@@ -14,7 +14,9 @@ namespace DCL.Social.Passports
         private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org?utm_source=dcl_explorer";
         private const string NAME_TYPE = "name";
-        private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, "parcel", "estate" };
+        private const string PARCEL_TYPE = "parcel";
+        private const string ESTATE_TYPE = "estate";
+        private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, PARCEL_TYPE, ESTATE_TYPE };
 
         private readonly IPlayerPassportHUDView view;
         private readonly StringVariable currentPlayerId;

@@ -54,6 +54,10 @@ namespace DCL.Social.Passports
             ViewAllComponentController viewAllController,
             StringVariable currentPlayerId)
         {
+            const string NAME_TYPE = "name";
+            const string PARCEL_TYPE = "parcel";
+            const string ESTATE_TYPE = "estate";
+
             this.view = view;
             this.profanityFilter = profanityFilter;
             this.wearableItemResolver = wearableItemResolver;
@@ -66,12 +70,12 @@ namespace DCL.Social.Passports
             this.viewAllController = viewAllController;
             this.currentPlayerId = currentPlayerId;
 
-            view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
+            view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
             view.OnClickedViewAll += ClickedViewAll;
             view.OnClickDescriptionCoordinates += OpenGoToPanel;
             viewAllController.OnBackFromViewAll += BackFromViewAll;
-            viewAllController.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
+            viewAllController.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
         }
 
         private void BackFromViewAll()
