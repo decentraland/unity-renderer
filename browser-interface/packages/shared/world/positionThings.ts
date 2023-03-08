@@ -4,7 +4,7 @@ import { InstancedSpawnPoint } from '../types'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { DEBUG, playerConfigurations } from 'config'
+import { DEBUG, playerHeight } from 'config'
 import { isInsideWorldLimits, Scene } from '@dcl/schemas'
 
 export type PositionReport = {
@@ -38,7 +38,7 @@ const positionEvent = {
   position: Vector3.Zero(),
   quaternion: Quaternion.Identity,
   rotation: Vector3.Zero(),
-  playerHeight: playerConfigurations.height,
+  playerHeight: playerHeight,
   mousePosition: Vector3.Zero(),
   immediate: false, // By default the renderer lerps avatars position
   cameraQuaternion: Quaternion.Identity,
@@ -107,9 +107,9 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
     spawnPoints = [
       {
         position: {
-          x: [1, 15],
-          y: [0, 0],
-          z: [1, 15]
+          x: 1,
+          y: 0,
+          z: 1
         }
       }
     ]
@@ -148,8 +148,8 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
     }
 
     if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
-      finalPosition.x = 8
-      finalPosition.z = 8
+      finalPosition.x = 1
+      finalPosition.z = 1
     }
   }
 

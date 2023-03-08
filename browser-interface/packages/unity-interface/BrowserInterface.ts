@@ -5,14 +5,13 @@ import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
 import {
   DEBUG,
   ethereumConfigurations,
-  playerConfigurations,
-  timeBetweenLoadingUpdatesInMillis,
+  playerHeight,
   WORLD_EXPLORER
 } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
 import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
 import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
 import { emotesRequest, wearablesRequest } from 'shared/catalogs/actions'
@@ -119,6 +118,7 @@ import { now } from 'lib/javascript/now'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
+const TIME_BETWEEN_SCENE_LOADING_UPDATES = 1_000
 
 type UnityEvent = any
 
@@ -285,7 +285,7 @@ export class BrowserInterface {
       data.position,
       data.rotation,
       data.cameraRotation || data.rotation,
-      data.playerHeight || playerConfigurations.height
+      data.playerHeight || playerHeight
     )
   }
 
@@ -917,7 +917,7 @@ export class BrowserInterface {
     const currentTime = now()
     const last = getLastUpdateTime(store.getState())
     const elapsed = currentTime - (last || 0)
-    if (elapsed > timeBetweenLoadingUpdatesInMillis) {
+    if (elapsed > TIME_BETWEEN_SCENE_LOADING_UPDATES) {
       store.dispatch(updateStatusMessage(message, loadPercentage, currentTime))
     }
   }

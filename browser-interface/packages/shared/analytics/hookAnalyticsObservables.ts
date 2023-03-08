@@ -1,6 +1,7 @@
+import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
-import { positionObservable } from '../world/positionThings'
-import { trackEvent } from '.'
+import { trackEvent } from './trackEvent'
+import { positionObservable } from 'shared/world/positionThings'
 
 export function hookAnalyticsObservables() {
   let lastTime: number = performance.now()
@@ -12,7 +13,7 @@ export function hookAnalyticsObservables() {
     // Update seconds variable and check if new parcel
     if (performance.now() - lastTime > 1000) {
       worldToGrid(position, gridPosition)
-      const currentPosition = `${gridPosition.x | 0},${gridPosition.y | 0}`
+      const currentPosition = encodeParcelPosition(gridPosition)
       if (previousPosition !== currentPosition) {
         trackEvent('Move to Parcel', {
           newParcel: currentPosition,

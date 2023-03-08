@@ -26,8 +26,8 @@ export async function processGif(buffer: ArrayBuffer): Promise<GifData> {
   const parsedGif = await parseGIF(buffer)
   const decompressedFrames = decompressFrames(parsedGif, true)
 
-  const frameDelays = []
-  const framesImageData = []
+  const frameDelays: number[] = []
+  const framesImageData: ArrayBufferLike[] = []
 
   const gifDims = decompressedFrames[0].dims
 

@@ -20,6 +20,7 @@ namespace DCL.Social.Friends
         private string messageBody;
         private string recipientId;
         private CancellationTokenSource friendOperationsCancellationToken = new ();
+        private CancellationTokenSource showCancellationToken = new ();
 
         public SendFriendRequestHUDController(
             ISendFriendRequestHUDView view,
@@ -48,6 +49,7 @@ namespace DCL.Social.Friends
         public void Dispose()
         {
             friendOperationsCancellationToken.SafeCancelAndDispose();
+            showCancellationToken.SafeCancelAndDispose();
             dataStore.HUDs.sendFriendRequest.OnChange -= ShowOrHide;
             view.OnMessageBodyChanged -= OnMessageBodyChanged;
             view.OnSend -= Send;
@@ -66,16 +68,30 @@ namespace DCL.Social.Friends
 
         private void Show(string recipient)
         {
-            messageBody = "";
-            recipientId = recipient;
-            var userProfile = userProfileBridge.Get(recipient);
-            if (userProfile == null) return;
-            view.SetName(userProfile.userName);
+            async UniTaskVoid ShowAsync(string recipient, CancellationToken cancellationToken)
+            {
+                messageBody = "";
+                recipientId = recipient;
+                var userProfile = userProfileBridge.Get(recipient);
 
-            // must send the snapshot observer, otherwise the faceUrl is invalid and the texture never loads
-            view.SetProfilePicture(userProfile.snapshotObserver);
-            view.ClearInputField();
-            view.Show();
+                try { userProfile ??= await userProfileBridge.RequestFullUserProfileAsync(recipient, cancellationToken); }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    view.SetName(recipient);
+                    view.ClearInputField();
+                    view.Show();
+                    throw;
+                }
+
+                view.SetName(userProfile.userName);
+                // must send the snapshot observer, otherwise the faceUrl is invalid and the texture never loads
+                view.SetProfilePicture(userProfile.snapshotObserver);
+                view.ClearInputField();
+                view.Show();
+            }
+
+            showCancellationToken = showCancellationToken.SafeRestart();
+            ShowAsync(recipient, showCancellationToken.Token).Forget();
         }
 
         private void Send()
@@ -115,6 +131,7 @@ namespace DCL.Social.Friends
 
         private void Hide()
         {
+            showCancellationToken.SafeCancelAndDispose();
             dataStore.HUDs.sendFriendRequest.Set(null, false);
             friendRequestHUDController.Hide();
         }
