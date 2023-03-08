@@ -298,7 +298,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(MENTION_AUTOCOMPLETE, new Dictionary<string, string>());
         }
 
-        public void SendPassportOpen(bool found = true, AvatarOpenOrigin source = AvatarOpenOrigin.World)
+        public void SendPassportOpen(bool found = true, AvatarOpenSource source = AvatarOpenSource.World)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {

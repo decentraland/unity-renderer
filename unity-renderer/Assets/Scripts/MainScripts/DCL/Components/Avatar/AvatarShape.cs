@@ -22,6 +22,7 @@ namespace DCL
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         private const string VISIBILITY_CONSTRAINT_HIDE_AREA = "IN_HIDE_AREA";
         private const string VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS = "OUTSIDE_SCENE_BOUNDS";
+        private const string OPEN_PASSPORT_SOURCE = "World";
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -38,7 +39,7 @@ namespace DCL
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
-        private BaseVariable<string> currentPlayerInfoCardId;
+        private BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
 
         public bool everythingIsLoaded;
 
@@ -121,7 +122,8 @@ namespace DCL
         {
             if (model == null)
                 return;
-            currentPlayerInfoCardId.Set(((AvatarModel) model).id);
+
+            currentPlayerInfoCardId.Set(new KeyValuePair<string, string>(((AvatarModel)model).id, OPEN_PASSPORT_SOURCE));
         }
 
         public void OnDestroy()

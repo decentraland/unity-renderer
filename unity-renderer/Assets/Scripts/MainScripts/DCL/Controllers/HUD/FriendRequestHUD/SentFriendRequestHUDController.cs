@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -10,13 +11,14 @@ namespace DCL.Social.Friends
     public class SentFriendRequestHUDController
     {
         private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+        private const string OPEN_PASSPORT_SOURCE = "FriendRequest";
 
         private readonly ISentFriendRequestHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IFriendsController friendsController;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly BaseVariable<string> openPassportVariable;
+        private readonly BaseVariable<KeyValuePair<string, string>> openPassportVariable;
 
         private CancellationTokenSource friendRequestOperationsCancellationToken = new ();
         private string friendRequestId;
@@ -135,7 +137,7 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            openPassportVariable.Set(friendRequest.To);
+            openPassportVariable.Set(new KeyValuePair<string, string>(friendRequest.To, OPEN_PASSPORT_SOURCE));
             view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
     }

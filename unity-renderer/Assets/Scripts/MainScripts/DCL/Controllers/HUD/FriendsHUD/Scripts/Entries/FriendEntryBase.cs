@@ -1,6 +1,7 @@
 using DCL;
 using System;
 using DCL.Social.Friends;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,6 +9,7 @@ using UnityEngine.UI;
 
 public class FriendEntryBase : BaseComponentView
 {
+    private const string OPEN_PASSPORT_SOURCE = "FriendsHUD";
     public FriendEntryModel Model { get; private set; } = new FriendEntryModel();
 
     public Image playerBlockedImage;
@@ -21,7 +23,7 @@ public class FriendEntryBase : BaseComponentView
     [SerializeField] protected internal GameObject offlineStatusContainer;
     [SerializeField] protected internal Button passportButton;
 
-    private BaseVariable<string> currentPlayerInfoCardId;
+    private BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
     private bool avatarFetchingEnabled;
 
     public event Action<FriendEntryBase> OnMenuToggle;
@@ -111,6 +113,6 @@ public class FriendEntryBase : BaseComponentView
         if (currentPlayerInfoCardId == null)
             currentPlayerInfoCardId = DataStore.i.HUDs.currentPlayerId;
 
-        currentPlayerInfoCardId.Set(Model.userId);
+        currentPlayerInfoCardId.Set(new KeyValuePair<string, string>(Model.userId, OPEN_PASSPORT_SOURCE));
     }
 }

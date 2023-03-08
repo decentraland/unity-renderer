@@ -21,6 +21,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
     private const string IN_HIDE_AREA = "IN_HIDE_AREA";
     private const string INSIDE_CAMERA = "INSIDE_CAMERA";
+    private const string OPEN_PASSPORT_SOURCE = "World";
 
     private CancellationTokenSource avatarLoadingCts;
     public GameObject avatarContainer;
@@ -44,7 +45,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
     private Service<IEmotesCatalogService> emotesCatalog;
     private ISocialAnalytics socialAnalytics;
-    private BaseVariable<string> currentPlayerInfoCardId;
+    private BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
     private IAvatar avatar;
 
     private void Start()
@@ -79,7 +80,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private void PlayerClicked()
     {
         if (currentAvatar == null) return;
-        currentPlayerInfoCardId.Set(currentAvatar.id);
+        currentPlayerInfoCardId.Set(new KeyValuePair<string, string>(currentAvatar.id, OPEN_PASSPORT_SOURCE));
     }
 
     private IAvatar GetStandardAvatar()

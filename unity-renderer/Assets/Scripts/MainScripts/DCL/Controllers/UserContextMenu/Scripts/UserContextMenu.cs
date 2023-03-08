@@ -23,6 +23,7 @@ public class UserContextMenu : MonoBehaviour
 {
     private const string BLOCK_BTN_BLOCK_TEXT = "Block";
     private const string BLOCK_BTN_UNBLOCK_TEXT = "Unblock";
+    private const string OPEN_PASSPORT_SOURCE = "FriendsHUD";
     private const string DELETE_MSG_PATTERN = "Are you sure you want to delete {0} as a friend?";
 
     [Flags]
@@ -78,7 +79,7 @@ public class UserContextMenu : MonoBehaviour
     public event Action<string> OnUnfriend;
     public event Action OnHide;
 
-    private static BaseVariable<string> currentPlayerId;
+    private static BaseVariable<KeyValuePair<string, string>> currentPlayerId;
     private string userId;
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
@@ -169,7 +170,7 @@ public class UserContextMenu : MonoBehaviour
     private void OnPassportButtonPressed()
     {
         OnPassport?.Invoke(userId);
-        currentPlayerId.Set(userId);
+        currentPlayerId.Set(new KeyValuePair<string, string>(userId, OPEN_PASSPORT_SOURCE));
         Hide();
 
         AudioScriptableObjects.dialogOpen.Play(true);

@@ -4,6 +4,7 @@ using DCL.Chat.Channels;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Channel = DCL.Chat.Channels.Channel;
@@ -17,7 +18,7 @@ namespace DCL.Social.Chat.Channels
         private readonly DataStore dataStore;
         internal readonly DataStore_Channels channelsDataStore;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly BaseVariable<string> currentPlayerInfoCardId;
+        private readonly BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
         private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private CancellationTokenSource joinChannelCancellationToken = new ();
         private string channelName;
@@ -169,7 +170,7 @@ namespace DCL.Social.Chat.Channels
                 }
             }
 
-            if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get()))
+            if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get().Key))
                 return ChannelLinkSource.Profile;
 
             var visibleTaskbarPanels = dataStore.HUDs.visibleTaskbarPanels.Get();

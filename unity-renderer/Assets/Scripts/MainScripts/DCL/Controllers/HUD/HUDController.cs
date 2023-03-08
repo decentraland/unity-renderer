@@ -18,6 +18,7 @@ using UnityEngine;
 public class HUDController : IHUDController
 {
     private const string TOGGLE_UI_VISIBILITY_ASSET_NAME = "ToggleUIVisibility";
+    private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     static bool VERBOSE = false;
     public static HUDController i { get; private set; }
@@ -555,7 +556,7 @@ public class HUDController : IHUDController
             "dcl://halloween_2019/bride_of_frankie_upper_body",
             "dcl://halloween_2019/creepy_nurse_upper_body",
         });
-        dataStore.HUDs.currentPlayerId.Set(newModel.userId);
+        dataStore.HUDs.currentPlayerId.Set(new KeyValuePair<string, string>(newModel.userId, OPEN_PASSPORT_SOURCE));
     }
 #endif
     public void Dispose()

@@ -15,11 +15,13 @@ namespace SocialFeaturesAnalytics
         ProfileEditHUD
     }
 
-    public enum AvatarOpenOrigin
+    public enum AvatarOpenSource
     {
         FriendsHUD,
         Mention,
-        World
+        World,
+        FriendRequest,
+        ProfileHUD
     }
 
     public enum ItemType

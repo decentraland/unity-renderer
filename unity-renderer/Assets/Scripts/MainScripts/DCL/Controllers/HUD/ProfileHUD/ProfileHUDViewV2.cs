@@ -2,6 +2,7 @@ using DCL;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private const float COPY_TOAST_VISIBLE_TIME = 3;
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
+    private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] internal GameObject loadingSpinner;
@@ -84,7 +86,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private UserProfile profile = null;
     private string description;
     private string userId;
-    private BaseVariable<string> currentPlayerId;
+    private BaseVariable<KeyValuePair<string, string>> currentPlayerId;
 
     public event EventHandler ClaimNamePressed;
     public event EventHandler SignedUpPressed;
@@ -282,7 +284,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             return;
 
         ShowExpanded(false);
-        currentPlayerId.Set(userId);
+        currentPlayerId.Set(new KeyValuePair<string, string>(userId, OPEN_PASSPORT_SOURCE));
     }
 
     private void HandleProfileSnapshot(UserProfile userProfile)

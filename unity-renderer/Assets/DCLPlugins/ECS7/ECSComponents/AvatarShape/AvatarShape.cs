@@ -55,6 +55,7 @@ namespace DCL.ECSComponents
         private const float AVATAR_Y_AXIS_OFFSET = -0.72f;
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         internal const string IN_HIDE_AREA = "IN_HIDE_AREA";
+        private const string OPEN_PASSPORT_SOURCE = "World";
 
         [SerializeField] private GameObject avatarContainer;
         [SerializeField] internal Collider avatarCollider;
@@ -69,7 +70,7 @@ namespace DCL.ECSComponents
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
-        private BaseVariable<string> currentPlayerInfoCardId;
+        private BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
 
         internal bool initializedPosition = false;
 
@@ -135,7 +136,7 @@ namespace DCL.ECSComponents
         {
             if (model == null)
                 return;
-            currentPlayerInfoCardId.Set(model.Id);
+            currentPlayerInfoCardId.Set(new KeyValuePair<string, string>(model.Id, OPEN_PASSPORT_SOURCE));
         }
 
         public void OnDestroy()
