@@ -266,16 +266,24 @@ public class TaskbarHUDController : IHUD
         if (publicChatWindow.View.IsActive ||
             channelChatWindow.View.IsActive ||
             privateChatWindow.View.IsActive)
-            OpenChatList();
+        {
+            if (!DataStore.i.mentions.isMentionSuggestionVisible.Get())
+            {
+                publicChatWindow.SetVisibility(false);
+                privateChatWindow.SetVisibility(false);
+                channelChatWindow.SetVisibility(false);
+                OpenChatList();
+            }
+        }
         else
         {
+            publicChatWindow.SetVisibility(false);
+            privateChatWindow.SetVisibility(false);
+            channelChatWindow.SetVisibility(false);
             worldChatWindowHud.SetVisibility(false);
             view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
         }
 
-        publicChatWindow.SetVisibility(false);
-        privateChatWindow.SetVisibility(false);
-        channelChatWindow.SetVisibility(false);
         CloseFriendsWindow();
         CloseVoiceChatWindow();
         isEmotesVisible.Set(false);

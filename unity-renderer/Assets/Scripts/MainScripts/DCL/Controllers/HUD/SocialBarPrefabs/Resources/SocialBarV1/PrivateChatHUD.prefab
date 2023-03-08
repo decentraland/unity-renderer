@@ -4092,7 +4092,7 @@ MonoBehaviour:
     type: 2}
   previousMentionSuggestionInput: {fileID: 11400000, guid: 06d28566773ab401d82c0f1ac66713c8,
     type: 2}
-  closeMentionSuggestionsInput: {fileID: 11400000, guid: 8c4093231e53544689734f8b077bc0fc,
+  closeMentionSuggestionsInput: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b,
     type: 2}
   chatMentionSuggestions: {fileID: 1011907313089259839}
   model:
