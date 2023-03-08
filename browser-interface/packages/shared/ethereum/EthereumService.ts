@@ -1,7 +1,7 @@
 import { BigNumber } from 'eth-connect'
 import { fromWei, toHex, toWei } from 'eth-connect'
 import { future, IFuture } from 'fp-future'
-import { defaultLogger } from 'shared/logger'
+import { defaultLogger } from 'lib/logger'
 import { RPCSendableMessage } from 'shared/types'
 import { getERC20 } from './ERC20'
 import { requestManager, getUserAccount } from './provider'

@@ -11,5 +11,7 @@ public enum InternalECSComponentsId
     UI_CONTAINER = 9,
     UI_INPUT_EVENTS_RESULT = 10,
     VIDEO_PLAYER = 11,
-    VIDEO_MATERIAL = 12
+    VIDEO_MATERIAL = 12,
+    SCENE_BOUNDS_CHECK = 13,
+    AUDIO_SOURCE = 14
 }

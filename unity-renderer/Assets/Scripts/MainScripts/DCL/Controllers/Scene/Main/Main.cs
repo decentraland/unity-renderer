@@ -2,11 +2,15 @@ using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.Map;
 using DCL.SettingsCommon;
-using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using UnityEngine;
+#if UNITY_EDITOR
+using DG.Tweening;
+#endif
 
 namespace DCL
 {
@@ -40,17 +44,19 @@ namespace DCL
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();
 
-            Settings.CreateSharedInstance(new DefaultSettingsFactory());
+            #if UNITY_EDITOR
+            // Prevent warning when starting on unity editor mode
+            // TODO: Are we instantiating 500 different kinds of animations?
+            DOTween.SetTweensCapacity(500,50);
+            #endif
 
-            // TODO: migrate chat controller singleton into a service in the service locator
-            ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
+            Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
                 performanceMetricsController = new PerformanceMetricsController();
                 SetupServices();
 
-                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
                 dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
 
@@ -115,7 +121,6 @@ namespace DCL
             {
                 // Prewarm shader variants
                 Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
                 dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             }
         }
@@ -147,7 +152,6 @@ namespace DCL
 
         protected virtual void Dispose()
         {
-            dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
 
             DataStore.i.common.isApplicationQuitting.Set(true);
@@ -165,9 +169,9 @@ namespace DCL
         {
             gameObject.AddComponent<UserProfileController>();
             gameObject.AddComponent<RenderingController>();
-            gameObject.AddComponent<CatalogController>();
+            gameObject.AddComponent<WebInterfaceWearablesCatalogService>();
+            gameObject.AddComponent<WebInterfaceMinimapApiBridge>();
             gameObject.AddComponent<MinimapMetadataController>();
-            gameObject.AddComponent<WebInterfaceChatBridge>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();

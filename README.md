@@ -17,7 +17,7 @@ This repository contains the reference implementation of the [decentraland explo
 * The [Unity](https://unity.com) engine and IDE, currently using version 2021.3.14f1
 * [node.js](https://nodejs.com), version 16 or later
 
-## Developer mode, without running the `browser-interface`
+### Steps
 
 Check: [Multiplatform in Editor](docs/multiplatform-in-editor.md)
 
@@ -27,7 +27,7 @@ Check: [Multiplatform in Editor](docs/multiplatform-in-editor.md)
 4. On `DebugConfig` inspector, make sure that `Base url mode` is set to `Custom`
    and `Base url custom` is set to `https://play.decentraland.zone/?`
 5. Run the Initial Scene in the Unity editor
-6. A browser tab with `explorer` should open automatically and steal your focus, don't close it!. Login with your wallet, go back to Unity and explorer should start running on the `Game View`.
+6. A browser tab with `explorer` should open automatically and steal your focus, don't close it! Login with your wallet, go back to Unity and explorer should start running on the `Game View`.
 7. As you can see, `DebugConfig` has other special options like the starting position, etc. You are welcome to use them as you see fit, but you'll have to close the tab and restart the scene for them to make effect.
 
 ### Troubleshooting
@@ -50,14 +50,6 @@ To test against a build made on this repository, you can use a link with this fo
 
     https://play.decentraland.zone/?explorer-branch=<branch-name>
 
-Note that using this approach, the Unity builds will run against kernel `master` HEAD.
-
-If you want to test your Unity branch against a specific kernel branch, you'll have to use the `renderer` url param like this:
-
-    https://play.decentraland.zone/?explorer-branch=<branch-name>&kernel-branch=<kernel-branch-name>
-
-If the CI for both branches succeeds, you can browse to the generated link and test your changes. Bear in mind that any push will kick the CI. There's no need to create a pull request.
-
 # Links for Contributors
 
 1. [Contribution Guidelines](.github/CONTRIBUTING.md)
@@ -67,19 +59,18 @@ If the CI for both branches succeeds, you can browse to the generated link and t
 
 # Advanced debugging scenarios
 
-## Debug with Unity Editor + local Kernel
+## Debug with Unity Editor + local Browser Interface
 
-Use this approach when working on any features that need both Kernel and Unity modifications, and you need to watch Unity code changes fast without the need of injecting a wasm targeted build in the browser.
+Use this approach when working on any features that need both Browser Interface and Unity modifications, and you need to watch Unity code changes fast without the need of injecting a wasm targeted build in the browser.
 
-When the steps are followed, you will be able to test your changes with just pressing the "Play" button within Unity. This will open a tab running the local Kernel build and Unity will connect to it using websocket.
+When the steps are followed, you will be able to test your changes by just pressing the "Play" button within Unity. This will open a tab running the local Browser Interface build and Unity will connect to it using websocket.
 
 This is the most useful debugging scenario for advanced feature implementation.
 
 ### Steps
 
 1. Make sure you have the proper Unity version up and running
-2. Make sure you have Kernel repository cloned and set up.
-3. Make sure you are running kernel through `make watch` command.
+3. Make sure you are running browser-interface through `make watch` command on `browser-interface` path.
 4. Back in unity editor, open the `DebugConfig` component inspector of `InitialScene`
 5. Make sure that the component is setup correctly
 6. Hit 'Play' button
@@ -104,7 +95,7 @@ Alternatively you can go through these 2 steps after step 3 and load the build l
 1. Make sure you have the [explorer website repository](https://github.com/decentraland/explorer-website) cloned.
 2. Make sure you have the local website up and running by executing `npm run start:linked` in the cloned repo directory (`npm i` first just in case).
 3. When the WebGL build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `explorer-website/node_modules/@dcl/unity-renderer`.
-4. Access using using `localhost:3000`
+4. Access using `localhost:3000`
 
 ### Troubleshooting
 

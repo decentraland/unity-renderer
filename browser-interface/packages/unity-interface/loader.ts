@@ -1,5 +1,5 @@
 import future from 'fp-future'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 
 const generatedFiles = {
@@ -90,8 +90,12 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
   const resolveWithBaseUrl = (file: string) =>
     new URL(file + (explorerVersion ? '?v=' + explorerVersion : ''), baseUrl).toString()
 
+  // only assets deployed to DCL's CDN, the @dcl/cdn-uploader takes care of that compression
+  // this optimization is important, please do not remove
   const enableBrotli =
-    typeof options.enableBrotli !== 'undefined' ? !!options.enableBrotli : document.location.protocol === 'https:'
+    baseUrl.startsWith('https://renderer-artifacts.decentraland.org') ||
+    baseUrl.startsWith('https://cdn.decentraland.org') ||
+    false
 
   const postfix = enableBrotli ? '.br' : ''
 

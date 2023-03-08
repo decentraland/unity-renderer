@@ -1,7 +1,6 @@
 using DCL.Components.Video.Plugin;
 using System.Collections.Generic;
 using DCL.ECSComponents;
-using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
@@ -71,6 +70,22 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers = new List<Renderer>();
     }
 
+    public class InternalAudioSource : InternalComponent
+    {
+        public AudioSource audioSource;
+    }
+
+    public class InternalSceneBoundsCheck : InternalComponent
+    {
+        public Vector3 entityPosition = Vector3.zero;
+        public Bounds entityLocalMeshBounds = new Bounds();
+        public bool meshesDirty = false;
+        public IList<Renderer> renderers;
+        public IList<Collider> physicsColliders;
+        public IList<Collider> pointerColliders;
+        public AudioSource audioSource;
+    }
+
     public class InternalVisibility : InternalComponent
     {
         public bool visible = true;
@@ -88,6 +103,7 @@ namespace DCL.ECS7.InternalComponents
 
         public Queue<EventData> events;
         public int lastTimestamp;
+        public long lastEntity;
     }
 
     public class InternalUiContainer : InternalComponent

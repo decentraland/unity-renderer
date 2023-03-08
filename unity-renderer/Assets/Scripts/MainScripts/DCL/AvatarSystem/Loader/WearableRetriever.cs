@@ -15,8 +15,6 @@ namespace AvatarSystem
 
         private RendereableAssetLoadHelper loaderAssetHelper;
 
-
-
         public async UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -58,7 +56,7 @@ namespace AvatarSystem
                 loaderAssetHelper.Load(mainFile, AvatarSystemUtils.UseAssetBundles() ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY);
 
                 // AttachExternalCancellation is needed because a cancelled WaitUntil UniTask requires a frame
-                await UniTask.WaitUntil(() => done, cancellationToken: ct).AttachExternalCancellation(ct);
+                await UniTaskUtils.WaitForBoolean(ref done, cancellationToken: ct).AttachExternalCancellation(ct);
 
                 if (exception != null)
                     throw exception;

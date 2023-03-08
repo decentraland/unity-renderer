@@ -1,4 +1,4 @@
-import { IEthereumProvider, LoginState } from '@dcl/kernel-interface'
+import { IEthereumProvider, LoginState } from 'kernel-web-interface'
 import { RootSessionState } from './types'
 
 // TODO use userId
@@ -8,8 +8,8 @@ export const getCurrentUserId = (store: RootSessionState) => store.session.ident
 export const getCurrentIdentity = (store: RootSessionState) => store.session.identity
 export const getCurrentNetwork = (store: RootSessionState) => store.session.network
 export const hasWallet = (store: RootSessionState) => store.session.identity?.hasConnectedWeb3
-export const getIsSignUp = (state: RootSessionState): boolean => !!state.session.isSignUp
-export const getIsGuestLogin = (state: RootSessionState): boolean => !!state.session.isGuestLogin
+export const isSignupInProgress = (state: RootSessionState): boolean => !!state.session.isSignUp
+export const isGuestLogin = (state: RootSessionState): boolean => !!state.session.isGuestLogin
 export const getProvider = (state: RootSessionState): IEthereumProvider | undefined => state.session.provider
 
 export function isLoginCompleted(state: RootSessionState) {

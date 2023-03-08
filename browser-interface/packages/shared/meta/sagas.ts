@@ -1,14 +1,14 @@
 import { FeatureFlagsResult, fetchFlags } from '@dcl/feature-flags'
 import { ETHEREUM_NETWORK, getAssetBundlesBaseUrl, getServerConfigurations, PREVIEW, rootURLPreviewMode } from 'config'
 import { all, call, fork, put, select, take } from 'redux-saga/effects'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { SELECT_NETWORK } from 'shared/dao/actions'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { addKernelPortableExperience } from 'shared/portableExperiences/actions'
 import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
 import { getPortableExperienceFromUrn } from 'unity-interface/portableExperiencesUtils'
-import defaultLogger from '../logger'
+import defaultLogger from 'lib/logger'
 import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
 import { getFeatureFlagVariantValue, isMetaConfigurationInitialized } from './selectors'
 import { FeatureFlagsName, MetaConfiguration } from './types'
@@ -38,7 +38,6 @@ function* initMeta() {
 
   const merge: Partial<MetaConfiguration> = {
     ...config,
-    comms: config.comms,
     featureFlagsV2: flagsAndVariants
   }
 
@@ -154,10 +153,6 @@ async function fetchMetaConfiguration(network: ETHEREUM_NETWORK): Promise<Partia
         network === ETHEREUM_NETWORK.MAINNET ? 'https://social.decentraland.org' : 'https://social.decentraland.zone',
       world: {
         pois: []
-      },
-      comms: {
-        targetConnections: 4,
-        maxConnections: 6
       }
     }
   }

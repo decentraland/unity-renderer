@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
+using UIComponents.Scripts.Utils;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCL.Social.Passports
@@ -80,11 +82,13 @@ namespace DCL.Social.Passports
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
         public event Action OnClickCollectibles;
+        public event Action<ParcelCoordinates> OnClickDescriptionCoordinates;
 
         private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
         private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_";
         private const int MAX_NFT_ICON_ENTRIES = 20;
         private const int MAX_NFT_PAGES_ENTRIES = 20;
+        private const string COORD_LINK_ID = "coord://";
 
         private List<PoolableObject> nftIconPoolableQueue = new List<PoolableObject>();
         private List<PoolableObject> nftPagesPoolableQueue = new List<PoolableObject>();
@@ -105,6 +109,7 @@ namespace DCL.Social.Passports
             nftNamesScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
             nftLandsScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
             collectiblesMainScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
+            descriptionText.SubscribeToClickEvents(OnDescriptionClicked);
         }
 
         private void EnableAboutSection(bool isActive)
@@ -190,10 +195,32 @@ namespace DCL.Social.Passports
             {
                 emptyDescriptionGO.SetActive(false);
                 descriptionText.gameObject.SetActive(true);
+                description = AddCoordinateLinks(description);
                 descriptionText.text = description;
             }
 
             SetLinks(links);
+        }
+
+        private string AddCoordinateLinks(string description)
+        {
+            return CoordinateUtils.ReplaceTextCoordinates(description, (text, coordinates) =>
+                $"<link=coord://{text}><color=#4886E3><u>{text}</u></color></link>");
+        }
+
+        private void OnDescriptionClicked(PointerEventData clickData)
+        {
+            if (clickData.button != PointerEventData.InputButton.Left) return;
+
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(descriptionText, clickData.position, descriptionText.canvas.worldCamera);
+            if (linkIndex == -1) return;
+
+            string link = descriptionText.textInfo.linkInfo[linkIndex].GetLinkID();
+            if (!link.StartsWith(COORD_LINK_ID)) return;
+
+            string coordText = link[COORD_LINK_ID.Length..];
+            ParcelCoordinates coordinates = CoordinateUtils.ParseCoordinatesString(coordText);
+            OnClickDescriptionCoordinates?.Invoke(coordinates);
         }
 
         private void SetLinks(List<string> links)
@@ -468,7 +495,7 @@ namespace DCL.Social.Passports
                         type = NAME_TYPE,
                         marketplaceURI = "",
                         name = names[i + j].Name,
-                        rarity = LEGENDARY_RARITY,
+                        rarity = NAME_TYPE,
                         imageURI = "",
                         nftId = (names[i + j].ContractAddress, NAME_TYPE)
                     };

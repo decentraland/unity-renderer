@@ -1,10 +1,10 @@
-import type { BannedUsers, CommsConfig, FeatureFlag, FeatureFlagsName, RootMetaState, WorldConfig } from './types'
+import type { BannedUsers, FeatureFlag, FeatureFlagsName, RootMetaState, WorldConfig } from './types'
 import { AlgorithmChainConfig } from 'shared/dao/pick-realm-algorithm/types'
 import { BYPASS_CONTENT_ALLOWLIST, SOCIAL_SERVER_URL } from 'config'
 import { urlWithProtocol } from 'shared/realm/resolver'
 import { DEFAULT_MAX_VISIBLE_PEERS } from '.'
 import { QS_MAX_VISIBLE_PEERS } from 'config'
-import { trackEvent } from '../analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 
 export const getAddedServers = (store: RootMetaState): string[] => {
   const { config } = store.meta
@@ -35,8 +35,6 @@ export const getMinCatalystVersion = (store: RootMetaState): string | undefined 
 export const isMetaConfigurationInitialized = (store: RootMetaState): boolean => store.meta.initialized
 
 export const getWorldConfig = (store: RootMetaState): WorldConfig => store.meta.config.world as WorldConfig
-
-export const getCommsConfig = (store: RootMetaState): CommsConfig => store.meta.config.comms ?? {}
 
 export const getBannedUsers = (store: RootMetaState): BannedUsers =>
   (getFeatureFlagVariantValue(store, 'banned_users') as BannedUsers) ?? {}

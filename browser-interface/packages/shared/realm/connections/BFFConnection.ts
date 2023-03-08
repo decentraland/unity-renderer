@@ -1,4 +1,4 @@
-import { ILogger, createLogger } from 'shared/logger'
+import { ILogger, createLogger } from 'lib/logger'
 import { Authenticator } from '@dcl/crypto'
 import { createRpcClient, RpcClientPort } from '@dcl/rpc'
 import { WebSocketTransport } from '@dcl/rpc/dist/transports/WebSocket'
@@ -8,7 +8,7 @@ import {
   WelcomePeerInformation
 } from '@dcl/protocol/out-ts/decentraland/bff/authentication_service.gen'
 import { CommsServiceDefinition } from '@dcl/protocol/out-ts/decentraland/bff/comms_service.gen'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { ExplorerIdentity } from 'shared/session/types'
 import { RealmConnectionEvents, BffServices, IRealmAdapter } from '../types'
 import mitt from 'mitt'

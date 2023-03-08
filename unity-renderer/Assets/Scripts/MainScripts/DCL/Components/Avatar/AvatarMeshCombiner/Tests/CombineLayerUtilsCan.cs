@@ -3,12 +3,16 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using DCL;
 using NUnit.Framework;
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
 
 public class CombineLayerUtilsCan
 {
+    private static CombineLayerComparer comparer = new CombineLayerComparer();
+
     [Test]
     public void Slice()
     {
@@ -37,29 +41,34 @@ public class CombineLayerUtilsCan
         }
 
         // Act
-        List<CombineLayer> result = DCL.CombineLayerUtils.Slice(skrList.ToArray());
+        using var result = CombineLayersList.Rent();
+        CombineLayerUtils.TrySlice(skrList.ToArray(), result);
 
-        // Assert
         Assert.That(result.Count, Is.EqualTo(4));
-        Assert.That(result[0].textureToId.Count, Is.EqualTo(6));
-        Assert.That(result[0].renderers.Count, Is.EqualTo(3));
-        Assert.That(result[0].isOpaque, Is.True);
-        Assert.That(result[0].cullMode, Is.EqualTo(CullMode.Back));
 
-        Assert.That(result[1].textureToId.Count, Is.EqualTo(4));
-        Assert.That(result[1].renderers.Count, Is.EqualTo(2));
-        Assert.That(result[1].isOpaque, Is.True);
-        Assert.That(result[1].cullMode, Is.EqualTo(CullMode.Front));
+        Assert.IsTrue(result.Layers.Any(x =>
+            x.cullMode == CullMode.Back
+            && x.isOpaque
+            && x.Renderers.Count == 3
+            && x.textureToId.Count == 6));
 
-        Assert.That(result[2].textureToId.Count, Is.EqualTo(6));
-        Assert.That(result[2].renderers.Count, Is.EqualTo(3));
-        Assert.That(result[2].isOpaque, Is.False);
-        Assert.That(result[2].cullMode, Is.EqualTo(CullMode.Back));
+        Assert.IsTrue(result.Layers.Any(x =>
+            x.cullMode == CullMode.Front
+            && x.isOpaque
+            && x.Renderers.Count == 2
+            && x.textureToId.Count == 4));
 
-        Assert.That(result[3].textureToId.Count, Is.EqualTo(4));
-        Assert.That(result[3].renderers.Count, Is.EqualTo(2));
-        Assert.That(result[3].isOpaque, Is.False);
-        Assert.That(result[3].cullMode, Is.EqualTo(CullMode.Front));
+        Assert.IsTrue(result.Layers.Any(x =>
+            x.cullMode == CullMode.Back
+            && !x.isOpaque
+            && x.Renderers.Count == 3
+            && x.textureToId.Count == 6));
+
+        Assert.IsTrue(result.Layers.Any(x =>
+            x.cullMode == CullMode.Front
+            && !x.isOpaque
+            && x.Renderers.Count == 2
+            && x.textureToId.Count == 4));
 
         for ( int i = 0; i < skrList.Count; i++ )
         {
@@ -87,13 +96,12 @@ public class CombineLayerUtilsCan
             emissionList.Add(emissionTex);
         }
 
-        CombineLayer layer = new CombineLayer();
-        layer.cullMode = CullMode.Back;
-        layer.isOpaque = true;
-        layer.renderers = skrList;
+        using var result = CombineLayersList.Rent();
+        CombineLayer layer = CombineLayer.Rent(CullMode.Back, true);
+        result.AddRenderers(layer, skrList);
 
         // Act
-        var result = DCL.CombineLayerUtils.SubsliceLayerByTextures(layer);
+        CombineLayerUtils.SubsliceLayerByTextures(layer, result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(2));
@@ -146,13 +154,11 @@ public class CombineLayerUtilsCan
             emissionList.Add(emissionTex);
         }
 
-        CombineLayer layer = new CombineLayer();
-        layer.cullMode = CullMode.Back;
-        layer.isOpaque = true;
-        layer.renderers = skrList;
+        using var result = CombineLayersList.Rent();
+        CombineLayer layer = CombineLayer.Rent(CullMode.Back, true, skrList);
 
         // Act
-        var result = DCL.CombineLayerUtils.SubsliceLayerByTextures(layer);
+        CombineLayerUtils.SubsliceLayerByTextures(layer, result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(1));
@@ -187,7 +193,8 @@ public class CombineLayerUtilsCan
         }
 
         // Act
-        var result = DCL.CombineLayerUtils.SliceByRenderState(skrList.ToArray());
+        var result = new List<CombineLayer>();
+        SliceByRenderState.Execute(skrList, result, false);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(2));
@@ -223,7 +230,8 @@ public class CombineLayerUtilsCan
         }
 
         // Act
-        var result = DCL.CombineLayerUtils.SliceByRenderState(skrList.ToArray());
+        var result = new List<CombineLayer>();
+        SliceByRenderState.Execute(skrList, result, false);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(2));
@@ -236,6 +244,25 @@ public class CombineLayerUtilsCan
         for ( int i = 0; i < skrList.Count; i++ )
         {
             DCL.Helpers.SkinnedMeshRenderer.DestroyAndUnload(skrList[i]);
+        }
+    }
+
+    private class CombineLayerComparer : IEqualityComparer<CombineLayer>
+    {
+        public bool Equals(CombineLayer x, CombineLayer y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, null)) return false;
+            if (ReferenceEquals(y, null)) return false;
+            if (x.GetType() != y.GetType()) return false;
+            return x.cullMode == y.cullMode && x.isOpaque == y.isOpaque
+                                            && x.Renderers.Count == y.Renderers.Count
+                                            && x.textureToId.Count == y.textureToId.Count;
+        }
+
+        public int GetHashCode(CombineLayer obj)
+        {
+            return HashCode.Combine((int)obj.cullMode, obj.isOpaque, obj.Renderers.Count, obj.textureToId.Count);
         }
     }
 
@@ -264,25 +291,18 @@ public class CombineLayerUtilsCan
         }
 
         // Act
-        var result = DCL.CombineLayerUtils.SliceByRenderState(skrList.ToArray());
+        var result = new List<CombineLayer>();
+        SliceByRenderState.Execute(skrList, result, false);
 
-        // Assert
-        Assert.That(result.Count, Is.EqualTo(4));
-        Assert.That(result[0].textureToId.Count, Is.EqualTo(0));
-        Assert.That(result[0].cullMode, Is.EqualTo(CullMode.Back));
-        Assert.That(result[0].isOpaque, Is.True);
+        var expected = new List<CombineLayer>
+        {
+            CombineLayer.Rent(CullMode.Back, true, new SkinnedMeshRenderer[3]),
+            CombineLayer.Rent(CullMode.Back, false, new SkinnedMeshRenderer[3]),
+            CombineLayer.Rent(CullMode.Front, true, new SkinnedMeshRenderer[2]),
+            CombineLayer.Rent(CullMode.Front, false, new SkinnedMeshRenderer[2]),
+        };
 
-        Assert.That(result[1].textureToId.Count, Is.EqualTo(0));
-        Assert.That(result[1].cullMode, Is.EqualTo(CullMode.Front));
-        Assert.That(result[1].isOpaque, Is.True);
-
-        Assert.That(result[2].textureToId.Count, Is.EqualTo(0));
-        Assert.That(result[2].cullMode, Is.EqualTo(CullMode.Back));
-        Assert.That(result[2].isOpaque, Is.False);
-
-        Assert.That(result[3].textureToId.Count, Is.EqualTo(0));
-        Assert.That(result[3].cullMode, Is.EqualTo(CullMode.Front));
-        Assert.That(result[3].isOpaque, Is.False);
+        Assert.That(result, Is.EquivalentTo(expected).Using(comparer));
 
         for ( int i = 0; i < skrList.Count; i++ )
         {
@@ -304,7 +324,8 @@ public class CombineLayerUtilsCan
         };
 
         // Act
-        var result = DCL.CombineLayerUtils.GetMapIds(new ReadOnlyDictionary<Texture2D, int>(textures), mats, 0);
+        var result = new Dictionary<Texture2D, int>();
+        CombineLayerUtils.AddMapIds(textures, result, mats, 0);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(6));
@@ -332,7 +353,8 @@ public class CombineLayerUtilsCan
         textures.Add( Texture2D.blackTexture, 1 );
 
         // Act
-        var result = DCL.CombineLayerUtils.GetMapIds(new ReadOnlyDictionary<Texture2D, int>(textures), mats, 2);
+        var result = new Dictionary<Texture2D, int>();
+        CombineLayerUtils.AddMapIds(textures, result, mats, 2);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));
@@ -355,7 +377,7 @@ public class CombineLayerUtilsCan
             SkinnedMeshRenderer r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(CullMode.Back, null, null);
 
             // Act
-            bool isOpaque = DCL.CombineLayerUtils.IsOpaque(r.sharedMaterials[0]);
+            bool isOpaque = SliceByRenderState.IsOpaque(r.sharedMaterials[0]);
 
             // Assert
             Assert.That(isOpaque, Is.True);
@@ -368,7 +390,7 @@ public class CombineLayerUtilsCan
             SkinnedMeshRenderer r = DCL.Helpers.SkinnedMeshRenderer.CreateWithTransparentMat(CullMode.Back, null, null);
 
             // Act
-            bool isOpaque = DCL.CombineLayerUtils.IsOpaque(r.sharedMaterials[0]);
+            bool isOpaque = SliceByRenderState.IsOpaque(r.sharedMaterials[0]);
 
             // Assert
             Assert.That(isOpaque, Is.False);
@@ -387,7 +409,7 @@ public class CombineLayerUtilsCan
         SkinnedMeshRenderer r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(cullMode, null, null);
 
         // Act
-        CullMode resultMode = DCL.CombineLayerUtils.GetCullMode(r.sharedMaterials[0]);
+        CullMode resultMode = SliceByRenderState.GetCullMode(r.sharedMaterials[0]);
 
         // Assert
         Assert.That( resultMode, Is.EqualTo(expectedResult));
@@ -405,7 +427,7 @@ public class CombineLayerUtilsCan
         SkinnedMeshRenderer r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(cullMode, null, null);
 
         // Act
-        CullMode resultMode = DCL.CombineLayerUtils.GetCullModeWithoutCullOff(r);
+        CullMode resultMode = SliceByRenderState.GetCullModeWithoutCullOff(r);
 
         // Assert
         Assert.That( resultMode, Is.EqualTo(expectedResult));

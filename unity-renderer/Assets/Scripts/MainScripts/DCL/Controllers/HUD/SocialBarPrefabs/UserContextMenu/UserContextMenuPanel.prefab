@@ -1493,8 +1493,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   confirmationDialog: {fileID: 0}
   menuConfigFlags: -1
+  enableSendMessage: 1
   headerContainer: {fileID: 2509732966232078900}
-  bodyContainer: {fileID: 2925717574549486877}
   friendshipContainer: {fileID: 811012761570672796}
   friendAddContainer: {fileID: 8987714422498632940}
   friendRemoveContainer: {fileID: 7036840294256032757}

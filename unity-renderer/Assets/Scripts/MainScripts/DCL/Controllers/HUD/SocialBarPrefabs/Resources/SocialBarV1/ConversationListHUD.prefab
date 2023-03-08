@@ -340,7 +340,7 @@ RectTransform:
   m_Children:
   - {fileID: 4870776625288108345}
   m_Father: {fileID: 6385060616518280574}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2408,8 +2408,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2848366822303428748}
   m_HandleRect: {fileID: 7437318031689893040}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.8834459
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3419,7 +3419,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 10
   m_Viewport: {fileID: 2828657937425296497}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 2911345154281567359}
@@ -4958,8 +4958,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5239503401355176004}
-  - {fileID: 617924651212043353}
   - {fileID: 4382546108109034416}
+  - {fileID: 617924651212043353}
   - {fileID: 4620314683889069474}
   - {fileID: 8351527217900942837}
   - {fileID: 4257313855285611501}
@@ -5201,7 +5201,7 @@ RectTransform:
   m_Children:
   - {fileID: 207844789075968199}
   m_Father: {fileID: 6385060616518280574}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

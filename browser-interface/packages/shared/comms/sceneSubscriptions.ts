@@ -16,7 +16,9 @@ export function unsubscribeParcelSceneToCommsMessages(controller: ICommunication
 }
 
 /**
- * Returns a list of CIDs that must receive scene messages from comms
+ * Retrieve the scene IDs that are subscribed to receive scene messages from comms
+ *
+ * @returns a list of CIDs, identifying the Scenes by their hash
  */
 export function getParcelSceneSubscriptions(): string[] {
   const ids: string[] = []

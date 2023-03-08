@@ -2,13 +2,14 @@ import { EntityType, Scene } from '@dcl/schemas'
 import { call, select, takeEvery, takeLatest } from '@redux-saga/core/effects'
 import { jsonFetch } from 'lib/javascript/jsonFetch'
 import { put } from 'redux-saga-test-plan/matchers'
-import { getFetchContentUrlPrefixFromRealmAdapter, waitForRealmAdapter } from 'shared/realm/selectors'
-import { IRealmAdapter } from 'shared/realm/types'
+import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import type { IRealmAdapter } from 'shared/realm/types'
 import { wearablesRequest, WearablesSuccess, WEARABLES_SUCCESS } from 'shared/catalogs/actions'
-import defaultLogger from 'shared/logger'
-import { ProfileSuccessAction, PROFILE_SUCCESS } from 'shared/profiles/actions'
+import defaultLogger from 'lib/logger'
+import type { ProfileSuccessAction } from 'shared/profiles/actions'
+import { PROFILE_SUCCESS } from 'shared/profiles/actions'
 import { isCurrentUserId } from 'shared/session/selectors'
-import { LoadableScene, WearableV2 } from 'shared/types'
+import type { LoadableScene, WearableV2 } from 'shared/types'
 import { getDesiredWearablePortableExpriences } from 'shared/wearablesPortableExperience/selectors'
 import {
   addDesiredPortableExperience,
@@ -17,6 +18,7 @@ import {
   PROCESS_WEARABLES,
   removeDesiredPortableExperience
 } from './actions'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 
 export function* wearablesPortableExperienceSaga(): any {
   yield takeLatest(PROFILE_SUCCESS, handleSelfProfileSuccess)
@@ -80,8 +82,8 @@ function* handleWearablesSuccess(action: WearablesSuccess): any {
   )
 
   if (wearablesToProcess.length > 0) {
-    const adapter: IRealmAdapter = yield call(waitForRealmAdapter)
-    const defaultBaseUrl: string = yield call(getFetchContentUrlPrefixFromRealmAdapter, adapter)
+    const adapter: IRealmAdapter = yield call(waitForRealm)
+    const defaultBaseUrl: string = getFetchContentUrlPrefixFromRealmAdapter(adapter)
 
     for (const wearable of wearablesToProcess) {
       try {

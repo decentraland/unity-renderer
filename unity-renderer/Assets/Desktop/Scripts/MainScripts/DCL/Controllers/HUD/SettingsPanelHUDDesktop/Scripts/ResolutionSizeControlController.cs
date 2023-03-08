@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using MainScripts.DCL.Controllers.SettingsDesktop;
 using MainScripts.DCL.Controllers.SettingsDesktop.SettingsControllers;
-using MainScripts.DCL.ScriptableObjectsDesktop;
 using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
@@ -12,7 +9,7 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
         fileName = "ResolutionSizeControlController")]
     public class ResolutionSizeControlController : SpinBoxSettingsControlControllerDesktop
     {
-        private List<Resolution> possibleResolutions = new List<Resolution>();
+        private readonly List<Resolution> possibleResolutions = new ();
 
         public override void Initialize()
         {
@@ -44,14 +41,13 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
             RaiseOnOverrideIndicatorLabel(resolutionLabels);
         }
 
-        private static string GetLabel(Resolution resolution)
-        {
-            return $"{resolution.width}x{resolution.height} {GetAspectRatio(resolution.width, resolution.height)} {resolution.refreshRate} Hz";
-        }
+        private static string GetLabel(Resolution resolution) =>
+            $"{resolution.width}x{resolution.height} ({GetAspectRatio(resolution.width, resolution.height)}) {resolution.refreshRate} Hz";
 
         public override object GetStoredValue()
         {
-            return currentDisplaySettings.resolutionSizeIndex;
+            int index = currentDisplaySettings.resolutionSizeIndex;
+            return index >= 0 ? index : ScreenResolutionUtils.DefaultIndex;
         }
 
         private static string GetAspectRatio(int width, int height)
@@ -67,7 +63,7 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
                 height = rest;
             }
 
-            return (tempWidth / width) + ":" + (tempHeight / width);
+            return $"{tempWidth / width}:{tempHeight / width}";
         }
 
         public override void UpdateSetting(object newValue)

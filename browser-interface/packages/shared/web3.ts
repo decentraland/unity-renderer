@@ -1,9 +1,9 @@
-import { ETHEREUM_NETWORK, ethereumConfigurations } from 'config'
-import { defaultLogger } from './logger'
-import { CatalystNode, GraphResponse } from './types'
+import { CATALYSTS_FROM_DAO_CONTRACT, ethereumConfigurations, ETHEREUM_NETWORK } from 'config'
+import { bytesToHex, ContractFactory } from 'eth-connect'
 import { retry } from 'lib/javascript/retry'
+import { defaultLogger } from 'lib/logger'
 import { requestManager } from './ethereum/provider'
-import { ContractFactory, bytesToHex } from 'eth-connect'
+import { CatalystNode, GraphResponse } from './types'
 
 declare let window: Window & {
   ethereum: any
@@ -280,13 +280,41 @@ const catalystABI = [
   }
 ]
 
+/**
+ * The HARDCODED_CATALYST_LIST exists because this function was taking ~8s fetching all the data from the contract (at
+ * least through metamask)
+ */
 export async function fetchCatalystNodesFromDAO(): Promise<CatalystNode[]> {
   if (!requestManager.provider) {
-    debugger
     throw new Error('requestManager.provider not set')
   }
 
   const net = await getAppNetwork()
+
+  if (!CATALYSTS_FROM_DAO_CONTRACT) {
+    if (net === ETHEREUM_NETWORK.MAINNET) {
+      return [
+        { domain: 'https://peer-wc1.decentraland.org' },
+        { domain: 'https://interconnected.online' },
+        { domain: 'https://peer-ec2.decentraland.org' },
+        { domain: 'https://peer-ec1.decentraland.org' },
+        { domain: 'https://peer.dclnodes.io' },
+        { domain: 'https://peer-eu1.decentraland.org' },
+        { domain: 'https://peer-ap1.decentraland.org' },
+        { domain: 'https://peer.decentral.io' },
+        { domain: 'https://peer.uadevops.com' },
+        { domain: 'https://peer.kyllian.me' },
+        { domain: 'https://peer.melonwave.com' }
+      ]
+    } else if (net === ETHEREUM_NETWORK.GOERLI) {
+      return [
+        { domain: 'https://peer.decentraland.zone' },
+        { domain: 'https://peer-ap1.decentraland.zone' },
+        { domain: 'https://peer-ue-2.decentraland.zone' },
+        { domain: 'https://peer-ue-2.decentraland.zone' }
+      ]
+    }
+  }
 
   const contract2: {
     catalystCount(): Promise<string>

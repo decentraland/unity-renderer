@@ -1,7 +1,7 @@
 import { getTLD } from 'config'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { ExplorerIdentity } from 'shared/session/types'
-import { defaultLogger } from 'shared/logger'
+import { defaultLogger } from 'lib/logger'
 import {
   saveToPersistentStorage,
   getFromPersistentStorage,

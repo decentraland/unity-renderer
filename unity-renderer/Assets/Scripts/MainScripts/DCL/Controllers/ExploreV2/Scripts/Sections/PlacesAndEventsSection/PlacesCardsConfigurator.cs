@@ -17,7 +17,7 @@ public static class PlacesCardsConfigurator
     /// <param name="placeInfo">Model to apply.</param>
     /// <param name="OnPlaceInfoClicked">Action to inform when the Info button has been clicked.</param>
     /// <param name="OnPlaceJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
-    public static PlaceCardComponentView Configure(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<HotSceneInfo> OnPlaceJumpInClicked)
+    public static PlaceCardComponentView Configure(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<HotSceneInfo> OnPlaceJumpInClicked, Action<string, bool> OnFavoriteClicked)
     {
         placeCard.Configure(placeInfo);
 
@@ -25,6 +25,8 @@ public static class PlacesCardsConfigurator
         placeCard.onInfoClick.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
         placeCard.onJumpInClick.RemoveAllListeners();
         placeCard.onJumpInClick.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
+        placeCard.onFavoriteClick -= OnFavoriteClicked;
+        placeCard.onFavoriteClick += OnFavoriteClicked;
 
         return placeCard;
     }

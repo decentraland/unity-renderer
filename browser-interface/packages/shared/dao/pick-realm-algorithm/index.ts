@@ -1,12 +1,12 @@
 import { Candidate, Parcel } from '../types'
 import { defaultAllPeersScoreConfig, defaultClosePeersScoreConfig, defaultLargeLatencyConfig } from './defaults'
 import { AlgorithmChainConfig, AlgorithmContext, AlgorithmLink, AlgorithmLinkConfig, AlgorithmLinkTypes } from './types'
-import { defaultLogger } from 'shared/logger'
+import { defaultLogger } from 'lib/logger'
 import { largeLatencyLink } from './largeLatency'
 import { closePeersScoreLink } from './closePeers'
 import { allPeersScoreLink } from './allPeers'
 import { loadBalancingLink } from './loadBalancing'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 
 function buildLink(linkConfig: AlgorithmLinkConfig) {
   switch (linkConfig.type) {
