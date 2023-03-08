@@ -73,6 +73,7 @@ public class ECSSystemsController : IDisposable
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
+            DataStore.i.ecs7.scenes,
             context.internalEcsComponents.sceneBoundsCheckComponent,
             context.internalEcsComponents.visibilityComponent,
             context.internalEcsComponents.renderersComponent,
@@ -120,6 +121,7 @@ public class ECSSystemsController : IDisposable
         uiSystem.Dispose();
         cameraEntitySystem.Dispose();
         playerTransformSystem.Dispose();
+        sceneBoundsCheckerSystem.Dispose();
         Object.Destroy(hoverCanvas);
         Object.Destroy(scenesUi);
     }

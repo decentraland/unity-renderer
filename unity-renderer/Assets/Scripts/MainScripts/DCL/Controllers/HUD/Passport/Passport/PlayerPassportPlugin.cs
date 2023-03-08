@@ -19,10 +19,12 @@ public class PlayerPassportPlugin : IPlugin
         PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportReferenceContainer>();
         var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
 
+        StringVariable currentPlayerId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+
         passportController = new PlayerPassportHUDController(
                         referenceContainer.PassportView,
                         new PassportPlayerInfoComponentController(
-                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                            currentPlayerId,
                             referenceContainer.PlayerInfoView,
                             DataStore.i,
                             Environment.i.serviceLocator.Get<IProfanityFilter>(),
@@ -47,8 +49,9 @@ public class PlayerPassportPlugin : IPlugin
                             Environment.i.serviceLocator.Get<INamesService>(),
                             Environment.i.serviceLocator.Get<ILandsService>(),
                             new UserProfileWebInterfaceBridge(),
-                            DataStore.i),
-                        Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                            DataStore.i,
+                            currentPlayerId),
+                        currentPlayerId,
                         new UserProfileWebInterfaceBridge(),
                         new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(
