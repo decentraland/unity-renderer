@@ -77,7 +77,8 @@ namespace DCL.Social.Passports
                                     Substitute.For<ILandsService>(),
                                     Substitute.For<INamesService>(),
                                     NotificationsController.i
-                                    ));
+                                    ),
+                                currentPlayerInfoCardId);
 
             controller = new PlayerPassportHUDController(
                 view,
