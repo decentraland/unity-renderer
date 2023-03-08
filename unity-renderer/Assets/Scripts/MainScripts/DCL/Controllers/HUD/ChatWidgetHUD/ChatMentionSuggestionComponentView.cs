@@ -48,14 +48,8 @@ namespace DCL.Chat.HUD
             layout.ForceUpdateLayout();
         }
 
-        public void SelectFirstEntry()
-        {
-            foreach (ChatMentionSuggestionEntryComponentView view in pooledObjects.Keys)
-            {
-                view.Select();
-                break;
-            }
-        }
+        public void SelectFirstEntry() =>
+            pooledObjects.Keys.FirstOrDefault()?.Select();
 
         public void SelectNextEntry()
         {

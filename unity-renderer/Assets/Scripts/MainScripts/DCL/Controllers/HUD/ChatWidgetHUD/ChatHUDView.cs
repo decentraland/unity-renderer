@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -38,6 +39,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private readonly ChatMessage currentMessage = new ();
     private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners = new ();
     private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners = new ();
+    private readonly Regex emptyMentionTagRegex = new (@"<link=mention://\w*><color=#4886E3><u>\s*</u></color></link>");
 
     private int updateLayoutDelayedFrames;
     private bool isSortingDirty;
@@ -123,7 +125,18 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onSubmit.AddListener(OnInputFieldSubmit);
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
-        inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str, inputField.stringPosition));
+        inputField.onValueChanged.AddListener(str =>
+        {
+            (bool removedEmptyMentions, string messageWithoutEmptyMentions) = RemoveEmptyMentionLink(str);
+
+            if (removedEmptyMentions)
+            {
+                inputField.text = messageWithoutEmptyMentions;
+                return;
+            }
+
+            OnMessageUpdated?.Invoke(str, inputField.stringPosition);
+        });
         chatMentionSuggestions.OnEntrySubmit += model => OnMentionSuggestionSelected?.Invoke(model.userId);
         ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
         model.enableFadeoutMode = true;
@@ -462,6 +475,20 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
 
         return firstEntry;
+    }
+
+    private (bool removed, string result) RemoveEmptyMentionLink(string message)
+    {
+        MatchCollection matches = emptyMentionTagRegex.Matches(message);
+
+        if (matches.Count <= 0) return (false, message);
+
+        StringBuilder stringBuilder = new(message);
+
+        foreach (Match match in matches)
+            stringBuilder = stringBuilder.Remove(match.Index, match.Length);
+
+        return (true, stringBuilder.ToString());
     }
 
     [Serializable]
