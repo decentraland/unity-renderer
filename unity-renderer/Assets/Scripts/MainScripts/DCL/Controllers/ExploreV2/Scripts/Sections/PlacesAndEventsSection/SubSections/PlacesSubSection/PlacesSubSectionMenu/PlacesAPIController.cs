@@ -5,7 +5,6 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using UnityEngine;
 using UnityEngine.Networking;
 using static HotScenesController;
 
@@ -45,11 +44,7 @@ public class PlacesAPIController : IPlacesAPIController
     public async UniTask GetAllFavorites(Action<List<PlaceInfo>> OnCompleted)
     {
         UnityWebRequest result = await webRequestController.Ref.GetAsync(FAVORITE_PLACES_URL, isSigned: true);
-        string data = result.downloadHandler.text;
-        Debug.Log($"data {data}");
-        var favoriteScenes = Utils.SafeFromJson<PlacesAPIResponse>(data);
-        Debug.Log($"fav count {favoriteScenes.data.Count}");
-        OnCompleted?.Invoke(favoriteScenes.data);
+        OnCompleted?.Invoke(Utils.SafeFromJson<PlacesAPIResponse>(result.downloadHandler.text).data);
     }
 
     private void OnFetchHotScenes()

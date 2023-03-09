@@ -172,7 +172,9 @@ namespace DCL
             {
                 UnityWebRequest request = requestFactory.CreateWebRequest(url);
                 request.timeout = timeout;
-                Enum.TryParse(request.method, out RequestMethod method);
+
+                if (!Enum.TryParse(request.method, out RequestMethod method))
+                    method = RequestMethod.Get;
 
                 if (isSigned && rpcSignRequest != null)
                 {
