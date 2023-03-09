@@ -46,8 +46,6 @@ namespace DCL
 
         public bool everythingIsLoaded;
 
-        bool initializedPosition = false;
-
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
@@ -84,15 +82,6 @@ namespace DCL
         {
             base.Initialize(scene, entity);
             DataStore.i.sceneBoundariesChecker?.Add(entity,this);
-            entity.OnTransformChange += InitializePosition;
-        }
-
-        private void InitializePosition(object newModel)
-        {
-            DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
-            if (newTransformModel.position.Equals(Vector3.zero)) return;
-            OnEntityTransformChanged(newModel);
-            entity.OnTransformChange -= InitializePosition;
         }
 
         private IAvatar GetStandardAvatar()
@@ -148,6 +137,8 @@ namespace DCL
                 poolableObject.RemoveFromPool();
         }
 
+        private bool PositionCorrectlyInitialized() =>
+            !entity.gameObject.transform.position.Equals(Vector3.zero);
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
@@ -170,9 +161,13 @@ namespace DCL
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
-            yield return new UnityEngine.WaitUntil(() => initializedPosition);
+            yield return new UnityEngine.WaitUntil(PositionCorrectlyInitialized);
+
+            OnEntityTransformChanged(entity.gameObject.transform.localPosition,
+                entity.gameObject.transform.localRotation, true);
 
             Debug.Log("VOY A CONFIGURARLO CON LA POSICION " + entity.gameObject.transform.localPosition);
+
 
             // NOTE: we subscribe here to transform changes since we might "lose" the message
             // if we subscribe after a any yield
@@ -356,10 +351,10 @@ namespace DCL
         private void OnEntityTransformChanged(object newModel)
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
-            OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
+            OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation);
         }
 
-        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
+        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate = false)
         {
             if (isGlobalSceneAvatar)
             {
@@ -370,7 +365,6 @@ namespace DCL
                 var scenePosition = Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
                 avatarMovementController.OnTransformChanged(scenePosition + position, rotation, inmediate);
             }
-            initializedPosition = true;
         }
 
         public override void OnPoolGet()
@@ -378,7 +372,7 @@ namespace DCL
             base.OnPoolGet();
 
             everythingIsLoaded = false;
-            initializedPosition = false;
+            entity.gameObject.transform.localPosition = Vector3.zero;
             model = new AvatarModel();
             player = null;
         }
