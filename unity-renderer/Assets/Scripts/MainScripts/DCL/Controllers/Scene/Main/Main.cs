@@ -57,8 +57,8 @@ namespace DCL
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
-                performanceMetricsController = new PerformanceMetricsController();
                 SetupServices();
+                performanceMetricsController = new PerformanceMetricsController();
 
                 dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }

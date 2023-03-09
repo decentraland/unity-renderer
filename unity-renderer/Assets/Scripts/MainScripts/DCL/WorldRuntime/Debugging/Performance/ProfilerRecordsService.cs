@@ -1,10 +1,9 @@
-﻿using DCL;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Profiling;
 
 namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
 {
-    public class ProfilerRecordsService : IService
+    public class ProfilerRecordsService : IProfilerRecordsService
     {
         private const int CAPACITY = 15;
 
@@ -12,8 +11,9 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
 
         private ProfilerRecorder mainThreadTimeRecorder;
 
-        public float CurrentFrameTime => mainThreadTimeRecorder.LastValue * 1e-6f;
-        public float CurrentFPS => 1000 / CurrentFrameTime;
+        public float LastFrameTimeInSec => mainThreadTimeRecorder.LastValue * 1e-9f; // [nanoseconds] -> [sec]
+        public float LastFrameTimeInMS => mainThreadTimeRecorder.LastValue * 1e-6f; // [nanoseconds] -> [ms]
+        public float LastFPS => 1000 / LastFrameTimeInMS;
 
         public float AverageFrameTime => GetRecorderFrameAverage(mainThreadTimeRecorder) * 1e-6f;
         public float AverageFPS => 1000 / AverageFrameTime;

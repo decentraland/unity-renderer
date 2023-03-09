@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using Newtonsoft.Json;
-using System;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -17,7 +16,8 @@ namespace DCL
         private const int SAMPLES_SIZE = 1000; // Send performance report every 1000 samples
         private const string PROFILER_METRICS_FEATURE_FLAG = "profiler_metrics";
 
-        private readonly LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
+        private readonly LinealBufferHiccupCounter tracker;
+
         private readonly char[] encodedSamples = new char[SAMPLES_SIZE];
         private readonly PerformanceMetricsDataVariable performanceMetricsDataVariable;
         private IWorldState worldState => Environment.i.world.state;
@@ -37,6 +37,8 @@ namespace DCL
         public PerformanceMetricsController()
         {
             performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
+
+            tracker = new LinealBufferHiccupCounter(Environment.i.serviceLocator.Get<IProfilerRecordsService>());
 
             featureFlags.OnChange += OnFeatureFlagChange;
             OnFeatureFlagChange(featureFlags.Get(), null);

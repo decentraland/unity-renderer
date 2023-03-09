@@ -31,13 +31,12 @@ namespace DCL
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
 
-            result.Register<ProfilerRecordsService>(() => new ProfilerRecordsService());
-
             // Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
             // Platform
+            result.Register<IProfilerRecordsService>(() => new ProfilerRecordsService());
             result.Register<IMemoryManager>(() => new MemoryManager());
             result.Register<ICullingController>(CullingController.Create);
             result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());

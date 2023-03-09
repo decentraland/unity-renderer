@@ -1,22 +1,35 @@
-﻿namespace DCL.FPSDisplay
-{
-    public class LinealBufferHiccupCounter
-    {
+﻿using MainScripts.DCL.WorldRuntime.Debugging.Performance;
+using System;
 
-        private readonly LinealBufferFPSCounter counter = new ();
+namespace DCL.FPSDisplay
+{
+    public class LinealBufferHiccupCounter : IDisposable
+    {
+        private readonly IProfilerRecordsService profilerRecordsService;
 
         public int HiccupsCountInBuffer { get; private set; }
+
         public float HiccupsSum { get; private set; }
+
         public float TotalSeconds { get; private set; }
 
-        public float CurrentFPSCount => counter.CurrentFPSCount();
+        public float CurrentFPSCount => profilerRecordsService.LastFPS;
+
+        public LinealBufferHiccupCounter(IProfilerRecordsService profilerRecordsService)
+        {
+            this.profilerRecordsService = profilerRecordsService;
+        }
+
+        public void Dispose() { }
 
         public void AddDeltaTime(float valueInSeconds)
         {
-            if (IsHiccup(counter.LastValue))
+            float lastFrameTimeInSec = profilerRecordsService.LastFrameTimeInSec;
+
+            if (IsHiccup(lastFrameTimeInSec))
             {
                 HiccupsCountInBuffer -= 1;
-                HiccupsSum -= counter.LastValue;
+                HiccupsSum -= lastFrameTimeInSec;
             }
 
             if (IsHiccup(valueInSeconds))
@@ -25,10 +38,8 @@
                 HiccupsSum += valueInSeconds;
             }
 
-            TotalSeconds -= counter.LastValue;
+            TotalSeconds -= lastFrameTimeInSec;
             TotalSeconds += valueInSeconds;
-
-            counter.AddDeltaTime(valueInSeconds);
         }
 
         private static bool IsHiccup(float value) =>

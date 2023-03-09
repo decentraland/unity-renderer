@@ -1,3 +1,4 @@
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,17 +27,18 @@ namespace DCL.FPSDisplay
         private void Awake()
         {
             containerStartAnchoredPosition = container.anchoredPosition;
-            
+
             sceneDebugMetricModule = new SceneDebugMetricModule();
             debugMetricsModules = new List<IDebugMetricModule>
             {
-                new FPSDebugMetricModule(performanceData),
+                new FPSDebugMetricModule(performanceData, Environment.i.serviceLocator.Get<IProfilerRecordsService>()),
                 new SkyboxDebugMetricModule(),
                 new MemoryJSDebugMetricModule(),
                 new MemoryDesktopDebugMetricModule(),
                 new GeneralDebugMetricModule(),
                 sceneDebugMetricModule
             };
+
             updateValueDictionary = new Dictionary<DebugValueEnum, Func<string>>();
             foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
             {
@@ -57,10 +59,10 @@ namespace DCL.FPSDisplay
             {
                 debugMetricsModule.EnableModule();
             }
-            
+
             StartCoroutine(UpdateLabelLoop());
         }
-        
+
         private void OnDisable()
         {
             foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
@@ -69,14 +71,14 @@ namespace DCL.FPSDisplay
             }
             StopAllCoroutines();
         }
- 
+
         private IEnumerator UpdateLabelLoop()
         {
             while (performanceData.Get().totalSeconds <= 0)
             {
                 yield return null;
             }
-            
+
             while (true)
             {
                 foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
@@ -93,7 +95,7 @@ namespace DCL.FPSDisplay
                 yield return new WaitForSeconds(REFRESH_SECONDS);
             }
         }
-       
+
         private void OnDestroy()
         {
             closeButton.onClick.RemoveAllListeners();
