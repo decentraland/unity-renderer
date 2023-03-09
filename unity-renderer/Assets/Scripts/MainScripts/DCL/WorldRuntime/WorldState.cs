@@ -261,6 +261,7 @@ namespace DCL
             globalSceneNumbers.Clear();
             loadedPortableExperienceScenes.Clear();
             currentSceneNumber = -1;
+            currentSceneHash = "";
         }
 
         public void Initialize() { }
