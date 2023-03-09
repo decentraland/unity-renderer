@@ -6,7 +6,6 @@ using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 
 public class FPSDebugMetricModule : IDebugMetricModule
 {
-
     private const string NO_DECIMALS = "##";
     private const string TWO_DECIMALS = "##.00";
 
@@ -44,8 +43,11 @@ public class FPSDebugMetricModule : IDebugMetricModule
 
     private string GetFPSCount()
     {
-        var fpsFormatted = profilerRecordsService.AverageFPS.ToString("##");
-        var msFormatted = profilerRecordsService.AverageFrameTime.ToString("##");
+        (float FrameTime, float FPS) averageData = profilerRecordsService.AverageData;
+
+        var fpsFormatted = averageData.FPS.ToString("##");
+        var msFormatted =  averageData.FrameTime.ToString("##");
+
         return $"<b>FPS</b> {fpsColor}{fpsFormatted}</color> {msFormatted} ms";
     }
 

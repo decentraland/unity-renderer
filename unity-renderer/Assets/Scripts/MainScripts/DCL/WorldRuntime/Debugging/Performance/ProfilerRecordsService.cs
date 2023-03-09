@@ -11,12 +11,31 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
 
         private ProfilerRecorder mainThreadTimeRecorder;
 
-        public float LastFrameTimeInSec => mainThreadTimeRecorder.LastValue * 1e-9f; // [nanoseconds] -> [sec]
-        public float LastFrameTimeInMS => mainThreadTimeRecorder.LastValue * 1e-6f; // [nanoseconds] -> [ms]
+        private ProfilerRecorder drawCallsRecorder;
+        private ProfilerRecorder reservedMemoryRecorder;
+        private ProfilerRecorder usedMemoryRecorder;
+        private ProfilerRecorder gcAllocatedInFrameRecorder;
+
+        private bool isRecordingAdditionalProfilers;
+
+        public float LastFrameTimeInSec => mainThreadTimeRecorder.LastValue * 1e-9f; // [sec]
+        public float LastFrameTimeInMS => mainThreadTimeRecorder.LastValue * 1e-6f; // [ms]
         public float LastFPS => 1000 / LastFrameTimeInMS;
 
-        public float AverageFrameTime => GetRecorderFrameAverage(mainThreadTimeRecorder) * 1e-6f;
-        public float AverageFPS => 1000 / AverageFrameTime;
+        public (float FrameTime, float FPS) AverageData
+        {
+            get
+            {
+                float frameTime = GetRecorderFrameAverage(mainThreadTimeRecorder) * 1e-6f; // [ms]
+                return (FrameTime: frameTime, FPS: 1000 / frameTime);
+            }
+        }
+
+        // Additional recordings
+        public long TotalAllocSample => gcAllocatedInFrameRecorder.LastValue;
+        public long TotalMemoryUsage => usedMemoryRecorder.LastValue;
+        public long TotalMemoryReserved => reservedMemoryRecorder.LastValue;
+        public long DrawCalls => drawCallsRecorder.LastValue;
 
         public ProfilerRecordsService()
         {
@@ -29,6 +48,26 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         public void Dispose()
         {
             mainThreadTimeRecorder.Dispose();
+
+            if (isRecordingAdditionalProfilers)
+            {
+                drawCallsRecorder.Dispose();
+                reservedMemoryRecorder.Dispose();
+                usedMemoryRecorder.Dispose();
+                gcAllocatedInFrameRecorder.Dispose();
+            }
+        }
+
+        public void RecordAdditionalProfilerMetrics()
+        {
+            if (isRecordingAdditionalProfilers) return;
+
+            drawCallsRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
+            reservedMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "Total Reserved Memory");
+            usedMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "Total Used Memory");
+            gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
+
+            isRecordingAdditionalProfilers = true;
         }
 
         private float GetRecorderFrameAverage(ProfilerRecorder recorder)
