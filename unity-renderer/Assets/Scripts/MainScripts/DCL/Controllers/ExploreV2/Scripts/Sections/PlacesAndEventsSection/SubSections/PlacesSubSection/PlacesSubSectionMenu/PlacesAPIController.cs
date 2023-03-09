@@ -27,6 +27,7 @@ public interface IPlacesAPIController
 [ExcludeFromCodeCoverage]
 public class PlacesAPIController : IPlacesAPIController
 {
+    private const string FAVORITE_PLACES_URL = "https://places.decentraland.org/api/places?only_favorites=true";
     private readonly HotScenesController hotScenesController = HotScenesController.i;
     private Service<IWebRequestController> webRequestController;
 
@@ -43,12 +44,12 @@ public class PlacesAPIController : IPlacesAPIController
 
     public async UniTask GetAllFavorites(Action<List<PlaceInfo>> OnCompleted)
     {
-        UnityWebRequest result = await webRequestController.Ref.GetAsync("https://places.decentraland.org/api/places?only_favorites=true", isSigned: true);
+        UnityWebRequest result = await webRequestController.Ref.GetAsync(FAVORITE_PLACES_URL, isSigned: true);
         string data = result.downloadHandler.text;
         Debug.Log($"data {data}");
-        var favoriteScenes = Utils.SafeFromJson<List<PlaceInfo>>(data);
-        Debug.Log($"fav count {favoriteScenes.Count}");
-        OnCompleted?.Invoke(favoriteScenes);
+        var favoriteScenes = Utils.SafeFromJson<PlacesAPIResponse>(data);
+        Debug.Log($"fav count {favoriteScenes.data.Count}");
+        OnCompleted?.Invoke(favoriteScenes.data);
     }
 
     private void OnFetchHotScenes()

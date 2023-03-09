@@ -41,6 +41,14 @@ public class HotScenesController : MonoBehaviour
     }
 
     [Serializable]
+    public class PlacesAPIResponse
+    {
+        public bool ok;
+        public int total;
+        public List<PlaceInfo> data;
+    }
+
+    [Serializable]
     public class PlaceInfo
     {
         public string id;
