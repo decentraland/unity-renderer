@@ -89,6 +89,9 @@ namespace DCL
         private void FirstPositionRetrieved(object newModel)
         {
             firstPositionRetrieved = true;
+            DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
+            Debug.Log("I COME TRHOUGH FIRST POSITION RETRIEVED " + newTransformModel.position);
+
             entity.OnTransformChange -= FirstPositionRetrieved;
         }
 
@@ -150,16 +153,7 @@ namespace DCL
         {
             var model = (AvatarModel) newModel;
 
-            if (model.Equals(null) || model.bodyShape.Equals(null))
-            {
-                Debug.Log("Remote avatar is in signup");
-                yield break;
-            }
-
-            if (!firstPositionRetrieved) yield break;
-
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
-
 
             bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
             currentAvatar.CopyFrom(model);
@@ -183,6 +177,8 @@ namespace DCL
                 OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                     entity.gameObject.transform.localRotation, true);
             }
+
+            Debug.Log("I COME TRHOUGH AVATAR SHAPRE GENERATION " + entity.gameObject.transform.localPosition);
 
             // NOTE: we subscribe here to transform changes since we might "lose" the message
             // if we subscribe after a any yield
