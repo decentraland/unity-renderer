@@ -4,7 +4,7 @@ using System.Text;
 
 namespace KernelCommunication
 {
-    // Write BigEndian binary to stream
+    // Write LittleEndian binary to stream
     public class BinaryWriter : IDisposable
     {
         private Stream stream;
@@ -17,32 +17,32 @@ namespace KernelCommunication
         public unsafe void WriteInt32(int value)
         {
             byte* ptr = (byte*)&value;
-            stream.WriteByte(ptr[3]);
-            stream.WriteByte(ptr[2]);
-            stream.WriteByte(ptr[1]);
             stream.WriteByte(ptr[0]);
+            stream.WriteByte(ptr[1]);
+            stream.WriteByte(ptr[2]);
+            stream.WriteByte(ptr[3]);
         }
 
         public unsafe void WriteSingle(float value)
         {
             byte* ptr = (byte*)&value;
-            stream.WriteByte(ptr[3]);
-            stream.WriteByte(ptr[2]);
-            stream.WriteByte(ptr[1]);
             stream.WriteByte(ptr[0]);
-        }        
+            stream.WriteByte(ptr[1]);
+            stream.WriteByte(ptr[2]);
+            stream.WriteByte(ptr[3]);
+        }
 
         public unsafe void WriteInt64(long value)
         {
             byte* ptr = (byte*)&value;
-            stream.WriteByte(ptr[7]);
-            stream.WriteByte(ptr[6]);
-            stream.WriteByte(ptr[5]);
-            stream.WriteByte(ptr[4]);
-            stream.WriteByte(ptr[3]);
-            stream.WriteByte(ptr[2]);
-            stream.WriteByte(ptr[1]);
             stream.WriteByte(ptr[0]);
+            stream.WriteByte(ptr[1]);
+            stream.WriteByte(ptr[2]);
+            stream.WriteByte(ptr[3]);
+            stream.WriteByte(ptr[4]);
+            stream.WriteByte(ptr[5]);
+            stream.WriteByte(ptr[6]);
+            stream.WriteByte(ptr[7]);
         }
 
         public void WriteBytes(byte[] value)
