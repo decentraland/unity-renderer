@@ -176,23 +176,17 @@ namespace DCL
 
                 if (isSigned && rpcSignRequest != null)
                 {
-                    Debug.Log($"full url {url}");
                     int index = url.IndexOf("?", StringComparison.Ordinal);
                     if (index >= 0)
                         url = url.Substring(0, index);
 
-                    Debug.Log($"url without query params{url}");
                     SignBodyResponse signedFetchResponse = await rpcSignRequest.RequestSignedRequest(method, url, null, cancellationToken);
 
+                    await UniTask.SwitchToMainThread();
                     for (var j = 0; j < signedFetchResponse.AuthChain.Count; j++)
                     {
-                        await UniTask.SwitchToMainThread();
-                        Debug.Log($"auth header {signedFetchResponse.AuthChain[j]}");
                         request.SetRequestHeader($"x-identity-auth-chain-{j}", signedFetchResponse.AuthChain[j]);
                     }
-
-                    Debug.Log($"timestamp {signedFetchResponse.Timestamp.ToString()}");
-                    Debug.Log($"metadata {signedFetchResponse.Metadata}");
                     request.SetRequestHeader(TIMESTAMP_HEADER, signedFetchResponse.Timestamp.ToString());
                     request.SetRequestHeader(METADATA_HEADER, signedFetchResponse.Metadata);
                 }
