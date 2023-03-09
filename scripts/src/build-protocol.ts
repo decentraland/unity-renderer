@@ -26,7 +26,7 @@ const rendererProtocolRawInputPath = normalizePath(
 )
 
 const rendererProtocolInputPath = normalizePath(
-  path.resolve(__dirname, '../temp/decentraland/renderer/'),
+  path.resolve(__dirname, '../temp/'),
 )
 
 async function main() {

@@ -10,7 +10,7 @@ import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { sendParcelSceneCommsMessage } from 'shared/comms'
 import type { PortContext } from './context'
-import { CommunicationsControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/communications_controller.gen'
+import { CommunicationsControllerServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/communications_controller.gen'
 
 /**
  * The CommunicationsControllerService connects messages from the comms controller with the scenes of Decentraland,

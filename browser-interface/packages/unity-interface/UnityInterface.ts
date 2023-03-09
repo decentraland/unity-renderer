@@ -1,6 +1,6 @@
 import { Vector3 } from '@dcl/ecs-math'
 import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { Avatar, ContentMapping } from '@dcl/schemas'
 import type { UnityGame } from '@dcl/unity-renderer/src'
 import { RENDERER_WS, RESET_TUTORIAL, WORLD_EXPLORER, WSS_ENABLED } from 'config'

@@ -1,7 +1,7 @@
 import * as codegen from '@dcl/rpc/dist/codegen'
 import type { RpcServerPort } from '@dcl/rpc/dist/types'
-import type { GetSceneRequest, GetSceneResponse } from '@dcl/protocol/out-ts/decentraland/kernel/apis/scene.gen'
-import { SceneServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/scene.gen'
+import type { GetSceneRequest, GetSceneResponse } from 'shared/protocol/decentraland/kernel/apis/scene.gen'
+import { SceneServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/scene.gen'
 import type { PortContext, PortContextService } from './context'
 
 export function registerSceneServiceServerImplementation(port: RpcServerPort<PortContextService<'sceneData'>>) {
