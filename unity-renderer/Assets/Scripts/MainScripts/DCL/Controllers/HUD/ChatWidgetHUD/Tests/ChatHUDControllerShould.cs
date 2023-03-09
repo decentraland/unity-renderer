@@ -182,7 +182,7 @@ public class ChatHUDControllerShould
                 bodyText = "test"
             };
 
-            controller.AddChatMessage(msg);
+            await controller.AddChatMessage(msg);
 
             view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.senderName.Equals(filteredName)));
         });

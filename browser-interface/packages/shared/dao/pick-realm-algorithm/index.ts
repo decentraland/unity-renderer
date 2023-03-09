@@ -6,7 +6,7 @@ import { largeLatencyLink } from './largeLatency'
 import { closePeersScoreLink } from './closePeers'
 import { allPeersScoreLink } from './allPeers'
 import { loadBalancingLink } from './loadBalancing'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 
 function buildLink(linkConfig: AlgorithmLinkConfig) {
   switch (linkConfig.type) {

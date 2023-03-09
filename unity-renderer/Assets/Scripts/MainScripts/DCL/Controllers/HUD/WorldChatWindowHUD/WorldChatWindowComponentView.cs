@@ -162,7 +162,7 @@ namespace DCL.Chat.HUD
 
         public void Hide() => gameObject.SetActive(false);
 
-        public void SetPrivateChat(PrivateChatModel model) => privateChatsCreationQueue[model.user.userId] = model;
+        public void SetPrivateChat(PrivateChatModel model) => privateChatsCreationQueue[model.userId] = model;
 
         public void RemovePrivateChat(string userId)
         {
@@ -336,17 +336,16 @@ namespace DCL.Chat.HUD
 
         private void Set(PrivateChatModel model)
         {
-            var user = model.user;
-            var userId = user.userId;
+            string userId = model.userId;
 
             var entry = new PrivateChatEntryModel(
-                user.userId,
-                user.userName,
+                userId,
+                model.userName,
                 model.recentMessage != null ? model.recentMessage.body : string.Empty,
-                user.face256SnapshotURL,
+                model.faceSnapshotUrl,
                 model.isBlocked,
                 model.isOnline,
-                model.recentMessage != null ? model.recentMessage.timestamp : 0);
+                model.recentMessage?.timestamp ?? 0);
 
             if (isSearchMode)
                 searchResultsList.Set(entry);

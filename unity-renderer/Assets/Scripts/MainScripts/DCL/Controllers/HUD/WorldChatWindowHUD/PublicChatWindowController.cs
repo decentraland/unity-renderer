@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Chat.HUD.Mentions;
 using System;
 using System.Collections.Generic;
@@ -253,7 +254,7 @@ namespace DCL.Chat.HUD
                 messageId = Guid.NewGuid().ToString(),
                 messageType = ChatMessage.Type.SYSTEM,
                 subType = ChatEntryModel.SubType.RECEIVED
-            });
+            }).Forget();
         }
 
         private void MuteChannel(bool muted)

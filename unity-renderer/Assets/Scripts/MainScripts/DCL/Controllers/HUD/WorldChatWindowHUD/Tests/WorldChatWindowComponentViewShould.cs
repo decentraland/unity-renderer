@@ -138,17 +138,12 @@ public class WorldChatWindowComponentViewShould
     [UnityTest]
     public IEnumerator ReplacePrivateChat()
     {
-        const string userId = "userId";
-        var profile = ScriptableObject.CreateInstance<UserProfile>();
-        profile.UpdateData(new UserProfileModel
-        {
-            userId = userId,
-            name = "userName"
-        });
+        const string USER_ID = "userId";
 
         var model = new PrivateChatModel
         {
-            user = profile,
+            userId = USER_ID,
+            userName = "userName",
             isBlocked = false,
             isOnline = false,
             recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "hello!")
@@ -172,7 +167,7 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual("Direct Messages (1)", view.directChatsHeaderLabel.text);
         Assert.AreEqual("Channels (0)", view.channelsHeaderLabel.text);
         Assert.AreEqual("Results (0)", view.searchResultsHeaderLabel.text);
-        Assert.IsNotNull(view.directChatList.Get(userId));
+        Assert.IsNotNull(view.directChatList.Get(USER_ID));
     }
 
     [UnityTest]
@@ -341,12 +336,14 @@ public class WorldChatWindowComponentViewShould
 
         view.SetPrivateChat(new PrivateChatModel
         {
-            user = GivenProfile("genio"),
+            userId = "genio",
+            userName = "userName",
             recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "hello")
         });
         view.SetPrivateChat(new PrivateChatModel
         {
-            user = GivenProfile("pepe"),
+            userId = "pepe",
+            userName = "userName",
             recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "buy my nft")
         });
         view.SetPublicChat(new PublicChatModel("nearby", "nearby", "", true, 1, false, true));
@@ -499,11 +496,10 @@ public class WorldChatWindowComponentViewShould
 
     private void GivenPrivateChat(string userId)
     {
-        var profile = GivenProfile(userId);
-
         view.SetPrivateChat(new PrivateChatModel
         {
-            user = profile,
+            userId = userId,
+            userName = "userName",
             isBlocked = false,
             isOnline = false,
             recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "hello!")
@@ -513,16 +509,5 @@ public class WorldChatWindowComponentViewShould
     private void GivenPublicChannel(string channelId, string name)
     {
         view.SetPublicChat(new PublicChatModel(channelId, name, "any description", true, 0, false, true));
-    }
-
-    private UserProfile GivenProfile(string userId)
-    {
-        var profile = ScriptableObject.CreateInstance<UserProfile>();
-        profile.UpdateData(new UserProfileModel
-        {
-            userId = userId,
-            name = "userName"
-        });
-        return profile;
     }
 }

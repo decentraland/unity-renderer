@@ -26,6 +26,8 @@ namespace DCL.Chat.Notifications
         private readonly IProfanityFilter profanityFilter;
         private readonly TimeSpan maxNotificationInterval = new (0, 1, 0);
         private readonly HashSet<string> notificationEntries = new ();
+        private readonly CancellationTokenSource addMessagesCancellationToken = new ();
+
         private BaseVariable<bool> shouldShowNotificationPanel => dataStore.HUDs.shouldShowNotificationPanel;
         private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private BaseVariable<Transform> topNotificationPanelTransform => dataStore.HUDs.topNotificationPanelTransform;
@@ -33,7 +35,6 @@ namespace DCL.Chat.Notifications
         private BaseVariable<string> openedChat => dataStore.HUDs.openChat;
         private CancellationTokenSource fadeOutCT = new ();
         private UserProfile internalOwnUserProfile;
-        private CancellationTokenSource addMessagesCancellationToken = new ();
 
         private UserProfile ownUserProfile
         {
@@ -145,7 +146,6 @@ namespace DCL.Chat.Notifications
             }
         }
 
-        // TODO: add support for cancellation tokens in profanity filtering
         private async UniTaskVoid AddNotificationAsync(ChatMessage message, Channel channel = null, CancellationToken cancellationToken = default)
         {
             string body = message.body;

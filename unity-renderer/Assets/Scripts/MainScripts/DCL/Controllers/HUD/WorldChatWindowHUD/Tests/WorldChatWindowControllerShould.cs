@@ -209,7 +209,7 @@ public class WorldChatWindowControllerShould
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(
             new[] {new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow")});
 
-        view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => p.user.userId == FRIEND_ID));
+        view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => p.userId == FRIEND_ID));
         view.DidNotReceiveWithAnyArgs().ShowMoreChatsToLoadHint(default);
     }
 
@@ -284,6 +284,7 @@ public class WorldChatWindowControllerShould
     {
         controller.Initialize(view, false);
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(40);
+        GivenFriend("bleh", PresenceStatus.ONLINE);
 
         controller.SetVisibility(true);
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
@@ -302,6 +303,7 @@ public class WorldChatWindowControllerShould
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(26);
         controller.SetVisibility(true);
         view.ClearReceivedCalls();
+        GivenFriend("bleh", PresenceStatus.ONLINE);
 
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
             new List<FriendWithDirectMessages>
@@ -331,6 +333,7 @@ public class WorldChatWindowControllerShould
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(42);
         view.ClearReceivedCalls();
         friendsController.ClearReceivedCalls();
+        GivenFriend("bleh", PresenceStatus.ONLINE);
 
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
             new List<FriendWithDirectMessages>

@@ -21,6 +21,7 @@ namespace DCL.Social.Friends
         private readonly BaseVariable<KeyValuePair<string, string>> openPassportVariable;
         private readonly ISocialAnalytics socialAnalytics;
 
+        private CancellationTokenSource showCancellationToken = new ();
         private CancellationTokenSource friendOperationsCancellationToken = new ();
         private string friendRequestId;
 
@@ -51,6 +52,7 @@ namespace DCL.Social.Friends
         public void Dispose()
         {
             friendOperationsCancellationToken.SafeCancelAndDispose();
+            showCancellationToken.SafeCancelAndDispose();
             dataStore.HUDs.openReceivedFriendRequestDetail.OnChange -= ShowOrHide;
             friendRequestHUDController.Dispose();
         }
@@ -65,33 +67,44 @@ namespace DCL.Social.Friends
 
         private void Show(string friendRequestId)
         {
-            this.friendRequestId = friendRequestId;
-
-            FriendRequest friendRequest = friendsController.GetAllocatedFriendRequest(this.friendRequestId);
-
-            if (friendRequest == null)
+            async UniTaskVoid ShowAsync(string friendRequestId, CancellationToken cancellationToken)
             {
-                Debug.LogError($"Cannot display friend request {friendRequestId}, is not allocated");
-                return;
-            }
+                this.friendRequestId = friendRequestId;
 
-            view.SetBodyMessage(friendRequest.MessageBody);
-            view.SetTimestamp(DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.Timestamp).DateTime);
+                FriendRequest friendRequest = friendsController.GetAllocatedFriendRequest(this.friendRequestId);
 
-            var recipientProfile = userProfileBridge.Get(friendRequest.From);
+                if (friendRequest == null)
+                {
+                    Debug.LogError($"Cannot display friend request {friendRequestId}, is not allocated");
+                    return;
+                }
 
-            if (recipientProfile != null)
-            {
+                view.SetBodyMessage(friendRequest.MessageBody);
+                view.SetTimestamp(DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.Timestamp).DateTime);
+
+                UserProfile recipientProfile = userProfileBridge.Get(friendRequest.From);
+
+                try
+                {
+                    recipientProfile ??= await userProfileBridge.RequestFullUserProfileAsync(friendRequest.From);
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    view.SetSenderName(friendRequest.From);
+                    throw;
+                }
+
                 view.SetSenderName(recipientProfile.userName);
                 view.SetSenderProfilePicture(recipientProfile.face256SnapshotURL);
-            }
-            else
-                Debug.LogError($"Cannot display user profile {friendRequest.From}, is not allocated");
 
-            var ownProfile = userProfileBridge.GetOwn();
-            view.SetRecipientProfilePicture(ownProfile.face256SnapshotURL);
-            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() + 1);
-            view.Show();
+                var ownProfile = userProfileBridge.GetOwn();
+                view.SetRecipientProfilePicture(ownProfile.face256SnapshotURL);
+                view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() + 1);
+                view.Show();
+            }
+
+            showCancellationToken = showCancellationToken.SafeRestart();
+            ShowAsync(friendRequestId, showCancellationToken.Token).Forget();
         }
 
         private void Hide()
