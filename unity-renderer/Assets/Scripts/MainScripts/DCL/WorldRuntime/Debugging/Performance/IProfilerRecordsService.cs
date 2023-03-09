@@ -7,7 +7,7 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         float LastFrameTimeInSec { get; }
         float LastFrameTimeInMS { get; }
         float LastFPS { get; }
-        public (float FrameTime, float FPS) AverageData { get; }
+        (float FrameTime, float FPS) AverageData { get; }
 
         long TotalAllocSample { get; }
         long TotalMemoryUsage { get; }

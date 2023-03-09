@@ -168,8 +168,6 @@ namespace DCL
                 Environment.Dispose();
 
             kernelCommunication?.Dispose();
-
-            performanceMetricsController.Dispose();
         }
 
         protected virtual void InitializeSceneDependencies()
