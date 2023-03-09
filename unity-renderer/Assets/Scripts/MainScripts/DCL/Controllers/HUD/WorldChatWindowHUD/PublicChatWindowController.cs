@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCL.Chat.HUD.Mentions;
 using System;
 using System.Collections.Generic;
 using DCL.Interface;

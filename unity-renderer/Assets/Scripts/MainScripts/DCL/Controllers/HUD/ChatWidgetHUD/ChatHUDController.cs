@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
 using DCL.Chat.HUD;
-using DCL.Chat.HUD.Mentions;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
@@ -45,6 +44,8 @@ public class ChatHUDController : IHUD
     private int mentionLength;
     private int mentionFromIndex;
     private Dictionary<string, UserProfile> mentionSuggestedProfiles;
+
+    private bool isMentionsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("chat_mentions_enabled");
 
     public ChatHUDController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
@@ -208,8 +209,13 @@ public class ChatHUDController : IHUD
         dataStore.settings.profanityChatFilteringEnabled.Get()
         && profanityFilter != null;
 
-    private void HandleMessageUpdated(string message, int cursorPosition)
+    private void HandleMessageUpdated(string message, int cursorPosition) =>
+        UpdateMentions(message, cursorPosition);
+
+    private void UpdateMentions(string message, int cursorPosition)
     {
+        if (!isMentionsEnabled) return;
+
         if (string.IsNullOrEmpty(message))
         {
             HideMentionSuggestions();
@@ -220,7 +226,10 @@ public class ChatHUDController : IHUD
         {
             try
             {
-                List<UserProfile> suggestions = await chatMentionSuggestionProvider.GetProfilesStartingWith(name, MAX_MENTION_SUGGESTIONS, cancellationToken);
+                List<UserProfile> suggestions =
+                    await chatMentionSuggestionProvider.GetProfilesStartingWith(name, MAX_MENTION_SUGGESTIONS,
+                        cancellationToken);
+
                 mentionSuggestedProfiles = suggestions.ToDictionary(profile => profile.userId, profile => profile);
 
                 if (suggestions.Count == 0)
@@ -229,6 +238,7 @@ public class ChatHUDController : IHUD
                 {
                     view.ShowMentionSuggestions();
                     dataStore.mentions.isMentionSuggestionVisible.Set(true);
+
                     view.SetMentionSuggestions(suggestions.Select(profile => new ChatMentionSuggestionModel
                                                            {
                                                                userId = profile.userId,
@@ -238,13 +248,10 @@ public class ChatHUDController : IHUD
                                                           .ToList());
                 }
             }
-            catch (Exception e) when (e is not OperationCanceledException)
-            {
-                HideMentionSuggestions();
-            }
+            catch (Exception e) when (e is not OperationCanceledException) { HideMentionSuggestions(); }
         }
 
-       int lastWrittenCharacterIndex = Math.Max(0, cursorPosition - 1);
+        int lastWrittenCharacterIndex = Math.Max(0, cursorPosition - 1);
 
         if (mentionFromIndex >= message.Length || message[lastWrittenCharacterIndex] == ' ')
             mentionFromIndex = cursorPosition;
@@ -284,7 +291,7 @@ public class ChatHUDController : IHUD
             return;
         }
 
-        if(MentionsUtils.TextContainsMention(message.body))
+        if (MentionsUtils.TextContainsMention(message.body))
             socialAnalytics.SendMessageWithMention();
 
         ApplyWhisperAttributes(message);

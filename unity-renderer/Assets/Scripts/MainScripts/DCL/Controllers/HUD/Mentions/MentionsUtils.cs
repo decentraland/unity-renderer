@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace DCL.Chat.HUD.Mentions
+namespace DCL.Social.Chat.Mentions
 {
     public static class MentionsUtils
     {

@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
-using DCL.Chat.HUD.Mentions;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using DCL.Social.Chat.Mentions;
 using System;
 using System.Collections.Generic;
 using System.Threading;

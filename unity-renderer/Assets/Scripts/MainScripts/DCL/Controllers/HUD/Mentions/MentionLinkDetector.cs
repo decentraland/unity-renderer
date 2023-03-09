@@ -1,13 +1,12 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using System;
-using System.Text.RegularExpressions;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace DCL.Chat.HUD.Mentions
+namespace DCL.Social.Chat.Mentions
 {
     public class MentionLinkDetector : MonoBehaviour, IPointerClickHandler
     {
@@ -23,13 +22,16 @@ namespace DCL.Chat.HUD.Mentions
 
         private void Awake()
         {
-            // TODO: Check mentions Feature Flag...
-            isMentionsFeatureEnabled = true;
-
             if (textComponent == null)
                 return;
 
             textComponent.OnPreRenderText += OnTextComponentPreRenderText;
+        }
+
+        private void Start()
+        {
+            isMentionsFeatureEnabled = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("chat_mentions_enabled");
+            DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
         }
 
         private void OnDestroy()
@@ -38,6 +40,7 @@ namespace DCL.Chat.HUD.Mentions
                 return;
 
             textComponent.OnPreRenderText -= OnTextComponentPreRenderText;
+            DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagsChanged;
 
             cancellationToken.SafeCancelAndDispose();
         }
@@ -112,5 +115,8 @@ namespace DCL.Chat.HUD.Mentions
             if (MentionsUtils.IsUserMentionedInText(ownUserProfile.userId, textComp.text))
                 OnOwnPlayerMentioned?.Invoke();
         }
+
+        private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous) =>
+            isMentionsFeatureEnabled = current.IsFeatureEnabled("chat_mentions_enabled");
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Chat.HUD.Mentions;
 using DCL.Interface;
 using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
