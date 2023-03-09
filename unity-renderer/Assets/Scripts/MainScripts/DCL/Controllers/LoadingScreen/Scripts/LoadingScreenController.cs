@@ -26,6 +26,7 @@ namespace DCL.LoadingScreen
         private bool currentRealmIsWorld;
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
+        private bool onSignUpFlow;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -90,6 +91,7 @@ namespace DCL.LoadingScreen
 
         private void OnSignupFlow(bool current, bool previous)
         {
+            onSignUpFlow = current;
             if (current)
                 FadeOutView();
             else
@@ -98,9 +100,11 @@ namespace DCL.LoadingScreen
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
         {
+            if (onSignUpFlow) return;
+
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
 
-            if (IsNewRealm() || IsSceneLoaded(currentDestinationCandidate))
+            if (IsNewRealm() || IsNewScene(currentDestinationCandidate))
             {
                 currentDestination = currentDestinationCandidate;
 
@@ -123,6 +127,10 @@ namespace DCL.LoadingScreen
         //we wont see the loading screen. Same happens when leaving a world. Thats why we need to keep track of the latest realmName as well as if it is a world.
         private bool IsNewRealm()
         {
+            //Realm has not been set yet, so we are not in a new realm
+            if (realmDataStore.playerRealmAboutConfiguration.Get() == null)
+                return false;
+
             bool realmChangeRequiresLoadingScreen;
 
             if (commonDataStore.isWorld.Get())
@@ -137,7 +145,7 @@ namespace DCL.LoadingScreen
 
         //If the destination scene is not loaded, we show the teleport screen. THis is called in the POSITION_UNSETTLED
         //On the other hand, the POSITION_SETTLED event is called; but since the scene will already be loaded, the loading screen wont be shown
-        private bool IsSceneLoaded(Vector2Int currentDestinationCandidate) =>
+        private bool IsNewScene(Vector2Int currentDestinationCandidate) =>
              worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
 
         private void CheckSceneTimeout(Vector2Int currentDestinationCandidate)

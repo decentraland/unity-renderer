@@ -393,7 +393,7 @@ namespace DCL.Chat.HUD
                 messageId = Guid.NewGuid().ToString(),
                 messageType = ChatMessage.Type.SYSTEM,
                 subType = ChatEntryModel.SubType.RECEIVED
-            });
+            }).Forget();
         }
     }
 }
