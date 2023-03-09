@@ -22,7 +22,7 @@ const protocolInputPath = normalizePath(
 )
 
 const rendererProtocolRawInputPath = normalizePath(
-  path.resolve(__dirname, '../../renderer-protocol/'),
+  path.resolve(__dirname, '../../renderer-protocol/proto/'),
 )
 
 const rendererProtocolInputPath = normalizePath(
@@ -33,12 +33,13 @@ async function main() {
   if (fs.existsSync(protocolInputPath)) {
     fs.rmSync(protocolInputPath, { recursive: true })
   }
+
   fse.copySync(protocolRawInputPath, protocolInputPath, {
     overwrite: true,
   })
 
   fse.copySync(rendererProtocolRawInputPath, rendererProtocolInputPath, {
-    overwrite: true,
+    overwrite: false,
   })
 
   await execute(`${protocPath} --version`, workingDirectory)
