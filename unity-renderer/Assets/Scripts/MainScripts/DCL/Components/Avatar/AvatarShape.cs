@@ -12,8 +12,11 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
+using System.Numerics;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 namespace DCL
 {
@@ -59,8 +62,6 @@ namespace DCL
         private Service<IEmotesCatalogService> emotesCatalogService;
         public override string componentName => "avatarShape";
 
-        private bool firstPositionRetrieved;
-
         private void Awake()
         {
             model = new AvatarModel();
@@ -83,16 +84,15 @@ namespace DCL
         {
             base.Initialize(scene, entity);
             DataStore.i.sceneBoundariesChecker?.Add(entity,this);
-            entity.OnTransformChange += FirstPositionRetrieved;
+            entity.OnTransformChange += InitializePosition;
         }
 
-        private void FirstPositionRetrieved(object newModel)
+        private void InitializePosition(object newModel)
         {
-            firstPositionRetrieved = true;
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
-            Debug.Log("I COME TRHOUGH FIRST POSITION RETRIEVED " + newTransformModel.position);
-
-            entity.OnTransformChange -= FirstPositionRetrieved;
+            if (newTransformModel.position.Equals(Vector3.zero)) return;
+            OnEntityTransformChanged(newModel);
+            entity.OnTransformChange -= InitializePosition;
         }
 
         private IAvatar GetStandardAvatar()
@@ -170,15 +170,9 @@ namespace DCL
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
-            // To deal with the cases in which the entity transform was configured before the AvatarShape
-            if (!initializedPosition && scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
-            {
-                initializedPosition = true;
-                OnEntityTransformChanged(entity.gameObject.transform.localPosition,
-                    entity.gameObject.transform.localRotation, true);
-            }
+            yield return new UnityEngine.WaitUntil(() => initializedPosition);
 
-            Debug.Log("I COME TRHOUGH AVATAR SHAPRE GENERATION " + entity.gameObject.transform.localPosition);
+            Debug.Log("VOY A CONFIGURARLO CON LA POSICION " + entity.gameObject.transform.localPosition);
 
             // NOTE: we subscribe here to transform changes since we might "lose" the message
             // if we subscribe after a any yield
