@@ -6,6 +6,7 @@ using DCL.FPSDisplay;
 using DCL.SettingsCommon;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using Newtonsoft.Json;
+using System;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -40,6 +41,7 @@ namespace DCL
             featureFlags.OnChange += OnFeatureFlagChange;
             OnFeatureFlagChange(featureFlags.Get(), null);
         }
+
         private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
         {
             trackProfileRecords = current.IsFeatureEnabled(PROFILER_METRICS_FEATURE_FLAG);
@@ -54,6 +56,17 @@ namespace DCL
             }
         }
 
+        public void Dispose()
+        {
+            if (isTrackingProfileRecords)
+            {
+                drawCallsRecorder.Dispose();
+                reservedMemoryRecorder.Dispose();
+                usedMemoryRecorder.Dispose();
+                gcAllocatedInFrameRecorder.Dispose();
+            }
+        }
+
         public void Update()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -63,21 +76,14 @@ namespace DCL
             if (!CommonScriptableObjects.rendererState.Get() && !CommonScriptableObjects.forcePerformanceMeter.Get())
                 return;
 
-            var deltaInMs = Time.deltaTime * 1000;
+            tracker.AddDeltaTime(Time.unscaledDeltaTime);
+            performanceMetricsDataVariable.Set(tracker.CurrentFPSCount, tracker.HiccupsCountInBuffer, tracker.HiccupsSum, tracker.TotalSeconds);
 
-            tracker.AddDeltaTime(Time.deltaTime);
-
-            performanceMetricsDataVariable.Set(tracker.CurrentFPSCount(),
-                tracker.CurrentHiccupCount(),
-                tracker.HiccupsSum,
-                tracker.GetTotalSeconds());
-
-            encodedSamples[currentIndex++] = (char) deltaInMs;
+            var deltaInMs = Time.unscaledDeltaTime * 1000;
+            encodedSamples[currentIndex++] = (char)deltaInMs;
 
             if (trackProfileRecords)
-            {
                 totalAllocSample += gcAllocatedInFrameRecorder.LastValue;
-            }
 
             if (currentIndex == SAMPLES_SIZE)
             {
@@ -85,21 +91,20 @@ namespace DCL
                 Report(new string(encodedSamples));
                 totalAllocSample = 0;
             }
-
         }
 
         private void Report(string encodedSamples)
         {
-
             var loadedScenesValues = worldState.GetLoadedScenes();
             scenesMemoryScore.Clear();
+
             foreach (var parcelScene in loadedScenesValues)
             {
                 // we ignore global scene
                 IParcelScene parcelSceneValue = parcelScene.Value;
 
                 if (parcelSceneValue.isPersistent)
-                    continue; 
+                    continue;
 
                 scenesMemoryScore.Add(parcelSceneValue.sceneData.sceneNumber, parcelSceneValue.metricsCounter.currentCount.totalMemoryScore);
             }
@@ -130,12 +135,11 @@ namespace DCL
 
             bool usingFPSCap = Settings.i.qualitySettings.Data.fpsCap;
 
-            int hiccupsInThousandFrames = tracker.CurrentHiccupCount();
+            int hiccupsInThousandFrames = tracker.HiccupsCountInBuffer;
+            float hiccupsTime = tracker.HiccupsSum;
 
-            float hiccupsTime = tracker.GetHiccupSum();
+            float totalTime = tracker.TotalSeconds;
 
-            float totalTime = tracker.GetTotalSeconds();
-            
             WebInterface.PerformanceReportPayload performanceReportPayload = new WebInterface.PerformanceReportPayload
             {
                 samples = encodedSamples,
@@ -165,7 +169,7 @@ namespace DCL
                 totalGCAlloc = totalGCAlloc
             };
 
-            var result = JsonConvert.SerializeObject(performanceReportPayload);
+            string result = JsonConvert.SerializeObject(performanceReportPayload);
             WebInterface.SendPerformanceReport(result);
             PerformanceAnalytics.ResetAll();
         }

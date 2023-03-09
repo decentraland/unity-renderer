@@ -20,7 +20,7 @@ namespace FPSDisplayTests
                 counter.AddDeltaTime(tenMillis);
             }
 
-            Assert.AreEqual(counter.CurrentFPSCount(), expectedFps);
+            Assert.AreEqual(counter.CurrentFPSCount, expectedFps);
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace FPSDisplayTests
             const float eps = 0.002f;
             Assert.LessOrEqual(Mathf.Abs(counter.HiccupsSum - hiccups), eps);
             Assert.AreEqual(counter.HiccupsCountInBuffer, hiccupCount);
-            Assert.LessOrEqual(Mathf.Abs(counter.GetTotalSeconds() - totalTime), eps);
+            Assert.LessOrEqual(Mathf.Abs(counter.TotalSeconds - totalTime), eps);
         }
     }
 }

@@ -2,14 +2,18 @@
 {
     public class LinealBufferFPSCounter
     {
-        public const int MAX_BUFFER_SIZE = 1000;
-        public readonly float[] values = new float[MAX_BUFFER_SIZE];
+        private const int MAX_BUFFER_SIZE = 1000;
 
-        public int begin { get; private set; } = 0;
-        public int end { get; private set; } = 0;
-        public float secondsBetweenBeginAndEnd { get; private set; } = 0;
-        public float secondsInBuffer { get; private set; } = 0;
-        public int countBetweenBeginAndEnd { get; private set; } = 0;
+        private readonly float[] values = new float[MAX_BUFFER_SIZE];
+
+        public float LastValue => values[end];
+
+        private int begin;
+        private int end;
+
+        private float secondsBetweenBeginAndEnd;
+        private float secondsInBuffer;
+        private int countBetweenBeginAndEnd;
 
         public void AddDeltaTime(float valueInSeconds)
         {
@@ -31,14 +35,7 @@
             }
         }
 
-        public float CurrentFPSCount()
-        {
-            return countBetweenBeginAndEnd;
-        }
-
-        public float GetTotalSeconds()
-        {
-            return secondsInBuffer;
-        }
+        public float CurrentFPSCount() => countBetweenBeginAndEnd;
+        public float GetTotalSeconds() => secondsInBuffer;
     }
 }

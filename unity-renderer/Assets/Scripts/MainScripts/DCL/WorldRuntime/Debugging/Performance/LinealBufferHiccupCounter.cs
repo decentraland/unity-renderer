@@ -2,66 +2,36 @@
 {
     public class LinealBufferHiccupCounter
     {
-        private readonly LinealBufferFPSCounter counter = new LinealBufferFPSCounter();
-        private int hiccupsCountInBuffer = 0;
-        private float hiccupsSum = 0.0f;
-        private float bufferCount = 0.0f;
 
-        public int HiccupsCountInBuffer
-        {
-            get => hiccupsCountInBuffer;
-            private set => hiccupsCountInBuffer = value;
-        }
+        private readonly LinealBufferFPSCounter counter = new ();
 
-        public float HiccupsSum
-        {
-            get => hiccupsSum;
-            set => hiccupsSum = value;
-        }
+        public int HiccupsCountInBuffer { get; private set; }
+        public float HiccupsSum { get; private set; }
+        public float TotalSeconds { get; private set; }
 
-        public float CurrentFPSCount()
-        {
-            return counter.CurrentFPSCount();
-        }
-
-        public float GetTotalSeconds()
-        {
-            return bufferCount;
-        }
+        public float CurrentFPSCount => counter.CurrentFPSCount();
 
         public void AddDeltaTime(float valueInSeconds)
         {
-            if (IsHiccup(counter.values[counter.end]))
+            if (IsHiccup(counter.LastValue))
             {
-                hiccupsCountInBuffer -= 1;
-                hiccupsSum -= counter.values[counter.end];
+                HiccupsCountInBuffer -= 1;
+                HiccupsSum -= counter.LastValue;
             }
 
             if (IsHiccup(valueInSeconds))
             {
-                hiccupsCountInBuffer += 1;
-                hiccupsSum += valueInSeconds;
+                HiccupsCountInBuffer += 1;
+                HiccupsSum += valueInSeconds;
             }
 
-            bufferCount -= counter.values[counter.end];
-            bufferCount += valueInSeconds;
+            TotalSeconds -= counter.LastValue;
+            TotalSeconds += valueInSeconds;
 
             counter.AddDeltaTime(valueInSeconds);
         }
 
-        public int CurrentHiccupCount()
-        {
-            return hiccupsCountInBuffer;
-        }
-
-        private bool IsHiccup(float value)
-        {
-            return value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
-        }
-
-        public float GetHiccupSum()
-        {
-            return hiccupsSum;
-        }
+        private static bool IsHiccup(float value) =>
+            value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
     }
 }

@@ -18,8 +18,8 @@ using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using System.Collections.Generic;
-using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -31,7 +31,9 @@ namespace DCL
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
 
-            //Addressable Resource Provider
+            result.Register<ProfilerRecordsService>(() => new ProfilerRecordsService());
+
+            // Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
