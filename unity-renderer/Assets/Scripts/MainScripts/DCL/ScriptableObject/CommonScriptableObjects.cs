@@ -108,6 +108,9 @@ public static class AudioScriptableObjects
     private static AudioEvent friendRequestEvent;
     public static AudioEvent FriendRequestEvent => CommonScriptableObjects.GetOrLoad(ref friendRequestEvent, "ScriptableObjects/AudioEvents/HUDCommon/FriendRequest");
 
+    private static AudioEvent ownPlayerMentionedEvent;
+    public static AudioEvent OwnPlayerMentionedEvent => CommonScriptableObjects.GetOrLoad(ref ownPlayerMentionedEvent, "ScriptableObjects/AudioEvents/HUDCommon/OwnPlayerMentioned");
+
     public static void UnloadAll()
     {
         Resources.UnloadAsset(cameraFadeInEvent);
@@ -138,6 +141,7 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(UIShowEvent);
         Resources.UnloadAsset(tooltipPopupEvent);
         Resources.UnloadAsset(friendRequestEvent);
+        Resources.UnloadAsset(ownPlayerMentionedEvent);
     }
 }
 

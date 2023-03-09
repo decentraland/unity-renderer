@@ -178,6 +178,12 @@ namespace DCL.Chat.Notifications
                 if (message.sender != openedChatId && message.recipient != openedChatId)
                     if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                         topNotificationView.AddNewChatNotification(privateModel);
+
+                if (isOwnPlayerMentioned)
+                {
+                    // TODO: refactor sfx usage into non-static
+                    AudioScriptableObjects.OwnPlayerMentionedEvent.Play();
+                }
             }
             else if (message.messageType == ChatMessage.Type.PUBLIC)
             {
@@ -207,6 +213,12 @@ namespace DCL.Chat.Notifications
                     || (!string.IsNullOrEmpty(message.recipient) && openedChatId != message.recipient))
                     if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                         topNotificationView.AddNewChatNotification(publicModel);
+
+                if (isOwnPlayerMentioned)
+                {
+                    // TODO: refactor sfx usage into non-static
+                    AudioScriptableObjects.OwnPlayerMentionedEvent.Play();
+                }
             }
         }
 
