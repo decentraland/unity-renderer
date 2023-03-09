@@ -159,6 +159,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         base.OnEnable();
         UpdateLayout();
+        Debug.Log($"ChatHUDView.inputField.isRichTextEditingAllowed: {inputField.isRichTextEditingAllowed}");
+        inputField.isRichTextEditingAllowed = false;
         nextChatInHistoryInput.OnTriggered += HandleNextChatInHistoryInput;
         previousChatInHistoryInput.OnTriggered += HandlePreviousChatInHistoryInput;
         nextMentionSuggestionInput.OnTriggered += HandleNextMentionSuggestionInput;
