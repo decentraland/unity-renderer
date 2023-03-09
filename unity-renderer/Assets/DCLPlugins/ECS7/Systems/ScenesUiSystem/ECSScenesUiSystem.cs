@@ -18,6 +18,8 @@ namespace ECSSystems.ScenesUiSystem
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly BaseVariable<bool> loadingHudVisibleVariable;
 
+        private static HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
+
         private int lastSceneNumber;
         private bool isPendingSceneUI;
         private IParcelScene currentScene;
@@ -109,7 +111,7 @@ namespace ECSSystems.ScenesUiSystem
         internal static HashSet<IParcelScene> ApplyParenting(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent, int currentSceneNumber)
         {
-            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
+             scenesToSort.Clear();
 
             // check for orphan ui containers
             var allContainers = internalUiContainerComponent.GetForAll();
