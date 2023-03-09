@@ -69,5 +69,11 @@ namespace DCL.Chat.Notifications
         /// </summary>
         /// <param name="notificationTargetId">New target id.</param>
         void SetNotificationTargetId(string notificationTargetId);
+
+        /// <summary>
+        /// Set if the own player is mentioned in the notification message.
+        /// </summary>
+        /// <param name="isMentioned">If the own player is mentioned or not.</param>
+        void SetOwnPlayerMention(bool isMentioned);
     }
 }

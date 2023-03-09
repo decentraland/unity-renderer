@@ -211,6 +211,7 @@ namespace DCL.Chat.Notifications
             chatNotificationComponentView.SetNotificationSender($"{senderName}:");
             chatNotificationComponentView.SetNotificationTargetId(model.TargetId);
             chatNotificationComponentView.SetImageVisibility(false);
+            chatNotificationComponentView.SetOwnPlayerMention(model.IsOwnPlayerMentioned);
         }
 
         private void PopulatePublicNotification(PublicChannelMessageNotificationModel model)

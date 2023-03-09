@@ -25,6 +25,7 @@ namespace DCL.Chat.Notifications
         [SerializeField] internal GameObject imageContainer;
         [SerializeField] internal GameObject imageBackground;
         [SerializeField] internal GameObject multiNotificationBackground;
+        [SerializeField] internal GameObject mentionMark;
         [SerializeField] internal bool isPrivate;
         [SerializeField] internal RectTransform backgroundTransform;
         [SerializeField] internal RectTransform messageContainerTransform;
@@ -100,6 +101,7 @@ namespace DCL.Chat.Notifications
             SetNotificationHeader(model.messageHeader);
             SetImage(model.imageUri);
             SetImageVisibility(model.isImageVisible);
+            SetOwnPlayerMention(model.isOwnPlayerMentioned);
 
             if (model.isDockedLeft)
                 DockLeft();
@@ -242,6 +244,14 @@ namespace DCL.Chat.Notifications
         {
             model.notificationTargetId = notificationTargetId;
             this.notificationTargetId = notificationTargetId;
+        }
+
+        public void SetOwnPlayerMention(bool isMentioned)
+        {
+            model.isOwnPlayerMentioned = isMentioned;
+
+            if (mentionMark != null)
+                mentionMark.SetActive(isMentioned);
         }
 
         public void DockRight()
