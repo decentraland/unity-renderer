@@ -12,7 +12,6 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
-using System.Numerics;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
 using Quaternion = UnityEngine.Quaternion;
