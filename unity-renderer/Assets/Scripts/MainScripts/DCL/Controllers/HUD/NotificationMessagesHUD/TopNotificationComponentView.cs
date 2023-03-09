@@ -210,8 +210,9 @@ namespace DCL.Chat.Notifications
             chatNotificationComponentView.SetNotificationHeader($"DM - {model.PeerUsername}");
             chatNotificationComponentView.SetNotificationSender($"{senderName}:");
             chatNotificationComponentView.SetNotificationTargetId(model.TargetId);
-            chatNotificationComponentView.SetImageVisibility(false);
+            chatNotificationComponentView.SetImageVisibility(true);
             chatNotificationComponentView.SetOwnPlayerMention(model.IsOwnPlayerMentioned);
+            chatNotificationComponentView.SetImage(model.ProfilePicture);
         }
 
         private void PopulatePublicNotification(PublicChannelMessageNotificationModel model)
