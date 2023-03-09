@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using Unity.Profiling;
+using Unity.Profiling.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace DefaultNamespace
@@ -10,6 +12,7 @@ namespace DefaultNamespace
         ProfilerRecorder systemMemoryRecorder;
         ProfilerRecorder gcMemoryRecorder;
         ProfilerRecorder mainThreadTimeRecorder;
+        ProfilerRecorder renderThreadTimeRecorder;
 
         static double GetRecorderFrameAverage(ProfilerRecorder recorder)
         {
@@ -36,6 +39,7 @@ namespace DefaultNamespace
             systemMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "System Used Memory");
             gcMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Reserved Memory");
             mainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", 15);
+            renderThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Render Thread", 15);
         }
 
         void OnDisable()
@@ -43,6 +47,7 @@ namespace DefaultNamespace
             systemMemoryRecorder.Dispose();
             gcMemoryRecorder.Dispose();
             mainThreadTimeRecorder.Dispose();
+            renderThreadTimeRecorder.Dispose();
         }
 
         void Update()
@@ -56,6 +61,8 @@ namespace DefaultNamespace
             sb.AppendLine($"FPS Raw: {1000 / (mainThreadTimeRecorder.LastValue* (1e-6f)):F1} ms");
             sb.AppendLine($"FPS: {fps:F1} ms");
 
+            sb.AppendLine($"Render Frame Time Raw: {(renderThreadTimeRecorder.LastValue* (1e-6f)):F1} ms");
+            sb.AppendLine($"Render Frame Time: { GetRecorderFrameAverage(renderThreadTimeRecorder)* (1e-6f):F1} ms");
 
             sb.AppendLine($"GC Memory: {gcMemoryRecorder.LastValue / (1024 * 1024)} MB");
             sb.AppendLine($"System Memory: {systemMemoryRecorder.LastValue / (1024 * 1024)} MB");
@@ -67,6 +74,46 @@ namespace DefaultNamespace
             GUI.skin.label.fontSize = 45;
             GUI.TextArea(new Rect(10, 30, 250, 250), statsText);
             GUI.skin.label.fontSize = 45;
+        }
+
+        struct StatInfo
+        {
+            public ProfilerCategory Cat;
+            public string Name;
+            public ProfilerMarkerDataUnit Unit;
+        }
+
+        [ContextMenu(nameof(EnumerateProfilerStats))]
+        public void EnumerateProfilerStats()
+        {
+            var availableStatHandles = new List<ProfilerRecorderHandle>();
+            ProfilerRecorderHandle.GetAvailable(availableStatHandles);
+
+            var availableStats = new List<StatInfo>(availableStatHandles.Count);
+            foreach (var h in availableStatHandles)
+            {
+                var statDesc = ProfilerRecorderHandle.GetDescription(h);
+                var statInfo = new StatInfo()
+                {
+                    Cat = statDesc.Category,
+                    Name = statDesc.Name,
+                    Unit = statDesc.UnitType
+                };
+                availableStats.Add(statInfo);
+            }
+            availableStats.Sort((a, b) =>
+            {
+                var result = string.Compare(a.Cat.ToString(), b.Cat.ToString());
+                if (result != 0)
+                    return result;
+
+                return string.Compare(a.Name, b.Name);
+            });
+
+            foreach (var s in availableStats)
+            {
+                Debug.Log($"{s.Cat.ToString()}\t\t - {s.Name}\t\t - {s.Unit}");
+            }
         }
     }
 }
