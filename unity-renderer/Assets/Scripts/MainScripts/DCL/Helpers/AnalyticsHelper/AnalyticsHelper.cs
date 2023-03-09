@@ -15,7 +15,7 @@ public static class AnalyticsHelper
         if (sceneNumber > 0 && !string.IsNullOrEmpty(sceneHash))
         {
             analyticDict.Add("base_parcel_position", scene.sceneData.basePosition.x + "," + scene.sceneData.basePosition.y );
-            analyticDict.Add("scene", $"scene:{sceneHash}");
+            analyticDict.Add("scene", sceneHash);
         }
     }
 
