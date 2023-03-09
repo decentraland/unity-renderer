@@ -226,7 +226,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<IMouseCatcher>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
-            Substitute.For<IChatMentionSuggestionProvider>());
+            Substitute.For<IChatMentionSuggestionProvider>(),
+            Substitute.For<ISocialAnalytics>());
 
         controller.Initialize(GivenView());
 

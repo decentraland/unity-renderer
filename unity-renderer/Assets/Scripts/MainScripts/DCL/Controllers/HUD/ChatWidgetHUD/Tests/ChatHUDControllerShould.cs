@@ -8,6 +8,7 @@ using DCL.ProfanityFiltering;
 using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using NSubstitute;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -37,6 +38,7 @@ public class ChatHUDControllerShould
 
         controller = new ChatHUDController(dataStore, userProfileBridge, true,
             chatMentionSuggestionProvider,
+            Substitute.For<ISocialAnalytics>(),
             profanityFilter);
         controller.Initialize(view);
     }

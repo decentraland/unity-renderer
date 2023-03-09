@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
+using SocialFeaturesAnalytics;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
@@ -22,6 +23,7 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly InputAction_Trigger toggleChatTrigger;
         private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
+        private readonly ISocialAnalytics socialAnalytics;
         private ChatHUDController chatHudController;
         private string channelId;
         private bool skipChatInputTrigger;
@@ -37,7 +39,8 @@ namespace DCL.Chat.HUD
             IProfanityFilter profanityFilter,
             IMouseCatcher mouseCatcher,
             InputAction_Trigger toggleChatTrigger,
-            IChatMentionSuggestionProvider chatMentionSuggestionProvider)
+            IChatMentionSuggestionProvider chatMentionSuggestionProvider,
+            ISocialAnalytics socialAnalytics)
         {
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
@@ -46,6 +49,7 @@ namespace DCL.Chat.HUD
             this.mouseCatcher = mouseCatcher;
             this.toggleChatTrigger = toggleChatTrigger;
             this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
+            this.socialAnalytics = socialAnalytics;
         }
 
         public void Initialize(IPublicChatWindowView view = null, bool isVisible = true)
@@ -63,6 +67,7 @@ namespace DCL.Chat.HUD
                 userProfileBridge,
                 true,
                 chatMentionSuggestionProvider,
+                socialAnalytics,
                 profanityFilter);
 
             chatHudController.Initialize(view.ChatHUD);

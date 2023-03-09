@@ -121,7 +121,10 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
-                    new MemoryChatMentionSuggestionProvider(UserProfileController.i));
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
             case HUDElementID.CHANNELS_CHAT:
                 return new ChatChannelHUDController(
                     DataStore.i,

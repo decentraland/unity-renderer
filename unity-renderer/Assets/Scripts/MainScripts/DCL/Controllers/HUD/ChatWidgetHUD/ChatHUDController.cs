@@ -6,6 +6,7 @@ using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
 using DCL.Tasks;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,7 @@ public class ChatHUDController : IHUD
     private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
     private readonly InputAction_Trigger closeMentionSuggestionsTrigger;
     private readonly IProfanityFilter profanityFilter;
+    private readonly ISocialAnalytics socialAnalytics;
     private readonly Regex mentionRegex = new (@"(\B@\w+)|(\B@+)");
     private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
@@ -47,12 +49,14 @@ public class ChatHUDController : IHUD
         IUserProfileBridge userProfileBridge,
         bool detectWhisper,
         IChatMentionSuggestionProvider chatMentionSuggestionProvider,
+        ISocialAnalytics socialAnalytics,
         IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
         this.detectWhisper = detectWhisper;
         this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
+        this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
     }
 
@@ -398,6 +402,7 @@ public class ChatHUDController : IHUD
     private void HandleMentionSuggestionSelected(string userId)
     {
         view.AddMentionToInputField(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
+        socialAnalytics.SendMentionAutocomplete();
         HideMentionSuggestions();
     }
 

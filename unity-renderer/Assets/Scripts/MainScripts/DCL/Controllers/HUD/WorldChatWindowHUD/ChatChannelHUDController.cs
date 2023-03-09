@@ -78,7 +78,7 @@ namespace DCL.Chat.HUD
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
 
-            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, chatMentionSuggestionProvider, profanityFilter);
+            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, chatMentionSuggestionProvider, socialAnalytics, profanityFilter);
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
