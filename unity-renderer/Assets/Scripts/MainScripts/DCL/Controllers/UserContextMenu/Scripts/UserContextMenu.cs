@@ -23,7 +23,8 @@ public class UserContextMenu : MonoBehaviour
 {
     private const string BLOCK_BTN_BLOCK_TEXT = "Block";
     private const string BLOCK_BTN_UNBLOCK_TEXT = "Unblock";
-    private const string OPEN_PASSPORT_SOURCE = "FriendsHUD";
+    private const string OPEN_PASSPORT_NORMAL_SOURCE = "FriendsHUD";
+    private const string OPEN_PASSPORT_MENTION_SOURCE = "Mention";
     private const string DELETE_MSG_PATTERN = "Are you sure you want to delete {0} as a friend?";
 
     [Flags]
@@ -85,6 +86,7 @@ public class UserContextMenu : MonoBehaviour
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
     private CancellationTokenSource friendOperationsCancellationToken = new ();
+    private bool isFreomMentionContextMenu = false;
     private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private bool isFriendsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
     internal ISocialAnalytics socialAnalytics;
@@ -145,6 +147,11 @@ public class UserContextMenu : MonoBehaviour
     public void SetFriendshipContentActive(bool isActive) =>
         friendshipContainer.SetActive(isActive);
 
+    public void SetPassportOpenSource(bool isFromMention)
+    {
+        isFreomMentionContextMenu = isFromMention;
+    }
+
     private void Awake()
     {
         currentPlayerId = DataStore.i.HUDs.currentPlayerId;
@@ -170,7 +177,7 @@ public class UserContextMenu : MonoBehaviour
     private void OnPassportButtonPressed()
     {
         OnPassport?.Invoke(userId);
-        currentPlayerId.Set(new KeyValuePair<string, string>(userId, OPEN_PASSPORT_SOURCE));
+        currentPlayerId.Set(new KeyValuePair<string, string>(userId, isFreomMentionContextMenu ? OPEN_PASSPORT_MENTION_SOURCE : OPEN_PASSPORT_NORMAL_SOURCE));
         Hide();
 
         AudioScriptableObjects.dialogOpen.Play(true);

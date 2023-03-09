@@ -7,6 +7,7 @@ public interface IChatHUDComponentView
 {
     event Action<ChatMessage> OnSendMessage;
     event Action<string, int> OnMessageUpdated;
+    event Action OnOpenedContextMenu;
     event Action OnShowMenu;
     event Action OnInputFieldSelected;
     event Action OnInputFieldDeselected;

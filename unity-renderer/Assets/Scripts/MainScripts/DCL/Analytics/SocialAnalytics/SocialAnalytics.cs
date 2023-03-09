@@ -42,6 +42,7 @@ namespace SocialFeaturesAnalytics
         private const string CHANNEL_SEARCH = "player_search_channel";
         private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
         private const string MENTION_MESSAGE_SENT = "mention_message_sent";
+        private const string MENTION_CLICKED = "mendion_clicked";
         private const string MENTION_AUTOCOMPLETE = "mention_autocomplete";
 
         public static SocialAnalytics i { get; private set; }
@@ -291,6 +292,11 @@ namespace SocialFeaturesAnalytics
         public void SendMessageWithMention()
         {
             analytics.SendAnalytic(MENTION_MESSAGE_SENT, new Dictionary<string, string>());
+        }
+
+        public void SendClickedMention()
+        {
+            analytics.SendAnalytic(MENTION_CLICKED, new Dictionary<string, string>());
         }
 
         public void SendMentionAutocomplete()

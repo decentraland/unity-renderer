@@ -19,5 +19,8 @@ namespace DCL.Chat.HUD.Mentions
 
         public static bool IsUserMentionedInText(string userId, string text) =>
             text.ToLower().Contains($"{MENTION_URL_PREFIX}{userId.ToLower()}");
+
+        public static bool TextContainsMention(string text) =>
+            text.ToLower().Contains(MENTION_URL_PREFIX);
     }
 }

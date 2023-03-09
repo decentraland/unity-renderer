@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
 using DCL.Chat.HUD;
+using DCL.Chat.HUD.Mentions;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
@@ -79,6 +80,13 @@ public class ChatHUDController : IHUD
         this.view.OnMessageUpdated += HandleMessageUpdated;
         this.view.OnMentionSuggestionSelected -= HandleMentionSuggestionSelected;
         this.view.OnMentionSuggestionSelected += HandleMentionSuggestionSelected;
+        this.view.OnOpenedContextMenu -= OpenedContextMenu;
+        this.view.OnOpenedContextMenu += OpenedContextMenu;
+    }
+
+    private void OpenedContextMenu()
+    {
+        socialAnalytics.SendClickedMention();
     }
 
     public void SetVisibility(bool visible)
@@ -275,6 +283,9 @@ public class ChatHUDController : IHUD
             OnMessageSentBlockedBySpam?.Invoke(message);
             return;
         }
+
+        if(MentionsUtils.TextContainsMention(message.body))
+            socialAnalytics.SendMessageWithMention();
 
         ApplyWhisperAttributes(message);
 

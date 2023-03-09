@@ -49,6 +49,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
 
     public event Action<string, int> OnMessageUpdated;
+    public event Action OnOpenedContextMenu;
 
     public event Action OnShowMenu
     {
@@ -151,6 +152,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         chatMentionSuggestions.OnEntrySubmit += model => OnMentionSuggestionSelected?.Invoke(model.userId);
         ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
         model.enableFadeoutMode = true;
+        contextMenu.SetPassportOpenSource(true);
     }
 
     public override void OnEnable()
@@ -393,6 +395,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private void OnOpenContextMenu(ChatEntry chatEntry)
     {
+        OnOpenedContextMenu?.Invoke();
         chatEntry.DockContextMenu((RectTransform)contextMenu.transform);
         contextMenu.transform.parent = transform.parent;
         contextMenu.transform.SetAsLastSibling();
