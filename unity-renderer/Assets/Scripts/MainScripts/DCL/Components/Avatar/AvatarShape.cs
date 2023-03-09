@@ -141,9 +141,9 @@ namespace DCL
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            var model = (AvatarModel) newModel;
-
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
+
+            var model = (AvatarModel) newModel;
 
             bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
             currentAvatar.CopyFrom(model);
