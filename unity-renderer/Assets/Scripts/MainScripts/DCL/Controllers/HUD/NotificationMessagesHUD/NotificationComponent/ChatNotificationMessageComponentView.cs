@@ -4,6 +4,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace DCL.Chat.Notifications
 {
@@ -112,10 +113,7 @@ namespace DCL.Chat.Notifications
         public void SetMessage(string message)
         {
             model.message = notificationMessage.ReplaceUnsupportedCharacters(message, '?');
-            if (message.Length <= maxContentCharacters)
-                notificationMessage.text = message;
-            else
-                notificationMessage.text = $"{message.Substring(0, maxContentCharacters)}...";
+            notificationMessage.text = message;
 
             ForceUIRefresh();
         }
@@ -156,7 +154,7 @@ namespace DCL.Chat.Notifications
             {
                 seed += (int)value;
             }
-            System.Random rand1 = new System.Random(seed);
+            Random rand1 = new Random(seed);
             notificationHeader.color = channelColors[rand1.Next(0, channelColors.Length)];
         }
 
