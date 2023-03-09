@@ -3,8 +3,8 @@ import { buildStore } from './store/store'
 import { globalObservable } from './observables'
 import { RootStore } from './store/rootTypes'
 import { initializeSessionObserver } from './session/sagas'
-import { hookAnalyticsObservables } from './analytics/hook-observable'
-import { beforeUnloadAction } from './actions'
+import { hookAnalyticsObservables } from './analytics/hookAnalyticsObservables'
+import { beforeUnloadAction } from 'shared/meta/actions'
 import { isRendererVisible } from './loadingScreen/selectors'
 
 declare const globalThis: { globalStore: RootStore }

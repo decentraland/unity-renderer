@@ -1,4 +1,4 @@
-import { defaultLogger } from 'shared/logger'
+import { defaultLogger } from 'lib/logger'
 import { ErrorContextTypes, ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
 import { getUnityInstance, IUnityInterface } from './IUnityInterface'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'

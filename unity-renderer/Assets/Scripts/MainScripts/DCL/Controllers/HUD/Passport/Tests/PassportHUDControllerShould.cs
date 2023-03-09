@@ -3,6 +3,7 @@ using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
@@ -63,12 +64,13 @@ namespace DCL.Social.Passports
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,
                                 wearableItemResolver,
-                                Substitute.For<IWearableCatalogBridge>(),
+                                Substitute.For<IWearablesCatalogService>(),
                                 Substitute.For<IEmotesCatalogService>(),
                                 Substitute.For<INamesService>(),
                                 Substitute.For<ILandsService>(),
                                 Substitute.For<IUserProfileBridge>(),
-                                dataStore);
+                                dataStore,
+                                currentPlayerInfoCardId);
 
             controller = new PlayerPassportHUDController(
                 view,
@@ -107,4 +109,4 @@ namespace DCL.Social.Passports
             view.Received(1).SetVisibility(false);
         }
     }
-    }
+}

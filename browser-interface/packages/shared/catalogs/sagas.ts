@@ -13,7 +13,7 @@ import {
 } from 'config'
 
 import { authorizeBuilderHeaders } from 'lib/decentraland/authentication/authorizeBuilderHeaders'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 import {
   EmotesRequest,
   emotesFailure,
@@ -51,18 +51,15 @@ import { getSelectedNetwork } from 'shared/dao/selectors'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { ExplorerIdentity } from 'shared/session/types'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { IRealmAdapter } from 'shared/realm/types'
-import {
-  getFetchContentServerFromRealmAdapter,
-  getFetchContentUrlPrefixFromRealmAdapter,
-  waitForRealmAdapter
-} from 'shared/realm/selectors'
+import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { OwnedItemsWithDefinition } from 'dcl-catalyst-client/dist/LambdasAPI'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 
-export const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
-export const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
+const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
+const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
 
 const BASE_BUILDER_DOWNLOAD_URL = `${BUILDER_SERVER_URL}/storage/contents`
 
@@ -80,15 +77,15 @@ export function* catalogsSaga(): any {
   yield takeEvery([WEARABLES_FAILURE, EMOTES_FAILURE], handleItemsRequestFailure)
 }
 
-export function* handleItemRequest(action: EmotesRequest | WearablesRequest) {
+function* handleItemRequest(action: EmotesRequest | WearablesRequest) {
   const { filters, context } = action.payload
 
   const valid = areFiltersValid(filters)
   const isRequestingEmotes = action.type === EMOTES_REQUEST
   const failureAction = isRequestingEmotes ? emotesFailure : wearablesFailure
   if (valid) {
-    const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
-    const contentBaseUrl: string = yield call(getFetchContentUrlPrefixFromRealmAdapter, realmAdapter)
+    const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+    const contentBaseUrl: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     try {
       const response: PartialItem[] = yield call(fetchItemsFromCatalyst, action, filters)
@@ -118,8 +115,8 @@ function* fetchItemsFromCatalyst(
   action: EmotesRequest | WearablesRequest,
   filters: EmotesRequestFilters | WearablesRequestFilters
 ) {
-  const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
-  const contentBaseUrl: string = yield call(getFetchContentServerFromRealmAdapter, realmAdapter)
+  const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+  const contentBaseUrl: string = getFetchContentServerFromRealmAdapter(realmAdapter)
   // TODO: stop using CatalystClient and move endpoints to BFF
   const catalystUrl: string = contentBaseUrl.replace(/\/content\/?.*$/, '')
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
@@ -431,7 +428,7 @@ function mapCatalystItemIntoV2(v2Item: PartialItem): PartialItem {
   }
 }
 
-export function* handleItemsRequestSuccess(action: WearablesSuccess | EmotesSuccess) {
+function* handleItemsRequestSuccess(action: WearablesSuccess | EmotesSuccess) {
   const { context } = action.payload
 
   yield call(waitForRendererInstance)
@@ -442,7 +439,7 @@ export function* handleItemsRequestSuccess(action: WearablesSuccess | EmotesSucc
   }
 }
 
-export function* handleItemsRequestFailure(action: WearablesFailure | EmotesFailure) {
+function* handleItemsRequestFailure(action: WearablesFailure | EmotesFailure) {
   const { context, error } = action.payload
 
   defaultLogger.error(
@@ -483,14 +480,14 @@ function areFiltersValid(filters: WearablesRequestFilters | EmotesRequestFilters
   return filtersSet === 1 && ok
 }
 
-export function informRequestFailure(error: string, context: string | undefined) {
+function informRequestFailure(error: string, context: string | undefined) {
   getUnityInstance().WearablesRequestFailed(error, context)
 }
 
-export function sendWearablesCatalog(wearables: WearableV2[], context: string | undefined) {
+function sendWearablesCatalog(wearables: WearableV2[], context: string | undefined) {
   getUnityInstance().AddWearablesToCatalog(wearables, context)
 }
 
-export function sendEmotesCatalog(emotes: Emote[], context: string | undefined) {
+function sendEmotesCatalog(emotes: Emote[], context: string | undefined) {
   getUnityInstance().AddEmotesToCatalog(emotes, context)
 }

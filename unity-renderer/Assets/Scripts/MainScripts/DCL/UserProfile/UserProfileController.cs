@@ -1,12 +1,16 @@
 using Cysharp.Threading.Tasks;
+using DCL.Interface;
+using DCLServices.WearablesCatalogService;
 using System;
-using DCL;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
 {
+    private const int REQUEST_TIMEOUT = 30;
+
     public static UserProfileController i { get; private set; }
 
     public event Action OnBaseWereablesFail;
@@ -37,17 +41,26 @@ public class UserProfileController : MonoBehaviour
         ownUserProfile = UserProfile.GetOwnUserProfile();
     }
 
+    [PublicAPI]
     public void LoadProfile(string payload)
     {
+        async UniTaskVoid RequestBaseWearablesAsync(CancellationToken ct)
+        {
+            try
+            {
+                await DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RequestBaseWearablesAsync(ct);
+            }
+            catch (Exception e)
+            {
+                OnBaseWereablesFail?.Invoke();
+                Debug.LogError(e.Message);
+            }
+        }
+
         if (!baseWearablesAlreadyRequested)
         {
             baseWearablesAlreadyRequested = true;
-            CatalogController.RequestBaseWearables()
-                             .Catch((error) =>
-                             {
-                                 OnBaseWereablesFail?.Invoke();
-                                 Debug.LogError(error);
-                             });
+            RequestBaseWearablesAsync(CancellationToken.None).Forget();
         }
 
         if (payload == null)
@@ -134,6 +147,8 @@ public class UserProfileController : MonoBehaviour
         cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
         pendingUserProfileTasks[userId] = task;
 
-        return task.Task;
+        WebInterface.SendRequestUserProfile(userId);
+
+        return task.Task.Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
     }
 }

@@ -1,26 +1,25 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import { isChrome } from 'lib/browser/isChrome'
+import { createLogger } from 'lib/logger'
 import {
-  Room,
-  RoomEvent,
-  RemoteParticipant,
-  RemoteTrackPublication,
-  RemoteTrack,
-  Track,
+  LocalAudioTrack,
   ParticipantEvent,
   RemoteAudioTrack,
-  LocalAudioTrack
+  RemoteParticipant,
+  RemoteTrack,
+  RemoteTrackPublication,
+  Room,
+  RoomEvent,
+  Track
 } from 'livekit-client'
-import Html from 'shared/Html'
-import { createLogger } from 'shared/logger'
-import { VoiceHandler } from '../../../voiceChat/VoiceHandler'
 import { getPeer } from 'shared/comms/peers'
-import { getSpatialParamsFor, isChrome } from '../../../voiceChat/utils'
-import { startLoopback } from './loopback'
-
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { shouldPlayVoice } from 'shared/voiceChat/selectors'
+import { getSpatialParamsFor } from 'shared/voiceChat/utils'
+import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import Html from './Html'
+import { startLoopback } from './loopback'
 
 type ParticipantInfo = {
   participant: RemoteParticipant
@@ -253,7 +252,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     .on(RoomEvent.RoomMetadataChanged, function (...args) {
       logger.log('RoomMetadataChanged', args)
     })
-    .on(RoomEvent.Reconnected, function (...args) {
+    .on(RoomEvent.Reconnected, function (..._args) {
       reconnectAllParticipants()
     })
     .on(RoomEvent.MediaDevicesChanged, function (...args) {
@@ -385,12 +384,14 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
       return validInput
     },
     async destroy() {
-      room.localParticipant.unpublishTracks(
-        Array.from(room.localParticipant.audioTracks.values())
-          .map(($) => $.audioTrack!)
-          .filter(Boolean)
-      )
-      await handleDisconnect()
+      await Promise.allSettled([
+        room.localParticipant.unpublishTracks(
+          Array.from(room.localParticipant.audioTracks.values())
+            .map(($) => $.audioTrack!)
+            .filter(Boolean)
+        ),
+        handleDisconnect()
+      ])
     }
   }
 }

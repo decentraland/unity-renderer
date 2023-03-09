@@ -1,4 +1,4 @@
-import { Vector2 } from 'lib/math/Vector2'
+import type { Vector2 } from 'lib/math/Vector2'
 
 export type AtlasState = {
   hasPois: boolean

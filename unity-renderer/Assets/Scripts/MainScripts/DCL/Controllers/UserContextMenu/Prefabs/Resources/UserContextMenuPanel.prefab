@@ -1146,6 +1146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   confirmationDialog: {fileID: 0}
   menuConfigFlags: -1
+  enableSendMessage: 1
   headerContainer: {fileID: 2509732966232078900}
   friendshipContainer: {fileID: 5264641308601234958}
   friendAddContainer: {fileID: 216683297733264312}

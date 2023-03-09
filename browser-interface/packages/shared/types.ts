@@ -404,18 +404,6 @@ export type WelcomeHUDControllerModel = HUDConfiguration & {
   hasWallet: boolean
 }
 
-export type CatalystNode = {
-  domain: string
-}
-
-export type GraphResponse = {
-  nfts: {
-    ens: {
-      subdomain: string
-    }
-  }[]
-}
-
 export enum ChatMessageType {
   NONE,
   PUBLIC,
@@ -614,6 +602,7 @@ export type KernelConfigForRenderer = {
   kernelVersion: string
   rendererVersion: string
   avatarTextureAPIBaseUrl: string
+  urlParamsForWearablesDebug: boolean // temporal field until the whole the wearables catalog sagas flow is migrated to Unity
 }
 
 export type RealmsInfoForRenderer = {

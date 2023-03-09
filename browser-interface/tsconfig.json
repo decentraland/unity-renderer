@@ -37,7 +37,7 @@
     "public"
   ],
   "include": [
-    "src/**/*",
+    "packages/**/*",
     "test/**/*"
   ]
 }

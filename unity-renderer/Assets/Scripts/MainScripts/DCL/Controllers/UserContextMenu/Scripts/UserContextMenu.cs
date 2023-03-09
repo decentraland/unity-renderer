@@ -45,6 +45,7 @@ public class UserContextMenu : MonoBehaviour
 
     [Header("Enable Actions")]
     [SerializeField] internal MenuConfigFlags menuConfigFlags = MenuConfigFlags.Passport | MenuConfigFlags.Block | MenuConfigFlags.Report;
+    [SerializeField] internal bool enableSendMessage = true;
 
     [Header("Containers")]
     [SerializeField] internal GameObject headerContainer;
@@ -285,6 +286,7 @@ public class UserContextMenu : MonoBehaviour
     private void UpdateBlockButton()
     {
         blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
+        messageButton.gameObject.SetActive(!isBlocked && enableSendMessage);
     }
 
     private void HideIfClickedOutside()
@@ -312,7 +314,7 @@ public class UserContextMenu : MonoBehaviour
         passportButton.gameObject.SetActive((flags & MenuConfigFlags.Passport) != 0);
         blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0);
         reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0);
-        messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0);
+        messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && (!isBlocked && enableSendMessage));
     }
 
     private void Setup(string userId, MenuConfigFlags configFlags)
@@ -363,7 +365,7 @@ public class UserContextMenu : MonoBehaviour
                 deleteFriendButton.gameObject.SetActive(true);
             }
 
-            if (messageEnabled) { messageButton.gameObject.SetActive(true); }
+            if (messageEnabled) { messageButton.gameObject.SetActive(!isBlocked && enableSendMessage); }
         }
         else if (friendshipStatus == FriendshipStatus.REQUESTED_TO)
         {

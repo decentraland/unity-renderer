@@ -1,52 +1,53 @@
-import { call, select, takeEvery, takeLatest, put, apply, fork, take } from 'redux-saga/effects'
+import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { trackEvent } from 'shared/analytics/trackEvent'
+import { positionReportToCommsPositionRfc4 } from 'shared/comms/interface/utils'
 import { receiveUserTalking } from 'shared/comms/peers'
+import { store } from 'shared/store/isolatedStore'
+import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import { VOICE_CHAT_SAMPLE_RATE } from 'voice-chat-codec/constants'
-import { VoiceHandler } from './VoiceHandler'
 import {
+  clearVoiceChatError,
+  JOIN_VOICE_CHAT,
+  leaveVoiceChat,
+  LEAVE_VOICE_CHAT,
+  REQUEST_TOGGLE_VOICE_CHAT_RECORDING,
+  REQUEST_VOICE_CHAT_RECORDING,
+  SetAudioDevice,
+  setVoiceChatError,
+  SetVoiceChatErrorAction,
+  setVoiceChatHandler,
+  setVoiceChatMedia,
+  SetVoiceChatMediaAction,
+  SetVoiceChatMuteAction,
+  SetVoiceChatVolumeAction,
+  SET_AUDIO_DEVICE,
+  SET_VOICE_CHAT_ERROR,
+  SET_VOICE_CHAT_HANDLER,
+  SET_VOICE_CHAT_MEDIA,
   SET_VOICE_CHAT_MUTE,
   SET_VOICE_CHAT_VOLUME,
-  VOICE_PLAYING_UPDATE,
-  REQUEST_VOICE_CHAT_RECORDING,
-  REQUEST_TOGGLE_VOICE_CHAT_RECORDING,
-  VoicePlayingUpdateAction,
-  SetVoiceChatVolumeAction,
-  SetVoiceChatMuteAction,
-  setVoiceChatHandler,
-  voiceRecordingUpdate,
   voicePlayingUpdate,
-  setVoiceChatError,
-  leaveVoiceChat,
-  SetVoiceChatErrorAction,
-  SET_VOICE_CHAT_ERROR,
-  SetVoiceChatMediaAction,
-  setVoiceChatMedia,
-  SET_VOICE_CHAT_MEDIA,
-  clearVoiceChatError,
-  SET_AUDIO_DEVICE,
-  SetAudioDevice,
-  SET_VOICE_CHAT_HANDLER,
-  LEAVE_VOICE_CHAT,
-  JOIN_VOICE_CHAT
+  VoicePlayingUpdateAction,
+  voiceRecordingUpdate,
+  VOICE_PLAYING_UPDATE
 } from './actions'
-import { voiceChatLogger } from './context'
-import { store } from 'shared/store/isolatedStore'
+import { voiceChatLogger } from './logger'
 import {
-  getVoiceHandler,
-  isVoiceChatAllowedByCurrentScene,
-  isRequestedVoiceChatRecording,
   getVoiceChatState,
-  hasJoinedVoiceChat
+  getVoiceHandler,
+  hasJoinedVoiceChat,
+  isRequestedVoiceChatRecording,
+  isVoiceChatAllowedByCurrentScene
 } from './selectors'
-import { positionObservable, PositionReport } from 'shared/world/positionThings'
-import { positionReportToCommsPositionRfc4 } from 'shared/comms/interface/utils'
-import { trackEvent } from 'shared/analytics'
-import { VoiceChatState } from './types'
+import { RootVoiceChatState, VoiceChatState } from './types'
+import { VoiceHandler } from './VoiceHandler'
 
 import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
-import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
-import { incrementCounter } from 'shared/occurences'
-import { getCommsRoom } from 'shared/comms/selectors'
 import { RoomConnection } from 'shared/comms/interface'
+import { getCommsRoom } from 'shared/comms/selectors'
+import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
+import { incrementCounter } from 'shared/analytics/occurences'
+import { RootWorldState } from 'shared/world/types'
 
 let audioRequestInitialized = false
 
@@ -98,17 +99,24 @@ function* handleConnectVoiceChatToRoom() {
 }
 
 function* handleRecordingRequest() {
-  const requestedRecording = yield select(isRequestedVoiceChatRecording)
-  const voiceHandler: VoiceHandler | null = yield select(getVoiceHandler)
+  const { requestedRecording, voiceHandler, isAllowedByScene } = (yield select(
+    getHandleRecordingRequestInfo
+  )) as ReturnType<typeof getHandleRecordingRequestInfo>
 
   if (voiceHandler) {
-    const isAlowedByScene: boolean = yield select(isVoiceChatAllowedByCurrentScene)
-    if (!isAlowedByScene || !requestedRecording) {
+    if (!isAllowedByScene || !requestedRecording) {
       voiceHandler.setRecording(false)
     } else {
       yield call(requestUserMediaIfNeeded)
       voiceHandler.setRecording(true)
     }
+  }
+}
+function getHandleRecordingRequestInfo(state: RootVoiceChatState & RootWorldState) {
+  return {
+    requestedRecording: isRequestedVoiceChatRecording(state),
+    voiceHandler: getVoiceHandler(state),
+    isAllowedByScene: isVoiceChatAllowedByCurrentScene(state)
   }
 }
 

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { ensureAvatarCompatibilityFormat } from 'shared/profiles/transformations/profileToServerFormat'
+import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 
 describe('legacy spec conversion', () => {
   it.skip('works with a sample case', () => {

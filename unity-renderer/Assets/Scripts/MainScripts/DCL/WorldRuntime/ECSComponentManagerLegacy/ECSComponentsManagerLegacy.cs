@@ -45,7 +45,7 @@ namespace DCL
             IParcelScenesCleaner parcelScenesCleaner,
             ISceneBoundsChecker sceneBoundsChecker,
             IPhysicsSyncController physicsSyncController,
-            ICullingController cullingController, 
+            ICullingController cullingController,
             FeatureFlag featureFlags)
         {
             this.scene = scene;
@@ -207,7 +207,7 @@ namespace DCL
             {
                 entityComponents = new Dictionary<CLASS_ID_COMPONENT, IEntityComponent>();
                 entitiesComponents.Add(entity.entityId, entityComponents);
-                
+
                 entity.OnBaseComponentAdded?.Invoke(componentId, entity);
             }
             entityComponents.Add(componentId, component);
@@ -431,7 +431,7 @@ namespace DCL
                         targetComponent.UpdateFromJSON(json);
                     else
                         targetComponent.UpdateFromModel(data as BaseModel);
-                    
+
                     wasCreated = true;
                 }
             }
@@ -439,7 +439,7 @@ namespace DCL
             {
                 targetComponent = EntityComponentUpdate(entity, classId, data as string);
             }
-            
+
             var isTransform = classId == CLASS_ID_COMPONENT.TRANSFORM;
             var avoidThrottling = isSBCNerfEnabled ? isTransform && wasCreated : isTransform;
 
@@ -490,15 +490,6 @@ namespace DCL
                 return sharedComponent;
             }
 
-            if (scene.GetSceneTransform() == null)
-            {
-                Debug.LogError($"Unknown disposableComponent {id} -- scene has been destroyed?");
-            }
-            else
-            {
-                Debug.LogError($"Unknown disposableComponent {id}", scene.GetSceneTransform());
-            }
-
             return null;
         }
 
@@ -508,15 +499,6 @@ namespace DCL
             {
                 disposableComponent.UpdateFromJSON(json);
                 return disposableComponent;
-            }
-
-            if (scene.GetSceneTransform() == null)
-            {
-                Debug.LogError($"Unknown disposableComponent {id} -- scene has been destroyed?");
-            }
-            else
-            {
-                Debug.LogError($"Unknown disposableComponent {id}", scene.GetSceneTransform());
             }
 
             return null;

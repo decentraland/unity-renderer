@@ -22,5 +22,6 @@ namespace DCL.Chat.Notifications
         void HideNotifications();
         void ShowPanel();
         void HidePanel();
+        int GetNotificationsCount();
     }
 }

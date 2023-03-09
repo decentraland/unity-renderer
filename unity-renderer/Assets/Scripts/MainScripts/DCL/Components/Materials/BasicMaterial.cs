@@ -149,15 +149,6 @@ namespace DCL.Components
             if (meshRenderer.sharedMaterial == material)
                 return;
 
-            MaterialTransitionController
-                matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
-
-            if (matTransition != null && matTransition.canSwitchMaterial)
-            {
-                matTransition.finalMaterials = new Material[] { material };
-                matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
-            }
-
             SRPBatchingHelper.OptimizeMaterial(material);
 
             Material oldMaterial = meshRenderer.sharedMaterial;

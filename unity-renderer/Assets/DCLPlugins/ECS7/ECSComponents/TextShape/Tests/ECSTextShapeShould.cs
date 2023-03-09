@@ -50,7 +50,7 @@ namespace Tests
                                            internalCompData.model = info.ArgAt<InternalRenderers>(2);
                                        });
 
-            textShapeComponentHandler = new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i, renderersInternalComponent);
+            textShapeComponentHandler = new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i, renderersInternalComponent, Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
             textShapeComponentHandler.OnComponentCreated(scene, entity);
 
             Environment.Setup(ServiceLocatorTestFactory.CreateMocked());
@@ -306,7 +306,7 @@ namespace Tests
 
             textShapeComponentHandler.OnComponentRemoved(scene, entity);
 
-            renderersInternalComponent.Received(1).RemoveFor(scene, entity);
+            renderersInternalComponent.Received(1).RemoveFor(scene, entity, Arg.Any<InternalRenderers>());
         }
     }
 }

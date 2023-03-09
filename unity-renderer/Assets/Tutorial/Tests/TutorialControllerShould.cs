@@ -9,6 +9,7 @@ using DCL.Helpers;
 using DCL.Models;
 using NSubstitute;
 using Tests;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using static DCL.Tutorial.TutorialController;
@@ -552,7 +553,7 @@ namespace DCL.Tutorial_Tests
             // NOTE(Brian): Avoid AudioListener warning
             tutorialView.gameObject.AddComponent<AudioListener>();
 
-            tutorialView.configuration = Object.Instantiate(Resources.Load<TutorialSettings>("TutorialConfigurationForTests"));
+            tutorialView.configuration = Object.Instantiate(AssetDatabase.LoadAssetAtPath<TutorialSettings>("Assets/Tutorial/Tests/TutorialConfigurationForTests.asset"));
             tutorialView.ConfigureView(tutorialController);
             tutorialController.SetConfiguration(tutorialView.configuration);
             tutorialController = tutorialView.tutorialController;

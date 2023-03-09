@@ -1,4 +1,4 @@
-import { createLogger } from 'shared/logger'
+import { createLogger } from 'lib/logger'
 import { IslandChangedMessage } from '@dcl/protocol/out-ts/decentraland/kernel/comms/v3/archipelago.gen'
 import { Heartbeat } from '@dcl/protocol/out-ts/decentraland/bff/comms_director_service.gen'
 import { store } from 'shared/store/isolatedStore'
@@ -22,12 +22,12 @@ import { getRealmAdapter } from './selectors'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { ExplorerIdentity } from 'shared/session/types'
 import { FATAL_ERROR } from 'shared/loading/types'
-import { BEFORE_UNLOAD } from 'shared/actions'
+import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { notifyStatusThroughChat } from 'shared/chat'
 import { realmToConnectionString } from './resolver'
 import { hookConnectToFixedAdaptersIfNecessary } from './logic'
 
-const logger = createLogger('BffSagas')
+const logger = createLogger('realm')
 
 export function* bffSaga() {
   yield fork(handleNewBFF)

@@ -39,11 +39,11 @@ public class AirdroppingHUDController : IHUD
     internal int currentItemShown = -1;
     internal int totalItems => model?.items?.Length ?? 0;
 
-    public static event System.Action OnAirdropFinished = null;
+    public static event Action OnAirdropFinished = null;
 
-    public AirdroppingHUDController()
+    public AirdroppingHUDController(AirdroppingHUDView view)
     {
-        view = AirdroppingHUDView.Create();
+        this.view = view;
         view.Initialize(MoveToNextState);
         currentState = State.Hidden;
         ApplyState();

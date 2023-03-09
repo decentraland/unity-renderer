@@ -1,66 +1,62 @@
-import { put, takeEvery, select, call, takeLatest, fork, take, race, delay, apply } from 'redux-saga/effects'
+import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 
+import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import { IPFSv2 } from '@dcl/schemas'
+import type { Avatar, Snapshots } from '@dcl/schemas'
+import { genericAvatarSnapshots } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
+import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
+import { deepEqual } from 'lib/javascript/deepEqual'
+import { isURL } from 'lib/javascript/isURL'
+import type { EventChannel } from 'redux-saga'
+import { BEFORE_UNLOAD } from 'shared/meta/actions'
+import { trackEvent } from 'shared/analytics/trackEvent'
+import { notifyStatusThroughChat } from 'shared/chat'
+import { setCatalystCandidates } from 'shared/dao/actions'
+import { selectAndReconnectRealm } from 'shared/dao/sagas'
+import { getCatalystCandidates } from 'shared/dao/selectors'
 import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
-import { commsLogger } from './context'
-import { getCommsRoom } from './selectors'
-import { BEFORE_UNLOAD } from 'shared/actions'
+import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
+import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
+import { incrementCounter } from 'shared/analytics/occurences'
+import type { SendProfileToRenderer } from 'shared/profiles/actions'
+import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared/profiles/actions'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import type { ConnectToCommsAction } from 'shared/realm/actions'
+import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
+import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter } from 'shared/realm/selectors'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import type { IRealmAdapter } from 'shared/realm/types'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
+import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
+import { getCurrentIdentity } from 'shared/session/selectors'
+import type { ExplorerIdentity } from 'shared/session/types'
+import { store } from 'shared/store/isolatedStore'
+import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
+import type { HandleRoomDisconnection, SetRoomConnectionAction } from './actions'
 import {
-  HandleRoomDisconnection,
   HANDLE_ROOM_DISCONNECTION,
   setCommsIsland,
   setRoomConnection,
-  SetRoomConnectionAction,
   SET_COMMS_ISLAND,
   SET_ROOM_CONNECTION
 } from './actions'
-import { notifyStatusThroughChat } from 'shared/chat'
-import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel, sendPing } from './handlers'
-import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
-import { DEPLOY_PROFILE_SUCCESS, SendProfileToRenderer, SEND_PROFILE_TO_RENDERER } from 'shared/profiles/actions'
-import { getCurrentUserProfile } from 'shared/profiles/selectors'
-import { Avatar, IPFSv2, Snapshots } from '@dcl/schemas'
-import { commConfigurations, COMMS_GRAPH, DEBUG_COMMS, genericAvatarSnapshots, PREFERED_ISLAND } from 'config'
-import { isURL } from 'lib/javascript/isURL'
-import { getAllPeers, processAvatarVisibility } from './peers'
-import { getFatalError } from 'shared/loading/selectors'
-import { EventChannel } from 'redux-saga'
-import { ExplorerIdentity } from 'shared/session/types'
-import { USER_AUTHENTIFIED } from 'shared/session/actions'
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
-import { selectAndReconnectRealm } from 'shared/dao/sagas'
-import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
-import { getCommsConfig, getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
-import { getCurrentIdentity } from 'shared/session/selectors'
-import { OfflineAdapter } from './adapters/OfflineAdapter'
-import { WebSocketAdapter } from './adapters/WebSocketAdapter'
 import { LivekitAdapter } from './adapters/LivekitAdapter'
+import { OfflineAdapter } from './adapters/OfflineAdapter'
 import { SimulationRoom } from './adapters/SimulatorAdapter'
-import { IRealmAdapter } from 'shared/realm/types'
-import { CommsConfig } from 'shared/meta/types'
-import { Authenticator } from '@dcl/crypto'
-import { LighthouseConnectionConfig, LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceConnection'
-import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
-import { store } from 'shared/store/isolatedStore'
-import { ConnectToCommsAction, CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
-import { getRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter, waitForRealmAdapter } from 'shared/realm/selectors'
+import { WebSocketAdapter } from './adapters/WebSocketAdapter'
+import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel, sendPing } from './handlers'
+import type { RoomConnection } from './interface'
 import { positionReportToCommsPositionRfc4 } from './interface/utils'
-import { deepEqual } from 'lib/javascript/deepEqual'
-import { incrementCounter } from 'shared/occurences'
-import { RoomConnection } from './interface'
-import {
-  debugCommsGraph,
-  measurePingTime,
-  measurePingTimePercentages,
-  overrideCommsProtocol
-} from 'shared/session/getPerformanceInfo'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { NotificationType } from 'shared/types'
-import { trackEvent } from 'shared/analytics'
-import { getCatalystCandidates } from 'shared/dao/selectors'
-import { setCatalystCandidates } from 'shared/dao/actions'
-import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
+import { commsLogger } from './logger'
+import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
+import { getConnectedPeerCount, processAvatarVisibility } from './peers'
+import { getCommsRoom, reconnectionState } from './selectors'
+import { RootState } from 'shared/store/rootTypes'
+import { now } from 'lib/javascript/now'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
+const CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS = 10_000
+
 // this interval should be fast because this will be the delay other people around
 // you will experience to fully show your avatar. i.e. if we set it to 10sec, people
 // in the genesis plaza will have to wait up to 10 seconds (if already connected) to
@@ -93,10 +89,6 @@ export function* commsSaga() {
   yield fork(handleCommsReconnectionInterval)
   yield fork(pingerProcess)
   yield fork(reportPositionSaga)
-
-  if (COMMS_GRAPH) {
-    yield call(debugCommsGraph)
-  }
 }
 
 /**
@@ -172,7 +164,7 @@ function* pingerProcess() {
       yield delay(15_000 + Math.random() * 60_000)
 
       const responses = new Map<string, number[]>()
-      const expectedResponses = getAllPeers().size
+      const expectedResponses = getConnectedPeerCount()
 
       yield call(sendPing, (dt, address) => {
         const list = responses.get(address) || []
@@ -220,7 +212,7 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
     const candidates = yield select(getCatalystCandidates)
     for (const candidate of candidates) {
-      if (candidate.domain === realmAdapter!.baseUrl) {
+      if (candidate.domain === realmAdapter?.baseUrl) {
         candidate.lastConnectionAttempt = Date.now()
         break
       }
@@ -309,104 +301,8 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         })
       )
     }
-    case 'lighthouse': {
-      return createLighthouseConnection(url, identity)
-    }
   }
   throw new Error(`A communications adapter could not be created for protocol=${protocol}`)
-}
-
-function createLighthouseConnection(url: string, identity: ExplorerIdentity) {
-  const commsConfig: CommsConfig = getCommsConfig(store.getState())
-  const peerConfig: LighthouseConnectionConfig = {
-    connectionConfig: {
-      iceServers: commConfigurations.defaultIceServers
-    },
-    authHandler: async (msg: string) => {
-      try {
-        return Authenticator.signPayload(identity, msg)
-      } catch (e) {
-        commsLogger.info(`error while trying to sign message from lighthouse '${msg}'`)
-      }
-      // if any error occurs
-      return getCurrentIdentity(store.getState())
-    },
-    logLevel: DEBUG_COMMS ? 'TRACE' : 'NONE',
-    targetConnections: commsConfig.targetConnections ?? 4,
-    maxConnections: commsConfig.maxConnections ?? 6,
-    positionConfig: {
-      selfPosition: () => {
-        if (lastPlayerPositionReport) {
-          const { x, y, z } = lastPlayerPositionReport.position
-          return [x, y, z]
-        }
-      },
-      maxConnectionDistance: 4,
-      nearbyPeersDistance: 5,
-      disconnectDistance: 6
-    },
-    preferedIslandId: PREFERED_ISLAND ?? ''
-  }
-
-  if (!commsConfig.relaySuspensionDisabled) {
-    peerConfig.relaySuspensionConfig = {
-      relaySuspensionInterval: commsConfig.relaySuspensionInterval ?? 750,
-      relaySuspensionDuration: commsConfig.relaySuspensionDuration ?? 5000
-    }
-  }
-
-  const lighthouse = new LighthouseWorldInstanceConnection(
-    url,
-    peerConfig,
-    (status) => {
-      commsLogger.log('Lighthouse status: ', status)
-      switch (status.status) {
-        case 'realm-full':
-          disconnect(status.status, 'The realm is full, reconnecting')
-          break
-        case 'reconnection-error':
-          disconnect(status.status, 'Reconnection comms error')
-          break
-        case 'id-taken':
-          disconnect(status.status, 'A previous connection to the connection server is still active')
-          break
-        case 'error':
-          disconnect(status.status, 'An error has ocurred in the communications server, reconnecting.')
-          break
-      }
-    },
-    identity
-  )
-
-  function disconnect(reason: string, message: string) {
-    trackEvent('disconnect_lighthouse', { message, reason, url })
-
-    getUnityInstance().ShowNotification({
-      type: NotificationType.GENERIC,
-      message: message,
-      buttonMessage: 'OK',
-      timer: 10
-    })
-
-    lighthouse
-      .disconnect({ kicked: reason === 'id-taken', error: new Error(message) })
-      .catch(commsLogger.error)
-      .finally(() => {
-        setTimeout(
-          () => {
-            store.dispatch(setRealmAdapter(undefined))
-            store.dispatch(setRoomConnection(undefined))
-          },
-          reason === 'id-taken' ? 10000 : 300
-        )
-      })
-  }
-
-  lighthouse.onIslandChangedObservable.add(({ island }) => {
-    store.dispatch(setCommsIsland(island))
-  })
-
-  return lighthouse
 }
 
 /**
@@ -442,20 +338,22 @@ function* respondCommsProfileRequests() {
     // wait for the next event of the channel
     yield take(chan)
 
-    const context = (yield select(getCommsRoom)) as RoomConnection | undefined
-    const profile: Avatar | null = yield select(getCurrentUserProfile)
-    const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
+    const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+    const { context, profile, identity } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+      typeof getInformationForCommsProfileRequest
+    >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
-    const identity: ExplorerIdentity | null = yield select(getCurrentIdentity)
 
     if (profile && context) {
       profile.hasConnectedWeb3 = identity?.hasConnectedWeb3 || profile.hasConnectedWeb3
 
       // naive throttling
-      const now = Date.now()
-      const elapsed = now - lastMessage
-      if (elapsed < TIME_BETWEEN_PROFILE_RESPONSES) continue
-      lastMessage = now
+      const currentTimestamp = now()
+      const elapsed = currentTimestamp - lastMessage
+      if (elapsed < TIME_BETWEEN_PROFILE_RESPONSES) {
+        continue
+      }
+      lastMessage = currentTimestamp
 
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(stripSnapshots(profile)),
@@ -463,6 +361,14 @@ function* respondCommsProfileRequests() {
       }
       yield apply(context, context.sendProfileResponse, [response])
     }
+  }
+}
+
+function getInformationForCommsProfileRequest(state: RootState) {
+  return {
+    context: getCommsRoom(state),
+    profile: getCurrentUserProfile(state),
+    identity: getCurrentIdentity(state)
   }
 }
 
@@ -494,20 +400,20 @@ function stripSnapshots(profile: Avatar): Avatar {
  * This saga handle reconnections of comms contexts.
  */
 function* handleCommsReconnectionInterval() {
+  yield call(waitForMetaConfigurationInitialization)
+  const isUnexpectedDisconnectionCheckEnabled = yield select(getFeatureFlagEnabled, 'unexpected-disconnection-check')
+
   while (true) {
-    const reason: any = yield race({
+    const reason = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
-      USER_AUTHENTIFIED: take(USER_AUTHENTIFIED),
-      timeout: delay(1000)
+      USER_AUTHENTICATED: take(USER_AUTHENTICATED),
+      timeout: isUnexpectedDisconnectionCheckEnabled ? delay(CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS) : undefined
     })
 
-    const coomConnection: RoomConnection | undefined = yield select(getCommsRoom)
-    const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
-    const hasFatalError: string | undefined = yield select(getFatalError)
-    const identity: ExplorerIdentity | undefined = yield select(getCurrentIdentity)
+    const { commsConnection, realmAdapter, hasFatalError, identity } = yield select(reconnectionState)
 
-    const shouldReconnect = !coomConnection && !hasFatalError && identity?.address && !realmAdapter
+    const shouldReconnect = !commsConnection && !hasFatalError && identity?.address && !realmAdapter
 
     if (shouldReconnect) {
       // reconnect
@@ -526,7 +432,7 @@ function* handleAnnounceProfile() {
     // We notify the network of our profile's latest version when:
     const reason: { sendProfileToRenderer?: SendProfileToRenderer } = yield race({
       // A local profile is updated in the renderer
-      sendProfileToRenderer: take(SEND_PROFILE_TO_RENDERER),
+      sendProfileToRenderer: take(SEND_PROFILE_TO_RENDERER_REQUEST),
       // The profile got updated on a catalyst
       DEPLOY_PROFILE_SUCCESS: take(DEPLOY_PROFILE_SUCCESS),
       // The current user's island changed

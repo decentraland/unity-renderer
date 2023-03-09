@@ -1,48 +1,42 @@
-import {
-  setCatalystCandidates,
-  SET_CATALYST_CANDIDATES,
-  SetCatalystCandidates,
-  catalystRealmsScanRequested
-} from './actions'
-import { call, put, takeEvery, select, take } from 'redux-saga/effects'
-import { PIN_CATALYST, ETHEREUM_NETWORK, PREVIEW, rootURLPreviewMode } from 'config'
-import { waitForMetaConfigurationInitialization, waitForNetworkSelected } from '../meta/sagas'
-import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
-import { fetchCatalystRealms, fetchCatalystStatuses, changeRealm } from '.'
-import { ask, ping } from './utils/ping'
+import { ETHEREUM_NETWORK, PIN_CATALYST, PREVIEW, rootURLPreviewMode } from 'config'
+import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
+import defaultLogger from 'lib/logger'
+import { waitFor } from 'lib/redux'
+import { call, put, select, take, takeEvery } from 'redux-saga/effects'
+import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
+import { getCommsRoom } from 'shared/comms/selectors'
+import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import {
   getAddedServers,
   getCatalystNodesEndpoint,
   getDisabledCatalystConfig,
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
-import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
-import { saveToPersistentStorage, getFromPersistentStorage } from 'lib/browser/persistentStorage'
-import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
-import { createAlgorithm } from './pick-realm-algorithm/index'
-import { AlgorithmChainConfig } from './pick-realm-algorithm/types'
-import { defaultChainConfig } from './pick-realm-algorithm/defaults'
-import defaultLogger from 'shared/logger'
-import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
-import { getCommsRoom } from 'shared/comms/selectors'
-import { CatalystNode } from 'shared/types'
-import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
-import { getCurrentIdentity } from 'shared/session/selectors'
-import { USER_AUTHENTIFIED } from 'shared/session/actions'
-import {
-  getFetchContentServerFromRealmAdapter,
-  getProfilesContentServerFromRealmAdapter,
-  waitForRealmAdapter
-} from 'shared/realm/selectors'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
+import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
+import { getFetchContentServerFromRealmAdapter, getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
+import { getCurrentIdentity } from 'shared/session/selectors'
+import { RootState } from 'shared/store/rootTypes'
+import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
+import { changeRealm, fetchCatalystRealms, fetchCatalystStatuses } from '.'
+import { waitForMetaConfigurationInitialization, waitForNetworkSelected } from '../meta/sagas'
+import {
+  catalystRealmsScanRequested,
+  setCatalystCandidates,
+  SetCatalystCandidates,
+  SET_CATALYST_CANDIDATES
+} from './actions'
+import { defaultChainConfig } from './pick-realm-algorithm/defaults'
+import { createAlgorithm } from './pick-realm-algorithm/index'
+import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
+import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
+import { ask, ping } from './utils/ping'
 
-function* waitForExplorerIdentity() {
-  while (!(yield select(getCurrentIdentity))) {
-    yield take(USER_AUTHENTIFIED)
-  }
-}
+const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
 function getLastRealmCacheKey(network: ETHEREUM_NETWORK) {
   return 'last_realm_string_' + network
@@ -57,15 +51,10 @@ export function* daoSaga(): any {
 }
 
 function* pickCatalystRealm() {
-  const candidates: Candidate[] = yield select(getAllCatalystCandidates)
+  const { candidates, currentUserParcel, config } = (yield select(getInformationForCatalystPicker)) as ReturnType<
+    typeof getInformationForCatalystPicker
+  >
   if (candidates.length === 0) return undefined
-  const currentUserParcel: ReadOnlyVector2 = yield select(getParcelPosition)
-
-  let config: AlgorithmChainConfig | undefined = yield select(getPickRealmsAlgorithmConfig)
-
-  if (!config || config.length === 0) {
-    config = defaultChainConfig
-  }
 
   const algorithm = createAlgorithm(config)
 
@@ -75,6 +64,15 @@ function* pickCatalystRealm() {
   )
 
   return urlWithProtocol(realm.hostname)
+}
+
+function getInformationForCatalystPicker(state: RootState) {
+  const config = getPickRealmsAlgorithmConfig(state)
+  return {
+    candidates: getAllCatalystCandidates(state),
+    currentUserParcel: getParcelPosition(state),
+    config: !config || !config.length ? defaultChainConfig : config
+  }
 }
 
 function qsRealm() {
@@ -179,12 +177,11 @@ function* initializeCatalystCandidates() {
   yield call(waitForMetaConfigurationInitialization)
   yield put(catalystRealmsScanRequested())
 
-  const catalystsNodesEndpointURL: string | undefined = yield select(getCatalystNodesEndpoint)
+  const { catalystsNodesEndpointURL, added, denylistedCatalysts } = (yield select(
+    getInformationForInitializeCatalystCandidates
+  )) as ReturnType<typeof getInformationForInitializeCatalystCandidates>
 
   const nodes: CatalystNode[] = yield call(fetchCatalystRealms, catalystsNodesEndpointURL)
-  const added: string[] = yield select(getAddedServers)
-
-  const denylistedCatalysts: string[] = (yield select(getDisabledCatalystConfig)) ?? []
 
   const candidates: Candidate[] = yield call(
     fetchCatalystStatuses,
@@ -194,6 +191,14 @@ function* initializeCatalystCandidates() {
   )
 
   yield put(setCatalystCandidates(candidates))
+}
+
+function getInformationForInitializeCatalystCandidates(state: RootState) {
+  return {
+    catalystsNodesEndpointURL: getCatalystNodesEndpoint(state),
+    added: getAddedServers(state),
+    denylistedCatalysts: getDisabledCatalystConfig(state) || []
+  }
 }
 
 export async function checkValidRealm(baseUrl: string): Promise<PingResult | null> {
@@ -209,7 +214,7 @@ function* cacheCatalystRealm() {
   const network: ETHEREUM_NETWORK = yield call(waitForNetworkSelected)
   // PRINT DEBUG INFO
   const dao: string = yield select((state) => state.dao)
-  const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
+  const realmAdapter: IRealmAdapter = yield call(waitForRealm)
 
   if (realmAdapter) {
     yield call(saveToPersistentStorage, getLastRealmCacheKey(network), realmAdapter.baseUrl)
@@ -233,8 +238,4 @@ function* cacheCatalystCandidates(_action: SetCatalystCandidates) {
   yield call(saveToPersistentStorage, getLastRealmCandidatesCacheKey(network), allCandidates)
 }
 
-export function* waitForRoomConnection() {
-  while (!(yield select(getCommsRoom))) {
-    yield take(SET_ROOM_CONNECTION)
-  }
-}
+export const waitForRoomConnection = waitFor(getCommsRoom, SET_ROOM_CONNECTION)

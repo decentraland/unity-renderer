@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.ProfanityFiltering;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,47 +19,52 @@ namespace DCL.Social.Passports
 
         private readonly IProfanityFilter profanityFilter;
         private readonly IWearableItemResolver wearableItemResolver;
-        private readonly IWearableCatalogBridge wearableCatalogBridge;
+        private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IEmotesCatalogService emotesCatalogService;
         private readonly INamesService namesService;
         private readonly ILandsService landsService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
-        private string currentUserId;
+        private readonly StringVariable currentPlayerId;
+        private readonly List<string> loadedWearables = new ();
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
         private HashSet<string> cachedAvatarEquippedWearables = new ();
-        private readonly List<string> loadedWearables = new List<string>();
+        private string currentUserId;
+        private CancellationTokenSource cts = new ();
+        private Promise<WearableItem[]> wearablesPromise;
+        private Promise<WearableItem[]> emotesPromise;
+
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
         public event Action OnClickCollectibles;
-        private CancellationTokenSource cts = new CancellationTokenSource();
-        private Promise<WearableItem[]> wearablesPromise;
-        private Promise<WearableItem[]> emotesPromise;
 
         public PassportNavigationComponentController(
             IPassportNavigationComponentView view,
             IProfanityFilter profanityFilter,
             IWearableItemResolver wearableItemResolver,
-            IWearableCatalogBridge wearableCatalogBridge,
+            IWearablesCatalogService wearablesCatalogService,
             IEmotesCatalogService emotesCatalogService,
             INamesService namesService,
             ILandsService landsService,
             IUserProfileBridge userProfileBridge,
-            DataStore dataStore)
+            DataStore dataStore,
+            StringVariable currentPlayerId)
         {
             this.view = view;
             this.profanityFilter = profanityFilter;
             this.wearableItemResolver = wearableItemResolver;
-            this.wearableCatalogBridge = wearableCatalogBridge;
+            this.wearablesCatalogService = wearablesCatalogService;
             this.emotesCatalogService = emotesCatalogService;
             this.namesService = namesService;
             this.landsService = landsService;
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
+            this.currentPlayerId = currentPlayerId;
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
+            view.OnClickDescriptionCoordinates += OpenGoToPanel;
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile)
@@ -67,7 +73,7 @@ namespace DCL.Social.Passports
             {
                 var ct = cts.Token;
                 currentUserId = userProfile.userId;
-                wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
+                wearablesCatalogService.RemoveWearablesInUse(loadedWearables);
                 string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
                 view.SetGuestUser(userProfile.isGuest);
                 view.SetName(filteredName);
@@ -90,7 +96,8 @@ namespace DCL.Social.Passports
             UpdateWithUserProfileAsync().Forget();
         }
 
-        public void CloseAllNFTItemInfos() => view.CloseAllNFTItemInfos();
+        public void CloseAllNFTItemInfos() =>
+            view.CloseAllNFTItemInfos();
 
         public void SetViewInitialPage() =>
             view.SetInitialPage();
@@ -102,6 +109,7 @@ namespace DCL.Social.Passports
             cts = null;
 
             wearablesPromise?.Dispose();
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
         }
 
         private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile, CancellationToken ct)
@@ -115,7 +123,7 @@ namespace DCL.Social.Passports
                     LoadAndShowOwnedWearables(userProfile);
                     LoadAndShowOwnedEmotes(userProfile).Forget();
 
-                    WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
+                    WearableItem[] wearableItems = await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems, userProfile.avatar.bodyShape);
                     return;
                 }
@@ -124,24 +132,36 @@ namespace DCL.Social.Passports
 
         private void LoadAndShowOwnedWearables(UserProfile userProfile)
         {
-            view.SetCollectibleWearablesLoadingActive(true);
-            wearablesPromise = wearableCatalogBridge.RequestOwnedWearables(userProfile.userId).Then(wearables =>
+            async UniTaskVoid RequestOwnedWearablesAsync(CancellationToken ct)
             {
-                IGrouping<string, WearableItem>[] wearableItems = wearables.GroupBy(i => i.id).ToArray();
-                string[] wearableIds = wearableItems.Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
-                userProfile.SetInventory(wearableIds);
-                loadedWearables.AddRange(wearableIds);
+                try
+                {
+                    var wearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
+                        userProfile.userId,
+                        1,
+                        int.MaxValue,
+                        true,
+                        ct);
 
-                var containedWearables = wearableItems
-                                        .Select(g => g.First())
-                                        .Take(MAX_NFT_COUNT)
-                                        .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
+                    IGrouping<string, WearableItem>[] wearableItems = wearables.GroupBy(i => i.id).ToArray();
+                    string[] wearableIds = wearableItems.Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
+                    userProfile.SetInventory(wearableIds);
+                    loadedWearables.AddRange(wearableIds);
 
-                view.SetCollectibleWearables(containedWearables.ToArray());
-                view.SetCollectibleWearablesLoadingActive(false);
-            });
+                    var containedWearables = wearableItems
+                                            .Select(g => g.First())
+                                            .Take(MAX_NFT_COUNT)
+                                            .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id));
 
-            wearablesPromise.Catch(Debug.LogError);
+                    view.SetCollectibleWearables(containedWearables.ToArray());
+                    view.SetCollectibleWearablesLoadingActive(false);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e) { Debug.LogError(e.Message); }
+            }
+
+            view.SetCollectibleWearablesLoadingActive(true);
+            RequestOwnedWearablesAsync(cts.Token).Forget();
         }
 
         private async UniTask LoadAndShowOwnedEmotes(UserProfile userProfile)
@@ -173,6 +193,7 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile, CancellationToken ct)
         {
             view.SetCollectibleLandsLoadingActive(true);
+
             // TODO (Santi): Use userProfile.userId here!!
             using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, ct);
@@ -194,5 +215,22 @@ namespace DCL.Social.Passports
 
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();
+
+        private void OpenGoToPanel(ParcelCoordinates coordinates)
+        {
+            dataStore.HUDs.gotoPanelVisible.Set(true, true);
+            dataStore.HUDs.gotoPanelCoordinates.Set(coordinates, true);
+
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
+            dataStore.HUDs.goToPanelConfirmed.OnChange += CloseUIFromGoToPanel;
+        }
+
+        private void CloseUIFromGoToPanel(bool confirmed, bool _)
+        {
+            if (!confirmed) return;
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
+            dataStore.exploreV2.isOpen.Set(false, true);
+            currentPlayerId.Set(null);
+        }
     }
 }

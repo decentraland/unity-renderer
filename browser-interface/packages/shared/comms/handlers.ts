@@ -1,50 +1,48 @@
-import { COMMS_PROFILE_TIMEOUT } from 'config'
+import * as proto from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import type { Avatar } from '@dcl/schemas'
+import { uuid } from 'lib/javascript/uuid'
+import { Observable } from 'mz-observable'
+import { eventChannel } from 'redux-saga'
+import { getBannedUsers } from 'shared/meta/selectors'
+import { incrementCounter } from 'shared/analytics/occurences'
+import { validateAvatar } from 'shared/profiles/schemaValidation'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
+import { incrementCommsMessageReceived, incrementCommsMessageReceivedByName } from 'shared/session/getPerformanceInfo'
+import { getCurrentUserId } from 'shared/session/selectors'
+import { store } from 'shared/store/isolatedStore'
 import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
+import { processVoiceFragment } from 'shared/voiceChat/handlers'
+import { isBlockedOrBanned } from 'shared/voiceChat/selectors'
+import { sendPublicChatMessage } from '.'
+import { messageReceived } from '../chat/actions'
+import { handleRoomDisconnection } from './actions'
+import { AdapterDisconnectedEvent, PeerDisconnectedEvent } from './adapters/types'
+import { RoomConnection } from './interface'
+import { AvatarMessageType, Package } from './interface/types'
 import {
-  getPeer,
   avatarMessageObservable,
-  setupPeer,
   ensureTrackingUniqueAndLatest,
+  getPeer,
   receiveUserPosition,
   removeAllPeers,
   removePeerByAddress,
-  receivePeerUserData
+  setupPeer as setupPeerTrackingInfo
 } from './peers'
-import { AvatarMessageType, Package } from './interface/types'
-import * as proto from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
-import { store } from 'shared/store/isolatedStore'
-import { getCurrentUserProfile } from 'shared/profiles/selectors'
-import { messageReceived } from '../chat/actions'
-import { getBannedUsers } from 'shared/meta/selectors'
-import { processVoiceFragment } from 'shared/voiceChat/handlers'
-import future, { IFuture } from 'fp-future'
-import { handleRoomDisconnection } from './actions'
-import { Avatar } from '@dcl/schemas'
-import { Observable } from 'mz-observable'
-import { eventChannel } from 'redux-saga'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { trackEvent } from 'shared/analytics'
-import { ProfileType } from 'shared/profiles/types'
-import { ensureAvatarCompatibilityFormat } from 'shared/profiles/transformations/profileToServerFormat'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
-import { isBlockedOrBanned } from 'shared/voiceChat/selectors'
-import { validateAvatar } from 'shared/profiles/schemaValidation'
-import { AdapterDisconnectedEvent, PeerDisconnectedEvent } from './adapters/types'
-import { RoomConnection } from './interface'
-import { incrementCommsMessageReceived, incrementCommsMessageReceivedByName } from 'shared/session/getPerformanceInfo'
-import { sendPublicChatMessage } from '.'
-import { getCurrentIdentity } from 'shared/session/selectors'
-import { commsLogger } from './context'
-import { incrementCounter } from 'shared/occurences'
-import { ensureRealmAdapterPromise, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
-import { uuid } from 'lib/javascript/uuid'
+import { globalObservable } from 'shared/observables'
 
 type PingRequest = {
   alias: number
   sentTime: number
   onPong: (dt: number, address: string) => void
 }
+type VersionUpdateInformation = {
+  userId: string
+  version: number
+}
 
+const versionUpdateOverCommsChannel = new Observable<VersionUpdateInformation>()
 const receiveProfileOverCommsChannel = new Observable<Avatar>()
 const sendMyProfileOverCommsChannel = new Observable<Record<string, never>>()
 const pingRequests = new Map<number, PingRequest>()
@@ -73,68 +71,23 @@ export async function bindHandlersToCommsContext(room: RoomConnection) {
   room.events.on('DISCONNECTION', (event) => handleDisconnectionEvent(event, room))
 }
 
-const pendingProfileRequests: Map<string, Set<IFuture<Avatar | null>>> = new Map()
-
-export async function requestProfileToPeers(
+/**
+ *
+ * @returns true if the user is connected, false if not
+ */
+export async function requestProfileFromPeers(
   roomConnection: RoomConnection,
   address: string,
   profileVersion: number
-): Promise<Avatar | null> {
-  if (!pendingProfileRequests.has(address)) {
-    pendingProfileRequests.set(address, new Set())
+): Promise<boolean> {
+  if (getPeer(address)) {
+    await roomConnection.sendProfileRequest({
+      address,
+      profileVersion
+    })
+    return true
   }
-
-  const thisFuture = future<Avatar | null>()
-
-  pendingProfileRequests.get(address)!.add(thisFuture)
-
-  void thisFuture.then((value) => {
-    incrementCounter(value ? 'profile-over-comms-succesful' : 'profile-over-comms-failed')
-  })
-
-  // send the request
-  await roomConnection.sendProfileRequest({
-    address,
-    profileVersion
-  })
-
-  // send another retry in a couple seconds
-  setTimeout(function () {
-    if (thisFuture.isPending) {
-      roomConnection
-        .sendProfileRequest({
-          address,
-          profileVersion
-        })
-        .catch(commsLogger.error)
-    }
-  }, COMMS_PROFILE_TIMEOUT / 3)
-
-  // send another retry in a couple seconds
-  setTimeout(function () {
-    if (thisFuture.isPending) {
-      roomConnection
-        .sendProfileRequest({
-          address,
-          profileVersion
-        })
-        .catch(commsLogger.error)
-    }
-  }, COMMS_PROFILE_TIMEOUT / 2)
-
-  // and lastly fail
-  setTimeout(function () {
-    if (thisFuture.isPending) {
-      // We resolve with a null profile. This will fallback to a random profile
-      thisFuture.resolve(null)
-      const pendingRequests = pendingProfileRequests.get(address)
-      if (pendingRequests) {
-        pendingRequests.delete(thisFuture)
-      }
-    }
-  }, COMMS_PROFILE_TIMEOUT)
-
-  return thisFuture
+  return false
 }
 
 function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConnection) {
@@ -153,7 +106,7 @@ function handleDisconnectPeer(data: PeerDisconnectedEvent) {
 }
 
 function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVersion>) {
-  const peerTrackingInfo = setupPeer(message.address)
+  const peerTrackingInfo = setupPeerTrackingInfo(message.address)
   peerTrackingInfo.ethereumAddress = message.address
   peerTrackingInfo.lastUpdate = Date.now()
 
@@ -162,32 +115,10 @@ function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVers
 
     // remove duplicates
     ensureTrackingUniqueAndLatest(peerTrackingInfo)
-
-    const profileVersion = +message.data.profileVersion
-
-    ProfileAsPromise(
-      message.address,
-      profileVersion,
-      /* we ask for LOCAL to ask information about the profile using comms to not overload the servers*/
-      ProfileType.LOCAL
-    )
-      .then(async (avatar) => {
-        // send to Avatars scene
-        const realmAdapter = await ensureRealmAdapterPromise()
-        const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
-        receivePeerUserData(avatar, peerTrackingInfo.baseUrl || fetchContentServerWithPrefix)
-      })
-      .catch((e: Error) => {
-        trackEvent('error', {
-          message: `error loading profile ${message.address}:${profileVersion}: ` + e.message,
-          context: 'kernel#saga',
-          stack: e.stack || 'processProfileUpdatedMessage'
-        })
-      })
+    versionUpdateOverCommsChannel.notifyObservers({ userId: message.address, version: message.data.profileVersion })
   }
 }
 
-// TODO: Change ChatData to the new class once it is added to the .proto
 function processParcelSceneCommsMessage(message: Package<proto.Scene>) {
   const peer = getPeer(message.address)
 
@@ -226,14 +157,20 @@ export function sendPing(onPong?: (dt: number, address: string) => void) {
   incrementCounter('ping_sent_counter')
 }
 
-globalThis.__sendPing = sendPing
-
 const answeredPings = new Set<number>()
 
 function processChatMessage(message: Package<proto.Chat>) {
   const myProfile = getCurrentUserProfile(store.getState())
   const fromAlias: string = message.address
-  const senderPeer = setupPeer(fromAlias)
+  if (!fromAlias) {
+    globalObservable.emit('error', {
+      error: new Error(`Unexpected message without address: ${JSON.stringify(message)}`),
+      code: 'comms',
+      level: 'warning'
+    })
+    return
+  }
+  const senderPeer = setupPeerTrackingInfo(fromAlias)
 
   senderPeer.lastUpdate = Date.now()
 
@@ -287,8 +224,7 @@ function processChatMessage(message: Package<proto.Chat>) {
 
 // Receive a "rpc" signal over comms to send our profile
 function processProfileRequest(message: Package<proto.ProfileRequest>) {
-  const myIdentity = getCurrentIdentity(store.getState())
-  const myAddress = myIdentity?.address
+  const myAddress = getCurrentUserId(store.getState())
 
   // We only send profile responses for our own address
   if (message.data.address.toLowerCase() === myAddress?.toLowerCase()) {
@@ -297,12 +233,12 @@ function processProfileRequest(message: Package<proto.ProfileRequest>) {
 }
 
 function processProfileResponse(message: Package<proto.ProfileResponse>) {
-  const peerTrackingInfo = setupPeer(message.address)
+  const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
   const profile = ensureAvatarCompatibilityFormat(JSON.parse(message.data.serializedProfile))
 
   if (!validateAvatar(profile)) {
-    console.error('Invalid avatar received', validateAvatar.errors)
+    console.trace('Invalid avatar received', validateAvatar.errors)
     debugger
   }
 
@@ -311,14 +247,6 @@ function processProfileResponse(message: Package<proto.ProfileResponse>) {
     return
   }
 
-  const promises = pendingProfileRequests.get(profile.userId)
-
-  if (promises?.size) {
-    promises.forEach((it) => it.resolve(profile))
-    pendingProfileRequests.delete(profile.userId)
-  }
-
-  // If we received an unexpected profile, maybe the profile saga can use this preemptively
   receiveProfileOverCommsChannel.notifyObservers(profile)
 }
 
@@ -327,6 +255,15 @@ export function createSendMyProfileOverCommsChannel() {
     const listener = sendMyProfileOverCommsChannel.add(emitter)
     return () => {
       sendMyProfileOverCommsChannel.remove(listener)
+    }
+  })
+}
+
+export function createVersionUpdateOverCommsChannel() {
+  return eventChannel<VersionUpdateInformation>((emitter) => {
+    const listener = versionUpdateOverCommsChannel.add(emitter)
+    return () => {
+      versionUpdateOverCommsChannel.remove(listener)
     }
   })
 }

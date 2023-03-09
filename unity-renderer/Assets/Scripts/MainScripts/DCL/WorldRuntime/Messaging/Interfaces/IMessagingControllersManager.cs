@@ -5,6 +5,7 @@ namespace DCL
 {
     public interface IMessagingControllersManager : IService
     {
+        float timeBudgetCounter { get; set; }
         bool hasPendingMessages { get; }
         bool isRunning { get; }
         bool paused { get; set; }

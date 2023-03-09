@@ -1,122 +1,119 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
-import { sendPublicChatMessage } from 'shared/comms'
-import { findProfileByName } from 'shared/profiles/selectors'
-import { TeleportController } from 'shared/world/TeleportController'
-import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
-import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
-import {
-  DEBUG,
-  ethereumConfigurations,
-  playerConfigurations,
-  WORLD_EXPLORER,
-  timeBetweenLoadingUpdatesInMillis
-} from 'config'
-import { trackEvent } from 'shared/analytics'
-import { ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
-import { defaultLogger } from 'shared/logger'
-import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
-import { ProfileType } from 'shared/profiles/types'
-import {
-  ChatMessage,
-  FriendshipUpdateStatusMessage,
-  FriendshipAction,
-  WorldPosition,
-  AvatarRendererMessage,
-  GetFriendsPayload,
-  GetFriendRequestsPayload,
-  GetFriendsWithDirectMessagesPayload,
-  MarkMessagesAsSeenPayload,
-  GetPrivateMessagesPayload,
-  MarkChannelMessagesAsSeenPayload,
-  CreateChannelPayload,
-  GetChannelsPayload,
-  GetChannelMessagesPayload,
-  GetJoinedChannelsPayload,
-  LeaveChannelPayload,
-  MuteChannelPayload,
-  GetChannelInfoPayload,
-  SetAudioDevicesPayload,
-  JoinOrCreateChannelPayload,
-  GetChannelMembersPayload
-} from 'shared/types'
-import {
-  getSceneWorkerBySceneID,
-  getSceneWorkerBySceneNumber,
-  allScenesEvent,
-  AllScenesEvents
-} from 'shared/world/parcelSceneManager'
-import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
-import { receivePositionReport } from 'shared/world/positionThings'
-import { sendMessage } from 'shared/chat/actions'
-import { leaveChannel, updateUserData } from 'shared/friends/actions'
-import { changeRealm } from 'shared/dao'
-import { notifyStatusThroughChat } from 'shared/chat'
-import { fetchENSOwner } from 'shared/web3'
-import { updateStatusMessage } from 'shared/loading/actions'
-import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
-import { setAudioStream } from './audioStream'
-import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
-import { getUnityInstance } from './IUnityInterface'
-import { setDelightedSurveyEnabled } from './delightedSurvey'
+import { Authenticator } from '@dcl/crypto'
+import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
+import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
+import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
-import { reportHotScenes } from 'shared/social/hotScenes'
-import { GIFProcessor } from './gif-processor'
-import {
-  joinVoiceChat,
-  leaveVoiceChat,
-  requestVoiceChatRecording,
-  setVoiceChatPolicy,
-  setVoiceChatVolume,
-  requestToggleVoiceChatRecording,
-  setAudioDevice
-} from 'shared/voiceChat/actions'
-import { getERC20Balance } from 'shared/ethereum/EthereumService'
-import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
+import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
+import { arrayCleanup } from 'lib/javascript/arrayCleanup'
+import { now } from 'lib/javascript/now'
+import { defaultLogger } from 'lib/logger'
+import { fetchENSOwner } from 'lib/web3/fetchENSOwner'
+import { trackEvent } from 'shared/analytics/trackEvent'
+import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
+import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
 import { emotesRequest, wearablesRequest } from 'shared/catalogs/actions'
 import { EmotesRequestFilters, WearablesRequestFilters } from 'shared/catalogs/types'
-import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
-import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
-import { getLastUpdateTime } from 'shared/loading/selectors'
+import { notifyStatusThroughChat } from 'shared/chat'
+import { sendMessage } from 'shared/chat/actions'
+import { sendPublicChatMessage } from 'shared/comms'
+import { changeRealm } from 'shared/dao'
 import { getSelectedNetwork } from 'shared/dao/selectors'
-import { globalObservable } from 'shared/observables'
-import { store } from 'shared/store/isolatedStore'
-import { setRendererAvatarState } from 'shared/social/avatarTracker'
-import { isAddress } from 'eth-connect'
-import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
-import { Authenticator } from '@dcl/crypto'
-import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
-import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
-import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
+import { getERC20Balance } from 'lib/web3/EthereumService'
+import { leaveChannel, updateUserData } from 'shared/friends/actions'
+import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
 import {
+  createChannel,
+  getChannelInfo,
+  getChannelMembers,
+  getChannelMessages,
   getFriendRequests,
   getFriends,
   getFriendsWithDirectMessages,
-  getUnseenMessagesByUser,
-  getPrivateMessages,
-  markAsSeenPrivateChatMessages,
-  createChannel,
-  getChannelMessages,
   getJoinedChannels,
+  getPrivateMessages,
   getUnseenMessagesByChannel,
-  markAsSeenChannelMessages,
-  muteChannel,
-  getChannelInfo,
-  searchChannels,
+  getUnseenMessagesByUser,
   joinChannel,
-  getChannelMembers,
+  markAsSeenChannelMessages,
+  markAsSeenPrivateChatMessages,
+  muteChannel,
+  searchChannels,
   UpdateFriendshipAsPromise
 } from 'shared/friends/sagas'
 import { areChannelsEnabled, getMatrixIdFromUser } from 'shared/friends/utils'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { ensureRealmAdapterPromise, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
-import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
-import { rendererSignalSceneReady } from 'shared/world/actions'
-import { requestMediaDevice } from 'shared/voiceChat/sagas'
+import { updateStatusMessage } from 'shared/loading/actions'
+import { ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
+import { getLastUpdateTime } from 'shared/loading/selectors'
+import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
 import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
+import { globalObservable } from 'shared/observables'
+import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
+import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
+import { retrieveProfile } from 'shared/profiles/retrieveProfile'
+import { findProfileByName } from 'shared/profiles/selectors'
+import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
+import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
+import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
+import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
+import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
+import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
+import { setRendererAvatarState } from 'shared/social/avatarTracker'
+import { reportHotScenes } from 'shared/social/hotScenes'
+import { store } from 'shared/store/isolatedStore'
+import {
+  AvatarRendererMessage,
+  ChatMessage,
+  CreateChannelPayload,
+  FriendshipAction,
+  FriendshipUpdateStatusMessage,
+  GetChannelInfoPayload,
+  GetChannelMembersPayload,
+  GetChannelMessagesPayload,
+  GetChannelsPayload,
+  GetFriendRequestsPayload,
+  GetFriendsPayload,
+  GetFriendsWithDirectMessagesPayload,
+  GetJoinedChannelsPayload,
+  GetPrivateMessagesPayload,
+  JoinOrCreateChannelPayload,
+  LeaveChannelPayload,
+  MarkChannelMessagesAsSeenPayload,
+  MarkMessagesAsSeenPayload,
+  MuteChannelPayload,
+  SetAudioDevicesPayload,
+  WorldPosition
+} from 'shared/types'
+import {
+  joinVoiceChat,
+  leaveVoiceChat,
+  requestToggleVoiceChatRecording,
+  requestVoiceChatRecording,
+  setAudioDevice,
+  setVoiceChatPolicy,
+  setVoiceChatVolume
+} from 'shared/voiceChat/actions'
+import { requestMediaDevice } from 'shared/voiceChat/sagas'
+import { rendererSignalSceneReady } from 'shared/world/actions'
+import {
+  allScenesEvent,
+  AllScenesEvents,
+  getSceneWorkerBySceneID,
+  getSceneWorkerBySceneNumber
+} from 'shared/world/parcelSceneManager'
+import { receivePositionReport } from 'shared/world/positionThings'
+import { TeleportController } from 'shared/world/TeleportController'
+import { setAudioStream } from './audioStream'
+import { setDelightedSurveyEnabled } from './delightedSurvey'
+import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
+import { GIFProcessor } from './gif-processor'
+import { getUnityInstance } from './IUnityInterface'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
+const TIME_BETWEEN_SCENE_LOADING_UPDATES = 1_000
 
 type UnityEvent = any
 
@@ -235,11 +232,6 @@ const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>
 // This is the new one
 const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
 
-// Returns the current time in millis
-function now() {
-  return new Date().getTime()
-}
-
 // the BrowserInterface is a visitor for messages received from Unity
 export class BrowserInterface {
   private lastBalanceOfMana: number = -1
@@ -288,7 +280,7 @@ export class BrowserInterface {
       data.position,
       data.rotation,
       data.cameraRotation || data.rotation,
-      data.playerHeight || playerConfigurations.height
+      data.playerHeight || playerHeight
     )
   }
 
@@ -865,7 +857,7 @@ export class BrowserInterface {
 
   public SearchENSOwner(data: { name: string; maxResults?: number }) {
     async function work() {
-      const adapter = await ensureRealmAdapterPromise()
+      const adapter = await ensureRealmAdapter()
       const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(adapter)
 
       try {
@@ -920,7 +912,7 @@ export class BrowserInterface {
     const currentTime = now()
     const last = getLastUpdateTime(store.getState())
     const elapsed = currentTime - (last || 0)
-    if (elapsed > timeBetweenLoadingUpdatesInMillis) {
+    if (elapsed > TIME_BETWEEN_SCENE_LOADING_UPDATES) {
       store.dispatch(updateStatusMessage(message, loadPercentage, currentTime))
     }
   }
@@ -1062,7 +1054,7 @@ export class BrowserInterface {
   }
 
   public RequestUserProfile(userIdPayload: { value: string }) {
-    ProfileAsPromise(userIdPayload.value, undefined, ProfileType.DEPLOYED).catch(defaultLogger.error)
+    retrieveProfile(userIdPayload.value, undefined).catch(defaultLogger.error)
   }
 
   public ReportAvatarFatalError(payload: any) {
@@ -1135,10 +1127,6 @@ export class BrowserInterface {
         break
     }
   }
-}
-
-function arrayCleanup<T>(array: T[] | null | undefined): T[] | undefined {
-  return !array || array.length === 0 ? undefined : array
 }
 
 export const browserInterface: BrowserInterface = new BrowserInterface()

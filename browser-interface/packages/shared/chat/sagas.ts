@@ -1,40 +1,44 @@
-import { takeEvery, put, select, call } from 'redux-saga/effects'
-import { PayloadAction } from 'typesafe-actions'
-import {
-  MESSAGE_RECEIVED,
-  MessageReceived,
-  messageReceived,
-  SEND_MESSAGE,
-  SendMessage,
-  sendPrivateMessage
-} from './actions'
-import { uuid } from 'lib/javascript/uuid'
-import { ChatMessageType, ChatMessagePlayerType, ChatMessage } from 'shared/types'
-import { EXPERIENCE_STARTED } from 'shared/loading/types'
-import { trackEvent } from 'shared/analytics'
-import { sendPublicChatMessage } from 'shared/comms'
-import { getAllPeers } from 'shared/comms/peers'
+import { SHOW_FPS_COUNTER } from 'config'
+import { SocialAPI } from 'dcl-social-client'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
-import { TeleportController } from 'shared/world/TeleportController'
-import { notifyStatusThroughChat } from './index'
-import defaultLogger from 'shared/logger'
-import { changeRealm } from 'shared/dao'
+import { uuid } from 'lib/javascript/uuid'
+import defaultLogger from 'lib/logger'
+import { call, put, select, takeEvery } from 'redux-saga/effects'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { isValidExpression, validExpressions } from 'shared/apis/expressionExplainer'
-import { SHOW_FPS_COUNTER } from 'config'
-import { findProfileByName, getCurrentUserProfile, getProfile } from 'shared/profiles/selectors'
+import { sendPublicChatMessage } from 'shared/comms'
+import { getAllPeers } from 'shared/comms/peers'
+import { changeRealm } from 'shared/dao'
+import { joinOrCreateChannel, leaveChannel, sendChannelMessage } from 'shared/friends/actions'
 import { getSocialClient, isFriend } from 'shared/friends/selectors'
-import { fetchHotScenes } from 'shared/social/hotScenes'
+import { areChannelsEnabled } from 'shared/friends/utils'
+import { EXPERIENCE_STARTED } from 'shared/loading/types'
+import { getExplorerVersion } from 'shared/meta/version'
+import {
+  findProfileByName,
+  getCurrentUserProfile as currentUserProfileSelector,
+  getProfile
+} from 'shared/profiles/selectors'
+import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
+import { getRendererModules } from 'shared/renderer/selectors'
 import { getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { fetchHotScenes } from 'shared/social/hotScenes'
 import { store } from 'shared/store/isolatedStore'
-import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { getUsedComponentVersions } from 'shared/rolloutVersions'
-import { SocialAPI } from 'dcl-social-client'
-import { joinOrCreateChannel, leaveChannel, sendChannelMessage } from 'shared/friends/actions'
-import { areChannelsEnabled } from 'shared/friends/utils'
-import { getRendererModules } from 'shared/renderer/selectors'
+import { ChatMessage, ChatMessagePlayerType, ChatMessageType } from 'shared/types'
+import { TeleportController } from 'shared/world/TeleportController'
+import { PayloadAction } from 'typesafe-actions'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import {
+  MessageReceived,
+  messageReceived,
+  MESSAGE_RECEIVED,
+  SendMessage,
+  sendPrivateMessage,
+  SEND_MESSAGE
+} from './actions'
+import { notifyStatusThroughChat } from './index'
 
 interface IChatCommand {
   name: string
@@ -327,7 +331,7 @@ function initChatCommands() {
   )
 
   addChatCommand('getname', 'Gets your username', (_message) => {
-    const currentUserProfile = getCurrentUserProfile(store.getState())
+    const currentUserProfile = currentUserProfileSelector(store.getState())
     if (!currentUserProfile) throw new Error('profileNotInitialized')
     return {
       messageId: uuid(),
@@ -498,7 +502,7 @@ function initChatCommands() {
   })
 
   addChatCommand('version', 'Shows application version', (_message) => {
-    const { explorerVersion } = getUsedComponentVersions()
+    const explorerVersion = getExplorerVersion()
     return {
       messageId: uuid(),
       sender: 'Decentraland',
