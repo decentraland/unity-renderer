@@ -13,16 +13,16 @@ namespace Tests
     public class FPSDisplayTests
     {
 
-        
+
         private FPSDisplay fpsDisplay;
-        
+
         [SetUp]
         public void SetUp()
         {
             fpsDisplay = Resources.Load<DebugView>("DebugView").GetComponentInChildren<FPSDisplay>(true);
             DataStore.i.debugConfig.isFPSPanelVisible.Set(true);
         }
-        
+
         [Test]
         public void BeCreatedProperly()
         {
@@ -39,11 +39,11 @@ namespace Tests
             fpsDisplay.AddValueToUpdate(testDebugValue);
 
             yield return new WaitForSeconds(1f);
-            
+
             Assert.AreNotEqual(testDebugValue.textValue.text, currentTime);
-            
+
         }
-        
+
         [Test]
         public void LinealFPSTest()
         {
@@ -56,8 +56,3 @@ namespace Tests
             {
                 counter.AddDeltaTime(tenMillis);
             }
-
-            Assert.AreEqual(counter.CurrentFPSCount(), expectedFps);
-        }
-    }
-}

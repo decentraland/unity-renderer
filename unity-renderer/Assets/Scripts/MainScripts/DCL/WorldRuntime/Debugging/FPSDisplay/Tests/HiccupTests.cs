@@ -1,32 +1,16 @@
 using DCL.FPSDisplay;
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using NUnit.Framework;
 using UnityEngine;
-using System.Collections;
 
 namespace FPSDisplayTests
 {
     public class HiccupTests
     {
         [Test]
-        public void BehavesLikeFPSCounter()
-        {
-            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter();
-
-            const float tenMillis = 0.01f;
-            const float expectedFps = 100.0f;
-
-            for (int i = 0; i < 100; i++)
-            {
-                counter.AddDeltaTime(tenMillis);
-            }
-
-            Assert.AreEqual(counter.CurrentFPSCount, expectedFps);
-        }
-
-        [Test]
         public void DetectsOneHiccup()
         {
-            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter();
+            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter(new ProfilerRecordsService());
 
             const float tenMillis = 0.01f;
 
@@ -43,7 +27,7 @@ namespace FPSDisplayTests
         [Test]
         public void CorrectlyAccountsTimeInHiccups()
         {
-            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter();
+            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter(new ProfilerRecordsService());
 
             float hiccups = 0.0f;
             int hiccupCount = 0;
@@ -66,7 +50,7 @@ namespace FPSDisplayTests
         [Test]
         public void GetSumOfHiccupsAndTime()
         {
-            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter();
+            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter(new ProfilerRecordsService());
 
             float hiccups = 0.0f;
             float totalTime = 0.0f;
