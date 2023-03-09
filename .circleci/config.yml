@@ -227,17 +227,12 @@ jobs:
             sudo apt-get install -y jq
       - checkout
       - run:
-          name: Components and Renderer Protocol code generation
-          command: |
-            cd protocol-gen
-            npm install
-            npm run build
-      - run:
-          name: Update sentry params
+          name: Update sentry params and Components and Renderer Protocol code generation
           command: |
             cd scripts
             npm install
             npm run inject-sentry-params
+            npm run build-protocol
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
