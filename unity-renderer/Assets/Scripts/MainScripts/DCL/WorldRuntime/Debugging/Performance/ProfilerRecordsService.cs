@@ -19,8 +19,7 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         private bool isRecordingAdditionalProfilers;
 
         public float LastFrameTimeInSec => mainThreadTimeRecorder.LastValue * 1e-9f; // [sec]
-        public float LastFrameTimeInMS => mainThreadTimeRecorder.LastValue * 1e-6f; // [ms]
-        public float LastFPS => 1000 / LastFrameTimeInMS;
+        public float LastFPS => 1 / LastFrameTimeInSec;
 
         public (float FrameTime, float FPS) AverageData
         {
