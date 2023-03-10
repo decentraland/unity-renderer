@@ -1,9 +1,10 @@
-using System;
-using System.Collections.Generic;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using ECSSystems.VisibilitySystem;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Tests
@@ -21,8 +22,9 @@ namespace Tests
         {
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var executors = new Dictionary<int, ICRDTExecutor>();
 
-            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             var visibilityGroup = componentsManager.CreateComponentGroup<InternalRenderers, InternalVisibility>
                 ((int)InternalECSComponentsId.RENDERERS, (int)InternalECSComponentsId.VISIBILITY);
@@ -33,11 +35,12 @@ namespace Tests
 
             systemsUpdate = () =>
             {
+                internalEcsComponents.MarkDirtyComponentsUpdate();
                 visibilitySystemUpdate();
-                internalEcsComponents.WriteSystemUpdate();
+                internalEcsComponents.ResetDirtyComponentsUpdate();
             };
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene0 = testUtils.CreateScene(666);
             scene1 = testUtils.CreateScene(777);
         }
@@ -67,10 +70,12 @@ namespace Tests
             {
                 renderers = new List<Renderer>() { renderer00 }
             });
+
             renderersComponent.PutFor(scene0, entity01, new InternalRenderers()
             {
                 renderers = new List<Renderer>() { renderer01 }
             });
+
             renderersComponent.PutFor(scene1, entity10, new InternalRenderers()
             {
                 renderers = new List<Renderer>() { renderer10 }
@@ -89,6 +94,7 @@ namespace Tests
             {
                 visible = true
             });
+
             visibilityComponent.PutFor(scene0, entity01, new InternalVisibility()
             {
                 visible = false
