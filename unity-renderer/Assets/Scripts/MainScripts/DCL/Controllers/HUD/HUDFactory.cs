@@ -10,7 +10,6 @@ using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
@@ -19,7 +18,6 @@ using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEditor;
 using UnityEngine;
 using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
@@ -112,7 +110,7 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
-                    new MemoryChatMentionSuggestionProvider(UserProfileController.i));
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i));
             case HUDElementID.PUBLIC_CHAT:
                 return new PublicChatWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),
@@ -121,7 +119,7 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
-                    new MemoryChatMentionSuggestionProvider(UserProfileController.i),
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()));
@@ -136,7 +134,7 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
-                    new MemoryChatMentionSuggestionProvider(UserProfileController.i));
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i));
             case HUDElementID.CHANNELS_SEARCH:
                 return new SearchChannelsWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),

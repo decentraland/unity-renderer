@@ -22,6 +22,8 @@ public class ChatHUDController : IHUD
     private const int MAX_HISTORY_ITERATION = 10;
     private const int MAX_MENTION_SUGGESTIONS = 5;
 
+    public delegate UniTask<List<UserProfile>> GetSuggestedUserProfiles(string name, int maxCount, CancellationToken cancellationToken);
+
     public event Action OnInputFieldSelected;
     public event Action<ChatMessage> OnSendMessage;
     public event Action<ChatMessage> OnMessageSentBlockedBySpam;
@@ -29,7 +31,7 @@ public class ChatHUDController : IHUD
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly bool detectWhisper;
-    private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
+    private readonly GetSuggestedUserProfiles getSuggestedUserProfiles;
     private readonly InputAction_Trigger closeMentionSuggestionsTrigger;
     private readonly IProfanityFilter profanityFilter;
     private readonly ISocialAnalytics socialAnalytics;
@@ -50,14 +52,14 @@ public class ChatHUDController : IHUD
     public ChatHUDController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
         bool detectWhisper,
-        IChatMentionSuggestionProvider chatMentionSuggestionProvider,
+        GetSuggestedUserProfiles getSuggestedUserProfiles,
         ISocialAnalytics socialAnalytics,
         IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
         this.detectWhisper = detectWhisper;
-        this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
+        this.getSuggestedUserProfiles = getSuggestedUserProfiles;
         this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
     }
@@ -226,9 +228,7 @@ public class ChatHUDController : IHUD
         {
             try
             {
-                List<UserProfile> suggestions =
-                    await chatMentionSuggestionProvider.GetProfilesStartingWith(name, MAX_MENTION_SUGGESTIONS,
-                        cancellationToken);
+                List<UserProfile> suggestions = await getSuggestedUserProfiles.Invoke(name, MAX_MENTION_SUGGESTIONS, cancellationToken);
 
                 mentionSuggestedProfiles = suggestions.ToDictionary(profile => profile.userId, profile => profile);
 

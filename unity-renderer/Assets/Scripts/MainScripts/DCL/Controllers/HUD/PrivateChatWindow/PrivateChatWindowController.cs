@@ -75,7 +75,16 @@ public class PrivateChatWindowController : IHUD
 
         view.OnRequireMoreMessages += RequestOldConversations;
 
-        chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, chatMentionSuggestionProvider, socialAnalytics);
+        chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
+            async (name, count, ct) =>
+            {
+                return await chatMentionSuggestionProvider.GetProfilesStartingWith(name, count, new[]
+                {
+                    userProfileBridge.GetOwn(),
+                    userProfileBridge.Get(conversationUserId)
+                }, ct);
+            },
+          socialAnalytics);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
         chatHudController.OnSendMessage += HandleSendChatMessage;

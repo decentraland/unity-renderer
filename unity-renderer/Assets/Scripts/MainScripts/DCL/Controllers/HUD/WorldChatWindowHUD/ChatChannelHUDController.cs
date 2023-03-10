@@ -77,7 +77,9 @@ namespace DCL.Chat.HUD
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
 
-            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, chatMentionSuggestionProvider, socialAnalytics, profanityFilter);
+            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
+               (name, count, ct) => chatMentionSuggestionProvider.GetProfilesFromChatChannelsStartingWith(name, channelId, count, ct),
+                socialAnalytics, profanityFilter);
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
@@ -88,7 +90,7 @@ namespace DCL.Chat.HUD
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
-            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge);
+            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge, dataStore.channels);
 
             SetVisibility(isVisible);
             this.isVisible = isVisible;
@@ -238,6 +240,8 @@ namespace DCL.Chat.HUD
                 // one approach could be to increment the max amount of messages depending on how many pages you loaded from the history
                 // for example: 1 page = 30 messages, 2 pages = 60 messages, and so on..
                 chatHudController.AddChatMessage(message, limitMaxEntries: true);
+
+                dataStore.channels.SetAvailableMemberInChannel(message.sender, channelId);
 
                 View?.SetLoadingMessagesActive(false);
                 View?.SetOldMessagesLoadingActive(false);

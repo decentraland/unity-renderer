@@ -66,7 +66,7 @@ namespace DCL.Chat.HUD
             chatHudController = new ChatHUDController(dataStore,
                 userProfileBridge,
                 true,
-                chatMentionSuggestionProvider,
+                (name, count, ct) => chatMentionSuggestionProvider.GetNearbyProfilesStartingWith(name, count, ct),
                 socialAnalytics,
                 profanityFilter);
 
