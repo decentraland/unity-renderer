@@ -27,6 +27,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     private Pool nftElementsEntryPool;
     private PassportSection section;
     private readonly List<NFTIconComponentView> nftWearableViews = new List<NFTIconComponentView>();
+    private string poolEntryId;
 
     public override void Awake()
     {
@@ -39,6 +40,8 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
             OnBackFromViewAll?.Invoke();
         });
         pageSelector.OnValueChanged += RequestPage;
+
+        poolEntryId = NFT_ELEMENTS_POOL_NAME_PREFIX + name + GetInstanceID();
     }
 
     public void Initialize(PassportSection passportSection)
@@ -127,7 +130,6 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     private Pool GetNftElementsEntryPool()
     {
-        string poolEntryId = NFT_ELEMENTS_POOL_NAME_PREFIX + name + GetInstanceID();
         var pool = PoolManager.i.GetPool(poolEntryId);
         if (pool != null) return pool;
 
