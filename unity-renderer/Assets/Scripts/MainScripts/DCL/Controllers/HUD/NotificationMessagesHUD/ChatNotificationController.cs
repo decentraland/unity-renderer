@@ -180,10 +180,7 @@ namespace DCL.Chat.Notifications
                         topNotificationView.AddNewChatNotification(privateModel);
 
                 if (isOwnPlayerMentioned)
-                {
-                    // TODO: refactor sfx usage into non-static
-                    AudioScriptableObjects.OwnPlayerMentionedEvent.Play();
-                }
+                    AudioScriptableObjects.ChatReceiveMentionEvent.Play(true);
             }
             else if (message.messageType == ChatMessage.Type.PUBLIC)
             {
@@ -215,10 +212,7 @@ namespace DCL.Chat.Notifications
                         topNotificationView.AddNewChatNotification(publicModel);
 
                 if (isOwnPlayerMentioned)
-                {
-                    // TODO: refactor sfx usage into non-static
-                    AudioScriptableObjects.OwnPlayerMentionedEvent.Play();
-                }
+                    AudioScriptableObjects.ChatReceiveMentionEvent.Play(true);
             }
         }
 

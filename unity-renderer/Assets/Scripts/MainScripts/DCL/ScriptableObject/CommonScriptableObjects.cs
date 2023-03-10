@@ -75,6 +75,9 @@ public static class AudioScriptableObjects
     private static AudioEvent chatReceivePrivateEvent;
     public static AudioEvent chatReceivePrivate => CommonScriptableObjects.GetOrLoad(ref chatReceivePrivateEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceivePrivate");
 
+    private static AudioEvent chatReceiveMentionEvent;
+    public static AudioEvent ChatReceiveMentionEvent => CommonScriptableObjects.GetOrLoad(ref chatReceiveMentionEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceiveMention");
+
     private static AudioEvent chatSendEvent;
     public static AudioEvent chatSend => CommonScriptableObjects.GetOrLoad(ref chatSendEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatSend");
 
@@ -108,9 +111,6 @@ public static class AudioScriptableObjects
     private static AudioEvent friendRequestEvent;
     public static AudioEvent FriendRequestEvent => CommonScriptableObjects.GetOrLoad(ref friendRequestEvent, "ScriptableObjects/AudioEvents/HUDCommon/FriendRequest");
 
-    private static AudioEvent ownPlayerMentionedEvent;
-    public static AudioEvent OwnPlayerMentionedEvent => CommonScriptableObjects.GetOrLoad(ref ownPlayerMentionedEvent, "ScriptableObjects/AudioEvents/HUDCommon/OwnPlayerMentioned");
-
     public static void UnloadAll()
     {
         Resources.UnloadAsset(cameraFadeInEvent);
@@ -130,6 +130,7 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(listItemAppearEvent);
         Resources.UnloadAsset(chatReceiveGlobalEvent);
         Resources.UnloadAsset(chatReceivePrivateEvent);
+        Resources.UnloadAsset(chatReceiveMentionEvent);
         Resources.UnloadAsset(chatSendEvent);
         Resources.UnloadAsset(joinChannelEvent);
         Resources.UnloadAsset(leaveChannelEvent);
@@ -141,7 +142,6 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(UIShowEvent);
         Resources.UnloadAsset(tooltipPopupEvent);
         Resources.UnloadAsset(friendRequestEvent);
-        Resources.UnloadAsset(ownPlayerMentionedEvent);
     }
 }
 
