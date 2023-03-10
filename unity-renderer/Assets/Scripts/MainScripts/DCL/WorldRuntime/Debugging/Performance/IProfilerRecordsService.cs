@@ -5,6 +5,8 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
     public interface IProfilerRecordsService: IService
     {
         float LastFrameTimeInSec { get; }
+        float LastFrameTimeInMS { get; }
+
         float LastFPS { get; }
         (float FrameTime, float FPS) AverageData { get; }
 
@@ -14,5 +16,9 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         long DrawCalls { get; }
 
         void RecordAdditionalProfilerMetrics();
+
+        void StartRecordGCAllocatedInFrame();
+
+        void StopRecordGCAllocatedInFrame();
     }
 }

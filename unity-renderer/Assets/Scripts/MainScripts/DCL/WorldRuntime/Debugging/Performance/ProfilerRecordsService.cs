@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.Profiling;
 
 namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
@@ -19,6 +20,7 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         private bool isRecordingAdditionalProfilers;
 
         public float LastFrameTimeInSec => mainThreadTimeRecorder.LastValue * 1e-9f; // [sec]
+        public float LastFrameTimeInMS => mainThreadTimeRecorder.LastValue * 1e-6f; // [sec]
         public float LastFPS => 1 / LastFrameTimeInSec;
 
         public (float FrameTime, float FPS) AverageData
@@ -67,6 +69,22 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
             gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
 
             isRecordingAdditionalProfilers = true;
+        }
+
+        public void StartRecordGCAllocatedInFrame()
+        {
+            if (isRecordingAdditionalProfilers)
+                return;
+
+            gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
+        }
+
+        public void StopRecordGCAllocatedInFrame()
+        {
+            if (isRecordingAdditionalProfilers)
+                return;
+
+            gcAllocatedInFrameRecorder.Dispose();
         }
 
         private float GetRecorderFrameAverage(ProfilerRecorder recorder)

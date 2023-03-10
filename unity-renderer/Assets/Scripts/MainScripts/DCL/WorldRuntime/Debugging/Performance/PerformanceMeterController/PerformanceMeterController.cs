@@ -4,8 +4,8 @@ using System.Linq;
 using UnityEngine;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using Newtonsoft.Json;
-using Unity.Profiling;
 
 namespace DCL
 {
@@ -24,7 +24,7 @@ namespace DCL
         {
             public int frameNumber;
             public float millisecondsConsumed;
-            public bool isHiccup = false;
+            public bool isHiccup;
             public float currentTime;
             public float frameTimeMs;
 
@@ -54,10 +54,12 @@ namespace DCL
             }
         }
 
-        private PerformanceMetricsDataVariable metricsData;
-        private float currentDurationInSeconds = 0f;
-        private float targetDurationInSeconds = 0f;
-        private List<SampleData> samples = new List<SampleData>();
+        private readonly IProfilerRecordsService profilerRecordsService;
+        private readonly PerformanceMetricsDataVariable metricsData;
+        private readonly List<SampleData> samples = new ();
+
+        private float currentDurationInSeconds;
+        private float targetDurationInSeconds;
 
         // auxiliar data
         private SampleData lastSavedSample;
@@ -79,33 +81,13 @@ namespace DCL
         private long highestAllocation;
         private long averageAllocation;
         private long totalAllocation;
-        private ProfilerRecorder gcAllocatedInFrameRecorder;
-        
-        private bool justStarted = false;
 
-        public PerformanceMeterController() { metricsData = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData"); }
+        private bool justStarted;
 
-        private void ResetDataValues()
+        public PerformanceMeterController()
         {
-            samples.Clear();
-            currentDurationInSeconds = 0f;
-            targetDurationInSeconds = 0f;
-
-            lastSavedSample = null;
-
-            highestFrameTime = 0;
-            lowestFrameTime = 0;
-            averageFrameTime = 0;
-            percentile50FrameTime = 0;
-            percentile99FrameTime = 0;
-            totalHiccupFrames = 0;
-            totalHiccupsTimeInSeconds = 0;
-            totalFrames = 0;
-            totalFramesTimeInSeconds = 0;
-            lowestAllocation = long.MaxValue;
-            highestAllocation = 0;
-            averageAllocation = 0;
-            totalAllocation = 0;
+            metricsData = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
+            this.profilerRecordsService = Environment.i.serviceLocator.Get<IProfilerRecordsService>();
         }
 
         /// <summary>
@@ -120,29 +102,35 @@ namespace DCL
 
             targetDurationInSeconds = durationInSeconds;
             justStarted = true;
-            gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
+            profilerRecordsService.StartRecordGCAllocatedInFrame();
+
             metricsData.OnChange += OnMetricsChange;
         }
 
-        /// <summary>
-        /// Stops the Performance Meter Tool sampling, processes the data gathered and prints a full report in the console.
-        /// </summary>
-        public void StopSampling()
+        private void ResetDataValues()
         {
-            Log("Stopped running.");
+            samples.Clear();
+            currentDurationInSeconds = 0f;
+            targetDurationInSeconds = 0f;
 
-            metricsData.OnChange -= OnMetricsChange;
+            lastSavedSample = null;
 
-            if (samples.Count == 0)
-            {
-                Log("No samples were gathered, the duration time in seconds set is probably too small");
+            highestFrameTime = 0;
+            lowestFrameTime = 0;
+            averageFrameTime = 0;
+            percentile50FrameTime = 0;
+            percentile99FrameTime = 0;
 
-                return;
-            }
+            totalHiccupFrames = 0;
+            totalHiccupsTimeInSeconds = 0;
 
-            ProcessSamples();
+            totalFrames = 0;
+            totalFramesTimeInSeconds = 0;
 
-            ReportData();
+            lowestAllocation = long.MaxValue;
+            highestAllocation = 0;
+            averageAllocation = 0;
+            totalAllocation = 0;
         }
 
         /// <summary>
@@ -158,7 +146,7 @@ namespace DCL
                 justStarted = false;
                 return;
             }
-            
+
             float secondsConsumed = 0;
 
             if (lastSavedSample != null)
@@ -173,11 +161,9 @@ namespace DCL
                 secondsConsumed = Time.timeSinceLevelLoad - lastSavedSample.currentTime;
             }
 
-            float frameTimeMs = Time.deltaTime * 1000f;
-
             SampleData newSample = new SampleData
             {
-                frameTimeMs = frameTimeMs,
+                frameTimeMs = profilerRecordsService.LastFrameTimeInMS,
                 frameNumber = Time.frameCount,
                 millisecondsConsumed = secondsConsumed * 1000,
                 currentTime = Time.timeSinceLevelLoad,
@@ -208,7 +194,7 @@ namespace DCL
 
         private void UpdateAllocations()
         {
-            long lastAllocation = gcAllocatedInFrameRecorder.LastValue;
+            long lastAllocation = profilerRecordsService.TotalAllocSample;
 
             if (highestAllocation < lastAllocation)
             {
@@ -221,6 +207,28 @@ namespace DCL
             }
 
             totalAllocation += lastAllocation;
+        }
+
+        /// <summary>
+        /// Stops the Performance Meter Tool sampling, processes the data gathered and prints a full report in the console.
+        /// </summary>
+        public void StopSampling()
+        {
+            Log("Stopped running.");
+
+            profilerRecordsService.StopRecordGCAllocatedInFrame();
+            metricsData.OnChange -= OnMetricsChange;
+
+            if (samples.Count == 0)
+            {
+                Log("No samples were gathered, the duration time in seconds set is probably too small");
+
+                return;
+            }
+
+            ProcessSamples();
+
+            ReportData();
         }
 
         /// <summary>
@@ -240,11 +248,11 @@ namespace DCL
             lowestFrameTime = benchmark.min;
             averageFrameTime = benchmark.mean;
             marginOfError = benchmark.rme;
-            
+
             percentile1FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.01f), sortedSamples.Count-1)].frameTimeMs;
             percentile50FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.5f), sortedSamples.Count-1)].frameTimeMs;
             percentile99FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.99f), sortedSamples.Count-1)].frameTimeMs;
-            
+
             averageAllocation = totalAllocation / sortedSamples.Count;
         }
 
@@ -327,7 +335,7 @@ namespace DCL
         {
             double desiredFrameTime = Settings.i.qualitySettings.Data.fpsCap ? 1000/30.0 : 1000/60.0;
             double frameScore = Mathf.Min((float)(desiredFrameTime/ averageFrameTime), 1); // from 0 to 1
-            double hiccupsScore = 1 - (float) totalHiccupFrames / samples.Count; // from 0 to 1
+            double hiccupsScore = 1 - ((float) totalHiccupFrames / samples.Count); // from 0 to 1
             double performanceScore = (frameScore + hiccupsScore) / 2 * 100; // scores sum / amount of scores * 100 to have a 0-100 scale
 
             return Mathf.RoundToInt((float)performanceScore * 100f) / 100;
@@ -342,9 +350,9 @@ namespace DCL
         }
 
         /// <summary>
-        /// Logs the tool messages in console regardless of the "Debug.unityLogger.logEnabled" value. 
+        /// Logs the tool messages in console regardless of the "Debug.unityLogger.logEnabled" value.
         /// </summary>
-        private void Log(string message)
+        private static void Log(string message)
         {
             bool originalLogEnabled = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
