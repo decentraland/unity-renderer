@@ -215,7 +215,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
         catch (PromiseException ex)
         {
-            Debug.LogError($"Emote with id:{id} was rejected");
+            Debug.LogWarning($"Emote with id:{id} was rejected");
         }
         catch (OperationCanceledException ex)
         {
