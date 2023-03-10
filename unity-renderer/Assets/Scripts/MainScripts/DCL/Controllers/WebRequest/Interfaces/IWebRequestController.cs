@@ -44,7 +44,8 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             CancellationToken cancellationToken = default,
-            Dictionary<string, string> headers = null);
+            Dictionary<string, string> headers = null,
+            bool isSigned = false);
 
         /// <summary>
         /// Make a post request and download data from a url.
@@ -67,7 +68,8 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             CancellationToken cancellationToken = default,
-            Dictionary<string, string> headers = null);
+            Dictionary<string, string> headers = null,
+            bool isSigned = false);
 
         /// <summary>
         /// Download an Asset Bundle from a url.
