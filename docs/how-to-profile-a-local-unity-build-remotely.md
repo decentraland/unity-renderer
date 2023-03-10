@@ -4,8 +4,9 @@
 1. Open the build settings. **Toggle on** `Development Build` and `Autoconnect Profiler`.
 2. Also in build settings, make sure that `Deep Profiling` is **toggled off**. **WebGL Builds do NOT support Deep Profiling**
 3. Build inside the `Builds` folder, and the build name must be named `unity`. The final folder should be `(root)/Builds/unity/`
-4. Go to `cd browser-interface` with the console and then execute `docker-compose up` (requires docker and docker compose) to execute the browser interface locally. You need to check on the logs if it is copying the Unity build files.
-5. Open http://localhost:8080/ and after starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data (you can open on the Unity Editor at `window -> analysis -> profiler`)
+4. Ensure the addressables are correctly built, your `StreamingAssets` folder should contain a folder called `aa` which contains folders for WebGL assets. Within the unity editor open `Addressables Groups -> Build -> New Build -> Default Build Script` if they are not already built. They should be copied as part of the docker-compose up. 
+5. Go to `cd browser-interface` with the console and then execute `docker-compose up` (requires docker and docker compose) to execute the browser interface locally. You need to check on the logs if it is copying the Unity build files.
+6. Open http://localhost:8080/ and after starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data (you can open on the Unity Editor at `window -> analysis -> profiler`).
 
 # Profiling a Desktop Build
 
@@ -23,3 +24,5 @@
 - If the data is not transmitted automatically, fiddle with toggling/untoggling the record button in the Profiler until the samples start arriving at Unity
 
 - Recommended setup: Only CPU, Rendering and Memory modules on display; Disable VSync and "Others" from CPU module.
+
+- On WebGL the process of building via the editor `bakes` the `local ip` into the build itself. If this changes, it will no longer work and you will have to build again.
