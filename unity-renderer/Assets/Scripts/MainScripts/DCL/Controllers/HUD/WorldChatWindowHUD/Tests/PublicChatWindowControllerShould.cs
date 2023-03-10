@@ -236,7 +236,7 @@ public class PublicChatWindowControllerShould
     {
         dataStore.mentions.ownPlayerMentionedInChannel.Set(null, false);
         string testMessage = ownPlayerIsMentioned
-            ? $"Hi <link=mention://{userProfileBridge.GetOwn().userId}><color=#4886E3><u>@{userProfileBridge.GetOwn().name}</u></color></link>"
+            ? $"Hi <link=mention://{userProfileBridge.GetOwn().userName}><color=#4886E3><u>@{userProfileBridge.GetOwn().userName}</u></color></link>"
             : "test message";
         controller.Setup(CHANNEL_ID);
         view.IsActive.Returns(false);
