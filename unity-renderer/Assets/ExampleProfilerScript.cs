@@ -34,12 +34,15 @@ namespace DefaultNamespace
             return r;
         }
 
+        ProfilerRecorder mainThreadTimeRecorder2;
+
         void OnEnable()
         {
             systemMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "System Used Memory");
             gcMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Reserved Memory");
             mainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", 15);
             renderThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Render Thread");
+            mainThreadTimeRecorder2 = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "CPU Main Thread Frame Time");
         }
 
         void OnDisable()
@@ -47,6 +50,7 @@ namespace DefaultNamespace
             systemMemoryRecorder.Dispose();
             gcMemoryRecorder.Dispose();
             mainThreadTimeRecorder.Dispose();
+            mainThreadTimeRecorder2.Dispose();
             renderThreadTimeRecorder.Dispose();
         }
 
@@ -62,7 +66,7 @@ namespace DefaultNamespace
             sb.AppendLine($"FPS: {fps:F1} ms");
 
             sb.AppendLine($"Render Frame Time Last Raw: {renderThreadTimeRecorder.LastValue} ms");
-            sb.AppendLine($"Render Frame Time Current Raw: {renderThreadTimeRecorder.CurrentValue} ms");
+            sb.AppendLine($"Frame Time 2 Raw: {mainThreadTimeRecorder2.LastValue* (1e-6f):F1} ms");
 
             sb.AppendLine($"GC Memory: {gcMemoryRecorder.LastValue / (1024 * 1024)} MB");
             sb.AppendLine($"System Memory: {systemMemoryRecorder.LastValue / (1024 * 1024)} MB");
