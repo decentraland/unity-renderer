@@ -752,7 +752,6 @@ MonoBehaviour:
   openChatContainer: {fileID: 0}
   joinedContainer: {fileID: 0}
   muteNotificationsToggle: {fileID: 6399995157022769309}
-  ownPlayerMentionMark: {fileID: 1204280570097601587}
 --- !u!114 &3467122139030337497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1265,6 +1264,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9124122113037406819}
     m_Modifications:
+    - target: {fileID: 2475570976191959864, guid: 0a008e464c70e3744b62a048a23c72f5,
+        type: 3}
+      propertyPath: ownPlayerMentionMark
+      value: 
+      objectReference: {fileID: 1204280570097601587}
     - target: {fileID: 4429308612254855752, guid: 0a008e464c70e3744b62a048a23c72f5,
         type: 3}
       propertyPath: m_Pivot.x

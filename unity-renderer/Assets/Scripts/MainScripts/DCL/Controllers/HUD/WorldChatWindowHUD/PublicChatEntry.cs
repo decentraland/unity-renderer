@@ -20,9 +20,9 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject openChatContainer;
         [SerializeField] internal GameObject joinedContainer;
         [SerializeField] internal Toggle muteNotificationsToggle;
-        [SerializeField] internal GameObject ownPlayerMentionMark;
 
         private IChatController chatController;
+        private DataStore_Mentions mentionsDataStore;
 
         public PublicChatEntryModel Model => model;
 
@@ -39,13 +39,7 @@ namespace DCL.Chat.HUD
         public override void Awake()
         {
             base.Awake();
-            openChatButton.onClick.AddListener(() =>
-            {
-                if (ownPlayerMentionMark != null)
-                    ownPlayerMentionMark.SetActive(false);
-
-                OnOpenChat?.Invoke(this);
-            });
+            openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
 
             if (optionsButton)
                 optionsButton.onClick.AddListener(() => OnOpenOptions?.Invoke(this));
@@ -62,10 +56,7 @@ namespace DCL.Chat.HUD
             DataStore_Mentions mentionsDataStore)
         {
             this.chatController = chatController;
-
-            if (mentionsDataStore == null) return;
-            mentionsDataStore.ownPlayerMentionedInChannel.OnChange -= HandleOwnPlayerMentioned;
-            mentionsDataStore.ownPlayerMentionedInChannel.OnChange += HandleOwnPlayerMentioned;
+            this.mentionsDataStore = mentionsDataStore;
         }
 
         public void Configure(PublicChatEntryModel newModel)
@@ -78,7 +69,7 @@ namespace DCL.Chat.HUD
         {
             nameLabel.text = $"{namePrefix}{model.name}";
             if (unreadNotifications)
-                unreadNotifications.Initialize(chatController, model.channelId);
+                unreadNotifications.Initialize(chatController, model.channelId, mentionsDataStore);
             if (memberCountLabel)
                 memberCountLabel.SetText($"{model.memberCount} members {(model.showOnlyOnlineMembers ? "online" : "joined")}");
             if (joinedContainer)
@@ -94,12 +85,6 @@ namespace DCL.Chat.HUD
         public void Dock(ChannelContextualMenu contextualMenu)
         {
             contextualMenu.transform.position = optionsButton.transform.position;
-        }
-
-        private void HandleOwnPlayerMentioned(string channelId, string previous)
-        {
-            if (model.channelId != channelId) return;
-            ownPlayerMentionMark.SetActive(true);
         }
     }
 }

@@ -18,10 +18,10 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject onlineStatusContainer;
         [SerializeField] internal GameObject offlineStatusContainer;
         [SerializeField] internal RectTransform userContextMenuPositionReference;
-        [SerializeField] internal GameObject ownPlayerMentionMark;
 
         private UserContextMenu userContextMenu;
         private IChatController chatController;
+        private DataStore_Mentions mentionsDataStore;
 
         public PrivateChatEntryModel Model => model;
 
@@ -40,13 +40,7 @@ namespace DCL.Chat.HUD
                 userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
             });
-            openChatButton.onClick.AddListener(() =>
-            {
-                if (ownPlayerMentionMark != null)
-                    ownPlayerMentionMark.SetActive(false);
-
-                OnOpenChat?.Invoke(this);
-            });
+            openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
             onFocused += isFocused =>
             {
                 if (optionsButton == null) return;
@@ -63,12 +57,11 @@ namespace DCL.Chat.HUD
         {
             this.chatController = chatController;
             this.userContextMenu = userContextMenu;
+            this.mentionsDataStore = mentionsDataStore;
             userContextMenu.OnHide -= HandleContextMenuHidden;
             userContextMenu.OnHide += HandleContextMenuHidden;
             userContextMenu.OnBlock -= HandleUserBlocked;
             userContextMenu.OnBlock += HandleUserBlocked;
-            mentionsDataStore.ownPlayerMentionedInDM.OnChange -= HandleOwnPlayerMentioned;
-            mentionsDataStore.ownPlayerMentionedInDM.OnChange += HandleOwnPlayerMentioned;
         }
 
         public void Configure(PrivateChatEntryModel newModel)
@@ -84,7 +77,7 @@ namespace DCL.Chat.HUD
             lastMessageLabel.gameObject.SetActive(!string.IsNullOrEmpty(model.lastMessage));
             SetBlockStatus(model.isBlocked);
             SetPresence(model.isOnline);
-            unreadNotifications.Initialize(chatController, model.userId);
+            unreadNotifications.Initialize(chatController, model.userId, mentionsDataStore);
 
             if (model.imageFetchingEnabled)
                 EnableAvatarSnapshotFetching();
@@ -96,12 +89,6 @@ namespace DCL.Chat.HUD
         {
             if (userId != model.userId) return;
             SetBlockStatus(blocked);
-        }
-
-        private void HandleOwnPlayerMentioned(string userId, string _)
-        {
-            if (model.userId != userId) return;
-            ownPlayerMentionMark.SetActive(true);
         }
 
         public void SetBlockStatus(bool isBlocked)

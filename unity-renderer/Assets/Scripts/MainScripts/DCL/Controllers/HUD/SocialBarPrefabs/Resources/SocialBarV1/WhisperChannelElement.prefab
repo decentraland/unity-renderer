@@ -1576,7 +1576,6 @@ MonoBehaviour:
   onlineStatusContainer: {fileID: 5811804064744196431}
   offlineStatusContainer: {fileID: 8107356904502252134}
   userContextMenuPositionReference: {fileID: 1314382267237426187}
-  ownPlayerMentionMark: {fileID: 881281521542408616}
 --- !u!1 &8929287110965387129
 GameObject:
   m_ObjectHideFlags: 0
@@ -1801,6 +1800,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2901606008627308901}
     m_Modifications:
+    - target: {fileID: 2475570976191959864, guid: 0a008e464c70e3744b62a048a23c72f5,
+        type: 3}
+      propertyPath: ownPlayerMentionMark
+      value: 
+      objectReference: {fileID: 881281521542408616}
     - target: {fileID: 4429308612254855752, guid: 0a008e464c70e3744b62a048a23c72f5,
         type: 3}
       propertyPath: m_Pivot.x
