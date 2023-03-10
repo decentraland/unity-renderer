@@ -11,6 +11,8 @@ namespace DCL.Social.Chat.Mentions
 {
     public class MentionLinkDetector : MonoBehaviour, IPointerClickHandler
     {
+        private const string MENTION_URL_PREFIX = "mention://";
+
         public event Action OnOwnPlayerMentioned;
 
         [SerializeField] internal TMP_Text textComponent;
@@ -81,9 +83,10 @@ namespace DCL.Social.Chat.Mentions
 
             string mentionText = linkInfo.GetLinkText();
             string mentionLink = linkInfo.GetLinkID();
+
             return !MentionsUtils.IsAMention(mentionText)
                 ? null
-                : MentionsUtils.GetUserNameFromMentionLink(mentionLink);
+                : mentionLink.Replace(MENTION_URL_PREFIX, string.Empty);
         }
 
         private void ShowContextMenu(string userName)
@@ -120,8 +123,8 @@ namespace DCL.Social.Chat.Mentions
                 textComponent.text = textComponent.text.Replace(
                     mentionFound,
                     hasNoParseLabel ?
-                        $"</noparse><link=mention://{mentionFound.Remove(0, 1)}><color=#4886E3><u>{mentionFound}</u></color></link><noparse>" :
-                        $"<link=mention://{mentionFound.Remove(0, 1)}><color=#4886E3><u>{mentionFound}</u></color></link>");
+                        $"</noparse><link={MENTION_URL_PREFIX}{mentionFound.Remove(0, 1)}><color=#4886E3><u>{mentionFound}</u></color></link><noparse>" :
+                        $"<link={MENTION_URL_PREFIX}{mentionFound.Remove(0, 1)}><color=#4886E3><u>{mentionFound}</u></color></link>");
             }
 
             currentText = textComponent.text;

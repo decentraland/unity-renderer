@@ -5,7 +5,6 @@ namespace DCL.Social.Chat.Mentions
 {
     public static class MentionsUtils
     {
-        private const string MENTION_URL_PREFIX = "mention://";
         private const string MENTION_PATTERN = "^@[a-zA-Z\\d]{3,15}(#[a-zA-Z\\d]{4})?$";
         private static readonly Regex MENTION_REGEX = new (MENTION_PATTERN);
 
@@ -15,14 +14,14 @@ namespace DCL.Social.Chat.Mentions
             return match.Success;
         }
 
-        public static string GetUserNameFromMentionLink(string link) =>
-            link.Replace(MENTION_URL_PREFIX, string.Empty);
-
         public static bool IsUserMentionedInText(string userName, string text) =>
-            text.ToLower().Contains($"{MENTION_URL_PREFIX}{userName.ToLower()}");
+            text.ToLower().Contains($"@{userName.ToLower()}");
 
-        public static bool TextContainsMention(string text) =>
-            text.Contains(MENTION_URL_PREFIX);
+        public static bool TextContainsMention(string text)
+        {
+            var mentionsFound = ExtractMentionsFromText(text);
+            return mentionsFound.Count > 0;
+        }
 
         public static List<string> ExtractMentionsFromText(string text)
         {
