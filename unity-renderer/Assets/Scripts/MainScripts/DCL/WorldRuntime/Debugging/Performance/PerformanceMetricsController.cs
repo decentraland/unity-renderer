@@ -66,7 +66,7 @@ namespace DCL
             encodedSamples[currentIndex++] = (char)deltaInMs;
 
             if (trackProfileRecords)
-                totalAllocSample +=  profilerRecordsService.TotalAllocSample;
+                totalAllocSample +=  profilerRecordsService.GcAllocatedInFrame;
 
             if (currentIndex == SAMPLES_SIZE)
             {
@@ -100,8 +100,8 @@ namespace DCL
             if (trackProfileRecords)
             {
                 drawCalls = (int)profilerRecordsService.DrawCalls;
-                totalMemoryReserved = profilerRecordsService.TotalMemoryReserved;
-                totalMemoryUsage = profilerRecordsService.TotalMemoryUsage;
+                totalMemoryReserved = profilerRecordsService.ReservedMemory;
+                totalMemoryUsage = profilerRecordsService.UsedMemory;
                 totalGCAlloc = totalAllocSample;
             }
 

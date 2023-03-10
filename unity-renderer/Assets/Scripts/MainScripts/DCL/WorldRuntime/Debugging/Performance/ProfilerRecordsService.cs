@@ -33,9 +33,9 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         }
 
         // Additional recordings
-        public long TotalAllocSample => gcAllocatedInFrameRecorder.LastValue;
-        public long TotalMemoryUsage => usedMemoryRecorder.LastValue;
-        public long TotalMemoryReserved => reservedMemoryRecorder.LastValue;
+        public long GcAllocatedInFrame => gcAllocatedInFrameRecorder.LastValue;
+        public long UsedMemory => usedMemoryRecorder.LastValue;
+        public long ReservedMemory => reservedMemoryRecorder.LastValue;
         public long DrawCalls => drawCallsRecorder.LastValue;
 
         public ProfilerRecordsService()
@@ -57,6 +57,9 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
                 usedMemoryRecorder.Dispose();
                 gcAllocatedInFrameRecorder.Dispose();
             }
+
+            if (gcAllocatedInFrameRecorder.IsRunning)
+                gcAllocatedInFrameRecorder.Dispose();
         }
 
         public void RecordAdditionalProfilerMetrics()

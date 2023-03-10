@@ -10,9 +10,9 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         float LastFPS { get; }
         (float FrameTime, float FPS) AverageData { get; }
 
-        long TotalAllocSample { get; }
-        long TotalMemoryUsage { get; }
-        long TotalMemoryReserved { get; }
+        long GcAllocatedInFrame { get; }
+        long UsedMemory { get; }
+        long ReservedMemory { get; }
         long DrawCalls { get; }
 
         void RecordAdditionalProfilerMetrics();

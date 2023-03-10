@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace DCL
 {
@@ -20,40 +20,6 @@ namespace DCL
     /// </summary>
     public class PerformanceMeterController
     {
-        private class SampleData : IComparable
-        {
-            public int frameNumber;
-            public float millisecondsConsumed;
-            public bool isHiccup;
-            public float currentTime;
-            public float frameTimeMs;
-
-            public override string ToString()
-            {
-                return "frame number: " + frameNumber
-                                        + "\n frame consumed milliseconds: " + millisecondsConsumed
-                                        + "\n is hiccup: " + isHiccup
-                                        + "\n frame time: " + frameTimeMs;
-            }
-
-            public int CompareTo(object obj)
-            {
-                // 0    -> this and otherSample are equal
-                // 1    -> this is greater
-                // -1   -> otherSample is greater
-
-                SampleData otherSample = obj as SampleData;
-
-                if (otherSample == null)
-                    return 1;
-
-                if (Math.Abs(this.frameTimeMs - otherSample.frameTimeMs) < float.Epsilon)
-                    return 0;
-
-                return this.frameTimeMs > otherSample.frameTimeMs ? 1 : -1;
-            }
-        }
-
         private readonly IProfilerRecordsService profilerRecordsService;
         private readonly PerformanceMetricsDataVariable metricsData;
         private readonly List<SampleData> samples = new ();
@@ -87,7 +53,7 @@ namespace DCL
         public PerformanceMeterController()
         {
             metricsData = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
-            this.profilerRecordsService = Environment.i.serviceLocator.Get<IProfilerRecordsService>();
+            profilerRecordsService = Environment.i.serviceLocator.Get<IProfilerRecordsService>();
         }
 
         /// <summary>
@@ -154,20 +120,19 @@ namespace DCL
                 if (lastSavedSample.frameNumber == Time.frameCount)
                 {
                     Log("PerformanceMetricsDataVariable changed more than once in the same frame!");
-
                     return;
                 }
 
                 secondsConsumed = Time.timeSinceLevelLoad - lastSavedSample.currentTime;
             }
 
-            SampleData newSample = new SampleData
+            var newSample = new SampleData
             {
                 frameTimeMs = profilerRecordsService.LastFrameTimeInMS,
                 frameNumber = Time.frameCount,
                 millisecondsConsumed = secondsConsumed * 1000,
                 currentTime = Time.timeSinceLevelLoad,
-                isHiccup = secondsConsumed > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS
+                isHiccup = secondsConsumed > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS,
             };
 
             samples.Add(newSample);
@@ -194,17 +159,13 @@ namespace DCL
 
         private void UpdateAllocations()
         {
-            long lastAllocation = profilerRecordsService.TotalAllocSample;
+            long lastAllocation = profilerRecordsService.GcAllocatedInFrame;
 
             if (highestAllocation < lastAllocation)
-            {
                 highestAllocation = lastAllocation;
-            }
 
             if (lowestAllocation > lastAllocation)
-            {
                 lowestAllocation = lastAllocation;
-            }
 
             totalAllocation += lastAllocation;
         }
@@ -222,12 +183,10 @@ namespace DCL
             if (samples.Count == 0)
             {
                 Log("No samples were gathered, the duration time in seconds set is probably too small");
-
                 return;
             }
 
             ProcessSamples();
-
             ReportData();
         }
 
@@ -249,9 +208,9 @@ namespace DCL
             averageFrameTime = benchmark.mean;
             marginOfError = benchmark.rme;
 
-            percentile1FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.01f), sortedSamples.Count-1)].frameTimeMs;
-            percentile50FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.5f), sortedSamples.Count-1)].frameTimeMs;
-            percentile99FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.99f), sortedSamples.Count-1)].frameTimeMs;
+            percentile1FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.01f), sortedSamples.Count - 1)].frameTimeMs;
+            percentile50FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.5f), sortedSamples.Count - 1)].frameTimeMs;
+            percentile99FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.99f), sortedSamples.Count - 1)].frameTimeMs;
 
             averageAllocation = totalAllocation / sortedSamples.Count;
         }
@@ -293,9 +252,9 @@ namespace DCL
             );
 
             // Step 2 - report processed data
-            string format = "F1";
+            var format = "F1";
 
-            Log($"Data report step 2 - Processed values:" +
+            Log("Data report step 2 - Processed values:" +
                 $"\n * PERFORMANCE SCORE (0-100) -> {CalculatePerformanceScore()}" +
                 $"\n * lowest frame time -> {lowestFrameTime.ToString(format)}ms" +
                 $"\n * average frame time -> {averageFrameTime.ToString(format)}ms" +
@@ -333,9 +292,9 @@ namespace DCL
         /// </summary>
         private int CalculatePerformanceScore()
         {
-            double desiredFrameTime = Settings.i.qualitySettings.Data.fpsCap ? 1000/30.0 : 1000/60.0;
-            double frameScore = Mathf.Min((float)(desiredFrameTime/ averageFrameTime), 1); // from 0 to 1
-            double hiccupsScore = 1 - ((float) totalHiccupFrames / samples.Count); // from 0 to 1
+            double desiredFrameTime = Settings.i.qualitySettings.Data.fpsCap ? 1000 / 30.0 : 1000 / 60.0;
+            double frameScore = Mathf.Min((float)(desiredFrameTime / averageFrameTime), 1); // from 0 to 1
+            double hiccupsScore = 1 - ((float)totalHiccupFrames / samples.Count); // from 0 to 1
             double performanceScore = (frameScore + hiccupsScore) / 2 * 100; // scores sum / amount of scores * 100 to have a 0-100 scale
 
             return Mathf.RoundToInt((float)performanceScore * 100f) / 100;
@@ -343,7 +302,7 @@ namespace DCL
 
         private float CalculateHiccupsPercentage()
         {
-            float percentage = ((float) totalHiccupFrames / totalFrames) * 100;
+            float percentage = (float)totalHiccupFrames / totalFrames * 100;
             percentage = Mathf.Round(percentage * 100f) / 100f; // to have 2 decimals
 
             return percentage;
@@ -360,6 +319,38 @@ namespace DCL
             Debug.Log("PerformanceMeter - " + message);
 
             Debug.unityLogger.logEnabled = originalLogEnabled;
+        }
+
+        private class SampleData : IComparable
+        {
+            public int frameNumber;
+            public float millisecondsConsumed;
+            public bool isHiccup;
+            public float currentTime;
+            public float frameTimeMs;
+
+            public override string ToString() =>
+                "frame number: " + frameNumber
+                                 + "\n frame consumed milliseconds: " + millisecondsConsumed
+                                 + "\n is hiccup: " + isHiccup
+                                 + "\n frame time: " + frameTimeMs;
+
+            public int CompareTo(object obj)
+            {
+                // 0    -> this and otherSample are equal
+                // 1    -> this is greater
+                // -1   -> otherSample is greater
+
+                var otherSample = obj as SampleData;
+
+                if (otherSample == null)
+                    return 1;
+
+                if (Math.Abs(frameTimeMs - otherSample.frameTimeMs) < float.Epsilon)
+                    return 0;
+
+                return frameTimeMs > otherSample.frameTimeMs ? 1 : -1;
+            }
         }
     }
 }
