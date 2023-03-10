@@ -6,10 +6,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
-using System.Net;
-using System.IO;
-using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace AssetPromiseKeeper_Texture_Tests
 {
