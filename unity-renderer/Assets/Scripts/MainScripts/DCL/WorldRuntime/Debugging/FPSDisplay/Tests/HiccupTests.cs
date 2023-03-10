@@ -1,5 +1,6 @@
 using DCL.FPSDisplay;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -56,23 +57,17 @@ namespace FPSDisplayTests
             float totalTime = 0.0f;
             int hiccupCount = 0;
 
-            // Fill in random values
-            for (int i = 0; i < 1500; i++)
-            {
-                float value = Random.Range(0.001f, 1f);
-                counter.AddDeltaTime(value);
-            }
-
             for (int i = 0; i < 1000; i++)
             {
                 float value = Random.Range(0.001f, 1f);
-                totalTime += value;
+
                 if (value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS)
                 {
                     hiccupCount += 1;
                     hiccups += value;
                 }
 
+                totalTime += value;
                 counter.AddDeltaTime(value);
             }
 
