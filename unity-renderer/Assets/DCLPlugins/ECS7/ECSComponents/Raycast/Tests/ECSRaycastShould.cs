@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
@@ -8,9 +7,10 @@ using DCL.Helpers;
 using DCLPlugins.ECSComponents.Raycast;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Vector3 = Decentraland.Common.Vector3;
 
 namespace Tests
 {
@@ -32,10 +32,11 @@ namespace Tests
         {
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             componentWriter = Substitute.For<IECSComponentWriter>();
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 
             scene = testUtils.CreateScene(666);
 
@@ -43,7 +44,7 @@ namespace Tests
 
             entityCollider1 = scene.CreateEntity(513);
             entityCollider1.gameObject.transform.position =
-                PositionUtils.WorldToUnityPosition(new UnityEngine.Vector3(8, 1, 8));
+                PositionUtils.WorldToUnityPosition(new Vector3(8, 1, 8));
             var colliderEntity1 =  entityCollider1.gameObject.AddComponent<BoxCollider>();
             internalComponents.physicColliderComponent.PutFor(scene, entityCollider1,
                 new InternalColliders() { colliders = new List<Collider>() { colliderEntity1 } });
@@ -51,7 +52,7 @@ namespace Tests
 
             entityCollider2 = scene.CreateEntity(514);
             entityCollider2.gameObject.transform.position =
-                PositionUtils.WorldToUnityPosition(new UnityEngine.Vector3(8, 1, 12));
+                PositionUtils.WorldToUnityPosition(new Vector3(8, 1, 12));
             var colliderEntity2 = entityCollider2.gameObject.AddComponent<BoxCollider>();
             internalComponents.physicColliderComponent.PutFor(scene, entityCollider2,
                 new InternalColliders() { colliders = new List<Collider>() { colliderEntity2 } });
@@ -70,8 +71,8 @@ namespace Tests
         {
             PBRaycast raycast = new PBRaycast()
             {
-                Origin = new Vector3() { X = 12.0f, Y = 0.5f, Z = 0.0f },
-                Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
+                Origin = new Decentraland.Common.Vector3() { X = 12.0f, Y = 0.5f, Z = 0.0f },
+                Direction = new Decentraland.Common.Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
                 QueryType = RaycastQueryType.RqtHitFirst
             };
@@ -93,8 +94,8 @@ namespace Tests
         {
             PBRaycast raycast = new PBRaycast()
             {
-                Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
-                Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
+                Origin = new Decentraland.Common.Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
+                Direction = new Decentraland.Common.Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
                 QueryType = RaycastQueryType.RqtHitFirst
             };
@@ -117,8 +118,8 @@ namespace Tests
         {
             PBRaycast raycast = new PBRaycast()
             {
-                Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
-                Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
+                Origin = new Decentraland.Common.Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
+                Direction = new Decentraland.Common.Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
                 QueryType = RaycastQueryType.RqtQueryAll
             };
@@ -144,8 +145,8 @@ namespace Tests
 
             PBRaycast raycast = new PBRaycast()
             {
-                Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
-                Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
+                Origin = new Decentraland.Common.Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
+                Direction = new Decentraland.Common.Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
                 QueryType = RaycastQueryType.RqtHitFirst
             };
