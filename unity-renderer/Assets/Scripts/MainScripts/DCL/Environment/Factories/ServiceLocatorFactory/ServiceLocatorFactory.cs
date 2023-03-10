@@ -7,6 +7,8 @@ using DCL.Providers;
 using DCL.Rendering;
 using DCL.Services;
 using DCL.Social.Chat;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
@@ -15,6 +17,7 @@ using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
+using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
@@ -71,10 +74,27 @@ namespace DCL
             result.Register<IAvatarFactory>(() => new AvatarFactory(result));
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
             result.Register<IChatController>(() => new ChatController(WebInterfaceChatBridge.GetOrCreate(), DataStore.i));
+
+            result.Register<IFriendsController>(() =>
+            {
+                // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
+                WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.i;
+                var rpc = Environment.i.serviceLocator.Get<IRPC>();
+
+                return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
+                    webInterfaceFriendsApiBridge,
+                    RPCFriendsApiBridge.CreateSharedInstance(rpc, webInterfaceFriendsApiBridge),
+                    DataStore.i), new RPCSocialApiBridge(rpc));
+            });
+
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
+
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
+
             result.Register<ITeleportController>(() => new TeleportController());
+
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
+
             result.Register<IBillboardsController>(BillboardsController.Create);
 
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
@@ -91,19 +111,31 @@ namespace DCL
             // Asset Providers
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
-                { AssetSource.EMBEDDED, new EmbeddedTextureProvider() },
-                { AssetSource.WEB, new AssetTextureWebLoader() },
+                {
+                    AssetSource.EMBEDDED, new EmbeddedTextureProvider()
+                },
+
+                {
+                    AssetSource.WEB, new AssetTextureWebLoader()
+                },
             }, DataStore.i.featureFlags));
 
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
-                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) },
+                {
+                    AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance)
+                },
             }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
 
             result.Register<IFontAssetResolver>(() => new FontAssetResolver(new Dictionary<AssetSource, IFontAssetProvider>
             {
-                { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
-                { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
+                {
+                    AssetSource.EMBEDDED, new EmbeddedFontProvider()
+                },
+
+                {
+                    AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider)
+                },
             }, DataStore.i.featureFlags));
 
             // Map
@@ -128,7 +160,6 @@ namespace DCL
             // Analytics
 
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
-
             return result;
         }
     }

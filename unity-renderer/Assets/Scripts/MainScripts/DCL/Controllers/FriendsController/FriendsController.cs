@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
+using MainScripts.DCL.Controllers.FriendsController;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,8 @@ namespace DCL.Social.Friends
 {
     public class FriendsController : IFriendsController
     {
-        // TODO: remove singleton, rename to FriendsService and add to service locator
-        public static FriendsController i { get; private set; }
-
         private readonly IFriendsApiBridge apiBridge;
+        private readonly RPCSocialApiBridge socialApiBridge;
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
         private readonly Dictionary<string, UserStatus> friends = new ();
 
@@ -36,12 +35,9 @@ namespace DCL.Social.Friends
         public event Action<FriendRequest> OnFriendRequestReceived;
         public event Action<FriendRequest> OnSentFriendRequestApproved;
 
-        public static void CreateSharedInstance(IFriendsApiBridge apiBridge)
-        {
-            i = new FriendsController(apiBridge);
-        }
+        private CancellationTokenSource controllerCancellationTokenSource;
 
-        public FriendsController(IFriendsApiBridge apiBridge)
+        public FriendsController(IFriendsApiBridge apiBridge, RPCSocialApiBridge rpcSocialApiBridge)
         {
             this.apiBridge = apiBridge;
             apiBridge.OnInitialized += Initialize;
@@ -53,6 +49,47 @@ namespace DCL.Social.Friends
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
             apiBridge.OnFriendRequestsAdded += AddFriendRequests; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
             apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
+
+            this.socialApiBridge = rpcSocialApiBridge;
+
+            socialApiBridge.OnFriendAdded += AddFriend;
+            socialApiBridge.OnFriendRemoved += InternalRemoveFriend;
+            socialApiBridge.OnFriendRequestAdded += AddFriendRequest;
+            socialApiBridge.OnFriendRequestRemoved += RemoveFriendRequest;
+        }
+
+        public void Initialize()
+        {
+            controllerCancellationTokenSource = new CancellationTokenSource();
+
+            socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.Initialize).Forget();
+            socialApiBridge.InitializeClient(controllerCancellationTokenSource.Token).Forget();
+        }
+
+        public void Dispose()
+        {
+            controllerCancellationTokenSource.Cancel();
+            controllerCancellationTokenSource.Dispose();
+        }
+
+        private void RemoveFriendRequest(string userId)
+        {
+            this.friendRequests.Remove(userId);
+        }
+
+        private void AddFriendRequest(FriendRequest friendRequest)
+        {
+            this.friendRequests.Add(friendRequest.FriendRequestId, friendRequest);
+        }
+
+        private void AddFriend(UserStatus friend)
+        {
+            this.friends.Add(friend.userId, friend);
+        }
+
+        private void InternalRemoveFriend(string userId)
+        {
+            this.friends.Remove(userId);
         }
 
         private void Initialize(FriendshipInitializationMessage msg)
@@ -84,17 +121,7 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            RequestFriendshipConfirmationPayload payload = await apiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
-
-            FriendRequestPayload friendRequestPayload = payload.friendRequest;
-
-            FriendRequest friendRequest = new (friendRequestPayload.friendRequestId,
-                friendRequestPayload.timestamp,
-                friendRequestPayload.from,
-                friendRequestPayload.to,
-                friendRequestPayload.messageBody);
-
-            friendRequests[friendRequest.FriendRequestId] = friendRequest;
+            var friendRequest = await socialApiBridge.RequestFriendship(friendUserId, messageBody, cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.To });
@@ -131,16 +158,14 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
+            var friendRequest = friendRequests[friendRequestId];
 
-            FriendRequestPayload requestPayload = payload.FriendRequestPayload;
-            var request = ToFriendRequest(requestPayload);
-            friendRequests.Remove(request.FriendRequestId);
+            await socialApiBridge.RejectFriendship(friendRequestId, cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.REJECTED, userId = request.From });
+                { action = FriendshipAction.REJECTED, userId = friendRequest.From });
 
-            return request;
+            return friendRequest;
         }
 
         public bool IsFriend(string userId) =>
@@ -309,10 +334,11 @@ namespace DCL.Social.Friends
             TotalFriendsWithDirectMessagesCount = friendsWithDMs.totalFriendsWithDirectMessages;
 
             var friendIds = friendsWithDMs.currentFriendsWithDirectMessages.Select(messages => messages.userId);
+
             foreach (var friendId in friendIds)
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.APPROVED, userId = friendId });
+                    { action = FriendshipAction.APPROVED, userId = friendId });
             }
 
             OnAddFriendsWithDirectMessages?.Invoke(friendsWithDMs.currentFriendsWithDirectMessages.ToList());

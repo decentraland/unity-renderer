@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using Decentraland.Renderer.KernelServices;
+using Decentraland.Social.Friendships;
 using RPC;
 using rpc_csharp;
 using System;
@@ -13,6 +14,7 @@ namespace DCL
         private ClientFriendRequestKernelService friendRequests;
         private ClientFriendsKernelService friends;
         private ClientSignRequestKernelService signRequest;
+        private ClientFriendshipsService social;
 
         private readonly UniTaskCompletionSource modulesLoaded = new ();
 
@@ -29,6 +31,8 @@ namespace DCL
 
         public ClientSignRequestKernelService SignRequestKernelService() =>
             signRequest;
+        public ClientFriendshipsService Social() =>
+            social;
 
         public UniTask EnsureRpc() =>
             modulesLoaded.Task;
@@ -46,6 +50,8 @@ namespace DCL
 
             signRequest = await SafeLoadModule(SignRequestKernelServiceCodeGen.ServiceName, port,
                 module => new ClientSignRequestKernelService(module));
+            social = await SafeLoadModule(FriendshipsServiceCodeGen.ServiceName, port,
+                module => new ClientFriendshipsService(module));
 
             modulesLoaded.TrySetResult();
         }
@@ -61,6 +67,7 @@ namespace DCL
             catch (Exception e)
             {
                 Debug.LogException(e);
+
                 // TODO: may be improved by returning a valid instance with dummy behaviour. This way we force to do null-checks on usage
                 return null;
             }

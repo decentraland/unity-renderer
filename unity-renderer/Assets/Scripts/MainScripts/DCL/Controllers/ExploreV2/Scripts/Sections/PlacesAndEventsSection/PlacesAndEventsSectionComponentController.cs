@@ -2,6 +2,7 @@ using DCL;
 using ExploreV2Analytics;
 using System;
 using DCL.Social.Friends;
+using Environment = DCL.Environment;
 
 public interface IPlacesAndEventsSectionComponentController : IDisposable
 {
@@ -42,7 +43,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             view.HighlightsSubSectionView,
             placesAPI,
             eventsAPI,
-            FriendsController.i,
+            Environment.i.serviceLocator.Get<IFriendsController>(),
             exploreV2Analytics,
             dataStore);
         highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
@@ -51,7 +52,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         placesSubSectionComponentController = new PlacesSubSectionComponentController(
             view.PlacesSubSectionView,
             placesAPI,
-            FriendsController.i,
+            Environment.i.serviceLocator.Get<IFriendsController>(),
             exploreV2Analytics,
             dataStore);
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
@@ -67,7 +68,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         favoritesSubSectionComponentController = new FavoritesesSubSectionComponentController(
             view.FavoritesSubSectionView,
             placesAPI,
-            FriendsController.i,
+            Environment.i.serviceLocator.Get<IFriendsController>(),
             exploreV2Analytics,
             dataStore);
         favoritesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
