@@ -10,4 +10,5 @@ import public "decentraland/renderer/kernel_services/emotes_kernel.proto";
 import public "decentraland/renderer/kernel_services/analytics.proto";
 import public "decentraland/renderer/kernel_services/friend_request_kernel.proto";
 import public "decentraland/renderer/kernel_services/friends_kernel.proto";
+import public "decentraland/renderer/kernel_services/sign_request.proto";
 import public "decentraland/renderer/kernel_services/mutual_friends_kernel.proto";
