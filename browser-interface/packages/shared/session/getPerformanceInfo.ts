@@ -1,6 +1,6 @@
 import mitt from 'mitt'
-import { incrementCounter, getAndClearOccurenceCounters } from 'shared/occurences'
-import { getUsedComponentVersions } from 'shared/rolloutVersions'
+import { getAndClearOccurenceCounters, incrementCounter } from 'shared/analytics/occurences'
+import { getExplorerVersion } from 'shared/meta/version'
 
 const pingResponseTimes: number[] = []
 const pingResponsePercentages: number[] = []
@@ -130,7 +130,7 @@ export function getPerformanceInfo(data: {
 
   const isHidden = (globalThis as any).document?.hidden
 
-  const { explorerVersion } = getUsedComponentVersions()
+  const explorerVersion = getExplorerVersion()
 
   const ret = {
     runtime,

@@ -82,8 +82,8 @@ export function getUsersAllowedToCreate(store: RootMetaState): UsersAllowed | un
 /*
  * Returns true if the new friends requests flow is enabled
  */
-export function isNewFriendRequestEnabled(): boolean {
-  return getFeatureFlagEnabled(store.getState(), 'new_friend_requests')
+export function isNewFriendRequestEnabled(state: RootMetaState): boolean {
+  return getFeatureFlagEnabled(state, 'new_friend_requests')
 }
 
 /**

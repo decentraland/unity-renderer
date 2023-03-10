@@ -5,7 +5,7 @@ import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms
 import { store } from 'shared/store/isolatedStore'
 import { getVoiceHandler, shouldPlayVoice } from './selectors'
 import { voiceChatLogger } from './logger'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 
 // TODO: create a component to emit opus audio in a specific position that can be used
 // by the voicechat and by the SDK
