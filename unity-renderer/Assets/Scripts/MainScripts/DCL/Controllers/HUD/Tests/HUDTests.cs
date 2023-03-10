@@ -19,8 +19,6 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-
-            FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
             hudController = new HUDController(DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>(), new DataStore_FeatureFlag(), new HUDFactory(new AddressableResourceProvider()));
             hudController.Initialize();
             yield return null;

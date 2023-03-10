@@ -14,6 +14,8 @@ namespace DCL.Social.Friends
     {
         private const string GET_FRIENDS_REQUEST_MESSAGE_ID = "GetFriendsRequest";
 
+        public static WebInterfaceFriendsApiBridge i { get; private set; }
+
         private readonly Dictionary<string, IUniTaskSource> pendingRequests = new ();
         private readonly Dictionary<string, UniTaskCompletionSource<FriendshipUpdateStatusMessage>> updatedFriendshipPendingRequests = new ();
 
@@ -26,6 +28,10 @@ namespace DCL.Social.Friends
         public event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
         public event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
         public event Action<FriendRequestPayload> OnFriendRequestReceived;
+
+        private void Awake() {
+        i = this;
+        }
 
         [PublicAPI]
         public void InitializeFriends(string json) =>

@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Decentraland.Echo {
+namespace Decentraland.Social.Friendships {
 
   /// <summary>Holder for reflection information generated from decentraland/renderer/renderer_services/social_client.proto</summary>
   public static partial class SocialClientReflection {
@@ -25,61 +25,75 @@ namespace Decentraland.Echo {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjtkZWNlbnRyYWxhbmQvcmVuZGVyZXIvcmVuZGVyZXJfc2VydmljZXMvc29j",
-            "aWFsX2NsaWVudC5wcm90bxIRZGVjZW50cmFsYW5kLmVjaG8iBwoFRW1wdHki",
-            "8gEKBUV2ZW50Ei0KB3JlcXVlc3QYASABKAsyGi5kZWNlbnRyYWxhbmQuZWNo",
-            "by5SZXF1ZXN0SAASKwoGYWNjZXB0GAIgASgLMhkuZGVjZW50cmFsYW5kLmVj",
-            "aG8uQWNjZXB0SAASKwoGcmVqZWN0GAQgASgLMhkuZGVjZW50cmFsYW5kLmVj",
-            "aG8uUmVqZWN0SAASKwoGZGVsZXRlGAUgASgLMhkuZGVjZW50cmFsYW5kLmVj",
-            "aG8uRGVsZXRlSAASKwoGY2FuY2VsGAYgASgLMhkuZGVjZW50cmFsYW5kLmVj",
-            "aG8uQ2FuY2VsSABCBgoEdHlwZSIXCgRVc2VyEg8KB2FkZHJlc3MYASABKAki",
-            "LwoFVXNlcnMSJgoFdXNlcnMYASADKAsyFy5kZWNlbnRyYWxhbmQuZWNoby5V",
-            "c2VyImYKB1JlcXVlc3QSJQoEdXNlchgBIAEoCzIXLmRlY2VudHJhbGFuZC5l",
-            "Y2hvLlVzZXISEgoKY3JlYXRlZF9hdBgCIAEoAxIUCgdtZXNzYWdlGAMgASgJ",
-            "SACIAQFCCgoIX21lc3NhZ2UiRAoIUmVxdWVzdHMSDQoFdG90YWwYASABKAMS",
-            "KQoFaXRlbXMYAiADKAsyGi5kZWNlbnRyYWxhbmQuZWNoby5SZXF1ZXN0Im0K",
-            "DVJlcXVlc3RFdmVudHMSLQoIb3V0Z29pbmcYASABKAsyGy5kZWNlbnRyYWxh",
-            "bmQuZWNoby5SZXF1ZXN0cxItCghpbmNvbWluZxgCIAEoCzIbLmRlY2VudHJh",
-            "bGFuZC5lY2hvLlJlcXVlc3RzIi8KBkFjY2VwdBIlCgR1c2VyGAEgASgLMhcu",
-            "ZGVjZW50cmFsYW5kLmVjaG8uVXNlciIvCgZSZWplY3QSJQoEdXNlchgBIAEo",
-            "CzIXLmRlY2VudHJhbGFuZC5lY2hvLlVzZXIiLwoGRGVsZXRlEiUKBHVzZXIY",
-            "ASABKAsyFy5kZWNlbnRyYWxhbmQuZWNoby5Vc2VyIi8KBkNhbmNlbBIlCgR1",
-            "c2VyGAEgASgLMhcuZGVjZW50cmFsYW5kLmVjaG8uVXNlciJCChdVcGRhdGVG",
-            "cmllbmRzaGlwUGF5bG9hZBInCgVldmVudBgBIAEoCzIYLmRlY2VudHJhbGFu",
-            "ZC5lY2hvLkV2ZW50IocBChhVcGRhdGVGcmllbmRzaGlwUmVzcG9uc2USNwoF",
-            "ZXJyb3IYASABKA4yJi5kZWNlbnRyYWxhbmQuZWNoby5GcmllbmRzaGlwRXJy",
-            "b3JDb2RlSAASKQoFZXZlbnQYAiABKAsyGC5kZWNlbnRyYWxhbmQuZWNoby5F",
-            "dmVudEgAQgcKBXJlcGx5IlQKKFN1YnNjcmliZUZyaWVuZHNoaXBFdmVudHNV",
-            "cGRhdGVzUmVzcG9uc2USKAoGZXZlbnRzGAEgAygLMhguZGVjZW50cmFsYW5k",
-            "LmVjaG8uRXZlbnQqmAEKE0ZyaWVuZHNoaXBFcnJvckNvZGUSGgoWVE9PX01B",
-            "TllfUkVRVUVTVFNfU0VOVBAAEhoKFk5PVF9FTk9VR0hfVElNRV9QQVNTRUQQ",
-            "ARIQCgxCTE9DS0VEX1VTRVIQAhIVChFOT05fRVhJU1RJTkdfVVNFUhADEhMK",
-            "D0lOVkFMSURfUkVRVUVTVBAEEgsKB1VOS05PV04QBTKYAwoSRnJpZW5kc2hp",
-            "cHNTZXJ2aWNlEkIKCkdldEZyaWVuZHMSGC5kZWNlbnRyYWxhbmQuZWNoby5F",
-            "bXB0eRoYLmRlY2VudHJhbGFuZC5lY2hvLlVzZXJzIgASUAoQR2V0UmVxdWVz",
-            "dEV2ZW50cxIYLmRlY2VudHJhbGFuZC5lY2hvLkVtcHR5GiAuZGVjZW50cmFs",
-            "YW5kLmVjaG8uUmVxdWVzdEV2ZW50cyIAEm0KEFVwZGF0ZUZyaWVuZHNoaXAS",
-            "Ki5kZWNlbnRyYWxhbmQuZWNoby5VcGRhdGVGcmllbmRzaGlwUGF5bG9hZBor",
-            "LmRlY2VudHJhbGFuZC5lY2hvLlVwZGF0ZUZyaWVuZHNoaXBSZXNwb25zZSIA",
-            "En0KIFN1YnNjcmliZUZyaWVuZHNoaXBFdmVudHNVcGRhdGVzEhguZGVjZW50",
-            "cmFsYW5kLmVjaG8uRW1wdHkaOy5kZWNlbnRyYWxhbmQuZWNoby5TdWJzY3Jp",
-            "YmVGcmllbmRzaGlwRXZlbnRzVXBkYXRlc1Jlc3BvbnNlIgAwAWIGcHJvdG8z"));
+            "aWFsX2NsaWVudC5wcm90bxIfZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRz",
+            "aGlwcyIHCgVFbXB0eSLCAgoPRnJpZW5kc2hpcEV2ZW50EjsKB3JlcXVlc3QY",
+            "ASABKAsyKC5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlJlcXVl",
+            "c3RIABI5CgZhY2NlcHQYAiABKAsyJy5kZWNlbnRyYWxhbmQuc29jaWFsLmZy",
+            "aWVuZHNoaXBzLkFjY2VwdEgAEjkKBnJlamVjdBgEIAEoCzInLmRlY2VudHJh",
+            "bGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUmVqZWN0SAASOQoGZGVsZXRlGAUg",
+            "ASgLMicuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5EZWxldGVI",
+            "ABI5CgZjYW5jZWwYBiABKAsyJy5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVu",
+            "ZHNoaXBzLkNhbmNlbEgAQgYKBHR5cGUiFwoEVXNlchIPCgdhZGRyZXNzGAEg",
+            "ASgJIj0KBVVzZXJzEjQKBXVzZXJzGAEgAygLMiUuZGVjZW50cmFsYW5kLnNv",
+            "Y2lhbC5mcmllbmRzaGlwcy5Vc2VyInQKB1JlcXVlc3QSMwoEdXNlchgBIAEo",
+            "CzIlLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuVXNlchISCgpj",
+            "cmVhdGVkX2F0GAIgASgDEhQKB21lc3NhZ2UYAyABKAlIAIgBAUIKCghfbWVz",
+            "c2FnZSJSCghSZXF1ZXN0cxINCgV0b3RhbBgBIAEoAxI3CgVpdGVtcxgCIAMo",
+            "CzIoLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUmVxdWVzdCKJ",
+            "AQoNUmVxdWVzdEV2ZW50cxI7CghvdXRnb2luZxgBIAEoCzIpLmRlY2VudHJh",
+            "bGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUmVxdWVzdHMSOwoIaW5jb21pbmcY",
+            "AiABKAsyKS5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlJlcXVl",
+            "c3RzIj0KBkFjY2VwdBIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5kLnNv",
+            "Y2lhbC5mcmllbmRzaGlwcy5Vc2VyIj0KBlJlamVjdBIzCgR1c2VyGAEgASgL",
+            "MiUuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Vc2VyIj0KBkRl",
+            "bGV0ZRIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmll",
+            "bmRzaGlwcy5Vc2VyIj0KBkNhbmNlbBIzCgR1c2VyGAEgASgLMiUuZGVjZW50",
+            "cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Vc2VyItEBChdVcGRhdGVGcmll",
+            "bmRzaGlwUGF5bG9hZBIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5kLnNv",
+            "Y2lhbC5mcmllbmRzaGlwcy5Vc2VyEjkKBWV2ZW50GAIgASgOMiouZGVjZW50",
+            "cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5FdmVudFR5cGUSOwoHcmVxdWVz",
+            "dBgDIAEoCzIoLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUmVx",
+            "dWVzdEgAQgkKB3BheWxvYWQirQEKGFVwZGF0ZUZyaWVuZHNoaXBSZXNwb25z",
+            "ZRJFCgVlcnJvchgBIAEoDjI0LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5k",
+            "c2hpcHMuRnJpZW5kc2hpcEVycm9yQ29kZUgAEkEKBWV2ZW50GAIgASgLMjAu",
+            "ZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5GcmllbmRzaGlwRXZl",
+            "bnRIAEIHCgVyZXBseSJsCihTdWJzY3JpYmVGcmllbmRzaGlwRXZlbnRzVXBk",
+            "YXRlc1Jlc3BvbnNlEkAKBmV2ZW50cxgBIAMoCzIwLmRlY2VudHJhbGFuZC5z",
+            "b2NpYWwuZnJpZW5kc2hpcHMuRnJpZW5kc2hpcEV2ZW50KpgBChNGcmllbmRz",
+            "aGlwRXJyb3JDb2RlEhoKFlRPT19NQU5ZX1JFUVVFU1RTX1NFTlQQABIaChZO",
+            "T1RfRU5PVUdIX1RJTUVfUEFTU0VEEAESEAoMQkxPQ0tFRF9VU0VSEAISFQoR",
+            "Tk9OX0VYSVNUSU5HX1VTRVIQAxITCg9JTlZBTElEX1JFUVVFU1QQBBILCgdV",
+            "TktOT1dOEAUqSAoJRXZlbnRUeXBlEgsKB1JFUVVFU1QQABIKCgZBQ0NFUFQQ",
+            "ARIKCgZSRUpFQ1QQAhIKCgZDQU5DRUwQAxIKCgZERUxFVEUQBDKPBAoSRnJp",
+            "ZW5kc2hpcHNTZXJ2aWNlEl4KCkdldEZyaWVuZHMSJi5kZWNlbnRyYWxhbmQu",
+            "c29jaWFsLmZyaWVuZHNoaXBzLkVtcHR5GiYuZGVjZW50cmFsYW5kLnNvY2lh",
+            "bC5mcmllbmRzaGlwcy5Vc2VycyIAEmwKEEdldFJlcXVlc3RFdmVudHMSJi5k",
+            "ZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLkVtcHR5Gi4uZGVjZW50",
+            "cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5SZXF1ZXN0RXZlbnRzIgASjgEK",
+            "FVVwZGF0ZUZyaWVuZHNoaXBFdmVudBI4LmRlY2VudHJhbGFuZC5zb2NpYWwu",
+            "ZnJpZW5kc2hpcHMuVXBkYXRlRnJpZW5kc2hpcFBheWxvYWQaOS5kZWNlbnRy",
+            "YWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlVwZGF0ZUZyaWVuZHNoaXBSZXNw",
+            "b25zZSIAEpkBCiBTdWJzY3JpYmVGcmllbmRzaGlwRXZlbnRzVXBkYXRlcxIm",
+            "LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuRW1wdHkaSS5kZWNl",
+            "bnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlN1YnNjcmliZUZyaWVuZHNo",
+            "aXBFdmVudHNVcGRhdGVzUmVzcG9uc2UiADABYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Echo.FriendshipErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Empty), global::Decentraland.Echo.Empty.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Event), global::Decentraland.Echo.Event.Parser, new[]{ "Request", "Accept", "Reject", "Delete", "Cancel" }, new[]{ "Type" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.User), global::Decentraland.Echo.User.Parser, new[]{ "Address" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Users), global::Decentraland.Echo.Users.Parser, new[]{ "Users_" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Request), global::Decentraland.Echo.Request.Parser, new[]{ "User", "CreatedAt", "Message" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Requests), global::Decentraland.Echo.Requests.Parser, new[]{ "Total", "Items" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.RequestEvents), global::Decentraland.Echo.RequestEvents.Parser, new[]{ "Outgoing", "Incoming" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Accept), global::Decentraland.Echo.Accept.Parser, new[]{ "User" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Reject), global::Decentraland.Echo.Reject.Parser, new[]{ "User" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Delete), global::Decentraland.Echo.Delete.Parser, new[]{ "User" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.Cancel), global::Decentraland.Echo.Cancel.Parser, new[]{ "User" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.UpdateFriendshipPayload), global::Decentraland.Echo.UpdateFriendshipPayload.Parser, new[]{ "Event" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.UpdateFriendshipResponse), global::Decentraland.Echo.UpdateFriendshipResponse.Parser, new[]{ "Error", "Event" }, new[]{ "Reply" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Echo.SubscribeFriendshipEventsUpdatesResponse), global::Decentraland.Echo.SubscribeFriendshipEventsUpdatesResponse.Parser, new[]{ "Events" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Social.Friendships.FriendshipErrorCode), typeof(global::Decentraland.Social.Friendships.EventType), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Empty), global::Decentraland.Social.Friendships.Empty.Parser, null, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.FriendshipEvent), global::Decentraland.Social.Friendships.FriendshipEvent.Parser, new[]{ "Request", "Accept", "Reject", "Delete", "Cancel" }, new[]{ "Type" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.User), global::Decentraland.Social.Friendships.User.Parser, new[]{ "Address" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Users), global::Decentraland.Social.Friendships.Users.Parser, new[]{ "Users_" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Request), global::Decentraland.Social.Friendships.Request.Parser, new[]{ "User", "CreatedAt", "Message" }, new[]{ "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Requests), global::Decentraland.Social.Friendships.Requests.Parser, new[]{ "Total", "Items" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.RequestEvents), global::Decentraland.Social.Friendships.RequestEvents.Parser, new[]{ "Outgoing", "Incoming" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Accept), global::Decentraland.Social.Friendships.Accept.Parser, new[]{ "User" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Reject), global::Decentraland.Social.Friendships.Reject.Parser, new[]{ "User" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Delete), global::Decentraland.Social.Friendships.Delete.Parser, new[]{ "User" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Cancel), global::Decentraland.Social.Friendships.Cancel.Parser, new[]{ "User" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UpdateFriendshipPayload), global::Decentraland.Social.Friendships.UpdateFriendshipPayload.Parser, new[]{ "User", "Event", "Request" }, new[]{ "Payload" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UpdateFriendshipResponse), global::Decentraland.Social.Friendships.UpdateFriendshipResponse.Parser, new[]{ "Error", "Event" }, new[]{ "Reply" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.SubscribeFriendshipEventsUpdatesResponse), global::Decentraland.Social.Friendships.SubscribeFriendshipEventsUpdatesResponse.Parser, new[]{ "Events" }, null, null, null, null)
           }));
     }
     #endregion
@@ -96,6 +110,14 @@ namespace Decentraland.Echo {
     [pbr::OriginalName("NON_EXISTING_USER")] NonExistingUser = 3,
     [pbr::OriginalName("INVALID_REQUEST")] InvalidRequest = 4,
     [pbr::OriginalName("UNKNOWN")] Unknown = 5,
+  }
+
+  public enum EventType {
+    [pbr::OriginalName("REQUEST")] Request = 0,
+    [pbr::OriginalName("ACCEPT")] Accept = 1,
+    [pbr::OriginalName("REJECT")] Reject = 2,
+    [pbr::OriginalName("CANCEL")] Cancel = 3,
+    [pbr::OriginalName("DELETE")] Delete = 4,
   }
 
   #endregion
@@ -118,7 +140,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -256,21 +278,24 @@ namespace Decentraland.Echo {
 
   }
 
-  public sealed partial class Event : pb::IMessage<Event>
+  /// <summary>
+  /// This message is a response that is sent from the server to the client
+  /// </summary>
+  public sealed partial class FriendshipEvent : pb::IMessage<FriendshipEvent>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<Event> _parser = new pb::MessageParser<Event>(() => new Event());
+    private static readonly pb::MessageParser<FriendshipEvent> _parser = new pb::MessageParser<FriendshipEvent>(() => new FriendshipEvent());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<Event> Parser { get { return _parser; } }
+    public static pb::MessageParser<FriendshipEvent> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -281,7 +306,7 @@ namespace Decentraland.Echo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Event() {
+    public FriendshipEvent() {
       OnConstruction();
     }
 
@@ -289,7 +314,7 @@ namespace Decentraland.Echo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Event(Event other) : this() {
+    public FriendshipEvent(FriendshipEvent other) : this() {
       switch (other.TypeCase) {
         case TypeOneofCase.Request:
           Request = other.Request.Clone();
@@ -313,16 +338,16 @@ namespace Decentraland.Echo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Event Clone() {
-      return new Event(this);
+    public FriendshipEvent Clone() {
+      return new FriendshipEvent(this);
     }
 
     /// <summary>Field number for the "request" field.</summary>
     public const int RequestFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Request Request {
-      get { return typeCase_ == TypeOneofCase.Request ? (global::Decentraland.Echo.Request) type_ : null; }
+    public global::Decentraland.Social.Friendships.Request Request {
+      get { return typeCase_ == TypeOneofCase.Request ? (global::Decentraland.Social.Friendships.Request) type_ : null; }
       set {
         type_ = value;
         typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Request;
@@ -333,8 +358,8 @@ namespace Decentraland.Echo {
     public const int AcceptFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Accept Accept {
-      get { return typeCase_ == TypeOneofCase.Accept ? (global::Decentraland.Echo.Accept) type_ : null; }
+    public global::Decentraland.Social.Friendships.Accept Accept {
+      get { return typeCase_ == TypeOneofCase.Accept ? (global::Decentraland.Social.Friendships.Accept) type_ : null; }
       set {
         type_ = value;
         typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Accept;
@@ -345,8 +370,8 @@ namespace Decentraland.Echo {
     public const int RejectFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Reject Reject {
-      get { return typeCase_ == TypeOneofCase.Reject ? (global::Decentraland.Echo.Reject) type_ : null; }
+    public global::Decentraland.Social.Friendships.Reject Reject {
+      get { return typeCase_ == TypeOneofCase.Reject ? (global::Decentraland.Social.Friendships.Reject) type_ : null; }
       set {
         type_ = value;
         typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Reject;
@@ -357,8 +382,8 @@ namespace Decentraland.Echo {
     public const int DeleteFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Delete Delete {
-      get { return typeCase_ == TypeOneofCase.Delete ? (global::Decentraland.Echo.Delete) type_ : null; }
+    public global::Decentraland.Social.Friendships.Delete Delete {
+      get { return typeCase_ == TypeOneofCase.Delete ? (global::Decentraland.Social.Friendships.Delete) type_ : null; }
       set {
         type_ = value;
         typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Delete;
@@ -369,8 +394,8 @@ namespace Decentraland.Echo {
     public const int CancelFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Cancel Cancel {
-      get { return typeCase_ == TypeOneofCase.Cancel ? (global::Decentraland.Echo.Cancel) type_ : null; }
+    public global::Decentraland.Social.Friendships.Cancel Cancel {
+      get { return typeCase_ == TypeOneofCase.Cancel ? (global::Decentraland.Social.Friendships.Cancel) type_ : null; }
       set {
         type_ = value;
         typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Cancel;
@@ -404,12 +429,12 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as Event);
+      return Equals(other as FriendshipEvent);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(Event other) {
+    public bool Equals(FriendshipEvent other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -536,38 +561,38 @@ namespace Decentraland.Echo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(Event other) {
+    public void MergeFrom(FriendshipEvent other) {
       if (other == null) {
         return;
       }
       switch (other.TypeCase) {
         case TypeOneofCase.Request:
           if (Request == null) {
-            Request = new global::Decentraland.Echo.Request();
+            Request = new global::Decentraland.Social.Friendships.Request();
           }
           Request.MergeFrom(other.Request);
           break;
         case TypeOneofCase.Accept:
           if (Accept == null) {
-            Accept = new global::Decentraland.Echo.Accept();
+            Accept = new global::Decentraland.Social.Friendships.Accept();
           }
           Accept.MergeFrom(other.Accept);
           break;
         case TypeOneofCase.Reject:
           if (Reject == null) {
-            Reject = new global::Decentraland.Echo.Reject();
+            Reject = new global::Decentraland.Social.Friendships.Reject();
           }
           Reject.MergeFrom(other.Reject);
           break;
         case TypeOneofCase.Delete:
           if (Delete == null) {
-            Delete = new global::Decentraland.Echo.Delete();
+            Delete = new global::Decentraland.Social.Friendships.Delete();
           }
           Delete.MergeFrom(other.Delete);
           break;
         case TypeOneofCase.Cancel:
           if (Cancel == null) {
-            Cancel = new global::Decentraland.Echo.Cancel();
+            Cancel = new global::Decentraland.Social.Friendships.Cancel();
           }
           Cancel.MergeFrom(other.Cancel);
           break;
@@ -589,7 +614,7 @@ namespace Decentraland.Echo {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            global::Decentraland.Echo.Request subBuilder = new global::Decentraland.Echo.Request();
+            global::Decentraland.Social.Friendships.Request subBuilder = new global::Decentraland.Social.Friendships.Request();
             if (typeCase_ == TypeOneofCase.Request) {
               subBuilder.MergeFrom(Request);
             }
@@ -598,7 +623,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 18: {
-            global::Decentraland.Echo.Accept subBuilder = new global::Decentraland.Echo.Accept();
+            global::Decentraland.Social.Friendships.Accept subBuilder = new global::Decentraland.Social.Friendships.Accept();
             if (typeCase_ == TypeOneofCase.Accept) {
               subBuilder.MergeFrom(Accept);
             }
@@ -607,7 +632,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 34: {
-            global::Decentraland.Echo.Reject subBuilder = new global::Decentraland.Echo.Reject();
+            global::Decentraland.Social.Friendships.Reject subBuilder = new global::Decentraland.Social.Friendships.Reject();
             if (typeCase_ == TypeOneofCase.Reject) {
               subBuilder.MergeFrom(Reject);
             }
@@ -616,7 +641,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 42: {
-            global::Decentraland.Echo.Delete subBuilder = new global::Decentraland.Echo.Delete();
+            global::Decentraland.Social.Friendships.Delete subBuilder = new global::Decentraland.Social.Friendships.Delete();
             if (typeCase_ == TypeOneofCase.Delete) {
               subBuilder.MergeFrom(Delete);
             }
@@ -625,7 +650,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 50: {
-            global::Decentraland.Echo.Cancel subBuilder = new global::Decentraland.Echo.Cancel();
+            global::Decentraland.Social.Friendships.Cancel subBuilder = new global::Decentraland.Social.Friendships.Cancel();
             if (typeCase_ == TypeOneofCase.Cancel) {
               subBuilder.MergeFrom(Cancel);
             }
@@ -649,7 +674,7 @@ namespace Decentraland.Echo {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            global::Decentraland.Echo.Request subBuilder = new global::Decentraland.Echo.Request();
+            global::Decentraland.Social.Friendships.Request subBuilder = new global::Decentraland.Social.Friendships.Request();
             if (typeCase_ == TypeOneofCase.Request) {
               subBuilder.MergeFrom(Request);
             }
@@ -658,7 +683,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 18: {
-            global::Decentraland.Echo.Accept subBuilder = new global::Decentraland.Echo.Accept();
+            global::Decentraland.Social.Friendships.Accept subBuilder = new global::Decentraland.Social.Friendships.Accept();
             if (typeCase_ == TypeOneofCase.Accept) {
               subBuilder.MergeFrom(Accept);
             }
@@ -667,7 +692,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 34: {
-            global::Decentraland.Echo.Reject subBuilder = new global::Decentraland.Echo.Reject();
+            global::Decentraland.Social.Friendships.Reject subBuilder = new global::Decentraland.Social.Friendships.Reject();
             if (typeCase_ == TypeOneofCase.Reject) {
               subBuilder.MergeFrom(Reject);
             }
@@ -676,7 +701,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 42: {
-            global::Decentraland.Echo.Delete subBuilder = new global::Decentraland.Echo.Delete();
+            global::Decentraland.Social.Friendships.Delete subBuilder = new global::Decentraland.Social.Friendships.Delete();
             if (typeCase_ == TypeOneofCase.Delete) {
               subBuilder.MergeFrom(Delete);
             }
@@ -685,7 +710,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 50: {
-            global::Decentraland.Echo.Cancel subBuilder = new global::Decentraland.Echo.Cancel();
+            global::Decentraland.Social.Friendships.Cancel subBuilder = new global::Decentraland.Social.Friendships.Cancel();
             if (typeCase_ == TypeOneofCase.Cancel) {
               subBuilder.MergeFrom(Cancel);
             }
@@ -714,7 +739,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -903,7 +928,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -935,12 +960,12 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "users" field.</summary>
     public const int Users_FieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Decentraland.Echo.User> _repeated_users_codec
-        = pb::FieldCodec.ForMessage(10, global::Decentraland.Echo.User.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Echo.User> users_ = new pbc::RepeatedField<global::Decentraland.Echo.User>();
+    private static readonly pb::FieldCodec<global::Decentraland.Social.Friendships.User> _repeated_users_codec
+        = pb::FieldCodec.ForMessage(10, global::Decentraland.Social.Friendships.User.Parser);
+    private readonly pbc::RepeatedField<global::Decentraland.Social.Friendships.User> users_ = new pbc::RepeatedField<global::Decentraland.Social.Friendships.User>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Echo.User> Users_ {
+    public pbc::RepeatedField<global::Decentraland.Social.Friendships.User> Users_ {
       get { return users_; }
     }
 
@@ -1081,7 +1106,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1115,10 +1140,10 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "user" field.</summary>
     public const int UserFieldNumber = 1;
-    private global::Decentraland.Echo.User user_;
+    private global::Decentraland.Social.Friendships.User user_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.User User {
+    public global::Decentraland.Social.Friendships.User User {
       get { return user_; }
       set {
         user_ = value;
@@ -1274,7 +1299,7 @@ namespace Decentraland.Echo {
       }
       if (other.user_ != null) {
         if (user_ == null) {
-          User = new global::Decentraland.Echo.User();
+          User = new global::Decentraland.Social.Friendships.User();
         }
         User.MergeFrom(other.User);
       }
@@ -1301,7 +1326,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -1331,7 +1356,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -1365,7 +1390,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[5]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1413,12 +1438,12 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "items" field.</summary>
     public const int ItemsFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Decentraland.Echo.Request> _repeated_items_codec
-        = pb::FieldCodec.ForMessage(18, global::Decentraland.Echo.Request.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Echo.Request> items_ = new pbc::RepeatedField<global::Decentraland.Echo.Request>();
+    private static readonly pb::FieldCodec<global::Decentraland.Social.Friendships.Request> _repeated_items_codec
+        = pb::FieldCodec.ForMessage(18, global::Decentraland.Social.Friendships.Request.Parser);
+    private readonly pbc::RepeatedField<global::Decentraland.Social.Friendships.Request> items_ = new pbc::RepeatedField<global::Decentraland.Social.Friendships.Request>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Echo.Request> Items {
+    public pbc::RepeatedField<global::Decentraland.Social.Friendships.Request> Items {
       get { return items_; }
     }
 
@@ -1583,7 +1608,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[6]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1616,13 +1641,13 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "outgoing" field.</summary>
     public const int OutgoingFieldNumber = 1;
-    private global::Decentraland.Echo.Requests outgoing_;
+    private global::Decentraland.Social.Friendships.Requests outgoing_;
     /// <summary>
-    /// Requests the auth user have sent to users
+    /// Requests the authed user have sent to users
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Requests Outgoing {
+    public global::Decentraland.Social.Friendships.Requests Outgoing {
       get { return outgoing_; }
       set {
         outgoing_ = value;
@@ -1631,13 +1656,13 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "incoming" field.</summary>
     public const int IncomingFieldNumber = 2;
-    private global::Decentraland.Echo.Requests incoming_;
+    private global::Decentraland.Social.Friendships.Requests incoming_;
     /// <summary>
-    /// Requests the auth user have received from users
+    /// Requests the authed user have received from users
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Requests Incoming {
+    public global::Decentraland.Social.Friendships.Requests Incoming {
       get { return incoming_; }
       set {
         incoming_ = value;
@@ -1744,13 +1769,13 @@ namespace Decentraland.Echo {
       }
       if (other.outgoing_ != null) {
         if (outgoing_ == null) {
-          Outgoing = new global::Decentraland.Echo.Requests();
+          Outgoing = new global::Decentraland.Social.Friendships.Requests();
         }
         Outgoing.MergeFrom(other.Outgoing);
       }
       if (other.incoming_ != null) {
         if (incoming_ == null) {
-          Incoming = new global::Decentraland.Echo.Requests();
+          Incoming = new global::Decentraland.Social.Friendships.Requests();
         }
         Incoming.MergeFrom(other.Incoming);
       }
@@ -1771,14 +1796,14 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (outgoing_ == null) {
-              Outgoing = new global::Decentraland.Echo.Requests();
+              Outgoing = new global::Decentraland.Social.Friendships.Requests();
             }
             input.ReadMessage(Outgoing);
             break;
           }
           case 18: {
             if (incoming_ == null) {
-              Incoming = new global::Decentraland.Echo.Requests();
+              Incoming = new global::Decentraland.Social.Friendships.Requests();
             }
             input.ReadMessage(Incoming);
             break;
@@ -1800,14 +1825,14 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (outgoing_ == null) {
-              Outgoing = new global::Decentraland.Echo.Requests();
+              Outgoing = new global::Decentraland.Social.Friendships.Requests();
             }
             input.ReadMessage(Outgoing);
             break;
           }
           case 18: {
             if (incoming_ == null) {
-              Incoming = new global::Decentraland.Echo.Requests();
+              Incoming = new global::Decentraland.Social.Friendships.Requests();
             }
             input.ReadMessage(Incoming);
             break;
@@ -1833,7 +1858,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[7]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1865,10 +1890,10 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "user" field.</summary>
     public const int UserFieldNumber = 1;
-    private global::Decentraland.Echo.User user_;
+    private global::Decentraland.Social.Friendships.User user_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.User User {
+    public global::Decentraland.Social.Friendships.User User {
       get { return user_; }
       set {
         user_ = value;
@@ -1962,7 +1987,7 @@ namespace Decentraland.Echo {
       }
       if (other.user_ != null) {
         if (user_ == null) {
-          User = new global::Decentraland.Echo.User();
+          User = new global::Decentraland.Social.Friendships.User();
         }
         User.MergeFrom(other.User);
       }
@@ -1983,7 +2008,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -2005,7 +2030,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -2031,7 +2056,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[8]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2063,10 +2088,10 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "user" field.</summary>
     public const int UserFieldNumber = 1;
-    private global::Decentraland.Echo.User user_;
+    private global::Decentraland.Social.Friendships.User user_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.User User {
+    public global::Decentraland.Social.Friendships.User User {
       get { return user_; }
       set {
         user_ = value;
@@ -2160,7 +2185,7 @@ namespace Decentraland.Echo {
       }
       if (other.user_ != null) {
         if (user_ == null) {
-          User = new global::Decentraland.Echo.User();
+          User = new global::Decentraland.Social.Friendships.User();
         }
         User.MergeFrom(other.User);
       }
@@ -2181,7 +2206,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -2203,7 +2228,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -2229,7 +2254,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[9]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2261,10 +2286,10 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "user" field.</summary>
     public const int UserFieldNumber = 1;
-    private global::Decentraland.Echo.User user_;
+    private global::Decentraland.Social.Friendships.User user_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.User User {
+    public global::Decentraland.Social.Friendships.User User {
       get { return user_; }
       set {
         user_ = value;
@@ -2358,7 +2383,7 @@ namespace Decentraland.Echo {
       }
       if (other.user_ != null) {
         if (user_ == null) {
-          User = new global::Decentraland.Echo.User();
+          User = new global::Decentraland.Social.Friendships.User();
         }
         User.MergeFrom(other.User);
       }
@@ -2379,7 +2404,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -2401,7 +2426,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -2427,7 +2452,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[10]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2459,10 +2484,10 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "user" field.</summary>
     public const int UserFieldNumber = 1;
-    private global::Decentraland.Echo.User user_;
+    private global::Decentraland.Social.Friendships.User user_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.User User {
+    public global::Decentraland.Social.Friendships.User User {
       get { return user_; }
       set {
         user_ = value;
@@ -2556,7 +2581,7 @@ namespace Decentraland.Echo {
       }
       if (other.user_ != null) {
         if (user_ == null) {
-          User = new global::Decentraland.Echo.User();
+          User = new global::Decentraland.Social.Friendships.User();
         }
         User.MergeFrom(other.User);
       }
@@ -2577,7 +2602,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -2599,7 +2624,7 @@ namespace Decentraland.Echo {
             break;
           case 10: {
             if (user_ == null) {
-              User = new global::Decentraland.Echo.User();
+              User = new global::Decentraland.Social.Friendships.User();
             }
             input.ReadMessage(User);
             break;
@@ -2625,7 +2650,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[11]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2645,7 +2670,14 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public UpdateFriendshipPayload(UpdateFriendshipPayload other) : this() {
-      event_ = other.event_ != null ? other.event_.Clone() : null;
+      user_ = other.user_ != null ? other.user_.Clone() : null;
+      event_ = other.event_;
+      switch (other.PayloadCase) {
+        case PayloadOneofCase.Request:
+          Request = other.Request.Clone();
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -2655,16 +2687,60 @@ namespace Decentraland.Echo {
       return new UpdateFriendshipPayload(this);
     }
 
-    /// <summary>Field number for the "event" field.</summary>
-    public const int EventFieldNumber = 1;
-    private global::Decentraland.Echo.Event event_;
+    /// <summary>Field number for the "user" field.</summary>
+    public const int UserFieldNumber = 1;
+    private global::Decentraland.Social.Friendships.User user_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Event Event {
+    public global::Decentraland.Social.Friendships.User User {
+      get { return user_; }
+      set {
+        user_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "event" field.</summary>
+    public const int EventFieldNumber = 2;
+    private global::Decentraland.Social.Friendships.EventType event_ = global::Decentraland.Social.Friendships.EventType.Request;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.EventType Event {
       get { return event_; }
       set {
         event_ = value;
       }
+    }
+
+    /// <summary>Field number for the "request" field.</summary>
+    public const int RequestFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.Request Request {
+      get { return payloadCase_ == PayloadOneofCase.Request ? (global::Decentraland.Social.Friendships.Request) payload_ : null; }
+      set {
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Request;
+      }
+    }
+
+    private object payload_;
+    /// <summary>Enum of possible cases for the "payload" oneof.</summary>
+    public enum PayloadOneofCase {
+      None = 0,
+      Request = 3,
+    }
+    private PayloadOneofCase payloadCase_ = PayloadOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public PayloadOneofCase PayloadCase {
+      get { return payloadCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPayload() {
+      payloadCase_ = PayloadOneofCase.None;
+      payload_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2682,7 +2758,10 @@ namespace Decentraland.Echo {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(Event, other.Event)) return false;
+      if (!object.Equals(User, other.User)) return false;
+      if (Event != other.Event) return false;
+      if (!object.Equals(Request, other.Request)) return false;
+      if (PayloadCase != other.PayloadCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -2690,7 +2769,10 @@ namespace Decentraland.Echo {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (event_ != null) hash ^= Event.GetHashCode();
+      if (user_ != null) hash ^= User.GetHashCode();
+      if (Event != global::Decentraland.Social.Friendships.EventType.Request) hash ^= Event.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Request) hash ^= Request.GetHashCode();
+      hash ^= (int) payloadCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -2709,9 +2791,17 @@ namespace Decentraland.Echo {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (event_ != null) {
+      if (user_ != null) {
         output.WriteRawTag(10);
-        output.WriteMessage(Event);
+        output.WriteMessage(User);
+      }
+      if (Event != global::Decentraland.Social.Friendships.EventType.Request) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Event);
+      }
+      if (payloadCase_ == PayloadOneofCase.Request) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Request);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -2723,9 +2813,17 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (event_ != null) {
+      if (user_ != null) {
         output.WriteRawTag(10);
-        output.WriteMessage(Event);
+        output.WriteMessage(User);
+      }
+      if (Event != global::Decentraland.Social.Friendships.EventType.Request) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Event);
+      }
+      if (payloadCase_ == PayloadOneofCase.Request) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Request);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -2737,8 +2835,14 @@ namespace Decentraland.Echo {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (event_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
+      if (user_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(User);
+      }
+      if (Event != global::Decentraland.Social.Friendships.EventType.Request) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Event);
+      }
+      if (payloadCase_ == PayloadOneofCase.Request) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Request);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -2752,12 +2856,24 @@ namespace Decentraland.Echo {
       if (other == null) {
         return;
       }
-      if (other.event_ != null) {
-        if (event_ == null) {
-          Event = new global::Decentraland.Echo.Event();
+      if (other.user_ != null) {
+        if (user_ == null) {
+          User = new global::Decentraland.Social.Friendships.User();
         }
-        Event.MergeFrom(other.Event);
+        User.MergeFrom(other.User);
       }
+      if (other.Event != global::Decentraland.Social.Friendships.EventType.Request) {
+        Event = other.Event;
+      }
+      switch (other.PayloadCase) {
+        case PayloadOneofCase.Request:
+          if (Request == null) {
+            Request = new global::Decentraland.Social.Friendships.Request();
+          }
+          Request.MergeFrom(other.Request);
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -2774,10 +2890,23 @@ namespace Decentraland.Echo {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            if (event_ == null) {
-              Event = new global::Decentraland.Echo.Event();
+            if (user_ == null) {
+              User = new global::Decentraland.Social.Friendships.User();
             }
-            input.ReadMessage(Event);
+            input.ReadMessage(User);
+            break;
+          }
+          case 16: {
+            Event = (global::Decentraland.Social.Friendships.EventType) input.ReadEnum();
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.Request subBuilder = new global::Decentraland.Social.Friendships.Request();
+            if (payloadCase_ == PayloadOneofCase.Request) {
+              subBuilder.MergeFrom(Request);
+            }
+            input.ReadMessage(subBuilder);
+            Request = subBuilder;
             break;
           }
         }
@@ -2796,10 +2925,23 @@ namespace Decentraland.Echo {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            if (event_ == null) {
-              Event = new global::Decentraland.Echo.Event();
+            if (user_ == null) {
+              User = new global::Decentraland.Social.Friendships.User();
             }
-            input.ReadMessage(Event);
+            input.ReadMessage(User);
+            break;
+          }
+          case 16: {
+            Event = (global::Decentraland.Social.Friendships.EventType) input.ReadEnum();
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.Request subBuilder = new global::Decentraland.Social.Friendships.Request();
+            if (payloadCase_ == PayloadOneofCase.Request) {
+              subBuilder.MergeFrom(Request);
+            }
+            input.ReadMessage(subBuilder);
+            Request = subBuilder;
             break;
           }
         }
@@ -2823,7 +2965,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[12]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2865,8 +3007,8 @@ namespace Decentraland.Echo {
     public const int ErrorFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.FriendshipErrorCode Error {
-      get { return replyCase_ == ReplyOneofCase.Error ? (global::Decentraland.Echo.FriendshipErrorCode) reply_ : global::Decentraland.Echo.FriendshipErrorCode.TooManyRequestsSent; }
+    public global::Decentraland.Social.Friendships.FriendshipErrorCode Error {
+      get { return replyCase_ == ReplyOneofCase.Error ? (global::Decentraland.Social.Friendships.FriendshipErrorCode) reply_ : global::Decentraland.Social.Friendships.FriendshipErrorCode.TooManyRequestsSent; }
       set {
         reply_ = value;
         replyCase_ = ReplyOneofCase.Error;
@@ -2877,8 +3019,8 @@ namespace Decentraland.Echo {
     public const int EventFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Echo.Event Event {
-      get { return replyCase_ == ReplyOneofCase.Event ? (global::Decentraland.Echo.Event) reply_ : null; }
+    public global::Decentraland.Social.Friendships.FriendshipEvent Event {
+      get { return replyCase_ == ReplyOneofCase.Event ? (global::Decentraland.Social.Friendships.FriendshipEvent) reply_ : null; }
       set {
         reply_ = value;
         replyCase_ = value == null ? ReplyOneofCase.None : ReplyOneofCase.Event;
@@ -3012,7 +3154,7 @@ namespace Decentraland.Echo {
           break;
         case ReplyOneofCase.Event:
           if (Event == null) {
-            Event = new global::Decentraland.Echo.Event();
+            Event = new global::Decentraland.Social.Friendships.FriendshipEvent();
           }
           Event.MergeFrom(other.Event);
           break;
@@ -3039,7 +3181,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 18: {
-            global::Decentraland.Echo.Event subBuilder = new global::Decentraland.Echo.Event();
+            global::Decentraland.Social.Friendships.FriendshipEvent subBuilder = new global::Decentraland.Social.Friendships.FriendshipEvent();
             if (replyCase_ == ReplyOneofCase.Event) {
               subBuilder.MergeFrom(Event);
             }
@@ -3068,7 +3210,7 @@ namespace Decentraland.Echo {
             break;
           }
           case 18: {
-            global::Decentraland.Echo.Event subBuilder = new global::Decentraland.Echo.Event();
+            global::Decentraland.Social.Friendships.FriendshipEvent subBuilder = new global::Decentraland.Social.Friendships.FriendshipEvent();
             if (replyCase_ == ReplyOneofCase.Event) {
               subBuilder.MergeFrom(Event);
             }
@@ -3097,7 +3239,7 @@ namespace Decentraland.Echo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Echo.SocialClientReflection.Descriptor.MessageTypes[13]; }
+      get { return global::Decentraland.Social.Friendships.SocialClientReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3129,12 +3271,12 @@ namespace Decentraland.Echo {
 
     /// <summary>Field number for the "events" field.</summary>
     public const int EventsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Decentraland.Echo.Event> _repeated_events_codec
-        = pb::FieldCodec.ForMessage(10, global::Decentraland.Echo.Event.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Echo.Event> events_ = new pbc::RepeatedField<global::Decentraland.Echo.Event>();
+    private static readonly pb::FieldCodec<global::Decentraland.Social.Friendships.FriendshipEvent> _repeated_events_codec
+        = pb::FieldCodec.ForMessage(10, global::Decentraland.Social.Friendships.FriendshipEvent.Parser);
+    private readonly pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEvent> events_ = new pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEvent>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Echo.Event> Events {
+    public pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEvent> Events {
       get { return events_; }
     }
 

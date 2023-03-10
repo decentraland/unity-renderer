@@ -161,7 +161,7 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnDisable()
     {
-        FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
+        Environment.i.serviceLocator.Get<IFriendsController>().OnUpdateFriendship -= OnFriendActionUpdate;
     }
 
     private void OnPassportButtonPressed()
@@ -187,7 +187,7 @@ public class UserContextMenu : MonoBehaviour
             UserProfileController.userProfilesCatalog.Get(userId)?.userName,
             () =>
             {
-                FriendsController.i.RemoveFriend(userId);
+                Environment.i.serviceLocator.Get<IFriendsController>().RemoveFriend(userId);
                 OnUnfriend?.Invoke(userId);
             }), true);
 
@@ -211,7 +211,7 @@ public class UserContextMenu : MonoBehaviour
         }
         else
         {
-            FriendsController.i.RequestFriendship(userId);
+            Environment.i.serviceLocator.Get<IFriendsController>().RequestFriendship(userId);
             GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
         }
     }
@@ -228,7 +228,7 @@ public class UserContextMenu : MonoBehaviour
         {
             try
             {
-                FriendRequest request = await FriendsController.i.CancelRequestByUserIdAsync(userId, cancellationToken);
+                FriendRequest request = await Environment.i.serviceLocator.Get<IFriendsController>().CancelRequestByUserIdAsync(userId, cancellationToken);
 
                 GetSocialAnalytics()
                    .SendFriendRequestCancelled(request.From, request.To,
@@ -237,14 +237,14 @@ public class UserContextMenu : MonoBehaviour
             catch (Exception e) when (e is not OperationCanceledException)
             {
                 e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.ProfileContextMenu.ToString(),
-                    FriendsController.i, socialAnalytics);
+                    Environment.i.serviceLocator.Get<IFriendsController>(), socialAnalytics);
 
                 throw;
             }
         }
         else
         {
-            FriendsController.i.CancelRequestByUserId(userId);
+            Environment.i.serviceLocator.Get<IFriendsController>().CancelRequestByUserId(userId);
 
             GetSocialAnalytics()
                .SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId,
@@ -269,14 +269,14 @@ public class UserContextMenu : MonoBehaviour
                 () =>
                 {
                     WebInterface.SendBlockPlayer(userId);
-                    GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+                    GetSocialAnalytics().SendPlayerBlocked(Environment.i.serviceLocator.Get<IFriendsController>().IsFriend(userId), PlayerActionSource.ProfileContextMenu);
                     OnBlock?.Invoke(userId, blockUser);
                 }), true);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
-            GetSocialAnalytics().SendPlayerUnblocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendPlayerUnblocked(Environment.i.serviceLocator.Get<IFriendsController>().IsFriend(userId), PlayerActionSource.ProfileContextMenu);
             OnBlock?.Invoke(userId, blockUser);
         }
 
@@ -343,10 +343,10 @@ public class UserContextMenu : MonoBehaviour
 
         if ((configFlags & usesFriendsApiFlags) != 0)
         {
-            UserStatus status = FriendsController.i.GetUserStatus(userId);
+            UserStatus status = Environment.i.serviceLocator.Get<IFriendsController>().GetUserStatus(userId);
             SetupFriendship(status?.friendshipStatus ?? FriendshipStatus.NOT_FRIEND);
-            FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
-            FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
+            Environment.i.serviceLocator.Get<IFriendsController>().OnUpdateFriendship -= OnFriendActionUpdate;
+            Environment.i.serviceLocator.Get<IFriendsController>().OnUpdateFriendship += OnFriendActionUpdate;
         }
     }
 

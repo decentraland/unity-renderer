@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using MainScripts.DCL.Controllers.FriendsController;
 using UnityEngine;
 using UnityEngine.TestTools;
 using SocialFeaturesAnalytics;
@@ -25,7 +26,6 @@ public class UserContextMenuShould
         contextMenu.socialAnalytics = Substitute.For<ISocialAnalytics>();
 
         friendsApiBridge = Substitute.For<IFriendsApiBridge>();
-        FriendsController.CreateSharedInstance(friendsApiBridge);
         profileController = new GameObject().AddComponent<UserProfileController>();
         profileController.AddUserProfileToCatalog(new UserProfileModel()
         {

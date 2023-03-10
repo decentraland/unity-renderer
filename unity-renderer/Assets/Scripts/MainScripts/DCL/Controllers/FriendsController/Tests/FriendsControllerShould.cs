@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
+using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
@@ -14,13 +15,15 @@ namespace DCL.Social.Friends
     public class FriendsControllerShould
     {
         private IFriendsApiBridge apiBridge;
+        private RPCSocialApiBridge socialApiBridge;
         private FriendsController controller;
 
         [SetUp]
         public void SetUp()
         {
             apiBridge = Substitute.For<IFriendsApiBridge>();
-            controller = new FriendsController(apiBridge);
+            var rpc = Substitute.For<IRPC>();
+            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(rpc));
         }
 
         [Test]

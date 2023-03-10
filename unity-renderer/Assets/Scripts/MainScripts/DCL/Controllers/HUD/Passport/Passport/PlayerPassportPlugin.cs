@@ -28,7 +28,7 @@ public class PlayerPassportPlugin : IPlugin
                             referenceContainer.PlayerInfoView,
                             DataStore.i,
                             Environment.i.serviceLocator.Get<IProfanityFilter>(),
-                            FriendsController.i,
+                            Environment.i.serviceLocator.Get<IFriendsController>(),
                             new UserProfileWebInterfaceBridge(),
                             new SocialAnalytics(
                                 Environment.i.platform.serviceProviders.analytics,
