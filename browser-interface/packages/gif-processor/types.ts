@@ -33,7 +33,7 @@ export type ProcessorMessageData = {
   type: ProcessorMessageType
 }
 
-export type ProcessorMessageType = 'FETCH' | 'CANCEL'
+type ProcessorMessageType = 'FETCH' | 'CANCEL'
 
 export type GifData = {
   width: number

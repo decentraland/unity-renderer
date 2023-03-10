@@ -177,7 +177,7 @@ namespace DCL
 #if UNITY_EDITOR
                 assetBundleModelGO.name = subPromise.asset.GetName();
 #endif
-                
+
             }
         }
 
@@ -185,14 +185,21 @@ namespace DCL
         {
             foreach (Mesh mesh in meshesList)
             {
+
                 if (!mesh.isReadable)
                     continue;
 
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
 
-                Physics.BakeMesh(mesh.GetInstanceID(), false);
-                mesh.UploadMeshData(true);
+                bool isCollider = mesh.name.Contains("_collider", StringComparison.InvariantCultureIgnoreCase);
+
+                // colliders will fail to be created if they are not readable on WebGL
+                if (!isCollider)
+                {
+                    Physics.BakeMesh(mesh.GetInstanceID(), false);
+                    mesh.UploadMeshData(true);
+                }
             }
         }
 

@@ -404,18 +404,6 @@ export type WelcomeHUDControllerModel = HUDConfiguration & {
   hasWallet: boolean
 }
 
-export type CatalystNode = {
-  domain: string
-}
-
-export type GraphResponse = {
-  nfts: {
-    ens: {
-      subdomain: string
-    }
-  }[]
-}
-
 export enum ChatMessageType {
   NONE,
   PUBLIC,

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { convertMessageToObject, messageToString } from 'shared/ethereum/EthereumService'
+import { convertMessageToObject, messageToString } from 'lib/web3/EthereumService'
 import { toHex } from 'eth-connect'
 
 describe('EthereumService tests', function() {

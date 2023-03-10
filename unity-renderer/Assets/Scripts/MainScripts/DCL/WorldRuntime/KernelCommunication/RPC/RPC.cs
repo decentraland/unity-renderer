@@ -13,6 +13,7 @@ namespace DCL
         private ClientFriendRequestKernelService friendRequests;
         private ClientAnalyticsKernelService analytics;
         private ClientFriendsKernelService friends;
+        private ClientSignRequestKernelService signRequest;
 
         private readonly UniTaskCompletionSource modulesLoaded = new ();
 
@@ -30,6 +31,9 @@ namespace DCL
         public ClientFriendsKernelService Friends() =>
             friends;
 
+        public ClientSignRequestKernelService SignRequestKernelService() =>
+            signRequest;
+
         public UniTask EnsureRpc() =>
             modulesLoaded.Task;
 
@@ -46,6 +50,9 @@ namespace DCL
 
             friends = await SafeLoadModule(FriendsKernelServiceCodeGen.ServiceName, port,
                 module => new ClientFriendsKernelService(module));
+
+            signRequest = await SafeLoadModule(SignRequestKernelServiceCodeGen.ServiceName, port,
+                module => new ClientSignRequestKernelService(module));
 
             modulesLoaded.TrySetResult();
             await this.StartRpc();
