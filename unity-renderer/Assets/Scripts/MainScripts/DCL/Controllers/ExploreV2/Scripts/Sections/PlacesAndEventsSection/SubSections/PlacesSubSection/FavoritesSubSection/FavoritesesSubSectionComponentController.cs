@@ -114,8 +114,17 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         return modelsList;
     }
 
-    internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI) =>
-        modelsFromAPI.Take(availableUISlots).ToList();
+    internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI)
+    {
+        List<PlaceInfo> placeInfos = new List<PlaceInfo>();
+        for (int i = 0; i < availableUISlots; i++)
+        {
+            placeInfos.Add(modelsFromAPI[i]);
+        }
+
+        return placeInfos;
+    }
+
 
     internal void ShowMoreFavorites()
     {
