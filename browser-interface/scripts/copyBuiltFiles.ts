@@ -2,6 +2,7 @@ import { mkdir } from 'fs/promises'
 import { copyFile, ensureEqualFiles } from './utils'
 import * as glob from 'glob'
 import path from 'path'
+import fs from "fs";
 
 const DIST_PATH = path.resolve(__dirname, '../static')
 
@@ -29,6 +30,12 @@ async function copyBuiltFiles() {
 
   for (const file of glob.sync('**/*', { cwd: basePath, absolute: true })) {
     copyFile(file, path.resolve(DIST_PATH, file.replace(basePath + '/', './')))
+  }
+
+  const webGLStreamingAssetsPath = path.resolve(process.env.BUILD_PATH!, 'StreamingAssets/aa/WebGL')
+
+  if (!fs.existsSync(webGLStreamingAssetsPath)) {
+    throw new Error(`Streaming Assets folder for WebGL does not exist! Please check that they are built correctly`)
   }
 
   const streamingPath = path.resolve(process.env.BUILD_PATH!, 'StreamingAssets')

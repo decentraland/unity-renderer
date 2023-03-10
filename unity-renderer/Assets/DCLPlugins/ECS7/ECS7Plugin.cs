@@ -31,7 +31,7 @@ namespace DCL.ECS7
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, crdtExecutors);
 
             crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, DataStore.i.rpc.context.crdt);
 
