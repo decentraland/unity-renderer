@@ -173,11 +173,11 @@ namespace DCL
                 UnityWebRequest request = requestFactory.CreateWebRequest(url);
                 request.timeout = timeout;
 
-                if (!Enum.TryParse(request.method, out RequestMethod method))
-                    method = RequestMethod.Get;
-
-                if (isSigned && rpcSignRequest != null)
+                if (isSigned)
                 {
+                    if (!Enum.TryParse(request.method, out RequestMethod method))
+                        method = RequestMethod.Get;
+
                     int index = url.IndexOf("?", StringComparison.Ordinal);
                     if (index >= 0)
                         url = url.Substring(0, index);

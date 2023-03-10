@@ -45,7 +45,7 @@ namespace DCL
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
-                RPCSignRequest.CreateSharedInstance(irpc)
+                new RPCSignRequest(irpc)
             ));
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());

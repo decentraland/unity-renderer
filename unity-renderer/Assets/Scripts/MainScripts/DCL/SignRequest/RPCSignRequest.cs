@@ -11,15 +11,7 @@ public class RPCSignRequest : IRPCSignRequest
 {
     private const int REQUEST_TIMEOUT = 30;
 
-    private static RPCSignRequest i;
-
     private readonly IRPC rpc;
-
-    public static RPCSignRequest CreateSharedInstance(IRPC rpc)
-    {
-        i = new RPCSignRequest(rpc);
-        return i;
-    }
 
     public RPCSignRequest(IRPC rpc)
     {
@@ -35,6 +27,7 @@ public class RPCSignRequest : IRPCSignRequest
                                                   Url = url,
                                                   Metadata = string.IsNullOrEmpty(metadata) ? "{}" : metadata
                                               })
+                                             .AttachExternalCancellation(cancellationToken)
                                              .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
         return response;
     }
