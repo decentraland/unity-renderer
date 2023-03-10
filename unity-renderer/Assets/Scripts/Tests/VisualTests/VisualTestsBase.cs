@@ -65,15 +65,15 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         UnityEngine.RenderSettings.fogStartDistance = 100;
         UnityEngine.RenderSettings.fogEndDistance = 110;
 
-        DCL.Environment.i.world.state.ForceCurrentScene( scene.sceneData.sceneNumber);
-        
+        DCL.Environment.i.world.state.ForceCurrentScene( scene.sceneData.sceneNumber, scene.sceneData.id);
+
         VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(0, 2, 0));
     }
 
     protected override IEnumerator TearDown()
     {
         coreComponentsPlugin.Dispose();
-        uiComponentsPlugin.Dispose();   
+        uiComponentsPlugin.Dispose();
         uiRefresherPlugin.Dispose();
         Object.Destroy(camera.gameObject);
         QualitySettings.anisotropicFiltering = originalAnisoSetting;
