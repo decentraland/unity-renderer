@@ -32,6 +32,7 @@ namespace DCL.Chat.Notifications
         [SerializeField] internal RectTransform messageContainerTransform;
         [SerializeField] internal RectTransform header;
         [SerializeField] internal RectTransform content;
+        [SerializeField] internal bool isTopNorification;
 
         [Header("Configuration")]
         [SerializeField] internal ChatNotificationMessageComponentModel model;
@@ -103,6 +104,8 @@ namespace DCL.Chat.Notifications
             SetImage(model.imageUri);
             SetImageVisibility(model.isImageVisible);
             SetOwnPlayerMention(model.isOwnPlayerMentioned);
+
+            if (isTopNorification) return;
 
             if (model.isDockedLeft)
                 DockLeft();
