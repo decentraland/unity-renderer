@@ -24,7 +24,6 @@ export type TrackEvents = PositionTrackEvents & {
   ['SNAPSHOT_IMAGE_NOT_FOUND']: { userId: string }
   ['fetchWearablesFromCatalyst_failed']: { wearableId: string }
   ['avatar_edit_success']: { userId: string; version: number; wearables: string[] }
-  ['referral_save']: { code: string; address?: string; referral_of?: unknown }
   ['Move to Parcel']: { newParcel: string; oldParcel: string | null; exactPosition: Vector3 }
   ['motd_failed']: Record<string, unknown> // {}
   ['TermsOfServiceResponse']: { sceneId: string; accepted: boolean; dontShowAgain: boolean }
