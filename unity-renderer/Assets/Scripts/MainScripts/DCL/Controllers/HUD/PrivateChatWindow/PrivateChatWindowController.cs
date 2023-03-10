@@ -239,12 +239,12 @@ public class PrivateChatWindowController : IHUD
 
     private bool CheckOwnPlayerMentionInDMs(ChatMessage message)
     {
-        string ownUserId = userProfileBridge.GetOwn().userId;
+        var ownUserProfile = userProfileBridge.GetOwn();
 
-        if (message.sender == ownUserId ||
+        if (message.sender == ownUserProfile.userId ||
             (message.sender == conversationUserId && View.IsActive) ||
             message.messageType != ChatMessage.Type.PRIVATE ||
-            !MentionsUtils.IsUserMentionedInText(ownUserId, message.body))
+            !MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, message.body))
             return false;
 
         dataStore.mentions.ownPlayerMentionedInDM.Set(message.sender, true);

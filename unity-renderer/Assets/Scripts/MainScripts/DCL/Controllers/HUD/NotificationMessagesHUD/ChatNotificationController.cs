@@ -150,7 +150,7 @@ namespace DCL.Chat.Notifications
         {
             string body = message.body;
             string openedChatId = openedChat.Get();
-            bool isOwnPlayerMentioned = MentionsUtils.IsUserMentionedInText(ownUserProfile.userId, body);
+            bool isOwnPlayerMentioned = MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, body);
 
             if (message.messageType == ChatMessage.Type.PRIVATE)
             {

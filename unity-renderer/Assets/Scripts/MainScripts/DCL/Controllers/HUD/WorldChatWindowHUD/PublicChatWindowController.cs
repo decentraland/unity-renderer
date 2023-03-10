@@ -222,13 +222,13 @@ namespace DCL.Chat.HUD
 
         private bool CheckOwnPlayerMentionInNearBy(ChatMessage message)
         {
-            string ownUserId = userProfileBridge.GetOwn().userId;
+            var ownUserProfile = userProfileBridge.GetOwn();
 
-            if (message.sender == ownUserId ||
+            if (message.sender == ownUserProfile.userId ||
                 message.messageType != ChatMessage.Type.PUBLIC ||
                 !string.IsNullOrEmpty(message.recipient) ||
                 View.IsActive ||
-                !MentionsUtils.IsUserMentionedInText(ownUserId, message.body))
+                !MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, message.body))
                 return false;
 
             dataStore.mentions.ownPlayerMentionedInChannel.Set(ChatUtils.NEARBY_CHANNEL_ID, true);

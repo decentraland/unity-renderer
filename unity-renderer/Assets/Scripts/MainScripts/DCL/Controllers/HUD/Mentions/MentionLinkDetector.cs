@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace DCL.Social.Chat.Mentions
         private bool isMentionsFeatureEnabled = true;
         private UserContextMenu contextMenu;
         private string currentText;
+        private bool hasNoParseLabel;
+        private List<string> mentionsFoundInText = new ();
         private readonly CancellationTokenSource cancellationToken = new ();
 
         private void Awake()
@@ -53,11 +56,11 @@ namespace DCL.Social.Chat.Mentions
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
 
-            string userId = GetUserIdByPointerPosition(eventData.position);
-            if (string.IsNullOrEmpty(userId))
+            string userName = GetUserNameByPointerPosition(eventData.position);
+            if (string.IsNullOrEmpty(userName))
                 return;
 
-            ShowContextMenu(userId);
+            ShowContextMenu(userName);
         }
 
         public void SetContextMenu(UserContextMenu userContextMenu)
@@ -65,7 +68,7 @@ namespace DCL.Social.Chat.Mentions
             this.contextMenu = userContextMenu;
         }
 
-        private string GetUserIdByPointerPosition(Vector2 pointerPosition)
+        private string GetUserNameByPointerPosition(Vector2 pointerPosition)
         {
             if (textComponent == null)
                 return null;
@@ -78,19 +81,19 @@ namespace DCL.Social.Chat.Mentions
 
             string mentionText = linkInfo.GetLinkText();
             string mentionLink = linkInfo.GetLinkID();
-            return !MentionsUtils.IsAMention(mentionText, mentionLink)
+            return !MentionsUtils.IsAMention(mentionText)
                 ? null
-                : MentionsUtils.GetUserIdFromMentionLink(mentionLink);
+                : MentionsUtils.GetUserNameFromMentionLink(mentionLink);
         }
 
-        private void ShowContextMenu(string userId)
+        private void ShowContextMenu(string userName)
         {
             if (contextMenu == null)
                 return;
 
             var menuTransform = (RectTransform)contextMenu.transform;
             menuTransform.position = textComponent.transform.position;
-            contextMenu.Show(userId);
+            contextMenu.ShowByUserName(userName);
         }
 
         private void OnTextComponentPreRenderText(TMP_TextInfo textInfo)
@@ -101,8 +104,27 @@ namespace DCL.Social.Chat.Mentions
             if (textInfo.textComponent.text == currentText)
                 return;
 
-            currentText = textInfo.textComponent.text;
+            hasNoParseLabel = textInfo.textComponent.text.ToLower().Contains("<noparse>");
+            RefreshMentionPatterns(cancellationToken.Token).Forget();
             CheckOwnPlayerMentionAsync(textInfo.textComponent, cancellationToken.Token).Forget();
+        }
+
+        private async UniTask RefreshMentionPatterns(CancellationToken cancellationToken)
+        {
+            await UniTask.WaitForEndOfFrame(this, cancellationToken);
+
+            mentionsFoundInText = MentionsUtils.ExtractMentionsFromText(textComponent.text);
+
+            foreach (string mentionFound in mentionsFoundInText)
+            {
+                textComponent.text = textComponent.text.Replace(
+                    mentionFound,
+                    hasNoParseLabel ?
+                        $"</noparse><link=mention://{mentionFound.Remove(0, 1)}><color=#4886E3><u>{mentionFound}</u></color></link><noparse>" :
+                        $"<link=mention://{mentionFound.Remove(0, 1)}><color=#4886E3><u>{mentionFound}</u></color></link>");
+            }
+
+            currentText = textComponent.text;
         }
 
         private async UniTask CheckOwnPlayerMentionAsync(TMP_Text textComp, CancellationToken ct)
@@ -112,7 +134,7 @@ namespace DCL.Social.Chat.Mentions
 
             await UniTask.WaitForEndOfFrame(this, ct);
 
-            if (MentionsUtils.IsUserMentionedInText(ownUserProfile.userId, textComp.text))
+            if (MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, textComp.text))
                 OnOwnPlayerMentioned?.Invoke();
         }
 

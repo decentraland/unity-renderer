@@ -123,6 +123,19 @@ public class UserContextMenu : MonoBehaviour
     }
 
     /// <summary>
+    /// Show context menu
+    /// </summary>
+    /// <param name="userName">User name</param>
+    public void ShowByUserName(string userName)
+    {
+        var userProfile = UserProfileController.userProfilesCatalog.GetValues().FirstOrDefault(p => p.userName.ToLower() == userName.ToLower());
+        if (userProfile != null)
+            Show(userProfile.userId);
+        else
+            ShowUserNotificationError(userName);
+    }
+
+    /// <summary>
     /// Set confirmation popup to reference use
     /// </summary>
     /// <param name="confirmationPopup">confirmation popup reference</param>
@@ -335,8 +348,7 @@ public class UserContextMenu : MonoBehaviour
 
         if (profile == null)
         {
-            DataStore.i.notifications.DefaultErrorNotification.Set("This user was not found.", true);
-            Debug.LogError($"User {userId} was not found in the catalog!");
+            ShowUserNotificationError(userId);
             return false;
         }
 
@@ -444,6 +456,12 @@ public class UserContextMenu : MonoBehaviour
         }
 
         return socialAnalytics;
+    }
+
+    private static void ShowUserNotificationError(string userIdOrName)
+    {
+        DataStore.i.notifications.DefaultErrorNotification.Set("This user was not found.", true);
+        Debug.LogError($"User {userIdOrName} was not found in the catalog!");
     }
 
 #if UNITY_EDITOR
