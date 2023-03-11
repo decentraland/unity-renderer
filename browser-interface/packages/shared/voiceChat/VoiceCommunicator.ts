@@ -10,13 +10,13 @@ import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms
 const workletWorkerRaw = require('../../../static/voice-chat-codec/audioWorkletProcessors.js.txt')
 const workletWorkerUrl = URL.createObjectURL(new Blob([workletWorkerRaw], { type: 'application/javascript' }))
 
-export type AudioCommunicatorChannel = {
+type AudioCommunicatorChannel = {
   send(data: rfc4.Voice): any
 }
 
-export type StreamPlayingListener = (streamId: string, playing: boolean) => any
-export type StreamRecordingListener = (recording: boolean) => any
-export type StreamRecordingErrorListener = (message: string) => any
+type StreamPlayingListener = (streamId: string, playing: boolean) => any
+type StreamRecordingListener = (recording: boolean) => any
+type StreamRecordingErrorListener = (message: string) => any
 
 type VoiceOutput = {
   encodedFramesQueue: SortedLimitedQueue<rfc4.Voice>
@@ -41,7 +41,7 @@ type VoiceInput = {
   encodeStream: EncodeStream
 }
 
-export type VoiceCommunicatorOptions = {
+type VoiceCommunicatorOptions = {
   sampleRate?: number
   outputBufferLength?: number
   maxDistance?: number

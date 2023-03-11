@@ -23,7 +23,6 @@ import {
  */
 const peerInformationMap = new Map<string, PeerInformation>()
 export const avatarMessageObservable = new Observable<AvatarMessage>()
-export const avatarVersionUpdateObservable = new Observable<{ userId: string; version: number }>()
 
 export function getAllPeers() {
   return new Map(peerInformationMap)

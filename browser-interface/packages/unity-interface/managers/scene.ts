@@ -1,8 +1,4 @@
-import { now } from 'lib/javascript/now'
 import defaultLogger from 'lib/logger'
-import { updateStatusMessage } from 'shared/loading/actions'
-import { getLastUpdateTime } from 'shared/loading/selectors'
-import { store } from 'shared/store/isolatedStore'
 import { getSceneWorkerBySceneID, getSceneWorkerBySceneNumber } from 'shared/world/parcelSceneManager'
 
 export function handleSceneEvent(data: { sceneId: string; sceneNumber: number; eventType: string; payload: any }) {
@@ -27,16 +23,5 @@ export function handleSceneEvent(data: { sceneId: string; sceneNumber: number; e
         defaultLogger.error(`SceneEvent: Scene number ${data.sceneNumber} not found`, data)
       }
     }
-  }
-}
-
-const TIME_BETWEEN_SCENE_LOADING_UPDATES = 1_000
-export function handleScenesLoadingFeedback(data: { message: string; loadPercentage: number }) {
-  const { message, loadPercentage } = data
-  const currentTime = now()
-  const last = getLastUpdateTime(store.getState())
-  const elapsed = currentTime - (last || 0)
-  if (elapsed > TIME_BETWEEN_SCENE_LOADING_UPDATES) {
-    store.dispatch(updateStatusMessage(message, loadPercentage, currentTime))
   }
 }

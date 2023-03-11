@@ -5,7 +5,7 @@ import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { store } from 'shared/store/isolatedStore'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 
-export async function questsClient() {
+async function questsClient() {
   const { identity } = await onLoginCompleted()
   const net = getSelectedNetwork(store.getState())
   const servers = getServerConfigurations(net)

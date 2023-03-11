@@ -4,7 +4,6 @@ import { sagaMiddleware } from 'shared/store/store'
 import { profileRequest } from './actions'
 import { fetchCatalystProfile } from './sagas/content'
 import { fetchProfile } from './sagas/fetchProfile'
-import { getProfile } from './selectors'
 
 /**
  * Retrieves a Profile with a version equal or higher than the provided one (if any)
@@ -26,8 +25,4 @@ export async function retrieveProfile(userId: string, minimumVersion?: number): 
  */
 export async function retrieveProfileFromCatalyst(userId: string, minimumVersion?: number): Promise<Avatar> {
   return sagaMiddleware.run(fetchCatalystProfile, userId, minimumVersion).toPromise()
-}
-
-export function getProfileIfExists(userId: string): Avatar | null {
-  return getProfile(store.getState(), userId)
 }

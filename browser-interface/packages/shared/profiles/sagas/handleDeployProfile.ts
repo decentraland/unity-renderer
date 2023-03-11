@@ -58,12 +58,7 @@ async function buildSnapshotContent(selector: string, value: string) {
   return { name, hash, contentFile }
 }
 
-export async function deployAvatar(params: {
-  url: string
-  userId: string
-  identity: ExplorerIdentity
-  profile: Avatar
-}) {
+async function deployAvatar(params: { url: string; userId: string; identity: ExplorerIdentity; profile: Avatar }) {
   const { url, profile, identity } = params
   const { avatar } = profile
 

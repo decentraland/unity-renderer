@@ -11,6 +11,7 @@ import {
   GetFriendRequestsReplyOk,
   SendFriendRequestPayload
 } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 import {
   Conversation,
   ConversationType,
@@ -48,7 +49,6 @@ import {
 } from 'shared/types'
 import sinon, { assert } from 'sinon'
 import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
-import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 function getMockedAvatar(userId: string, name: string): ProfileUserInfo {
   return {

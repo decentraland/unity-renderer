@@ -1,14 +1,11 @@
 import { Authenticator } from '@dcl/crypto'
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
-import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
-import { isAddress } from 'eth-connect'
+import { DEBUG, playerHeight, WORLD_EXPLORER } from 'config'
 import future, { IFuture } from 'fp-future'
 import { getSignedHeaders } from 'lib/decentraland/authentication/signedFetch'
 import { arrayCleanup } from 'lib/javascript/arrayCleanup'
 import { defaultLogger } from 'lib/logger'
-import { getERC20Balance } from 'lib/web3/EthereumService'
-import { fetchENSOwner } from 'lib/web3/fetchENSOwner'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError, trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
 import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
 import { emotesRequest, wearablesRequest } from 'shared/catalogs/actions'
@@ -16,10 +13,7 @@ import { EmotesRequestFilters, WearablesRequestFilters } from 'shared/catalogs/t
 import { notifyStatusThroughChat } from 'shared/chat'
 import { sendMessage } from 'shared/chat/actions'
 import { sendPublicChatMessage } from 'shared/comms'
-import { changeRealm } from 'shared/dao'
-import { getSelectedNetwork } from 'shared/dao/selectors'
-import { leaveChannel, updateUserData } from 'shared/friends/actions'
-import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
+import { leaveChannel } from 'shared/friends/actions'
 import {
   createChannel,
   getChannelInfo,
@@ -36,20 +30,15 @@ import {
   markAsSeenChannelMessages,
   markAsSeenPrivateChatMessages,
   muteChannel,
-  searchChannels,
-  UpdateFriendshipAsPromise
+  searchChannels
 } from 'shared/friends/sagas'
-import { areChannelsEnabled, getMatrixIdFromUser } from 'shared/friends/utils'
+import { areChannelsEnabled } from 'shared/friends/utils'
 import { ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
 import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
-import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
 import { globalObservable } from 'shared/observables'
 import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
 import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
 import { retrieveProfile } from 'shared/profiles/retrieveProfile'
-import { findProfileByName } from 'shared/profiles/selectors'
-import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
-import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
 import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
@@ -61,7 +50,6 @@ import {
   AvatarRendererMessage,
   ChatMessage,
   CreateChannelPayload,
-  FriendshipAction,
   FriendshipUpdateStatusMessage,
   GetChannelInfoPayload,
   GetChannelMembersPayload,
@@ -99,13 +87,15 @@ import { receivePositionReport } from 'shared/world/positionThings'
 import { TeleportController } from 'shared/world/TeleportController'
 import { setAudioStream } from './audioStream'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
-import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
 import { handleRequestAudioDevices } from './managers/audio'
 import { handlePerformanceReport } from './managers/performance'
+import { handleJumpIn } from './managers/position'
 import { handleSaveUserAvatar, RendererSaveProfile } from './managers/profiles'
-import { handleSceneEvent, handleScenesLoadingFeedback } from './managers/scene'
+import { handleSceneEvent } from './managers/scene'
+import { handleUpdateFriendshipStatus } from './managers/social'
+import { handleFetchBalanceOfMANA, handleSearchENSOwner } from './managers/web3'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -122,9 +112,7 @@ type SystemInfoPayload = {
 }
 
 // the BrowserInterface is a visitor for messages received from Unity
-export class BrowserInterface {
-  private lastBalanceOfMana: number = -1
-
+class BrowserInterface {
   startedFuture = future<void>()
   onUserInteraction = future<void>()
 
@@ -137,7 +125,7 @@ export class BrowserInterface {
    */
   public handleUnityMessage(type: string, message: any) {
     if (type in this) {
-      ;(this as any)[type](message)
+      ; (this as any)[type](message)
     } else {
       if (DEBUG) {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
@@ -207,6 +195,7 @@ export class BrowserInterface {
 
   /** @deprecated */
   public Track(data: { name: string; properties: { key: string; value: string }[] | null }) {
+    trackError('kernel:renderer', new Error('use of deprecated browserInterface "Track"'))
     const properties: Record<string, string> = {}
     if (data.properties) {
       for (const property of data.properties) {
@@ -219,6 +208,7 @@ export class BrowserInterface {
 
   /** @deprecated */
   public TriggerExpression(data: { id: string; timestamp: number }) {
+    trackError('kernel:renderer', new Error('use of deprecated browserInterface "TriggerExpression"'))
     allScenesEvent({
       eventType: 'playerExpression',
       payload: {
@@ -256,8 +246,8 @@ export class BrowserInterface {
   public GoTo(data: { x: number; y: number }) {
     notifyStatusThroughChat(`Jumped to ${data.x},${data.y}!`)
     TeleportController.goTo(data.x, data.y).then(
-      () => {},
-      () => {}
+      () => { },
+      () => { }
     )
   }
 
@@ -315,13 +305,10 @@ export class BrowserInterface {
 
   // @TODO! @deprecated
   public GetFriendRequests(getFriendRequestsPayload: GetFriendRequestsPayload) {
+    trackError('kernel:renderer', new Error('use of deprecated browserInterface method "GetFriendsRequestsPayload"'))
     getFriendRequests(getFriendRequestsPayload).catch((err) => {
-      defaultLogger.error('error getFriendRequestsDeprecate', err),
-        trackEvent('error', {
-          message: `error getting friend requests ` + err.message,
-          context: 'kernel#friendsSaga',
-          stack: 'getFriendRequests'
-        })
+      defaultLogger.error('error getFriendRequestsDeprecate', err)
+      trackError('kernel:social', new Error(`error getting friend requests ` + err.message))
     })
   }
 
@@ -329,22 +316,17 @@ export class BrowserInterface {
     if (userId.userId === 'nearby') return
     markAsSeenPrivateChatMessages(userId).catch((err) => {
       defaultLogger.error('error markAsSeenPrivateChatMessages', err),
-        trackEvent('error', {
-          message: `error marking private messages as seen ${userId.userId} ` + err.message,
-          context: 'kernel#friendsSaga',
-          stack: 'markAsSeenPrivateChatMessages'
-        })
+        trackError('kernel:social', new Error(`error marking private messages as seen ${userId.userId} ` + err.message))
     })
   }
 
   public async GetPrivateMessages(getPrivateMessagesPayload: GetPrivateMessagesPayload) {
     getPrivateMessages(getPrivateMessagesPayload).catch((err) => {
-      defaultLogger.error('error getPrivateMessages', err),
-        trackEvent('error', {
-          message: `error getting private messages ${getPrivateMessagesPayload.userId} ` + err.message,
-          context: 'kernel#friendsSaga',
-          stack: 'getPrivateMessages'
-        })
+      defaultLogger.error('error getPrivateMessages', err)
+      trackError(
+        'kernel:social',
+        new Error(`error getting private messages ${getPrivateMessagesPayload.userId} ` + err.message)
+      )
     })
   }
 
@@ -369,24 +351,6 @@ export class BrowserInterface {
         store.dispatch(rendererSignalSceneReady(sceneId, sceneNumber))
         break
       }
-      /** @deprecated #3642 Will be moved to Renderer */
-      case 'DeactivateRenderingACK': {
-        /**
-         * This event is called everytime the renderer deactivates its camera
-         */
-        store.dispatch(renderingDectivated())
-        console.log('DeactivateRenderingACK')
-        break
-      }
-      /** @deprecated #3642 Will be moved to Renderer */
-      case 'ActivateRenderingACK': {
-        /**
-         * This event is called everytime the renderer activates the main camera
-         */
-        store.dispatch(renderingActivated())
-        console.log('ActivateRenderingACK')
-        break
-      }
       default: {
         defaultLogger.warn(`Unknown event type ${eventType}, ignoring`)
         break
@@ -405,7 +369,7 @@ export class BrowserInterface {
   /**
    * @deprecated
    */
-  public UserAcceptedCollectibles(_data: { id: string }) {}
+  public UserAcceptedCollectibles(_data: { id: string }) { }
 
   /** @deprecated */
   public SetDelightedSurveyEnabled(data: { enabled: boolean }) {
@@ -494,69 +458,19 @@ export class BrowserInterface {
   }
 
   // @TODO! @deprecated - With the new friend request flow, the only action that will be triggered by this message is FriendshipAction.DELETED.
-  public async UpdateFriendshipStatus(message: FriendshipUpdateStatusMessage) {
-    try {
-      let { userId } = message
-      let found = false
-      const state = store.getState()
-
-      // TODO - fix this hack: search should come from another message and method should only exec correct updates (userId, action) - moliva - 01/05/2020
-      // @TODO! @deprecated - With the new friend request flow, the only action that will be triggered by this message is FriendshipAction.DELETED.
-      if (message.action === FriendshipAction.REQUESTED_TO) {
-        const avatar = await ensureFriendProfile(userId)
-
-        if (isAddress(userId)) {
-          found = avatar.hasConnectedWeb3 || false
-        } else {
-          const profileByName = findProfileByName(state, userId)
-          if (profileByName) {
-            userId = profileByName.userId
-            found = true
-          }
-        }
-      }
-
-      if (!found) {
-        // if user profile was not found on server -> no connected web3, check if it's a claimed name
-        const net = getSelectedNetwork(state)
-        const address = await fetchENSOwner(ethereumConfigurations[net].names, userId)
-        if (address) {
-          // if an address was found for the name -> set as user id & add that instead
-          userId = address
-          found = true
-        }
-      }
-
-      // @TODO! @deprecated - With the new friend request flow, the only action that will be triggered by this message is FriendshipAction.DELETED.
-      if (message.action === FriendshipAction.REQUESTED_TO && !found) {
-        // if we still haven't the user by now (meaning the user has never logged and doesn't have a profile in the dao, or the user id is for a non wallet user or name is not correct) -> fail
-        getUnityInstance().FriendNotFound(userId)
-        return
-      }
-
-      store.dispatch(updateUserData(userId.toLowerCase(), getMatrixIdFromUser(userId)))
-      await UpdateFriendshipAsPromise(message.action, userId.toLowerCase(), false)
-    } catch (error) {
-      const message = 'Failed while processing updating friendship status'
-      defaultLogger.error(message, error)
-
-      trackEvent('error', {
-        context: 'kernel#saga',
-        message: message,
-        stack: '' + error
-      })
-    }
+  public UpdateFriendshipStatus(message: FriendshipUpdateStatusMessage) {
+    trackError('kernel:renderer', new Error('use of deprecated browserInterface "UpdateFriendshipStatus"'))
+    return handleUpdateFriendshipStatus(message)
   }
 
   public CreateChannel(createChannelPayload: CreateChannelPayload) {
     if (!areChannelsEnabled()) return
     createChannel(createChannelPayload).catch((err) => {
-      defaultLogger.error('error createChannel', err),
-        trackEvent('error', {
-          message: `error creating channel ${createChannelPayload.channelId} ` + err.message,
-          context: 'kernel#friendsSaga',
-          stack: 'createChannel'
-        })
+      defaultLogger.error('error createChannel', err)
+      trackError(
+        'kernel#friendsSaga',
+        new Error(`error creating channel ${createChannelPayload.channelId} ${err.message}`)
+      )
     })
   }
 
@@ -648,47 +562,11 @@ export class BrowserInterface {
   }
 
   public SearchENSOwner(data: { name: string; maxResults?: number }) {
-    async function work() {
-      const adapter = await ensureRealmAdapter()
-      const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(adapter)
-
-      try {
-        const profiles = await fetchENSOwnerProfile(data.name, data.maxResults)
-        getUnityInstance().SetENSOwnerQueryResult(data.name, profiles, fetchContentServerWithPrefix)
-      } catch (error: any) {
-        getUnityInstance().SetENSOwnerQueryResult(data.name, undefined, fetchContentServerWithPrefix)
-        defaultLogger.error(error)
-      }
-    }
-
-    work().catch(defaultLogger.error)
+    return handleSearchENSOwner(data)
   }
 
   public async JumpIn(data: WorldPosition) {
-    const {
-      gridPosition: { x, y },
-      realm: { serverName }
-    } = data
-
-    notifyStatusThroughChat(`Jumping to ${serverName} at ${x},${y}...`)
-
-    changeRealm(serverName).then(
-      () => {
-        const successMessage = `Welcome to realm ${serverName}!`
-        notifyStatusThroughChat(successMessage)
-        getUnityInstance().ConnectionToRealmSuccess(data)
-        TeleportController.goTo(x, y, successMessage).then(
-          () => {},
-          () => {}
-        )
-      },
-      (e) => {
-        const cause = e === 'realm-full' ? ' The requested realm is full.' : ''
-        notifyStatusThroughChat('changerealm: Could not join realm.' + cause)
-        getUnityInstance().ConnectionToRealmFailed(data)
-        defaultLogger.error(e)
-      }
-    )
+    handleJumpIn(data)
   }
 
   public async LoadingHUDReadyForTeleport(data: { x: number; y: number }) {
@@ -699,8 +577,9 @@ export class BrowserInterface {
     getUnityInstance().SendMemoryUsageToRenderer()
   }
 
-  public ScenesLoadingFeedback(data: { message: string; loadPercentage: number }) {
-    handleScenesLoadingFeedback(data)
+  public ScenesLoadingFeedback(_: { message: string; loadPercentage: number }) {
+    defaultLogger.log('Deprecated method: ScenesLoadingFeedback')
+    trackError('kernel:renderer', new Error('Attempted call: ScenesLoadingFeedback'))
   }
 
   public FetchHotScenes() {
@@ -738,21 +617,7 @@ export class BrowserInterface {
   }
 
   public FetchBalanceOfMANA() {
-    const fn = async () => {
-      const identity = getCurrentIdentity(store.getState())
-
-      if (!identity?.hasConnectedWeb3) {
-        return
-      }
-      const net = getSelectedNetwork(store.getState())
-      const balance = (await getERC20Balance(identity.address, ethereumConfigurations[net].MANAToken)).toNumber()
-      if (this.lastBalanceOfMana !== balance) {
-        this.lastBalanceOfMana = balance
-        getUnityInstance().UpdateBalanceOfMANA(`${balance}`)
-      }
-    }
-
-    fn().catch((err) => defaultLogger.error(err))
+    return handleFetchBalanceOfMANA()
   }
 
   public SetMuteUsers(data: { usersId: string[]; mute: boolean }) {
@@ -790,8 +655,8 @@ export class BrowserInterface {
 
     const headers: Record<string, string> = identity
       ? getSignedHeaders(data.method, data.url, data.metadata, (_payload) =>
-          Authenticator.signPayload(identity, data.url)
-        )
+        Authenticator.signPayload(identity, data.url)
+      )
       : {}
 
     getUnityInstance().SendHeaders(data.url, headers)

@@ -24,13 +24,9 @@ export const experienceStarted = () => action(EXPERIENCE_STARTED)
 export const TELEPORT_TRIGGERED = 'TELEPORT_TRIGGERED'
 export const trackTeleportTriggered = (payload: string) => action(TELEPORT_TRIGGERED, payload)
 
-export const SCENE_ENTERED = 'Entered into a new scene'
-export const sceneEntered = () => action(SCENE_ENTERED)
 export const UNEXPECTED_ERROR = 'Unexpected fatal error'
-export const unexpectedError = (error: any) => action(UNEXPECTED_ERROR, { error })
 
 export const COMMS_COULD_NOT_BE_ESTABLISHED = 'Communications channel error'
-export const commsCouldNotBeEstablished = () => action(COMMS_COULD_NOT_BE_ESTABLISHED)
 export const CATALYST_COULD_NOT_LOAD = 'Catalysts Contract could not be queried'
 export const NETWORK_MISMATCH = 'Network mismatch'
 export const FATAL_ERROR = 'fatal error'
@@ -48,7 +44,6 @@ export type ExecutionLifecycleEvent =
   | typeof WAITING_FOR_RENDERER
   | typeof EXPERIENCE_STARTED
   | typeof TELEPORT_TRIGGERED
-  | typeof SCENE_ENTERED
   | typeof UNEXPECTED_ERROR
   | typeof COMMS_COULD_NOT_BE_ESTABLISHED
   | typeof CATALYST_COULD_NOT_LOAD
@@ -68,7 +63,6 @@ export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   WAITING_FOR_RENDERER,
   EXPERIENCE_STARTED,
   TELEPORT_TRIGGERED,
-  SCENE_ENTERED,
   UNEXPECTED_ERROR,
   COMMS_COULD_NOT_BE_ESTABLISHED,
   CATALYST_COULD_NOT_LOAD,

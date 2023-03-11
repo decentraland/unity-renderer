@@ -3,7 +3,7 @@ import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/trans
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
 import {
-  addProfileToLastSentProfileVersionAndCatalog, ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, profileRequest
+  addProfileToLastSentProfileVersionAndCatalog, ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, profileRequest, PROFILE_SUCCESS
 } from 'shared/profiles/actions'
 import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/profiles/sagas/fetchProfile'
 import type { ProfileUserInfo } from 'shared/profiles/types'
@@ -14,7 +14,6 @@ import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { buildStore } from 'shared/store/store'
 import sinon from 'sinon'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
 
 const mockAdapter = {
   services: {

@@ -1,5 +1,5 @@
-import type { Vector2 } from '../../math/Vector2'
-import type { Vector3 } from '../../math/Vector3'
+import type { Vector2 } from 'lib/math/Vector2'
+import type { Vector3 } from 'lib/math/Vector3'
 import { parcelSize } from './limits'
 
 /**

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { buildStore } from '../../packages/shared/store/store'
+import { buildStore } from 'shared/store/store'
 import { getDisabledCatalystConfig, getFeatureFlags } from 'shared/meta/selectors'
 
 describe('Meta tests', () => {

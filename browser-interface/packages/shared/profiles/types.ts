@@ -22,12 +22,6 @@ export type ContentFile = {
   content: Uint8Array
 }
 
-export enum ProfileType {
-  LOCAL = 0,
-  DEPLOYED = 1,
-  COMMS = 2
-}
-
 export interface RemoteProfile {
   timestamp: number
   avatars: Avatar[]

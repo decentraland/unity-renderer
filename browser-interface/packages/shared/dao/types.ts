@@ -6,14 +6,6 @@ export enum ServerConnectionStatus {
   UNREACHABLE
 }
 
-export type CatalystStatus = {
-  name: string
-  version: string
-  usersCount?: number
-  maxUsers?: number
-  usersParcels?: Parcel[]
-}
-
 type BaseCandidate = {
   // connectionString: string
   protocol: string
@@ -31,13 +23,6 @@ export type Candidate = {
 } & BaseCandidate
 
 export type Parcel = [number, number]
-
-export type LayerUserInfo = {
-  userId: string
-  peerId: string
-  protocolVersion: number
-  parcel?: Parcel
-}
 
 export type Realm = {
   protocol: string

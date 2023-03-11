@@ -13,7 +13,7 @@ export function usersParcels(candidate: Candidate) {
   return candidate.usersParcels
 }
 
-export function memoizedScores(scoreFunction: (c: Candidate) => number) {
+function memoizedScores(scoreFunction: (c: Candidate) => number) {
   const scores = new Map<Candidate, number>()
   return (candidate: Candidate) => {
     if (!scores.has(candidate)) {
@@ -24,7 +24,7 @@ export function memoizedScores(scoreFunction: (c: Candidate) => number) {
   }
 }
 
-export function latencyDeductions(
+function latencyDeductions(
   candidate: Candidate,
   { multiplier, exponentialDivisor, maxDeduction }: LatencyDeductionsParameters
 ) {
@@ -32,7 +32,7 @@ export function latencyDeductions(
   return Math.min(expResult, maxDeduction)
 }
 
-export function scoreUsingLatencyDeductions(
+function scoreUsingLatencyDeductions(
   parameters: LatencyDeductionsParameters,
   baseScoreFunction: (c: Candidate) => number
 ) {
@@ -53,7 +53,7 @@ export function defaultScoreAddons(
   )
 }
 
-export function penalizeFull(baseScore: number, baseScoreFunction: (c: Candidate) => number) {
+function penalizeFull(baseScore: number, baseScoreFunction: (c: Candidate) => number) {
   return (candidate: Candidate) => {
     const max = maxUsers(candidate)
     const count = usersCount(candidate)

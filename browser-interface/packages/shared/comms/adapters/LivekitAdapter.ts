@@ -12,7 +12,7 @@ import { commsLogger } from '../logger'
 import type { CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
 import { createLiveKitVoiceHandler } from './voice/liveKitVoiceHandler'
 
-export type LivekitConfig = {
+type LivekitConfig = {
   url: string
   token: string
   logger: ILogger

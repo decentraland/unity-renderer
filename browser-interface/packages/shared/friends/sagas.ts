@@ -578,7 +578,7 @@ function* refreshFriends() {
     const friendsSocial: SocialData[] = []
 
     // init friend requests
-    const friendRequests: FriendshipRequest[] = yield client.getPendingRequests()
+    const friendRequests: FriendshipRequest[] = yield apply(client, client.getPendingRequests, [])
 
     // filter my requests to others
     const toFriendRequests = friendRequests.filter((request) => request.from === ownId)
@@ -634,13 +634,12 @@ function* refreshFriends() {
     defaultLogger.log('____ initChatMessage ____', initChatMessage)
 
     // all profiles to obtain, deduped
-    const allProfilesToObtain: string[] = friendIds
-      .concat(requestedFromIds.map((x) => x.userId))
-      .concat(requestedToIds.map((x) => x.userId))
-      .filter((each, i, elements) => elements.indexOf(each) === i)
+    const allProfilesToObtain: string[] = Array.from(
+      new Set(friendIds.concat(requestedFromIds.map((x) => x.userId)).concat(requestedToIds.map((x) => x.userId)))
+    )
 
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
-    yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
+    yield call(async () => await Promise.all(ensureFriendProfilesPromises).catch(logger.error))
 
     getUnityInstance().InitializeFriends(initFriendsMessage)
     getUnityInstance().InitializeChat(initChatMessage)

@@ -1,3 +1,4 @@
+import { HAS_INITIAL_POSITION_MARK, RESET_TUTORIAL } from 'config'
 import type { KernelOptions } from 'kernel-web-interface'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { changeRealm, realmInitialized } from 'shared/dao'
@@ -18,8 +19,6 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { HUDElementID } from 'shared/types'
 import { foregroundChangeObservable, isForeground } from 'shared/world/worldState'
-import { HAS_INITIAL_POSITION_MARK, RESET_TUTORIAL } from 'config'
-import { renderingInBackground, renderingInForeground } from 'shared/loadingScreen/types'
 import { kernelConfigForRenderer } from 'unity-interface/kernelConfigForRenderer'
 import { logger } from './logger'
 import { startPreview } from './startPreview'
@@ -131,10 +130,8 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
 
   function reportForeground() {
     if (isForeground()) {
-      store.dispatch(renderingInForeground())
       renderer.ReportFocusOn()
     } else {
-      store.dispatch(renderingInBackground())
       renderer.ReportFocusOff()
     }
   }

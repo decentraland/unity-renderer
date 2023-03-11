@@ -14,7 +14,7 @@ import { FriendshipAction, AntiSpamConfig, UsersAllowed } from 'shared/types'
  * */
 export function getUserIdFromMatrix(userId: string) {
   // this means that the id comes from matrix
-  if (userId.indexOf('@') === 0) {
+  if (userId.startsWith('@')) {
     return userId.split(':')[0].substring(1)
   }
   return userId
@@ -50,7 +50,7 @@ export function getMatrixIdFromUser(userId: string) {
  * */
 export function getNormalizedRoomName(name: string) {
   // it means we got the name with a inadequate format
-  if (name.indexOf('#') === 0) {
+  if (name.startsWith('#')) {
     return name.split(':')[0].substring(1)
   }
   return name
@@ -63,7 +63,7 @@ export function areChannelsEnabled(): boolean {
   return getFeatureFlagEnabled(store.getState(), 'matrix_channels_enabled')
 }
 
-export const DEFAULT_MAX_CHANNELS_VALUE = 10
+const DEFAULT_MAX_CHANNELS_VALUE = 10
 
 /*
  * Returns the maximum allowed number of channels a user can join.
@@ -131,17 +131,16 @@ export function encodeFriendRequestId(ownId: string, otherUserId: string, incomi
  * @return `otherUserId`
  */
 export function decodeFriendRequestId(friendRequestId: string, ownId: string) {
-  // The friendRequestId follows the pattern '0x1111ada11111'
+  // The friendRequestId follows the pattern '0x1111ada11111_0x2222bbbb22222'
   ownId = getUserIdFromMatrix(ownId)
+  const [first, second] = friendRequestId.split('_')
 
-  // Get index of the ownId
-  const index = friendRequestId.indexOf(ownId)
-
-  // Return the id placed in the other index
-  if (index === 0) {
-    return friendRequestId.split('_')[1]
+  if (ownId === first) {
+    return second
+  } else if (ownId === second) {
+    return first
   } else {
-    return friendRequestId.split('_')[0]
+    throw new Error(`Received unexpected friendRequestId: ${friendRequestId} does not contain ownId=${ownId}`)
   }
 }
 
@@ -170,9 +169,9 @@ export function isBlocked(userId: string) {
   return profile?.blocked?.includes(userId) ?? false
 }
 
-export const DEFAULT_MAX_NUMBER_OF_REQUESTS = 5
+const DEFAULT_MAX_NUMBER_OF_REQUESTS = 5
 
-export const COOLDOWN_TIME_MS = 10000 // 10 seconds
+export const COOLDOWN_TIME_MS = 10_000
 
 /**
  * Returns the anti-spam config, that is, the max number allowed of sent requests to a given user and

@@ -76,9 +76,6 @@ const sdk7RuntimeRaw =
 const sdk7RuntimeBLOB = new Blob([sdk7RuntimeRaw])
 const sdk7RuntimeUrl = URL.createObjectURL(sdk7RuntimeBLOB)
 
-export type SceneLifeCycleStatusType = 'unloaded' | 'awake' | 'loaded' | 'ready' | 'failed'
-export type SceneLifeCycleStatusReport = { sceneId: string; status: SceneLifeCycleStatusType }
-
 export const sceneEvents = mitt<{
   [SCENE_LOAD]: SceneLoad
   [SCENE_START]: SceneStart
