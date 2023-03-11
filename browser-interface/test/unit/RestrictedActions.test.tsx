@@ -7,9 +7,9 @@ import { movePlayerTo, triggerEmote } from 'shared/apis/host/RestrictedActions'
 import { buildStore } from 'shared/store/store'
 import Sinon, * as sinon from 'sinon'
 import { UnityInterface } from 'unity-interface/UnityInterface'
-import defaultLogger from '../../packages/lib/logger'
-import { lastPlayerPosition } from '../../packages/shared/world/positionThings'
-import { getUnityInstance, setUnityInstance } from '../../packages/unity-interface/IUnityInterface'
+import defaultLogger from 'lib/logger'
+import { lastPlayerPosition } from 'shared/world/positionThings'
+import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
 
 describe('RestrictedActions tests', () => {
   beforeEach(() => {
