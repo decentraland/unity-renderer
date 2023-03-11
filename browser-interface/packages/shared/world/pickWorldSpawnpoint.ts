@@ -95,12 +95,8 @@ function checkBoundaries(land: Scene, finalPosition: Vector3): ReadOnlyVector3 {
   return finalPosition
 }
 
-function resolveRanges(v: { x: number | number[]; y: number | number[]; z: number | number[] }): ReadOnlyVector3 {
-  return {
-    x: computeComponentValue(v.x),
-    y: computeComponentValue(v.y),
-    z: computeComponentValue(v.z)
-  }
+function resolveRanges(v: { x: number | number[]; y: number | number[]; z: number | number[] }): Vector3 {
+  return new Vector3(computeComponentValue(v.x), computeComponentValue(v.y), computeComponentValue(v.z))
 }
 
 function computeComponentValue(x: number | number[]) {

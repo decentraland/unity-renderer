@@ -137,7 +137,7 @@ export class BrowserInterface {
    */
   public handleUnityMessage(type: string, message: any) {
     if (type in this) {
-      ; (this as any)[type](message)
+      ;(this as any)[type](message)
     } else {
       if (DEBUG) {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
@@ -256,8 +256,8 @@ export class BrowserInterface {
   public GoTo(data: { x: number; y: number }) {
     notifyStatusThroughChat(`Jumped to ${data.x},${data.y}!`)
     TeleportController.goTo(data.x, data.y).then(
-      () => { },
-      () => { }
+      () => {},
+      () => {}
     )
   }
 
@@ -405,7 +405,7 @@ export class BrowserInterface {
   /**
    * @deprecated
    */
-  public UserAcceptedCollectibles(_data: { id: string }) { }
+  public UserAcceptedCollectibles(_data: { id: string }) {}
 
   /** @deprecated */
   public SetDelightedSurveyEnabled(data: { enabled: boolean }) {
@@ -678,8 +678,8 @@ export class BrowserInterface {
         notifyStatusThroughChat(successMessage)
         getUnityInstance().ConnectionToRealmSuccess(data)
         TeleportController.goTo(x, y, successMessage).then(
-          () => { },
-          () => { }
+          () => {},
+          () => {}
         )
       },
       (e) => {
@@ -790,8 +790,8 @@ export class BrowserInterface {
 
     const headers: Record<string, string> = identity
       ? getSignedHeaders(data.method, data.url, data.metadata, (_payload) =>
-        Authenticator.signPayload(identity, data.url)
-      )
+          Authenticator.signPayload(identity, data.url)
+        )
       : {}
 
     getUnityInstance().SendHeaders(data.url, headers)
