@@ -169,8 +169,8 @@ async function authenticateWhenItsReady(provider: IEthereumProvider, isGuest: bo
   store.dispatch(authenticate(provider, isGuest))
 }
 
-function getInitialPositionFromUrl(): ReadOnlyVector2 | undefined {
-  const query = new URLSearchParams(location.search)
+function getInitialPositionFromUrl(searchParams: string): ReadOnlyVector2 | undefined {
+  const query = new URLSearchParams(searchParams)
   const position = query.get('position')
   if (typeof position === 'string') {
     const { x, y } = parseParcelPosition(position)

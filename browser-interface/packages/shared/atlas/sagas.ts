@@ -68,7 +68,6 @@ function* reportPositionAndScenesIfMoved() {
     Math.abs(userPosition.x - lastReport.x) > TRIGGER_DISTANCE ||
     Math.abs(userPosition.z - lastReport.y) > TRIGGER_DISTANCE
   ) {
-    defaultLogger.error('HAPPENED!')
     const gridPosition = worldToGrid(userPosition)
 
     yield put(reportScenesAroundParcel(gridPosition, MAX_SCENES_AROUND))

@@ -1,12 +1,6 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3, Quaternion, Vector3 } from '@dcl/ecs-math'
-import { isInsideWorldLimits, Scene } from '@dcl/schemas'
-import { DEBUG, playerHeight } from 'config'
-import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
-import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
-import type { Vector2 } from 'lib/math/Vector2'
+import { playerHeight } from 'config'
 import { Observable } from 'mz-observable'
-import type { InstancedSpawnPoint } from '../types'
 
 export type PositionReport = {
   /** Camera position, world space */
