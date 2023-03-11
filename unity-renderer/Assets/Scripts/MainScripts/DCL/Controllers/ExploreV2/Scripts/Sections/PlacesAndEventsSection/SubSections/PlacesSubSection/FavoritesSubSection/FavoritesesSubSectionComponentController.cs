@@ -23,12 +23,11 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<HotSceneInfo> favoritesFromAPI = new ();
+    internal List<PlaceInfo> favoritesFromAPI = new ();
     internal int availableUISlots;
 
     public FavoritesesSubSectionComponentController(IFavoritesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
         this.view = view;
@@ -83,29 +82,60 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
             OnCompleted: OnRequestedEventsUpdated);
     }
 
-    private void OnRequestedEventsUpdated(List<HotSceneInfo> placeList)
+    private void OnRequestedEventsUpdated(List<PlaceInfo> placeList)
     {
         friendsTrackerController.RemoveAllHandlers();
 
         favoritesFromAPI = placeList;
 
-        view.SetFavorites(PlacesAndEventsCardsFactory.CreatePlacesCards((TakeAllForAvailableSlots(placeList))));
+        view.SetFavorites(ConvertPlacesToModels(TakeAllForAvailableSlots(placeList)));
         view.SetShowMoreFavoritesButtonActive(availableUISlots < favoritesFromAPI.Count);
     }
 
-    internal List<HotSceneInfo> TakeAllForAvailableSlots(List<HotSceneInfo> modelsFromAPI) =>
-        modelsFromAPI.Take(availableUISlots).ToList();
+    private List<PlaceCardComponentModel> ConvertPlacesToModels(List<PlaceInfo> placeInfo)
+    {
+        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
+
+        foreach (var place in placeInfo)
+        {
+            modelsList.Add(
+                new PlaceCardComponentModel()
+                {
+                    placePictureUri = place.image,
+                    placeName = place.title,
+                    placeDescription = place.description,
+                    placeAuthor = place.contact_name,
+                    numberOfUsers = place.user_count,
+                    coords = new Vector2Int(),
+                    parcels = new Vector2Int[1]
+                });
+        }
+
+        return modelsList;
+    }
+
+    internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI)
+    {
+        List<PlaceInfo> placeInfos = new List<PlaceInfo>();
+        for (int i = 0; i < availableUISlots; i++)
+        {
+            placeInfos.Add(modelsFromAPI[i]);
+        }
+
+        return placeInfos;
+    }
+
 
     internal void ShowMoreFavorites()
     {
         int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentFavoritePlacesPerRow) * view.currentFavoritePlacesPerRow) - availableUISlots;
         int numberOfItemsToAdd = (view.currentFavoritePlacesPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
-        List<HotSceneInfo> placesFiltered = availableUISlots + numberOfItemsToAdd <= favoritesFromAPI.Count
+        List<PlaceInfo> placesFiltered = availableUISlots + numberOfItemsToAdd <= favoritesFromAPI.Count
             ? favoritesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : favoritesFromAPI.GetRange(availableUISlots, favoritesFromAPI.Count - availableUISlots);
 
-        view.AddFavorites(PlacesAndEventsCardsFactory.CreatePlacesCards(placesFiltered));
+        view.AddFavorites(ConvertPlacesToModels(placesFiltered));
 
         availableUISlots += numberOfItemsToAdd;
 

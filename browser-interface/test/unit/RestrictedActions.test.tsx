@@ -83,7 +83,7 @@ describe('RestrictedActions tests', () => {
       const errorSpy = sinon.spy(defaultLogger, 'error')
       const stub = sinon.stub(getUnityInstance(), 'Teleport')
       movePlayerTo({ newRelativePosition: new Vector3(21, 0, 32) }, ctx)
-      
+
       const callArguments = errorSpy.firstCall.args
       expect(callArguments[0]).to.eq('Error: Position is out of scene')
       expect((callArguments[1]! as any).x).to.eq(21)
