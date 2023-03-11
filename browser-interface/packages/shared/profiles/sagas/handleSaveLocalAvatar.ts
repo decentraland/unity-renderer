@@ -12,8 +12,8 @@ import { getCurrentUserProfileDirty } from '../selectors'
 import { localProfilesRepo } from './local/localProfilesRepo'
 
 export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
-  const { userId, savedProfile, identity, network } = (yield select(getInformationForSaveLocalAvatar)) as ReturnType<
-    typeof getInformationForSaveLocalAvatar
+  const { userId, savedProfile, identity, network } = (yield select(getInformationToSaveLocalAvatar)) as ReturnType<
+    typeof getInformationToSaveLocalAvatar
   >
 
   try {
@@ -58,7 +58,7 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
   }
 }
 
-function getInformationForSaveLocalAvatar(state: RootState) {
+function getInformationToSaveLocalAvatar(state: RootState) {
   return {
     // TODO: Validate if getCurrentUserId, getCurrentIdentity, getCurrentNetwork are always truthy
     userId: getCurrentUserId(state)!,
