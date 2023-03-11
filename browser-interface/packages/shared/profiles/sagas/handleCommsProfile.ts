@@ -53,7 +53,7 @@ export function* handleCommsVersionUpdates() {
 function getProfileAndRoom(state: RootState, userId: string) {
   return {
     existingProfile: getProfileFromStore(state, userId),
-    // TODO: Is the assumption that `comms` is not null correct?
+    // TODO: Is this assumption correct? Are we sure `comms` is never null?
     roomConnection: getCommsRoom(state)!
   }
 }

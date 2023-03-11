@@ -1,5 +1,9 @@
 # Style guidelines
 
+Please follow this golden rule:
+
+> Read the line you just wrote out loud. Would someone not familiar with the code understand it?
+
 # Code order
 
 ```
