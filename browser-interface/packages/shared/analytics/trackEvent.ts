@@ -13,3 +13,12 @@ export function trackEvent<K extends keyof TrackEvents>(eventName: K, eventData:
     eventData
   })
 }
+
+export function trackError(context: string, error?: Error, message?: string) {
+  trackEvent('error', {
+    context,
+    message: message || error?.message || 'unknown',
+    stack: error?.stack || '',
+    saga_stack: error?.toString()
+  })
+}

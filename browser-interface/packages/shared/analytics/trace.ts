@@ -1,15 +1,21 @@
 import type { UnityGame } from '@dcl/unity-renderer/src'
-import { TRACE_RENDERER } from 'config'
 import {
   incrementMessageFromKernelToRenderer,
   incrementMessageFromRendererToKernel
 } from 'shared/session/getPerformanceInfo'
+import { CommonRendererOptions } from 'kernel-web-interface/renderer'
 import defaultLogger from 'lib/logger'
-import type { CommonRendererOptions } from './loader'
 
 let pendingMessagesInTrace = 0
-const currentTrace: string[] = []
 let traceType: 'console' | 'file' = 'file'
+const currentTrace: string[] = []
+export function setupTracing() {
+  /*
+   * TODO: This does nothing, but it's here to signal the side-effect of creating `currentTrace`,
+   * which is required due to some race condition between script imports. If not necessary,
+   * analyze dropping this on `entrypoints/index.ts`.
+   */
+}
 
 export function traceDecoratorRendererOptions(options: CommonRendererOptions): CommonRendererOptions {
   const originalOnMessage = options.onMessage
@@ -95,12 +101,4 @@ export function endTrace() {
   defaultLogger.log('[TRACING] Ending trace, downloading file: ', exportUrl, ' check your downloads folder.')
   window.location.assign(exportUrl)
   currentTrace.length = 0
-}
-
-;(globalThis as any).beginTrace = beginTrace
-;(globalThis as any).endTrace = endTrace
-
-const parametricTrace = parseInt(TRACE_RENDERER || '0', 10)
-if (!isNaN(parametricTrace) && parametricTrace > 0) {
-  beginTrace(parametricTrace)
 }

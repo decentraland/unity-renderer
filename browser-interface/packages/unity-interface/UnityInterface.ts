@@ -12,10 +12,10 @@ import { uniqBy } from 'lib/javascript/uniqBy'
 import { uuid } from 'lib/javascript/uuid'
 import { createUnityLogger, ILogger } from 'lib/logger'
 import { Observable } from 'mz-observable'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError, trackEvent } from 'shared/analytics/trackEvent'
 import { Emote, WearableV2 } from 'shared/catalogs/types'
 import { FeatureFlag } from 'shared/meta/types'
-import { incrementCounter } from 'shared/occurences'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { getProvider } from 'shared/session/index'
 import {
   AddChatMessagesPayload,
@@ -715,8 +715,11 @@ export class UnityInterface implements IUnityInterface {
       incrementCounter(method as any)
     } catch (e: any) {
       incrementCounter(`setThrew:${method}`)
+      trackError('renderer#setThrew', e)
       unityLogger.error(
-        `Error on "${method}" from kernel to unity-renderer, with args (${payload}). Reported message is: "${e.message}", stack trace:\n${e.stack}`
+        `Error executing "${method}" on unity-renderer with args ${stringify(payload)}\nReported message is: "${
+          e.message
+        }", stack trace:\n${e.stack}`
       )
     }
   }

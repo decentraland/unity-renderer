@@ -2,7 +2,7 @@ import type { Avatar } from '@dcl/schemas'
 import { createFakeName } from 'lib/decentraland/profiles/names/fakeName'
 import defaultLogger from 'lib/logger'
 import { call, put, select } from 'redux-saga/effects'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError, trackEvent } from 'shared/analytics/trackEvent'
 import { getCurrentIdentity, getCurrentNetwork, getCurrentUserId } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
 import type { SaveProfileDelta } from '../actions'
@@ -53,11 +53,7 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
       yield put(deployProfile(profile))
     }
   } catch (error: any) {
-    trackEvent('error', {
-      message: `cant_persist_avatar ${error}`,
-      context: 'kernel#saga',
-      stack: error.stacktrace
-    })
+    trackError('kernel#saga', error, 'cant_persist_avatar ${error}')
     yield put(saveProfileFailure(userId, 'unknown reason'))
   }
 }

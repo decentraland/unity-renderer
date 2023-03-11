@@ -5,10 +5,10 @@ import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { waitFor } from 'lib/redux'
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
-import { BEFORE_UNLOAD } from 'shared/actions'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError } from 'shared/analytics/trackEvent'
 import { SceneFail, SceneStart, SceneUnload, SCENE_FAIL, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
 import { getResourcesURL } from 'shared/location'
+import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import { SetRealmAdapterAction, SET_REALM_ADAPTER } from 'shared/realm/actions'
 import {
@@ -25,7 +25,8 @@ import { store } from 'shared/store/isolatedStore'
 import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
 import { getSceneWorkerBySceneID, setDesiredParcelScenes } from 'shared/world/parcelSceneManager'
-import { pickWorldSpawnpoint, positionObservable, receivePositionReport } from 'shared/world/positionThings'
+import { pickWorldSpawnpoint } from 'shared/world/pickWorldSpawnpoint'
+import { positionObservable, receivePositionReport } from 'shared/world/positionThings'
 import { sceneEvents, SceneWorker } from 'shared/world/SceneWorker'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import {
@@ -157,11 +158,7 @@ function* teleportHandler(action: TeleportToAction) {
       yield put(positionSettled(action.payload))
     }
   } catch (err: any) {
-    trackEvent('error', {
-      context: 'teleportHandler',
-      message: err.message,
-      stack: err.stack
-    })
+    trackError('teleportHandler', err)
   }
 }
 
@@ -297,11 +294,7 @@ function* onWorldPositionChange() {
 
         yield call(setDesiredParcelScenes, map)
       } catch (err: any) {
-        trackEvent('error', {
-          context: 'onWorldPositionChange',
-          message: err.message,
-          stack: err.stack
-        })
+        trackError('onWorldPositionChange', err)
       }
     }
 

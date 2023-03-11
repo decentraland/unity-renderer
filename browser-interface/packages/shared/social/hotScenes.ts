@@ -1,5 +1,9 @@
 import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
+import { getSceneDescriptionFromJsonData } from 'lib/decentraland/sceneJson/getSceneDescriptionFromJsonData'
+import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
+import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
 import { jsonFetch } from 'lib/javascript/jsonFetch'
 import { pickProperty } from 'lib/javascript/pickProperty'
 import { reportScenesFromTiles } from 'shared/atlas/actions'
@@ -8,12 +12,6 @@ import { getHotScenesService } from 'shared/dao/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
-import {
-  getOwnerNameFromJsonData,
-  getSceneDescriptionFromJsonData,
-  getSceneNameFromJsonData,
-  getThumbnailUrlFromJsonDataAndContent
-} from 'shared/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { getUnityInstance, HotSceneInfo, RealmInfo } from 'unity-interface/IUnityInterface'
 

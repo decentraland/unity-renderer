@@ -9,6 +9,14 @@ CWD = $(shell pwd)
 # SDK Files
 EMPTY_SCENES := public/empty-scenes/common
 
+build:
+	echo 'declare module "env" {}' > node_modules/env.d.ts
+	echo 'declare module "dcl" {}' > node_modules/dcl.d.ts
+# Prevent error on `estrella` compatibility with typescript 4.9+ & @types/node 18.0+
+	sed ${SED_OPTION} 's/interface FileWriteOptionsObj .*/interface FileWriteOptionsObj {/g' node_modules/estrella/estrella.d.ts
+	ESSENTIALS_ONLY=true node ./build.js
+	BUNDLES_ONLY=true node ./build.js
+
 empty-parcels:
 	cd public/empty-scenes/common && (node generate_all.js || true)
 	mkdir -p static/loader/empty-scenes || true
@@ -21,13 +29,7 @@ ifeq ($(shell uname),Darwin)
 SED_OPTION= -i ""
 endif
 
-build: empty-parcels
-	echo 'declare module "env" {}' > node_modules/env.d.ts
-	echo 'declare module "dcl" {}' > node_modules/dcl.d.ts
-# Prevent error on `estrella` compatibility with typescript 4.9+ & @types/node 18.0+
-	sed ${SED_OPTION} 's/interface FileWriteOptionsObj .*/interface FileWriteOptionsObj {/g' node_modules/estrella/estrella.d.ts
-	ESSENTIALS_ONLY=true node ./build.js
-	BUNDLES_ONLY=true node ./build.js
+
 
 # Entry points
 static/index.js:

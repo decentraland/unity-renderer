@@ -15,13 +15,13 @@ import {
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import type { RemoteProfile } from '../types'
 import { createFakeName } from 'lib/decentraland/profiles/names/fakeName'
-import { takeLatestById } from './takeLatestById'
 import { fetchProfile } from './fetchProfile'
 import { handleCommsProfile, handleCommsVersionUpdates } from './handleCommsProfile'
 import { handleDeployProfile } from './handleDeployProfile'
 import { handleSaveLocalAvatar } from './handleSaveLocalAvatar'
 import { initialRemoteProfileLoad } from './initialRemoteProfileLoad'
 import { cachedRequest } from './content/cachedRequest'
+import { takeLatestById } from 'lib/redux'
 
 const concatenatedActionTypeUserId = (action: { type: string; payload: { userId: string } }) =>
   action.type + action.payload.userId

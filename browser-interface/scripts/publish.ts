@@ -1,7 +1,7 @@
-import { exec } from 'child_process'
 import { readFile } from 'fs/promises'
 import { resolve } from 'path'
 import { fetch, FormData } from 'undici'
+import { execute } from './execute'
 import { ensureFileExists } from './utils'
 
 const DIST_ROOT = resolve(__dirname, '../static')
@@ -104,21 +104,6 @@ export async function publish(npmTags: string[], access: string, workingDirector
   }
 
   return execute(`npm publish ` + args.join(' '), workingDirectory)
-}
-
-async function execute(command: string, workingDirectory: string): Promise<string> {
-  return new Promise<string>((onSuccess, onError) => {
-    exec(command, { cwd: workingDirectory }, (error, stdout, stderr) => {
-      stdout.trim().length && console.log('stdout:\n' + stdout.replace(/\n/g, '\n  '))
-      stderr.trim().length && console.error('stderr:\n' + stderr.replace(/\n/g, '\n  '))
-
-      if (error) {
-        onError(stderr)
-      } else {
-        onSuccess(stdout)
-      }
-    })
-  })
 }
 
 main().catch((err) => {

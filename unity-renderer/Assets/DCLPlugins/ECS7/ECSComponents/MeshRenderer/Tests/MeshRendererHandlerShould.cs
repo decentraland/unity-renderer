@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -25,9 +26,10 @@ namespace Tests
         {
             var factory = new ECSComponentsFactory();
             var manager = new ECSComponentsManager(factory.componentBuilders);
-            internalComponent = new InternalECSComponents(manager, factory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            internalComponent = new InternalECSComponents(manager, factory, executors);
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(manager);
+            testUtils = new ECS7TestUtilsScenesAndEntities(manager, executors);
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(100);
             texturizableComponent = internalComponent.texturizableComponent;
@@ -36,7 +38,7 @@ namespace Tests
                 Substitute.For<IInternalECSComponent<InternalRenderers>>());
 
             var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, manager, factory, null, new List<InternalComponentWriteData>());
+                0, manager, factory, null, new KeyValueSet<ComponentIdentifier,ComponentWriteData>(), executors);
             keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 

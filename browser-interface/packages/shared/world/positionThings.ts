@@ -1,13 +1,12 @@
-import { Vector3, EcsMathReadOnlyVector3, EcsMathReadOnlyQuaternion, Quaternion } from '@dcl/ecs-math'
+import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3, Quaternion, Vector3 } from '@dcl/ecs-math'
+import { isInsideWorldLimits, Scene } from '@dcl/schemas'
+import { DEBUG, playerHeight } from 'config'
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
+import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import type { Vector2 } from 'lib/math/Vector2'
 import { Observable } from 'mz-observable'
 import type { InstancedSpawnPoint } from '../types'
-import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
-import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
-import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { DEBUG, playerHeight } from 'config'
-import { Scene } from '@dcl/schemas'
-import { isInsideWorldLimits } from '@dcl/schemas'
-import type { Vector2 } from 'lib/math/Vector2'
 
 export type PositionReport = {
   /** Camera position, world space */
@@ -65,125 +64,4 @@ export function receivePositionReport(
   positionEvent.cameraEuler.copyFrom(positionEvent.cameraQuaternion.eulerAngles)
 
   positionObservable.notifyObservers(positionEvent)
-}
-
-// sets the initial state of the position based on the URL query params
-export function getInitialPositionFromUrl(url: string): Vector2 | undefined {
-  // LOAD INITIAL POSITION IF SET TO ZERO
-  const query = new URLSearchParams(url)
-  const position = query.get('position')
-  if (typeof position === 'string') {
-    const { x, y } = parseParcelPosition(position)
-    if (isInsideWorldLimits(x, y)) return { x, y }
-  }
-}
-
-/**
- * Computes the spawn point based on a scene.
- *
- * The computation takes the spawning points defined in the scene document and computes the spawning point in the world based on the base parcel position.
- *
- * @param land Scene on which the player is spawning
- */
-export function pickWorldSpawnpoint(land: Scene): InstancedSpawnPoint {
-  const spawnpoint = pickSpawnpoint(land)
-
-  const baseParcel = land.scene.base
-  const [bx, by] = baseParcel.split(',')
-
-  const basePosition = new Vector3()
-
-  const { position, cameraTarget } = spawnpoint
-
-  gridToWorld(parseInt(bx, 10), parseInt(by, 10), basePosition)
-
-  return {
-    position: basePosition.add(position),
-    cameraTarget: cameraTarget ? basePosition.add(cameraTarget) : undefined
-  }
-}
-
-function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
-  let spawnPoints = land.spawnPoints
-  if (!Array.isArray(spawnPoints) || spawnPoints.length === 0) {
-    spawnPoints = [
-      {
-        position: {
-          x: 1,
-          y: 0,
-          z: 1
-        }
-      }
-    ]
-  }
-  if (!spawnPoints) {
-    throw new Error(`Invalid spawnpoint definition`)
-  }
-
-  // 1 - default spawn points
-  const defaults = spawnPoints.filter(($) => $.default)
-
-  // 2 - if no default spawn points => all existing spawn points
-  const eligiblePoints = defaults.length === 0 ? spawnPoints : defaults
-
-  // 3 - pick randomly between spawn points
-  const { position, cameraTarget } = eligiblePoints[Math.floor(Math.random() * eligiblePoints.length)]
-
-  // 4 - generate random x, y, z components when in arrays
-  const finalPosition = {
-    x: computeComponentValue(position.x),
-    y: computeComponentValue(position.y),
-    z: computeComponentValue(position.z)
-  }
-
-  // 5 - If the final position is outside the scene limits, we zero it
-  if (!DEBUG) {
-    const sceneBaseParcelCoords = land.scene.base.split(',')
-    const sceneBaseParcelWorldPos = gridToWorld(
-      parseInt(sceneBaseParcelCoords[0], 10),
-      parseInt(sceneBaseParcelCoords[1], 10)
-    )
-    const finalWorldPosition = {
-      x: sceneBaseParcelWorldPos.x + finalPosition.x,
-      y: finalPosition.y,
-      z: sceneBaseParcelWorldPos.z + finalPosition.z
-    }
-
-    if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
-      finalPosition.x = 1
-      finalPosition.z = 1
-    }
-  }
-
-  return {
-    position: finalPosition,
-    cameraTarget
-  }
-}
-
-function computeComponentValue(x: number | number[]) {
-  if (typeof x === 'number') {
-    return x
-  }
-
-  const length = x.length
-  if (length === 0) {
-    return 0
-  } else if (length < 2) {
-    return x[0]
-  } else if (length > 2) {
-    x = [x[0], x[1]]
-  }
-
-  let [min, max] = x
-
-  if (min === max) return max
-
-  if (min > max) {
-    const aux = min
-    min = max
-    max = aux
-  }
-
-  return Math.random() * (max - min) + min
 }

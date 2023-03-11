@@ -1,4 +1,5 @@
 using DCL;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -33,8 +34,9 @@ namespace Tests
 
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var executors = new Dictionary<int, ICRDTExecutor>();
 
-            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             var materialRegister = new MaterialRegister(MATERIAL_COMPONENT_ID, componentsFactory,
                 Substitute.For<IECSComponentWriter>(), internalEcsComponents);
@@ -48,11 +50,12 @@ namespace Tests
 
             systemsUpdate = () =>
             {
+                internalEcsComponents.MarkDirtyComponentsUpdate();
                 materialSystemUpdate();
-                internalEcsComponents.WriteSystemUpdate();
+                internalEcsComponents.ResetDirtyComponentsUpdate();
             };
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene0 = testUtils.CreateScene(666);
             scene1 = testUtils.CreateScene(222);
 

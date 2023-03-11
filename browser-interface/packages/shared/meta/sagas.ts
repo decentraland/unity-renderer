@@ -1,14 +1,14 @@
 import { FeatureFlagsResult, fetchFlags } from '@dcl/feature-flags'
 import { ETHEREUM_NETWORK, getAssetBundlesBaseUrl, getServerConfigurations, PREVIEW, rootURLPreviewMode } from 'config'
+import defaultLogger from 'lib/logger'
 import { all, call, fork, put, select, take } from 'redux-saga/effects'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError } from 'shared/analytics/trackEvent'
 import { SELECT_NETWORK } from 'shared/dao/actions'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { addKernelPortableExperience } from 'shared/portableExperiences/actions'
 import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
 import { getPortableExperienceFromUrn } from 'unity-interface/portableExperiencesUtils'
-import defaultLogger from 'lib/logger'
 import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
 import { getFeatureFlagVariantValue, isMetaConfigurationInitialized } from './selectors'
 import { FeatureFlagsName, MetaConfiguration } from './types'
@@ -62,11 +62,7 @@ function* fetchInitialPortableExperiences() {
         yield put(addKernelPortableExperience(px))
       } catch (err: any) {
         console.error(err)
-        trackEvent('error', {
-          context: 'fetchInitialPortableExperiences',
-          message: err.message,
-          stack: err.stack
-        })
+        trackError('fetchInitialPortableExperiences', err)
       }
     }
   }

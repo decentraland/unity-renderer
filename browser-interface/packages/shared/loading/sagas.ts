@@ -12,7 +12,6 @@ import { RENDERER_INITIALIZED_CORRECTLY } from 'shared/renderer/types'
 import { ChangeLoginStateAction, CHANGE_LOGIN_STAGE } from 'shared/session/actions'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { getCurrentUserId } from 'shared/session/selectors'
-import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
 import { loadedSceneWorkers } from 'shared/world/parcelSceneManager'
 import { lastPlayerPosition } from 'shared/world/positionThings'
@@ -27,7 +26,7 @@ import {
   SCENE_LOAD,
   SCENE_START
 } from './actions'
-import { experienceStarted, metricsAuthSuccessful, metricsUnityClientLoaded } from './types'
+import { experienceStarted, metricsAuthSuccessful, metricsUnityClientLoaded, TELEPORT_TRIGGERED } from './types'
 
 export function* loadingSaga() {
   yield fork(function* initialSceneLoading() {
@@ -125,4 +124,72 @@ function* trackLoadTime(action: SceneLoad): any {
     sceneId: entityId,
     userId: userId
   })
+}
+
+export const ACTIONS_FOR_LOADING = [
+  AUTHENTICATE,
+  CHANGE_LOGIN_STAGE,
+  PARCEL_LOADING_STARTED,
+  PENDING_SCENES,
+  RENDERER_INITIALIZED_CORRECTLY,
+  SCENE_FAIL,
+  SCENE_LOAD,
+  SIGNUP_SET_IS_SIGNUP,
+  TELEPORT_TRIGGERED,
+  UPDATE_STATUS_MESSAGE,
+  SET_REALM_ADAPTER,
+  SET_SCENE_LOADER,
+  POSITION_SETTLED,
+  POSITION_UNSETTLED,
+  SCENE_UNLOAD
+]
+
+function* waitForSceneLoads() {
+  function shouldWaitForScenes(state: RootState) {
+    if (!state.renderer.parcelLoadingStarted) {
+      return true
+    }
+
+    // in the initial load, we should wait until we have *some* scene to load
+    if (state.loading.initialLoad) {
+      if (state.loading.pendingScenes !== 0 || state.loading.totalScenes === 0) {
+        return true
+      }
+    }
+
+    // otherwise only wait until pendingScenes == 0
+    return state.loading.pendingScenes !== 0
+  }
+
+  while (yield select(shouldWaitForScenes)) {
+    // these are the events that _may_ change the result of shouldWaitForScenes
+    yield take(ACTIONS_FOR_LOADING)
+  }
+}
+
+function* initialSceneLoading() {
+  yield call(onLoginCompleted)
+  yield call(waitForSceneLoads)
+  yield put(experienceStarted())
+}
+
+/**
+ * Reports the number of loading parcel scenes to unity to handle the loading states
+ */
+function* handleReportPendingScenes() {
+  const pendingScenes = new Set<string>()
+
+  let countableScenes = 0
+  for (const [sceneId, sceneWorker] of loadedSceneWorkers) {
+    const isPending = (sceneWorker.ready & SceneWorkerReadyState.STARTED) === 0
+    const failedLoading = (sceneWorker.ready & SceneWorkerReadyState.LOADING_FAILED) !== 0
+
+    countableScenes++
+
+    if (isPending && !failedLoading) {
+      pendingScenes.add(sceneId)
+    }
+  }
+
+  yield put(informPendingScenes(pendingScenes.size, countableScenes))
 }

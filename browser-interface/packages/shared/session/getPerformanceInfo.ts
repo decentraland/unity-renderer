@@ -1,5 +1,5 @@
-import { incrementCounter, getAndClearOccurenceCounters } from 'shared/occurences'
-import { getUsedComponentVersions } from 'shared/rolloutVersions'
+import { getExplorerVersion } from 'shared/meta/version'
+import { getAndClearOccurenceCounters, incrementCounter } from 'shared/occurences'
 
 const pingResponseTimes: number[] = []
 const pingResponsePercentages: number[] = []
@@ -124,7 +124,7 @@ export function getPerformanceInfo(data: {
 
   const isHidden = (globalThis as any).document?.hidden
 
-  const { explorerVersion } = getUsedComponentVersions()
+  const explorerVersion = getExplorerVersion()
 
   const ret = {
     runtime,
