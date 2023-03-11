@@ -8,7 +8,7 @@ import { arrayCleanup } from 'lib/javascript/arrayCleanup'
 import { defaultLogger } from 'lib/logger'
 import { getERC20Balance } from 'lib/web3/EthereumService'
 import { fetchENSOwner } from 'lib/web3/fetchENSOwner'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError, trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
 import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
 import { emotesRequest, wearablesRequest } from 'shared/catalogs/actions'
@@ -104,7 +104,7 @@ import { getUnityInstance } from './IUnityInterface'
 import { handleRequestAudioDevices } from './managers/audio'
 import { handlePerformanceReport } from './managers/performance'
 import { handleSaveUserAvatar, RendererSaveProfile } from './managers/profiles'
-import { handleSceneEvent, handleScenesLoadingFeedback } from './managers/scene'
+import { handleSceneEvent } from './managers/scene'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -136,7 +136,7 @@ class BrowserInterface {
    */
   public handleUnityMessage(type: string, message: any) {
     if (type in this) {
-      ; (this as any)[type](message)
+      ;(this as any)[type](message)
     } else {
       if (DEBUG) {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
@@ -255,8 +255,8 @@ class BrowserInterface {
   public GoTo(data: { x: number; y: number }) {
     notifyStatusThroughChat(`Jumped to ${data.x},${data.y}!`)
     TeleportController.goTo(data.x, data.y).then(
-      () => { },
-      () => { }
+      () => {},
+      () => {}
     )
   }
 
@@ -386,7 +386,7 @@ class BrowserInterface {
   /**
    * @deprecated
    */
-  public UserAcceptedCollectibles(_data: { id: string }) { }
+  public UserAcceptedCollectibles(_data: { id: string }) {}
 
   /** @deprecated */
   public SetDelightedSurveyEnabled(data: { enabled: boolean }) {
@@ -659,8 +659,8 @@ class BrowserInterface {
         notifyStatusThroughChat(successMessage)
         getUnityInstance().ConnectionToRealmSuccess(data)
         TeleportController.goTo(x, y, successMessage).then(
-          () => { },
-          () => { }
+          () => {},
+          () => {}
         )
       },
       (e) => {
@@ -682,7 +682,7 @@ class BrowserInterface {
 
   public ScenesLoadingFeedback(data: { message: string; loadPercentage: number }) {
     defaultLogger.log('Deprecated method: ScenesLoadingFeedback')
-    handleScenesLoadingFeedback(data)
+    trackError('kernel:renderer', new Error("Attempted call: ScenesLoadingFeedback"))
   }
 
   public FetchHotScenes() {
@@ -772,8 +772,8 @@ class BrowserInterface {
 
     const headers: Record<string, string> = identity
       ? getSignedHeaders(data.method, data.url, data.metadata, (_payload) =>
-        Authenticator.signPayload(identity, data.url)
-      )
+          Authenticator.signPayload(identity, data.url)
+        )
       : {}
 
     getUnityInstance().SendHeaders(data.url, headers)

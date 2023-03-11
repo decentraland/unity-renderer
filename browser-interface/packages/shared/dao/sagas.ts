@@ -178,8 +178,8 @@ function* initializeCatalystCandidates() {
   yield put(catalystRealmsScanRequested())
 
   const { catalystsNodesEndpointURL, added, denylistedCatalysts } = (yield select(
-    getInformationForInitializeCatalystCandidates
-  )) as ReturnType<typeof getInformationForInitializeCatalystCandidates>
+    getInformationToInitializeCatalystCandidates
+  )) as ReturnType<typeof getInformationToInitializeCatalystCandidates>
 
   const nodes: CatalystNode[] = yield call(fetchCatalystRealms, catalystsNodesEndpointURL)
 
@@ -193,7 +193,7 @@ function* initializeCatalystCandidates() {
   yield put(setCatalystCandidates(candidates))
 }
 
-function getInformationForInitializeCatalystCandidates(state: RootState) {
+function getInformationToInitializeCatalystCandidates(state: RootState) {
   return {
     catalystsNodesEndpointURL: getCatalystNodesEndpoint(state),
     added: getAddedServers(state),

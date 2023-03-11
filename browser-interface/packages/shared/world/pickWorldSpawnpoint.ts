@@ -85,10 +85,13 @@ function checkBoundaries(land: Scene, finalPosition: ReadOnlyVector3): ReadOnlyV
   }
 
   if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
-    finalWorldPosition.x = 1
-    finalWorldPosition.z = 1
+    return {
+      x: 1,
+      y: finalPosition.y,
+      z: 1
+    }
   }
-  return finalWorldPosition
+  return finalPosition
 }
 
 function resolveRanges(v: { x: number | number[]; y: number | number[]; z: number | number[] }): ReadOnlyVector3 {

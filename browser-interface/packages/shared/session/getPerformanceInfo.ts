@@ -1,5 +1,5 @@
+import { getAndClearOccurenceCounters, incrementCounter } from 'shared/analytics/occurences'
 import { getExplorerVersion } from 'shared/meta/version'
-import { getAndClearOccurenceCounters, incrementCounter } from 'shared/occurences'
 
 const pingResponseTimes: number[] = []
 const pingResponsePercentages: number[] = []
