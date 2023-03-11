@@ -578,7 +578,7 @@ function* refreshFriends() {
     const friendsSocial: SocialData[] = []
 
     // init friend requests
-    const friendRequests: FriendshipRequest[] = yield call(async () => await client.getPendingRequests())
+    const friendRequests: FriendshipRequest[] = yield apply(client, client.getPendingRequests)
 
     // filter my requests to others
     const toFriendRequests = friendRequests.filter((request) => request.from === ownId)
