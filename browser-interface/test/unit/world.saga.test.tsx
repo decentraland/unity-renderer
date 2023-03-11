@@ -11,14 +11,14 @@ import {
   getSceneWorkerBySceneID,
   getSceneWorkerBySceneNumber
 } from 'shared/world/parcelSceneManager'
-import { anounceOnEnterOnSceneStart, anounceOnReadyOnSceneReady } from 'shared/world/sagas'
+import { worldSagas } from 'shared/world/sagas'
 import { SceneWorker } from 'shared/world/SceneWorker'
 
 describe('World', () => {
   it('anounceOnReadyOnSceneReady -> sceneNumber', async () => {
     const action = rendererSignalSceneReady('abc', 123)
     let called = false
-    await expectSaga(anounceOnReadyOnSceneReady)
+    await expectSaga(worldSagas)
       .provide([
         [
           call(getSceneWorkerBySceneNumber, 123),
@@ -37,7 +37,7 @@ describe('World', () => {
   it('anounceOnReadyOnSceneReady -> sceneId', async () => {
     const action = rendererSignalSceneReady('abc')
     let called = false
-    await expectSaga(anounceOnReadyOnSceneReady)
+    await expectSaga(worldSagas)
       .provide([
         [
           call(getSceneWorkerBySceneID, 'abc'),
@@ -69,7 +69,7 @@ describe('World', () => {
       }
     } as any as SceneWorker
 
-    await expectSaga(anounceOnEnterOnSceneStart)
+    await expectSaga(worldSagas)
       .provide([
         [select(getParcelPositionAsString), SCENE_POSITION],
         [call(getLoadedParcelSceneByParcel, SCENE_POSITION), SCENE_WORKER],
@@ -98,7 +98,7 @@ describe('World', () => {
       }
     } as any as SceneWorker
 
-    await expectSaga(anounceOnEnterOnSceneStart)
+    await expectSaga(worldSagas)
       .provide([
         [select(getParcelPositionAsString), SCENE_POSITION],
         [call(getLoadedParcelSceneByParcel, SCENE_POSITION), SCENE_WORKER],

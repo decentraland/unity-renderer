@@ -22,16 +22,19 @@ import {
 import { getDesiredPortableExperiences } from './selectors'
 
 export function* portableExperienceSaga(): any {
-  yield takeEvery([
-    REMOVE_DESIRED_PORTABLE_EXPERIENCE,
-    ADD_DESIRED_PORTABLE_EXPERIENCE,
-    SHUTDOWN_ALL_PORTABLE_EXPERIENCES,
-    ACTIVATE_ALL_PORTABLE_EXPERIENCES,
-    DENY_PORTABLE_EXPERIENCES,
-    ADD_SCENE_PX,
-    ADD_KERNEL_PX,
-    REMOVE_SCENE_PX
-  ], handlePortableExperienceChanges)
+  yield takeEvery(
+    [
+      REMOVE_DESIRED_PORTABLE_EXPERIENCE,
+      ADD_DESIRED_PORTABLE_EXPERIENCE,
+      SHUTDOWN_ALL_PORTABLE_EXPERIENCES,
+      ACTIVATE_ALL_PORTABLE_EXPERIENCES,
+      DENY_PORTABLE_EXPERIENCES,
+      ADD_SCENE_PX,
+      ADD_KERNEL_PX,
+      REMOVE_SCENE_PX
+    ],
+    handlePortableExperienceChanges
+  )
   yield takeEvery(RELOAD_SCENE_PX, reloadPortableExperienceChanges)
   yield debounce(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY(), UPDATE_ENGINE_PX, handlePortableExperienceChangesEffect)
 }

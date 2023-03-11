@@ -11,6 +11,7 @@ import { globalObservable } from '../observables'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { store } from 'shared/store/isolatedStore'
 import defaultLogger from 'lib/logger'
+import { stringify } from 'lib/javascript/stringify'
 
 export function BringDownClientAndShowError(event: ExecutionLifecycleEvent | string) {
   if (ExecutionLifecycleEventsList.includes(event as any)) {
@@ -32,9 +33,11 @@ export function BringDownClientAndShowError(event: ExecutionLifecycleEvent | str
 export namespace ErrorContext {
   export const WEBSITE_INIT = `website#init`
   export const COMMS_INIT = `comms#init`
+  export const COMMS = `comms`
   export const KERNEL_INIT = `kernel#init`
   export const KERNEL_SAGA = `kernel#saga`
   export const KERNEL_SCENE = `kernel#scene`
+  export const KERNEL_WARNING = `kernel#warning`
   export const RENDERER_AVATARS = `renderer#avatars`
   export const RENDERER_ERRORHANDLER = `renderer#errorHandler`
   export const RENDERER_NEWERRORHANDLER = `renderer#newErrorHandler`
@@ -43,22 +46,14 @@ export namespace ErrorContext {
 export type ErrorContextTypes =
   | typeof ErrorContext.WEBSITE_INIT
   | typeof ErrorContext.COMMS_INIT
+  | typeof ErrorContext.COMMS
   | typeof ErrorContext.KERNEL_INIT
   | typeof ErrorContext.KERNEL_SAGA
   | typeof ErrorContext.KERNEL_SCENE
+  | typeof ErrorContext.KERNEL_WARNING
   | typeof ErrorContext.RENDERER_AVATARS
   | typeof ErrorContext.RENDERER_ERRORHANDLER
   | typeof ErrorContext.RENDERER_NEWERRORHANDLER
-
-export function ReportFatalErrorWithCatalystPayload(error: Error, context: ErrorContextTypes) {
-  // TODO(Brian): Get some useful catalyst payload to append here
-  BringDownClientAndReportFatalError(error, context)
-}
-
-export function ReportFatalErrorWithCommsPayload(error: Error, context: ErrorContextTypes) {
-  // TODO(Brian): Get some useful comms payload to append here
-  BringDownClientAndReportFatalError(error, context)
-}
 
 Object.assign(globalThis, {
   BringDownClientAndShowError,
@@ -99,9 +94,7 @@ export function BringDownClientAndReportFatalError(
   // segment requires less information than rollbar
   trackEvent('error_fatal', {
     context,
-    // this is on purpose, if error is not an actual Error, it has no message, so we use the ''+error to call a
-    // toString, we do that because it may be also null. and (null).toString() is invalid, but ''+null works perfectly
-    message: error.message || '' + error,
+    message: error.message || turnToString(error),
     stack: getStack(error).slice(0, 10000),
     saga_stack: sagaStack
   })
@@ -123,4 +116,15 @@ function getStack(error?: any) {
       return e.stack || '' + error
     }
   }
+}
+
+/**
+ * Turns `arg` into a string.
+ *
+ * @param arg
+ */
+function turnToString(arg: any) {
+  // Uses JSON.stringify if `typeof arg === 'object'`, but `''+arg` for native types for performance
+  if (typeof arg === 'object') return stringify(arg)
+  return '' + arg
 }

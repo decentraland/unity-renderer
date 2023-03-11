@@ -7,8 +7,15 @@ import { CommonRendererOptions } from 'kernel-web-interface/renderer'
 import defaultLogger from 'lib/logger'
 
 let pendingMessagesInTrace = 0
-const currentTrace: string[] = []
 let traceType: 'console' | 'file' = 'file'
+const currentTrace: string[] = []
+export function setupTracing() {
+  /*
+   * TODO: This does nothing, but it's here to signal the side-effect of creating `currentTrace`,
+   * which is required due to some race condition between script imports. If not necessary,
+   * analyze dropping this on `entrypoints/index.ts`.
+   */
+}
 
 export function traceDecoratorRendererOptions(options: CommonRendererOptions): CommonRendererOptions {
   const originalOnMessage = options.onMessage
