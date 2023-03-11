@@ -601,7 +601,7 @@ describe('Friends sagas', () => {
           ]
         ])
         .dispatch(setMatrixClient(stubClient))
-        .silentRun() // due to initializeStatusUpdateInterval saga is a while(true) gen
+        .silentRun(0) // due to initializeStatusUpdateInterval saga is a while(true) gen
       unityMock.verify()
     })
 
@@ -645,7 +645,7 @@ describe('Friends sagas', () => {
           ]
         ])
         .dispatch(setMatrixClient(client))
-        .silentRun()
+        .silentRun(0)
       unityMock.verify()
     })
 
@@ -668,7 +668,7 @@ describe('Friends sagas', () => {
           ]
         ])
         .dispatch(setMatrixClient(stubClient))
-        .silentRun()
+        .silentRun(0)
       unityMock.verify()
     })
   })
