@@ -634,10 +634,9 @@ function* refreshFriends() {
     defaultLogger.log('____ initChatMessage ____', initChatMessage)
 
     // all profiles to obtain, deduped
-    const allProfilesToObtain: string[] = friendIds
-      .concat(requestedFromIds.map((x) => x.userId))
-      .concat(requestedToIds.map((x) => x.userId))
-      .filter((each, i, elements) => elements.indexOf(each) === i)
+    const allProfilesToObtain: string[] = Array.from(
+      new Set(friendIds.concat(requestedFromIds.map((x) => x.userId)).concat(requestedToIds.map((x) => x.userId)))
+    )
 
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
     yield call(async () => await Promise.all(ensureFriendProfilesPromises).catch(logger.error))
