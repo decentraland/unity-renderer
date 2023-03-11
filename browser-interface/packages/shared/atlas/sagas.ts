@@ -4,6 +4,9 @@ import { getTilesRectFromCenter } from 'lib/decentraland/parcels/getTilesRectFro
 import { parcelSize } from 'lib/decentraland/parcels/limits'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
+import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
+import { getSceneDescriptionFromJsonData } from 'lib/decentraland/sceneJson/getSceneDescriptionFromJsonData'
+import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
 import defaultLogger from 'lib/logger'
 import { Vector2 } from 'lib/math/Vector2'
 import { waitFor } from 'lib/redux'
@@ -11,18 +14,15 @@ import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { getPOIService } from 'shared/dao/selectors'
 import { SCENE_LOAD } from 'shared/loading/actions'
+import { META_CONFIGURATION_INITIALIZED } from 'shared/meta/actions'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
-import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
-import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
-import { getSceneDescriptionFromJsonData } from 'lib/decentraland/sceneJson/getSceneDescriptionFromJsonData'
 import { store } from 'shared/store/isolatedStore'
 import { LoadableScene } from 'shared/types'
+import { lastPlayerPosition } from 'shared/world/positionThings'
 import { getUnityInstance, MinimapSceneInfo } from 'unity-interface/IUnityInterface'
-import { META_CONFIGURATION_INITIALIZED } from '../meta/actions'
-import { lastPlayerPosition } from '../world/positionThings'
 import {
   initializePoiTiles,
   INITIALIZE_POI_TILES,
@@ -45,7 +45,7 @@ import { RootAtlasState } from './types'
 import { homePointKey } from './utils'
 
 export function* atlasSaga(): any {
-  yield takeEvery(SCENE_LOAD, checkAndReportAround)
+  yield takeEvery(SCENE_LOAD, reportPositionAndScenesIfMoved)
 
   yield takeLatest(META_CONFIGURATION_INITIALIZED, initializePois)
   yield takeLatest(PARCEL_LOADING_STARTED, reportPois)
@@ -59,7 +59,7 @@ export function* atlasSaga(): any {
 const TRIGGER_DISTANCE = 10 * parcelSize
 const MAX_SCENES_AROUND = 15
 
-function* checkAndReportAround() {
+function* reportPositionAndScenesIfMoved() {
   const userPosition = lastPlayerPosition
   const lastReport: Vector2 | undefined = yield select((state) => state.atlas.lastReportPosition)
 
@@ -68,6 +68,7 @@ function* checkAndReportAround() {
     Math.abs(userPosition.x - lastReport.x) > TRIGGER_DISTANCE ||
     Math.abs(userPosition.z - lastReport.y) > TRIGGER_DISTANCE
   ) {
+    defaultLogger.error('HAPPENED!')
     const gridPosition = worldToGrid(userPosition)
 
     yield put(reportScenesAroundParcel(gridPosition, MAX_SCENES_AROUND))

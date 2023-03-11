@@ -1,14 +1,12 @@
-import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
-
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
+import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
 import { getSignedHeaders } from 'lib/decentraland/authentication/signedFetch'
 import { arrayCleanup } from 'lib/javascript/arrayCleanup'
-import { now } from 'lib/javascript/now'
 import { defaultLogger } from 'lib/logger'
+import { getERC20Balance } from 'lib/web3/EthereumService'
 import { fetchENSOwner } from 'lib/web3/fetchENSOwner'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
@@ -20,7 +18,6 @@ import { sendMessage } from 'shared/chat/actions'
 import { sendPublicChatMessage } from 'shared/comms'
 import { changeRealm } from 'shared/dao'
 import { getSelectedNetwork } from 'shared/dao/selectors'
-import { getERC20Balance } from 'lib/web3/EthereumService'
 import { leaveChannel, updateUserData } from 'shared/friends/actions'
 import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
 import {
@@ -43,9 +40,7 @@ import {
   UpdateFriendshipAsPromise
 } from 'shared/friends/sagas'
 import { areChannelsEnabled, getMatrixIdFromUser } from 'shared/friends/utils'
-import { updateStatusMessage } from 'shared/loading/actions'
 import { ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
-import { getLastUpdateTime } from 'shared/loading/selectors'
 import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
 import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
 import { globalObservable } from 'shared/observables'
@@ -57,7 +52,6 @@ import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
 import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
-import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
 import { setRendererAvatarState } from 'shared/social/avatarTracker'
@@ -83,7 +77,6 @@ import {
   MarkChannelMessagesAsSeenPayload,
   MarkMessagesAsSeenPayload,
   MuteChannelPayload,
-  SetAudioDevicesPayload,
   WorldPosition
 } from 'shared/types'
 import {
@@ -95,7 +88,6 @@ import {
   setVoiceChatPolicy,
   setVoiceChatVolume
 } from 'shared/voiceChat/actions'
-import { requestMediaDevice } from 'shared/voiceChat/sagas'
 import { rendererSignalSceneReady } from 'shared/world/actions'
 import {
   allScenesEvent,
@@ -110,10 +102,13 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
+import { handleRequestAudioDevices } from './managers/audio'
+import { handlePerformanceReport } from './managers/performance'
+import { handleSaveUserAvatar, RendererSaveProfile } from './managers/profiles'
+import { handleSceneEvent, handleScenesLoadingFeedback } from './managers/scene'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
-const TIME_BETWEEN_SCENE_LOADING_UPDATES = 1_000
 
 type UnityEvent = any
 
@@ -125,112 +120,6 @@ type SystemInfoPayload = {
   processorCount: number
   systemMemorySize: number
 }
-
-/** Message from renderer sent to save the profile in the catalyst */
-export type RendererSaveProfile = {
-  avatar: {
-    name: string
-    bodyShape: string
-    skinColor: {
-      r: number
-      g: number
-      b: number
-      a: number
-    }
-    hairColor: {
-      r: number
-      g: number
-      b: number
-      a: number
-    }
-    eyeColor: {
-      r: number
-      g: number
-      b: number
-      a: number
-    }
-    wearables: string[]
-    emotes: {
-      slot: number
-      urn: string
-    }[]
-  }
-  face256: string
-  body: string
-  isSignUpFlow?: boolean
-}
-
-const color3Schema: JSONSchema<{ r: number; g: number; b: number; a: number }> = {
-  type: 'object',
-  required: ['r', 'g', 'b', 'a'],
-  properties: {
-    r: { type: 'number', nullable: false },
-    g: { type: 'number', nullable: false },
-    b: { type: 'number', nullable: false },
-    a: { type: 'number', nullable: false }
-  }
-} as any
-
-const emoteSchema: JSONSchema<{ slot: number; urn: string }> = {
-  type: 'object',
-  required: ['slot', 'urn'],
-  properties: {
-    slot: { type: 'number', nullable: false },
-    urn: { type: 'string', nullable: false }
-  }
-}
-
-export const rendererSaveProfileSchemaV0: JSONSchema<RendererSaveProfile> = {
-  type: 'object',
-  required: ['avatar', 'body', 'face256'],
-  properties: {
-    face256: { type: 'string' },
-    body: { type: 'string' },
-    isSignUpFlow: { type: 'boolean', nullable: true },
-    avatar: {
-      type: 'object',
-      required: ['bodyShape', 'eyeColor', 'hairColor', 'name', 'skinColor', 'wearables'],
-      properties: {
-        bodyShape: { type: 'string' },
-        name: { type: 'string' },
-        eyeColor: color3Schema,
-        hairColor: color3Schema,
-        skinColor: color3Schema,
-        wearables: { type: 'array', items: { type: 'string' } },
-        emotes: { type: 'array', items: emoteSchema }
-      }
-    }
-  }
-} as any
-
-export const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
-  type: 'object',
-  required: ['avatar', 'body', 'face256'],
-  properties: {
-    face256: { type: 'string' },
-    body: { type: 'string' },
-    isSignUpFlow: { type: 'boolean', nullable: true },
-    avatar: {
-      type: 'object',
-      required: ['bodyShape', 'eyeColor', 'hairColor', 'name', 'skinColor', 'wearables'],
-      properties: {
-        bodyShape: { type: 'string' },
-        name: { type: 'string' },
-        eyeColor: color3Schema,
-        hairColor: color3Schema,
-        skinColor: color3Schema,
-        wearables: { type: 'array', items: { type: 'string' } },
-        emotes: { type: 'array', items: emoteSchema }
-      }
-    }
-  }
-} as any
-
-// This old schema should keep working until ADR74 is merged and renderer is released
-const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV0)
-
-// This is the new one
-const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
 
 // the BrowserInterface is a visitor for messages received from Unity
 export class BrowserInterface {
@@ -248,7 +137,7 @@ export class BrowserInterface {
    */
   public handleUnityMessage(type: string, message: any) {
     if (type in this) {
-      ;(this as any)[type](message)
+      ; (this as any)[type](message)
     } else {
       if (DEBUG) {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
@@ -289,30 +178,7 @@ export class BrowserInterface {
   }
 
   public SceneEvent(data: { sceneId: string; sceneNumber: number; eventType: string; payload: any }) {
-    const scene = data.sceneNumber
-      ? getSceneWorkerBySceneNumber(data.sceneNumber)
-      : getSceneWorkerBySceneID(data.sceneId)
-
-    if (scene) {
-      scene.rpcContext.sendSceneEvent(data.eventType as IEventNames, data.payload)
-
-      // Keep backward compatibility with old scenes using deprecated `pointerEvent`
-      if (data.eventType === 'actionButtonEvent') {
-        const { payload } = data.payload
-        // CLICK, PRIMARY or SECONDARY
-        if (payload.buttonId >= 0 && payload.buttonId <= 2) {
-          scene.rpcContext.sendSceneEvent('pointerEvent', data.payload)
-        }
-      }
-    } else {
-      if (data.eventType !== 'metricsUpdate') {
-        if (data.sceneId) {
-          defaultLogger.error(`SceneEvent: Scene id ${data.sceneId} not found`, data)
-        } else {
-          defaultLogger.error(`SceneEvent: Scene number ${data.sceneNumber} not found`, data)
-        }
-      }
-    }
+    handleSceneEvent(data)
   }
 
   public OpenWebURL(data: { url: string }) {
@@ -321,14 +187,7 @@ export class BrowserInterface {
 
   /** @deprecated */
   public PerformanceReport(data: Record<string, unknown>) {
-    let estimatedAllocatedMemory = 0
-    let estimatedTotalMemory = 0
-    if (getUnityInstance()?.Module?.asmLibraryArg?._GetDynamicMemorySize) {
-      estimatedAllocatedMemory = getUnityInstance().Module.asmLibraryArg._GetDynamicMemorySize()
-      estimatedTotalMemory = getUnityInstance().Module.asmLibraryArg._GetTotalMemorySize()
-    }
-    const perfReport = getPerformanceInfo({ ...(data as any), estimatedAllocatedMemory, estimatedTotalMemory })
-    trackEvent('performance report', perfReport)
+    handlePerformanceReport(data)
   }
 
   /** @deprecated TODO: remove useBinaryTransform after SDK7 is fully in prod */
@@ -397,8 +256,8 @@ export class BrowserInterface {
   public GoTo(data: { x: number; y: number }) {
     notifyStatusThroughChat(`Jumped to ${data.x},${data.y}!`)
     TeleportController.goTo(data.x, data.y).then(
-      () => {},
-      () => {}
+      () => { },
+      () => { }
     )
   }
 
@@ -428,48 +287,7 @@ export class BrowserInterface {
   }
 
   public SaveUserAvatar(changes: RendererSaveProfile) {
-    if (validateRendererSaveProfileV1(changes as RendererSaveProfile)) {
-      const update: Partial<Avatar> = {
-        avatar: {
-          bodyShape: changes.avatar.bodyShape,
-          eyes: { color: changes.avatar.eyeColor },
-          hair: { color: changes.avatar.hairColor },
-          skin: { color: changes.avatar.skinColor },
-          wearables: changes.avatar.wearables,
-          snapshots: {
-            body: changes.body,
-            face256: changes.face256
-          },
-          emotes: changes.avatar.emotes
-        }
-      }
-      store.dispatch(saveProfileDelta(update))
-    } else if (validateRendererSaveProfileV0(changes as RendererSaveProfile)) {
-      const update: Partial<Avatar> = {
-        avatar: {
-          bodyShape: changes.avatar.bodyShape,
-          eyes: { color: changes.avatar.eyeColor },
-          hair: { color: changes.avatar.hairColor },
-          skin: { color: changes.avatar.skinColor },
-          wearables: changes.avatar.wearables,
-          emotes: (changes.avatar.emotes ?? []).map((value, index) => ({ slot: index, urn: value as any as string })),
-          snapshots: {
-            body: changes.body,
-            face256: changes.face256
-          }
-        }
-      }
-      store.dispatch(saveProfileDelta(update))
-    } else {
-      const errors = validateRendererSaveProfileV1.errors ?? validateRendererSaveProfileV0.errors
-      defaultLogger.error('error validating schema', errors)
-      trackEvent('invalid_schema', {
-        schema: 'SaveUserAvatar',
-        payload: changes,
-        errors: (errors ?? []).map(($) => $.message).join(',')
-      })
-      defaultLogger.error('Unity sent invalid profile' + JSON.stringify(changes) + ' Errors: ' + JSON.stringify(errors))
-    }
+    handleSaveUserAvatar(changes)
   }
 
   public SendPassport(passport: { name: string; email: string }) {
@@ -587,7 +405,7 @@ export class BrowserInterface {
   /**
    * @deprecated
    */
-  public UserAcceptedCollectibles(_data: { id: string }) {}
+  public UserAcceptedCollectibles(_data: { id: string }) { }
 
   /** @deprecated */
   public SetDelightedSurveyEnabled(data: { enabled: boolean }) {
@@ -611,33 +429,7 @@ export class BrowserInterface {
   }
 
   public async RequestAudioDevices() {
-    if (!navigator.mediaDevices?.enumerateDevices) {
-      defaultLogger.error('enumerateDevices() not supported.')
-    } else {
-      try {
-        await requestMediaDevice()
-
-        // List cameras and microphones.
-        const devices = await navigator.mediaDevices.enumerateDevices()
-
-        const filterDevices = (kind: string) => {
-          return devices
-            .filter((device) => device.kind === kind)
-            .map((device) => {
-              return { deviceId: device.deviceId, label: device.label }
-            })
-        }
-
-        const payload: SetAudioDevicesPayload = {
-          inputDevices: filterDevices('audioinput'),
-          outputDevices: filterDevices('audiooutput')
-        }
-
-        getUnityInstance().SetAudioDevices(payload)
-      } catch (err: any) {
-        defaultLogger.error(`${err.name}: ${err.message}`)
-      }
-    }
+    await handleRequestAudioDevices()
   }
 
   public GetFriendsWithDirectMessages(getFriendsWithDirectMessagesPayload: GetFriendsWithDirectMessagesPayload) {
@@ -886,8 +678,8 @@ export class BrowserInterface {
         notifyStatusThroughChat(successMessage)
         getUnityInstance().ConnectionToRealmSuccess(data)
         TeleportController.goTo(x, y, successMessage).then(
-          () => {},
-          () => {}
+          () => { },
+          () => { }
         )
       },
       (e) => {
@@ -908,13 +700,7 @@ export class BrowserInterface {
   }
 
   public ScenesLoadingFeedback(data: { message: string; loadPercentage: number }) {
-    const { message, loadPercentage } = data
-    const currentTime = now()
-    const last = getLastUpdateTime(store.getState())
-    const elapsed = currentTime - (last || 0)
-    if (elapsed > TIME_BETWEEN_SCENE_LOADING_UPDATES) {
-      store.dispatch(updateStatusMessage(message, loadPercentage, currentTime))
-    }
+    handleScenesLoadingFeedback(data)
   }
 
   public FetchHotScenes() {
@@ -1004,8 +790,8 @@ export class BrowserInterface {
 
     const headers: Record<string, string> = identity
       ? getSignedHeaders(data.method, data.url, data.metadata, (_payload) =>
-          Authenticator.signPayload(identity, data.url)
-        )
+        Authenticator.signPayload(identity, data.url)
+      )
       : {}
 
     getUnityInstance().SendHeaders(data.url, headers)

@@ -1,3 +1,4 @@
+import { isInsideWorldLimits } from '@dcl/schemas'
 import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK } from 'config/index'
 import { WebSocketProvider } from 'eth-connect'
 import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from 'kernel-web-interface'
@@ -7,6 +8,7 @@ import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPositio
 import { resolveBaseUrl } from 'lib/decentraland/url/resolveBaseUrl'
 import { storeCondition } from 'lib/redux/storeCondition'
 import { initShared } from 'shared'
+import { setupTracing } from 'shared/analytics/trace'
 import { sendHomeScene } from 'shared/atlas/actions'
 import { homePointKey } from 'shared/atlas/utils'
 import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
@@ -18,9 +20,7 @@ import { retrieveLastSessionByAddress } from 'shared/session'
 import { authenticate, initSession } from 'shared/session/actions'
 import { store } from 'shared/store/isolatedStore'
 import type { RootState } from 'shared/store/rootTypes'
-import { getInitialPositionFromUrl } from 'shared/world/positionThings'
 import { initializeUnity } from 'unity-interface/initializer'
-import 'unity-interface/trace'
 import Hls from './hlsLoader'
 import { loadWebsiteSystems } from './loadWebsiteSystems'
 import { isWebGLCompatible } from './validations'
@@ -32,8 +32,8 @@ declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
     ensureWebGLCapability()
-
     ensureHLSCapability()
+    setupTracing()
 
     await setupBaseUrl(options)
 
@@ -43,22 +43,12 @@ globalThis.DecentralandKernel = {
 
     initShared()
 
-    /**
-     * These are executed asynchronously. After initShared sets up the redux store and sagas, we can return
-     * control back to the caller.
-     */
-    setTimeout(async () => {
-      try {
-        // TODO: is there a reason why initial teleport needs to happen before initializing a session?
-        // TODO: do we need `initSession`? Can't it be just a fork at the begining of the main saga?
-        await setupHomeAndInitialTeleport()
-        store.dispatch(initSession())
+    executeOnNextTick(async () => {
+      await setupHomeAndInitialTeleport()
+      store.dispatch(initSession())
 
-        await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
-      } catch (err: any) {
-        BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
-      }
-    }, 0)
+      await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
+    })
 
     return {
       authenticate: authenticateCallback,
@@ -177,4 +167,25 @@ function isLoginStateWaitingForProvider(state: RootState) {
 async function authenticateWhenItsReady(provider: IEthereumProvider, isGuest: boolean) {
   await storeCondition(isLoginStateWaitingForProvider)
   store.dispatch(authenticate(provider, isGuest))
+}
+
+function getInitialPositionFromUrl(): ReadOnlyVector2 | undefined {
+  const query = new URLSearchParams(location.search)
+  const position = query.get('position')
+  if (typeof position === 'string') {
+    const { x, y } = parseParcelPosition(position)
+    if (isInsideWorldLimits(x, y)) {
+      return { x, y }
+    }
+  }
+}
+
+function executeOnNextTick(task: () => Promise<any>) {
+  setTimeout(async () => {
+    try {
+      await task()
+    } catch (err: any) {
+      BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
+    }
+  }, 0)
 }

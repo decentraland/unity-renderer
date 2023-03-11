@@ -1,25 +1,24 @@
 // This file contains code that selects which renderer to use and loads it
-import { storeCondition } from 'lib/redux/storeCondition'
-import { initializeRenderer } from 'shared/renderer/actions'
-import { CommonRendererOptions, loadUnity } from './loader'
+import { Transport } from '@dcl/rpc'
 import type { UnityGame } from '@dcl/unity-renderer/src/index'
+import { ALLOW_SWIFT_SHADER } from 'config'
 import type { KernelOptions } from 'kernel-web-interface'
-
-import { initializeUnityEditor } from './wsEditorAdapter'
-import { traceDecoratorRendererOptions } from './trace'
+import defaultLogger from 'lib/logger'
+import { storeCondition } from 'lib/redux/storeCondition'
+import { webTransport } from 'renderer-protocol/transports/webTransport'
+import { traceDecoratorRendererOptions } from 'shared/analytics/trace'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import {
   BringDownClientAndShowError,
   ErrorContext,
   ReportFatalErrorWithUnityPayloadAsync
 } from 'shared/loading/ReportFatalError'
-import { store } from 'shared/store/isolatedStore'
-import defaultLogger from 'lib/logger'
-import { trackEvent } from 'shared/analytics/trackEvent'
-import { browserInterface } from './BrowserInterface'
-import { webTransport } from 'renderer-protocol/transports/webTransport'
-import { Transport } from '@dcl/rpc'
+import { initializeRenderer } from 'shared/renderer/actions'
 import { isRendererInitialized } from 'shared/renderer/selectors'
-import { ALLOW_SWIFT_SHADER } from 'config'
+import { store } from 'shared/store/isolatedStore'
+import { browserInterface } from './BrowserInterface'
+import { CommonRendererOptions, loadUnity } from './loader'
+import { initializeUnityEditor } from './wsEditorAdapter'
 
 export type InitializeUnityResult = {
   container: HTMLElement

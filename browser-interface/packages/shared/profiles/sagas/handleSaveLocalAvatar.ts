@@ -9,7 +9,7 @@ import { getCurrentUserId, getCurrentIdentity, getCurrentNetwork } from 'shared/
 import { createFakeName } from 'lib/decentraland/profiles/names/fakeName'
 import type { Avatar } from '@dcl/schemas'
 import { validateAvatar } from '../schemaValidation'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError, trackEvent } from 'shared/analytics/trackEvent'
 import { localProfilesRepo } from './local/localProfilesRepo'
 
 export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
@@ -56,11 +56,7 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
       yield put(deployProfile(profile))
     }
   } catch (error: any) {
-    trackEvent('error', {
-      message: `cant_persist_avatar ${error}`,
-      context: 'kernel#saga',
-      stack: error.stacktrace
-    })
+    trackError('kernel#saga', error, 'cant_persist_avatar ${error}')
     yield put(saveProfileFailure(userId, 'unknown reason'))
   }
 }

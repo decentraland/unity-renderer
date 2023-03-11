@@ -51,7 +51,7 @@ import { uuid } from 'lib/javascript/uuid'
 import defaultLogger, { createDummyLogger, createLogger } from 'lib/logger'
 import { fetchENSOwner } from 'lib/web3/fetchENSOwner'
 import { apply, call, delay, fork, put, race, select, take, takeEvery } from 'redux-saga/effects'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError, trackEvent } from 'shared/analytics/trackEvent'
 import { SendPrivateMessage, SEND_PRIVATE_MESSAGE } from 'shared/chat/actions'
 import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
 import { getPeer } from 'shared/comms/peers'
@@ -1254,12 +1254,7 @@ function* handleSendPrivateMessage(action: SendPrivateMessage) {
     getUnityInstance().AddMessageToChatWindow(message)
   } catch (e: any) {
     logger.error(e)
-    trackEvent('error', {
-      context: 'handleSendPrivateMessage',
-      message: e.message,
-      stack: e.stack,
-      saga_stack: e.toString()
-    })
+    trackError('handleSendPrivateMessage', e)
   }
 }
 
