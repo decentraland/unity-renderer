@@ -1,10 +1,11 @@
 using DCL;
 using DCL.Controllers;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
-using DCL.ECSRuntime;
-using DCL.Models;
 using DCL.ECSComponents;
 using DCL.ECSComponents.UIText;
+using DCL.ECSRuntime;
+using DCL.Models;
 using ECSSystems.ScenesUiSystem;
 using NSubstitute;
 using NUnit.Framework;
@@ -25,10 +26,11 @@ namespace Tests
         {
             var factory = new ECSComponentsFactory();
             var manager = new ECSComponentsManager(factory.componentBuilders);
-            var internalComponents = new InternalECSComponents(manager, factory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            var internalComponents = new InternalECSComponents(manager, factory, executors);
             uiContainerComponent = internalComponents.uiContainerComponent;
 
-            sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager);
+            sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager, executors);
             uiDocument = Object.Instantiate(Resources.Load<UIDocument>("ScenesUI"));
         }
 

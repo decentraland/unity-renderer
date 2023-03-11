@@ -13,7 +13,6 @@ using UnityEngine;
 public class ECS7TestScene : IParcelScene
 {
     public LoadParcelScenesMessage.UnityParcelScene sceneData { get; internal set; }
-    public ICRDTExecutor crdtExecutor { get; set; }
     public Dictionary<long, IDCLEntity> entities { get; internal set; }
     public ECS7TestEntity CreateEntity(long id) => _entityCreator(id);
     public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true) => _entityRemover(id);

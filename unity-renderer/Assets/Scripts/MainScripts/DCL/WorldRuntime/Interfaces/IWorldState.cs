@@ -9,6 +9,7 @@ namespace DCL
     public interface IWorldState : ISceneHandler, IService
     {
         int GetCurrentSceneNumber();
+        string GetCurrentSceneHash();
         IEnumerable<KeyValuePair<int, IParcelScene>> GetLoadedScenes();
         List<IParcelScene> GetGlobalScenes();
         bool TryGetScene(int sceneNumber, out IParcelScene scene);
@@ -25,6 +26,6 @@ namespace DCL
         void SortScenesByDistance(Vector2Int position);
         void AddScene(IParcelScene newScene);
         void RemoveScene(int sceneNumber);
-        void ForceCurrentScene(int sceneNumber);
+        void ForceCurrentScene(int sceneNumber, string sceneHash);
     }
 }

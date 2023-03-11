@@ -4,7 +4,6 @@ using DCL.Helpers;
 using DCL.Models;
 using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
-using DCL.CRDT;
 using DCL.Interface;
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
 using System;
@@ -25,7 +24,6 @@ namespace DCL.Controllers
         public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
-
         public HashSet<Vector2Int> parcels = new HashSet<Vector2Int>();
         public ISceneMetricsCounter metricsCounter { get; set; }
         public event System.Action<IDCLEntity> OnEntityAdded;
@@ -51,8 +49,6 @@ namespace DCL.Controllers
 
         public SceneLifecycleHandler sceneLifecycleHandler;
 
-        public ICRDTExecutor crdtExecutor { get; set; }
-
         public bool isReleased { get; private set; }
 
         private Bounds outerBounds = new Bounds();
@@ -71,7 +67,6 @@ namespace DCL.Controllers
         {
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             metricsCounter?.Dispose();
-            crdtExecutor?.Dispose();
         }
 
         void OnDisable()
@@ -205,12 +200,6 @@ namespace DCL.Controllers
             }
 
             componentsManagerLegacy.DisposeAllSceneComponents();
-
-            if (crdtExecutor != null)
-            {
-                crdtExecutor.Dispose();
-                crdtExecutor = null;
-            }
 
             if (immediate) //!CommonScriptableObjects.rendererState.Get())
             {

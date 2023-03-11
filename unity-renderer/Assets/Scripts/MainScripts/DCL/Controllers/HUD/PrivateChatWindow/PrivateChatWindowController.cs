@@ -346,7 +346,7 @@ public class PrivateChatWindowController : IHUD
             messageId = Guid.NewGuid().ToString(),
             messageType = ChatMessage.Type.SYSTEM,
             subType = ChatEntryModel.SubType.RECEIVED
-        });
+        }).Forget();
     }
 
     private void ResetPagination()

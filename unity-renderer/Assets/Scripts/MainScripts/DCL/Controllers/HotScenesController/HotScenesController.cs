@@ -41,6 +41,48 @@ public class HotScenesController : MonoBehaviour
     }
 
     [Serializable]
+    public class PlacesAPIResponse
+    {
+        public bool ok;
+        public int total;
+        public List<PlaceInfo> data;
+    }
+
+    [Serializable]
+    public class PlaceInfo
+    {
+        public string id;
+        public string title;
+        public string description;
+        public string image;
+        public string owner;
+        public string[] tags;
+        public string[] positions;
+        public string base_position;
+        public string contact_name;
+        public string contact_email;
+        public string content_rating;
+        public bool disabled;
+        public string disabled_at;
+        public string created_at;
+        public string updated_at;
+        public int favorites;
+        public int likes;
+        public int dislikes;
+        public string[] categories;
+        public int like_rate;
+        public bool highlighted;
+        public string highlighted_image;
+        public bool featured;
+        public string featured_image;
+        public bool user_favorite;
+        public bool user_like;
+        public bool user_dislike;
+        public int user_count;
+        public int user_visits;
+    }
+
+    [Serializable]
     internal struct HotScenesUpdatePayload
     {
         public int chunkIndex;
