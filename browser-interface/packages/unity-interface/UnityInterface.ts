@@ -15,7 +15,7 @@ import { Observable } from 'mz-observable'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { Emote, WearableV2 } from 'shared/catalogs/types'
 import { FeatureFlag } from 'shared/meta/types'
-import { incrementCounter } from 'shared/occurences'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { getProvider } from 'shared/session/index'
 import {
   AddChatMessagesPayload,

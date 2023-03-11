@@ -1,6 +1,6 @@
 const occurrencesCounter = new Map<Counters, number>()
 
-export type Counters =
+type Counters =
   | 'failed:sendPositionMessage'
   | `commMessage:${string}`
   | `setThrew:${string}`
