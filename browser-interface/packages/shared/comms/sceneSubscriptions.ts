@@ -14,18 +14,3 @@ export function subscribeParcelSceneToCommsMessages(controller: ICommunicationsC
 export function unsubscribeParcelSceneToCommsMessages(controller: ICommunicationsController) {
   scenesSubscribedToCommsEvents.delete(controller)
 }
-
-/**
- * Retrieve the scene IDs that are subscribed to receive scene messages from comms
- *
- * @returns a list of CIDs, identifying the Scenes by their hash
- */
-export function getParcelSceneSubscriptions(): string[] {
-  const ids: string[] = []
-
-  scenesSubscribedToCommsEvents.forEach(($) => {
-    ids.push($.cid)
-  })
-
-  return ids
-}

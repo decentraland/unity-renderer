@@ -51,7 +51,7 @@ import { uuid } from 'lib/javascript/uuid'
 import defaultLogger, { createDummyLogger, createLogger } from 'lib/logger'
 import { fetchENSOwner } from 'lib/web3/fetchENSOwner'
 import { apply, call, delay, fork, put, race, select, take, takeEvery } from 'redux-saga/effects'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { trackError, trackEvent } from 'shared/analytics/trackEvent'
 import { SendPrivateMessage, SEND_PRIVATE_MESSAGE } from 'shared/chat/actions'
 import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
 import { getPeer } from 'shared/comms/peers'
@@ -578,7 +578,7 @@ function* refreshFriends() {
     const friendsSocial: SocialData[] = []
 
     // init friend requests
-    const friendRequests: FriendshipRequest[] = yield client.getPendingRequests()
+    const friendRequests: FriendshipRequest[] = yield apply(client, client.getPendingRequests, [])
 
     // filter my requests to others
     const toFriendRequests = friendRequests.filter((request) => request.from === ownId)
@@ -634,13 +634,12 @@ function* refreshFriends() {
     defaultLogger.log('____ initChatMessage ____', initChatMessage)
 
     // all profiles to obtain, deduped
-    const allProfilesToObtain: string[] = friendIds
-      .concat(requestedFromIds.map((x) => x.userId))
-      .concat(requestedToIds.map((x) => x.userId))
-      .filter((each, i, elements) => elements.indexOf(each) === i)
+    const allProfilesToObtain: string[] = Array.from(
+      new Set(friendIds.concat(requestedFromIds.map((x) => x.userId)).concat(requestedToIds.map((x) => x.userId)))
+    )
 
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
-    yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
+    yield call(async () => await Promise.all(ensureFriendProfilesPromises).catch(logger.error))
 
     getUnityInstance().InitializeFriends(initFriendsMessage)
     getUnityInstance().InitializeChat(initChatMessage)
@@ -1254,12 +1253,7 @@ function* handleSendPrivateMessage(action: SendPrivateMessage) {
     getUnityInstance().AddMessageToChatWindow(message)
   } catch (e: any) {
     logger.error(e)
-    trackEvent('error', {
-      context: 'handleSendPrivateMessage',
-      message: e.message,
-      stack: e.stack,
-      saga_stack: e.toString()
-    })
+    trackError('handleSendPrivateMessage', e)
   }
 }
 

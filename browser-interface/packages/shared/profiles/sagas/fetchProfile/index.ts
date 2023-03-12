@@ -10,8 +10,8 @@ import type { ProfileRequestAction } from 'shared/profiles/actions'
 import { profileFailure, profileSuccess } from 'shared/profiles/actions'
 import { isCurrentUserId, isGuestLogin as isGuestLoginSelector } from 'shared/session/selectors'
 import type { RootState } from 'shared/store/rootTypes'
-import { getProfileStatusAndData } from '../../selectors'
-import type { ProfileStatus } from '../../types'
+import { getProfileStatusAndData } from 'shared/profiles/selectors'
+import type { ProfileStatus } from 'shared/profiles/types'
 import { fetchPeerProfile } from '../comms'
 import { fetchCatalystProfile } from '../content'
 
@@ -24,9 +24,11 @@ export function* fetchProfile(action: ProfileRequestAction): any {
     existingProfile,
     isGuestLogin,
     existingProfileWithCorrectVersion
-  } = yield select(getInformationToFetchProfileFromStore, action)
+  } = (yield select(getInformationToFetchProfileFromStore, action)) as ReturnType<
+    typeof getInformationToFetchProfileFromStore
+  >
 
-  if (existingProfileWithCorrectVersion) {
+  if (existingProfile && existingProfileWithCorrectVersion) {
     yield put(profileSuccess(existingProfile))
     return existingProfile
   }

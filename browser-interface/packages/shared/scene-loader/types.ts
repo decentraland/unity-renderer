@@ -1,11 +1,12 @@
-import { InstancedSpawnPoint, LoadableScene } from 'shared/types'
+import type { Vector2 } from 'lib/math/Vector2'
+import type { InstancedSpawnPoint, LoadableScene } from 'shared/types'
 
 export type SetDesiredScenesCommand = {
   scenes: LoadableScene[]
 }
 
 export type SceneLoaderPositionReport = {
-  position: ReadOnlyVector2
+  position: Vector2
   loadingRadius: number
   teleported: boolean
 }
@@ -20,7 +21,7 @@ export type SceneLoaderState = {
   loader: ISceneLoader | undefined
   positionSettled: boolean
   loadingRadius: number
-  parcelPosition: ReadOnlyVector2
+  parcelPosition: Vector2
 
   // if positionSettled==true, once this scene loads, the player will be spawned
   // to that position

@@ -1,3 +1,4 @@
+import { HAS_INITIAL_POSITION_MARK, RESET_TUTORIAL } from 'config'
 import type { KernelOptions } from 'kernel-web-interface'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { changeRealm, realmInitialized } from 'shared/dao'
@@ -18,8 +19,7 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { HUDElementID } from 'shared/types'
 import { foregroundChangeObservable, isForeground } from 'shared/world/worldState'
-import { HAS_INITIAL_POSITION_MARK, RESET_TUTORIAL } from 'config'
-import { renderingInBackground, renderingInForeground } from 'shared/loadingScreen/types'
+import { IUnityInterface } from 'unity-interface/IUnityInterface'
 import { kernelConfigForRenderer } from 'unity-interface/kernelConfigForRenderer'
 import { logger } from './logger'
 import { startPreview } from './startPreview'
@@ -47,6 +47,51 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
     renderer.SetDisableAssetBundles()
   }
 
+  configureHUDPartOne(renderer, questEnabled)
+
+  activateTaskbarElements(renderer, questEnabled)
+
+  configureHUDPartTwo(renderer)
+
+  await onLoginCompleted()
+
+  const identity = getCurrentIdentity(store.getState())!
+  const profile = getCurrentUserProfile(store.getState())!
+
+  if (!profile) {
+    BringDownClientAndReportFatalError(new Error('Profile missing during unity initialization'), 'kernel#init')
+    return
+  }
+
+  await setupTutorial(profile, worldConfig, renderer)
+
+  const isGuest = !identity.hasConnectedWeb3
+  const friendsActivated = !isGuest && !getFeatureFlagEnabled(store.getState(), 'matrix_disabled')
+
+  renderer.ConfigureHUDElement(HUDElementID.FRIENDS, { active: friendsActivated, visible: false })
+
+  function reportForeground() {
+    if (isForeground()) {
+      renderer.ReportFocusOn()
+    } else {
+      renderer.ReportFocusOff()
+    }
+  }
+
+  foregroundChangeObservable.add(reportForeground)
+  reportForeground()
+
+  if (options.previewMode) {
+    renderer.SetDisableAssetBundles()
+    await startPreview(renderer)
+  }
+
+  await realmInitialized()
+
+  return true
+}
+
+function configureHUDPartOne(renderer: IUnityInterface, questEnabled: boolean) {
   renderer.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
   renderer.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: true })
   renderer.ConfigureHUDElement(HUDElementID.AVATAR_EDITOR, { active: true, visible: false })
@@ -64,34 +109,29 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
   renderer.ConfigureHUDElement(HUDElementID.QUESTS_PANEL, { active: questEnabled, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.QUESTS_TRACKER, { active: questEnabled, visible: true })
   renderer.ConfigureHUDElement(HUDElementID.PROFILE_HUD, { active: true, visible: true })
+}
 
-  // Grouping these together as WorldChatWindow, ControlsHUD, and HelpAndSupportHUD require the Taskbar to be
-  // initialized first.
-  ;(function activateTaskbarElements() {
-    renderer.ConfigureHUDElement(
-      HUDElementID.TASKBAR,
-      { active: true, visible: true },
-      { enableVoiceChat: true, enableQuestPanel: questEnabled }
-    )
-    renderer.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: true, visible: false })
-    renderer.ConfigureHUDElement(HUDElementID.CONTROLS_HUD, { active: true, visible: false })
-    renderer.ConfigureHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD, { active: true, visible: false })
-  })()
 
+// Grouping these together as WorldChatWindow, ControlsHUD, and HelpAndSupportHUD require the Taskbar to be
+// initialized first.
+function activateTaskbarElements(renderer: IUnityInterface, questEnabled: boolean) {
+  renderer.ConfigureHUDElement(
+    HUDElementID.TASKBAR,
+    { active: true, visible: true },
+    { enableVoiceChat: true, enableQuestPanel: questEnabled }
+  )
+  renderer.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: true, visible: false })
+  renderer.ConfigureHUDElement(HUDElementID.CONTROLS_HUD, { active: true, visible: false })
+  renderer.ConfigureHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD, { active: true, visible: false })
+}
+
+function configureHUDPartTwo(renderer: IUnityInterface) {
   renderer.SetKernelConfiguration(kernelConfigForRenderer())
   renderer.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
+}
 
-  await onLoginCompleted()
-
-  const identity = getCurrentIdentity(store.getState())!
-  const profile = getCurrentUserProfile(store.getState())!
-
-  if (!profile) {
-    BringDownClientAndReportFatalError(new Error('Profile missing during unity initialization'), 'kernel#init')
-    return
-  }
-
+async function setupTutorial(profile, worldConfig: WorldConfig, renderer: IUnityInterface) {
   const NEEDS_TUTORIAL = RESET_TUTORIAL || !profile.tutorialStep
 
   // only enable the old tutorial if the feature flag new_tutorial is off
@@ -99,8 +139,7 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
   // from the renderer
   if (NEEDS_TUTORIAL) {
     const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
-    const IS_NEW_TUTORIAL_DISABLED =
-      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
+    const IS_NEW_TUTORIAL_DISABLED = NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
     if (IS_NEW_TUTORIAL_DISABLED) {
       const enableNewTutorialCamera = worldConfig ? worldConfig.enableNewTutorialCamera ?? false : false
       const tutorialConfig = {
@@ -123,31 +162,5 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
       }
     }
   }
-
-  const isGuest = !identity.hasConnectedWeb3
-  const friendsActivated = !isGuest && !getFeatureFlagEnabled(store.getState(), 'matrix_disabled')
-
-  renderer.ConfigureHUDElement(HUDElementID.FRIENDS, { active: friendsActivated, visible: false })
-
-  function reportForeground() {
-    if (isForeground()) {
-      store.dispatch(renderingInForeground())
-      renderer.ReportFocusOn()
-    } else {
-      store.dispatch(renderingInBackground())
-      renderer.ReportFocusOff()
-    }
-  }
-
-  foregroundChangeObservable.add(reportForeground)
-  reportForeground()
-
-  if (options.previewMode) {
-    renderer.SetDisableAssetBundles()
-    await startPreview(renderer)
-  }
-
-  await realmInitialized()
-
-  return true
 }
+

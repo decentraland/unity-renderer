@@ -1,27 +1,25 @@
 // This file contains code that selects which renderer to use and loads it
-import { storeCondition } from 'lib/redux/storeCondition'
-import { initializeRenderer } from 'shared/renderer/actions'
-import { CommonRendererOptions, loadUnity } from './loader'
-import type { UnityGame } from 'unity-interface/loader'
+import { Transport } from '@dcl/rpc'
+import { ALLOW_SWIFT_SHADER } from 'config'
 import type { KernelOptions } from 'kernel-web-interface'
-
-import { initializeUnityEditor } from './wsEditorAdapter'
-import { traceDecoratorRendererOptions } from './trace'
+import defaultLogger from 'lib/logger'
+import { storeCondition } from 'lib/redux/storeCondition'
+import { webTransport } from 'renderer-protocol/transports/webTransport'
+import { traceDecoratorRendererOptions } from 'shared/analytics/trace'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import {
   BringDownClientAndShowError,
   ErrorContext,
   ReportFatalErrorWithUnityPayloadAsync
 } from 'shared/loading/ReportFatalError'
-import { store } from 'shared/store/isolatedStore'
-import defaultLogger from 'lib/logger'
-import { trackEvent } from 'shared/analytics/trackEvent'
-import { browserInterface } from './BrowserInterface'
-import { webTransport } from 'renderer-protocol/transports/webTransport'
-import { Transport } from '@dcl/rpc'
+import { initializeRenderer } from 'shared/renderer/actions'
 import { isRendererInitialized } from 'shared/renderer/selectors'
-import { ALLOW_SWIFT_SHADER } from 'config'
+import { store } from 'shared/store/isolatedStore'
+import { browserInterface } from './BrowserInterface'
+import { CommonRendererOptions, loadUnity, UnityGame } from './loader'
+import { initializeUnityEditor } from './wsEditorAdapter'
 
-export type InitializeUnityResult = {
+type InitializeUnityResult = {
   container: HTMLElement
 }
 
@@ -65,7 +63,7 @@ async function loadInjectedUnityDelegate(
   const debug_ext = ctx.getExtension('WEBGL_debug_renderer_info')
   if (debug_ext) {
     const renderer = ctx.getParameter(debug_ext.UNMASKED_RENDERER_WEBGL)
-    if (renderer.indexOf('SwiftShader') >= 0 && !ALLOW_SWIFT_SHADER) {
+    if (renderer.includes('SwiftShader') && !ALLOW_SWIFT_SHADER) {
       throw new Error(
         'Your browser is using an emulated software renderer (SwiftShader). This prevents Decentraland from working. This is usually fixed by restarting the computer. In any case, we recommend you to use the Desktop Client instead for a better overall experience. You can find it in https://decentraland.org/download'
       )

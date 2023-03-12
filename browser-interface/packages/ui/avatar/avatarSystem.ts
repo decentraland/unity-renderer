@@ -24,7 +24,7 @@ type Position = {
 
 const avatarMap = new Map<string, AvatarEntity>()
 
-export class AvatarEntity extends Entity {
+class AvatarEntity extends Entity {
   visible = true
 
   transform: Transform

@@ -13,16 +13,11 @@ export const signalSceneLoad = (scene: LoadableScene) => action(SCENE_LOAD, scen
 export const signalSceneStart = (scene: LoadableScene) => action(SCENE_START, scene)
 export const signalSceneFail = (scene: LoadableScene) => action(SCENE_FAIL, scene)
 export const signalSceneUnload = (scene: LoadableScene) => action(SCENE_UNLOAD, scene)
-export const informPendingScenes = (pendingScenes: number, totalScenes: number) =>
-  action(PENDING_SCENES, { pendingScenes, totalScenes })
+export const informPendingScenes = (pendingScenes: number, totalScenes: number, lastUpdate: number) =>
+  action(PENDING_SCENES, { pendingScenes, totalScenes, lastUpdate })
 
 export type SceneLoad = ReturnType<typeof signalSceneLoad>
 export type SceneStart = ReturnType<typeof signalSceneStart>
 export type SceneFail = ReturnType<typeof signalSceneFail>
 export type SceneUnload = ReturnType<typeof signalSceneUnload>
 export type InformPendingScenes = ReturnType<typeof informPendingScenes>
-
-export const UPDATE_STATUS_MESSAGE = '[RENDERER] Update loading message'
-export const updateStatusMessage = (message: string, loadPercentage: number, lastUpdate: number) =>
-  action(UPDATE_STATUS_MESSAGE, { message, loadPercentage, lastUpdate })
-export type UpdateStatusMessage = ReturnType<typeof updateStatusMessage>

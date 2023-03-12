@@ -1,4 +1,3 @@
-import mitt from 'mitt'
 import { getAndClearOccurenceCounters, incrementCounter } from 'shared/analytics/occurences'
 import { getExplorerVersion } from 'shared/meta/version'
 
@@ -39,17 +38,12 @@ export function incrementCommsMessageReceived() {
   receivedCommsMessagesCounter++
 }
 
-export const commsPerfObservable = mitt<any>()
-
 export function incrementCommsMessageReceivedByName(event: string) {
-  commsPerfObservable.emit(event, { value: 1 })
   incrementCounter(`commMessage:${event}`)
   // NOTE:          ^^^^^^^^^^^ do NOT fix that typo
 }
 
-export function incrementAvatarSceneMessages(value: number) {
-  commsPerfObservable.emit('avatar-renderer', { value })
-}
+export function incrementAvatarSceneMessages(_: number) {}
 
 export function incrementCommsMessageSent(_bytes: number) {
   sentCommsMessagesCounter++

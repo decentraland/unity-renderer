@@ -1,7 +1,7 @@
 import { Transport, TransportEvents } from '@dcl/rpc'
 import mitt from 'mitt'
 
-export type WebTransportOptions = {
+type WebTransportOptions = {
   wasmModule: any
 }
 

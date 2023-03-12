@@ -1,4 +1,4 @@
-import { scenesChanged } from '../loading/actions'
+import { scenesChanged } from 'shared/loading/actions'
 import { LoadableScene } from '../types'
 import { SceneWorker } from './SceneWorker'
 import { store } from 'shared/store/isolatedStore'
@@ -12,7 +12,7 @@ import { getClient } from 'shared/renderer/selectors'
 declare const globalThis: any
 
 const PARCEL_DENY_LISTED_FEATURE_FLAG = 'parcel-denylist'
-export function isParcelDenyListed(coordinates: string[]) {
+function isParcelDenyListed(coordinates: string[]) {
   const denylist = getFeatureFlagVariantValue(store.getState(), PARCEL_DENY_LISTED_FEATURE_FLAG) as string
 
   const setOfCoordinates = new Set(coordinates)
@@ -24,7 +24,7 @@ export function isParcelDenyListed(coordinates: string[]) {
   return false
 }
 
-export function generateBannedLoadableScene(entity: LoadableScene): LoadableScene {
+function generateBannedLoadableScene(entity: LoadableScene): LoadableScene {
   return {
     ...entity,
     entity: {
@@ -34,7 +34,6 @@ export function generateBannedLoadableScene(entity: LoadableScene): LoadableScen
   }
 }
 
-export const onLoadParcelScenesObservable = new Observable<LoadableScene[]>()
 export const loadedSceneWorkers = new Map<string, SceneWorker>()
 globalThis['sceneWorkers'] = loadedSceneWorkers
 
@@ -116,7 +115,7 @@ function setNewParcelScene(worker: SceneWorker) {
 }
 
 // @internal
-export const parcelSceneLoadingState: ParcelSceneLoadingState = {
+const parcelSceneLoadingState: ParcelSceneLoadingState = {
   isWorldLoadingEnabled: true,
   desiredParcelScenes: new Map()
 }
@@ -125,7 +124,7 @@ export const parcelSceneLoadingState: ParcelSceneLoadingState = {
  *  @internal
  * Returns a set of Set<SceneId>
  */
-export function getDesiredParcelScenes(): Map<string, LoadableScene> {
+function getDesiredParcelScenes(): Map<string, LoadableScene> {
   return new Map(parcelSceneLoadingState.desiredParcelScenes)
 }
 

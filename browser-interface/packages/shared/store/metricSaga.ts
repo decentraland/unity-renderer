@@ -11,7 +11,6 @@ import {
   METRICS_UNITY_CLIENT_LOADED,
   EXPERIENCE_STARTED,
   TELEPORT_TRIGGERED,
-  SCENE_ENTERED,
   UNEXPECTED_ERROR,
   METRICS_AUTH_SUCCESSFUL,
   COMMS_COULD_NOT_BE_ESTABLISHED,
@@ -38,7 +37,6 @@ const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
   [PARCEL_LOADING_STARTED]: 'loading_7_load_scenes',
   [EXPERIENCE_STARTED]: 'loading_8_finished',
   [TELEPORT_TRIGGERED]: 'teleport_triggered',
-  [SCENE_ENTERED]: 'scene_entered',
   // errors
   [NETWORK_MISMATCH]: 'network_mismatch',
   [UNEXPECTED_ERROR]: 'error_fatal',

@@ -3,6 +3,7 @@ import type { EventChannel } from 'redux-saga'
 import { call, put, select, take } from 'redux-saga/effects'
 import { createReceiveProfileOverCommsChannel, createVersionUpdateOverCommsChannel } from 'shared/comms/handlers'
 import { getCommsRoom } from 'shared/comms/selectors'
+import { RootState } from 'shared/store/rootTypes'
 import { profileSuccess } from '../actions'
 import { getProfileFromStore } from '../selectors'
 import type { ProfileUserInfo } from '../types'
@@ -39,11 +40,20 @@ export function* handleCommsVersionUpdates() {
 
   while (true) {
     const { userId, version } = yield take(channelEvent)
-    const existingProfile: ProfileUserInfo | null = yield select(getProfileFromStore, userId)
+    const { existingProfile, roomConnection } = (yield select(getProfileAndRoom, userId)) as ReturnType<
+      typeof getProfileAndRoom
+    >
 
     if (!existingProfile || existingProfile.data?.version <= version) {
-      const roomConnection = yield select(getCommsRoom)
       yield call(fetchPeerProfile, roomConnection, userId, version)
     }
+  }
+}
+
+function getProfileAndRoom(state: RootState, userId: string) {
+  return {
+    existingProfile: getProfileFromStore(state, userId),
+    // TODO: Is this assumption correct? Couldn't `comms` be null?
+    roomConnection: getCommsRoom(state)!
   }
 }

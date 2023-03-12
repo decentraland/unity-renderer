@@ -1,4 +1,4 @@
-export const expressionExplainer = {
+const expressionExplainer = {
   wave: 'You start waving',
   fistpump: 'You start fist-pumping',
   robot: 'You start the robot dance!',
@@ -23,8 +23,6 @@ export const expressionExplainer = {
   snowballthrow: ''
 }
 export const validExpressions = Object.keys(expressionExplainer)
-
-export type validExpression = keyof typeof validExpressions
 
 export function isValidExpression(expression: any): expression is keyof typeof expressionExplainer {
   return validExpressions.includes(expression)

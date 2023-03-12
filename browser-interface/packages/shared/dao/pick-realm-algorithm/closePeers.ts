@@ -1,4 +1,4 @@
-import { countParcelsCloseTo } from '../../comms/interface/utils'
+import { countParcelsCloseTo } from 'shared/comms/interface/utils'
 import { Parcel, Candidate } from '../types'
 import { ClosePeersScoreParameters, AlgorithmLink, AlgorithmLinkTypes, AlgorithmContext } from './types'
 import { usersParcels, selectFirstByScore, defaultScoreAddons } from './utils'

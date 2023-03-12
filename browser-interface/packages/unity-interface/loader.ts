@@ -8,7 +8,7 @@ const generatedFiles = {
   codeUrl: 'unity.wasm'
 }
 
-export type LoadRendererResult = {
+type LoadRendererResult = {
   createWebRenderer(canvas: HTMLCanvasElement): Promise<DecentralandRendererInstance>
 }
 
@@ -28,7 +28,7 @@ export type UnityGame = {
   Quit(): Promise<void>
 }
 
-export type RendererOptions = {
+type RendererOptions = {
   canvas: HTMLCanvasElement
 
   onProgress?: (progress: number) => void
@@ -52,7 +52,7 @@ export type RendererOptions = {
   dontCheckMobile?: boolean
 }
 
-export type DecentralandRendererInstance = {
+type DecentralandRendererInstance = {
   /**
    * Signal sent by unity after it started correctly
    * it is a promise, that makes it awaitable.

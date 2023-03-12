@@ -49,7 +49,7 @@ export async function fetchCatalystRealms(nodesEndpoint: string | undefined): Pr
   return nodes
 }
 
-export async function fetchCatalystStatus(
+async function fetchCatalystStatus(
   domain: string,
   denylistedCatalysts: string[],
   askFunction: typeof ask
@@ -125,7 +125,7 @@ export async function realmInitialized(): Promise<void> {
   await storeCondition(getRealmAdapter)
 }
 
-export async function resolveRealmAboutFromBaseUrl(
+async function resolveRealmAboutFromBaseUrl(
   realmString: string
 ): Promise<{ about: AboutResponse; baseUrl: string } | undefined> {
   // load candidates if necessary

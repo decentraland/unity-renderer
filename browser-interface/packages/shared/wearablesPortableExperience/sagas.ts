@@ -1,7 +1,6 @@
 import { EntityType, Scene } from '@dcl/schemas'
-import { call, select, takeEvery, takeLatest } from '@redux-saga/core/effects'
+import { call, put, select, takeEvery, takeLatest } from '@redux-saga/core/effects'
 import { jsonFetch } from 'lib/javascript/jsonFetch'
-import { put } from 'redux-saga-test-plan/matchers'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { wearablesRequest, WearablesSuccess, WEARABLES_SUCCESS } from 'shared/catalogs/actions'

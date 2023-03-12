@@ -3,13 +3,13 @@ import { getDesiredLoadableWearablePortableExpriences } from 'shared/wearablesPo
 import { RootWearablesPortableExperienceState } from 'shared/wearablesPortableExperience/types'
 import { RootPortableExperiencesState } from './types'
 
-export const getPortableExperienceDenyList = (store: RootPortableExperiencesState) =>
+const getPortableExperienceDenyList = (store: RootPortableExperiencesState) =>
   store.portableExperiences.deniedPortableExperiencesFromRenderer
 
-export const getPortableExperiencesCreatedByScenes = (store: RootPortableExperiencesState): LoadableScene[] =>
+const getPortableExperiencesCreatedByScenes = (store: RootPortableExperiencesState): LoadableScene[] =>
   Object.values(store.portableExperiences.portableExperiencesCreatedByScenesList)
 
-export const getKernelPortableExperiences = (store: RootPortableExperiencesState): LoadableScene[] =>
+const getKernelPortableExperiences = (store: RootPortableExperiencesState): LoadableScene[] =>
   Object.values(store.portableExperiences.kernelPortableExperiences)
 
 export const getDesiredPortableExperiences = (

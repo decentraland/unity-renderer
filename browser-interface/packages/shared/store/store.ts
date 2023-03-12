@@ -1,15 +1,15 @@
+import { composeWithDevTools } from '@redux-devtools/extension'
+import { DEBUG_REDUX } from 'config'
+import defaultLogger from 'lib/logger'
 import { AnyAction, applyMiddleware, compose, createStore, Middleware, StoreEnhancer } from 'redux'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const createSagaMiddleware = require('@redux-saga/core').default
 import { createLogger } from 'redux-logger'
+import { logTrace } from 'shared/analytics/trace'
+import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
+import { setStore } from './isolatedStore'
 import { reducers } from './rootReducer'
 import { createRootSaga } from './rootSaga'
-import { DEBUG_REDUX } from 'config'
-import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
-import defaultLogger from 'lib/logger'
-import { setStore } from './isolatedStore'
-import { composeWithDevTools } from '@redux-devtools/extension'
-import { logTrace } from 'unity-interface/trace'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const createSagaMiddleware = require('@redux-saga/core').default
 
 export const sagaMiddleware = createSagaMiddleware({
   sagaMonitor: undefined,

@@ -8,7 +8,7 @@ import {
   SocialAPI,
   TextMessage
 } from 'dcl-social-client'
-import * as friendsSagas from '../../packages/shared/friends/sagas'
+import * as friendsSagas from 'shared/friends/sagas'
 import * as friendsSelectors from 'shared/friends/selectors'
 import * as profilesSelectors from 'shared/profiles/selectors'
 import { getUserIdFromMatrix } from 'shared/friends/utils'

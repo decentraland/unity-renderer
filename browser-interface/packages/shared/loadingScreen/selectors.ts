@@ -1,6 +1,6 @@
-﻿import { RootState } from '../store/rootTypes'
-import { LoginState } from 'kernel-web-interface'
-import { isSignupInProgress } from '../session/selectors'
+﻿import { LoginState } from 'kernel-web-interface'
+import { isSignupInProgress } from 'shared/session/selectors'
+import { RootState } from 'shared/store/rootTypes'
 
 /**
  * @returns true if the renderer is currently visible
@@ -15,11 +15,6 @@ export function isRendererVisible(state: RootState) {
   const { loginState } = state.session
   if (loginState === LoginState.WAITING_PROFILE && isSignupInProgress(state)) {
     return true
-  }
-
-  // if it is not yet loading scenes, renderer should not be visible either
-  if (!state.renderer.parcelLoadingStarted) {
-    return false
   }
 
   if (

@@ -7,6 +7,7 @@ import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNam
 import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
 import { postProcessSceneName } from 'shared/atlas/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
+import { jsonFetch } from 'lib/javascript/jsonFetch'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import type { PortContext } from './context'
 
@@ -47,8 +48,7 @@ export function registerUserActionModuleServiceServerImplementation(port: RpcSer
       }
 
       try {
-        const response = await fetch(`https://events.decentraland.org/api/events/?position=${destination}`)
-        const json = await response.json()
+        const json = await jsonFetch(`https://events.decentraland.org/api/events/?position=${destination}`)
         if (json.data.length > 0) {
           sceneEvent = {
             name: json.data[0].name,

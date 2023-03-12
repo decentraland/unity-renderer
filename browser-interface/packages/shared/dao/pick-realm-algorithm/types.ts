@@ -7,14 +7,14 @@ export enum AlgorithmLinkTypes {
   LOAD_BALANCING = 'LOAD_BALANCING'
 }
 
-export type LargeLatencyConfig = {
+type LargeLatencyConfig = {
   type: AlgorithmLinkTypes.LARGE_LATENCY
   config?: LargeLatencyParameters
 }
 
 export type LargeLatencyParameters = { largeLatencyThreshold: number }
 
-export type ClosePeersScoreConfig = {
+type ClosePeersScoreConfig = {
   type: AlgorithmLinkTypes.CLOSE_PEERS_SCORE
   config?: {
     /**
@@ -54,17 +54,17 @@ export type LatencyDeductionsParameters = {
   maxDeduction: number
 }
 
-export type LatencyDeductionsConfig = Partial<LatencyDeductionsParameters>
+type LatencyDeductionsConfig = Partial<LatencyDeductionsParameters>
 
 export type ClosePeersScoreParameters = Required<ClosePeersScoreConfig['config']> & {
   latencyDeductionsParameters: LatencyDeductionsParameters
 }
 
-export type LoadBalancingConfig = {
+type LoadBalancingConfig = {
   type: AlgorithmLinkTypes.LOAD_BALANCING
 }
 
-export type AllPeersScoreConfig = {
+type AllPeersScoreConfig = {
   type: AlgorithmLinkTypes.ALL_PEERS_SCORE
   config?: {
     /** Base score for any realm that has at least 1 user. Default: 40 */

@@ -1,32 +1,31 @@
+import { ContentMapping, EntityType, Scene, sdk } from '@dcl/schemas'
 import { DEBUG, ENGINE_DEBUG_PANEL, rootURLPreviewMode, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from 'config'
-import './UnityInterface'
+import { sleep } from 'lib/javascript/sleep'
+import defaultLogger from 'lib/logger'
+import { traceDecoratorUnityGame } from 'shared/analytics/trace'
+import { ensureMetaConfigurationInitialized } from 'shared/meta'
+import { reloadScenePortableExperience } from 'shared/portableExperiences/actions'
+import { signalRendererInitializedCorrectly } from 'shared/renderer/actions'
+import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
+import { store } from 'shared/store/isolatedStore'
+import { LoadableScene } from 'shared/types'
+import { UnityGame } from 'unity-interface/loader'
+import { wearableToSceneEntity } from 'shared/wearablesPortableExperience/sagas'
 import {
   allScenesEvent,
   loadParcelSceneWorker,
   reloadScene,
   unloadParcelSceneById
 } from 'shared/world/parcelSceneManager'
-import { getUnityInstance } from './IUnityInterface'
-import { clientDebug, ClientDebug } from './ClientDebug'
-import { kernelConfigForRenderer } from './kernelConfigForRenderer'
-import { store } from 'shared/store/isolatedStore'
-import type { UnityGame } from 'unity-interface/loader'
-import { traceDecoratorUnityGame } from './trace'
-import defaultLogger from 'lib/logger'
-import { ContentMapping, EntityType, Scene, sdk } from '@dcl/schemas'
-import { ensureMetaConfigurationInitialized } from 'shared/meta'
-import { reloadScenePortableExperience } from 'shared/portableExperiences/actions'
-import { wearableToSceneEntity } from 'shared/wearablesPortableExperience/sagas'
-import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
-import { sleep } from 'lib/javascript/sleep'
-import { signalRendererInitializedCorrectly } from 'shared/renderer/actions'
 import { browserInterface } from './BrowserInterface'
-import { LoadableScene } from 'shared/types'
+import { clientDebug, ClientDebug } from './ClientDebug'
+import { getUnityInstance } from './IUnityInterface'
+import { kernelConfigForRenderer } from './kernelConfigForRenderer'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const hudWorkerRaw = require('../../static/systems/decentraland-ui.scene.js.txt')
 const hudWorkerBLOB = new Blob([hudWorkerRaw])
-export const hudWorkerUrl = URL.createObjectURL(hudWorkerBLOB)
+const hudWorkerUrl = URL.createObjectURL(hudWorkerBLOB)
 
 declare const globalThis: { clientDebug: ClientDebug }
 

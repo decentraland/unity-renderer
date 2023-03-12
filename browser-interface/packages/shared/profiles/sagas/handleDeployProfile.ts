@@ -3,10 +3,11 @@ import { hashV1 } from '@dcl/hashing'
 import { Avatar, EntityType, Profile, Snapshots } from '@dcl/schemas'
 import { ContentClient } from 'dcl-catalyst-client/dist/ContentClient'
 import type { DeploymentData } from 'dcl-catalyst-client/dist/utils/DeploymentBuilder'
+import { buildServerMetadata } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import { base64ToBuffer } from 'lib/encoding/base64ToBlob'
-import { call, put, select } from 'redux-saga/effects'
-import { trackEvent } from 'shared/analytics/trackEvent'
 import defaultLogger from 'lib/logger'
+import { call, put, select } from 'redux-saga/effects'
+import { trackError } from 'shared/analytics/trackEvent'
 import { getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
@@ -14,7 +15,6 @@ import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import type { DeployProfile } from '../actions'
 import { deployProfileFailure, deployProfileSuccess } from '../actions'
-import { buildServerMetadata } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import type { ContentFile } from '../types'
 
 export function* handleDeployProfile(deployProfileAction: DeployProfile) {
@@ -33,11 +33,7 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
     })
     yield put(deployProfileSuccess(userId, profile.version, profile))
   } catch (e: any) {
-    trackEvent('error', {
-      context: 'kernel#saga',
-      message: 'error deploying profile. ' + e.message,
-      stack: e.stacktrace
-    })
+    trackError('kernel#saga', e, 'Error deploying profile: ' + e.message)
     defaultLogger.error('Error deploying profile!', e)
     yield put(deployProfileFailure(userId, profile, e))
   }
@@ -62,12 +58,7 @@ async function buildSnapshotContent(selector: string, value: string) {
   return { name, hash, contentFile }
 }
 
-export async function deployAvatar(params: {
-  url: string
-  userId: string
-  identity: ExplorerIdentity
-  profile: Avatar
-}) {
+async function deployAvatar(params: { url: string; userId: string; identity: ExplorerIdentity; profile: Avatar }) {
   const { url, profile, identity } = params
   const { avatar } = profile
 

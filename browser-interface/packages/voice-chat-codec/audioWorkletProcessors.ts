@@ -2,7 +2,7 @@ import { RingBuffer } from 'lib/data-structures/RingBuffer'
 import { OPUS_SAMPLES_PER_FRAME, VOICE_CHAT_SAMPLE_RATE } from './constants'
 import { InputWorkletRequestTopic, OutputWorkletRequestTopic } from './types'
 
-export interface AudioWorkletProcessor {
+interface AudioWorkletProcessor {
   readonly port: MessagePort
   process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: Record<string, Float32Array>): boolean
 }

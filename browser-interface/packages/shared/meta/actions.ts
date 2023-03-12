@@ -6,5 +6,5 @@ export const metaConfigurationInitialized = (config: Partial<MetaConfiguration>)
   action(META_CONFIGURATION_INITIALIZED, config)
 export type MetaConfigurationInitialized = ReturnType<typeof metaConfigurationInitialized>
 
-export const BEFORE_UNLOAD = 'Meta: Before Unload'
+export const BEFORE_UNLOAD = '[Meta]: window.onBeforeUnload called'
 export const beforeUnloadAction = () => action(BEFORE_UNLOAD)
