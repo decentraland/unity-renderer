@@ -101,4 +101,10 @@ export class ClientDebug {
   }
 }
 
-export const clientDebug: ClientDebug = new ClientDebug(getUnityInstance())
+let clientDebug: undefined | ClientDebug
+export function getClientDebug(): ClientDebug {
+  if (!clientDebug) {
+    clientDebug = new ClientDebug(getUnityInstance())
+  }
+  return clientDebug
+}

@@ -1,8 +1,6 @@
 import { RpcClient, RpcClientPort, Transport } from '@dcl/rpc'
-import type { UnityGame } from 'unity-interface/loader'
 import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
-import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
-import { deepEqual } from 'lib/javascript/deepEqual'
+import { isSceneFeatureToggleEnabled } from 'lib/decentraland/sceneJson/isSceneFeatureToggleEnabled'
 import defaultLogger from 'lib/logger'
 import { call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { createRendererRpcClient } from 'renderer-protocol/rpcClient'
@@ -25,7 +23,6 @@ import { SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { isSceneFeatureToggleEnabled } from 'lib/decentraland/sceneJson/isSceneFeatureToggleEnabled'
 import { SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
 import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
@@ -46,6 +43,7 @@ import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { initializeEngine } from 'unity-interface/dcl'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import type { UnityGame } from 'unity-interface/loader'
 import { InitializeRenderer, registerRendererModules, registerRendererPort, REGISTER_RPC_PORT } from './actions'
 import { waitForRendererInstance } from './sagas-helper'
 import { getClientPort } from './selectors'
@@ -257,7 +255,6 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   }
 }
 
-let lastSentProfile: NewProfileForRenderer | null = null
 export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): any {
   const { userId } = action.payload
 
@@ -267,46 +264,26 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
     getInformationToSubmitProfileFromStore,
     userId
   )) as ReturnType<typeof getInformationToSubmitProfileFromStore>
-  const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(bff)
 
-  if (!profile || !profile.data) {
+  if (!profile?.data) {
     return
   }
 
-  if (isCurrentUser) {
-    const forRenderer = profileToRendererFormat(profile.data, {
-      address: identity?.address,
-      baseUrl: fetchContentServerWithPrefix
-    })
-    forRenderer.hasConnectedWeb3 = identity?.hasConnectedWeb3 || false
+  const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(bff)
+  const rendererFormat = profileToRendererFormat(profile.data, {
+    baseUrl: fetchContentServerWithPrefix,
+    address: identity?.address
+  })
 
-    // TODO: this condition shouldn't be necessary. Unity fails with setThrew
-    //       if LoadProfile is called rapidly because it cancels ongoing
-    //       requests and those cancellations throw exceptions
-    if (lastSentProfile && lastSentProfile?.version > forRenderer.version) {
-      const event = 'Invalid user version' as const
-      trackEvent(event, { address: userId, version: forRenderer.version })
-    } else if (!deepEqual(lastSentProfile, forRenderer)) {
-      lastSentProfile = forRenderer
-      getUnityInstance().LoadProfile(forRenderer)
+  if (lastSentProfileVersion < rendererFormat.version) {
+    if (isCurrentUser) {
+      rendererFormat.hasConnectedWeb3 = identity?.hasConnectedWeb3 || false
+      getUnityInstance().LoadProfile(rendererFormat)
+    } else {
+      getUnityInstance().AddUserProfileToCatalog(rendererFormat)
+      receivePeerUserData(profile.data, fetchContentServerWithPrefix)
     }
-  } else {
-    // Add version check before submitting profile to renderer
-    // Technically profile version might be `0` and make `!lastSentProfileVersion` always true
-    if (typeof lastSentProfileVersion !== 'number' || lastSentProfileVersion < profile.data.version) {
-      const forRenderer = profileToRendererFormat(profile.data, {
-        baseUrl: fetchContentServerWithPrefix
-      })
-
-      getUnityInstance().AddUserProfileToCatalog(forRenderer)
-      // Update catalog and last sent profile version
-      yield put(addProfileToLastSentProfileVersionAndCatalog(userId, forRenderer.version))
-    }
-
-    // Send to Avatars scene
-    // TODO: Consider refactor this so that it's distinguishable from a message received over the network
-    // (`receivePeerUserData` is a handler for a comms message!!!)
-    receivePeerUserData(profile.data, fetchContentServerWithPrefix)
+    yield put(addProfileToLastSentProfileVersionAndCatalog(userId, rendererFormat.version))
   }
 }
 
@@ -317,6 +294,6 @@ export function getInformationToSubmitProfileFromStore(state: RootState, userId:
     profile: getProfileFromStore(state, userId),
     identity,
     isCurrentUser,
-    lastSentProfileVersion: getLastSentProfileVersion(state, userId)
+    lastSentProfileVersion: getLastSentProfileVersion(state, userId) || 0
   }
 }

@@ -111,7 +111,6 @@ function configureHUDPartOne(renderer: IUnityInterface, questEnabled: boolean) {
   renderer.ConfigureHUDElement(HUDElementID.PROFILE_HUD, { active: true, visible: true })
 }
 
-
 // Grouping these together as WorldChatWindow, ControlsHUD, and HelpAndSupportHUD require the Taskbar to be
 // initialized first.
 function activateTaskbarElements(renderer: IUnityInterface, questEnabled: boolean) {
@@ -139,7 +138,8 @@ async function setupTutorial(profile, worldConfig: WorldConfig, renderer: IUnity
   // from the renderer
   if (NEEDS_TUTORIAL) {
     const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
-    const IS_NEW_TUTORIAL_DISABLED = NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
+    const IS_NEW_TUTORIAL_DISABLED =
+      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
     if (IS_NEW_TUTORIAL_DISABLED) {
       const enableNewTutorialCamera = worldConfig ? worldConfig.enableNewTutorialCamera ?? false : false
       const tutorialConfig = {
@@ -163,4 +163,3 @@ async function setupTutorial(profile, worldConfig: WorldConfig, renderer: IUnity
     }
   }
 }
-

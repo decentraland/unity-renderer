@@ -18,7 +18,7 @@ import {
   unloadParcelSceneById
 } from 'shared/world/parcelSceneManager'
 import { browserInterface } from './BrowserInterface'
-import { clientDebug, ClientDebug } from './ClientDebug'
+import { getClientDebug, ClientDebug } from './ClientDebug'
 import { getUnityInstance } from './IUnityInterface'
 import { kernelConfigForRenderer } from './kernelConfigForRenderer'
 
@@ -29,8 +29,6 @@ const hudWorkerUrl = URL.createObjectURL(hudWorkerBLOB)
 
 declare const globalThis: { clientDebug: ClientDebug }
 
-globalThis.clientDebug = clientDebug
-
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -40,6 +38,7 @@ globalThis.clientDebug = clientDebug
  * @param _gameInstance Unity game instance
  */
 export async function initializeEngine(_gameInstance: UnityGame): Promise<void> {
+  globalThis.clientDebug = getClientDebug()
   const gameInstance = traceDecoratorUnityGame(_gameInstance)
 
   getUnityInstance().Init(gameInstance)

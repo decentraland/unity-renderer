@@ -1,9 +1,10 @@
 import { expect } from 'chai'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
-import { expectSaga } from 'redux-saga-test-plan'
+import { expectSaga, RunResult } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
 import {
-  addProfileToLastSentProfileVersionAndCatalog, ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, profileRequest, PROFILE_SUCCESS
+  addProfileToLastSentProfileVersionAndCatalog, profileRequest, PROFILE_SUCCESS, sendProfileToRenderer
 } from 'shared/profiles/actions'
 import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/profiles/sagas/fetchProfile'
 import type { ProfileUserInfo } from 'shared/profiles/types'
@@ -11,13 +12,15 @@ import type { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { getInformationToSubmitProfileFromStore, handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { buildStore } from 'shared/store/store'
-import sinon from 'sinon'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import sinon, { SinonMock } from 'sinon'
+import { setUnityInstance } from 'unity-interface/IUnityInterface'
 
-const mockAdapter = {
+const mockBaseUrl = 'https://example.com/'
+const mockAdapter: IRealmAdapter = {
   services: {
-    legacy: {}
+    legacy: {
+      fetchContentServer: mockBaseUrl
+    }
   }
 } as any as IRealmAdapter
 
@@ -88,27 +91,28 @@ describe('fetchProfile behavior', () => {
 })
 
 describe('Handle submit profile to renderer', () => {
-  sinon.mock()
-
-  const unityInstance = getUnityInstance()
-  const unityMock = sinon.mock(unityInstance)
+  const unityPrototype = {
+    AddUserProfilesToCatalog: () => ({}),
+    AddUserProfileToCatalog: () => ({}),
+    LoadProfile: () => ({})
+  }
+  setUnityInstance(unityPrototype as any)
+  let unityMock: SinonMock
 
   beforeEach(() => {
-    sinon.reset()
-    sinon.restore()
-    buildStore()
+    unityMock = sinon.mock(unityPrototype)
   })
-
   afterEach(() => {
-    sinon.restore()
+    unityMock.verify()
     sinon.reset()
+    sinon.restore()
   })
 
   context('When the profile has already been sent, and it doesnt have any updates', () => {
     it('Does not send the AddUserProfileToCatalog message.', async () => {
       const userId = '0x11pizarnik00'
 
-      const profile = getMockedProfileUserInfo(userId, '')
+      const profile = getMockedProfileUserInfo(userId, 'Name')
 
       unityMock.expects('AddUserProfilesToCatalog').never()
 
@@ -124,12 +128,7 @@ describe('Handle submit profile to renderer', () => {
           }],
         ])
         .run()
-        .then((response) => {
-          const putEffects = response.effects.put
-          expect(putEffects).to.be.undefined
-        })
-
-      unityMock.verify()
+        .then(countActionsDispatched(0))
     })
   })
 
@@ -153,12 +152,7 @@ describe('Handle submit profile to renderer', () => {
           }],
         ])
         .run()
-        .then((response) => {
-          const putEffects = response.effects.put
-          expect(putEffects).to.be.undefined
-        })
-
-      unityMock.verify()
+        .then(countActionsDispatched(0))
     })
   })
 
@@ -166,8 +160,7 @@ describe('Handle submit profile to renderer', () => {
     it('Sends the AddUserProfileToCatalog message.', async () => {
       const userId = '0x11pizarnik00'
 
-      const profile = getMockedProfileUserInfo(userId, '', 3)
-
+      const profile = getMockedProfileUserInfo(userId, 'john', 3)
       unityMock.expects('AddUserProfileToCatalog').once()
 
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
@@ -181,18 +174,53 @@ describe('Handle submit profile to renderer', () => {
             lastSentProfileVersion: 1
           }],
         ])
-        .dispatch(addProfileToLastSentProfileVersionAndCatalog(userId, 3))
+        .dispatch(sendProfileToRenderer(userId))
+        .put(addProfileToLastSentProfileVersionAndCatalog(userId, 3))
         .run()
-        .then((response) => {
-          const putEffects = response.effects.put
-          const lastPut = putEffects[putEffects.length - 1].payload.action
-          expect(lastPut.type).to.eq(ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG)
-        })
+    })
+    it('Sends the updated profile to the renderer', async () => {
+      const userId = '0x11pizarnik00'
 
-      unityMock.verify()
+      const newProfile = getMockedProfileUserInfo(userId, 'New Profile Data')
+      newProfile.data.version = 2
+
+      const expectedProfileFormat = profileToRendererFormat(newProfile.data, {
+        baseUrl: mockBaseUrl,
+        address: userId
+      });
+      expectedProfileFormat.hasConnectedWeb3 = false
+
+      unityMock.expects('LoadProfile').calledWith(expectedProfileFormat)
+
+      await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
+        .provide([
+          [call(waitForRendererInstance), true],
+          [call(waitForRealm), mockAdapter],
+          [select(getInformationToSubmitProfileFromStore, userId), {
+            profile: newProfile,
+            identity: { userId },
+            isCurrentUser: true,
+            lastSentProfileVersion: 1
+          }],
+        ])
+        .dispatch(sendProfileToRenderer(userId))
+        .put(addProfileToLastSentProfileVersionAndCatalog(userId, 2))
+        .run()
     })
   })
 })
+
+function countActionsDispatched(count: number): ((value: RunResult) => void | PromiseLike<void>) | null | undefined {
+  return (response) => {
+    const putEffects = response.effects.put
+    if (putEffects) {
+      debugger
+      expect(putEffects).to.have.length(count)
+    } else {
+      expect(0).to.eq(count)
+    }
+  }
+}
 
 function getMockedProfileUserInfo(userId: string, name: string, version: number = 1): ProfileUserInfo {
   return {

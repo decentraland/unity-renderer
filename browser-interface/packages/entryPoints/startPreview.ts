@@ -1,5 +1,5 @@
 import { sdk } from '@dcl/schemas'
-import { clientDebug } from 'unity-interface/ClientDebug'
+import { getClientDebug } from 'unity-interface/ClientDebug'
 import type { IUnityInterface } from 'unity-interface/IUnityInterface'
 import { DEBUG_WS_MESSAGES } from 'config/index'
 import { getPreviewSceneId, loadPreviewScene, reloadPlaygroundScene } from 'unity-interface/dcl'
@@ -15,7 +15,9 @@ export async function startPreview(unityInterface: IUnityInterface) {
             sceneLimitsWarningSceneId: sceneData.sceneId
           }
         })
-        clientDebug.ToggleSceneBoundingBoxes(sceneData.sceneId, false).catch((e) => logger.error(e))
+        getClientDebug()
+          .ToggleSceneBoundingBoxes(sceneData.sceneId, false)
+          .catch((e) => logger.error(e))
         unityInterface.SendMessageToUnity('Main', 'TogglePreviewMenu', JSON.stringify({ enabled: true }))
       }
     })

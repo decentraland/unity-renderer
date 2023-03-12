@@ -52,7 +52,7 @@ import {
 } from 'shared/types'
 import { futures } from './BrowserInterface'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
-import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
+import { HotSceneInfo, IUnityInterface, MinimapSceneInfo } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 
 const MINIMAP_CHUNK_SIZE = 100
@@ -724,5 +724,3 @@ export class UnityInterface implements IUnityInterface {
     }
   }
 }
-
-setUnityInstance(new UnityInterface())

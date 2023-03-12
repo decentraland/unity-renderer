@@ -16,7 +16,6 @@ import { loadedSceneWorkers } from 'shared/world/parcelSceneManager'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import {
   informPendingScenes,
-  PENDING_SCENES,
   SceneFail,
   SceneLoad,
   SCENE_CHANGED,
