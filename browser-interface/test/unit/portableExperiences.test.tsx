@@ -3,11 +3,12 @@ import { expect } from 'chai'
 import { PORTABLE_EXPERIENCES_DEBOUNCE_DELAY } from 'config'
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, delay, select } from 'redux-saga/effects'
+import { isMetaConfigurationInitialized } from 'shared/meta/selectors'
 import {
   activateAllPortableExperiences, addScenePortableExperience,
   denyPortableExperiences, killAllPortableExperiences, reloadScenePortableExperience, removeScenePortableExperience, updateEnginePortableExperiences
 } from 'shared/portableExperiences/actions'
-import { portableExperienceSaga } from 'shared/portableExperiences/sagas'
+import { fetchInitialPortableExperiences, portableExperienceSaga } from 'shared/portableExperiences/sagas'
 import { getDesiredPortableExperiences } from 'shared/portableExperiences/selectors'
 import { RootPortableExperiencesState } from 'shared/portableExperiences/types'
 import { getClient } from 'shared/renderer/selectors'
@@ -37,12 +38,14 @@ describe('Portable experiences sagas test', () => {
 
     return expectSaga(portableExperienceSaga)
       .provide([
-        [select(getClient), [true]],
+        [select(isMetaConfigurationInitialized), false],
+        [select(getClient), true],
         [select(getDesiredPortableExperiences), []],
         [call(declareWantedPortableExperiences, []), []]
       ])
       .dispatch(action)
       .put(updateEnginePortableExperiences([]))
+      .fork(fetchInitialPortableExperiences)
       .silentRun(0)
   })
 
@@ -52,6 +55,7 @@ describe('Portable experiences sagas test', () => {
 
     return expectSaga(portableExperienceSaga)
       .provide([
+        [select(isMetaConfigurationInitialized), false],
         [select(getClient), [true]],
         [select(getDesiredPortableExperiences), [px]],
         [call(declareWantedPortableExperiences, [px]), []]
@@ -67,6 +71,7 @@ describe('Portable experiences sagas test', () => {
 
     return expectSaga(portableExperienceSaga)
       .provide([
+        [select(isMetaConfigurationInitialized), false],
         [select(getClient), [true]],
         [select(getDesiredPortableExperiences), [px]],
         [call(declareWantedPortableExperiences, []), []],
@@ -85,6 +90,7 @@ describe('Portable experiences sagas test', () => {
 
     return expectSaga(portableExperienceSaga)
       .provide([
+        [select(isMetaConfigurationInitialized), false],
         [select(getClient), [true]],
         [call(declareWantedPortableExperiences, [px]), []]
       ])

@@ -1,14 +1,21 @@
 import { PORTABLE_EXPERIENCES_DEBOUNCE_DELAY } from 'config'
-import { call, debounce, delay, put, select, takeEvery } from 'redux-saga/effects'
+import { call, debounce, delay, fork, put, select, takeEvery } from 'redux-saga/effects'
+import { trackEvent } from 'shared/analytics/trackEvent'
+import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
+import { getFeatureFlagVariantValue } from 'shared/meta/selectors'
 import { waitForRendererRpcConnection } from 'shared/renderer/sagas-helper'
 import { LoadableScene } from 'shared/types'
 import {
   ADD_DESIRED_PORTABLE_EXPERIENCE,
   REMOVE_DESIRED_PORTABLE_EXPERIENCE
 } from 'shared/wearablesPortableExperience/actions'
-import { declareWantedPortableExperiences } from 'unity-interface/portableExperiencesUtils'
+import {
+  declareWantedPortableExperiences,
+  getPortableExperienceFromUrn
+} from 'unity-interface/portableExperiencesUtils'
 import {
   ACTIVATE_ALL_PORTABLE_EXPERIENCES,
+  addKernelPortableExperience,
   ADD_KERNEL_PX,
   ADD_SCENE_PX,
   DENY_PORTABLE_EXPERIENCES,
@@ -23,7 +30,10 @@ import {
 import { getDesiredPortableExperiences } from './selectors'
 
 export function* portableExperienceSaga(): any {
+  // Ensure we have a connection to the renderer
   yield call(waitForRendererRpcConnection)
+
+  // List the actions that might trigger a portable experience change
   yield takeEvery(
     [
       REMOVE_DESIRED_PORTABLE_EXPERIENCE,
@@ -38,7 +48,39 @@ export function* portableExperienceSaga(): any {
     handlePortableExperienceChanges
   )
   yield takeEvery(RELOAD_SCENE_PX, reloadPortableExperienceChanges)
+
+  // Debounce it -- this is likely due to some internal logical bug
+  // TODO: Figure out if we still need this
   yield debounce(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY(), UPDATE_ENGINE_PX, handlePortableExperienceChangesEffect)
+
+  // Finally, initialize the portable experiences
+  yield fork(fetchInitialPortableExperiences)
+}
+
+export function* fetchInitialPortableExperiences() {
+  yield waitForMetaConfigurationInitialization()
+
+  const qs = new URLSearchParams(globalThis.location.search)
+
+  const globalPortableExperiences: string[] = qs.has('GLOBAL_PX')
+    ? qs.getAll('GLOBAL_PX')
+    : yield select(getFeatureFlagVariantValue, 'initial_portable_experiences')
+
+  if (Array.isArray(globalPortableExperiences)) {
+    for (const id of globalPortableExperiences) {
+      try {
+        const px: LoadableScene = yield call(getPortableExperienceFromUrn, id)
+        yield put(addKernelPortableExperience(px))
+      } catch (err: any) {
+        console.error(err)
+        trackEvent('error', {
+          context: 'fetchInitialPortableExperiences',
+          message: err.message,
+          stack: err.stack
+        })
+      }
+    }
+  }
 }
 
 // every time the desired portable experiences change, the action `updateEnginePortableExperiences` should be dispatched
