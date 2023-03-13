@@ -50,16 +50,10 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         {
             mainThreadTimeRecorder.Dispose();
 
-            if (isRecordingAdditionalProfilers)
-            {
-                drawCallsRecorder.Dispose();
-                reservedMemoryRecorder.Dispose();
-                usedMemoryRecorder.Dispose();
-                gcAllocatedInFrameRecorder.Dispose();
-            }
-
-            if (gcAllocatedInFrameRecorder.IsRunning)
-                gcAllocatedInFrameRecorder.Dispose();
+            drawCallsRecorder.Dispose();
+            reservedMemoryRecorder.Dispose();
+            usedMemoryRecorder.Dispose();
+            gcAllocatedInFrameRecorder.Dispose();
         }
 
         public void RecordAdditionalProfilerMetrics()
