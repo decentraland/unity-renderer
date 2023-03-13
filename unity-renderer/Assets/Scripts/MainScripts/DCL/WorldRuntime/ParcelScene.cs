@@ -103,6 +103,7 @@ namespace DCL.Controllers
             if (IsAssetBundleEnabled(data))
             {
                 var sceneAb = await FetchSceneAssetBundles(data.id, data.baseUrlBundles);
+
                 if (sceneAb.IsSceneConverted())
                 {
                     contentProvider.assetBundles = sceneAb.GetConvertedFiles();
@@ -121,7 +122,7 @@ namespace DCL.Controllers
         }
 
         private bool IsAssetBundleEnabled(LoadParcelScenesMessage.UnityParcelScene data) =>
-            (data.id.StartsWith(URN_PREFIX, StringComparison.InvariantCultureIgnoreCase) && featureFlags.IsFeatureEnabled(NEW_CDN_FF_WORLDS)) // remove this after the other flag is activated
+            (!string.IsNullOrEmpty(data.id) && data.id.StartsWith(URN_PREFIX, StringComparison.InvariantCultureIgnoreCase) && featureFlags.IsFeatureEnabled(NEW_CDN_FF_WORLDS)) // remove this after the other flag is activated
             || featureFlags.IsFeatureEnabled(NEW_CDN_FF);
 
         private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
@@ -445,10 +446,7 @@ namespace DCL.Controllers
                 if (data.ContainsKey(sceneData.sceneNumber)) { data[sceneData.sceneNumber].owners.Remove(id); }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            else
-            {
-                Debug.LogWarning($"Couldn't remove entity with ID: {id} as it doesn't exist.");
-            }
+            else { Debug.LogWarning($"Couldn't remove entity with ID: {id} as it doesn't exist."); }
 #endif
         }
 

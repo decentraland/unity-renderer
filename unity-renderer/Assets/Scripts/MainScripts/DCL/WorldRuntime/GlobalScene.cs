@@ -61,7 +61,7 @@ namespace DCL.Controllers
         }
 
         private bool IsAssetBundleEnabled(LoadParcelScenesMessage.UnityParcelScene data) =>
-            (data.id.StartsWith(URN_PREFIX, StringComparison.InvariantCultureIgnoreCase) && featureFlags.IsFeatureEnabled(NEW_CDN_FF_WORLDS)) // remove this after the other flag is activated
+            (!string.IsNullOrEmpty(data.id) && data.id.StartsWith(URN_PREFIX, StringComparison.InvariantCultureIgnoreCase) && featureFlags.IsFeatureEnabled(NEW_CDN_FF_WORLDS)) // remove this after the other flag is activated
             || featureFlags.IsFeatureEnabled(NEW_CDN_FF);
 
         private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
