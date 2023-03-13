@@ -68,7 +68,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "d87d531193e551f20454131765242e8d4615d668"
+      "hash": "dc4df1dcdaef5601e403251532539a03a8914838"
     },
     "com.madsbangh.easybuttons": {
       "version": "1.3.0",
