@@ -14,7 +14,6 @@ import { POSITION_SETTLED, POSITION_UNSETTLED, SET_SCENE_LOADER } from 'shared/s
 import { AUTHENTICATE, ChangeLoginStateAction, CHANGE_LOGIN_STAGE, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { getCurrentUserId } from 'shared/session/selectors'
-import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
 import { loadedSceneWorkers } from 'shared/world/parcelSceneManager'
 import { lastPlayerPosition } from 'shared/world/positionThings'
