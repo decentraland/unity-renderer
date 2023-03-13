@@ -133,11 +133,6 @@ export interface IUnityInterface {
   SetDisableAssetBundles(): void
   CrashPayloadRequest(): Promise<string>
 
-  /** @deprecated #3642 Kernel will no longer control Loading Screen */
-  ActivateRendering(): void
-
-  /** @deprecated #3642 Not used */
-  DeactivateRendering(): void
   ReportFocusOn(): void
   ReportFocusOff(): void
   UnlockCursor(): void

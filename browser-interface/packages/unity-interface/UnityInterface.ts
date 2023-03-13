@@ -194,10 +194,6 @@ export class UnityInterface implements IUnityInterface {
     return promise
   }
 
-  public ActivateRendering() {
-    this.SendMessageToUnity('Main', 'ActivateRendering')
-  }
-
   public SendMemoryUsageToRenderer() {
     const memory = (performance as any).memory
     const jsHeapSizeLimit = memory?.jsHeapSizeLimit
@@ -213,10 +209,6 @@ export class UnityInterface implements IUnityInterface {
 
   public UpdateRealmAbout(configurations: AboutResponse) {
     this.SendMessageToUnity('Bridges', 'SetRealmAbout', JSON.stringify(configurations))
-  }
-
-  public DeactivateRendering() {
-    this.SendMessageToUnity('Main', 'DeactivateRendering')
   }
 
   public ReportFocusOn() {
