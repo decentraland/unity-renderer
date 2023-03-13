@@ -1,5 +1,6 @@
 import { PORTABLE_EXPERIENCES_DEBOUNCE_DELAY } from 'config'
 import { call, takeEvery, debounce, select, put, delay } from 'redux-saga/effects'
+import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { LoadableScene } from 'shared/types'
 import {
   ADD_DESIRED_PORTABLE_EXPERIENCE,
@@ -22,6 +23,7 @@ import {
 import { getDesiredPortableExperiences } from './selectors'
 
 export function* portableExperienceSaga(): any {
+  yield call(onLoginCompleted)
   yield takeEvery([
     REMOVE_DESIRED_PORTABLE_EXPERIENCE,
     ADD_DESIRED_PORTABLE_EXPERIENCE,
