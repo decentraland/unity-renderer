@@ -109,6 +109,11 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+            Debug.Log("down arrow key");
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+            Debug.Log("up arrow key");
         if (!renderingEnabled)
         {
             Stop_Measurable(measurableActions);
@@ -118,12 +123,6 @@ public class InputController : MonoBehaviour
         Update_Trigger(triggerTimeActions);
         Update_Hold(holdActions);
         Update_Measurable(measurableActions);
-
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-            Debug.Log("down arrow key");
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-            Debug.Log("up arrow key");
     }
 
     /// <summary>
