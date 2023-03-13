@@ -39,6 +39,8 @@ async function copyBuiltFiles() {
   const streamingPath = path.resolve(process.env.BUILD_PATH, 'StreamingAssets')
   const streamingDistPath = path.resolve(DIST_PATH, 'StreamingAssets')
 
+  await mkdir(streamingDistPath, { recursive: true })
+
   for (const file of glob.sync('**/*', { cwd: streamingPath, absolute: true })) {
     copyFile(file, path.resolve(streamingDistPath, file.replace(streamingPath + '/', './')))
   }
