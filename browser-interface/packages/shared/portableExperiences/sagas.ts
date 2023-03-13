@@ -49,8 +49,9 @@ export function* portableExperienceSaga(): any {
   )
   yield takeEvery(RELOAD_SCENE_PX, reloadPortableExperienceChanges)
 
-  // Debounce it -- this is likely due to some internal logical bug
-  // TODO: Figure out if we still need this
+  // Many actions can trigger a rebuild of the portable experience "desired list", for example, by adding wearables one
+  // by one in some async `for` loop that awaits for each experience.
+  // Thus, we reactions to UPDATE_ENGINE_PX, so we only alert the renderer once, and avoid unnecessary processing costs.
   yield debounce(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY(), UPDATE_ENGINE_PX, handlePortableExperienceChangesEffect)
 
   // Finally, initialize the portable experiences
