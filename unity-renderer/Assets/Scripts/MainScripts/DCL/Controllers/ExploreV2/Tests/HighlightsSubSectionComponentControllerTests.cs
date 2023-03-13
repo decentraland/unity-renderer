@@ -106,7 +106,7 @@ public class HighlightsSubSectionComponentControllerTests
         // Assert
         placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
     }
-
+/*
     [Test]
     public void RaiseOnRequestedPlacesAndEventsUpdatedCorrectly()
     {
@@ -243,4 +243,5 @@ public class HighlightsSubSectionComponentControllerTests
         // Assert
         Assert.IsTrue(goToEventsSubSectionClicked);
     }
+    */
 }

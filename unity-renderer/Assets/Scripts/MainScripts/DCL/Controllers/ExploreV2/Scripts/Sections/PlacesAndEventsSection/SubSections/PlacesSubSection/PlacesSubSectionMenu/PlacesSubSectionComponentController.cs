@@ -23,7 +23,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<HotSceneInfo> placesFromAPI = new ();
+    internal List<PlaceInfo> placesFromAPI = new ();
     internal int availableUISlots;
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
@@ -86,22 +86,45 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllPlaces(
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(
             OnCompleted: OnRequestedEventsUpdated);
     }
 
-    private void OnRequestedEventsUpdated(List<HotSceneInfo> placeList)
+    private void OnRequestedEventsUpdated(List<PlaceInfo> placeList)
     {
         friendsTrackerController.RemoveAllHandlers();
 
         placesFromAPI = placeList;
 
-        view.SetPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards((TakeAllForAvailableSlots(placeList))));
+        view.SetPlaces(ConvertPlacesToModels(TakeAllForAvailableSlots(placeList)));
 
         view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
     }
 
-    internal List<HotSceneInfo> TakeAllForAvailableSlots(List<HotSceneInfo> modelsFromAPI) =>
+    private List<PlaceCardComponentModel> ConvertPlacesToModels(List<PlaceInfo> placeInfo)
+    {
+        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
+
+        foreach (var place in placeInfo)
+        {
+            modelsList.Add(
+                new PlaceCardComponentModel()
+                {
+                    placePictureUri = place.image,
+                    placeName = place.title,
+                    placeDescription = place.description,
+                    placeAuthor = place.contact_name,
+                    numberOfUsers = place.user_count,
+                    coords = place.base_position,
+                    parcels = place.positions,
+                    placeInfo = place
+                });
+        }
+
+        return modelsList;
+    }
+
+    internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI) =>
         modelsFromAPI.Take(availableUISlots).ToList();
 
     internal void ShowMorePlaces()
@@ -109,11 +132,11 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentPlacesPerRow) * view.currentPlacesPerRow) - availableUISlots;
         int numberOfItemsToAdd = (view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
-        List<HotSceneInfo> placesFiltered = availableUISlots + numberOfItemsToAdd <= placesFromAPI.Count
+        List<PlaceInfo> placesFiltered = availableUISlots + numberOfItemsToAdd <= placesFromAPI.Count
             ? placesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : placesFromAPI.GetRange(availableUISlots, placesFromAPI.Count - availableUISlots);
 
-        view.AddPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(placesFiltered));
+        view.AddPlaces(ConvertPlacesToModels(placesFiltered));
 
         availableUISlots += numberOfItemsToAdd;
 
@@ -126,7 +149,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName);
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }

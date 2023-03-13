@@ -16,6 +16,8 @@ public interface IPlacesAPIController
     /// <param name="OnCompleted">It will be triggered when the operation has finished successfully.</param>
     void GetAllPlaces(Action<List<HotSceneInfo>> OnCompleted);
 
+    UniTask GetAllPlacesFromPlacesAPI(Action<List<PlaceInfo>> OnCompleted);
+
     /// <summary>
     /// Request all favorite places from the server.
     /// </summary>
@@ -27,6 +29,7 @@ public interface IPlacesAPIController
 public class PlacesAPIController : IPlacesAPIController
 {
     private const string FAVORITE_PLACES_URL = "https://places.decentraland.org/api/places?only_favorites=true";
+    private const string PLACES_URL = "https://places.decentraland.org/api/places?order_by=most_active&order=desc";
     private readonly HotScenesController hotScenesController = HotScenesController.i;
     private Service<IWebRequestController> webRequestController;
 
@@ -39,6 +42,12 @@ public class PlacesAPIController : IPlacesAPIController
 
         hotScenesController.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
         hotScenesController.OnHotSceneListFinishUpdating += OnFetchHotScenes;
+    }
+
+    public async UniTask GetAllPlacesFromPlacesAPI(Action<List<PlaceInfo>> OnCompleted)
+    {
+        UnityWebRequest result = await webRequestController.Ref.GetAsync(PLACES_URL, isSigned: true);
+        OnCompleted?.Invoke(Utils.SafeFromJson<PlacesAPIResponse>(result.downloadHandler.text).data);
     }
 
     public async UniTask GetAllFavorites(Action<List<PlaceInfo>> OnCompleted)

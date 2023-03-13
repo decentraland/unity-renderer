@@ -57,8 +57,8 @@ public class HotScenesController : MonoBehaviour
         public string image;
         public string owner;
         public string[] tags;
-        public string[] positions;
-        public string base_position;
+        public Vector2Int[] positions;
+        public Vector2Int base_position;
         public string contact_name;
         public string contact_email;
         public string content_rating;

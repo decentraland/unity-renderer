@@ -106,8 +106,8 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
                     placeDescription = place.description,
                     placeAuthor = place.contact_name,
                     numberOfUsers = place.user_count,
-                    coords = new Vector2Int(),
-                    parcels = new Vector2Int[1]
+                    coords = place.base_position,
+                    parcels = place.positions
                 });
         }
 

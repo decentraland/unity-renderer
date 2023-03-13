@@ -11,13 +11,13 @@ public class MapInfoHandler : IMapDataView
 
     public Vector2Int[] parcels { private set; get; }
 
-    public void SetMinimapSceneInfo(HotScenesController.HotSceneInfo sceneInfo)
+    public void SetMinimapSceneInfo(HotScenesController.PlaceInfo sceneInfo)
     {
-        baseCoord = sceneInfo.baseCoords;
-        name = sceneInfo.name;
-        creator = sceneInfo.creator;
+        baseCoord = sceneInfo.base_position;
+        name = sceneInfo.title;
+        creator = sceneInfo.owner;
         description = sceneInfo.description;
-        parcels = sceneInfo.parcels;
+        parcels = sceneInfo.positions;
     }
 
     public bool ContainCoords(Vector2Int coords)

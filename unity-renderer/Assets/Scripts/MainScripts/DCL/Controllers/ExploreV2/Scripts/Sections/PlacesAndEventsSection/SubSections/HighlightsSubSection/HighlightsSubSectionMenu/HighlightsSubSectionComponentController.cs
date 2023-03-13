@@ -25,7 +25,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<HotSceneInfo> placesFromAPI = new ();
+    internal List<PlaceInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
 
     public HighlightsSubSectionComponentController(IHighlightsSubSectionComponentView view, IPlacesAPIController placesAPI, IEventsAPIController eventsAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics,
@@ -105,7 +105,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllPlaces(
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(
             OnCompleted: placeList =>
             {
                 placesFromAPI = placeList;
@@ -128,20 +128,43 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         friendsTrackerController.RemoveAllHandlers();
 
-        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.CreatePlacesCards(FilterTrendingPlaces());
+        List<PlaceCardComponentModel> trendingPlaces = ConvertPlacesToModels(FilterTrendingPlaces());
         List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents(trendingPlaces.Count));
         view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
 
-        view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(FilterFeaturedPlaces()));
+        view.SetFeaturedPlaces(ConvertPlacesToModels(FilterFeaturedPlaces()));
         view.SetLiveEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterLiveEvents()));
     }
 
-    internal List<HotSceneInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
+    private List<PlaceCardComponentModel> ConvertPlacesToModels(List<PlaceInfo> placeInfo)
+    {
+        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
+
+        foreach (var place in placeInfo)
+        {
+            modelsList.Add(
+                new PlaceCardComponentModel()
+                {
+                    placePictureUri = place.image,
+                    placeName = place.title,
+                    placeDescription = place.description,
+                    placeAuthor = place.contact_name,
+                    numberOfUsers = place.user_count,
+                    coords = place.base_position,
+                    parcels = place.positions,
+                    placeInfo = place
+                });
+        }
+
+        return modelsList;
+    }
+
+    internal List<PlaceInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
     internal List<EventFromAPIModel> FilterLiveEvents() => eventsFromAPI.Where(x => x.live).Take(DEFAULT_NUMBER_OF_LIVE_EVENTS).ToList();
     internal List<EventFromAPIModel> FilterTrendingEvents(int amount) => eventsFromAPI.Where(e => e.highlighted).Take(amount).ToList();
-    internal List<HotSceneInfo> FilterFeaturedPlaces()
+    internal List<PlaceInfo> FilterFeaturedPlaces()
     {
-        List<HotSceneInfo> featuredPlaces;
+        List<PlaceInfo> featuredPlaces;
 
         if (placesFromAPI.Count >= DEFAULT_NUMBER_OF_TRENDING_PLACES)
         {
@@ -156,7 +179,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         else if (placesFromAPI.Count > 0)
             featuredPlaces = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList();
         else
-            featuredPlaces = new List<HotSceneInfo>();
+            featuredPlaces = new List<PlaceInfo>();
 
         return featuredPlaces;
     }

@@ -162,7 +162,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         InitializeFriendsTracker();
 
         if (mapInfoHandler != null)
-            mapInfoHandler.SetMinimapSceneInfo(model.hotSceneInfo);
+            mapInfoHandler.SetMinimapSceneInfo(model.placeInfo);
 
         RefreshControl();
     }

@@ -16,4 +16,7 @@ public class PlaceCardComponentModel : BaseComponentModel
 
     [HideInInspector]
     public HotScenesController.HotSceneInfo hotSceneInfo;
+
+    [HideInInspector]
+    public HotScenesController.PlaceInfo placeInfo;
 }
