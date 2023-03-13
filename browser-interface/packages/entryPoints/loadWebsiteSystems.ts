@@ -1,5 +1,5 @@
 import type { KernelOptions } from 'kernel-web-interface'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { changeRealm, realmInitialized } from 'shared/dao'
 import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
@@ -18,7 +18,7 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { HUDElementID } from 'shared/types'
 import { foregroundChangeObservable, isForeground } from 'shared/world/worldState'
-import { HAS_INITIAL_POSITION_MARK, OPEN_AVATAR_EDITOR, RESET_TUTORIAL } from 'config'
+import { HAS_INITIAL_POSITION_MARK, RESET_TUTORIAL } from 'config'
 import { renderingInBackground, renderingInForeground } from 'shared/loadingScreen/types'
 import { kernelConfigForRenderer } from 'unity-interface/kernelConfigForRenderer'
 import { logger } from './logger'
@@ -49,7 +49,7 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
 
   renderer.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
   renderer.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: true })
-  renderer.ConfigureHUDElement(HUDElementID.AVATAR_EDITOR, { active: true, visible: OPEN_AVATAR_EDITOR })
+  renderer.ConfigureHUDElement(HUDElementID.AVATAR_EDITOR, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.SIGNUP, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.LOADING_HUD, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.AVATAR_NAMES, { active: true, visible: true })

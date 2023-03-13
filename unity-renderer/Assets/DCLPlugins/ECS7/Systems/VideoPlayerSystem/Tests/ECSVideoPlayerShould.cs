@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Components.Video.Plugin;
+using DCL.CRDT;
 using System;
 using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
@@ -27,8 +28,9 @@ namespace Tests
         {
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var executors = new Dictionary<int, ICRDTExecutor>();
 
-            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             var videoPlayerSystem = new ECSVideoPlayerSystem(internalEcsComponents.videoPlayerComponent,
                 internalEcsComponents.videoMaterialComponent);
@@ -36,10 +38,10 @@ namespace Tests
             systemsUpdate = () =>
             {
                 videoPlayerSystem.Update();
-                internalEcsComponents.WriteSystemUpdate();
+                internalEcsComponents.MarkDirtyComponentsUpdate();
             };
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene0 = testUtils.CreateScene(666);
             scene1 = testUtils.CreateScene(678);
 

@@ -1,18 +1,19 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas'
 import { call, select, takeLatest } from 'redux-saga/effects'
+import { AvatarMessageType } from 'shared/comms/interface/types'
+import { avatarMessageObservable } from 'shared/comms/peers'
+import type { RootCommsState } from 'shared/comms/types'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { realmToConnectionString } from 'shared/realm/resolver'
 import { getRealmAdapter } from 'shared/realm/selectors'
-import { IRealmAdapter } from 'shared/realm/types'
-import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import type { RootRealmState } from 'shared/realm/types'
 import { toEnvironmentRealmType } from '../apis/host/EnvironmentAPI'
 import { SET_COMMS_ISLAND, SET_ROOM_CONNECTION } from '../comms/actions'
 import { getCommsIsland } from '../comms/selectors'
 import { SAVE_DELTA_PROFILE_REQUEST } from '../profiles/actions'
 import { takeLatestByUserId } from '../profiles/sagas'
 import { allScenesEvent } from '../world/parcelSceneManager'
-import { avatarMessageObservable } from 'shared/comms/peers'
-import { AvatarMessageType } from 'shared/comms/interface/types'
 
 export function* sceneEventsSaga() {
   yield takeLatest([SET_COMMS_ISLAND, SET_ROOM_CONNECTION, SET_REALM_ADAPTER], islandChanged)
@@ -20,8 +21,7 @@ export function* sceneEventsSaga() {
 }
 
 function* islandChanged() {
-  const adapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
-  const island: string | undefined = yield select(getCommsIsland)
+  const { adapter, island } = (yield select(getRealmAdapterAndIsland)) as ReturnType<typeof getRealmAdapterAndIsland>
 
   if (adapter) {
     const payload = toEnvironmentRealmType(adapter, island)
@@ -30,12 +30,21 @@ function* islandChanged() {
 
   yield call(updateLocation, adapter ? realmToConnectionString(adapter) : undefined, island)
 }
+export function getRealmAdapterAndIsland(state: RootCommsState & RootRealmState) {
+  return {
+    adapter: getRealmAdapter(state),
+    island: getCommsIsland(state)
+  }
+}
 
 // @internal
 export function updateLocation(realm: string | undefined, island: string | undefined) {
   const q = new URLSearchParams(window.location.search)
-  if (realm) q.set('realm', realm)
-  else q.delete('realm')
+  if (realm) {
+    q.set('realm', realm)
+  } else {
+    q.delete('realm')
+  }
   if (island) {
     q.set('island', island)
   } else {

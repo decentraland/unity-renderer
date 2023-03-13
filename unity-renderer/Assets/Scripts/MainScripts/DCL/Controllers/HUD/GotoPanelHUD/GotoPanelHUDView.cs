@@ -1,38 +1,35 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using DCL.Interface;
-using DCL;
 using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
-namespace GotoPanel
+namespace DCL.GoToPanel
 {
     public class GotoPanelHUDView : MonoBehaviour, IGotoPanelHUDView
     {
-        [SerializeField] private Button teleportButton;
-        [SerializeField] private TextMeshProUGUI panelText;
-        [SerializeField] public GameObject container;
+        [SerializeField] internal Button teleportButton;
+        [SerializeField] internal TextMeshProUGUI panelText;
+        [SerializeField] internal GameObject container;
         [SerializeField] internal TextMeshProUGUI sceneTitleText;
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
         [SerializeField] internal Sprite scenePreviewFailImage;
         [SerializeField] internal RawImageFillParent scenePreviewImage;
-        [SerializeField] internal GameObject loadingSpinner;
+        [SerializeField] internal GameObject imageLoadingContainer;
         [SerializeField] internal Button closeButton;
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal ShowHideAnimator contentAnimator;
+        [SerializeField] internal GameObject sceneMetadataLoadingContainer;
 
-        private bool isDestroyed = false;
-
-        internal ParcelCoordinates targetCoordinates;
-
-        AssetPromise_Texture texturePromise = null;
+        private bool isDestroyed;
+        private AssetPromise_Texture texturePromise;
+        private ParcelCoordinates targetCoordinates;
 
         public event Action<ParcelCoordinates> OnTeleportPressed;
         public event Action OnClosePressed;
 
-        private void Start()
+        private void Awake()
         {
-            teleportButton.onClick.RemoveAllListeners();
             teleportButton.onClick.AddListener(TeleportTo);
             closeButton.onClick.AddListener(ClosePanel);
             cancelButton.onClick.AddListener(ClosePanel);
@@ -40,35 +37,46 @@ namespace GotoPanel
             contentAnimator.OnWillFinishHide += (animator) => Hide();
         }
 
-        public static IGotoPanelHUDView CreateView()
+        private void OnDestroy()
         {
-            GotoPanelHUDView view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("GotoPanelHUD")).GetComponent<GotoPanelHUDView>();
-            view.name = "_GotoPanelHUD";
-            return view;
+            isDestroyed = true;
         }
 
-        private void TeleportTo()
+        public void Dispose()
         {
-            OnTeleportPressed?.Invoke(targetCoordinates);
-            ClosePanel();
+            if (isDestroyed)
+                return;
+
+            isDestroyed = true;
+            ClearPromise();
+            Destroy(gameObject);
+        }
+
+        public static GotoPanelHUDView CreateView()
+        {
+            GotoPanelHUDView view = Instantiate(Resources.Load<GotoPanelHUDView>("GotoPanelHUD"));
+            view.name = "_GotoPanelHUD";
+            return view;
         }
 
         public void SetVisible(bool isVisible)
         {
             container.SetActive(isVisible);
             contentAnimator.Show(!isVisible);
-            loadingSpinner.SetActive(isVisible);
+            imageLoadingContainer.SetActive(isVisible);
             scenePreviewImage.texture = null;
+
+            if (!isVisible)
+                AudioScriptableObjects.dialogClose.Play(true);
         }
 
-        public void SetPanelInfo(ParcelCoordinates parcelCoordinates)
+        public void SetPanelInfo(ParcelCoordinates coordinates, MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
-            MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y);
             if (sceneInfo != null)
             {
                 sceneTitleText.text = sceneInfo.name;
                 sceneOwnerText.text = sceneInfo.owner;
-                SetParcelImage(sceneInfo);
+                SetParcelImage(sceneInfo.previewImageUrl);
             }
             else
             {
@@ -76,28 +84,41 @@ namespace GotoPanel
                 sceneOwnerText.text = "Unknown";
                 DisplayThumbnail(scenePreviewFailImage.texture);
             }
-            targetCoordinates = parcelCoordinates;
-            panelText.text = parcelCoordinates.ToString();
+
+            targetCoordinates = coordinates;
+            panelText.text = coordinates.ToString();
         }
 
-        private void SetParcelImage(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        public void ShowLoading() =>
+            sceneMetadataLoadingContainer.SetActive(true);
+
+        public void HideLoading() =>
+            sceneMetadataLoadingContainer.SetActive(false);
+
+        private void TeleportTo()
+        {
+            OnTeleportPressed?.Invoke(targetCoordinates);
+            ClosePanel();
+        }
+
+        private void SetParcelImage(string imageUrl)
         {
             DisplayThumbnail(scenePreviewFailImage.texture);
-            if (!string.IsNullOrEmpty(sceneInfo.previewImageUrl))
-            {
-                if (texturePromise != null)
-                    AssetPromiseKeeper_Texture.i.Forget(texturePromise);
-                
-                texturePromise = new AssetPromise_Texture(sceneInfo.previewImageUrl, storeTexAsNonReadable: false);
-                texturePromise.OnSuccessEvent += (textureAsset) => { DisplayThumbnail(textureAsset.texture); };
-                texturePromise.OnFailEvent += (textureAsset, error) => { DisplayThumbnail(scenePreviewFailImage.texture); };
-                AssetPromiseKeeper_Texture.i.Keep(texturePromise);
-            }
+
+            if (string.IsNullOrEmpty(imageUrl)) return;
+
+            if (texturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(texturePromise);
+
+            texturePromise = new AssetPromise_Texture(imageUrl, storeTexAsNonReadable: false);
+            texturePromise.OnSuccessEvent += (textureAsset) => { DisplayThumbnail(textureAsset.texture); };
+            texturePromise.OnFailEvent += (textureAsset, error) => { DisplayThumbnail(scenePreviewFailImage.texture); };
+            AssetPromiseKeeper_Texture.i.Keep(texturePromise);
         }
 
         private void DisplayThumbnail(Texture2D texture)
         {
-            loadingSpinner.SetActive(false);
+            imageLoadingContainer.SetActive(false);
             scenePreviewImage.texture = texture;
         }
 
@@ -107,28 +128,15 @@ namespace GotoPanel
             contentAnimator.Hide(true);
         }
 
-        private void Hide() => container.SetActive(false);
-
-        private void OnDestroy() { isDestroyed = true; }
-
-        public void Dispose()
-        {
-            if (isDestroyed)
-                return;
-            isDestroyed = true; 
-            ClearPromise();
-            Destroy(gameObject);
-        }
+        private void Hide() =>
+            container.SetActive(false);
 
         private void ClearPromise()
         {
-            if (texturePromise != null)
-            {
-                texturePromise.ClearEvents();
-                AssetPromiseKeeper_Texture.i.Forget(texturePromise);
-                texturePromise = null;
-            }
+            if (texturePromise == null) return;
+            texturePromise.ClearEvents();
+            AssetPromiseKeeper_Texture.i.Forget(texturePromise);
+            texturePromise = null;
         }
-
     }
 }

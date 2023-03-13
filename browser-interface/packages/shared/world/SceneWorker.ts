@@ -1,47 +1,47 @@
 import { Quaternion, Vector3 } from '@dcl/ecs-math'
+import { EventDataType } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
+import { PermissionItem, permissionItemFromJSON } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
+import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
+import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
+import * as codegen from '@dcl/rpc/dist/codegen'
+import { WebWorkerTransport } from '@dcl/rpc/dist/transports/WebWorker'
+import { Scene } from '@dcl/schemas'
 import {
   DEBUG_SCENE_LOG,
   ETHEREUM_NETWORK,
   FORCE_SEND_MESSAGE,
   getAssetBundlesBaseUrl,
-  playerConfigurations,
+  playerHeight,
   WSS_ENABLED
 } from 'config'
-import { PositionReport } from './positionThings'
-import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
-import { WebWorkerTransport } from '@dcl/rpc/dist/transports/WebWorker'
-import { EventDataType } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
+import defaultLogger, { createDummyLogger, createLogger, ILogger } from 'lib/logger'
+import mitt from 'mitt'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { trackEvent } from 'shared/analytics'
-import { getSceneNameFromJsonData } from 'shared/selectors'
-import { Scene } from '@dcl/schemas'
-import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
-import * as codegen from '@dcl/rpc/dist/codegen'
 import {
-  signalSceneLoad,
-  signalSceneStart,
-  signalSceneFail,
-  signalSceneUnload,
+  SceneFail,
   SceneLoad,
   SceneStart,
-  SceneFail,
   SceneUnload,
-  SCENE_UNLOAD,
-  SCENE_LOAD,
   SCENE_FAIL,
-  SCENE_START
+  SCENE_LOAD,
+  SCENE_START,
+  SCENE_UNLOAD,
+  signalSceneFail,
+  signalSceneLoad,
+  signalSceneStart,
+  signalSceneUnload
 } from 'shared/loading/actions'
+import { incrementAvatarSceneMessages } from 'shared/session/getPerformanceInfo'
 import { EntityAction, LoadableScene } from 'shared/types'
-import defaultLogger, { createDummyLogger, createLogger, ILogger } from 'lib/logger'
-import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
-import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
 import { protobufMsgBridge } from 'unity-interface/protobufMessagesBridge'
-import mitt from 'mitt'
-import { PermissionItem, permissionItemFromJSON } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
-import { incrementAvatarSceneMessages } from 'shared/session/getPerformanceInfo'
+import { PositionReport } from './positionThings'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -446,7 +446,7 @@ export class SceneWorker {
               y: positionReport.position.y
             },
             cameraPosition: positionReport.position,
-            playerHeight: playerConfigurations.height
+            playerHeight: playerHeight
           }
         })
 

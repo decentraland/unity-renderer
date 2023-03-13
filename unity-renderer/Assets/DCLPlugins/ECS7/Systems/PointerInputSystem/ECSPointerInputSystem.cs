@@ -237,7 +237,7 @@ namespace ECSSystems.PointerInputSystem
             IReadOnlyList<IParcelScene> loadedScenes = state.dataStoreEcs7.scenes;
             for (int i = 0; i < loadedScenes.Count; i++)
             {
-                if (loadedScenes[i] != skipScene && loadedScenes[i].crdtExecutor != null)
+                if (loadedScenes[i] != skipScene)
                 {
                     AddInputResultEvent(state, buttonId, loadedScenes[i], entityId, ray, raycastHit, pointerEventType);
                 }
