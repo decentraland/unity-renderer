@@ -1,5 +1,5 @@
 import { RpcClient, RpcClientPort, Transport } from '@dcl/rpc'
-import type { UnityGame } from '@dcl/unity-renderer/src/index'
+import type { UnityGame } from 'unity-interface/loader'
 import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
 import { deepEqual } from 'lib/javascript/deepEqual'

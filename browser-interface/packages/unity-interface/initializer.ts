@@ -2,7 +2,7 @@
 import { storeCondition } from 'lib/redux/storeCondition'
 import { initializeRenderer } from 'shared/renderer/actions'
 import { CommonRendererOptions, loadUnity } from './loader'
-import type { UnityGame } from '@dcl/unity-renderer/src/index'
+import type { UnityGame } from 'unity-interface/loader'
 import type { KernelOptions } from 'kernel-web-interface'
 
 import { initializeUnityEditor } from './wsEditorAdapter'
