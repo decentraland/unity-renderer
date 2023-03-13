@@ -1,6 +1,6 @@
 import { PORTABLE_EXPERIENCES_DEBOUNCE_DELAY } from 'config'
-import { call, takeEvery, debounce, select, put, delay } from 'redux-saga/effects'
-import { onLoginCompleted } from 'shared/session/onLoginCompleted'
+import { call, debounce, delay, put, select, takeEvery } from 'redux-saga/effects'
+import { waitForRendererRpcConnection } from 'shared/renderer/sagas-helper'
 import { LoadableScene } from 'shared/types'
 import {
   ADD_DESIRED_PORTABLE_EXPERIENCE,
@@ -8,22 +8,19 @@ import {
 } from 'shared/wearablesPortableExperience/actions'
 import { declareWantedPortableExperiences } from 'unity-interface/portableExperiencesUtils'
 import {
-  ADD_SCENE_PX,
+  ACTIVATE_ALL_PORTABLE_EXPERIENCES,
+  ADD_KERNEL_PX, ADD_SCENE_PX,
   DENY_PORTABLE_EXPERIENCES,
   ReloadScenePortableExperienceAction,
   RELOAD_SCENE_PX,
-  REMOVE_SCENE_PX,
-  updateEnginePortableExperiences,
+  REMOVE_SCENE_PX, SHUTDOWN_ALL_PORTABLE_EXPERIENCES, updateEnginePortableExperiences,
   UpdateEnginePortableExperiencesAction,
-  UPDATE_ENGINE_PX,
-  SHUTDOWN_ALL_PORTABLE_EXPERIENCES,
-  ACTIVATE_ALL_PORTABLE_EXPERIENCES,
-  ADD_KERNEL_PX
+  UPDATE_ENGINE_PX
 } from './actions'
 import { getDesiredPortableExperiences } from './selectors'
 
 export function* portableExperienceSaga(): any {
-  yield call(onLoginCompleted)
+  yield call(waitForRendererRpcConnection)
   yield takeEvery([
     REMOVE_DESIRED_PORTABLE_EXPERIENCE,
     ADD_DESIRED_PORTABLE_EXPERIENCE,
