@@ -9,11 +9,14 @@ import {
 import { declareWantedPortableExperiences } from 'unity-interface/portableExperiencesUtils'
 import {
   ACTIVATE_ALL_PORTABLE_EXPERIENCES,
-  ADD_KERNEL_PX, ADD_SCENE_PX,
+  ADD_KERNEL_PX,
+  ADD_SCENE_PX,
   DENY_PORTABLE_EXPERIENCES,
   ReloadScenePortableExperienceAction,
   RELOAD_SCENE_PX,
-  REMOVE_SCENE_PX, SHUTDOWN_ALL_PORTABLE_EXPERIENCES, updateEnginePortableExperiences,
+  REMOVE_SCENE_PX,
+  SHUTDOWN_ALL_PORTABLE_EXPERIENCES,
+  updateEnginePortableExperiences,
   UpdateEnginePortableExperiencesAction,
   UPDATE_ENGINE_PX
 } from './actions'
@@ -21,16 +24,19 @@ import { getDesiredPortableExperiences } from './selectors'
 
 export function* portableExperienceSaga(): any {
   yield call(waitForRendererRpcConnection)
-  yield takeEvery([
-    REMOVE_DESIRED_PORTABLE_EXPERIENCE,
-    ADD_DESIRED_PORTABLE_EXPERIENCE,
-    SHUTDOWN_ALL_PORTABLE_EXPERIENCES,
-    ACTIVATE_ALL_PORTABLE_EXPERIENCES,
-    DENY_PORTABLE_EXPERIENCES,
-    ADD_SCENE_PX,
-    ADD_KERNEL_PX,
-    REMOVE_SCENE_PX
-  ], handlePortableExperienceChanges)
+  yield takeEvery(
+    [
+      REMOVE_DESIRED_PORTABLE_EXPERIENCE,
+      ADD_DESIRED_PORTABLE_EXPERIENCE,
+      SHUTDOWN_ALL_PORTABLE_EXPERIENCES,
+      ACTIVATE_ALL_PORTABLE_EXPERIENCES,
+      DENY_PORTABLE_EXPERIENCES,
+      ADD_SCENE_PX,
+      ADD_KERNEL_PX,
+      REMOVE_SCENE_PX
+    ],
+    handlePortableExperienceChanges
+  )
   yield takeEvery(RELOAD_SCENE_PX, reloadPortableExperienceChanges)
   yield debounce(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY(), UPDATE_ENGINE_PX, handlePortableExperienceChangesEffect)
 }

@@ -10,16 +10,12 @@ import {
 import { portableExperienceSaga } from 'shared/portableExperiences/sagas'
 import { getDesiredPortableExperiences } from 'shared/portableExperiences/selectors'
 import { RootPortableExperiencesState } from 'shared/portableExperiences/types'
-import { registerRendererPort } from 'shared/renderer/actions'
 import { getClient } from 'shared/renderer/selectors'
 import { reducers } from 'shared/store/rootReducer'
 import { LoadableScene } from 'shared/types'
 import { declareWantedPortableExperiences } from 'unity-interface/portableExperiencesUtils'
 
-const rendererInitialized = registerRendererPort(
-  {} as any, {} as any
-)
-describe.only('Portable experiences sagas test', () => {
+describe('Portable experiences sagas test', () => {
   const createLoadablePX = (urn: string): LoadableScene => ({
     parentCid: 'main',
     id: urn,
