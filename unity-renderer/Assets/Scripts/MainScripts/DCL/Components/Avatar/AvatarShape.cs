@@ -167,9 +167,6 @@ namespace DCL
             OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                 entity.gameObject.transform.localRotation, true);
 
-            // NOTE: we subscribe here to transform changes since we might "lose" the message
-            // if we subscribe after a any yield
-            entity.OnTransformChange -= OnEntityTransformChanged;
             entity.OnTransformChange += OnEntityTransformChanged;
 
             var wearableItems = model.wearables.ToList();
@@ -370,7 +367,7 @@ namespace DCL
             base.OnPoolGet();
 
             everythingIsLoaded = false;
-            entity.gameObject.transform.localPosition = Vector3.zero;
+            if(entity != null) entity.gameObject.transform.localPosition = Vector3.zero;
             model = new AvatarModel();
             player = null;
         }
