@@ -369,6 +369,7 @@ namespace DCL
             base.OnPoolGet();
 
             everythingIsLoaded = false;
+            avatarCollider.gameObject.SetActive(false);
             if (entity != null) entity.gameObject.transform.localPosition = Vector3.zero;
             model = new AvatarModel();
             player = null;
