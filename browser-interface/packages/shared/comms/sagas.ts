@@ -487,7 +487,7 @@ export function* handleNewCommsContext() {
   }
 }
 
-export async function disconnectRoom(context: RoomConnection) {
+async function disconnectRoom(context: RoomConnection) {
   try {
     await context.disconnect()
   } catch (err: any) {
@@ -501,6 +501,7 @@ export async function disconnectRoom(context: RoomConnection) {
 function* handleRoomDisconnectionSaga(action: HandleRoomDisconnection) {
   const room: RoomConnection = yield select(getCommsRoom)
 
+  // and only acts if the disconnected room is the current room
   if (room && room === action.payload.context) {
     // this also remove the context
     yield put(setRoomConnection(undefined))
