@@ -38,7 +38,13 @@ namespace Tests
             result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
             result.Register<IWorldState>( () => new WorldState());
             result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());
-            result.Register<IWebRequestController>( WebRequestController.Create );
+            result.Register<IWebRequestController>( () => new WebRequestController(
+                new GetWebRequestFactory(),
+                new WebRequestAssetBundleFactory(),
+                new WebRequestTextureFactory(),
+                new WebRequestAudioFactory(),
+                new PostWebRequestFactory()
+            ) );
             return result;
         }
 

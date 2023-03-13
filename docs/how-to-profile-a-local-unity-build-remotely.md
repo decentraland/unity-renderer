@@ -25,4 +25,4 @@
 
 - Recommended setup: Only CPU, Rendering and Memory modules on display; Disable VSync and "Others" from CPU module.
 
-- On WebGL the process of building via the editor `bakes` the `local ip` into the build itself. If this changes, it will no longer work and you will have to build again.
+- On WebGL the process of building via the editor `bakes` the `local ip` into the build itself. If this changes, it will no longer work and you will have to build again. This only happens when you have "AutoConnect To Profiler" ticked in unity.
