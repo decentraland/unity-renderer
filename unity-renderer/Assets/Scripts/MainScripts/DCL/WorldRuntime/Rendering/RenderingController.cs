@@ -61,9 +61,6 @@ public class RenderingController : MonoBehaviour
 
     private void AddLock(object id)
     {
-        if (CommonScriptableObjects.rendererState.Get())
-            return;
-
         if (VERBOSE)
             Debug.Log("Add lock: " + id);
 
