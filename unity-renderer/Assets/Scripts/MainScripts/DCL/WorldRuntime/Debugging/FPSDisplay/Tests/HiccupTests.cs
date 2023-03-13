@@ -1,6 +1,5 @@
 using DCL.FPSDisplay;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
-using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
