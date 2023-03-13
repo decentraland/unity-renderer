@@ -34,7 +34,9 @@ public class RenderingController : MonoBehaviour
     private void DeactivateRendering_Internal()
     {
         if (!CommonScriptableObjects.rendererState.Get()) return;
+
         CommonScriptableObjects.rendererState.Set(false);
+        WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
     }
 
     private void ActivateRendering_Internal()
@@ -54,6 +56,7 @@ public class RenderingController : MonoBehaviour
         }
 
         CommonScriptableObjects.rendererState.Set(true);
+        WebInterface.ReportControlEvent(new WebInterface.ActivateRenderingACK());
     }
 
     private void AddLock(object id)

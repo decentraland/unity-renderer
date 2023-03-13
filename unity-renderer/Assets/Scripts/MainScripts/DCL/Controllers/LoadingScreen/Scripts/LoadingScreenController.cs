@@ -90,9 +90,9 @@ namespace DCL.LoadingScreen
         {
             onSignUpFlow = current;
             if (current)
-                FadeOutView();
+                CommonScriptableObjects.rendererState.RemoveLock(this);
             else
-                view.FadeIn(false, false);
+                FadeInView(false, false);
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
@@ -111,7 +111,7 @@ namespace DCL.LoadingScreen
                 //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
 
-                view.FadeIn(false, true);
+                FadeInView(false, true);
             }
             else
             {
@@ -159,7 +159,7 @@ namespace DCL.LoadingScreen
                     timer = 10f,
                     destroyOnFinish = true
                 });
-                FadeOutView();
+                CommonScriptableObjects.rendererState.RemoveLock(this);
             }
         }
 
@@ -167,6 +167,12 @@ namespace DCL.LoadingScreen
         {
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+        }
+
+        private void FadeInView(bool instant, bool blitTexture)
+        {
+            view.FadeIn(instant, blitTexture);
+            CommonScriptableObjects.rendererState.AddLock(this);
         }
     }
 }

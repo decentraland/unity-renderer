@@ -136,6 +136,8 @@ namespace DCL
                 poolableObject.RemoveFromPool();
         }
 
+        // If the position is Vector3.zero, it means that the Transform entity had just been created but never initialized.
+        // We need to wait for a first initialization
         private bool PositionCorrectlyInitialized() =>
             !entity.gameObject.transform.position.Equals(Vector3.zero);
 
@@ -164,9 +166,6 @@ namespace DCL
 
             OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                 entity.gameObject.transform.localRotation, true);
-
-            Debug.Log("VOY A CONFIGURARLO CON LA POSICION " + entity.gameObject.transform.localPosition);
-
 
             // NOTE: we subscribe here to transform changes since we might "lose" the message
             // if we subscribe after a any yield
