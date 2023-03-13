@@ -109,11 +109,6 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-            Debug.Log("down arrow key");
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-            Debug.Log("up arrow key");
         if (!renderingEnabled)
         {
             Stop_Measurable(measurableActions);
@@ -245,10 +240,10 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
                     break;
                 case DCLAction_Trigger.ChatMentionNextEntry:
-                    InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.None);
+                    InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.ChatMentionPreviousEntry:
-                    InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.None);
+                    InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
                     InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
