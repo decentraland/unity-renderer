@@ -67,7 +67,6 @@ public class CrdtExecutorsManager : IDisposable
             return;
 
         ICRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
-        scene.crdtExecutor = executor;
         crdtExecutors[scene.sceneData.sceneNumber] = executor;
     }
 

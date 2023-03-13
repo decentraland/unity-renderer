@@ -9,10 +9,28 @@ namespace Tests
     {
         [Test]
         [TestCase(0, 1, 100, null,
-            ExpectedResult = new byte[] { 0,0,0,24,0,0,0,1,0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 100, 0, 0, 0, 0 })]
+            ExpectedResult = new byte[]
+            {
+                24, 0, 0, 0,    //msg_length
+                1, 0, 0, 0,     //msg_type
+                0, 0, 0, 0,     //entityId
+                1, 0, 0, 0,     //componentId
+                100, 0, 0, 0,   //timestamp
+                0, 0, 0, 0      //data_length
+            })]
+
         [TestCase(32424, 67867, 2138996092, new byte[] { 42, 33, 67, 22 },
-            ExpectedResult = new byte[] { 0, 0, 0, 28, 0, 0, 0, 1, 0, 0, 126, 168, 0, 1, 9, 27, 127, 126, 125, 124, 0, 0, 0, 4, 42, 33, 67, 22 })]
-                                    //    msg_length |  msg_type |    entityId   | componentId|     timestamp     |data_length| data
+            ExpectedResult = new byte[]
+            {
+                28, 0, 0, 0,        //msg_length
+                1, 0, 0, 0,         //msg_type
+                168, 126, 0, 0,     //entityId
+                27, 9, 1, 0,        //componentId
+                124, 125, 126, 127, //timestamp
+                4, 0, 0, 0,         //data_length
+                42, 33, 67, 22      //data
+            })]
+
         public byte[] SerializeCorrectlyPutComponent(int entityId, int componentId, int timestamp, byte[] data)
         {
             var message = new CRDTMessage()

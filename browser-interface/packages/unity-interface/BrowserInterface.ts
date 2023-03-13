@@ -5,7 +5,7 @@ import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
-import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
+import { getSignedHeaders } from 'lib/decentraland/authentication/signedFetch'
 import { arrayCleanup } from 'lib/javascript/arrayCleanup'
 import { now } from 'lib/javascript/now'
 import { defaultLogger } from 'lib/logger'
@@ -1003,7 +1003,7 @@ export class BrowserInterface {
     const identity = getCurrentIdentity(store.getState())
 
     const headers: Record<string, string> = identity
-      ? getAuthHeaders(data.method, data.url, data.metadata, (_payload) =>
+      ? getSignedHeaders(data.method, data.url, data.metadata, (_payload) =>
           Authenticator.signPayload(identity, data.url)
         )
       : {}

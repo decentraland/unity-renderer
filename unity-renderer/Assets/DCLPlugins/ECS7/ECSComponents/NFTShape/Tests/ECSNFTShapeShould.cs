@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -10,6 +9,8 @@ using Decentraland.Common;
 using NFTShape_Internal;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -31,9 +32,10 @@ namespace Tests
         {
             var factory = new ECSComponentsFactory();
             var manager = new ECSComponentsManager(factory.componentBuilders);
-            var internalComponent = new InternalECSComponents(manager, factory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            var internalComponent = new InternalECSComponents(manager, factory, executors);
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(manager);
+            testUtils = new ECS7TestUtilsScenesAndEntities(manager, executors);
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(10399);
 
@@ -41,13 +43,16 @@ namespace Tests
             infoRetriever = Substitute.For<INFTInfoRetriever>();
             assetRetriever = Substitute.For<INFTAssetRetriever>();
             var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
+
             handler = new ECSNFTShapeComponentHandler(shapeFrameFactory,
                 infoRetriever,
                 assetRetriever,
                 renderersComponent);
 
             var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, manager, factory, null, new List<InternalComponentWriteData>());
+                0, manager, factory, null,
+                new KeyValueSet<ComponentIdentifier, ComponentWriteData>(), executors);
+
             keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
@@ -67,6 +72,7 @@ namespace Tests
             {
                 Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722"
             };
+
             handler.OnComponentModelUpdated(scene, entity, model);
             infoRetriever.Received(1).FetchNFTInfo(model.Src);
 
