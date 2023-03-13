@@ -234,15 +234,19 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
                     break;
                 case DCLAction_Trigger.ChatNextInHistory:
+                    Debug.Log("Message next");
                     InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
                     break;
                 case DCLAction_Trigger.ChatPreviousInHistory:
+                    Debug.Log("Message previous");
                     InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
                     break;
                 case DCLAction_Trigger.ChatMentionNextEntry:
+                    Debug.Log("Mention next");
                     InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.ChatMentionPreviousEntry:
+                    Debug.Log("Mention previous");
                     InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
