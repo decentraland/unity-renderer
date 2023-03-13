@@ -16,6 +16,8 @@ namespace DCL.Controllers
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
         private const string NEW_CDN_FF = "ab-new-cdn";
+        private const string NEW_CDN_FF_WORLDS = "ab-new-cdn-worlds";
+        private const string URN_PREFIX = "urn:decentraland:entity:";
 
         [Header("Debug")]
         [SerializeField]
@@ -98,7 +100,7 @@ namespace DCL.Controllers
 
             contentProvider.BakeHashes();
 
-            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            if (IsAssetBundleEnabled(data))
             {
                 var sceneAb = await FetchSceneAssetBundles(data.id, data.baseUrlBundles);
                 if (sceneAb.IsSceneConverted())
@@ -117,6 +119,10 @@ namespace DCL.Controllers
 
             OnSetData?.Invoke(data);
         }
+
+        private bool IsAssetBundleEnabled(LoadParcelScenesMessage.UnityParcelScene data) =>
+            (data.id.StartsWith(URN_PREFIX, StringComparison.InvariantCultureIgnoreCase) && featureFlags.IsFeatureEnabled(NEW_CDN_FF_WORLDS)) // remove this after the other flag is activated
+            || featureFlags.IsFeatureEnabled(NEW_CDN_FF);
 
         private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
         {

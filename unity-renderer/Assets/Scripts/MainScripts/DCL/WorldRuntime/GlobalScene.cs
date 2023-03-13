@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Models;
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
+using System;
 using UnityEngine;
 
 namespace DCL.Controllers
@@ -9,6 +10,8 @@ namespace DCL.Controllers
     public class GlobalScene : ParcelScene
     {
         private const string NEW_CDN_FF = "ab-new-cdn";
+        private const string NEW_CDN_FF_WORLDS = "ab-new-cdn-worlds";
+        private const string URN_PREFIX = "urn:decentraland:entity:";
 
         [System.NonSerialized]
         public string iconUrl;
@@ -40,7 +43,7 @@ namespace DCL.Controllers
 
             contentProvider.BakeHashes();
 
-            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            if (IsAssetBundleEnabled(data))
             {
                 var sceneAb = await FetchSceneAssetBundles(data.id, data.baseUrlBundles);
 
@@ -56,6 +59,10 @@ namespace DCL.Controllers
 
             DataStore.i.sceneWorldObjects.AddScene(sceneData.sceneNumber);
         }
+
+        private bool IsAssetBundleEnabled(LoadParcelScenesMessage.UnityParcelScene data) =>
+            (data.id.StartsWith(URN_PREFIX, StringComparison.InvariantCultureIgnoreCase) && featureFlags.IsFeatureEnabled(NEW_CDN_FF_WORLDS)) // remove this after the other flag is activated
+            || featureFlags.IsFeatureEnabled(NEW_CDN_FF);
 
         private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
         {

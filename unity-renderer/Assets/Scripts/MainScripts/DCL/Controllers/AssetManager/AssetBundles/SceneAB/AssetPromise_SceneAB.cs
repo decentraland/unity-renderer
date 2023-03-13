@@ -78,6 +78,10 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
                 asset.Setup(sceneAb, contentUrl);
             }
             catch (OperationCanceledException) { }
+            catch (UnityWebRequestException e)
+            {
+                Debug.LogError("Failed to get asset bundles with url: " + finalUrl);
+            }
             finally { onSuccess(); }
         }
 

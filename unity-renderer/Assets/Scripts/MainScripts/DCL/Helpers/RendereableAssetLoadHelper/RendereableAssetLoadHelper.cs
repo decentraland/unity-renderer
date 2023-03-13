@@ -182,11 +182,11 @@ namespace DCL.Components
                 return;
             }
 
-            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            if (contentProvider.assetBundles.Contains(hash))
+                bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
+            else
             {
-                if (contentProvider.assetBundles.Contains(hash))
-                    bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
-                else
+                if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
                 {
                     // we track the failing asset for it to be fixed in the asset bundle converter
                     SentrySdk.CaptureMessage("Scene Asset not converted to AssetBundles", scope =>
@@ -201,7 +201,6 @@ namespace DCL.Components
                     return;
                 }
             }
-
 
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
