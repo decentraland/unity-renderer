@@ -118,6 +118,12 @@ public class InputController : MonoBehaviour
         Update_Trigger(triggerTimeActions);
         Update_Hold(holdActions);
         Update_Measurable(measurableActions);
+
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+            Debug.Log("down arrow key");
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+            Debug.Log("up arrow key");
     }
 
     /// <summary>
@@ -234,20 +240,16 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
                     break;
                 case DCLAction_Trigger.ChatNextInHistory:
-                    Debug.Log("Message next");
                     InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
                     break;
                 case DCLAction_Trigger.ChatPreviousInHistory:
-                    Debug.Log("Message previous");
                     InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
                     break;
                 case DCLAction_Trigger.ChatMentionNextEntry:
-                    Debug.Log("Mention next");
-                    InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
+                    InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.ChatMentionPreviousEntry:
-                    Debug.Log("Mention previous");
-                    InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
+                    InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
                     InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
