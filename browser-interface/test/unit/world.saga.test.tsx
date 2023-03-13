@@ -30,7 +30,7 @@ describe('World', () => {
         ]
       ])
       .dispatch(action)
-      .run()
+      .silentRun(0)
     expect({ called }).to.deep.eq({ called: true })
   })
 
@@ -49,7 +49,7 @@ describe('World', () => {
         ]
       ])
       .dispatch(action)
-      .run()
+      .silentRun(0)
     expect({ called }).to.deep.eq({ called: true })
   })
 
@@ -76,7 +76,7 @@ describe('World', () => {
         [select(getCurrentUserId), 'userid1']
       ])
       .dispatch(action)
-      .run()
+      .silentRun(0)
 
     expect({ userIdFromCall }).to.deep.eq({ userIdFromCall: 'userid1' })
   })
@@ -105,7 +105,7 @@ describe('World', () => {
         [select(getCurrentUserId), 'userid1']
       ])
       .dispatch(action)
-      .run()
+      .silentRun(0)
 
     expect({ userIdFromCall }).to.deep.eq({ userIdFromCall: 'userid1' })
   })

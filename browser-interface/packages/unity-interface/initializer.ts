@@ -2,7 +2,7 @@
 import { storeCondition } from 'lib/redux/storeCondition'
 import { initializeRenderer } from 'shared/renderer/actions'
 import { CommonRendererOptions, loadUnity } from './loader'
-import type { UnityGame } from '@dcl/unity-renderer/src/index'
+import type { UnityGame } from 'unity-interface/loader'
 import type { KernelOptions } from 'kernel-web-interface'
 
 import { initializeUnityEditor } from './wsEditorAdapter'
@@ -14,7 +14,7 @@ import {
 } from 'shared/loading/ReportFatalError'
 import { store } from 'shared/store/isolatedStore'
 import defaultLogger from 'lib/logger'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { browserInterface } from './BrowserInterface'
 import { webTransport } from 'renderer-protocol/transports/webTransport'
 import { Transport } from '@dcl/rpc'

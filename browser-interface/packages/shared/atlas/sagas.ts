@@ -1,49 +1,48 @@
-import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
-import {
-  getOwnerNameFromJsonData,
-  getSceneDescriptionFromJsonData,
-  getThumbnailUrlFromJsonDataAndContent
-} from 'shared/selectors'
+import { Scene } from '@dcl/schemas'
+import { saveToPersistentStorage } from 'lib/browser/persistentStorage'
+import { getTilesRectFromCenter } from 'lib/decentraland/parcels/getTilesRectFromCenter'
+import { parcelSize } from 'lib/decentraland/parcels/limits'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import defaultLogger from 'lib/logger'
+import { Vector2 } from 'lib/math/Vector2'
+import { waitFor } from 'lib/redux'
+import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects'
+import { trackEvent } from 'shared/analytics/trackEvent'
+import { getPOIService } from 'shared/dao/selectors'
+import { SCENE_LOAD } from 'shared/loading/actions'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
+import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
+import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
+import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
+import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
+import { getSceneDescriptionFromJsonData } from 'lib/decentraland/sceneJson/getSceneDescriptionFromJsonData'
+import { store } from 'shared/store/isolatedStore'
+import { LoadableScene } from 'shared/types'
+import { getUnityInstance, MinimapSceneInfo } from 'unity-interface/IUnityInterface'
+import { META_CONFIGURATION_INITIALIZED } from '../meta/actions'
 import { lastPlayerPosition } from '../world/positionThings'
 import {
-  ReportScenesAroundParcel,
-  reportedScenes,
-  REPORT_SCENES_AROUND_PARCEL,
-  reportScenesAroundParcel,
-  reportLastPosition,
   initializePoiTiles,
   INITIALIZE_POI_TILES,
+  reportedScenes,
+  reportLastPosition,
+  ReportScenesAroundParcel,
+  reportScenesAroundParcel,
   ReportScenesFromTile,
   reportScenesFromTiles,
+  REPORT_SCENES_AROUND_PARCEL,
   REPORT_SCENES_FROM_TILES,
-  SetHomeScene,
-  SET_HOME_SCENE,
   SendHomeScene,
   sendHomeScene,
-  SEND_HOME_SCENE_TO_UNITY
+  SEND_HOME_SCENE_TO_UNITY,
+  SetHomeScene,
+  SET_HOME_SCENE
 } from './actions'
 import { getPoiTiles, postProcessSceneName } from './selectors'
 import { RootAtlasState } from './types'
-import { getTilesRectFromCenter } from '../getTilesRectFromCenter'
-import { LoadableScene } from 'shared/types'
-import { SCENE_LOAD } from 'shared/loading/actions'
-import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
-import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
-import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
-import { META_CONFIGURATION_INITIALIZED } from '../meta/actions'
-import { getPOIService } from 'shared/dao/selectors'
-import { store } from 'shared/store/isolatedStore'
-import { getUnityInstance, MinimapSceneInfo } from 'unity-interface/IUnityInterface'
-import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { Scene } from '@dcl/schemas'
-import { saveToPersistentStorage } from 'lib/browser/persistentStorage'
 import { homePointKey } from './utils'
-import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
-import { trackEvent } from 'shared/analytics'
-import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { parcelSize } from 'lib/decentraland/parcels/limits'
-import { Vector2 } from 'lib/math/Vector2'
 
 export function* atlasSaga(): any {
   yield takeEvery(SCENE_LOAD, checkAndReportAround)
@@ -76,11 +75,10 @@ function* checkAndReportAround() {
   }
 }
 
-function* waitForPoiTilesInitialization() {
-  while (!(yield select((state: RootAtlasState) => state.atlas.hasPois))) {
-    yield take(INITIALIZE_POI_TILES)
-  }
+function atlasHasPois(state: RootAtlasState) {
+  return !!state.atlas.hasPois
 }
+const waitForPoiTilesInitialization = waitFor(atlasHasPois, INITIALIZE_POI_TILES)
 
 function* reportPois() {
   yield call(waitForPoiTilesInitialization)

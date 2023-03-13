@@ -4,6 +4,8 @@ import { registerEmotesKernelService } from './services/emotesService'
 import { registerAnalyticsKernelService } from './services/analyticsService'
 import { registerFriendRequestKernelService } from './services/friendRequestService'
 import { registerFriendsKernelService } from './services/friendsService'
+import { registerMutualFriendsKernelService } from './services/mutualFriendsService'
+import { registerSignRequestService } from './services/signRequestService'
 
 export function createRendererProtocolInverseRpcServer(transport: Transport) {
   const server = createRpcServer<RendererProtocolContext>({})
@@ -25,4 +27,6 @@ async function registerKernelServices(serverPort: RpcServerPort<RendererProtocol
   registerAnalyticsKernelService(serverPort)
   registerFriendRequestKernelService(serverPort)
   registerFriendsKernelService(serverPort)
+  registerMutualFriendsKernelService(serverPort)
+  registerSignRequestService(serverPort)
 }

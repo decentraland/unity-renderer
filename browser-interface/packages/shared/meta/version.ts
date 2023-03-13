@@ -1,5 +1,6 @@
-// this function injects rollout versions to records based on the rollouts
-// {a: asd} -> {a: asd, _site: 1.0.0, @dcl/unity-renderer: 6.0.0}
+/**
+ * @deprecated: use `getExplorerVersion`
+ */
 export function injectVersions<T extends Record<string, any>>(versions: T): T & Record<string, string> {
   const rolloutsInfo = (globalThis as any).ROLLOUTS || {}
 
@@ -14,8 +15,18 @@ export function injectVersions<T extends Record<string, any>>(versions: T): T & 
   return versions
 }
 
+/**
+ * @deprecated: use `getExplorerVersion`
+ */
 export function getUsedComponentVersions() {
   const versions = injectVersions({})
   const explorerVersion = versions['@dcl/explorer'] || 'unknown'
   return { explorerVersion }
+}
+
+/**
+ * Returns the build version
+ */
+export function getExplorerVersion() {
+  return ((globalThis as any).ROLLOUTS || {})['@dcl/explorer']?.version || 'unknown'
 }

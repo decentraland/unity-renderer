@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
 
-cd app
-npm install
+cd app/browser-interface
+npm ci
 make watch

@@ -272,8 +272,7 @@ function* onWorldPositionChange() {
   // start the loop to load scenes
   while (true) {
     const { sceneLoader, position, loadingRadius } = (yield select(getPositionChangeInfo)) as ReturnType<
-      typeof getPositionChangeInfo
-      >
+      typeof getPositionChangeInfo>
 
     if (sceneLoader) {
       const report: SceneLoaderPositionReport = {

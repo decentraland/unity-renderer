@@ -31,7 +31,7 @@ namespace DCL.ECS7
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, crdtExecutors);
 
             crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, DataStore.i.rpc.context.crdt);
 
@@ -48,8 +48,8 @@ namespace DCL.ECS7
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
 
-            sceneController.OnNewSceneAdded += SceneControllerOnOnNewSceneAdded;
-            sceneController.OnSceneRemoved += SceneControllerOnOnSceneRemoved;
+            sceneController.OnNewSceneAdded += SceneControllerOnNewSceneAdded;
+            sceneController.OnSceneRemoved += SceneControllerOnSceneRemoved;
         }
 
         public void Dispose()
@@ -61,11 +61,11 @@ namespace DCL.ECS7
             internalEcsComponents.Dispose();
             crdtExecutorsManager.Dispose();
 
-            sceneController.OnNewSceneAdded -= SceneControllerOnOnNewSceneAdded;
-            sceneController.OnSceneRemoved -= SceneControllerOnOnSceneRemoved;
+            sceneController.OnNewSceneAdded -= SceneControllerOnNewSceneAdded;
+            sceneController.OnSceneRemoved -= SceneControllerOnSceneRemoved;
         }
 
-        private void SceneControllerOnOnNewSceneAdded(IParcelScene scene)
+        private void SceneControllerOnNewSceneAdded(IParcelScene scene)
         {
             if (scene.sceneData.sdk7)
             {
@@ -73,7 +73,7 @@ namespace DCL.ECS7
             }
         }
 
-        private void SceneControllerOnOnSceneRemoved(IParcelScene scene)
+        private void SceneControllerOnSceneRemoved(IParcelScene scene)
         {
             if (scene.sceneData.sdk7)
             {

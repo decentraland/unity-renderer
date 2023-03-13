@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import type { EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 import type { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
-import type { UnityGame } from '@dcl/unity-renderer/src'
+import type { UnityGame } from 'unity-interface/loader'
 import type { Observable } from 'mz-observable'
 import type {
   RenderProfile,
