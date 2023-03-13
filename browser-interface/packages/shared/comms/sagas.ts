@@ -487,7 +487,7 @@ export function* handleNewCommsContext() {
   }
 }
 
-async function disconnectRoom(context: RoomConnection) {
+export async function disconnectRoom(context: RoomConnection) {
   try {
     await context.disconnect()
   } catch (err: any) {
