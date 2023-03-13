@@ -78,8 +78,8 @@ namespace DCL.ECSComponents.UIInput
             uiElement.style.fontSize = model.GetFontSize();
             uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();
 
-            if (model.HasTextValue)
-                uiElement.SetValueWithoutNotify(model.TextValue);
+            if (model.HasValue)
+                uiElement.SetValueWithoutNotify(model.Value);
 
             fontUpdater.Update(model.GetFont());
         }

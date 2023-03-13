@@ -65,7 +65,7 @@ namespace DCL.ECSComponents.UIInput.Tests
             };
 
             if (useTextValueProperty)
-                model.TextValue = "TEXT-VALUE";
+                model.Value = "TEXT-VALUE";
 
             handler.OnComponentModelUpdated(scene, entity, model);
         }
