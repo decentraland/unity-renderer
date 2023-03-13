@@ -62,7 +62,7 @@ namespace DCL
             tracker.AddDeltaTime(Time.unscaledDeltaTime);
             performanceMetricsDataVariable.Set(profilerRecordsService.LastFPS, tracker.HiccupsCountInBuffer, tracker.HiccupsSum, tracker.TotalSeconds);
 
-            encodedSamples[currentIndex++] = (char)(Time.unscaledDeltaTime * 1000);
+            encodedSamples[currentIndex++] = (char)profilerRecordsService.LastFrameTimeInMS;
 
             if (trackProfileRecords)
                 totalAllocSample +=  profilerRecordsService.GcAllocatedInFrame;

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.Profiling;
+﻿using Unity.Profiling;
 
 namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
 {
     public class ProfilerRecordsService : IProfilerRecordsService
     {
-        private const int CAPACITY = 15;
-
-        private readonly List<ProfilerRecorderSample> samples;
+        private const int CAPACITY = 15; // Amounts of frames used for calculating average FPS
 
         private ProfilerRecorder mainThreadTimeRecorder;
 
@@ -19,10 +15,12 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
 
         private bool isRecordingAdditionalProfilers;
 
-        public float LastFrameTimeInSec => mainThreadTimeRecorder.LastValue * 1e-9f; // [sec]
         public float LastFrameTimeInMS => mainThreadTimeRecorder.LastValue * 1e-6f; // [sec]
-        public float LastFPS => 1 / LastFrameTimeInSec;
+        public float LastFPS => 1 / (mainThreadTimeRecorder.LastValue * 1e-9f);
 
+        /// <summary>
+        /// Average frame time and FPS. In-game use only due to overhead (not for external analytics)
+        /// </summary>
         public (float FrameTime, float FPS) AverageData
         {
             get
@@ -41,7 +39,6 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
         public ProfilerRecordsService()
         {
             mainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", CAPACITY);
-            samples = new List<ProfilerRecorderSample>(CAPACITY);
         }
 
         public void Initialize() { }
@@ -84,20 +81,23 @@ namespace MainScripts.DCL.WorldRuntime.Debugging.Performance
             gcAllocatedInFrameRecorder.Dispose();
         }
 
-        private float GetRecorderFrameAverage(ProfilerRecorder recorder)
+        private static float GetRecorderFrameAverage(ProfilerRecorder recorder)
         {
             int samplesCount = recorder.Capacity;
 
             if (samplesCount == 0)
                 return 0;
 
-            samples.Clear();
-            recorder.CopyTo(samples);
-
             float r = 0;
 
-            for (var i = 0; i < samplesCount; ++i)
-                r += samples[i].Value;
+            unsafe
+            {
+                ProfilerRecorderSample* samples = stackalloc ProfilerRecorderSample[samplesCount];
+                recorder.CopyTo(samples, samplesCount);
+
+                for (var i = 0; i < samplesCount; ++i)
+                    r += samples[i].Value;
+            }
 
             return r / samplesCount;
         }
