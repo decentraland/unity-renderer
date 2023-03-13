@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -14,21 +14,33 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
     private Dictionary<int, ECS7TestScene> scenes = new Dictionary<int, ECS7TestScene>();
     private Dictionary<int, GameObject> scenesGO = new Dictionary<int, GameObject>();
     private ECSComponentsManager componentsManager;
+    private Dictionary<int, ICRDTExecutor> executorsDictionary;
 
-    public ECS7TestUtilsScenesAndEntities() : this(null) { }
+    public ECS7TestUtilsScenesAndEntities() : this(null, null) { }
 
-    public ECS7TestUtilsScenesAndEntities(ECSComponentsManager componentsManager)
+    public ECS7TestUtilsScenesAndEntities(ECSComponentsManager componentsManager) : this(componentsManager, null) { }
+
+    public ECS7TestUtilsScenesAndEntities(ECSComponentsManager componentsManager, Dictionary<int, ICRDTExecutor> executorsDictionary)
     {
         this.componentsManager = componentsManager ?? new ECSComponentsManager(new Dictionary<int, ECSComponentsFactory.ECSComponentBuilder>());
+        this.executorsDictionary = executorsDictionary ?? new Dictionary<int, ICRDTExecutor>();
     }
 
     public void Dispose()
     {
         ECS7TestScene[] scenes = this.scenes.Values.ToArray();
+
         foreach (var scene in scenes)
         {
             Internal_DeleteScene(scene);
         }
+
+        foreach (var crdtExecutor in executorsDictionary.Values)
+        {
+            crdtExecutor.Dispose();
+        }
+
+        executorsDictionary.Clear();
     }
 
     public ECS7TestScene GetScene(int sceneNumber)
@@ -59,6 +71,7 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
 
         // properties
         scene.entities = new Dictionary<long, IDCLEntity>();
+
         scene.sceneData = new LoadParcelScenesMessage.UnityParcelScene()
         {
             sceneNumber = sceneNumber,
@@ -66,8 +79,8 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
             parcels = parcels.ToArray(),
             sdk7 = true
         };
-        scene.crdtExecutor = new CRDTExecutor(scene, componentsManager);
 
+        executorsDictionary[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
         // methods: `CreateEntity` `RemoveEntity` `GetSceneTransform`
         scene._entityCreator = (id) =>
@@ -77,6 +90,7 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
             scene.entities.Add(entity.entityId, entity);
             return entity;
         };
+
         scene._entityRemover = (id) =>
         {
             if (scene.entities.TryGetValue(id, out IDCLEntity entity))
@@ -86,6 +100,7 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
                 Internal_DeleteEntity(entity);
             }
         };
+
         scene._go = go;
 
         return scene;
@@ -112,10 +127,12 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
         {
             Object.DestroyImmediate(go);
         }
+
         foreach (var entity in scene.entities.Values)
         {
             Internal_DeleteEntity(entity);
         }
+
         scenesGO.Remove(scene.sceneData.sceneNumber);
         scenes.Remove(scene.sceneData.sceneNumber);
     }
