@@ -76,6 +76,7 @@ namespace DCL.Chat.HUD
             view.OnShowMembersList += ShowMembersList;
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
+            dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
 
             chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
                (name, count, ct) => chatMentionSuggestionProvider.GetProfilesFromChatChannelsStartingWith(name, channelId, count, ct),
@@ -118,6 +119,7 @@ namespace DCL.Chat.HUD
 
             SetVisiblePanelList(visible);
             chatHudController.SetVisibility(visible);
+            dataStore.HUDs.chatInputVisible.Set(visible);
 
             if (visible)
             {
@@ -142,7 +144,8 @@ namespace DCL.Chat.HUD
                         INITIAL_PAGE_SIZE);
                 }
 
-                View.Show();
+                View?.ChatHUD.ResetInputField();
+                View?.Show();
                 Focus();
             }
             else
@@ -180,6 +183,7 @@ namespace DCL.Chat.HUD
                 View.OnMuteChanged -= MuteChannel;
                 View.Dispose();
             }
+            dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
 
             hideLoadingCancellationToken.Dispose();
             channelMembersHUDController.Dispose();
@@ -434,6 +438,14 @@ namespace DCL.Chat.HUD
                 messageType = ChatMessage.Type.SYSTEM,
                 subType = ChatEntryModel.SubType.RECEIVED
             }).Forget();
+        }
+
+        private void SomeoneMentionedFromContextMenu(string mention, string _)
+        {
+            if (!View.IsActive)
+                return;
+
+            View.ChatHUD.AddTextIntoInputField(mention);
         }
     }
 }

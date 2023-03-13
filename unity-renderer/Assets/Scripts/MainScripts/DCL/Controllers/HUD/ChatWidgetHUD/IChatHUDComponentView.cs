@@ -30,4 +30,5 @@ public interface IChatHUDComponentView
     void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions);
     void HideMentionSuggestions();
     void AddMentionToInputField(int fromIndex, int length, string userId, string userName);
+    void AddTextIntoInputField(string text);
 }

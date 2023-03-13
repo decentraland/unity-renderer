@@ -28,7 +28,7 @@ namespace SocialFeaturesAnalytics
         void SendFriendDeleted(string fromUserId, string toUserId, PlayerActionSource source);
         void SendMessageWithMention();
         void SendClickedMention();
-        void SendMentionAutocomplete();
+        void SendMentionCreated(MentionCreationSource source);
         void SendPassportOpen(bool found = true, AvatarOpenSource source = AvatarOpenSource.World);
         void SendPassportClose(double timeSpent);
         void SendPlayerBlocked(bool isFriend, PlayerActionSource source);

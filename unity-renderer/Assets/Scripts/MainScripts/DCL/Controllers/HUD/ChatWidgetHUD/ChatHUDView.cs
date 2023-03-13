@@ -235,6 +235,12 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         FocusInputField();
     }
 
+    public void AddTextIntoInputField(string text)
+    {
+        SetInputFieldText(string.IsNullOrEmpty(inputField.text) ? $"{text} " : $"{inputField.text.TrimEnd()} {text} ");
+        FocusInputField();
+    }
+
     public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
         if (entries.ContainsKey(model.messageId))

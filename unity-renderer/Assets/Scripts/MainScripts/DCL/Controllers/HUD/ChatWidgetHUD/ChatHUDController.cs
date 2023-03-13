@@ -420,7 +420,7 @@ public class ChatHUDController : IHUD
     private void HandleMentionSuggestionSelected(string userId)
     {
         view.AddMentionToInputField(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
-        socialAnalytics.SendMentionAutocomplete();
+        socialAnalytics.SendMentionCreated(MentionCreationSource.SuggestionList);
         HideMentionSuggestions();
     }
 

@@ -42,4 +42,10 @@ namespace SocialFeaturesAnalytics
         Shortcut,
         Button
     }
+
+    public enum MentionCreationSource
+    {
+        SuggestionList,
+        ProfileContextMenu,
+    }
 }

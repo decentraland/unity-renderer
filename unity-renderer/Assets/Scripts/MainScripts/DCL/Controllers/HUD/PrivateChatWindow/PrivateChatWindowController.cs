@@ -75,6 +75,8 @@ public class PrivateChatWindowController : IHUD
 
         view.OnRequireMoreMessages += RequestOldConversations;
 
+        dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
+
         chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
             async (name, count, ct) =>
             {
@@ -116,6 +118,7 @@ public class PrivateChatWindowController : IHUD
 
         SetVisiblePanelList(visible);
         chatHudController.SetVisibility(visible);
+        dataStore.HUDs.chatInputVisible.Set(visible);
 
         if (visible)
         {
@@ -179,6 +182,8 @@ public class PrivateChatWindowController : IHUD
             View.OnRequireMoreMessages -= RequestOldConversations;
             View.Dispose();
         }
+
+        dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
     }
 
     private void HandleSendChatMessage(ChatMessage message)
@@ -391,5 +396,13 @@ public class PrivateChatWindowController : IHUD
     {
         chatHudController.FocusInputField();
         MarkUserChatMessagesAsRead();
+    }
+
+    private void SomeoneMentionedFromContextMenu(string mention, string _)
+    {
+        if (!View.IsActive)
+            return;
+
+        View.ChatHUD.AddTextIntoInputField(mention);
     }
 }

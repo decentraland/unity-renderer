@@ -35,7 +35,8 @@ public class UserContextMenu : MonoBehaviour
         Message = 4,
         Passport = 8,
         Block = 16,
-        Report = 32
+        Report = 32,
+        Mention = 64,
     }
 
     const MenuConfigFlags headerFlags = MenuConfigFlags.Name | MenuConfigFlags.Friendship;
@@ -67,6 +68,7 @@ public class UserContextMenu : MonoBehaviour
     [SerializeField] internal Button cancelFriendButton;
     [SerializeField] internal Button deleteFriendButton;
     [SerializeField] internal Button messageButton;
+    [SerializeField] internal Button mentionButton;
 
     public static event Action<string> OnOpenPrivateChatRequest;
 
@@ -175,6 +177,7 @@ public class UserContextMenu : MonoBehaviour
         addFriendButton.onClick.AddListener(OnAddFriendButtonPressed);
         cancelFriendButton.onClick.AddListener(OnCancelFriendRequestButtonPressed);
         messageButton.onClick.AddListener(OnMessageButtonPressed);
+        mentionButton.onClick.AddListener(OnMentionButtonPressed);
     }
 
     private void Update()
@@ -306,6 +309,13 @@ public class UserContextMenu : MonoBehaviour
         Hide();
     }
 
+    private void OnMentionButtonPressed()
+    {
+        DataStore.i.mentions.someoneMentionedFromContextMenu.Set($"@{userName.text}", true);
+        GetSocialAnalytics().SendMentionCreated(MentionCreationSource.ProfileContextMenu);
+        Hide();
+    }
+
     private void UpdateBlockButton()
     {
         blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
@@ -340,6 +350,7 @@ public class UserContextMenu : MonoBehaviour
         blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0 && !isOwnUser);
         reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0 && !isOwnUser);
         messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && !isBlocked && enableSendMessage && !isOwnUser);
+        mentionButton.gameObject.SetActive((flags & MenuConfigFlags.Mention) != 0 && DataStore.i.HUDs.chatInputVisible.Get());
     }
 
     private bool Setup(string userId, MenuConfigFlags configFlags)

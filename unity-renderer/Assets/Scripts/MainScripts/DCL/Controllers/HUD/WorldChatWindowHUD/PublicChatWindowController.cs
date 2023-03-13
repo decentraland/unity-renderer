@@ -81,6 +81,8 @@ namespace DCL.Chat.HUD
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
+            dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
+
             SetVisibility(isVisible);
             this.isVisible = isVisible;
         }
@@ -117,6 +119,8 @@ namespace DCL.Chat.HUD
 
             toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
+            dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
+
             View?.Dispose();
         }
 
@@ -129,9 +133,11 @@ namespace DCL.Chat.HUD
 
             SetVisiblePanelList(visible);
             chatHudController.SetVisibility(visible);
+            dataStore.HUDs.chatInputVisible.Set(visible);
 
             if (visible)
             {
+                View.ChatHUD.ResetInputField();
                 View.Show();
                 MarkChannelMessagesAsRead();
 
@@ -279,6 +285,14 @@ namespace DCL.Chat.HUD
         {
             if (updatedChannel.ChannelId != channelId) return;
             View.Configure(ToPublicChatModel(updatedChannel));
+        }
+
+        private void SomeoneMentionedFromContextMenu(string mention, string _)
+        {
+            if (!View.IsActive)
+                return;
+
+            View.ChatHUD.AddTextIntoInputField(mention);
         }
     }
 }

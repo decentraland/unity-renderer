@@ -1,5 +1,4 @@
 using DCL;
-using System;
 using System.Collections.Generic;
 using static DCL.SettingsCommon.GeneralSettings;
 
@@ -42,8 +41,8 @@ namespace SocialFeaturesAnalytics
         private const string CHANNEL_SEARCH = "player_search_channel";
         private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
         private const string MENTION_MESSAGE_SENT = "mention_message_sent";
-        private const string MENTION_CLICKED = "mendion_clicked";
-        private const string MENTION_AUTOCOMPLETE = "mention_autocomplete";
+        private const string MENTION_CLICKED = "mention_clicked";
+        private const string MENTION_CREATED = "mention_created";
 
         public static SocialAnalytics i { get; private set; }
 
@@ -299,9 +298,14 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(MENTION_CLICKED, new Dictionary<string, string>());
         }
 
-        public void SendMentionAutocomplete()
+        public void SendMentionCreated(MentionCreationSource source)
         {
-            analytics.SendAnalytic(MENTION_AUTOCOMPLETE, new Dictionary<string, string>());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                {"source", source.ToString()},
+            };
+
+            analytics.SendAnalytic(MENTION_CREATED, data);
         }
 
         public void SendPassportOpen(bool found = true, AvatarOpenSource source = AvatarOpenSource.World)
