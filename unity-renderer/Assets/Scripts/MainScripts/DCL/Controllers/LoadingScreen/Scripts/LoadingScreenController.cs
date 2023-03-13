@@ -90,7 +90,8 @@ namespace DCL.LoadingScreen
         {
             onSignUpFlow = current;
             if (current)
-                CommonScriptableObjects.rendererState.RemoveLock(this);
+                //We gotta force it, since the SceneController does not release its lock on AvatarCreationScreen
+                FadeOutView();
             else
                 FadeInView(false, false);
         }
