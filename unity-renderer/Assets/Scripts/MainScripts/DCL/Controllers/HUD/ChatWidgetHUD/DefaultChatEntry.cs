@@ -321,6 +321,9 @@ namespace DCL.Chat.HUD
 
         private void OnOwnPlayerMentioned()
         {
+            if (model.senderId == UserProfile.GetOwnUserProfile().userId)
+                return;
+
             backgroundImage.color = autoMentionBackgroundColor;
         }
     }
