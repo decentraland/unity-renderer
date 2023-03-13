@@ -132,7 +132,7 @@ namespace DCL
                 frameNumber = Time.frameCount,
                 millisecondsConsumed = secondsConsumed * 1000,
                 currentTime = Time.timeSinceLevelLoad,
-                isHiccup = secondsConsumed > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS,
+                isHiccup = LinealBufferHiccupCounter.IsHiccup(secondsConsumed),
             };
 
             samples.Add(newSample);

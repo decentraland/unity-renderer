@@ -36,7 +36,7 @@ namespace DCL
             performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
 
             profilerRecordsService = Environment.i.serviceLocator.Get<IProfilerRecordsService>();
-            tracker = new LinealBufferHiccupCounter(profilerRecordsService);
+            tracker = new LinealBufferHiccupCounter(SAMPLES_SIZE);
 
             featureFlags.OnChange += OnFeatureFlagChange;
             OnFeatureFlagChange(featureFlags.Get(), null);
@@ -62,8 +62,7 @@ namespace DCL
             tracker.AddDeltaTime(Time.unscaledDeltaTime);
             performanceMetricsDataVariable.Set(profilerRecordsService.LastFPS, tracker.HiccupsCountInBuffer, tracker.HiccupsSum, tracker.TotalSeconds);
 
-            var deltaInMs = Time.unscaledDeltaTime * 1000;
-            encodedSamples[currentIndex++] = (char)deltaInMs;
+            encodedSamples[currentIndex++] = (char)(Time.unscaledDeltaTime * 1000);
 
             if (trackProfileRecords)
                 totalAllocSample +=  profilerRecordsService.GcAllocatedInFrame;

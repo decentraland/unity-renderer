@@ -1,28 +1,24 @@
-﻿using MainScripts.DCL.WorldRuntime.Debugging.Performance;
-
-namespace DCL.FPSDisplay
+﻿namespace DCL.FPSDisplay
 {
     public class LinealBufferHiccupCounter
     {
-        private readonly IProfilerRecordsService profilerRecordsService;
+        private readonly LinealBufferFPSCounter counter;
 
         public int HiccupsCountInBuffer { get; private set; }
         public float HiccupsSum { get; private set; }
         public float TotalSeconds { get; private set; }
 
-        public LinealBufferHiccupCounter(IProfilerRecordsService profilerRecordsService)
+        public LinealBufferHiccupCounter(int bufferSize)
         {
-            this.profilerRecordsService = profilerRecordsService;
+            counter = new LinealBufferFPSCounter(bufferSize);
         }
 
         public void AddDeltaTime(float valueInSeconds)
         {
-            float lastFrameTimeInSec = profilerRecordsService.LastFrameTimeInSec;
-
-            if (IsHiccup(lastFrameTimeInSec))
+            if (IsHiccup(counter.Values[counter.Tail]))
             {
                 HiccupsCountInBuffer -= 1;
-                HiccupsSum -= lastFrameTimeInSec;
+                HiccupsSum -= counter.Values[counter.Tail];
             }
 
             if (IsHiccup(valueInSeconds))
@@ -31,11 +27,52 @@ namespace DCL.FPSDisplay
                 HiccupsSum += valueInSeconds;
             }
 
-            TotalSeconds -= lastFrameTimeInSec;
+            TotalSeconds -= counter.Values[counter.Tail];
             TotalSeconds += valueInSeconds;
+
+            counter.AddDeltaTime(valueInSeconds);
         }
 
-        private static bool IsHiccup(float value) =>
+        public static bool IsHiccup(float value) =>
             value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
+
+        private class LinealBufferFPSCounter
+        {
+            public readonly float[] Values;
+            private readonly int maxBufferSize;
+
+            private int head;
+            private float secondsBetweenHeadAndTail;
+
+            public int Tail { get; private set; }
+
+            public LinealBufferFPSCounter(int bufferSize)
+            {
+                Values = new float[bufferSize];
+                maxBufferSize = bufferSize;
+            }
+
+            public void AddDeltaTime(float valueInSeconds)
+            {
+                Values[Tail] = valueInSeconds;
+
+                Tail = CircularIncrement(Tail);
+
+                AdjustHeadPosition(valueInSeconds);
+            }
+
+            private void AdjustHeadPosition(float valueInSeconds)
+            {
+                secondsBetweenHeadAndTail += valueInSeconds;
+                while (secondsBetweenHeadAndTail > 1)
+                {
+                    secondsBetweenHeadAndTail -= Values[head];
+                    head = CircularIncrement(head);
+                }
+            }
+
+            private int CircularIncrement(int id) =>
+                id == maxBufferSize - 1 ? 0 : id + 1;
+        }
     }
 }
