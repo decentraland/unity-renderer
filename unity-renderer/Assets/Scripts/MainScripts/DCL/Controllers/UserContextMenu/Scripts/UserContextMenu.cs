@@ -177,7 +177,9 @@ public class UserContextMenu : MonoBehaviour
         addFriendButton.onClick.AddListener(OnAddFriendButtonPressed);
         cancelFriendButton.onClick.AddListener(OnCancelFriendRequestButtonPressed);
         messageButton.onClick.AddListener(OnMessageButtonPressed);
-        mentionButton.onClick.AddListener(OnMentionButtonPressed);
+
+        if (mentionButton != null)
+            mentionButton.onClick.AddListener(OnMentionButtonPressed);
     }
 
     private void Update()
@@ -350,7 +352,9 @@ public class UserContextMenu : MonoBehaviour
         blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0 && !isOwnUser);
         reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0 && !isOwnUser);
         messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && !isBlocked && enableSendMessage && !isOwnUser);
-        mentionButton.gameObject.SetActive((flags & MenuConfigFlags.Mention) != 0 && DataStore.i.HUDs.chatInputVisible.Get());
+
+        if (mentionButton != null)
+            mentionButton.gameObject.SetActive((flags & MenuConfigFlags.Mention) != 0 && DataStore.i.HUDs.chatInputVisible.Get());
     }
 
     private bool Setup(string userId, MenuConfigFlags configFlags)
