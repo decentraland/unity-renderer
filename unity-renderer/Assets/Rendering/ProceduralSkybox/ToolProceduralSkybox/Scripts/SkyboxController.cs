@@ -156,6 +156,7 @@ namespace DCL.Skybox
 
         private void OnRenderStateChange(bool renderingEnabled, bool _)
         {
+            if(skyboxCam == null) return;
             skyboxCam.SetCameraEnabledState(renderingEnabled);
         }
 
