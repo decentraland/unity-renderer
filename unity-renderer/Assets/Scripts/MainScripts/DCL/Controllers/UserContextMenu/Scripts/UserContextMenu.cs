@@ -330,14 +330,16 @@ public class UserContextMenu : MonoBehaviour
 
     private void ProcessActiveElements(MenuConfigFlags flags)
     {
+        bool isOwnUser = UserProfile.GetOwnUserProfile().userId == userId;
+
         headerContainer.SetActive((flags & headerFlags) != 0);
         userName.gameObject.SetActive((flags & MenuConfigFlags.Name) != 0);
-        friendshipContainer.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled);
-        deleteFriendButton.gameObject.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled);
+        friendshipContainer.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled && !isOwnUser);
+        deleteFriendButton.gameObject.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled && !isOwnUser);
         passportButton.gameObject.SetActive((flags & MenuConfigFlags.Passport) != 0);
-        blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0);
-        reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0);
-        messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && (!isBlocked && enableSendMessage));
+        blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0 && !isOwnUser);
+        reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0 && !isOwnUser);
+        messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && !isBlocked && enableSendMessage && !isOwnUser);
     }
 
     private bool Setup(string userId, MenuConfigFlags configFlags)
