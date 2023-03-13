@@ -44,7 +44,7 @@ namespace DCL.Chat.Notifications
         public event Action<string> OnClickedNotification;
         public bool shouldAnimateFocus = true;
         public string notificationTargetId;
-        private int maxContentCharacters, maxHeaderCharacters, maxSenderCharacters;
+        private int maxHeaderCharacters, maxSenderCharacters;
         private float startingXPosition;
 
         public void Configure(ChatNotificationMessageComponentModel newModel)
@@ -226,7 +226,6 @@ namespace DCL.Chat.Notifications
         {
             maxContentCharacters = Mathf.Max(0, maxContentCharacters);
             model.maxContentCharacters = maxContentCharacters;
-            this.maxContentCharacters = maxContentCharacters;
         }
 
         public void SetMaxHeaderCharacters(int maxHeaderCharacters)
@@ -276,6 +275,6 @@ namespace DCL.Chat.Notifications
         }
 
         private void ForceUIRefresh() =>
-            Utils.ForceRebuildLayoutImmediate(backgroundTransform);
+            backgroundTransform.ForceUpdateLayout();
     }
 }
