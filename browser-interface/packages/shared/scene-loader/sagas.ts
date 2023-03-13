@@ -25,7 +25,7 @@ import { store } from 'shared/store/isolatedStore'
 import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
 import { getSceneWorkerBySceneID, setDesiredParcelScenes } from 'shared/world/parcelSceneManager'
-import { pickWorldSpawnpoint, positionObservable, receivePositionReport } from 'shared/world/positionThings'
+import { pickWorldSpawnpoint, positionObservable } from 'shared/world/positionThings'
 import { sceneEvents, SceneWorker } from 'shared/world/SceneWorker'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import {
