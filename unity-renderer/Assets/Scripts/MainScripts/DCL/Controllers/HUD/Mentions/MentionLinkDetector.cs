@@ -1,7 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -22,7 +21,6 @@ namespace DCL.Social.Chat.Mentions
         private UserContextMenu contextMenu;
         private string currentText;
         private bool hasNoParseLabel;
-        private List<string> mentionsFoundInText = new ();
         private readonly CancellationTokenSource cancellationToken = new ();
 
         private void Awake()
@@ -107,7 +105,7 @@ namespace DCL.Social.Chat.Mentions
             if (textInfo.textComponent.text == currentText)
                 return;
 
-            hasNoParseLabel = textInfo.textComponent.text.ToLower().Contains("<noparse>");
+            hasNoParseLabel = textInfo.textComponent.text.Contains("<noparse>", StringComparison.OrdinalIgnoreCase);
             RefreshMentionPatterns(cancellationToken.Token).Forget();
             CheckOwnPlayerMentionAsync(textInfo.textComponent, cancellationToken.Token).Forget();
         }
@@ -116,16 +114,14 @@ namespace DCL.Social.Chat.Mentions
         {
             await UniTask.WaitForEndOfFrame(this, cancellationToken);
 
-            mentionsFoundInText = MentionsUtils.ExtractMentionsFromText(textComponent.text);
-
-            foreach (string mentionFound in mentionsFoundInText)
+            textComponent.text = MentionsUtils.ReplaceMentionPattern(textComponent.text, mention =>
             {
-                textComponent.text = textComponent.text.Replace(
-                    mentionFound,
-                    hasNoParseLabel ?
-                        $"</noparse><link={MENTION_URL_PREFIX}{mentionFound.Remove(0, 1)}><color=#4886E3><u>{mentionFound}</u></color></link><noparse>" :
-                        $"<link={MENTION_URL_PREFIX}{mentionFound.Remove(0, 1)}><color=#4886E3><u>{mentionFound}</u></color></link>");
-            }
+                string mentionWithoutSymbol = mention[1..];
+
+                return hasNoParseLabel
+                    ? $"</noparse><link={MENTION_URL_PREFIX}{mentionWithoutSymbol}><color=#4886E3><u>{mention}</u></color></link><noparse>"
+                    : $"<link={MENTION_URL_PREFIX}{mentionWithoutSymbol}><color=#4886E3><u>{mention}</u></color></link>";
+            });
 
             currentText = textComponent.text;
         }
