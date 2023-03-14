@@ -537,23 +537,6 @@
 
     <script>
       globalThis.preview = true
-
-      const queryParameters = new URLSearchParams(document.location.search)
-      if (queryParameters.has('PIPE_CONSOLE_TO_PARENT')) {
-        function pipe(type, originalFunctionCallback) {
-          return (...args) => {
-            const targetWindow = window.parent || window
-            targetWindow && targetWindow.postMessage({ type, payload: args }, '*')
-            originalFunctionCallback(...args)
-          }
-        }
-
-        console.log('Pipe the console log and error enabled.')
-
-        globalThis.originalConsole = { log: globalThis.console.log, error: globalThis.console.error }
-        globalThis.console.log = pipe('log', globalThis.originalConsole.log)
-        globalThis.console.error = pipe('error', globalThis.originalConsole.error)
-      }
     </script>
 
     <script>

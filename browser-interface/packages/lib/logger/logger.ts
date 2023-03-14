@@ -53,6 +53,51 @@ function createDefaultLogger(type: 'kernel' | 'unity', prefix: string, subPrefix
   }
 }
 
+export function createForwardedLogger(type: 'kernel' | 'unity', prefix: string, subPrefix: string = ''): ILogger {
+  const targetWindow = globalThis.window.parent || globalThis.window
+  const kernelPrefix = `${type}:${prefix} `
+
+  function forwardMessage(type: string, args) {
+    targetWindow && targetWindow.postMessage({ type, payload: { args } }, '*')
+  }
+
+  return {
+    error(message: string | Error, ...args: any[]): void {
+      const computedArgs = [kernelPrefix, subPrefix, message, ...args]
+      if (typeof message === 'object' && message.stack) {
+        computedArgs.push(message.stack)
+      }
+
+      console.error.apply(null, computedArgs)
+      forwardMessage('logger.error', computedArgs)
+    },
+    log(message: string, ...args: any[]): void {
+      if (args && args[0] && args[0].startsWith && args[0].startsWith('The entity is already in the engine.')) {
+        return
+      }
+
+      const computedArgs = [kernelPrefix, subPrefix, message, ...args]
+      console.log.apply(null, computedArgs)
+      forwardMessage('logger.log', computedArgs)
+    },
+    warn(message: string, ...args: any[]): void {
+      const computedArgs = [kernelPrefix, subPrefix, message, ...args]
+      console.log.apply(null, computedArgs)
+      forwardMessage('logger.warn', computedArgs)
+    },
+    info(message: string, ...args: any[]): void {
+      const computedArgs = [kernelPrefix, subPrefix, message, ...args]
+      console.info.apply(null, computedArgs)
+      forwardMessage('logger.warn', computedArgs)
+    },
+    trace(message: string, ...args: any[]): void {
+      const computedArgs = [kernelPrefix, subPrefix, message, ...args]
+      console.trace.apply(null, computedArgs)
+      forwardMessage('logger.warn', computedArgs)
+    }
+  }
+}
+
 export function createLogger(prefix: string, subPrefix: string = ''): ILogger {
   return createDefaultLogger('kernel', prefix, subPrefix)
 }
