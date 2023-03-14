@@ -44,6 +44,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private int updateLayoutDelayedFrames;
     private bool isSortingDirty;
+    private GameObject webGlImeInputGameObject;
 
     protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
 
@@ -215,7 +216,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public void ShowMentionSuggestions()
     {
 #if (UNITY_WEBGL && !UNITY_EDITOR)
-        webGlImeInput.enabled = false;
+        webGlImeInputGameObject = webGlImeInput.gameObject;
+        Destroy(webGlImeInput);
 #endif
         chatMentionSuggestions.Show();
     }
@@ -230,7 +232,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public void HideMentionSuggestions()
     {
 #if (UNITY_WEBGL && !UNITY_EDITOR)
-        webGlImeInput.enabled = true;
+        webGlImeInput = webGlImeInputGameObject.AddComponent<WebGLSupport.WebGLInput>();
 #endif
         chatMentionSuggestions.Hide();
     }
