@@ -407,8 +407,7 @@ function* handleCommsReconnectionInterval() {
     const reason = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
-      USER_AUTHENTICATED: take(USER_AUTHENTICATED),
-      timeout: delay(CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS)
+      USER_AUTHENTICATED: take(USER_AUTHENTICATED)
     })
 
     const { commsConnection, realmAdapter, hasFatalError, identity } = yield select(reconnectionState)
