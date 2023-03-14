@@ -229,12 +229,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
             }
         }
-        catch (OperationCanceledException ex)
-        {
-            Debug.LogException(ex);
-            return;
-        }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Debug.LogException(e);
 

@@ -14,7 +14,7 @@ import {
   EntityActionType,
   QueryType
 } from 'shared/types'
-import type { UnityGame } from '@dcl/unity-renderer/src'
+import type { UnityGame } from 'unity-interface/loader'
 import { incrementMessageFromKernelToRendererNative } from 'shared/session/getPerformanceInfo'
 
 enum RaycastQueryType {

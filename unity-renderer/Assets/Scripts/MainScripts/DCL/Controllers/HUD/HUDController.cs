@@ -469,7 +469,7 @@ public class HUDController : IHUDController
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"Failed to load HUD element resource {hudElements[id].GetType().Name}. Exception message: {e.Message}");
+                Debug.LogWarning($"Failed to load HUD element resource {id}. Exception message: {e.Message}");
             }
         }
     }
