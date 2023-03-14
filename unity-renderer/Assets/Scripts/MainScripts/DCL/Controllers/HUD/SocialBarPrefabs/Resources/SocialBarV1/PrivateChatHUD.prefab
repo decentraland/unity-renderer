@@ -121,7 +121,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -514}
+  m_AnchoredPosition: {x: 205, y: -978}
   m_SizeDelta: {x: 380, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1261448214712527041
@@ -4095,6 +4095,7 @@ MonoBehaviour:
   closeMentionSuggestionsInput: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b,
     type: 2}
   chatMentionSuggestions: {fileID: 1011907313089259839}
+  webGlImeInput: {fileID: 9143899745818840519}
   model:
     isInputFieldFocused: 0
     inputFieldText: 
@@ -4316,5 +4317,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9143899745818840519 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 620615709946968176, guid: bac007ac4ef98284c8cf05867a35ee0f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8536985326357018039}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7071224145028346434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc33a39070010f94fb1c2dd721c1286d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -6,12 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using WebGLSupport;
 
 public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 {
@@ -34,6 +34,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [SerializeField] protected InputAction_Trigger previousMentionSuggestionInput;
     [SerializeField] protected InputAction_Trigger closeMentionSuggestionsInput;
     [SerializeField] protected ChatMentionSuggestionComponentView chatMentionSuggestions;
+    [SerializeField] protected WebGLInput webGlImeInput;
     [SerializeField] private Model model;
 
     private readonly Dictionary<string, ChatEntry> entries = new ();
@@ -211,8 +212,13 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         OnMessageUpdated?.Invoke(inputField.text, inputField.stringPosition);
     }
 
-    public void ShowMentionSuggestions() =>
+    public void ShowMentionSuggestions()
+    {
+#if (UNITY_WEBGL && !UNITY_EDITOR)
+        webGlImeInput.enabled = false;
+#endif
         chatMentionSuggestions.Show();
+    }
 
     public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions)
     {
@@ -221,8 +227,13 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         chatMentionSuggestions.SelectFirstEntry();
     }
 
-    public void HideMentionSuggestions() =>
+    public void HideMentionSuggestions()
+    {
+#if (UNITY_WEBGL && !UNITY_EDITOR)
+        webGlImeInput.enabled = true;
+#endif
         chatMentionSuggestions.Hide();
+    }
 
     public void AddMentionToInputField(int fromIndex, int length, string userId, string userName)
     {
