@@ -1,16 +1,18 @@
-using System;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
-using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 public class PublicChatWindowControllerShould
 {
@@ -26,6 +28,7 @@ public class PublicChatWindowControllerShould
     private IUserProfileBridge userProfileBridge;
     private IMouseCatcher mouseCatcher;
     private DataStore dataStore;
+    private IChatMentionSuggestionProvider mentionSuggestionProvider;
 
     [SetUp]
     public void SetUp()
@@ -38,6 +41,9 @@ public class PublicChatWindowControllerShould
             0, 1, true, false, ""));
         mouseCatcher = Substitute.For<IMouseCatcher>();
         dataStore = new DataStore();
+        dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["chat_mentions_enabled"] = true } });
+        mentionSuggestionProvider = Substitute.For<IChatMentionSuggestionProvider>();
+
         controller = new PublicChatWindowController(
             chatController,
             userProfileBridge,
@@ -45,7 +51,7 @@ public class PublicChatWindowControllerShould
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
-            Substitute.For<IChatMentionSuggestionProvider>(),
+            mentionSuggestionProvider,
             Substitute.For<ISocialAnalytics>());
 
         view = Substitute.For<IPublicChatWindowView>();
@@ -252,6 +258,19 @@ public class PublicChatWindowControllerShould
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {testMentionMessage});
 
         Assert.AreEqual(ownPlayerIsMentioned ? ChatUtils.NEARBY_CHANNEL_ID : null, dataStore.mentions.ownPlayerMentionedInChannel.Get());
+    }
+
+    [TestCase("@", "")]
+    [TestCase("hey @f", "f")]
+    [TestCase("im super @dude", "dude")]
+    public void SuggestNearbyUsers(string text, string name)
+    {
+        mentionSuggestionProvider.GetNearbyProfilesStartingWith(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+                                 .Returns(UniTask.FromResult(new List<UserProfile>()));
+
+        internalChatView.OnMessageUpdated += Raise.Event<Action<string, int>>(text, 1);
+
+        mentionSuggestionProvider.Received(1).GetNearbyProfilesStartingWith(name, 5, Arg.Any<CancellationToken>());
     }
 
     private void GivenOwnProfile()
