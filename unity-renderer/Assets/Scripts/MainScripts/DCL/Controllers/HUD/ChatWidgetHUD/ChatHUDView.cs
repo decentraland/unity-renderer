@@ -34,7 +34,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [SerializeField] protected InputAction_Trigger previousMentionSuggestionInput;
     [SerializeField] protected InputAction_Trigger closeMentionSuggestionsInput;
     [SerializeField] protected ChatMentionSuggestionComponentView chatMentionSuggestions;
-    [SerializeField] protected WebGLInput webGlImeInput;
+    [SerializeField] protected WebGLSupport.WebGLInput webGlImeInput;
     [SerializeField] private Model model;
 
     private readonly Dictionary<string, ChatEntry> entries = new ();
