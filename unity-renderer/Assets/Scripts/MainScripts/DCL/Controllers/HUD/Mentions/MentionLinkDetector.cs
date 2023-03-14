@@ -17,10 +17,10 @@ namespace DCL.Social.Chat.Mentions
         [SerializeField] internal TMP_Text textComponent;
         [SerializeField] internal UserProfile ownUserProfile;
 
-        private bool isMentionsFeatureEnabled = true;
+        internal bool isMentionsFeatureEnabled = true;
+        internal string currentText;
+        internal bool hasNoParseLabel;
         private UserContextMenu contextMenu;
-        private string currentText;
-        private bool hasNoParseLabel;
         private readonly CancellationTokenSource cancellationToken = new ();
 
         private void Awake()
@@ -110,7 +110,7 @@ namespace DCL.Social.Chat.Mentions
             CheckOwnPlayerMentionAsync(textInfo.textComponent, cancellationToken.Token).Forget();
         }
 
-        private async UniTask RefreshMentionPatterns(CancellationToken cancellationToken)
+        internal async UniTask RefreshMentionPatterns(CancellationToken cancellationToken)
         {
             await UniTask.WaitForEndOfFrame(this, cancellationToken);
 

@@ -1,0 +1,27 @@
+{
+    "name": "MentionsTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5cd5fb11f1b1d104586dec3f36722223",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:8bf30e5f113c544d88fc302761d180c0",
+        "GUID:55b66aa56b81d2d4cafb4a5f02bc90ca",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
