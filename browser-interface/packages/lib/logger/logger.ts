@@ -88,12 +88,12 @@ export function createForwardedLogger(type: 'kernel' | 'unity', prefix: string, 
     info(message: string, ...args: any[]): void {
       const computedArgs = [kernelPrefix, subPrefix, message, ...args]
       console.info.apply(null, computedArgs)
-      forwardMessage('logger.warn', computedArgs)
+      forwardMessage('logger.info', computedArgs)
     },
     trace(message: string, ...args: any[]): void {
       const computedArgs = [kernelPrefix, subPrefix, message, ...args]
       console.trace.apply(null, computedArgs)
-      forwardMessage('logger.warn', computedArgs)
+      forwardMessage('logger.trace', computedArgs)
     }
   }
 }
