@@ -1,3 +1,4 @@
+using DCL.Social.Chat;
 using System;
 using System.Collections;
 using TMPro;

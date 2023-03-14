@@ -10,9 +10,9 @@ namespace DCL.Chat.HUD
     {
         private const string POOL_NAME_PREFIX = "ChatMentionSuggestions";
 
-        [SerializeField] private ChatMentionSuggestionEntryComponentView mentionSuggestionPrefab;
-        [SerializeField] private RectTransform entryContainer;
-        [SerializeField] private RectTransform layout;
+        [SerializeField] internal ChatMentionSuggestionEntryComponentView mentionSuggestionPrefab;
+        [SerializeField] internal RectTransform entryContainer;
+        [SerializeField] internal RectTransform layout;
 
         private readonly Dictionary<ChatMentionSuggestionEntryComponentView, PoolableObject> pooledObjects = new ();
 

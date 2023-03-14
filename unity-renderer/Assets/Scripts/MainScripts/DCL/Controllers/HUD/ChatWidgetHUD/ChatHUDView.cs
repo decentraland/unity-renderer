@@ -13,485 +13,493 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using WebGLSupport;
 
-public class ChatHUDView : BaseComponentView, IChatHUDComponentView
+namespace DCL.Social.Chat
 {
-    private const string VIEW_PATH = "SocialBarV1/Chat";
-
-    [SerializeField] protected TMP_InputField inputField;
-    [SerializeField] protected RectTransform chatEntriesContainer;
-    [SerializeField] protected ScrollRect scrollRect;
-    [SerializeField] protected GameObject messageHoverPanel;
-    [SerializeField] protected GameObject messageHoverGotoPanel;
-    [SerializeField] protected TextMeshProUGUI messageHoverText;
-    [SerializeField] protected TextMeshProUGUI messageHoverGotoText;
-    [SerializeField] protected UserContextMenu contextMenu;
-    [SerializeField] protected UserContextConfirmationDialog confirmationDialog;
-    [SerializeField] protected DefaultChatEntryFactory defaultChatEntryFactory;
-    [SerializeField] protected PoolChatEntryFactory poolChatEntryFactory;
-    [SerializeField] protected InputAction_Trigger nextChatInHistoryInput;
-    [SerializeField] protected InputAction_Trigger previousChatInHistoryInput;
-    [SerializeField] protected InputAction_Trigger nextMentionSuggestionInput;
-    [SerializeField] protected InputAction_Trigger previousMentionSuggestionInput;
-    [SerializeField] protected InputAction_Trigger closeMentionSuggestionsInput;
-    [SerializeField] protected ChatMentionSuggestionComponentView chatMentionSuggestions;
-    [SerializeField] private Model model;
-
-    private readonly Dictionary<string, ChatEntry> entries = new ();
-    private readonly ChatMessage currentMessage = new ();
-    private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners = new ();
-    private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners = new ();
-
-    private int updateLayoutDelayedFrames;
-    private bool isSortingDirty;
-    private GameObject webGlImeInputGameObject;
-
-    protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
-
-    public event Action<string, int> OnMessageUpdated;
-    public event Action OnOpenedContextMenu;
-
-    public event Action OnShowMenu
+    public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
-        add
+        private const string VIEW_PATH = "SocialBarV1/ChatHUD";
+
+        [SerializeField] internal TMP_InputField inputField;
+        [SerializeField] internal RectTransform chatEntriesContainer;
+        [SerializeField] internal ScrollRect scrollRect;
+        [SerializeField] internal GameObject messageHoverPanel;
+        [SerializeField] internal GameObject messageHoverGotoPanel;
+        [SerializeField] internal TextMeshProUGUI messageHoverText;
+        [SerializeField] internal TextMeshProUGUI messageHoverGotoText;
+        [SerializeField] internal UserContextMenu contextMenu;
+        [SerializeField] internal UserContextConfirmationDialog confirmationDialog;
+        [SerializeField] internal DefaultChatEntryFactory defaultChatEntryFactory;
+        [SerializeField] internal PoolChatEntryFactory poolChatEntryFactory;
+        [SerializeField] internal InputAction_Trigger nextChatInHistoryInput;
+        [SerializeField] internal InputAction_Trigger previousChatInHistoryInput;
+        [SerializeField] internal InputAction_Trigger nextMentionSuggestionInput;
+        [SerializeField] internal InputAction_Trigger previousMentionSuggestionInput;
+        [SerializeField] internal InputAction_Trigger closeMentionSuggestionsInput;
+        [SerializeField] internal ChatMentionSuggestionComponentView chatMentionSuggestions;
+        [SerializeField] private Model model;
+
+        private readonly Dictionary<string, ChatEntry> entries = new ();
+        private readonly ChatMessage currentMessage = new ();
+        private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners = new ();
+        private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners = new ();
+
+        private int updateLayoutDelayedFrames;
+        private bool isSortingDirty;
+        private GameObject webGlImeInputGameObject;
+
+        protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
+
+        public event Action<string, int> OnMessageUpdated;
+        public event Action OnOpenedContextMenu;
+
+        public event Action OnShowMenu
         {
-            if (contextMenu != null)
-                contextMenu.OnShowMenu += value;
+            add
+            {
+                if (contextMenu != null)
+                    contextMenu.OnShowMenu += value;
+            }
+
+            remove
+            {
+                if (contextMenu != null)
+                    contextMenu.OnShowMenu -= value;
+            }
         }
 
-        remove
+        public event Action OnInputFieldSelected
         {
-            if (contextMenu != null)
-                contextMenu.OnShowMenu -= value;
-        }
-    }
+            add
+            {
+                void Action(string s) =>
+                    value.Invoke();
 
-    public event Action OnInputFieldSelected
-    {
-        add
-        {
-            void Action(string s) =>
-                value.Invoke();
+                inputFieldSelectedListeners[value] = Action;
+                inputField.onSelect.AddListener(Action);
+            }
 
-            inputFieldSelectedListeners[value] = Action;
-            inputField.onSelect.AddListener(Action);
-        }
+            remove
+            {
+                if (!inputFieldSelectedListeners.ContainsKey(value))
+                    return;
 
-        remove
-        {
-            if (!inputFieldSelectedListeners.ContainsKey(value))
-                return;
-
-            inputField.onSelect.RemoveListener(inputFieldSelectedListeners[value]);
-            inputFieldSelectedListeners.Remove(value);
-        }
-    }
-
-    public event Action OnInputFieldDeselected
-    {
-        add
-        {
-            void Action(string s) =>
-                value.Invoke();
-
-            inputFieldUnselectedListeners[value] = Action;
-            inputField.onDeselect.AddListener(Action);
+                inputField.onSelect.RemoveListener(inputFieldSelectedListeners[value]);
+                inputFieldSelectedListeners.Remove(value);
+            }
         }
 
-        remove
+        public event Action OnInputFieldDeselected
         {
-            if (!inputFieldUnselectedListeners.ContainsKey(value))
-                return;
+            add
+            {
+                void Action(string s) =>
+                    value.Invoke();
 
-            inputField.onDeselect.RemoveListener(inputFieldUnselectedListeners[value]);
-            inputFieldUnselectedListeners.Remove(value);
-        }
-    }
+                inputFieldUnselectedListeners[value] = Action;
+                inputField.onDeselect.AddListener(Action);
+            }
 
-    public event Action OnPreviousChatInHistory;
-    public event Action OnNextChatInHistory;
-    public event Action<string> OnMentionSuggestionSelected;
-    public event Action<ChatMessage> OnSendMessage;
+            remove
+            {
+                if (!inputFieldUnselectedListeners.ContainsKey(value))
+                    return;
 
-    public int EntryCount => entries.Count;
-    public IChatEntryFactory ChatEntryFactory { get; set; }
-
-    public static ChatHUDView Create()
-    {
-        var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<ChatHUDView>();
-        return view;
-    }
-
-    public override void Awake()
-    {
-        base.Awake();
-        inputField.onSubmit.AddListener(OnInputFieldSubmit);
-        inputField.onSelect.AddListener(OnInputFieldSelect);
-        inputField.onDeselect.AddListener(OnInputFieldDeselect);
-        inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str, inputField.stringPosition));
-        chatMentionSuggestions.OnEntrySubmit += model => OnMentionSuggestionSelected?.Invoke(model.userId);
-        ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
-        model.enableFadeoutMode = true;
-        contextMenu.SetPassportOpenSource(true);
-    }
-
-    public override void OnEnable()
-    {
-        base.OnEnable();
-        UpdateLayout();
-        nextChatInHistoryInput.OnTriggered += HandleNextChatInHistoryInput;
-        previousChatInHistoryInput.OnTriggered += HandlePreviousChatInHistoryInput;
-        nextMentionSuggestionInput.OnTriggered += HandleNextMentionSuggestionInput;
-        previousMentionSuggestionInput.OnTriggered += HandlePreviousMentionSuggestionInput;
-        closeMentionSuggestionsInput.OnTriggered += HandleCloseMentionSuggestionsInput;
-    }
-
-    public override void OnDisable()
-    {
-        base.OnDisable();
-        nextChatInHistoryInput.OnTriggered -= HandleNextChatInHistoryInput;
-        previousChatInHistoryInput.OnTriggered -= HandlePreviousChatInHistoryInput;
-        nextMentionSuggestionInput.OnTriggered -= HandleNextMentionSuggestionInput;
-        previousMentionSuggestionInput.OnTriggered -= HandlePreviousMentionSuggestionInput;
-        closeMentionSuggestionsInput.OnTriggered -= HandleCloseMentionSuggestionsInput;
-    }
-
-    public override void Update()
-    {
-        base.Update();
-
-        if (updateLayoutDelayedFrames > 0)
-        {
-            updateLayoutDelayedFrames--;
-
-            if (updateLayoutDelayedFrames <= 0)
-                chatEntriesContainer.ForceUpdateLayout(delayed: false);
+                inputField.onDeselect.RemoveListener(inputFieldUnselectedListeners[value]);
+                inputFieldUnselectedListeners.Remove(value);
+            }
         }
 
-        if (isSortingDirty)
-            SortEntriesImmediate();
+        public event Action OnPreviousChatInHistory;
+        public event Action OnNextChatInHistory;
+        public event Action<string> OnMentionSuggestionSelected;
+        public event Action<ChatMessage> OnSendMessage;
 
-        isSortingDirty = false;
-    }
+        public int EntryCount => entries.Count;
+        public IChatEntryFactory ChatEntryFactory { get; set; }
 
-    public void ResetInputField(bool loseFocus = false)
-    {
-        inputField.text = string.Empty;
-        inputField.caretColor = Color.white;
+        public static ChatHUDView Create()
+        {
+            var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<ChatHUDView>();
+            return view;
+        }
 
-        if (loseFocus)
-            UnfocusInputField();
-    }
+        public override void Awake()
+        {
+            base.Awake();
+            inputField.onSubmit.AddListener(OnInputFieldSubmit);
+            inputField.onSelect.AddListener(OnInputFieldSelect);
+            inputField.onDeselect.AddListener(OnInputFieldDeselect);
+            inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str, inputField.stringPosition));
+            chatMentionSuggestions.OnEntrySubmit += model => OnMentionSuggestionSelected?.Invoke(model.userId);
+            ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
+            model.enableFadeoutMode = true;
+            contextMenu.SetPassportOpenSource(true);
+        }
 
-    public override void RefreshControl()
-    {
-        if (model.isInputFieldFocused)
+        public override void OnEnable()
+        {
+            base.OnEnable();
+            UpdateLayout();
+            nextChatInHistoryInput.OnTriggered += HandleNextChatInHistoryInput;
+            previousChatInHistoryInput.OnTriggered += HandlePreviousChatInHistoryInput;
+            nextMentionSuggestionInput.OnTriggered += HandleNextMentionSuggestionInput;
+            previousMentionSuggestionInput.OnTriggered += HandlePreviousMentionSuggestionInput;
+            closeMentionSuggestionsInput.OnTriggered += HandleCloseMentionSuggestionsInput;
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            nextChatInHistoryInput.OnTriggered -= HandleNextChatInHistoryInput;
+            previousChatInHistoryInput.OnTriggered -= HandlePreviousChatInHistoryInput;
+            nextMentionSuggestionInput.OnTriggered -= HandleNextMentionSuggestionInput;
+            previousMentionSuggestionInput.OnTriggered -= HandlePreviousMentionSuggestionInput;
+            closeMentionSuggestionsInput.OnTriggered -= HandleCloseMentionSuggestionsInput;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (updateLayoutDelayedFrames > 0)
+            {
+                updateLayoutDelayedFrames--;
+
+                if (updateLayoutDelayedFrames <= 0)
+                    chatEntriesContainer.ForceUpdateLayout(delayed: false);
+            }
+
+            if (isSortingDirty)
+                SortEntriesImmediate();
+
+            isSortingDirty = false;
+        }
+
+        public void ResetInputField(bool loseFocus = false)
+        {
+            inputField.text = string.Empty;
+            inputField.caretColor = Color.white;
+
+            if (loseFocus)
+                UnfocusInputField();
+        }
+
+        public override void RefreshControl()
+        {
+            if (model.isInputFieldFocused)
+                FocusInputField();
+
+            SetInputFieldText(model.inputFieldText);
+            SetFadeoutMode(model.enableFadeoutMode);
+            ClearAllEntries();
+
+            foreach (var entry in model.entries)
+                AddEntry(entry);
+        }
+
+        public void FocusInputField()
+        {
+            inputField.ActivateInputField();
+            inputField.Select();
+        }
+
+        public void UnfocusInputField() =>
+            EventSystem.current?.SetSelectedGameObject(null);
+
+        public void SetInputFieldText(string text)
+        {
+            model.inputFieldText = text;
+            inputField.SetTextWithoutNotify(text);
+            inputField.MoveTextEnd(false);
+            OnMessageUpdated?.Invoke(inputField.text, inputField.stringPosition);
+        }
+
+        public void ShowMentionSuggestions()
+        {
+            chatMentionSuggestions.Show();
+        }
+
+        public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions)
+        {
+            chatMentionSuggestions.Clear();
+            chatMentionSuggestions.Set(suggestions);
+            chatMentionSuggestions.SelectFirstEntry();
+        }
+
+        public void HideMentionSuggestions()
+        {
+            chatMentionSuggestions.Hide();
+        }
+
+        public void AddMentionToInputField(int fromIndex, int length, string userId, string userName)
+        {
+            string message = inputField.text;
+            StringBuilder builder = new (message);
+
+            SetInputFieldText(builder.Remove(fromIndex, length)
+                                     .Insert(fromIndex, @$"@{userName} ")
+                                     .ToString());
             FocusInputField();
-
-        SetInputFieldText(model.inputFieldText);
-        SetFadeoutMode(model.enableFadeoutMode);
-        ClearAllEntries();
-
-        foreach (var entry in model.entries)
-            AddEntry(entry);
-    }
-
-    public void FocusInputField()
-    {
-        inputField.ActivateInputField();
-        inputField.Select();
-    }
-
-    public void UnfocusInputField() =>
-        EventSystem.current?.SetSelectedGameObject(null);
-
-    public void SetInputFieldText(string text)
-    {
-        model.inputFieldText = text;
-        inputField.SetTextWithoutNotify(text);
-        inputField.MoveTextEnd(false);
-        OnMessageUpdated?.Invoke(inputField.text, inputField.stringPosition);
-    }
-
-    public void ShowMentionSuggestions()
-    {
-        chatMentionSuggestions.Show();
-    }
-
-    public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions)
-    {
-        chatMentionSuggestions.Clear();
-        chatMentionSuggestions.Set(suggestions);
-        chatMentionSuggestions.SelectFirstEntry();
-    }
-
-    public void HideMentionSuggestions()
-    {
-        chatMentionSuggestions.Hide();
-    }
-
-    public void AddMentionToInputField(int fromIndex, int length, string userId, string userName)
-    {
-        string message = inputField.text;
-        StringBuilder builder = new (message);
-
-        SetInputFieldText(builder.Remove(fromIndex, length)
-                                 .Insert(fromIndex, @$"@{userName} ")
-                                 .ToString());
-        FocusInputField();
-    }
-
-    public void AddTextIntoInputField(string text)
-    {
-        SetInputFieldText(string.IsNullOrEmpty(inputField.text) ? $"{text} " : $"{inputField.text.TrimEnd()} {text} ");
-        FocusInputField();
-    }
-
-    public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
-    {
-        if (entries.ContainsKey(model.messageId))
-        {
-            var chatEntry = entries[model.messageId];
-            chatEntry.SetFadeout(this.model.enableFadeoutMode);
-            chatEntry.Populate(model);
-
-            SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
         }
-        else
+
+        public void AddTextIntoInputField(string text)
         {
-            var chatEntry = ChatEntryFactory.Create(model);
-            chatEntry.SetFadeout(this.model.enableFadeoutMode);
-            chatEntry.Populate(model);
-            chatEntry.ConfigureMentionLinkDetector(contextMenu);
-
-            if (model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
-                chatEntry.OnUserNameClicked += OnOpenContextMenu;
-
-            chatEntry.OnTriggerHover += OnMessageTriggerHover;
-            chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
-            chatEntry.OnCancelHover += OnMessageCancelHover;
-            chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
-
-            SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
+            SetInputFieldText(string.IsNullOrEmpty(inputField.text) ? $"{text} " : $"{inputField.text.TrimEnd()} {text} ");
+            FocusInputField();
         }
-    }
 
-    public virtual void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
-    {
-        chatEntry.transform.SetParent(chatEntriesContainer, false);
-        entries[messageId] = chatEntry;
+        public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
+        {
+            if (entries.ContainsKey(model.messageId))
+            {
+                var chatEntry = entries[model.messageId];
+                chatEntry.SetFadeout(this.model.enableFadeoutMode);
+                chatEntry.Populate(model);
 
-        SortEntries();
-        UpdateLayout();
+                SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
+            }
+            else
+            {
+                var chatEntry = ChatEntryFactory.Create(model);
+                chatEntry.SetFadeout(this.model.enableFadeoutMode);
+                chatEntry.Populate(model);
+                chatEntry.ConfigureMentionLinkDetector(contextMenu);
 
-        if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
-            scrollRect.verticalNormalizedPosition = 0;
-    }
+                if (model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
+                    chatEntry.OnUserNameClicked += OnOpenContextMenu;
 
-    public void RemoveOldestEntry()
-    {
-        if (entries.Count <= 0) return;
-        var firstEntry = GetFirstEntry();
-        if (!firstEntry) return;
-        entries.Remove(firstEntry.Model.messageId);
-        ChatEntryFactory.Destroy(firstEntry);
-        UpdateLayout();
-    }
+                chatEntry.OnTriggerHover += OnMessageTriggerHover;
+                chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
+                chatEntry.OnCancelHover += OnMessageCancelHover;
+                chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
 
-    public override void Hide(bool instant = false)
-    {
-        base.Hide(instant);
+                SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
+            }
+        }
 
-        if (contextMenu == null)
-            return;
+        public virtual void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
+        {
+            Dock(chatEntry);
+            entries[messageId] = chatEntry;
 
-        contextMenu.Hide();
-        confirmationDialog.Hide();
-    }
+            SortEntries();
+            UpdateLayout();
 
-    public void OnMessageCancelHover()
-    {
-        messageHoverPanel.SetActive(false);
-        messageHoverText.text = string.Empty;
-    }
+            if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
+                scrollRect.verticalNormalizedPosition = 0;
+        }
 
-    public virtual void ClearAllEntries()
-    {
-        foreach (var entry in entries.Values)
-            ChatEntryFactory.Destroy(entry);
+        public void RemoveOldestEntry()
+        {
+            if (entries.Count <= 0) return;
+            var firstEntry = GetFirstEntry();
+            if (!firstEntry) return;
+            entries.Remove(firstEntry.Model.messageId);
+            ChatEntryFactory.Destroy(firstEntry);
+            UpdateLayout();
+        }
 
-        entries.Clear();
-        UpdateLayout();
-    }
+        public override void Hide(bool instant = false)
+        {
+            base.Hide(instant);
 
-    private void SetFadeoutMode(bool enabled)
-    {
-        model.enableFadeoutMode = enabled;
+            if (contextMenu == null)
+                return;
 
-        foreach (var entry in entries.Values)
-            entry.SetFadeout(enabled && IsEntryVisible(entry));
-
-        if (enabled)
+            contextMenu.Hide();
             confirmationDialog.Hide();
-    }
-
-    private bool IsEntryVisible(ChatEntry entry)
-    {
-        int visibleCorners =
-            (entry.transform as RectTransform).CountCornersVisibleFrom(scrollRect.viewport.transform as RectTransform);
-
-        return visibleCorners > 0;
-    }
-
-    private void OnInputFieldSubmit(string message)
-    {
-        if (chatMentionSuggestions.IsVisible)
-        {
-            if (!inputField.wasCanceled)
-                chatMentionSuggestions.SubmitSelectedEntry();
-
-            return;
         }
 
-        currentMessage.body = message;
-        currentMessage.sender = string.Empty;
-        currentMessage.messageType = ChatMessage.Type.NONE;
-        currentMessage.recipient = string.Empty;
-
-        // A TMP_InputField is automatically marked as 'wasCanceled' when the ESC key is pressed
-        if (inputField.wasCanceled)
-            currentMessage.body = string.Empty;
-
-        // we have to wait one frame to disengage the flow triggered by OnSendMessage
-        // otherwise it crashes the application (WebGL only) due a TextMeshPro bug
-        StartCoroutine(WaitThenTriggerSendMessage());
-    }
-
-    private IEnumerator WaitThenTriggerSendMessage()
-    {
-        yield return null;
-        OnSendMessage?.Invoke(currentMessage);
-    }
-
-    private void OnInputFieldSelect(string message)
-    {
-        AudioScriptableObjects.inputFieldFocus.Play(true);
-    }
-
-    private void OnInputFieldDeselect(string message)
-    {
-        AudioScriptableObjects.inputFieldUnfocus.Play(true);
-    }
-
-    private void OnOpenContextMenu(ChatEntry chatEntry)
-    {
-        OnOpenedContextMenu?.Invoke();
-        chatEntry.DockContextMenu((RectTransform)contextMenu.transform);
-        contextMenu.transform.parent = transform.parent;
-        contextMenu.transform.SetAsLastSibling();
-        contextMenu.Show(chatEntry.Model.senderId);
-    }
-
-    private void OnMessageTriggerHover(ChatEntry chatEntry)
-    {
-        if (contextMenu == null || contextMenu.isVisible)
-            return;
-
-        messageHoverText.text = chatEntry.DateString;
-        chatEntry.DockHoverPanel((RectTransform)messageHoverPanel.transform);
-        messageHoverPanel.SetActive(true);
-    }
-
-    private void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
-    {
-        messageHoverGotoText.text = $"{parcelCoordinates} INFO";
-        chatEntry.DockHoverPanel((RectTransform)messageHoverGotoPanel.transform);
-        messageHoverGotoPanel.SetActive(true);
-    }
-
-    private void OnMessageCancelGotoHover()
-    {
-        messageHoverGotoPanel.SetActive(false);
-        messageHoverGotoText.text = string.Empty;
-    }
-
-    private void SortEntries() =>
-        isSortingDirty = true;
-
-    private void SortEntriesImmediate()
-    {
-        if (this.entries.Count <= 0) return;
-
-        var entries = this.entries.Values.OrderBy(x => x.Model.timestamp).ToList();
-
-        for (var i = 0; i < entries.Count; i++)
+        public void OnMessageCancelHover()
         {
-            if (entries[i].transform.GetSiblingIndex() != i)
-                entries[i].transform.SetSiblingIndex(i);
-        }
-    }
-
-    private void HandleNextChatInHistoryInput(DCLAction_Trigger action)
-    {
-        if (chatMentionSuggestions.IsVisible) return;
-        OnNextChatInHistory?.Invoke();
-    }
-
-    private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action)
-    {
-        if (chatMentionSuggestions.IsVisible) return;
-        OnPreviousChatInHistory?.Invoke();
-    }
-
-    private void HandleNextMentionSuggestionInput(DCLAction_Trigger action)
-    {
-        if (!chatMentionSuggestions.IsVisible) return;
-        chatMentionSuggestions.SelectNextEntry();
-    }
-
-    private void HandlePreviousMentionSuggestionInput(DCLAction_Trigger action)
-    {
-        if (!chatMentionSuggestions.IsVisible) return;
-        chatMentionSuggestions.SelectPreviousEntry();
-    }
-
-    private void HandleCloseMentionSuggestionsInput(DCLAction_Trigger action)
-    {
-        if (!chatMentionSuggestions.IsVisible) return;
-        chatMentionSuggestions.Hide();
-    }
-
-    private void UpdateLayout()
-    {
-        // we have to wait several frames before updating the layout
-        // every message entry waits for 3 frames before updating its own layout
-        // we gotta force the layout updating after that
-        // TODO: simplify this change to a bool when we update to a working TextMeshPro version
-        updateLayoutDelayedFrames = 4;
-    }
-
-    private ChatEntry GetFirstEntry()
-    {
-        ChatEntry firstEntry = null;
-
-        for (var i = 0; i < chatEntriesContainer.childCount; i++)
-        {
-            var firstChildTransform = chatEntriesContainer.GetChild(i);
-            if (!firstChildTransform) continue;
-            var entry = firstChildTransform.GetComponent<ChatEntry>();
-            if (!entry) continue;
-            firstEntry = entry;
-            break;
+            messageHoverPanel.SetActive(false);
+            messageHoverText.text = string.Empty;
         }
 
-        return firstEntry;
-    }
+        public virtual void ClearAllEntries()
+        {
+            foreach (var entry in entries.Values)
+                ChatEntryFactory.Destroy(entry);
 
-    [Serializable]
-    private struct Model
-    {
-        public bool isInputFieldFocused;
-        public string inputFieldText;
-        public bool enableFadeoutMode;
-        public ChatEntryModel[] entries;
+            entries.Clear();
+            UpdateLayout();
+        }
+
+        protected void Dock(ChatEntry entry)
+        {
+            entry.transform.SetParent(chatEntriesContainer, false);
+        }
+
+        private void SetFadeoutMode(bool enabled)
+        {
+            model.enableFadeoutMode = enabled;
+
+            foreach (var entry in entries.Values)
+                entry.SetFadeout(enabled && IsEntryVisible(entry));
+
+            if (enabled)
+                confirmationDialog.Hide();
+        }
+
+        private bool IsEntryVisible(ChatEntry entry)
+        {
+            int visibleCorners =
+                (entry.transform as RectTransform).CountCornersVisibleFrom(scrollRect.viewport.transform as RectTransform);
+
+            return visibleCorners > 0;
+        }
+
+        private void OnInputFieldSubmit(string message)
+        {
+            if (chatMentionSuggestions.IsVisible)
+            {
+                if (!inputField.wasCanceled)
+                    chatMentionSuggestions.SubmitSelectedEntry();
+
+                return;
+            }
+
+            currentMessage.body = message;
+            currentMessage.sender = string.Empty;
+            currentMessage.messageType = ChatMessage.Type.NONE;
+            currentMessage.recipient = string.Empty;
+
+            // A TMP_InputField is automatically marked as 'wasCanceled' when the ESC key is pressed
+            if (inputField.wasCanceled)
+                currentMessage.body = string.Empty;
+
+            // we have to wait one frame to disengage the flow triggered by OnSendMessage
+            // otherwise it crashes the application (WebGL only) due a TextMeshPro bug
+            StartCoroutine(WaitThenTriggerSendMessage());
+        }
+
+        private IEnumerator WaitThenTriggerSendMessage()
+        {
+            yield return null;
+            OnSendMessage?.Invoke(currentMessage);
+        }
+
+        private void OnInputFieldSelect(string message)
+        {
+            AudioScriptableObjects.inputFieldFocus.Play(true);
+        }
+
+        private void OnInputFieldDeselect(string message)
+        {
+            AudioScriptableObjects.inputFieldUnfocus.Play(true);
+        }
+
+        private void OnOpenContextMenu(ChatEntry chatEntry)
+        {
+            OnOpenedContextMenu?.Invoke();
+            chatEntry.DockContextMenu((RectTransform)contextMenu.transform);
+            contextMenu.transform.parent = transform.parent;
+            contextMenu.transform.SetAsLastSibling();
+            contextMenu.Show(chatEntry.Model.senderId);
+        }
+
+        private void OnMessageTriggerHover(ChatEntry chatEntry)
+        {
+            if (contextMenu == null || contextMenu.isVisible)
+                return;
+
+            messageHoverText.text = chatEntry.DateString;
+            chatEntry.DockHoverPanel((RectTransform)messageHoverPanel.transform);
+            messageHoverPanel.SetActive(true);
+        }
+
+        private void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
+        {
+            messageHoverGotoText.text = $"{parcelCoordinates} INFO";
+            chatEntry.DockHoverPanel((RectTransform)messageHoverGotoPanel.transform);
+            messageHoverGotoPanel.SetActive(true);
+        }
+
+        private void OnMessageCancelGotoHover()
+        {
+            messageHoverGotoPanel.SetActive(false);
+            messageHoverGotoText.text = string.Empty;
+        }
+
+        private void SortEntries() =>
+            isSortingDirty = true;
+
+        private void SortEntriesImmediate()
+        {
+            if (this.entries.Count <= 0) return;
+
+            var entries = this.entries.Values.OrderBy(x => x.Model.timestamp).ToList();
+
+            for (var i = 0; i < entries.Count; i++)
+            {
+                if (entries[i].transform.GetSiblingIndex() != i)
+                    entries[i].transform.SetSiblingIndex(i);
+            }
+        }
+
+        private void HandleNextChatInHistoryInput(DCLAction_Trigger action)
+        {
+            if (chatMentionSuggestions.IsVisible) return;
+            OnNextChatInHistory?.Invoke();
+        }
+
+        private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action)
+        {
+            if (chatMentionSuggestions.IsVisible) return;
+            OnPreviousChatInHistory?.Invoke();
+        }
+
+        private void HandleNextMentionSuggestionInput(DCLAction_Trigger action)
+        {
+            if (!chatMentionSuggestions.IsVisible) return;
+            chatMentionSuggestions.SelectNextEntry();
+        }
+
+        private void HandlePreviousMentionSuggestionInput(DCLAction_Trigger action)
+        {
+            if (!chatMentionSuggestions.IsVisible) return;
+            chatMentionSuggestions.SelectPreviousEntry();
+        }
+
+        private void HandleCloseMentionSuggestionsInput(DCLAction_Trigger action)
+        {
+            if (!chatMentionSuggestions.IsVisible) return;
+            chatMentionSuggestions.Hide();
+        }
+
+        private void UpdateLayout()
+        {
+            // we have to wait several frames before updating the layout
+            // every message entry waits for 3 frames before updating its own layout
+            // we gotta force the layout updating after that
+            // TODO: simplify this change to a bool when we update to a working TextMeshPro version
+            updateLayoutDelayedFrames = 4;
+        }
+
+        private ChatEntry GetFirstEntry()
+        {
+            ChatEntry firstEntry = null;
+
+            for (var i = 0; i < chatEntriesContainer.childCount; i++)
+            {
+                var firstChildTransform = chatEntriesContainer.GetChild(i);
+                if (!firstChildTransform) continue;
+                var entry = firstChildTransform.GetComponent<ChatEntry>();
+                if (!entry) continue;
+                firstEntry = entry;
+                break;
+            }
+
+            return firstEntry;
+        }
+
+        [Serializable]
+        private struct Model
+        {
+            public bool isInputFieldFocused;
+            public string inputFieldText;
+            public bool enableFadeoutMode;
+            public ChatEntryModel[] entries;
+        }
     }
 }

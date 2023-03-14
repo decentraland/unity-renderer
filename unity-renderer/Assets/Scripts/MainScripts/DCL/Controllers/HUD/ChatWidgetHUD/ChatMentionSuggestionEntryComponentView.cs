@@ -10,9 +10,9 @@ namespace DCL.Chat.HUD
     public class ChatMentionSuggestionEntryComponentView : BaseComponentView<ChatMentionSuggestionModel>,
         ISelectHandler, IDeselectHandler, ISubmitHandler
     {
-        [SerializeField] protected Button selectButton;
-        [SerializeField] protected TMP_Text userNameLabel;
-        [SerializeField] protected ImageComponentView faceImage;
+        [SerializeField] internal Button selectButton;
+        [SerializeField] internal TMP_Text userNameLabel;
+        [SerializeField] internal ImageComponentView faceImage;
 
         private bool isSelected;
 
