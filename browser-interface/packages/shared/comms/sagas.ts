@@ -401,14 +401,14 @@ function stripSnapshots(profile: Avatar): Avatar {
  */
 function* handleCommsReconnectionInterval() {
   yield call(waitForMetaConfigurationInitialization)
-  const isUnexpectedDisconnectionCheckEnabled = yield select(getFeatureFlagEnabled, 'unexpected-disconnection-check')
+  //const isUnexpectedDisconnectionCheckEnabled = yield select(getFeatureFlagEnabled, 'unexpected-disconnection-check')
 
   while (true) {
     const reason = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
       USER_AUTHENTICATED: take(USER_AUTHENTICATED),
-      timeout: isUnexpectedDisconnectionCheckEnabled ? delay(CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS) : undefined
+      timeout: delay(CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS)
     })
 
     const { commsConnection, realmAdapter, hasFatalError, identity } = yield select(reconnectionState)

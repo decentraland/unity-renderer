@@ -82,7 +82,9 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
   renderer.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
 
+  console.log("DEBUG: GETTING INTO LOGIN")
   await onLoginCompleted()
+  console.log("DEBUG: LOGIN DONE")
 
   const identity = getCurrentIdentity(store.getState())!
   const profile = getCurrentUserProfile(store.getState())!
