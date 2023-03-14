@@ -671,8 +671,6 @@ MonoBehaviour:
   isPrivate: 1
   backgroundTransform: {fileID: 1033574495846007016}
   messageContainerTransform: {fileID: 5928874722021721243}
-  header: {fileID: 0}
-  content: {fileID: 0}
   isTopNorification: 0
   model:
     maxHeaderCharacters: 30
@@ -846,6 +844,7 @@ GameObject:
   - component: {fileID: 1033574495846007016}
   - component: {fileID: 775720002375397469}
   - component: {fileID: 4851040096562633350}
+  - component: {fileID: 1423887419320821322}
   - component: {fileID: 528438299717859770}
   - component: {fileID: 2683305393465582786}
   - component: {fileID: 5584596510638272979}
@@ -923,6 +922,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!114 &1423887419320821322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6142842964367854493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f360e049965940489fbd5c4bff346c54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxWidth: 400
 --- !u!114 &528438299717859770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1227,7 +1239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360e049965940489fbd5c4bff346c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxWidth: 250
+  maxWidth: 160
 --- !u!1 &8132142528381989284
 GameObject:
   m_ObjectHideFlags: 0
