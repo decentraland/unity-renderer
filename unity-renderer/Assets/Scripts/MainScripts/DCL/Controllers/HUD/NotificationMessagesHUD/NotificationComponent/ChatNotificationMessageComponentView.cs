@@ -30,8 +30,6 @@ namespace DCL.Chat.Notifications
         [SerializeField] internal bool isPrivate;
         [SerializeField] internal RectTransform backgroundTransform;
         [SerializeField] internal RectTransform messageContainerTransform;
-        [SerializeField] internal RectTransform header;
-        [SerializeField] internal RectTransform content;
         [SerializeField] internal bool isTopNorification;
 
         [Header("Configuration")]
@@ -210,16 +208,6 @@ namespace DCL.Chat.Notifications
         {
             model.isImageVisible = visible;
             imageContainer.SetActive(visible);
-        }
-
-        public void SetPositionOffset(float xPosHeader, float xPosContent)
-        {
-            if (header != null)
-                header.anchoredPosition = new Vector2(xPosHeader, header.anchoredPosition.y);
-            if (content != null)
-                content.anchoredPosition = new Vector2(xPosContent, content.anchoredPosition.y);
-
-            ForceUIRefresh();
         }
 
         public void SetMaxContentCharacters(int maxContentCharacters)
