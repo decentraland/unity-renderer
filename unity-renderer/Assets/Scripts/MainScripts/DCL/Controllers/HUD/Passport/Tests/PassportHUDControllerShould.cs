@@ -69,7 +69,8 @@ namespace DCL.Social.Passports
                                 Substitute.For<INamesService>(),
                                 Substitute.For<ILandsService>(),
                                 Substitute.For<IUserProfileBridge>(),
-                                dataStore);
+                                dataStore,
+                                currentPlayerInfoCardId);
 
             controller = new PlayerPassportHUDController(
                 view,

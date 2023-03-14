@@ -318,7 +318,7 @@ public class HUDController : IHUDController
 
                     if (friendsHud != null)
                     {
-                        friendsHud.Initialize();
+                        friendsHud.Initialize(FriendsHUDComponentView.Create());
                         friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
                         friendsHud.OnPressWhisper += OpenPrivateChatWindow;
 
@@ -468,7 +468,7 @@ public class HUDController : IHUDController
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"Failed to load HUD element resource {hudElements[id].GetType().Name}. Exception message: {e.Message}");
+                Debug.LogWarning($"Failed to load HUD element resource {id}. Exception message: {e.Message}");
             }
         }
     }

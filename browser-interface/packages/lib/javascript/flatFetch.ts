@@ -1,4 +1,4 @@
-export type FlatFetchResponse = {
+type FlatFetchResponse = {
   ok: boolean
   status: number
   statusText: string
@@ -7,7 +7,7 @@ export type FlatFetchResponse = {
   text?: string
 }
 
-export type BodyType = 'json' | 'text'
+type BodyType = 'json' | 'text'
 
 export type FlatFetchInit = RequestInit & { responseBodyType?: BodyType }
 

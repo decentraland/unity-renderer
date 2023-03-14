@@ -73,7 +73,7 @@ export class SortedLimitedQueue<T> {
       this.pendingDequeue.futures.push(newFuture)
 
       setTimeout(() => {
-        if (this.pendingDequeue && this.pendingDequeue.futures.indexOf(newFuture) >= 0) {
+        if (this.pendingDequeue && this.pendingDequeue.futures.includes(newFuture)) {
           this.resolveBlockedDequeueWith(this.queuedCount())
         }
       }, timeout)

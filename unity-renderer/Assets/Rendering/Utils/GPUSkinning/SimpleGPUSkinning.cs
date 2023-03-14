@@ -9,7 +9,9 @@ namespace GPUSkinning
     public interface IGPUSkinning
     {
         Renderer renderer { get; }
+
         void Update();
+
         void Prepare(SkinnedMeshRenderer skr, bool encodeBindPoses = false);
     }
 
@@ -23,48 +25,50 @@ namespace GPUSkinning
         {
             Mesh sharedMesh = skr.sharedMesh;
             int vertexCount = sharedMesh.vertexCount;
-            
+
             NativeArray<Vector4> bone01data = new NativeArray<Vector4>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
             NativeArray<Vector4> bone23data = new NativeArray<Vector4>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
             var bonesPerVertex = sharedMesh.GetBonesPerVertex();
             var boneWeightsNative = sharedMesh.GetAllBoneWeights();
             var boneIndex = 0;
-            for ( int i = 0; i < vertexCount; i ++ )
+
+            for (int i = 0; i < vertexCount; i++)
             {
                 byte boneCount = bonesPerVertex[i];
+
                 if (boneCount == 0)
                 {
                     bone01data[i] = new Vector4(0, 0, 0, 0);
                     bone23data[i] = new Vector4(0, 0, 0, 0);
-                } 
+                }
                 else if (boneCount == 1)
                 {
                     var bw0 = boneWeightsNative[boneIndex];
                     bone01data[i] = new Vector4(bw0.boneIndex, bw0.weight, 0, 0);
                     bone23data[i] = new Vector4(0, 0, 0, 0);
-                } 
+                }
                 else if (boneCount == 2)
                 {
                     var bw0 = boneWeightsNative[boneIndex];
-                    var bw1 = boneWeightsNative[boneIndex+1];
+                    var bw1 = boneWeightsNative[boneIndex + 1];
                     bone01data[i] = new Vector4(bw0.boneIndex, bw0.weight, bw1.boneIndex, bw1.weight);
                     bone23data[i] = new Vector4(0, 0, 0, 0);
-                } 
+                }
                 else if (boneCount == 3)
                 {
                     var bw0 = boneWeightsNative[boneIndex];
-                    var bw1 = boneWeightsNative[boneIndex+1];
-                    var bw2 = boneWeightsNative[boneIndex+2];
+                    var bw1 = boneWeightsNative[boneIndex + 1];
+                    var bw2 = boneWeightsNative[boneIndex + 2];
                     bone01data[i] = new Vector4(bw0.boneIndex, bw0.weight, bw1.boneIndex, bw1.weight);
                     bone23data[i] = new Vector4(bw2.boneIndex, bw2.weight, 0, 0);
-                } 
+                }
                 else if (boneCount >= 4)
                 {
                     var bw0 = boneWeightsNative[boneIndex];
-                    var bw1 = boneWeightsNative[boneIndex+1];
-                    var bw2 = boneWeightsNative[boneIndex+2];
-                    var bw3 = boneWeightsNative[boneIndex+3];
+                    var bw1 = boneWeightsNative[boneIndex + 1];
+                    var bw2 = boneWeightsNative[boneIndex + 2];
+                    var bw3 = boneWeightsNative[boneIndex + 3];
                     bone01data[i] = new Vector4(bw0.boneIndex, bw0.weight, bw1.boneIndex, bw1.weight);
                     bone23data[i] = new Vector4(bw2.boneIndex, bw2.weight, bw3.boneIndex, bw3.weight);
                 }
@@ -74,11 +78,10 @@ namespace GPUSkinning
 
             sharedMesh.SetTangents(bone01data);
             sharedMesh.SetUVs(1, bone23data);
-            
+
             bone01data.Dispose();
             bone23data.Dispose();
         }
-        
     }
 
     public class SimpleGPUSkinning : IGPUSkinning
@@ -94,7 +97,7 @@ namespace GPUSkinning
 
         public void Prepare(SkinnedMeshRenderer skr, bool encodeBindPoses = false)
         {
-            if ( encodeBindPoses )
+            if (encodeBindPoses)
                 GPUSkinningUtils.EncodeBindPosesIntoMesh(skr);
 
             boneMatrices = new Matrix4x4[skr.bones.Length];
@@ -109,6 +112,7 @@ namespace GPUSkinning
             renderer = go.AddComponent<MeshRenderer>();
             renderer.enabled = skr.enabled;
             renderer.sharedMaterials = skr.sharedMaterials;
+
             foreach (Material material in renderer.sharedMaterials)
             {
                 material.SetMatrixArray(BIND_POSES, skr.sharedMesh.bindposes.ToArray());
@@ -116,7 +120,7 @@ namespace GPUSkinning
             }
 
             bones = skr.bones;
-            meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
+            renderer.localBounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
             UpdateMatrices();
 
             Object.Destroy(skr);
@@ -133,6 +137,7 @@ namespace GPUSkinning
         private void UpdateMatrices()
         {
             int bonesLength = bones.Length;
+
             for (int i = 0; i < bonesLength; i++)
             {
                 Transform bone = bones[i];
