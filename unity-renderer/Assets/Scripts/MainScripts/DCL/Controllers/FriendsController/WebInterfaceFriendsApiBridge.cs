@@ -29,8 +29,9 @@ namespace DCL.Social.Friends
         public event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
         public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
-        private void Awake() {
-        i = this;
+        private void Awake()
+        {
+            i = this;
         }
 
         [PublicAPI]
@@ -46,6 +47,7 @@ namespace DCL.Social.Friends
         {
             var payload = JsonUtility.FromJson<AddFriendsPayload>(json);
             string messageId = GET_FRIENDS_REQUEST_MESSAGE_ID;
+
             if (!pendingRequests.ContainsKey(messageId))
                 return;
 
