@@ -1,8 +1,10 @@
 ﻿using UnityEditor.AddressableAssets;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Build.AnalyzeRules;
 using UnityEditor.AddressableAssets.Build.DataBuilders;
@@ -16,17 +18,15 @@ namespace Tests.ValidationTests
 {
     public class AddressablesValidationTests
     {
-        private static readonly string[] EXCLUDE_FILE_TYPES = { "shader" };
+        private static readonly string[] EXCLUDED_FILE_TYPES = {  }; // "shader", "png", "jpg"
 
         [Test]
         public void Duplicates_Rule()
         {
-            AddressableAssetSettings assetSettings = AddressableAssetSettingsDefaultObject.Settings;
-
             CheckBundleDupeDependencies rule = new CheckBundleDupeDependencies();
-            var duplicates = rule.RefreshAnalysis(assetSettings);
+            List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-            Debug.Log("---- results ----");
+            Dictionary<string, List<string>> entriesToGroups = new Dictionary<string, List<string>>();
 
             foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
             {
@@ -34,12 +34,28 @@ namespace Tests.ValidationTests
                 string dPath = dSplit[0];
                 string dBundle = dSplit[^1];
 
-                // if (!EXCLUDE_FILE_TYPES.Contains(dPath.Split('.')[^1]))
-                Debug.Log($"{dPath}  =  {dBundle}");
-
+                if (!entriesToGroups.ContainsKey(dPath))
+                    entriesToGroups.Add(dPath, new List<string> { dBundle });
+                else if (!entriesToGroups[dPath].Contains(dBundle))
+                    entriesToGroups[dPath].Add(dBundle);
             }
 
-            Assert.That(duplicates.Count, Is.Zero);
+            StringBuilder message = new StringBuilder();
+
+            foreach (var keyValuePair in entriesToGroups
+                        .Where(keyValuePair => !EXCLUDED_FILE_TYPES.Contains(keyValuePair.Key.Split('.')[^1])))
+            {
+                message.Append(keyValuePair.Key + " - Groups: ");
+
+                foreach (string group in keyValuePair.Value)
+                    message.Append(group + ", ");
+
+                message.Remove(message.Length - 2, 2);
+                message.Append(";\n");
+            }
+
+            Assert.That(message.ToString(), Is.Empty,
+                message: $"Found {message.ToString().Split(';').Length} duplicates between groups: \n{message}");
         }
 
         public void Duplicates_Custom()
@@ -60,8 +76,6 @@ namespace Tests.ValidationTests
                 return;
 
             CalculateInputDefinitions(settings);
-
-
         }
 
         private readonly List<AddressableAssetEntry> m_AssetEntries = new ();
@@ -80,13 +94,16 @@ namespace Tests.ValidationTests
             for (var groupIndex = 0; groupIndex < settings.groups.Count; ++groupIndex)
             {
                 AddressableAssetGroup group = settings.groups[groupIndex];
+
                 if (group == null)
                     continue;
+
                 if (!progressDisplayed || groupIndex % updateFrequency == 0)
                 {
                     progressDisplayed = true;
+
                     if (EditorUtility.DisplayCancelableProgressBar("Calculating Input Definitions", "",
-                        (float) groupIndex / settings.groups.Count))
+                            (float)groupIndex / settings.groups.Count))
                     {
                         m_AssetEntries.Clear();
                         m_BundleToAssetGroup.Clear();
@@ -96,6 +113,7 @@ namespace Tests.ValidationTests
                 }
 
                 var schema = group.GetSchema<BundledAssetGroupSchema>();
+
                 if (schema != null && schema.IncludeInBuild)
                 {
                     List<AssetBundleBuild> bundleInputDefinitions = new List<AssetBundleBuild>();
@@ -104,7 +122,7 @@ namespace Tests.ValidationTests
                     for (var i = 0; i < bundleInputDefinitions.Count; i++)
                     {
                         if (m_BundleToAssetGroup.ContainsKey(bundleInputDefinitions[i].assetBundleName))
-                            bundleInputDefinitions[i] =  CreateUniqueBundle(bundleInputDefinitions[i], m_BundleToAssetGroup);
+                            bundleInputDefinitions[i] = CreateUniqueBundle(bundleInputDefinitions[i], m_BundleToAssetGroup);
 
                         m_BundleToAssetGroup.Add(bundleInputDefinitions[i].assetBundleName, schema.Group.Guid);
                     }
@@ -112,6 +130,7 @@ namespace Tests.ValidationTests
                     m_AllBundleInputDefs.AddRange(bundleInputDefinitions);
                 }
             }
+
             if (progressDisplayed)
                 EditorUtility.ClearProgressBar();
         }
