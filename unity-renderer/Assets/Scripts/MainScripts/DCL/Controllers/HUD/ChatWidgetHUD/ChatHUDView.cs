@@ -216,8 +216,11 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public void ShowMentionSuggestions()
     {
 #if (UNITY_WEBGL && !UNITY_EDITOR)
-        webGlImeInputGameObject = webGlImeInput.gameObject;
-        Destroy(webGlImeInput);
+        if (webGlImeInput)
+        {
+            webGlImeInputGameObject = webGlImeInput.gameObject;
+            Destroy(webGlImeInput);
+        }
 #endif
         chatMentionSuggestions.Show();
     }
@@ -232,7 +235,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public void HideMentionSuggestions()
     {
 #if (UNITY_WEBGL && !UNITY_EDITOR)
-        webGlImeInput = webGlImeInputGameObject.AddComponent<WebGLSupport.WebGLInput>();
+        if (!webGlImeInput && webGlImeInputGameObject)
+            webGlImeInput = webGlImeInputGameObject.AddComponent<WebGLSupport.WebGLInput>();
 #endif
         chatMentionSuggestions.Hide();
     }
