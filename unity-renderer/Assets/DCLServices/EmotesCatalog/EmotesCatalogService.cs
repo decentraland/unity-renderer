@@ -213,6 +213,11 @@ public class EmotesCatalogService : IEmotesCatalogService
             var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
             await promise.WithCancellation(linkedCt.Token);
         }
+        catch (PromiseException ex)
+        {
+            Debug.LogWarning($"Emote with id:{id} was rejected");
+            return null;
+        }
         catch (OperationCanceledException ex)
         {
             if (promises.ContainsKey(id))
