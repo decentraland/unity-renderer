@@ -220,6 +220,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         {
             webGlImeInputGameObject = webGlImeInput.gameObject;
             Destroy(webGlImeInput);
+            inputField.ActivateInputField();
         }
 #endif
         chatMentionSuggestions.Show();
