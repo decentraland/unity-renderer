@@ -106,7 +106,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public void RequestAllFromAPI()
     {
         placesAPIApiController.GetAllPlacesFromPlacesAPI(
-            OnCompleted: placeList =>
+            OnCompleted: (placeList, total) =>
             {
                 placesFromAPI = placeList;
 
@@ -121,7 +121,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
                         OnRequestedPlacesAndEventsUpdated();
                         Debug.LogError($"Error receiving events from the API: {error}");
                     });
-            });
+            }, 0, 20);
     }
 
     internal void OnRequestedPlacesAndEventsUpdated()

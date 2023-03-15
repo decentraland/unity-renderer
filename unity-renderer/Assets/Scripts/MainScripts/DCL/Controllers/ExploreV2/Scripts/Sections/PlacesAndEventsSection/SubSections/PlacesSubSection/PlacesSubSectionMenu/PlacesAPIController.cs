@@ -16,7 +16,7 @@ public interface IPlacesAPIController
     /// <param name="OnCompleted">It will be triggered when the operation has finished successfully.</param>
     void GetAllPlaces(Action<List<HotSceneInfo>> OnCompleted);
 
-    UniTask GetAllPlacesFromPlacesAPI(Action<List<PlaceInfo>> OnCompleted);
+    UniTask GetAllPlacesFromPlacesAPI(Action<List<PlaceInfo>, int> OnCompleted, int pageNumber, int amountPerPage);
 
     /// <summary>
     /// Request all favorite places from the server.
@@ -48,10 +48,11 @@ public class PlacesAPIController : IPlacesAPIController
         hotScenesController.OnHotSceneListFinishUpdating += OnFetchHotScenes;
     }
 
-    public async UniTask GetAllPlacesFromPlacesAPI(Action<List<PlaceInfo>> OnCompleted)
+    public async UniTask GetAllPlacesFromPlacesAPI(Action<List<PlaceInfo>, int> OnCompleted, int offset, int amountPerPage)
     {
-        UnityWebRequest result = await webRequestController.Ref.GetAsync(PLACES_URL, isSigned: true);
-        OnCompleted?.Invoke(Utils.SafeFromJson<PlacesAPIResponse>(result.downloadHandler.text).data);
+        UnityWebRequest result = await webRequestController.Ref.GetAsync(ComposePlacecsURLWithPage(offset, amountPerPage), isSigned: true);
+        PlacesAPIResponse placesAPIResponse = Utils.SafeFromJson<PlacesAPIResponse>(result.downloadHandler.text);
+        OnCompleted?.Invoke(placesAPIResponse.data, placesAPIResponse.total);
     }
 
     public async UniTask GetAllFavorites(Action<List<PlaceInfo>> OnCompleted)
@@ -65,6 +66,9 @@ public class PlacesAPIController : IPlacesAPIController
         string payload = "{\"favorites\":"+isFavorite.ToString().ToLower()+"}";
         await webRequestController.Ref.PatchAsync(ComposeAddRemovePlaceUrl(placeUUID), payload, isSigned: true);
     }
+
+    private string ComposePlacecsURLWithPage(int offset, int amountPerPage) =>
+        $"{PLACES_URL}&offset={offset}&limit={amountPerPage}";
 
     private string ComposeAddRemovePlaceUrl(string placeId) =>
         FAVORITE_SET_URL_START + placeId + FAVORITE_SET_URL_END;

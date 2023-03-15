@@ -92,11 +92,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllPlacesFromPlacesAPI(
-            OnCompleted: OnRequestedEventsUpdated);
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnRequestedEventsUpdated, 0, 20);
     }
 
-    private void OnRequestedEventsUpdated(List<PlaceInfo> placeList)
+    private void OnRequestedEventsUpdated(List<PlaceInfo> placeList, int total)
     {
         friendsTrackerController.RemoveAllHandlers();
 
@@ -104,7 +103,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(TakeAllForAvailableSlots(placeList)));
 
-        view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
+        view.SetShowMorePlacesButtonActive(placesFromAPI.Count < total);
     }
 
     internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI) =>
@@ -112,21 +111,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void ShowMorePlaces()
     {
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentPlacesPerRow) * view.currentPlacesPerRow) - availableUISlots;
-        int numberOfItemsToAdd = (view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnadditionalPageUpdated, placesFromAPI.Count, 8);
+    }
 
-        List<PlaceInfo> placesFiltered = availableUISlots + numberOfItemsToAdd <= placesFromAPI.Count
-            ? placesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
-            : placesFromAPI.GetRange(availableUISlots, placesFromAPI.Count - availableUISlots);
-
-        view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFiltered));
-
-        availableUISlots += numberOfItemsToAdd;
-
-        if (availableUISlots > placesFromAPI.Count)
-            availableUISlots = placesFromAPI.Count;
-
-        view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
+    private void OnadditionalPageUpdated(List<PlaceInfo> places, int total)
+    {
+        placesFromAPI.AddRange(places);
+        view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(places));
+        view.SetShowMorePlacesButtonActive(placesFromAPI.Count < total);
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
