@@ -11,7 +11,7 @@ namespace DCL.Social.Friends
     public class FriendsController : IFriendsController
     {
         private readonly IFriendsApiBridge apiBridge;
-        private readonly RPCSocialApiBridge socialApiBridge;
+        private readonly IRPCSocialApiBridge socialApiBridge;
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
         private readonly Dictionary<string, UserStatus> friends = new ();
 
@@ -19,7 +19,6 @@ namespace DCL.Social.Friends
         public bool IsInitialized { get; private set; }
 
         public int ReceivedRequestCount => friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
-
         public int TotalFriendCount { get; private set; }
         public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
         public int TotalReceivedFriendRequestCount { get; private set; }
@@ -37,7 +36,7 @@ namespace DCL.Social.Friends
 
         private CancellationTokenSource controllerCancellationTokenSource;
 
-        public FriendsController(IFriendsApiBridge apiBridge, RPCSocialApiBridge rpcSocialApiBridge)
+        public FriendsController(IFriendsApiBridge apiBridge, IRPCSocialApiBridge rpcSocialApiBridge)
         {
             this.apiBridge = apiBridge;
             apiBridge.OnInitialized += Initialize;
