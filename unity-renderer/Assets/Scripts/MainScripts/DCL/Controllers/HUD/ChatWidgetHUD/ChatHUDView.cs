@@ -47,8 +47,6 @@ namespace DCL.Social.Chat
         private int updateLayoutDelayedFrames;
         private bool isSortingDirty;
 
-        protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
-
         public event Action<string, int> OnMessageUpdated;
         public event Action OnOpenedContextMenu;
 
@@ -261,16 +259,13 @@ namespace DCL.Social.Chat
             if (entries.ContainsKey(model.messageId))
             {
                 var chatEntry = entries[model.messageId];
-                chatEntry.SetFadeout(this.model.enableFadeoutMode);
-                chatEntry.Populate(model);
-
+                Populate(chatEntry, model);
                 SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
             }
             else
             {
                 var chatEntry = ChatEntryFactory.Create(model);
-                chatEntry.SetFadeout(this.model.enableFadeoutMode);
-                chatEntry.Populate(model);
+                Populate(chatEntry, model);
                 chatEntry.ConfigureMentionLinkDetector(contextMenu);
 
                 if (model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
@@ -331,6 +326,12 @@ namespace DCL.Social.Chat
 
             entries.Clear();
             UpdateLayout();
+        }
+
+        protected void Populate(ChatEntry entry, ChatEntryModel model)
+        {
+            entry.Populate(model);
+            entry.SetFadeout(this.model.enableFadeoutMode);
         }
 
         protected void Dock(ChatEntry entry)

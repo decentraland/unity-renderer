@@ -9,7 +9,7 @@ namespace DCL.Social.Chat
     {
         [SerializeField] private PoolPrivateChatEntryFactory chatEntryFactory;
 
-        private readonly Dictionary<string, DateSeparatorEntry> dateSeparators = new Dictionary<string, DateSeparatorEntry>();
+        private readonly Dictionary<string, DateSeparatorEntry> dateSeparators = new ();
 
         public override void Awake()
         {
@@ -36,8 +36,7 @@ namespace DCL.Social.Chat
             if (dateSeparators.ContainsKey(separatorId)) return;
             var dateSeparatorEntry = chatEntryFactory.CreateDateSeparator();
             Dock(dateSeparatorEntry);
-            dateSeparatorEntry.Populate(chatEntryModel);
-            dateSeparatorEntry.SetFadeout(IsFadeoutModeEnabled);
+            Populate(dateSeparatorEntry, chatEntryModel);
             dateSeparators[separatorId] = dateSeparatorEntry;
             SetEntry(separatorId, dateSeparatorEntry);
         }
