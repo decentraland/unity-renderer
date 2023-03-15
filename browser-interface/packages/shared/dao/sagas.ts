@@ -46,6 +46,7 @@ import {store} from "../store/isolatedStore";
 import {trackEvent} from "../analytics/trackEvent";
 import {logger} from "../../entryPoints/logger";
 import {getCurrentUserProfile} from "../profiles/selectors";
+import {saveProfileDelta} from "../profiles/actions";
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
@@ -185,6 +186,10 @@ function OnboardingTutorialRealm(){
         const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
         if (realm) {
           trackEvent('onboarding_started', { onboardingRealm: realm })
+          //We are using the previous tutorial flow. 256 meant complete in the previous tutorial.
+          //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
+          //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
+          saveProfileDelta({ tutorialStep: 256 })
           return realm
         } else {
           logger.warn('No realm was provided for the onboarding experience.')
