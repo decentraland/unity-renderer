@@ -189,8 +189,8 @@ namespace DCLServices.WearablesCatalogService
                     0, 10, true, default(CancellationToken));
 
                 lambdasService.Received(1)
-                              .Get<WearableWithDefinitionResponse>("nfts/wearables/",
-                                   $"nfts/wearables/{USER_ID}?collectionId={TPW_COLLECTION_ID}",
+                              .Get<WearableWithDefinitionResponse>("users/",
+                                   $"users/{USER_ID}/third-party-wearables/{TPW_COLLECTION_ID}",
                                    45,
                                    3,
                                    Arg.Any<CancellationToken>(),
@@ -228,8 +228,8 @@ namespace DCLServices.WearablesCatalogService
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) wearables = await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, true, default(CancellationToken));
 
                 lambdasService.Received(1)
-                              .Get<WearableWithDefinitionResponse>("nfts/wearables/",
-                                   $"nfts/wearables/{USER_ID}",
+                              .Get<WearableWithDefinitionResponse>("users/",
+                                   $"users/{USER_ID}/wearables",
                                    45,
                                    3,
                                    Arg.Any<CancellationToken>(),
@@ -319,7 +319,7 @@ namespace DCLServices.WearablesCatalogService
         private void GivenPaginatedCollectionInLambdas(string collectionId, List<WearableDefinition> wearables)
         {
             lambdasService.Get<WearableWithDefinitionResponse>(Arg.Any<string>(),
-                               $"nfts/wearables/{USER_ID}?collectionId={collectionId}",
+                               $"users/{USER_ID}/third-party-wearables/{collectionId}",
                                Arg.Any<int>(),
                                Arg.Any<int>(),
                                Arg.Any<CancellationToken>(),
@@ -336,7 +336,7 @@ namespace DCLServices.WearablesCatalogService
         private void GivenPaginatedWearableInLambdas(List<WearableDefinition> wearables)
         {
             lambdasService.Get<WearableWithDefinitionResponse>(Arg.Any<string>(),
-                               $"nfts/wearables/{USER_ID}",
+                               $"users/{USER_ID}/wearables",
                                Arg.Any<int>(),
                                Arg.Any<int>(),
                                Arg.Any<CancellationToken>(),
