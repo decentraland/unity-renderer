@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.FriendsController
 {
-    public class RPCSocialApiBridge
+    public class RPCSocialApiBridge : IRPCSocialApiBridge
     {
         private const int REQUEST_TIMEOUT = 30;
 
@@ -27,11 +27,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public event Action<FriendRequest> OnFriendRequestAdded;
         public event Action<string> OnFriendRequestRemoved;
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
-        public event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
-        public event Action<UserStatus> OnUserPresenceUpdated;
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
-        public event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
-        public event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
         public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
         public RPCSocialApiBridge(IRPC rpc)
@@ -78,7 +74,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
             };
         }
 
-        private async UniTask ListenToFriendEvents(CancellationToken cancellationToken = default)
+        public async UniTask ListenToFriendEvents(CancellationToken cancellationToken = default)
         {
             var stream = rpc.Social().SubscribeFriendshipEventsUpdates(new Empty());
 
@@ -144,13 +140,13 @@ namespace MainScripts.DCL.Controllers.FriendsController
             return new FriendRequest(GetFriendRequestId(friendUserId, createdAt), createdAt, "GET OWN ADDRESS", friendUserId, messageBody);
         }
 
-        private string GetUserIdFromFriendRequestId(string friendRequestId) =>
+        public string GetUserIdFromFriendRequestId(string friendRequestId) =>
             friendRequestId.Split("-")[0];
 
-        private string GetFriendRequestId(string userId, long createdAt) =>
+        public string GetFriendRequestId(string userId, long createdAt) =>
             $"{userId}-{createdAt}";
 
-        private async UniTask UpdateFriendship(UpdateFriendshipPayload updateFriendshipPayload, CancellationToken cancellationToken = default)
+        public async UniTask UpdateFriendship(UpdateFriendshipPayload updateFriendshipPayload, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -239,7 +235,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
             throw new NotImplementedException();
 
-        private FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code)
+        public FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code)
         {
             switch (code)
             {
