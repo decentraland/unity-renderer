@@ -29,9 +29,9 @@ public static class ExplorePlacesTestHelpers
         };
     }
 
-    public static List<HotSceneInfo> CreateTestPlacesFromApi(int numberOfPlaces)
+    public static List<PlaceInfo> CreateTestPlacesFromApi(int numberOfPlaces)
     {
-        List<HotSceneInfo> testPlaces = new List<HotSceneInfo>();
+        List<PlaceInfo> testPlaces = new List<PlaceInfo>();
 
         for (int i = 0; i < numberOfPlaces; i++)
         {
@@ -41,19 +41,19 @@ public static class ExplorePlacesTestHelpers
         return testPlaces;
     }
 
-    public static HotSceneInfo CreateTestHotSceneInfo(string id)
+    public static PlaceInfo CreateTestHotSceneInfo(string id)
     {
-        return new HotSceneInfo
+        return new PlaceInfo
         {
             id = id,
-            baseCoords = new Vector2Int(10, 10),
-            creator = "Test Creator",
+            base_position = "10,10",
+            owner = "Test Creator",
             description = "Test Description",
-            name = "Test Name",
-            parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
-            realms = new HotSceneInfo.Realm[]
+            title = "Test Name",
+            positions = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
+            realms_detail = new PlaceInfo.Realm[]
             {
-                new HotSceneInfo.Realm
+                new PlaceInfo.Realm
                 {
                     layer = "Test Layer",
                     maxUsers = 500,
@@ -62,8 +62,8 @@ public static class ExplorePlacesTestHelpers
                     usersCount = 50
                 }
             },
-            thumbnail = "Test Thumbnail",
-            usersTotalCount = 50
+            image = "Test Thumbnail",
+            user_count = 50
         };
     }
 }

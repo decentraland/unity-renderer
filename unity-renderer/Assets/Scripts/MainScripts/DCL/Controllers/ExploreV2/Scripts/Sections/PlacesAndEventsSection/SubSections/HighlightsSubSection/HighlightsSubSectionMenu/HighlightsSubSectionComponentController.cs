@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
@@ -25,7 +26,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<HotSceneInfo> placesFromAPI = new ();
+    internal List<PlaceInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
 
     public HighlightsSubSectionComponentController(IHighlightsSubSectionComponentView view, IPlacesAPIController placesAPI, IEventsAPIController eventsAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics,
@@ -105,7 +106,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllPlaces(
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(
             OnCompleted: placeList =>
             {
                 placesFromAPI = placeList;
@@ -128,20 +129,20 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         friendsTrackerController.RemoveAllHandlers();
 
-        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.CreatePlacesCards(FilterTrendingPlaces());
+        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(FilterTrendingPlaces());
         List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents(trendingPlaces.Count));
         view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
 
-        view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(FilterFeaturedPlaces()));
+        view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(FilterFeaturedPlaces()));
         view.SetLiveEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterLiveEvents()));
     }
 
-    internal List<HotSceneInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
+    internal List<PlaceInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
     internal List<EventFromAPIModel> FilterLiveEvents() => eventsFromAPI.Where(x => x.live).Take(DEFAULT_NUMBER_OF_LIVE_EVENTS).ToList();
     internal List<EventFromAPIModel> FilterTrendingEvents(int amount) => eventsFromAPI.Where(e => e.highlighted).Take(amount).ToList();
-    internal List<HotSceneInfo> FilterFeaturedPlaces()
+    internal List<PlaceInfo> FilterFeaturedPlaces()
     {
-        List<HotSceneInfo> featuredPlaces;
+        List<PlaceInfo> featuredPlaces;
 
         if (placesFromAPI.Count >= DEFAULT_NUMBER_OF_TRENDING_PLACES)
         {
@@ -156,7 +157,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         else if (placesFromAPI.Count > 0)
             featuredPlaces = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList();
         else
-            featuredPlaces = new List<HotSceneInfo>();
+            featuredPlaces = new List<PlaceInfo>();
 
         return featuredPlaces;
     }
@@ -167,7 +168,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName);
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
@@ -178,14 +179,14 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Events);
     }
 
-    internal void JumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void JumpInToPlace(PlaceInfo placeFromAPI)
     {
         PlacesSubSectionComponentController.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, Utils.ConvertStringToVector(placeFromAPI.base_position));
     }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)

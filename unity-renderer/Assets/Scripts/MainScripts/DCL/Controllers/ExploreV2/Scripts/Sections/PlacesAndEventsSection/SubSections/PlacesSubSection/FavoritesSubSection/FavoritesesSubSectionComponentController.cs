@@ -88,43 +88,12 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
         favoritesFromAPI = placeList;
 
-        view.SetFavorites(ConvertPlacesToModels(TakeAllForAvailableSlots(placeList)));
+        view.SetFavorites(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(TakeAllForAvailableSlots(placeList)));
         view.SetShowMoreFavoritesButtonActive(availableUISlots < favoritesFromAPI.Count);
     }
 
-    private List<PlaceCardComponentModel> ConvertPlacesToModels(List<PlaceInfo> placeInfo)
-    {
-        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
-
-        foreach (var place in placeInfo)
-        {
-            modelsList.Add(
-                new PlaceCardComponentModel()
-                {
-                    placePictureUri = place.image,
-                    placeName = place.title,
-                    placeDescription = place.description,
-                    placeAuthor = place.contact_name,
-                    numberOfUsers = place.user_count,
-                    coords = new Vector2Int(),
-                    parcels = new Vector2Int[1]
-                });
-        }
-
-        return modelsList;
-    }
-
     internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI)
-    {
-        List<PlaceInfo> placeInfos = new List<PlaceInfo>();
-        for (int i = 0; i < availableUISlots; i++)
-        {
-            placeInfos.Add(modelsFromAPI[i]);
-        }
-
-        return placeInfos;
-    }
-
+        => modelsFromAPI.Take(availableUISlots).ToList();
 
     internal void ShowMoreFavorites()
     {
@@ -135,7 +104,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
             ? favoritesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : favoritesFromAPI.GetRange(availableUISlots, favoritesFromAPI.Count - availableUISlots);
 
-        view.AddFavorites(ConvertPlacesToModels(placesFiltered));
+        view.AddFavorites(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFiltered));
 
         availableUISlots += numberOfItemsToAdd;
 
@@ -153,7 +122,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void OnJumpInToPlace(PlaceInfo placeFromAPI)
     {
         view.HidePlaceModal();
 

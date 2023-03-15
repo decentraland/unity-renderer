@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using NSubstitute;
@@ -107,7 +108,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
-        placesSubSectionComponentController.view.SetPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(
+        placesSubSectionComponentController.view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(
             placesSubSectionComponentController.TakeAllForAvailableSlots(placesSubSectionComponentController.placesFromAPI)));
 
         // Assert
@@ -147,7 +148,7 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         bool exploreClosed = false;
         placesSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
-        HotSceneInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
+        PlaceInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
         placesSubSectionComponentController.OnJumpInToPlace(testPlaceFromAPI);
@@ -155,6 +156,6 @@ public class PlacesSubSectionComponentControllerTests
         // Assert
         placesSubSectionComponentView.Received().HidePlaceModal();
         Assert.IsTrue(exploreClosed);
-        exploreV2Analytics.Received().SendPlaceTeleport(testPlaceFromAPI.id, testPlaceFromAPI.name, testPlaceFromAPI.baseCoords);
+        exploreV2Analytics.Received().SendPlaceTeleport(testPlaceFromAPI.id, testPlaceFromAPI.title, Utils.ConvertStringToVector(testPlaceFromAPI.base_position));
     }
 }

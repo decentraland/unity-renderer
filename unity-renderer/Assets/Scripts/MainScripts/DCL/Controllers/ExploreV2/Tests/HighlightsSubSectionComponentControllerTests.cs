@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using NSubstitute;
@@ -131,7 +132,7 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(2);
 
         // Act
-        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.CreatePlacesCards(highlightsSubSectionComponentController.FilterTrendingPlaces());
+        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(highlightsSubSectionComponentController.FilterTrendingPlaces());
         List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(highlightsSubSectionComponentController.FilterTrendingEvents(trendingPlaces.Count));
         highlightsSubSectionComponentController.view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
 
@@ -147,7 +148,7 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
-        highlightsSubSectionComponentController.view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(highlightsSubSectionComponentController.FilterFeaturedPlaces()));
+        highlightsSubSectionComponentController.view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(highlightsSubSectionComponentController.FilterFeaturedPlaces()));
 
         // Assert
         highlightsSubSectionComponentView.Received().SetFeaturedPlaces(Arg.Any<List<PlaceCardComponentModel>>());
@@ -188,7 +189,7 @@ public class HighlightsSubSectionComponentControllerTests
         // Arrange
         bool exploreClosed = false;
         highlightsSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
-        HotSceneInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
+        PlaceInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
         highlightsSubSectionComponentController.JumpInToPlace(testPlaceFromAPI);
@@ -196,7 +197,7 @@ public class HighlightsSubSectionComponentControllerTests
         // Assert
         highlightsSubSectionComponentView.Received().HidePlaceModal();
         Assert.IsTrue(exploreClosed);
-        exploreV2Analytics.Received().SendPlaceTeleport(testPlaceFromAPI.id, testPlaceFromAPI.name, testPlaceFromAPI.baseCoords);
+        exploreV2Analytics.Received().SendPlaceTeleport(testPlaceFromAPI.id, testPlaceFromAPI.title, Utils.ConvertStringToVector(testPlaceFromAPI.base_position));
     }
 
     [Test]

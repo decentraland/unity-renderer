@@ -6,6 +6,6 @@ public interface IMapDataView
     string name { get; }
     string creator { get; }
     string description { get; }
-    void SetMinimapSceneInfo(HotScenesController.HotSceneInfo sceneInfo);
+    void SetMinimapSceneInfo(HotScenesController.PlaceInfo sceneInfo);
     bool ContainCoords(Vector2Int coords);
 }

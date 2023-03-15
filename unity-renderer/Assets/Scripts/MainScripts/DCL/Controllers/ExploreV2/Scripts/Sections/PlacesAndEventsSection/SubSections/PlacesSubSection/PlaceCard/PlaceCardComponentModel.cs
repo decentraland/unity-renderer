@@ -13,7 +13,10 @@ public class PlaceCardComponentModel : BaseComponentModel
     public int numberOfUsers;
     public Vector2Int coords;
     public Vector2Int[] parcels;
+    public bool isFavorite;
 
     [HideInInspector]
     public HotScenesController.HotSceneInfo hotSceneInfo;
+    [HideInInspector]
+    public HotScenesController.PlaceInfo placeInfo;
 }

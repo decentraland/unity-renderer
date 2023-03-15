@@ -10,6 +10,7 @@ using System.Reflection;
 using DCL.Configuration;
 using Google.Protobuf.Collections;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -693,6 +694,19 @@ namespace DCL.Helpers
             DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
             return dtDateTime;
+        }
+
+        private static readonly Regex COORDINATES_REGEX = new Regex(@"^(-?\d+),(-?\d+)$");
+
+        public static Vector2Int ConvertStringToVector(string input)
+        {
+            Match match = COORDINATES_REGEX.Match(input);
+            if (!int.TryParse(match.Groups[1].Value, out int x) || !int.TryParse(match.Groups[2].Value, out int y))
+            {
+                throw new Exception("Coordinates parsing error");
+            }
+
+            return new Vector2Int(x, y);
         }
     }
 }
