@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using WebGLSupport;
+using WebGLIMEInput = WebGLSupport.WebGLInput;
 
 namespace DCL.Social.Chat
 {
@@ -36,7 +36,7 @@ namespace DCL.Social.Chat
         [SerializeField] internal InputAction_Trigger previousMentionSuggestionInput;
         [SerializeField] internal InputAction_Trigger closeMentionSuggestionsInput;
         [SerializeField] internal ChatMentionSuggestionComponentView chatMentionSuggestions;
-        [SerializeField] internal WebGLSupport.WebGLInput webGlImeInput;
+        [SerializeField] internal WebGLIMEInput webGlImeInput;
         [SerializeField] private Model model;
 
         private readonly Dictionary<string, ChatEntry> entries = new ();
@@ -134,7 +134,6 @@ namespace DCL.Social.Chat
             ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
             model.enableFadeoutMode = true;
             contextMenu.SetPassportOpenSource(true);
-            Destroy(webGlImeInput);
         }
 
         public override void OnEnable()
