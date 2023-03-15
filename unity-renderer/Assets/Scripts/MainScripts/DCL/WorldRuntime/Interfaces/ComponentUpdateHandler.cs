@@ -100,7 +100,6 @@ namespace DCL
 #if UNITY_EDITOR
             applyChangesRunning = false;
 #endif
-            // FD:: check if this is raised every frame, this trigger the basedisposable update cycle
             owner.RaiseOnAppliedChanges();
         }
     }
