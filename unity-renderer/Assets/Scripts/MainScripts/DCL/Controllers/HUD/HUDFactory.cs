@@ -18,7 +18,6 @@ using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
 using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
 
@@ -109,7 +108,6 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
                     new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i));
             case HUDElementID.PUBLIC_CHAT:
                 return new PublicChatWindowController(
@@ -118,7 +116,6 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
                     new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
@@ -129,7 +126,6 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),

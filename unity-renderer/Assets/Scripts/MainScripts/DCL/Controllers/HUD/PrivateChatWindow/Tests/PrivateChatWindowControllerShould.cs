@@ -59,7 +59,6 @@ public class PrivateChatWindowControllerShould
             friendsController,
             socialAnalytics,
             mouseCatcher,
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             mentionSuggestionProvider);
     }
 

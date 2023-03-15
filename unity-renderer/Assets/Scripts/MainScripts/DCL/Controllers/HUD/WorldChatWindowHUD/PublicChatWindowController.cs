@@ -21,7 +21,6 @@ namespace DCL.Chat.HUD
         private readonly DataStore dataStore;
         private readonly IProfanityFilter profanityFilter;
         private readonly IMouseCatcher mouseCatcher;
-        private readonly InputAction_Trigger toggleChatTrigger;
         private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
         private readonly ISocialAnalytics socialAnalytics;
         private ChatHUDController chatHudController;
@@ -38,7 +37,6 @@ namespace DCL.Chat.HUD
             DataStore dataStore,
             IProfanityFilter profanityFilter,
             IMouseCatcher mouseCatcher,
-            InputAction_Trigger toggleChatTrigger,
             IChatMentionSuggestionProvider chatMentionSuggestionProvider,
             ISocialAnalytics socialAnalytics)
         {
@@ -47,7 +45,6 @@ namespace DCL.Chat.HUD
             this.dataStore = dataStore;
             this.profanityFilter = profanityFilter;
             this.mouseCatcher = mouseCatcher;
-            this.toggleChatTrigger = toggleChatTrigger;
             this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
             this.socialAnalytics = socialAnalytics;
         }
@@ -78,8 +75,6 @@ namespace DCL.Chat.HUD
             chatController.OnAddMessage += HandleMessageReceived;
             chatController.OnChannelUpdated -= HandleChannelUpdated;
             chatController.OnChannelUpdated += HandleChannelUpdated;
-
-            toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
 
@@ -116,8 +111,6 @@ namespace DCL.Chat.HUD
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= Hide;
-
-            toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
 
@@ -243,12 +236,6 @@ namespace DCL.Chat.HUD
 
         private void Hide() =>
             SetVisibility(false);
-
-        private void HandleChatInputTriggered(DCLAction_Trigger action)
-        {
-            if (!View.IsActive) return;
-            chatHudController.FocusInputField();
-        }
 
         private void HandleMessageBlockedBySpam(ChatMessage message)
         {

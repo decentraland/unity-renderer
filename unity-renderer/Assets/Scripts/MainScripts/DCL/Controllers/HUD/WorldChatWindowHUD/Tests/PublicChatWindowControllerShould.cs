@@ -50,7 +50,6 @@ public class PublicChatWindowControllerShould
             dataStore,
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             mouseCatcher,
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             mentionSuggestionProvider,
             Substitute.For<ISocialAnalytics>());
 

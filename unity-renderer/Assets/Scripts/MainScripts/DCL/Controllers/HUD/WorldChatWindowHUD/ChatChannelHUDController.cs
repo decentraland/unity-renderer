@@ -24,14 +24,12 @@ namespace DCL.Chat.HUD
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
-        private readonly InputAction_Trigger toggleChatTrigger;
         private readonly ISocialAnalytics socialAnalytics;
         private readonly IProfanityFilter profanityFilter;
         private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
         private ChatHUDController chatHudController;
         private ChannelMembersHUDController channelMembersHUDController;
-        private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
-        private bool skipChatInputTrigger;
+        private CancellationTokenSource hideLoadingCancellationToken = new ();
         private float lastRequestTime;
         private string channelId;
         private Channel channel;
@@ -48,7 +46,6 @@ namespace DCL.Chat.HUD
             IUserProfileBridge userProfileBridge,
             IChatController chatController,
             IMouseCatcher mouseCatcher,
-            InputAction_Trigger toggleChatTrigger,
             ISocialAnalytics socialAnalytics,
             IProfanityFilter profanityFilter,
             IChatMentionSuggestionProvider chatMentionSuggestionProvider)
@@ -57,7 +54,6 @@ namespace DCL.Chat.HUD
             this.userProfileBridge = userProfileBridge;
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
-            this.toggleChatTrigger = toggleChatTrigger;
             this.socialAnalytics = socialAnalytics;
             this.profanityFilter = profanityFilter;
             this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
@@ -88,8 +84,6 @@ namespace DCL.Chat.HUD
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += Hide;
-
-            toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
             channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge, dataStore.channels);
 
@@ -167,8 +161,6 @@ namespace DCL.Chat.HUD
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= Hide;
-
-            toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
             chatHudController.OnSendMessage -= HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
@@ -297,20 +289,6 @@ namespace DCL.Chat.HUD
 
         private void MarkChannelMessagesAsRead() =>
             chatController.MarkChannelMessagesAsSeen(channelId);
-
-        private void HandleChatInputTriggered(DCLAction_Trigger action)
-        {
-            // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
-            // chat input trigger is the same key as sending the chat message from the input field
-            if (skipChatInputTrigger)
-            {
-                skipChatInputTrigger = false;
-                return;
-            }
-
-            if (!View.IsActive) return;
-            chatHudController.FocusInputField();
-        }
 
         private void RequestMessages(string channelId, int limit, string fromMessageId = null)
         {

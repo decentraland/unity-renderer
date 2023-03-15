@@ -23,11 +23,9 @@ public class PrivateChatWindowController : IHUD
     private readonly IFriendsController friendsController;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
-    private readonly InputAction_Trigger toggleChatTrigger;
     private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
-    private bool skipChatInputTrigger;
     private float lastRequestTime;
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
     private bool shouldRequestMessages;
@@ -45,7 +43,6 @@ public class PrivateChatWindowController : IHUD
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics,
         IMouseCatcher mouseCatcher,
-        InputAction_Trigger toggleChatTrigger,
         IChatMentionSuggestionProvider chatMentionSuggestionProvider)
     {
         this.dataStore = dataStore;
@@ -54,7 +51,6 @@ public class PrivateChatWindowController : IHUD
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
-        this.toggleChatTrigger = toggleChatTrigger;
         this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
     }
 
@@ -94,8 +90,6 @@ public class PrivateChatWindowController : IHUD
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
-
-        toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
     }
 
     public void Setup(string newConversationUserId)
@@ -169,8 +163,6 @@ public class PrivateChatWindowController : IHUD
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= Hide;
-
-        toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
         if (View != null)
         {
@@ -323,21 +315,6 @@ public class PrivateChatWindowController : IHUD
             newSet.Remove("PrivateChatChannel");
 
         visibleTaskbarPanels.Set(newSet, true);
-    }
-
-    private void HandleChatInputTriggered(DCLAction_Trigger action)
-    {
-        // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
-        // chat input trigger is the same key as sending the chat message from the input field
-        if (skipChatInputTrigger)
-        {
-            skipChatInputTrigger = false;
-            return;
-        }
-
-        if (!View.IsActive)
-            return;
-        chatHudController.FocusInputField();
     }
 
     internal void RequestPrivateMessages(string userId, int limit, string fromMessageId)

@@ -164,7 +164,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             friendsController,
             socialAnalytics,
             Substitute.For<IMouseCatcher>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             Substitute.For<IChatMentionSuggestionProvider>());
 
         controller.Initialize(GivenView());
@@ -225,7 +224,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<IMouseCatcher>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             Substitute.For<IChatMentionSuggestionProvider>(),
             Substitute.For<ISocialAnalytics>());
 
@@ -301,7 +299,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             userProfileBridge,
             chatController,
             Substitute.For<IMouseCatcher>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             socialAnalytics,
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<IChatMentionSuggestionProvider>());

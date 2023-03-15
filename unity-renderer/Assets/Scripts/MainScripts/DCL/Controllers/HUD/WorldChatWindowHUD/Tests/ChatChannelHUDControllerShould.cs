@@ -54,7 +54,6 @@ namespace DCL.Chat.HUD
                 userProfileBridge,
                 chatController,
                 Substitute.For<IMouseCatcher>(),
-                ScriptableObject.CreateInstance<InputAction_Trigger>(),
                 socialAnalytics,
                 profanityFilter,
                 mentionSuggestionProvider);
