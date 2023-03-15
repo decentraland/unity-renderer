@@ -12,7 +12,6 @@ namespace ECSSystems.PointerInputSystem
 {
     public static class ECSPointerInputSystem
     {
-        private static WebInterface.ACTION_BUTTON[]  _inputActionEnums = Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)) as WebInterface.ACTION_BUTTON[];
         private class State
         {
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
@@ -85,7 +84,7 @@ namespace ECSSystems.PointerInputSystem
                 if (curState[i] != prevState[i])
                 {
                     PointerEventType pointerEventType = curState[i] ? PointerEventType.PetDown : PointerEventType.PetUp;
-                    InputAction inputAction = (InputAction)_inputActionEnums[i];
+                    InputAction inputAction = (InputAction)i;
 
                     if (colliderData != null)
                     {
