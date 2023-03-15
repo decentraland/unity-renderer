@@ -134,6 +134,7 @@ namespace DCL.Social.Chat
             ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
             model.enableFadeoutMode = true;
             contextMenu.SetPassportOpenSource(true);
+            Destroy(webGlImeInput);
         }
 
         public override void OnEnable()
@@ -217,8 +218,8 @@ namespace DCL.Social.Chat
         public void ShowMentionSuggestions()
         {
 #if (UNITY_WEBGL && !UNITY_EDITOR)
-            webGlImeInput.enabled = false;
-            inputField.ActivateInputField();
+            // webGlImeInput.enabled = false;
+            // inputField.ActivateInputField();
 #endif
             chatMentionSuggestions.Show();
         }
@@ -233,8 +234,8 @@ namespace DCL.Social.Chat
         public void HideMentionSuggestions()
         {
 #if (UNITY_WEBGL && !UNITY_EDITOR)
-            webGlImeInput.enabled = true;
-            inputField.DeactivateInputField();
+            // webGlImeInput.enabled = true;
+            // inputField.DeactivateInputField();
 #endif
             chatMentionSuggestions.Hide();
         }
