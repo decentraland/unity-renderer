@@ -36,6 +36,7 @@ namespace DCL.Social.Chat
         [SerializeField] internal InputAction_Trigger previousMentionSuggestionInput;
         [SerializeField] internal InputAction_Trigger closeMentionSuggestionsInput;
         [SerializeField] internal ChatMentionSuggestionComponentView chatMentionSuggestions;
+        [SerializeField] internal WebGLSupport.WebGLInput webGlImeInput;
         [SerializeField] private Model model;
 
         private readonly Dictionary<string, ChatEntry> entries = new ();
@@ -216,6 +217,14 @@ namespace DCL.Social.Chat
 
         public void ShowMentionSuggestions()
         {
+#if (UNITY_WEBGL && !UNITY_EDITOR)
+        if (webGlImeInput)
+        {
+            webGlImeInputGameObject = webGlImeInput.gameObject;
+            Destroy(webGlImeInput);
+            inputField.ActivateInputField();
+        }
+#endif
             chatMentionSuggestions.Show();
         }
 
@@ -228,6 +237,10 @@ namespace DCL.Social.Chat
 
         public void HideMentionSuggestions()
         {
+#if (UNITY_WEBGL && !UNITY_EDITOR)
+        if (!webGlImeInput && webGlImeInputGameObject)
+            webGlImeInput = webGlImeInputGameObject.AddComponent<WebGLSupport.WebGLInput>();
+#endif
             chatMentionSuggestions.Hide();
         }
 
