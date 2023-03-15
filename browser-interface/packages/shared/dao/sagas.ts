@@ -200,6 +200,7 @@ function OnboardingTutorialRealm(){
       }
     }
   }
+  return undefined
 }
 
 // load realm from local storage
