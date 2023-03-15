@@ -21,7 +21,21 @@ namespace Tests.ValidationTests
         private static readonly string[] EXCLUDED_FILE_TYPES = {  }; // "shader", "png", "jpg"
 
         [Test]
-        public void Duplicates_Rule()
+        public void ValidateResourcesToAddressableDuplicateDependencies()
+        {
+            CheckResourcesDupeDependencies rule = new CheckResourcesDupeDependencies();
+            List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
+       }
+
+        [Test]
+        public void ValidateScenesToAddressableDuplicateDependencies()
+        {
+            CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
+            List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
+        }
+
+        [Test]
+        public void ValidateDuplicateBundleDependencies()
         {
             CheckBundleDupeDependencies rule = new CheckBundleDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
@@ -55,7 +69,7 @@ namespace Tests.ValidationTests
             }
 
             Assert.That(message.ToString(), Is.Empty,
-                message: $"Found {message.ToString().Split(';').Length} duplicates between groups: \n{message}");
+                message: $"Found {message.ToString().Split(';').Length} assets being duplicated between groups: \n{message}");
         }
 
         public void Duplicates_Custom()
