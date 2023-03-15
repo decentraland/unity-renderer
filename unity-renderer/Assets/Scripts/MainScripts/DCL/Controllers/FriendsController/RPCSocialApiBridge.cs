@@ -12,7 +12,7 @@ using System.Threading;
 using rpc_csharp;
 using rpc_csharp.transport;
 using System.Collections.Generic;
-using Request = Decentraland.Social.Friendships.Request;
+using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.FriendsController
 {
@@ -42,19 +42,24 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public async UniTaskVoid InitializeClient(CancellationToken cancellationToken = default)
         {
             // start listening to streams
+            await UniTask.WhenAny(this.ListenToFriendEvents(cancellationToken));
         }
 
         public async UniTask<FriendshipInitializationMessage> InitializeFriendshipsInformation(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var friends = await rpc.Social().GetFriends(new Decentraland.Social.Friendships.Empty());
+            var friendsStream = rpc.Social().GetFriends(new Empty());
+
+            await foreach (var friends in friendsStream)
+            {
+                foreach (var friend in friends.Users_) { OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address }); }
+            }
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var requestEvents = await rpc.Social().GetRequestEvents(new Decentraland.Social.Friendships.Empty());
+            var requestEvents = await rpc.Social().GetRequestEvents(new Empty());
 
-            // TODO: User userid-timestamp as friendRequestId
             foreach (var friendRequest in requestEvents.Incoming.Items)
             {
                 OnFriendRequestAdded?.Invoke(new FriendRequest(
@@ -73,23 +78,45 @@ namespace MainScripts.DCL.Controllers.FriendsController
             };
         }
 
-        private async UniTask ListenToFriendChanges()
+        private async UniTask ListenToFriendEvents(CancellationToken cancellationToken = default)
         {
-            // var stream = this.clientBookService.SubscribeFriendshipRequests();
-            //
-            // await foreach (var item in stream)
-            // {
-            //     // this.friends.Add("asd", new User() { Address = "asd" });
-            //
-            //     // this.OnAddNewFriend?.Invoke(item);
-            // }
+            var stream = rpc.Social().SubscribeFriendshipEventsUpdates(new Empty());
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await foreach (var item in stream)
+            {
+                foreach (var friendshipEvent in item.Events)
+                {
+                    switch (friendshipEvent.BodyCase)
+                    {
+                        case FriendshipEventResponse.BodyOneofCase.None: break;
+                        case FriendshipEventResponse.BodyOneofCase.Request: break;
+                        case FriendshipEventResponse.BodyOneofCase.Accept: break;
+                        case FriendshipEventResponse.BodyOneofCase.Reject: break;
+                        case FriendshipEventResponse.BodyOneofCase.Delete: break;
+                        case FriendshipEventResponse.BodyOneofCase.Cancel: break;
+                        default: throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
         }
 
         public async UniTask RejectFriendship(string friendRequestId, CancellationToken cancellationToken = default)
         {
             string userId = GetUserIdFromFriendRequestId(friendRequestId);
 
-            var updateFriendshipPayload = new UpdateFriendshipPayload() { Event = EventType.Reject, User = new User() { Address = userId } };
+            var updateFriendshipPayload = new UpdateFriendshipPayload()
+            {
+                Event =
+                    new FriendshipEventPayload()
+                    {
+                        Reject = new RejectPayload()
+                        {
+                            User = new User() { Address = userId }
+                        }
+                    }
+            };
 
             await this.UpdateFriendship(updateFriendshipPayload, cancellationToken);
 
@@ -102,9 +129,13 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
             var updateFriendshipPayload = new UpdateFriendshipPayload()
             {
-                Event = EventType.Request, Request = new Decentraland.Social.Friendships.Request()
+                Event =
                 {
-                    Message = messageBody, User = new User() { Address = friendUserId }, CreatedAt = createdAt
+                    Request = new RequestPayload()
+                    {
+                        Message = messageBody,
+                        User = new User() { Address = friendUserId },
+                    }
                 }
             };
 
@@ -130,14 +161,14 @@ namespace MainScripts.DCL.Controllers.FriendsController
                                         .UpdateFriendshipEvent(updateFriendshipPayload)
                                         .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
-                switch (response.ReplyCase)
+                switch (response.ResponseCase)
                 {
-                    case UpdateFriendshipResponse.ReplyOneofCase.Event:
+                    case UpdateFriendshipResponse.ResponseOneofCase.Event:
                         break;
-                    case UpdateFriendshipResponse.ReplyOneofCase.Error:
+                    case UpdateFriendshipResponse.ResponseOneofCase.Error:
                         var error = response.Error;
                         throw new FriendshipException(ToErrorCode(error));
-                    case UpdateFriendshipResponse.ReplyOneofCase.None:
+                    case UpdateFriendshipResponse.ResponseOneofCase.None:
                     default:
                         throw new InvalidCastException();
                 }
@@ -207,13 +238,6 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         public UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
             throw new NotImplementedException();
-
-        private static FriendRequestPayload ToFriendRequestPayload(UpdateFriendshipPayload request) =>
-            new ()
-            {
-                to = request.User.Address,
-                messageBody = request.Request.Message,
-            };
 
         private FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code)
         {
