@@ -71,6 +71,7 @@ namespace DCL.Components
                     });
 
                     fetchRoutine = CoroutineStarter.Start(fetchIEnum);
+                    return null;
                 }
             }
             else
@@ -80,7 +81,6 @@ namespace DCL.Components
                 dclTexture = null;
             }
 
-            Debug.Log($"Texture with id {model.source} has the value of visible {model.visible} and texture is {referencesContainer.image.texture}");
             referencesContainer.image.enabled = model.visible;
             referencesContainer.image.color = Color.white;
 
