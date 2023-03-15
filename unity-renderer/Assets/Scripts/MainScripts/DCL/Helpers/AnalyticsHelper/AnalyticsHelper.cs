@@ -7,14 +7,15 @@ public static class AnalyticsHelper
     {
         IWorldState worldState = Environment.i.world.state;
         int sceneNumber = worldState.GetCurrentSceneNumber();
+        string sceneHash = worldState.GetCurrentSceneHash();
 
         if (!worldState.TryGetScene(sceneNumber, out var scene))
             return;
-        
-        if (sceneNumber > 0)
+
+        if (sceneNumber > 0 && !string.IsNullOrEmpty(sceneHash))
         {
             analyticDict.Add("base_parcel_position", scene.sceneData.basePosition.x + "," + scene.sceneData.basePosition.y );
-            analyticDict.Add("scene", $"scene number: {sceneNumber}");
+            analyticDict.Add("scene", sceneHash);
         }
     }
 

@@ -16,13 +16,16 @@ namespace DCL
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private readonly List<IParcelScene> globalScenes = new List<IParcelScene>();
         private int currentSceneNumber;
-        
+        private string currentSceneHash;
+
         public int GetCurrentSceneNumber() => currentSceneNumber;
-        
+        public string GetCurrentSceneHash() => currentSceneHash;
+
+
         public IEnumerable<KeyValuePair<int, IParcelScene>> GetLoadedScenes() => loadedScenes;
 
         public List<IParcelScene> GetGlobalScenes() => globalScenes;
-        
+
         public List<IParcelScene> GetScenesSortedByDistance() => scenesSortedByDistance;
 
         public IParcelScene GetScene(int sceneNumber)
@@ -134,21 +137,23 @@ namespace DCL
         {
             if (entity == null || entity.meshRootGameObject == null)
                 return;
-            
+
             attachedLoaders.Remove(entity.meshRootGameObject);
         }
-        
+
         public int GetSceneNumberByCoords(Vector2Int coords)
         {
             if (loadedScenesByCoordinate.ContainsKey(coords))
                 return loadedScenesByCoordinate[coords];
-            
+
             return -1;
         }
-        
+
         public void SortScenesByDistance(Vector2Int position)
         {
             currentSceneNumber = -1;
+            currentSceneHash = "";
+
             scenesSortedByDistance.Sort((sceneA, sceneB) =>
             {
                 sortAuxiliaryVector = sceneA.sceneData.basePosition - position;
@@ -176,26 +181,29 @@ namespace DCL
                     continue;
 
                 currentSceneNumber = scene.sceneData.sceneNumber;
+                currentSceneHash = scene.sceneData.id;
 
                 break;
             }
 
         }
-        
-        public void ForceCurrentScene(int sceneNumber)
+
+        public void ForceCurrentScene(int sceneNumber, string sceneHash)
         {
             currentSceneNumber = sceneNumber;
+            currentSceneHash = sceneHash;
         }
-        
+
         public void AddScene(IParcelScene newScene)
         {
             int sceneNumber = newScene.sceneData.sceneNumber;
+
             if (loadedScenes.ContainsKey(sceneNumber))
             {
                 Debug.LogWarning($"The scene {newScene.sceneData.id} already exists! scene number: {sceneNumber}");
                 return;
             }
-            
+
             if (newScene.isPersistent)
             {
                 globalSceneNumbers.Add(sceneNumber);
@@ -204,20 +212,23 @@ namespace DCL
                 if (newScene.isPortableExperience)
                     loadedPortableExperienceScenes.Add(newScene.sceneData.id, newScene);
             }
-            
+
             loadedScenes.Add(sceneNumber, newScene);
-            
+
             foreach (Vector2Int parcelPosition in newScene.GetParcels())
             {
                 loadedScenesByCoordinate[parcelPosition] = sceneNumber;
             }
-                
+
             scenesSortedByDistance.Add(newScene);
 
             if (currentSceneNumber <= 0)
+            {
                 currentSceneNumber = sceneNumber;
+                currentSceneHash = newScene.sceneData.id;
+            }
         }
-        
+
         public void RemoveScene(int sceneNumber)
         {
             IParcelScene loadedScene = loadedScenes[sceneNumber];
@@ -250,10 +261,9 @@ namespace DCL
             globalSceneNumbers.Clear();
             loadedPortableExperienceScenes.Clear();
             currentSceneNumber = -1;
+            currentSceneHash = "";
         }
 
-        public void Initialize()
-        {
-        }
+        public void Initialize() { }
     }
 }
