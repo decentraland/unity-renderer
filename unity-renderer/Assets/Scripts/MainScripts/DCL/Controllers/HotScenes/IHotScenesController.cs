@@ -15,6 +15,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
     {
         UniTask<IReadOnlyList<HotSceneInfo>> GetHotScenesListAsync(CancellationToken cancellationToken);
 
+        [Serializable]
         class HotSceneInfo
         {
             [Serializable]

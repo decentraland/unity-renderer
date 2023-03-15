@@ -92,7 +92,8 @@ namespace MainScripts.DCL.Helpers.Utils
 
         private void Destroy(T obj)
         {
-            global::DCL.Helpers.Utils.SafeDestroy(obj.gameObject);
+            if (obj)
+                global::DCL.Helpers.Utils.SafeDestroy(obj.gameObject);
         }
 
         public T Get() =>

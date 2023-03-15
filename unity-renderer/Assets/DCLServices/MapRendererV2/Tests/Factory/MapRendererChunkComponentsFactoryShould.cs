@@ -20,7 +20,7 @@ namespace DCLServices.MapRendererV2.Tests.Factory
             serviceLocator.Register<IAddressableResourceProvider>(() => new AddressableResourceProvider());
             Environment.Setup(serviceLocator);
 
-            factory = new MapRendererChunkComponentsFactory();
+            factory = new MapRendererChunkComponentsFactory(20, 1000);
         }
 
         [Test]

@@ -67,6 +67,7 @@ namespace DCL
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
+
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables, result.Get<ILambdasService>()),
                 WebInterfaceWearablesCatalogService.Instance,
@@ -98,7 +99,11 @@ namespace DCL
 
             // Map
             result.Register<IHotScenesFetcher>(() => new HotScenesFetcher(60f, 60f * 5f));
-            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory()));
+
+            const int ATLAS_CHUNK_SIZE = 1020;
+            const int PARCEL_SIZE = 20;
+
+            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory(PARCEL_SIZE, ATLAS_CHUNK_SIZE)));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));

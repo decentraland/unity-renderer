@@ -45,6 +45,14 @@ MonoBehaviour:
     m_Address: HomePoint
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 7e150ada146ad0749b39e65968780157
+    m_Address: MapParcelHighlightMarker
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0ae66608be2735a4f96e0f1aa9b3a75b
+    m_Address: PlayerMarker
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
