@@ -6,14 +6,14 @@ namespace DCLServices.Lambdas.NamesService
 {
     public class NamesService : INamesService, ILambdaServiceConsumer<NamesResponse>
     {
-        internal const string END_POINT = "nfts/names/";
+        internal const string END_POINT = "users/";
         internal const int TIMEOUT = ILambdasService.DEFAULT_TIMEOUT;
         internal const int ATTEMPTS_NUMBER = ILambdasService.DEFAULT_ATTEMPTS_NUMBER;
 
         private Service<ILambdasService> lambdasService;
 
         public LambdaResponsePagePointer<NamesResponse> GetPaginationPointer(string address, int pageSize, CancellationToken ct) =>
-            new (END_POINT + address, pageSize, ct, this);
+            new ($"{END_POINT}{address}/names", pageSize, ct, this);
 
         UniTask<(NamesResponse response, bool success)> ILambdaServiceConsumer<NamesResponse>.CreateRequest
             (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>

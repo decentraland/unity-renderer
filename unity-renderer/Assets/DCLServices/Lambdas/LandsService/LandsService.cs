@@ -7,14 +7,14 @@ namespace DCLServices.Lambdas.LandsService
 {
     public class LandsService : ILandsService, ILambdaServiceConsumer<LandsResponse>
     {
-        internal const string END_POINT = "nfts/lands/";
+        internal const string END_POINT = "users/";
         internal const int TIMEOUT = ILambdasService.DEFAULT_TIMEOUT;
         internal const int ATTEMPTS_NUMBER = ILambdasService.DEFAULT_ATTEMPTS_NUMBER;
 
         private Service<ILambdasService> lambdasService;
 
         public LambdaResponsePagePointer<LandsResponse> GetPaginationPointer(string address, int pageSize, CancellationToken ct) =>
-            new (END_POINT + address, pageSize, ct, this);
+            new ($"{END_POINT}{address}/lands", pageSize, ct, this);
 
         UniTask<(LandsResponse response, bool success)> ILambdaServiceConsumer<LandsResponse>.CreateRequest(string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
             lambdasService.Ref.Get<LandsResponse>(

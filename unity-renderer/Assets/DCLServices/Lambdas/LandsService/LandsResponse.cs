@@ -34,8 +34,8 @@ namespace DCLServices.Lambdas.LandsService
                 };
         }
 
-        [SerializeField] private List<LandEntry> lands;
+        [SerializeField] private List<LandEntry> elements;
 
-        public IReadOnlyList<LandEntry> Lands => lands;
+        public IReadOnlyList<LandEntry> Elements => elements;
     }
 }

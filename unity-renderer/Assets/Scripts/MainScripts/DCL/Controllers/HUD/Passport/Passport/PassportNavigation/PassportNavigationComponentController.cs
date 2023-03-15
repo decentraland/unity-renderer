@@ -160,6 +160,8 @@ namespace DCL.Social.Passports
         {
             async UniTaskVoid RequestOwnedWearablesAsync(CancellationToken ct)
             {
+                WearableItem[] containedWearables = Array.Empty<WearableItem>();
+
                 try
                 {
                     view.SetViewAllButtonActive(PassportSection.Wearables, false);
@@ -173,15 +175,18 @@ namespace DCL.Social.Passports
                     view.SetViewAllButtonActive(PassportSection.Wearables, wearables.totalAmount > MAX_NFT_COUNT);
                     var wearableItems = wearables.wearables.GroupBy(i => i.id);
 
-                    var containedWearables = wearableItems
-                                            .Select(g => g.First())
-                                            .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id));
-
-                    view.SetCollectibleWearables(containedWearables.ToArray());
-                    view.SetCollectibleWearablesLoadingActive(false);
+                    containedWearables = wearableItems
+                                        .Select(g => g.First())
+                                        .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id))
+                                        .ToArray();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogError(e.Message); }
+                finally
+                {
+                    view.SetCollectibleWearables(containedWearables);
+                    view.SetCollectibleWearablesLoadingActive(false);
+                }
             }
 
             view.SetCollectibleWearablesLoadingActive(true);
@@ -208,7 +213,7 @@ namespace DCL.Social.Passports
 
             if (response.success)
             {
-                namesResult = response.response.Names.ToArray();
+                namesResult = response.response.Elements.ToArray();
                 showViewAllButton = response.response.TotalAmount > MAX_NFT_COUNT;
             }
             else
@@ -230,7 +235,7 @@ namespace DCL.Social.Passports
 
             if (response.success)
             {
-                landsResult = response.response.Lands.ToArray();
+                landsResult = response.response.Elements.ToArray();
                 showViewAllButton = response.response.TotalAmount > MAX_NFT_COUNT;
             }
             else

@@ -329,7 +329,7 @@ namespace DCLServices.WearablesCatalogService
                           .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
                                (new WearableWithDefinitionResponse
                                {
-                                   wearables = wearables
+                                   elements = wearables
                                }, true)));
         }
 
@@ -346,7 +346,7 @@ namespace DCLServices.WearablesCatalogService
                           .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
                                (new WearableWithDefinitionResponse
                                {
-                                   wearables = wearables
+                                   elements = wearables
                                }, true)));
         }
 

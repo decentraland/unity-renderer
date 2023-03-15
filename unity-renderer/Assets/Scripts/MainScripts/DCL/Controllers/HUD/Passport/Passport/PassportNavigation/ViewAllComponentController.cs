@@ -142,7 +142,7 @@ public class ViewAllComponentController : IDisposable
 
             if (response.success)
             {
-                ProcessReceivedNames(response.response.Names);
+                ProcessReceivedNames(response.response.Elements);
                 view.SetTotalElements(response.response.TotalAmount);
                 view.SetLoadingActive(false);
             }
@@ -166,7 +166,7 @@ public class ViewAllComponentController : IDisposable
 
             if (response.success)
             {
-                ProcessReceivedLands(response.response.Lands);
+                ProcessReceivedLands(response.response.Elements);
                 view.SetTotalElements(response.response.TotalAmount);
                 view.SetLoadingActive(false);
             }

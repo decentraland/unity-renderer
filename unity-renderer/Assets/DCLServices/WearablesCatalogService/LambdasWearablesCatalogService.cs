@@ -18,7 +18,7 @@ namespace DCLServices.WearablesCatalogService
 
         private const string ASSET_BUNDLES_URL_ORG = "https://content-assets-as-bundle.decentraland.org/";
         private const string TEXTURES_URL_ORG = "https://interconnected.online/content/contents/";
-        private const string PAGINATED_WEARABLES_END_POINT = "nfts/wearables/";
+        private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
@@ -68,7 +68,7 @@ namespace DCLServices.WearablesCatalogService
             if (createNewPointer)
             {
                 ownerWearablesPagePointers[userId] = pagePointer = new LambdaResponsePagePointer<WearableWithDefinitionResponse>(
-                    PAGINATED_WEARABLES_END_POINT + userId,
+                    $"{PAGINATED_WEARABLES_END_POINT}{userId}/wearables",
                     pageSize, ct, this);
             }
 
@@ -77,7 +77,7 @@ namespace DCLServices.WearablesCatalogService
             if (!pageResponse.success)
                 throw new Exception($"The request of the owned wearables for '{userId}' failed!");
 
-            var wearables = pageResponse.response.wearables.Select(x => x.definition).ToList();
+            var wearables = pageResponse.response.elements.Select(x => x.definition).ToList();
             MapLambdasDataIntoWearableItem(wearables);
             AddWearablesToCatalog(wearables);
 
@@ -119,7 +119,7 @@ namespace DCLServices.WearablesCatalogService
             if (createNewPointer)
             {
                 thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new LambdaResponsePagePointer<WearableWithDefinitionResponse>(
-                    PAGINATED_WEARABLES_END_POINT + $"{userId}?collectionId={collectionId}",
+                    $"{PAGINATED_WEARABLES_END_POINT}{userId}/third-party-wearables/{collectionId}",
                     pageSize, ct, this);
             }
 
@@ -128,7 +128,7 @@ namespace DCLServices.WearablesCatalogService
             if (!pageResponse.success)
                 throw new Exception($"The request of the '{collectionId}' third party wearables collection of '{userId}' failed!");
 
-            var wearables = pageResponse.response.wearables.Select(x => x.definition).ToList();
+            var wearables = pageResponse.response.elements.Select(x => x.definition).ToList();
             MapLambdasDataIntoWearableItem(wearables);
             AddWearablesToCatalog(wearables);
 

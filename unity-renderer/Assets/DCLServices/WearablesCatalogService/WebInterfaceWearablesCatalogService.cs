@@ -73,7 +73,8 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             var wearables = await RequestWearablesByContextAsync(userId, null, null, $"{OWNED_WEARABLES_CONTEXT}{userId}", false, ct);
-            return (wearables, wearables.Count);
+            return (FilterWearablesByPage(wearables, pageNumber, pageSize), wearables.Count);
+
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct) =>
@@ -82,7 +83,7 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             var wearables = await RequestWearablesByContextAsync(userId, null, new[] { collectionId }, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
-            return (wearables, wearables.Count);
+            return (FilterWearablesByPage(wearables, pageNumber, pageSize), wearables.Count);
         }
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
@@ -376,6 +377,18 @@ namespace DCLServices.WearablesCatalogService
 
             awaitingWearablesByContextTasks.Remove(context);
             pendingWearablesByContextRequestedTimes.Remove(context);
+        }
+
+        // As kernel doesn't have pagination available, we apply a "local" pagination over the returned results
+        private static IReadOnlyList<WearableItem> FilterWearablesByPage(IReadOnlyCollection<WearableItem> wearables, int pageNumber, int pageSize)
+        {
+            int paginationIndex = pageNumber * pageSize;
+            int skippedWearables = Math.Min(paginationIndex - pageSize, wearables.Count);
+            int takenWearables = paginationIndex > wearables.Count ? paginationIndex - (paginationIndex - wearables.Count) : pageSize;
+            return wearables
+                  .Skip(skippedWearables)
+                  .Take(skippedWearables < wearables.Count ? takenWearables : 0)
+                  .ToArray();
         }
     }
 }

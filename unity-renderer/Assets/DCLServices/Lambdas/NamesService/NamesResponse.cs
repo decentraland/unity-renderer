@@ -26,8 +26,8 @@ namespace DCLServices.Lambdas.NamesService
                 };
         }
 
-        [SerializeField] private List<NameEntry> names;
+        [SerializeField] private List<NameEntry> elements;
 
-        public IReadOnlyList<NameEntry> Names => names;
+        public IReadOnlyList<NameEntry> Elements => elements;
     }
 }
