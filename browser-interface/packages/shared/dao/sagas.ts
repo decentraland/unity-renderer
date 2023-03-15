@@ -190,7 +190,7 @@ function OnboardingTutorialRealm(){
           //We are using the previous tutorial flow. 256 meant complete in the previous tutorial.
           //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
           //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
-          saveProfileDelta({ tutorialStep: 256 })
+          store.dispatch(saveProfileDelta({ tutorialStep: 256 }))
           return realm
         } else {
           logger.warn('No realm was provided for the onboarding experience.')
