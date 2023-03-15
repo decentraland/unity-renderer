@@ -181,6 +181,7 @@ function OnboardingTutorialRealm(){
     const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
     const IS_NEW_TUTORIAL_DISABLED =
       NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
+      console.log("DEBUG" + profile.tutorialStep);
     if(NEEDS_TUTORIAL && !IS_NEW_TUTORIAL_DISABLED){
       try {
         const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
