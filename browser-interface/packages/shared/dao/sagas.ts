@@ -1,4 +1,11 @@
-import { ETHEREUM_NETWORK, PIN_CATALYST, PREVIEW, rootURLPreviewMode } from 'config'
+import {
+  ETHEREUM_NETWORK,
+  HAS_INITIAL_POSITION_MARK,
+  PIN_CATALYST,
+  PREVIEW,
+  RESET_TUTORIAL,
+  rootURLPreviewMode
+} from 'config'
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 import defaultLogger from 'lib/logger'
 import { waitFor } from 'lib/redux'
@@ -9,7 +16,7 @@ import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalEr
 import {
   getAddedServers,
   getCatalystNodesEndpoint,
-  getDisabledCatalystConfig,
+  getDisabledCatalystConfig, getFeatureFlagVariantName, getFeatureFlagVariantValue,
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
@@ -35,6 +42,10 @@ import { createAlgorithm } from './pick-realm-algorithm/index'
 import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
 import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
 import { ask, ping } from './utils/ping'
+import {store} from "../store/isolatedStore";
+import {trackEvent} from "../analytics/trackEvent";
+import {logger} from "../../entryPoints/logger";
+import {getCurrentUserProfile} from "../profiles/selectors";
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
@@ -142,6 +153,7 @@ function* selectRealm() {
   }
 
   const realm: string | undefined =
+    OnboardingTutorialRealm() ||
     // query param (dao candidates & cached)
     (yield call(qsRealm)) ||
     // preview mode
@@ -153,11 +165,35 @@ function* selectRealm() {
     // cached in local storage
     (yield call(getRealmFromLocalStorage, network))
 
+
   if (!realm) debugger
 
   console.log(`Trying to connect to realm `, realm)
 
   return realm
+}
+
+function OnboardingTutorialRealm(){
+  const profile = getCurrentUserProfile(store.getState())!
+  if(profile){
+    const NEEDS_TUTORIAL = RESET_TUTORIAL || !profile.tutorialStep
+    const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
+    const IS_NEW_TUTORIAL_DISABLED =
+      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
+    if(NEEDS_TUTORIAL && !IS_NEW_TUTORIAL_DISABLED){
+      try {
+        const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
+        if (realm) {
+          trackEvent('onboarding_started', { onboardingRealm: realm })
+          return realm
+        } else {
+          logger.warn('No realm was provided for the onboarding experience.')
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }
 }
 
 // load realm from local storage

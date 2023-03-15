@@ -71,7 +71,6 @@ namespace DCL.Components
                     });
 
                     fetchRoutine = CoroutineStarter.Start(fetchIEnum);
-                    return null;
                 }
             }
             else
