@@ -87,6 +87,8 @@ namespace DCL
 
             // We trigger the Decentraland logic once everything is initialized.
             WebInterface.StartDecentraland();
+
+            Input.imeCompositionMode = IMECompositionMode.On;
         }
 
         protected virtual void Update()

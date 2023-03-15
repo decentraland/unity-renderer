@@ -214,10 +214,6 @@ namespace DCL.Social.Chat
 
         public void ShowMentionSuggestions()
         {
-#if (UNITY_WEBGL && !UNITY_EDITOR)
-            // webGlImeInput.enabled = false;
-            // inputField.ActivateInputField();
-#endif
             chatMentionSuggestions.Show();
         }
 
@@ -230,10 +226,6 @@ namespace DCL.Social.Chat
 
         public void HideMentionSuggestions()
         {
-#if (UNITY_WEBGL && !UNITY_EDITOR)
-            // webGlImeInput.enabled = true;
-            // inputField.DeactivateInputField();
-#endif
             chatMentionSuggestions.Hide();
         }
 
