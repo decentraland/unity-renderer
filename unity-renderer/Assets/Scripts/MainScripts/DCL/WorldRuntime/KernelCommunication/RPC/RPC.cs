@@ -31,7 +31,7 @@ namespace DCL
 
         public ClientSignRequestKernelService SignRequestKernelService() =>
             signRequest;
-        public ClientFriendshipsService Social() =>
+        public IClientFriendshipsService Social() =>
             social;
 
         public UniTask EnsureRpc() =>

@@ -44,6 +44,11 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public async UniTask<FriendshipInitializationMessage> InitializeFriendshipsInformation(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            var ownUserProfile = UserProfile.GetOwnUserProfile();
+
+            await UniTask.WaitUntil(() => ownUserProfile.userId != null);
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var friendsStream = rpc.Social().GetFriends(new Empty());
 
@@ -59,13 +64,13 @@ namespace MainScripts.DCL.Controllers.FriendsController
             foreach (var friendRequest in requestEvents.Incoming.Items)
             {
                 OnFriendRequestAdded?.Invoke(new FriendRequest(
-                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, friendRequest.User.Address, "GET OWN ADDRESS", friendRequest.Message));
+                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, friendRequest.User.Address, ownUserProfile.userId, friendRequest.Message));
             }
 
             foreach (var friendRequest in requestEvents.Outgoing.Items)
             {
                 OnFriendRequestAdded?.Invoke(new FriendRequest(
-                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, "GET OWN ADDRESS", friendRequest.User.Address, friendRequest.Message));
+                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, ownUserProfile.userId, friendRequest.User.Address, friendRequest.Message));
             }
 
             return new FriendshipInitializationMessage()
