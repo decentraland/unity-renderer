@@ -137,17 +137,13 @@ public class ViewAllComponentController : IDisposable
         {
             view.SetLoadingActive(true);
 
-            using var pagePointer = namesService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
-            var response = await pagePointer.GetPageAsync(pageNumber, ct);
+            (IReadOnlyList<NamesResponse.NameEntry> names, int totalAmount) ownedNamesItems =
+                await namesService.RequestOwnedNamesAsync(userId, pageNumber, pageSize, cleanCachedWearablesPages, ct);
 
-            if (response.success)
-            {
-                ProcessReceivedNames(response.response.Elements);
-                view.SetTotalElements(response.response.TotalAmount);
-                view.SetLoadingActive(false);
-            }
-            else
-                ShowErrorAndGoBack();
+            cleanCachedWearablesPages = false;
+            ProcessReceivedNames(ownedNamesItems.names);
+            view.SetTotalElements(ownedNamesItems.totalAmount);
+            view.SetLoadingActive(false);
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
@@ -161,17 +157,13 @@ public class ViewAllComponentController : IDisposable
         {
             view.SetLoadingActive(true);
 
-            using var pagePointer = landsService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
-            var response = await pagePointer.GetPageAsync(pageNumber, ct);
+            (IReadOnlyList<LandsResponse.LandEntry> lands, int totalAmount) ownedLandsItems =
+                await landsService.RequestOwnedLandsAsync(userId, pageNumber, pageSize, cleanCachedWearablesPages, ct);
 
-            if (response.success)
-            {
-                ProcessReceivedLands(response.response.Elements);
-                view.SetTotalElements(response.response.TotalAmount);
-                view.SetLoadingActive(false);
-            }
-            else
-                ShowErrorAndGoBack();
+            cleanCachedWearablesPages = false;
+            ProcessReceivedLands(ownedLandsItems.lands);
+            view.SetTotalElements(ownedLandsItems.totalAmount);
+            view.SetLoadingActive(false);
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
