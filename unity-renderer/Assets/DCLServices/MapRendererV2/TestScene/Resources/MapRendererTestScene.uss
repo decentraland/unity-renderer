@@ -12,3 +12,11 @@
     border-bottom-width: 2px;
     border-bottom-color: gray;
 }
+
+.renderTexturePreview {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    max-width: 256px;
+    max-height: 256px;
+    align-self: center;
+}

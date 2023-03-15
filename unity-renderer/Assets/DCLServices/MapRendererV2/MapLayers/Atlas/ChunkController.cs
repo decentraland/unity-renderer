@@ -69,10 +69,11 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         public void Dispose()
         {
-            Utils.SafeDestroy(spriteRenderer.gameObject);
+            if (spriteRenderer)
+                Utils.SafeDestroy(spriteRenderer.gameObject);
         }
 
-        public void SetDrawOrder(int order)
+        private void SetDrawOrder(int order)
         {
             spriteRenderer.sortingOrder = order;
         }

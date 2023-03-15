@@ -35,9 +35,9 @@ namespace DCLServices.MapRendererV2.TestScene
 
             var enabledLayers = new EnumFlagsField("Enabled Layers", MapLayer.Atlas);
             var position = new Vector2IntField("Position");
-            var zoom = new FloatField("Zoom");
-            var texRes = new Vector2IntField("Texture Resolution");
-            var zoomThreshold = new Vector2IntField("Zoom thresholds");
+            var zoom = new FloatField("Zoom") { value = 1 };
+            var texRes = new Vector2IntField("Texture Resolution") { value = new Vector2Int(512, 512) };
+            var zoomThreshold = new Vector2IntField("Zoom thresholds") { value = new Vector2Int(100, 500) };
 
             void CreateNewRent()
             {
@@ -51,10 +51,10 @@ namespace DCLServices.MapRendererV2.TestScene
 
                 mapCameraControllers.Add(rent);
 
-                AddMapCameraControllerControls(rent);
+                AddMapCameraControllerControls(rent, mapCameraControllers.Count - 1);
             }
 
-            var submitButton = new Button(CreateNewRent) {text = "Rent"};
+            var submitButton = new Button(CreateNewRent) { text = "Rent" };
 
             root.Add(enabledLayers);
             root.Add(position);
@@ -66,19 +66,35 @@ namespace DCLServices.MapRendererV2.TestScene
             return root;
         }
 
-        private void AddMapCameraControllerControls(IMapCameraController cameraController)
+        private void AddMapCameraControllerControls(IMapCameraController cameraController, int index)
         {
             // TODO add more controls
 
             var controls = new VisualElement();
             controls.AddToClassList(MapRendererTestSceneStyles.FUNCTION_GROUP);
 
+            var name = new Label($"#{index} {cameraController.EnabledLayers}");
+            name.AddToClassList(MapRendererTestSceneStyles.GROUP_TITLE);
+            controls.Add(name);
+
+            var texPreview = new Image { image = cameraController.GetRenderTexture() };
+            texPreview.AddToClassList(MapRendererTestSceneStyles.TEXTURE_PREVIEW);
+            controls.Add(texPreview);
+
+            var zoom = new FloatField("Zoom") { value = cameraController.Zoom};
+            zoom.RegisterValueChangedCallback(eve => cameraController.SetZoom(eve.newValue));
+            controls.Add(zoom);
+
+            var position = new Vector2Field("Position") { value = cameraController.Position };
+            position.RegisterValueChangedCallback(evt => cameraController.SetPosition(evt.newValue));
+            controls.Add(position);
+
             controls.Add(new Button(() =>
             {
                 cameraController.Release();
                 rents.Remove(controls);
                 mapCameraControllers.Remove(cameraController);
-            }) {text = "Release"});
+            }) { text = "Release" });
 
             rents.Add(controls);
         }
@@ -88,8 +104,11 @@ namespace DCLServices.MapRendererV2.TestScene
             rents = new VisualElement();
             rents.Add(new Label("Rents:") { style = { fontSize = 10, unityFontStyleAndWeight = FontStyle.Bold } });
 
-            foreach (IMapCameraController controller in mapCameraControllers)
-                AddMapCameraControllerControls(controller);
+            for (var index = 0; index < mapCameraControllers.Count; index++)
+            {
+                IMapCameraController controller = mapCameraControllers[index];
+                AddMapCameraControllerControls(controller, index);
+            }
 
             return rents;
         }

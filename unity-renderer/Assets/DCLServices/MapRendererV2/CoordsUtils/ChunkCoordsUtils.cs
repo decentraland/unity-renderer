@@ -12,6 +12,7 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector2Int WorldMaxCoords => WORLD_MAX_COORDS;
 
         public int ParcelSize { get; }
+        
         private Rect worldBounds;
 
         public ChunkCoordsUtils(int parcelSize)
