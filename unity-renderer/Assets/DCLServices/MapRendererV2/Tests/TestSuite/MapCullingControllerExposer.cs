@@ -8,7 +8,7 @@ namespace DCLServices.MapRendererV2.Culling
     /// </summary>
     public partial class MapCullingController
     {
-        internal List<IMapCameraControllerInternal> Cameras => cameras;
+        internal List<CameraState> CameraStates => cameraStates;
         internal LinkedList<TrackedState> DirtyObjects => dirtyObjects;
         internal Dictionary<IMapPositionProvider, TrackedState> TrackedObjs => trackedObjs;
 

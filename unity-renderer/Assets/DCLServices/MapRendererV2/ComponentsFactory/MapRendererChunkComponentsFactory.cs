@@ -74,7 +74,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                     highlightMarkersPool,
                     coordsUtils);
 
-                return new MapCameraController.MapCameraController(interactivityController, instance, coordsUtils);
+                return new MapCameraController.MapCameraController(interactivityController, instance, coordsUtils, cullingController);
             }
 
             IObjectPool<IMapCameraControllerInternal> cameraControllersPool = new ObjectPool<IMapCameraControllerInternal>(

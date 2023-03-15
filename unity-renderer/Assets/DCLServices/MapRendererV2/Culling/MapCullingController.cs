@@ -11,9 +11,8 @@ namespace DCLServices.MapRendererV2.Culling
         private const int MAX_DIRTY_OBJECTS_PER_FRAME = 10;
 
         private readonly IMapCullingVisibilityChecker cullingVisibilityChecker;
-        private readonly List<IMapCameraControllerInternal> cameras = new ();
+        private readonly List<CameraState> cameraStates = new ();
         private readonly LinkedList<TrackedState> dirtyObjects = new ();
-
         private readonly Dictionary<IMapPositionProvider, TrackedState> trackedObjs = new ();
 
         private int dirtyCamerasFlag = 0;
@@ -36,36 +35,38 @@ namespace DCLServices.MapRendererV2.Culling
 
         void IMapCullingController.OnCameraAdded(IMapCameraControllerInternal cameraController)
         {
-            if (cameras.Count == sizeof(int))
+            if (cameraStates.Count == sizeof(int))
                 throw new Exception("Camera out of range");
 
-            SetCameraDirtyInternal(cameras.Count);
-            cameras.Add(cameraController);
+            SetCameraDirtyInternal(cameraStates.Count);
+
+            cameraStates.Add(new CameraState { CameraController = cameraController, FrustrumPlanes = cameraController.GetFrustrumPlanes() });
         }
 
         void IMapCullingController.OnCameraRemoved(IMapCameraControllerInternal cameraController)
         {
-            int index = cameras.IndexOf(cameraController);
+            int index = GetCameraIndex(cameraController);
 
             if (index == -1)
                 return;
 
-            for (int i = index; i < cameras.Count; i++)
+            for (int i = index; i < cameraStates.Count; i++)
             {
                 SetCameraDirtyInternal(i); //We set dirty all the cameras onwards due to index shifting
             }
 
-            cameras.Remove(cameraController);
+            cameraStates.RemoveAt(index);
         }
 
         void IMapCullingController.SetCameraDirty(IMapCameraControllerInternal cameraController)
         {
-            int index = cameras.IndexOf(cameraController);
+            int index = GetCameraIndex(cameraController);
 
             if (index == -1)
                 throw new Exception($"Tried to set not tracked camera dirty");
 
             SetCameraDirtyInternal(index);
+            cameraStates[index].FrustrumPlanes = cameraController.GetFrustrumPlanes();
         }
 
         public void SetTrackedObjectPositionDirty<T>(T obj) where T: IMapPositionProvider
@@ -79,7 +80,7 @@ namespace DCLServices.MapRendererV2.Culling
         private void SetTrackedStateDirty(TrackedState state)
         {
             // shifting to the right will add zeroes on the left
-            state.SetCameraFlag((-1 >> (cameras.Count - 1)));
+            state.SetCameraFlag((-1 >> (cameraStates.Count - 1)));
 
             if (IsTrackedStateDirty(state))
                 return;
@@ -126,7 +127,7 @@ namespace DCLServices.MapRendererV2.Culling
                 foreach ((IMapPositionProvider obj, TrackedState cullable) in trackedObjs)
                 {
                     //If index is higher than camera count we have a dirty flag for a no longer tracked camera, we ignore it by setting the flag as 0
-                    bool visible = i < cameras.Count && cullingVisibilityChecker.IsVisible(obj, cameras[i]);
+                    bool visible = i < cameraStates.Count && cullingVisibilityChecker.IsVisible(obj, cameraStates[i]);
                     cullable.SetVisibleFlag(i, visible);
                     cullable.SetCameraFlag(i, false);
                 }
@@ -175,7 +176,7 @@ namespace DCLServices.MapRendererV2.Culling
                     continue;
 
                 //If index is higher than camera count we have a dirty flag for a no longer tracked camera, we ignore it by setting the flag as 0
-                bool visible = i < cameras.Count && cullingVisibilityChecker.IsVisible(state.Obj, cameras[i]);
+                bool visible = i < cameraStates.Count && cullingVisibilityChecker.IsVisible(state.Obj, cameraStates[i]);
                 state.SetVisibleFlag(i, visible);
                 state.SetCameraFlag(i, false);
             }
@@ -183,6 +184,17 @@ namespace DCLServices.MapRendererV2.Culling
 
         private bool IsTrackedStateDirty(TrackedState state) =>
             state.nodeInQueue.List != null;
+
+        private int GetCameraIndex(IMapCameraControllerInternal cameraController)
+        {
+            for (var i = 0; i < cameraStates.Count; i++)
+            {
+                if (cameraStates[i].CameraController == cameraController)
+                    return i;
+            }
+
+            return -1;
+        }
 
         public void Dispose()
         {

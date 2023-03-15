@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Linq;
+using UnityEngine;
 
 namespace DCLServices.MapRendererV2.Tests.Culling
 {
@@ -63,14 +64,19 @@ namespace DCLServices.MapRendererV2.Tests.Culling
         {
             for (int i = 0; i < initialCameraCount; i++)
             {
-                culling.Cameras.Add(Substitute.For<IMapCameraControllerInternal>());
+                culling.CameraStates.Add(new CameraState
+                    {
+                        CameraController = Substitute.For<IMapCameraControllerInternal>(),
+                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                    }
+                );
                 culling.SetCameraDirtyInternal_Test(i);
             }
 
             var camera = Substitute.For<IMapCameraControllerInternal>();
             culling.OnCameraAdded_Test(camera);
 
-            Assert.AreEqual(camera, culling.Cameras.Last());
+            Assert.AreEqual(camera, culling.CameraStates.Last().CameraController);
             Assert.IsTrue(culling.IsCameraDirty_Test(initialCameraCount));
         }
 
@@ -79,13 +85,21 @@ namespace DCLServices.MapRendererV2.Tests.Culling
         [TestCase(4, 2, 0b00001100)]
         public void SetDirtyOnwardsCameraFlagWhenRemovingCamera(int initialCameraCount, int indexToRemove, int expectedDirtyCameras)
         {
-            for (int i = 0; i < initialCameraCount; i++) { culling.Cameras.Add(Substitute.For<IMapCameraControllerInternal>()); }
+            for (int i = 0; i < initialCameraCount; i++)
+            {
+                culling.CameraStates.Add(new CameraState
+                    {
+                        CameraController = Substitute.For<IMapCameraControllerInternal>(),
+                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                    }
+                );
+            }
 
-            IMapCameraControllerInternal camera = culling.Cameras.ElementAt(indexToRemove);
+            IMapCameraControllerInternal camera = culling.CameraStates.ElementAt(indexToRemove).CameraController;
 
             culling.OnCameraRemoved_Test(camera);
 
-            Assert.AreEqual(initialCameraCount - 1, culling.Cameras.Count);
+            Assert.AreEqual(initialCameraCount - 1, culling.CameraStates.Count);
             Assert.AreEqual(expectedDirtyCameras, culling.DirtyCamerasFlag);
         }
 
@@ -100,9 +114,20 @@ namespace DCLServices.MapRendererV2.Tests.Culling
         [TestCase(4, 3, 0b000001000)]
         public void SetCameraDirty(int cameraCount, int index, int expected)
         {
-            for (int i = 0; i < cameraCount; i++) { culling.Cameras.Add(Substitute.For<IMapCameraControllerInternal>()); }
+            for (int i = 0; i < cameraCount; i++)
+            {
+                IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
+                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
 
-            ((IMapCullingController)culling).SetCameraDirty(culling.Cameras.ElementAt(index));
+                culling.CameraStates.Add(new CameraState
+                    {
+                        CameraController = mapCameraControllerInternal,
+                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                    }
+                );
+            }
+
+            ((IMapCullingController)culling).SetCameraDirty(culling.CameraStates.ElementAt(index).CameraController);
 
             Assert.AreEqual(expected, culling.DirtyCamerasFlag);
         }
@@ -158,7 +183,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
 
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
-                culling.Cameras.Add(Substitute.For<IMapCameraControllerInternal>());
+                IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
+                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                culling.CameraStates.Add(new CameraState
+                    {
+                        CameraController = mapCameraControllerInternal,
+                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                    }
+                );
             }
 
             for (int i = 0; i < 3; i++) //Simulate 3 tracked objects
@@ -169,7 +202,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
 
             culling.ResolveDirtyCameras_Test();
 
-            visibilityChecker.DidNotReceiveWithAnyArgs().IsVisible(Arg.Any<IMapPositionProvider>(), Arg.Any<IMapCameraControllerInternal>());
+            visibilityChecker.DidNotReceiveWithAnyArgs().IsVisible(Arg.Any<IMapPositionProvider>(), Arg.Any<CameraState>());
         }
 
         [Test]
@@ -180,7 +213,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
 
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
-                culling.Cameras.Add(Substitute.For<IMapCameraControllerInternal>());
+                IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
+                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                culling.CameraStates.Add(new CameraState
+                    {
+                        CameraController = mapCameraControllerInternal,
+                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                    }
+                );
             }
 
             for (int i = 0; i < 3; i++) //Simulate 3 tracked objects
@@ -193,9 +234,9 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             culling.ResolveDirtyCameras_Test();
 
             // Assert
-            visibilityChecker.DidNotReceive().IsVisible(Arg.Any<IMapPositionProvider>(), culling.Cameras[0]); // Camera 0 is not dirty
-            visibilityChecker.Received().IsVisible(Arg.Any<IMapPositionProvider>(), culling.Cameras[1]); // Camera 1 is dirty, visibility was checked
-            visibilityChecker.DidNotReceive().IsVisible(Arg.Any<IMapPositionProvider>(), culling.Cameras[2]); // Camera 2 is not dirty
+            visibilityChecker.DidNotReceive().IsVisible(Arg.Any<IMapPositionProvider>(), culling.CameraStates[0]); // Camera 0 is not dirty
+            visibilityChecker.Received().IsVisible(Arg.Any<IMapPositionProvider>(), culling.CameraStates[1]); // Camera 1 is dirty, visibility was checked
+            visibilityChecker.DidNotReceive().IsVisible(Arg.Any<IMapPositionProvider>(), culling.CameraStates[2]); // Camera 2 is not dirty
         }
 
         [Test]
@@ -206,7 +247,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
 
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
-                culling.Cameras.Add(Substitute.For<IMapCameraControllerInternal>());
+                IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
+                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                culling.CameraStates.Add(new CameraState
+                    {
+                        CameraController = mapCameraControllerInternal,
+                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                    }
+                );
             }
 
             for (int i = 0; i < 3; i++) //Simulate 3 tracked objects
@@ -219,9 +268,9 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             culling.ResolveDirtyCameras_Test();
 
             // Assert
-            visibilityChecker.DidNotReceive().IsVisible(Arg.Any<IMapPositionProvider>(), culling.Cameras[0]); // Camera 0 is not dirty
-            visibilityChecker.Received().IsVisible(Arg.Any<IMapPositionProvider>(), culling.Cameras[1]); // Camera 1 is dirty, visibility was checked
-            visibilityChecker.Received().IsVisible(Arg.Any<IMapPositionProvider>(), culling.Cameras[2]); // Camera 2 is not dirty
+            visibilityChecker.DidNotReceive().IsVisible(Arg.Any<IMapPositionProvider>(), culling.CameraStates[0]); // Camera 0 is not dirty
+            visibilityChecker.Received().IsVisible(Arg.Any<IMapPositionProvider>(), culling.CameraStates[1]); // Camera 1 is dirty, visibility was checked
+            visibilityChecker.Received().IsVisible(Arg.Any<IMapPositionProvider>(), culling.CameraStates[2]); // Camera 2 is not dirty
         }
 
         [Test]
@@ -232,7 +281,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
 
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
-                culling.Cameras.Add(Substitute.For<IMapCameraControllerInternal>());
+                IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
+                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                culling.CameraStates.Add(new CameraState
+                    {
+                        CameraController = mapCameraControllerInternal,
+                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                    }
+                );
             }
 
             for (int i = 0; i < 3; i++) //Simulate 3 tracked objects
@@ -245,7 +302,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             culling.ResolveDirtyCameras_Test();
 
             // Assert
-            visibilityChecker.DidNotReceiveWithAnyArgs().IsVisible(Arg.Any<IMapPositionProvider>(), Arg.Any<IMapCameraControllerInternal>());
+            visibilityChecker.DidNotReceiveWithAnyArgs().IsVisible(Arg.Any<IMapPositionProvider>(), Arg.Any<CameraState>());
         }
 
         [Test]
@@ -254,7 +311,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             // Arrange
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
-                culling.Cameras.Add(Substitute.For<IMapCameraControllerInternal>());
+                IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
+                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                culling.CameraStates.Add(new CameraState
+                    {
+                        CameraController = mapCameraControllerInternal,
+                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                    }
+                );
             }
 
             // Simulate 3 tracked objects
@@ -267,19 +332,19 @@ namespace DCLServices.MapRendererV2.Tests.Culling
 
             // Assert
             // Object 0
-            visibilityChecker.Received().IsVisible(obj0, culling.Cameras[0]);
-            visibilityChecker.Received().IsVisible(obj0, culling.Cameras[1]);
-            visibilityChecker.DidNotReceive().IsVisible(obj0, culling.Cameras[2]);
+            visibilityChecker.Received().IsVisible(obj0, culling.CameraStates[0]);
+            visibilityChecker.Received().IsVisible(obj0, culling.CameraStates[1]);
+            visibilityChecker.DidNotReceive().IsVisible(obj0, culling.CameraStates[2]);
 
             //Object 1
-            visibilityChecker.DidNotReceive().IsVisible(obj1, culling.Cameras[0]);
-            visibilityChecker.Received().IsVisible(obj1, culling.Cameras[1]);
-            visibilityChecker.Received().IsVisible(obj1, culling.Cameras[2]);
+            visibilityChecker.DidNotReceive().IsVisible(obj1, culling.CameraStates[0]);
+            visibilityChecker.Received().IsVisible(obj1, culling.CameraStates[1]);
+            visibilityChecker.Received().IsVisible(obj1, culling.CameraStates[2]);
 
             //Object2
-            visibilityChecker.DidNotReceive().IsVisible(obj2, culling.Cameras[0]);
-            visibilityChecker.DidNotReceive().IsVisible(obj2, culling.Cameras[1]);
-            visibilityChecker.DidNotReceive().IsVisible(obj2, culling.Cameras[2]);
+            visibilityChecker.DidNotReceive().IsVisible(obj2, culling.CameraStates[0]);
+            visibilityChecker.DidNotReceive().IsVisible(obj2, culling.CameraStates[1]);
+            visibilityChecker.DidNotReceive().IsVisible(obj2, culling.CameraStates[2]);
         }
 
         private IMapPositionProvider AddTrackedObjectAndSetDirtyCamerasFlag(int dirtyCamerasFlag)

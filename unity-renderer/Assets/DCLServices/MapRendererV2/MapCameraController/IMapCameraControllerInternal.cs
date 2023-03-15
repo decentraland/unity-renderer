@@ -17,5 +17,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         void Initialize(Vector2Int textureResolution, Vector2Int zoomValues, MapLayer layers);
 
         void SetActive(bool active);
+
+        Plane[] GetFrustrumPlanes();
     }
 }

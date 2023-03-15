@@ -1,4 +1,5 @@
 ﻿using DCLServices.MapRendererV2.CoordsUtils;
+using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using System;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         private readonly IMapInteractivityControllerInternal interactivityBehavior;
         private readonly ICoordsUtils coordsUtils;
+        private readonly IMapCullingController cullingController;
         private readonly MapCameraObject mapCameraObject;
 
         private RenderTexture renderTexture;
@@ -25,11 +27,13 @@ namespace DCLServices.MapRendererV2.MapCameraController
         public MapCameraController(
             IMapInteractivityControllerInternal interactivityBehavior,
             MapCameraObject mapCameraObject,
-            ICoordsUtils coordsUtils
+            ICoordsUtils coordsUtils,
+            IMapCullingController cullingController
         )
         {
             this.interactivityBehavior = interactivityBehavior;
             this.coordsUtils = coordsUtils;
+            this.cullingController = cullingController;
             this.mapCameraObject = mapCameraObject;
 
             mapCameraObject.transform.localPosition = Vector3.up * CAMERA_HEIGHT;
@@ -59,18 +63,23 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             value = Mathf.Clamp01(value);
             mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.x, zoomValues.y, value);
+            cullingController.SetCameraDirty(this);
         }
 
         public void SetPosition(Vector2 coordinates)
         {
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
             mapCameraObject.transform.position = new Vector3(position.x, CAMERA_HEIGHT, position.y);
+            cullingController.SetCameraDirty(this);
         }
 
         public void SetActive(bool active)
         {
             mapCameraObject.gameObject.SetActive(active);
         }
+
+        public Plane[] GetFrustrumPlanes() =>
+            GeometryUtility.CalculateFrustumPlanes(Camera);
 
         public void Release()
         {
