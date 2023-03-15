@@ -46,7 +46,6 @@ namespace DCL.Social.Chat
 
         private int updateLayoutDelayedFrames;
         private bool isSortingDirty;
-        private GameObject webGlImeInputGameObject;
 
         protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
 
@@ -218,12 +217,8 @@ namespace DCL.Social.Chat
         public void ShowMentionSuggestions()
         {
 #if (UNITY_WEBGL && !UNITY_EDITOR)
-        if (webGlImeInput)
-        {
-            webGlImeInputGameObject = webGlImeInput.gameObject;
-            Destroy(webGlImeInput);
+            webGlImeInput.enabled = false;
             inputField.ActivateInputField();
-        }
 #endif
             chatMentionSuggestions.Show();
         }
@@ -238,8 +233,8 @@ namespace DCL.Social.Chat
         public void HideMentionSuggestions()
         {
 #if (UNITY_WEBGL && !UNITY_EDITOR)
-        if (!webGlImeInput && webGlImeInputGameObject)
-            webGlImeInput = webGlImeInputGameObject.AddComponent<WebGLSupport.WebGLInput>();
+            webGlImeInput.enabled = true;
+            inputField.DeactivateInputField();
 #endif
             chatMentionSuggestions.Hide();
         }
