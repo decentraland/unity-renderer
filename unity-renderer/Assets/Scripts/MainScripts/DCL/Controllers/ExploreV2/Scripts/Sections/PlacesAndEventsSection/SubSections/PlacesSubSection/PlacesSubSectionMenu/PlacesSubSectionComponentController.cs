@@ -37,6 +37,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += OnJumpInToPlace;
+        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
 
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
 
@@ -59,6 +60,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowPlaceDetailedInfo;
         view.OnJumpInClicked -= OnJumpInToPlace;
+        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
@@ -67,6 +69,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         cardsReloader.Dispose();
     }
+
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite) =>
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
 
     private void FirstLoading()
     {

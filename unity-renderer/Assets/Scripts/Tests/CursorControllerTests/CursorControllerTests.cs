@@ -43,7 +43,8 @@ namespace Tests
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
-                new PostWebRequestFactory()
+                new PostWebRequestFactory(),
+                new PutWebRequestFactory()
             ) );
             return result;
         }

@@ -18,6 +18,7 @@ namespace DCL
         private IWebRequestTextureFactory textureFactory;
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
+        private IPutWebRequestFactory putWebRequestFactory;
         private readonly IRPCSignRequest rpcSignRequest;
 
         private readonly List<WebRequestAsyncOperation> ongoingWebRequests = new();
@@ -28,6 +29,7 @@ namespace DCL
             IWebRequestTextureFactory textureFactory,
             IWebRequestAudioFactory audioClipWebRequestFactory,
             IPostWebRequestFactory postWebRequestFactory,
+            IPutWebRequestFactory putWebRequestFactory,
             IRPCSignRequest rpcSignRequest = null
         )
         {
@@ -36,6 +38,7 @@ namespace DCL
             this.textureFactory = textureFactory;
             this.audioClipWebRequestFactory = audioClipWebRequestFactory;
             this.postWebRequestFactory = postWebRequestFactory;
+            this.putWebRequestFactory = putWebRequestFactory;
             this.rpcSignRequest = rpcSignRequest;
         }
 
@@ -48,7 +51,8 @@ namespace DCL
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
-                new PostWebRequestFactory()
+                new PostWebRequestFactory(),
+                new PutWebRequestFactory()
             );
 
             return newWebRequestController;
@@ -78,6 +82,24 @@ namespace DCL
             bool isSigned = false)
         {
             return await SendWebRequest(getWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
+                timeout, cancellationToken, headers, isSigned);
+        }
+
+        public async UniTask<UnityWebRequest> PatchAsync(
+            string url,
+            string patchData,
+            DownloadHandler downloadHandler = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            CancellationToken cancellationToken = default,
+            Dictionary<string, string> headers = null,
+            bool isSigned = false)
+        {
+            putWebRequestFactory.SetBody(patchData);
+            putWebRequestFactory.SetPatchRequest(true);
+            return await SendWebRequest(putWebRequestFactory, url, downloadHandler, onSuccess, onFail, requestAttemps,
                 timeout, cancellationToken, headers, isSigned);
         }
 
@@ -175,7 +197,7 @@ namespace DCL
 
                 if (isSigned)
                 {
-                    if (!Enum.TryParse(request.method, out RequestMethod method))
+                    if (!Enum.TryParse(request.method, true, out RequestMethod method))
                         method = RequestMethod.Get;
 
                     int index = url.IndexOf("?", StringComparison.Ordinal);

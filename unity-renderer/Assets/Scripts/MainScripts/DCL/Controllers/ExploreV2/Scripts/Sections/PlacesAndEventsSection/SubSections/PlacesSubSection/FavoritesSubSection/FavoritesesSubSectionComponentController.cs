@@ -26,7 +26,12 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
     internal List<PlaceInfo> favoritesFromAPI = new ();
     internal int availableUISlots;
 
-    public FavoritesesSubSectionComponentController(IFavoritesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
+    public FavoritesesSubSectionComponentController(
+        IFavoritesSubSectionComponentView view,
+        IPlacesAPIController placesAPI,
+        IFriendsController friendsController,
+        IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore)
     {
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
@@ -39,11 +44,15 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         this.view.OnJumpInClicked += OnJumpInToPlace;
         this.view.OnShowMoreFavoritesClicked += ShowMoreFavorites;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
+        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         view.ConfigurePools();
     }
+
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite) =>
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
 
     public void Dispose()
     {

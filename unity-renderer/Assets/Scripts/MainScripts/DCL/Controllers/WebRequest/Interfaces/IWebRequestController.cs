@@ -47,6 +47,18 @@ namespace DCL
             Dictionary<string, string> headers = null,
             bool isSigned = false);
 
+        UniTask<UnityWebRequest> PatchAsync(
+            string url,
+            string patchData,
+            DownloadHandler downloadHandler = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            CancellationToken cancellationToken = default,
+            Dictionary<string, string> headers = null,
+            bool isSigned = false);
+
         /// <summary>
         /// Make a post request and download data from a url.
         /// </summary>

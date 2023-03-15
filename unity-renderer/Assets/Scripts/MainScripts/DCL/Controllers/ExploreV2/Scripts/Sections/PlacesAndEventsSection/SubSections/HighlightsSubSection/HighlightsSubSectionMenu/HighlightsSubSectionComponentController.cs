@@ -40,7 +40,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         this.view.OnPlaceInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnPlaceJumpInClicked += JumpInToPlace;
-        this.view.OnFavoriteClicked += FavoritePlace;
+        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
 
         this.view.OnEventInfoClicked += ShowEventDetailedInfo;
         this.view.OnEventJumpInClicked += JumpInToEvent;
@@ -65,11 +65,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.ConfigurePools();
     }
 
-    private void FavoritePlace(string placeUUID, bool isFavorite)
-    {
-        //TODO: wire add/remove favorite request when places API is ready
-    }
-
     public void Dispose()
     {
         view.OnReady -= FirstLoading;
@@ -79,6 +74,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         view.OnPlaceJumpInClicked -= JumpInToPlace;
         view.OnEventJumpInClicked -= JumpInToEvent;
+        this.view.OnFavoriteClicked -= View_OnFavoritesClicked;
 
         view.OnEventSubscribeEventClicked -= SubscribeToEvent;
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
@@ -91,6 +87,9 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         cardsReloader.Dispose();
     }
+
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite) =>
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
 
     private void FirstLoading()
     {

@@ -30,6 +30,11 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     event Action<HotScenesController.PlaceInfo> OnJumpInClicked;
 
     /// <summary>
+    /// It will be triggered when the favorite button is clicked.
+    /// </summary>
+    event Action<string, bool> OnFavoriteClicked;
+
+    /// <summary>
     /// It will be triggered when a new friend handler is added by a place card.
     /// </summary>
     event Action<FriendsHandler> OnFriendHandlerAdded;
