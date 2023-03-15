@@ -121,7 +121,7 @@ public class MinimapMetadata : ScriptableObject
             if (parcels == null || parcels.Count == 0)
                 return 0;
 
-            var hashCode = parcels[1].GetHashCode();
+            var hashCode = parcels[0].GetHashCode();
 
             for (var i = 1; i < parcels.Count; i++)
                 hashCode = HashCode.Combine(hashCode, parcels[i].GetHashCode());
