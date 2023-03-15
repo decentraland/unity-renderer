@@ -26,8 +26,8 @@ namespace DCLServices.WearablesCatalogService
 
         private readonly ILambdasService lambdasService;
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
-        private readonly Dictionary<string, LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
-        private readonly Dictionary<(string, string), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
+        private readonly Dictionary<(string userId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
+        private readonly Dictionary<(string userId, string collectionId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
@@ -54,20 +54,20 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             var createNewPointer = false;
-            if (!ownerWearablesPagePointers.TryGetValue(userId, out var pagePointer))
+            if (!ownerWearablesPagePointers.TryGetValue((userId, pageSize), out var pagePointer))
             {
                 createNewPointer = true;
             }
             else if (cleanCachedPages)
             {
                 pagePointer.Dispose();
-                ownerWearablesPagePointers.Remove(userId);
+                ownerWearablesPagePointers.Remove((userId, pageSize));
                 createNewPointer = true;
             }
 
             if (createNewPointer)
             {
-                ownerWearablesPagePointers[userId] = pagePointer = new LambdaResponsePagePointer<WearableWithDefinitionResponse>(
+                ownerWearablesPagePointers[(userId, pageSize)] = pagePointer = new LambdaResponsePagePointer<WearableWithDefinitionResponse>(
                     $"{PAGINATED_WEARABLES_END_POINT}{userId}/wearables",
                     pageSize, ct, this);
             }
@@ -105,20 +105,20 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             var createNewPointer = false;
-            if (!thirdPartyCollectionPagePointers.TryGetValue((userId, collectionId), out var pagePointer))
+            if (!thirdPartyCollectionPagePointers.TryGetValue((userId, collectionId, pageSize), out var pagePointer))
             {
                 createNewPointer = true;
             }
             else if (cleanCachedPages)
             {
                 pagePointer.Dispose();
-                thirdPartyCollectionPagePointers.Remove((userId, collectionId));
+                thirdPartyCollectionPagePointers.Remove((userId, collectionId, pageSize));
                 createNewPointer = true;
             }
 
             if (createNewPointer)
             {
-                thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new LambdaResponsePagePointer<WearableWithDefinitionResponse>(
+                thirdPartyCollectionPagePointers[(userId, collectionId, pageSize)] = pagePointer = new LambdaResponsePagePointer<WearableWithDefinitionResponse>(
                     $"{PAGINATED_WEARABLES_END_POINT}{userId}/third-party-wearables/{collectionId}",
                     pageSize, ct, this);
             }
