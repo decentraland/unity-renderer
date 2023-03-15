@@ -201,14 +201,14 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Events);
     }
 
-    internal void JumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void JumpInToPlace(PlaceInfo placeFromAPI)
     {
         PlacesSubSectionComponentController.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, placeFromAPI.base_position);
     }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)

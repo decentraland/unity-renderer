@@ -43,7 +43,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
-    public event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
+    public event Action<HotScenesController.PlaceInfo> OnJumpInClicked;
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnFavoriteSubSectionEnable;

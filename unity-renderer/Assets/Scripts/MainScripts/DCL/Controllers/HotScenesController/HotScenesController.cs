@@ -51,6 +51,16 @@ public class HotScenesController : MonoBehaviour
     [Serializable]
     public class PlaceInfo
     {
+        [Serializable]
+        public class Realm
+        {
+            public string serverName;
+            public string layer;
+            public string url;
+            public int usersCount;
+            public int maxUsers;
+            public Vector2Int[] userParcels;
+        }
         public string id;
         public string title;
         public string description;
@@ -80,6 +90,7 @@ public class HotScenesController : MonoBehaviour
         public bool user_dislike;
         public int user_count;
         public int user_visits;
+        public Realm[] realms_detail;
     }
 
     [Serializable]

@@ -154,14 +154,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void OnJumpInToPlace(PlaceInfo placeFromAPI)
     {
         JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, placeFromAPI.base_position);
     }
 
     private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
@@ -181,25 +181,26 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     /// Makes a jump in to the place defined by the given place data from API.
     /// </summary>
     /// <param name="placeFromAPI">Place data from API.</param>
-    public static void JumpInToPlace(HotSceneInfo placeFromAPI)
+    public static void JumpInToPlace(PlaceInfo placeFromAPI)
     {
-        HotSceneInfo.Realm realm = new HotSceneInfo.Realm() { layer = null, serverName = null };
-        placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
+        PlaceInfo.Realm realm = new PlaceInfo.Realm() { layer = null, serverName = null };
+        placeFromAPI.realms_detail = placeFromAPI.realms_detail.OrderByDescending(x => x.usersCount).ToArray();
 
-        for (int i = 0; i < placeFromAPI.realms.Length; i++)
+        for (int i = 0; i < placeFromAPI.realms_detail.Length; i++)
         {
-            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms[i].layer);
+            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms_detail[i].layer);
 
-            if (isArchipelagoRealm || placeFromAPI.realms[i].usersCount < placeFromAPI.realms[i].maxUsers)
+            if (isArchipelagoRealm || placeFromAPI.realms_detail[i].usersCount < placeFromAPI.realms_detail[i].maxUsers)
             {
-                realm = placeFromAPI.realms[i];
+                realm = placeFromAPI.realms_detail[i];
                 break;
             }
         }
 
+        Debug.Log($"base x {placeFromAPI.base_position.x} y {placeFromAPI.base_position.y}");
         if (string.IsNullOrEmpty(realm.serverName))
-            Environment.i.world.teleportController.Teleport(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
+            Environment.i.world.teleportController.Teleport(placeFromAPI.base_position.x, placeFromAPI.base_position.y);
         else
-            Environment.i.world.teleportController.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
+            Environment.i.world.teleportController.JumpIn(placeFromAPI.base_position.x, placeFromAPI.base_position.y, realm.serverName, realm.layer);
     }
 }

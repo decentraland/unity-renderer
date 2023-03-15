@@ -27,7 +27,7 @@ public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionC
     /// <summary>
     /// It will be triggered when the JumpIn button is clicked.
     /// </summary>
-    event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
+    event Action<HotScenesController.PlaceInfo> OnJumpInClicked;
 
     /// <summary>
     /// It will be triggered when a new friend handler is added by a place card.

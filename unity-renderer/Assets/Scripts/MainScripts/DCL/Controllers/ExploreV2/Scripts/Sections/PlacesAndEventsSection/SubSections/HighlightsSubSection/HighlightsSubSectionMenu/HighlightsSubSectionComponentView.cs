@@ -68,7 +68,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
     public event Action<EventCardComponentModel> OnEventInfoClicked;
-    public event Action<HotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
+    public event Action<HotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<string> OnEventSubscribeEventClicked;

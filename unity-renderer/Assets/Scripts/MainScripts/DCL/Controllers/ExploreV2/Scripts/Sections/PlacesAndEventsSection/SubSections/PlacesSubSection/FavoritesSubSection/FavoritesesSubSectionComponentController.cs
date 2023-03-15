@@ -153,7 +153,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void OnJumpInToPlace(PlaceInfo placeFromAPI)
     {
         view.HidePlaceModal();
 
