@@ -466,12 +466,14 @@ namespace DCL.Social.Chat
 
         private void HandlePreviousMentionSuggestionInput(DCLAction_Trigger action)
         {
+            Debug.Log("ChatHUDView.HandlePreviousMentionSuggestionInput");
             if (!chatMentionSuggestions.IsVisible) return;
             chatMentionSuggestions.SelectPreviousEntry();
         }
 
         private void HandleCloseMentionSuggestionsInput(DCLAction_Trigger action)
         {
+            Debug.Log("ChatHUDView.HandleCloseMentionSuggestionsInput");
             if (!chatMentionSuggestions.IsVisible) return;
             chatMentionSuggestions.Hide();
         }
