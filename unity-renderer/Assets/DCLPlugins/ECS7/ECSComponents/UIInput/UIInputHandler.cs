@@ -5,7 +5,7 @@ using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.UIElements;
-using System;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIInput
@@ -37,8 +37,12 @@ namespace DCL.ECSComponents.UIInput
         {
             // `TextField` contains a label as well but
             // passing a null string will actually make it invisible
+
             uiElement = new TextField();
             uiElement.style.flexGrow = 1f;
+
+            // Set child element (automatically created) default values
+            uiElement.ElementAt(0).style.backgroundColor = new StyleColor(Color.white);
 
             placeholder = new TextFieldPlaceholder(uiElement);
 
