@@ -2,6 +2,7 @@
 using DCL;
 using DCL.Helpers;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 
@@ -78,8 +79,15 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
                 asset.Setup(sceneAb, contentUrl);
             }
             catch (OperationCanceledException) { }
+            catch (Exception)
+            {
+                if (!IsEmptyScene())
+                    Debug.LogError("No Asset Bundles for scene " + finalUrl);
+            }
             finally { onSuccess(); }
         }
+
+        private bool IsEmptyScene() => hash.Contains(",");
 
         protected override void OnBeforeLoadOrReuse() { }
 
