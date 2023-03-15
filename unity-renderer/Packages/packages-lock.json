@@ -64,11 +64,11 @@
       "hash": "06e147c3b999e7da725d5896aaf154f329b88642"
     },
     "com.decentraland.webgl-ime-input": {
-      "version": "https://github.com/decentraland/webgl-ime-input.git",
+      "version": "https://github.com/decentraland/webgl-ime-input.git?path=#fix/input",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "df8e5a76a9b7ad1d3b266a5bd359257b0d60e09c"
+      "hash": "936251f7f4e7399d32aff747ca4fe85e0351ad27"
     },
     "com.madsbangh.easybuttons": {
       "version": "1.3.0",
