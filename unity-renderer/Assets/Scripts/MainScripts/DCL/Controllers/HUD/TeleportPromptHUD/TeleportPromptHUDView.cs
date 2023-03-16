@@ -9,43 +9,36 @@ public class TeleportPromptHUDView : MonoBehaviour
 {
     [SerializeField] internal GameObject content;
     [SerializeField] internal ShowHideAnimator contentAnimator;
+    [SerializeField] internal Animator teleportHUDAnimator;
 
     [Header("Images")]
-    [SerializeField] RawImage imageSceneThumbnail;
+    [SerializeField] private RawImage imageSceneThumbnail;
 
-    [SerializeField] Image imageGotoCrowd;
-    [SerializeField] Image imageGotoMagic;
+    [SerializeField] private Image imageGotoCrowd;
+    [SerializeField] private Image imageGotoMagic;
 
     [Header("Containers")]
-    [SerializeField] GameObject containerCoords;
+    [SerializeField] private GameObject containerCoords;
 
-    [SerializeField] GameObject containerMagic;
-    [SerializeField] GameObject containerCrowd;
-    [SerializeField] GameObject containerScene;
-    [SerializeField] GameObject containerEvent;
+    [SerializeField] private GameObject containerMagic;
+    [SerializeField] private GameObject containerCrowd;
+    [SerializeField] private GameObject containerScene;
+    [SerializeField] private GameObject containerEvent;
 
     [Header("Scene info")]
-    [SerializeField] TextMeshProUGUI textCoords;
+    [SerializeField] private TextMeshProUGUI textCoords;
 
-    [SerializeField] TextMeshProUGUI textSceneName;
-    [SerializeField] TextMeshProUGUI textSceneOwner;
+    [SerializeField] private TextMeshProUGUI textSceneName;
+    [SerializeField] private TextMeshProUGUI textSceneOwner;
 
     [Header("Event info")]
-    [SerializeField] TextMeshProUGUI textEventInfo;
+    [SerializeField] private TextMeshProUGUI textEventInfo;
 
-    [SerializeField] TextMeshProUGUI textEventName;
-    [SerializeField] TextMeshProUGUI textEventAttendees;
+    [SerializeField] private TextMeshProUGUI textEventName;
+    [SerializeField] private TextMeshProUGUI textEventAttendees;
 
-    [Header("Buttons")]
-    [SerializeField] Button closeButton;
-
-    [SerializeField] Button continueButton;
-    [SerializeField] Button cancelButton;
-
-    [Header("Spinners")]
-    [SerializeField] GameObject spinnerGeneral;
-
-    [SerializeField] GameObject spinnerImage;
+    [SerializeField] private Button continueButton;
+    [SerializeField] private Button cancelButton;
 
     public event Action OnCloseEvent;
     public event Action OnTeleportEvent;
@@ -53,11 +46,12 @@ public class TeleportPromptHUDView : MonoBehaviour
     IWebRequestAsyncOperation fetchParcelImageOp;
     Texture2D downloadedBanner;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
+    private static readonly int IDLE = Animator.StringToHash("Idle");
+    private static readonly int OUT = Animator.StringToHash("Out");
 
     private void Awake()
     {
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(content.GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
-        closeButton.onClick.AddListener(OnClosePressed);
         cancelButton.onClick.AddListener(OnClosePressed);
         continueButton.onClick.AddListener(OnTeleportPressed);
         contentAnimator.OnWillFinishHide += (animator) => Hide();
@@ -74,9 +68,16 @@ public class TeleportPromptHUDView : MonoBehaviour
         imageSceneThumbnail.gameObject.SetActive(false);
         imageGotoCrowd.gameObject.SetActive(false);
         imageGotoMagic.gameObject.SetActive(false);
+    }
 
-        spinnerImage.SetActive(false);
-        spinnerGeneral.SetActive(false);
+    public void SetLoadingCompleted()
+    {
+        teleportHUDAnimator.SetTrigger(IDLE);
+    }
+
+    public void SetOutAnimation()
+    {
+        teleportHUDAnimator.SetTrigger(OUT);
     }
 
     public void ShowTeleportToMagic()
@@ -130,7 +131,6 @@ public class TeleportPromptHUDView : MonoBehaviour
         if (string.IsNullOrEmpty(previewImageUrl))
             return;
 
-        spinnerImage.SetActive(true);
         fetchParcelImageOp = Utils.FetchTexture(previewImageUrl, false, (texture) =>
         {
             downloadedBanner = texture;
@@ -140,8 +140,6 @@ public class TeleportPromptHUDView : MonoBehaviour
             float h = rt.rect.height;
             float w = h * (texture.width / (float)texture.height);
             imageSceneThumbnail.rectTransform.sizeDelta = new Vector2(w, h);
-
-            spinnerImage.SetActive(false);
             imageSceneThumbnail.gameObject.SetActive(true);
         });
     }

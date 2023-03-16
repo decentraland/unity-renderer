@@ -6,6 +6,7 @@ using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
+using DCL.Map;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.SettingsCommon;
@@ -148,7 +149,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NFT_INFO_DIALOG:
                 return new NFTPromptHUDController();
             case HUDElementID.TELEPORT_DIALOG:
-                return new TeleportPromptHUDController();
+                return new TeleportPromptHUDController(DataStore.i, WebInterfaceMinimapApiBridge.i);
             case HUDElementID.CONTROLS_HUD:
                 return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:

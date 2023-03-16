@@ -27,8 +27,8 @@ namespace DCL.GoToPanel
             this.view = view;
             view.OnTeleportPressed += Teleport;
             view.OnClosePressed += ClosePanel;
-            dataStore.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
-            dataStore.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
+            //dataStore.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
+            //dataStore.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
         }
 
         public void Dispose()

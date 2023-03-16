@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using DCL;
+using DCL.Map;
+using System.Collections;
 using NUnit.Framework;
+using NSubstitute;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -11,7 +14,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new TeleportPromptHUDController();
+            controller = new TeleportPromptHUDController(Substitute.For<DataStore>(), Substitute.For<IMinimapApiBridge>());
         }
 
         protected override IEnumerator TearDown()

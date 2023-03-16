@@ -1,7 +1,12 @@
+using Cysharp.Threading.Tasks;
+using DCL;
 using UnityEngine;
 using System;
 using DCL.Helpers;
-using DCL.Interface;
+using DCL.Map;
+using DCL.Tasks;
+using System.Linq;
+using System.Threading;
 
 public class TeleportPromptHUDController : IHUD
 {
@@ -13,20 +18,75 @@ public class TeleportPromptHUDController : IHUD
 
     internal TeleportPromptHUDView view { get; private set; }
 
-    TeleportData teleportData;
+    private readonly DataStore dataStore;
+    private readonly IMinimapApiBridge minimapApiBridge;
 
-    public TeleportPromptHUDController()
+    TeleportData teleportData;
+    private CancellationTokenSource cancellationToken = new ();
+
+    public TeleportPromptHUDController(DataStore dataStore, IMinimapApiBridge minimapApiBridge)
     {
+        this.dataStore = dataStore;
+        this.minimapApiBridge = minimapApiBridge;
+
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("TeleportPromptHUD")).GetComponent<TeleportPromptHUDView>();
         view.name = "_TeleportPromptHUD";
         view.content.SetActive(false);
         view.OnTeleportEvent += OnTeleportPressed;
+        dataStore.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
+        dataStore.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
+    }
+
+    private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous)
+    {
+        if (current == previous) return;
+
+        async UniTaskVoid SetCoordinatesAsync(ParcelCoordinates coordinates, CancellationToken cancellationToken)
+        {
+            //view.ShowLoading();
+
+
+            try
+            {
+                MinimapMetadata.MinimapSceneInfo[] scenes = await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y),
+                    2,
+                    cancellationToken);
+
+                MinimapMetadata.MinimapSceneInfo sceneInfo = scenes.First(info => info.parcels.Exists(i => i.x == coordinates.x && i.y == coordinates.y));
+                view.ShowTeleportToCoords(coordinates.ToString(), sceneInfo.name, sceneInfo.owner, sceneInfo.previewImageUrl);
+                UniTask.Delay(500, cancellationToken: cancellationToken);
+                view.SetLoadingCompleted();
+            }
+            catch (OperationCanceledException)
+            {
+                //view.SetPanelInfo(coordinates, null);
+            }
+            catch (Exception e)
+            {
+                //view.SetPanelInfo(coordinates, null);
+                Debug.LogException(e);
+            }
+            finally
+            {
+                //view.HideLoading();
+            }
+        }
+
+        cancellationToken = cancellationToken.SafeRestart();
+        SetCoordinatesAsync(current, cancellationToken.Token).Forget();
+    }
+
+    private void ChangeVisibility(bool current, bool previous)
+    {
+        SetVisibility(current);
     }
 
     public void SetVisibility(bool visible)
     {
         if (view.contentAnimator.isVisible && !visible)
         {
+            Debug.Log("Hide");
+            view.SetOutAnimation();
             view.contentAnimator.Hide();
         }
         else if (!view.contentAnimator.isVisible && visible)
@@ -74,6 +134,8 @@ public class TeleportPromptHUDController : IHUD
         {
             UnityEngine.Object.Destroy(view.gameObject);
         }
+        dataStore.HUDs.gotoPanelVisible.OnChange -= ChangeVisibility;
+        dataStore.HUDs.gotoPanelCoordinates.OnChange -= SetCoordinates;
     }
 
     private void SetSceneEvent()
