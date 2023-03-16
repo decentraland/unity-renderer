@@ -267,7 +267,7 @@ function* cacheCatalystRealm() {
     realmAdapter.about.configurations?.realmName !==
       getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
   ) {
-    store.dispatch(saveProfileDelta({ tutorialStep: 256 }))
+    yield put(saveProfileDelta({ tutorialStep: 256 }))
     isOnboarding = false
   }
 
