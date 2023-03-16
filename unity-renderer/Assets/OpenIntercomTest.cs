@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class OpenIntercomTest : MonoBehaviour
@@ -17,9 +16,8 @@ public class OpenIntercomTest : MonoBehaviour
 
 #if UNITY_WEBGL
         [DllImport("__Internal")]
-        private static void OpenIntercom();
+        private static extern void OpenIntercom();
 #else
-
 
     private static void OpenIntercom() { }
 #endif
