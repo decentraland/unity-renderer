@@ -101,7 +101,7 @@ export function pickWorldSpawnpoint(land: Scene, loadPosition: Vector3): Instanc
   }
 }
 
-function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition: Vector3): InstancedSpawnPoint {
+function pickSpawnpoint(land: Scene, targetWorldPosition: Vector3, basePosition: Vector3): InstancedSpawnPoint {
   let spawnPoints = land.spawnPoints
   if (!Array.isArray(spawnPoints) || spawnPoints.length === 0) {
     spawnPoints = [
@@ -125,7 +125,6 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
   const eligiblePoints = defaults.length === 0 ? spawnPoints : defaults
 
   // 3 - get the closest spawn point
-  const targetWorldPosition = new Vector3(targetParcelPosition.x * parcelSize, 0, targetParcelPosition.z * parcelSize)
   let closestIndex = 0
   let closestDist = Number.MAX_SAFE_INTEGER
 
