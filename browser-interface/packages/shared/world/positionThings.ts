@@ -161,12 +161,9 @@ function pickSpawnpoint(land: Scene, targetWorldPosition: Vector3, basePosition:
       z: basePosition.z + finalPosition.z
     }
 
-    console.log("[TEST] selected spawn point at index " + closestIndex + " with position " + finalPosition.x + "," + finalPosition.y + "," + finalPosition.z)
-
     if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
       finalPosition.x = 1
       finalPosition.z = 1
-      console.log("[TEST] spawn position out of bounds has been reset to 1,1");
     }
   }
 
