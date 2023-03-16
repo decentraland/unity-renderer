@@ -40,7 +40,7 @@ namespace DCLServices.MapRendererV2.Culling
 
             SetCameraDirtyInternal(cameraStates.Count);
 
-            cameraStates.Add(new CameraState { CameraController = cameraController, FrustrumPlanes = cameraController.GetFrustrumPlanes() });
+            cameraStates.Add(new CameraState { CameraController = cameraController, FrustrumPlanes = cameraController.GetFrustumPlanes() });
         }
 
         void IMapCullingController.OnCameraRemoved(IMapCameraControllerInternal cameraController)
@@ -66,7 +66,7 @@ namespace DCLServices.MapRendererV2.Culling
                 throw new Exception($"Tried to set not tracked camera dirty");
 
             SetCameraDirtyInternal(index);
-            cameraStates[index].FrustrumPlanes = cameraController.GetFrustrumPlanes();
+            cameraStates[index].FrustrumPlanes = cameraController.GetFrustumPlanes();
         }
 
         public void SetTrackedObjectPositionDirty<T>(T obj) where T: IMapPositionProvider
