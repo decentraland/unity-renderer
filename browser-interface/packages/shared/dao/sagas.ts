@@ -51,7 +51,7 @@ import { getCurrentUserProfile } from '../profiles/selectors'
 import { saveProfileDelta } from '../profiles/actions'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
-let IS_ONBOARDING = false
+let isOnboarding = false
 
 function getLastRealmCacheKey(network: ETHEREUM_NETWORK) {
   return 'last_realm_string_' + network
@@ -156,13 +156,15 @@ function* selectRealm() {
     yield call(waitForCandidates)
   }
 
-  const realm: string | undefined = yield call(onboardingTutorialRealm) ||
+  const realm: string | undefined =
     // query param (dao candidates & cached)
     (yield call(qsRealm)) ||
     // preview mode
     (PREVIEW ? rootURLPreviewMode() : null) ||
     // CATALYST from url parameter
     PIN_CATALYST ||
+    //Check if we are in onbaording
+    (yield call(onboardingTutorialRealm)) ||
     // fetch catalysts and select one using the load balancing
     (yield call(pickCatalystRealm)) ||
     // cached in local storage
@@ -178,12 +180,12 @@ function* selectRealm() {
 function* onboardingTutorialRealm() {
   const profile = yield select(getCurrentUserProfile)
   if (profile) {
-    const needs_tutorial = RESET_TUTORIAL || !profile.tutorialStep
-    const new_tutorial_feature_flag = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
-    const is_new_tutorial_disabled =
-      new_tutorial_feature_flag === 'disabled' || new_tutorial_feature_flag === 'undefined' || HAS_INITIAL_POSITION_MARK
+    const needsTutorial = RESET_TUTORIAL || !profile.tutorialStep
+    const newTutorialFeatureFlag = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
+    const isNewTutorialDisabled =
+      newTutorialFeatureFlag === 'disabled' || newTutorialFeatureFlag === 'undefined' || HAS_INITIAL_POSITION_MARK
     console.log('DEBUG' + profile.tutorialStep)
-    if (needs_tutorial && !is_new_tutorial_disabled) {
+    if (needsTutorial && !isNewTutorialDisabled) {
       try {
         const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
         if (realm) {
@@ -192,7 +194,7 @@ function* onboardingTutorialRealm() {
           //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
           //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
           //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
-          IS_ONBOARDING = true
+          isOnboarding = true
           return realm
         } else {
           logger.warn('No realm was provided for the onboarding experience.')
@@ -261,12 +263,12 @@ function* cacheCatalystRealm() {
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
 
   if (
-    IS_ONBOARDING &&
+    isOnboarding &&
     realmAdapter.about.configurations?.realmName !==
       getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
   ) {
     store.dispatch(saveProfileDelta({ tutorialStep: 256 }))
-    IS_ONBOARDING = false
+    isOnboarding = false
   }
 
   if (realmAdapter) {
