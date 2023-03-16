@@ -13,12 +13,8 @@ namespace DCL
 
             public void Add(Action action)
             {
-                int count = eventList.Count;
-                for (int i = 0; i < count; i++)
-                {
-                    if (eventList[i] == action)
-                        return;
-                }
+                if (Contains(action))
+                    return;
 
                 eventList.Add(action);
                 eventHashset.Add(action);
@@ -33,7 +29,7 @@ namespace DCL
                     {
                         eventList.RemoveAt(i);
                         eventHashset.Remove(action);
-                        break;
+                        return;
                     }
                 }
             }
@@ -65,19 +61,22 @@ namespace DCL
 
         void EnsureEventType(IUpdateEventHandler.EventType eventType)
         {
-            bool eventTypeExists = false;
+            if (!ContainsEventType(eventType))
+            {
+                eventCollections.Add(eventType, new UpdateEventCollection());
+            }
+        }
+
+        private bool ContainsEventType(IUpdateEventHandler.EventType eventType)
+        {
             foreach (var key in eventCollections.Keys)
             {
                 if (key == eventType)
                 {
-                    eventTypeExists = true;
-                    break;
+                    return true;
                 }
             }
-            if (!eventTypeExists)
-            {
-                eventCollections.Add(eventType, new UpdateEventCollection());
-            }
+            return false;
         }
 
         void Dispatch( IUpdateEventHandler.EventType eventType )
