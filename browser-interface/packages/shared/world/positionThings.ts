@@ -126,12 +126,16 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
 
   // 3 - get the closest spawn point
   const targetWorldPosition = new Vector3(targetParcelPosition.x * parcelSize, 0, targetParcelPosition.z * parcelSize)
-  let closestIndex = 0;
-  let closestDist = Number.MAX_SAFE_INTEGER;
+  let closestIndex = 0
+  let closestDist = Number.MAX_SAFE_INTEGER
 
+  console.log("[TEST] Getting spawn points near " + targetWorldPosition.toString())
   // we compare world positions from the target parcel and the spawn points
   const spawnDistances = eligiblePoints.map( (value: SpawnPoint, index: number , array: SpawnPoint[]) => { 
-    return Vector3.DistanceSquared(targetWorldPosition, getSpawnPointWorldPosition(value, basePosition)) 
+    const pos = getSpawnPointWorldPosition(value, basePosition)
+    const dist = Vector3.DistanceSquared(targetWorldPosition, pos) 
+    console.log("[TEST] spawn point at " + pos + " with distance " + dist)
+    return dist
   } )
 
   for(let i = 0; i < spawnDistances.length; i++)
@@ -140,9 +144,9 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
     {
         closestDist = spawnDistances[i]
         closestIndex = i
-        console.log(i)
     }
   }
+
   const { position, cameraTarget } = eligiblePoints[closestIndex]
 
   // 4 - generate random x, y, z components when in arrays
@@ -153,18 +157,21 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
   }
 
   // 5 - If the final position is outside the scene limits, we zero it
-  /*if (!DEBUG) {
+  if (!DEBUG) {
     const finalWorldPosition = {
       x: basePosition.x + finalPosition.x,
       y: finalPosition.y,
       z: basePosition.z + finalPosition.z
     }
 
+    console.log("[TEST] selected spawn point at index " + closestIndex + " with position " + finalPosition)
+
     if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
       finalPosition.x = 1
       finalPosition.z = 1
+      console.log("[TEST] spawn position out of bounds has been reset to 1,1");
     }
-  }*/
+  }
 
   return {
     position: finalPosition,
