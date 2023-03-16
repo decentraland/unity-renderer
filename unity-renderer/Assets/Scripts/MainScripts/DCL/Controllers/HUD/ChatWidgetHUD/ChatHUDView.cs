@@ -10,6 +10,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using WebGLIMEInput = WebGLSupport.WebGLInput;
 
@@ -132,6 +133,9 @@ namespace DCL.Social.Chat
             ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
             model.enableFadeoutMode = true;
             contextMenu.SetPassportOpenSource(true);
+
+            string currentKeyboardLayout = Keyboard.current.keyboardLayout;
+            Debug.Log($"Current keyboard layout: {currentKeyboardLayout}");
         }
 
         public override void OnEnable()
