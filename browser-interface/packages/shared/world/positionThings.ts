@@ -5,7 +5,7 @@ import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPositio
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { DEBUG, playerHeight } from 'config'
-import { isInsideWorldLimits, Scene } from '@dcl/schemas'
+import { isInsideWorldLimits, Scene, SpawnPoint } from '@dcl/schemas'
 
 export type PositionReport = {
   /** Camera position, world space */
@@ -83,8 +83,8 @@ export function getInitialPositionFromUrl(): ReadOnlyVector2 | undefined {
  *
  * @param land Scene on which the player is spawning
  */
-export function pickWorldSpawnpoint(land: Scene): InstancedSpawnPoint {
-  const spawnpoint = pickSpawnpoint(land)
+export function pickWorldSpawnpoint(land: Scene, loadPosition: Vector3): InstancedSpawnPoint {
+  const spawnpoint = pickSpawnpoint(land, loadPosition)
 
   const baseParcel = land.scene.base
   const [bx, by] = baseParcel.split(',')
@@ -101,7 +101,7 @@ export function pickWorldSpawnpoint(land: Scene): InstancedSpawnPoint {
   }
 }
 
-function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
+function pickSpawnpoint(land: Scene, loadPosition: Vector3): InstancedSpawnPoint {
   let spawnPoints = land.spawnPoints
   if (!Array.isArray(spawnPoints) || spawnPoints.length === 0) {
     spawnPoints = [
@@ -124,8 +124,22 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
   // 2 - if no default spawn points => all existing spawn points
   const eligiblePoints = defaults.length === 0 ? spawnPoints : defaults
 
-  // 3 - pick randomly between spawn points
-  const { position, cameraTarget } = eligiblePoints[Math.floor(Math.random() * eligiblePoints.length)]
+  // 3 - get the closest spawn point
+  let closestIndex = 0;
+  let closestDist = Number.MAX_SAFE_INTEGER;
+  const spawnDistances = eligiblePoints.map( (value: SpawnPoint, index: number , array: SpawnPoint[]) => { 
+    return Vector3.DistanceSquared(loadPosition, getSpawnPointCenter(value)) 
+  } )
+
+  for(let i = 0; i < spawnDistances.length; i++)
+  {
+    if (spawnDistances[i] < closestDist)
+    {
+        closestDist = spawnDistances[i]
+        closestIndex = i
+    }
+  }
+  const { position, cameraTarget } = eligiblePoints[closestIndex]
 
   // 4 - generate random x, y, z components when in arrays
   const finalPosition = {
@@ -184,4 +198,18 @@ function computeComponentValue(x: number | number[]) {
   }
 
   return Math.random() * (max - min) + min
+}
+
+function getSpawnPointCenter(spawnPoint: SpawnPoint)
+{
+  const x = spawnPoint.position.x;
+  const y = spawnPoint.position.y;
+  const z = spawnPoint.position.z;
+
+  if (typeof x === "number" && typeof y === "number" && typeof z === "number")
+  {
+    return new Vector3(x,y,z); 
+  } else {
+    return new Vector3(x[0], y[0], z[0]); 
+  }
 }
