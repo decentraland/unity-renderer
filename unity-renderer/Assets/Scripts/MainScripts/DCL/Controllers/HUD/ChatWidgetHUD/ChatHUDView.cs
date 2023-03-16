@@ -133,8 +133,16 @@ namespace DCL.Social.Chat
             model.enableFadeoutMode = true;
             contextMenu.SetPassportOpenSource(true);
 
-            string currentKeyboardLayout = Keyboard.current.keyboardLayout;
-            Debug.Log($"Current keyboard layout: {currentKeyboardLayout}");
+#if (UNITY_WEBGL && !UNITY_EDITOR)
+            SystemLanguage systemLanguage = Application.systemLanguage;
+
+            if (systemLanguage is not (SystemLanguage.Chinese
+                or SystemLanguage.ChineseSimplified
+                or SystemLanguage.ChineseTraditional
+                or SystemLanguage.Korean
+                or SystemLanguage.Japanese))
+                Destroy(webGlImeInput);
+#endif
         }
 
         public override void OnEnable()
@@ -217,10 +225,6 @@ namespace DCL.Social.Chat
 
         public void ShowMentionSuggestions()
         {
-#if (UNITY_WEBGL && !UNITY_EDITOR)
-            // webGlImeInput.enabled = false;
-            // inputField.ActivateInputField();
-#endif
             chatMentionSuggestions.Show();
         }
 
@@ -233,10 +237,6 @@ namespace DCL.Social.Chat
 
         public void HideMentionSuggestions()
         {
-#if (UNITY_WEBGL && !UNITY_EDITOR)
-            // webGlImeInput.enabled = true;
-            // inputField.DeactivateInputField();
-#endif
             chatMentionSuggestions.Hide();
         }
 
