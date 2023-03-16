@@ -17,6 +17,7 @@ namespace DCL.Rendering
     public class CullingController : ICullingController
     {
         private const string ANIMATION_CULLING_STATUS_FEATURE_FLAG = "animation_culling_status";
+        private const string SMR_OFFSCREEN_UPDATE_STATUS_FEATURE_FLAG = "smr_offscreen_update_status";
         private const bool DRAW_GIZMOS = false;
         internal List<CullingControllerProfile> profiles = null;
 
@@ -34,6 +35,7 @@ namespace DCL.Rendering
         private bool playerPositionDirty;
         private bool objectPositionsDirty;
         private bool running = false;
+        private bool offScreenUpdate = true;
 
         // Cache to avoid allocations when getting names
         private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
@@ -72,6 +74,7 @@ namespace DCL.Rendering
         private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
         {
             SetAnimationCulling(current.IsFeatureEnabled(ANIMATION_CULLING_STATUS_FEATURE_FLAG));
+            offScreenUpdate = current.IsFeatureEnabled(SMR_OFFSCREEN_UPDATE_STATUS_FEATURE_FLAG);
         }
 
         /// <summary>
@@ -195,7 +198,8 @@ namespace DCL.Rendering
                     if (IsAvatarRenderer(mat))
                         shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
 
-                    skr.updateWhenOffscreen = false;
+                    if (offScreenUpdate)
+                        skr.updateWhenOffscreen = false;
                 }
 
                 if (OnDataReport != null)
@@ -241,7 +245,7 @@ namespace DCL.Rendering
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
                 bool shouldHaveShadow = TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
-                if (r is SkinnedMeshRenderer skr)
+                if (offScreenUpdate && r is SkinnedMeshRenderer skr)
                     skr.updateWhenOffscreen = false;
 
                 if (OnDataReport != null)
@@ -406,10 +410,13 @@ namespace DCL.Rendering
                     renderer.forceRenderingOff = false;
             }
 
-            foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
+            if (offScreenUpdate)
             {
-                if (skinnedRenderer != null)
-                    skinnedRenderer.updateWhenOffscreen = true;
+                foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
+                {
+                    if (skinnedRenderer != null)
+                        skinnedRenderer.updateWhenOffscreen = true;
+                }
             }
 
             for (int i = 0; i < animations?.Length; i++)
