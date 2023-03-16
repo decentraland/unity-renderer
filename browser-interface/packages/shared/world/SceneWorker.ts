@@ -324,7 +324,7 @@ export class SceneWorker {
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
 
-    const WORKER_TIMEOUT = 180_000
+    const WORKER_TIMEOUT = 120_000
     setTimeout(() => this.onLoadTimeout(), WORKER_TIMEOUT)
   }
 
