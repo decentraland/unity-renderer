@@ -128,13 +128,10 @@ function pickSpawnpoint(land: Scene, targetWorldPosition: Vector3, basePosition:
   let closestIndex = 0
   let closestDist = Number.MAX_SAFE_INTEGER
 
-  console.log("[TEST] base position is " + basePosition)
-  console.log("[TEST] Getting spawn points near " + targetWorldPosition.toString())
   // we compare world positions from the target parcel and the spawn points
   const spawnDistances = eligiblePoints.map( (value: SpawnPoint, index: number , array: SpawnPoint[]) => { 
     const pos = getSpawnPointWorldPosition(value).add(basePosition);
     const dist = Vector3.Distance(targetWorldPosition, pos) 
-    console.log("[TEST] Spawn point at " + pos + " with distance " + dist)
     return dist
   } )
 
