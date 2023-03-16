@@ -153,15 +153,10 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
 
   // 5 - If the final position is outside the scene limits, we zero it
   if (!DEBUG) {
-    const sceneBaseParcelCoords = land.scene.base.split(',')
-    const sceneBaseParcelWorldPos = gridToWorld(
-      parseInt(sceneBaseParcelCoords[0], 10),
-      parseInt(sceneBaseParcelCoords[1], 10)
-    )
     const finalWorldPosition = {
-      x: sceneBaseParcelWorldPos.x + finalPosition.x,
+      x: basePosition.x + finalPosition.x,
       y: finalPosition.y,
-      z: sceneBaseParcelWorldPos.z + finalPosition.z
+      z: basePosition.z + finalPosition.z
     }
 
     if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {

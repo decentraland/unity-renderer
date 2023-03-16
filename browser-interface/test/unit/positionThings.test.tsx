@@ -44,8 +44,8 @@ describe('pickWorldSpawnPoint unit tests', function () {
           cameraTarget: { x: 1, y: 1, z: 1 }
         },
         {
-          position: { x: 12, y: 2, z: 2 },
-          cameraTarget: { x: 12, y: 2, z: 2 }
+          position: { x: 16, y: 1, z: 1 },
+          cameraTarget: { x: 16, y: 1, z: 1 }
         }
       ]
     }
@@ -55,8 +55,8 @@ describe('pickWorldSpawnPoint unit tests', function () {
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 12 + basePosition.x * parcelSize, y: 2 + basePosition.y * parcelSize, z: 2 + basePosition.z * parcelSize },
-        cameraTarget: { x: 12 + basePosition.x * parcelSize, y: 2 + basePosition.y * parcelSize, z: 2 + basePosition.z * parcelSize }
+        position: { x: 16 + basePosition.x * parcelSize, y: 1 + basePosition.y * parcelSize, z: 21 + basePosition.z * parcelSize },
+        cameraTarget: { x: 16 + basePosition.x * parcelSize, y: 1 + basePosition.y * parcelSize, z: 1 + basePosition.z * parcelSize }
       })
     )
   })
