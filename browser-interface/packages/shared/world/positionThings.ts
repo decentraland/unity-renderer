@@ -6,6 +6,7 @@ import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPo
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { DEBUG, playerHeight } from 'config'
 import { isInsideWorldLimits, Scene, SpawnPoint } from '@dcl/schemas'
+import { parcelSize } from 'lib/decentraland/parcels/limits'
 
 export type PositionReport = {
   /** Camera position, world space */
@@ -125,10 +126,11 @@ function pickSpawnpoint(land: Scene, loadPosition: Vector3): InstancedSpawnPoint
   const eligiblePoints = defaults.length === 0 ? spawnPoints : defaults
 
   // 3 - get the closest spawn point
+  const worldPosition = new Vector3(loadPosition.x * parcelSize, 0, loadPosition.z * parcelSize)
   let closestIndex = 0;
   let closestDist = Number.MAX_SAFE_INTEGER;
   const spawnDistances = eligiblePoints.map( (value: SpawnPoint, index: number , array: SpawnPoint[]) => { 
-    return Vector3.DistanceSquared(loadPosition, getSpawnPointCenter(value)) 
+    return Vector3.DistanceSquared(worldPosition, getSpawnPointCenter(value)) 
   } )
 
   for(let i = 0; i < spawnDistances.length; i++)
