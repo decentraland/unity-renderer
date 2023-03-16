@@ -13,7 +13,10 @@ namespace DCL
 
         public UpdateEventHandler ()
         {
-            var go = new GameObject(UPDATE_DISPATCHER);
+            var go = new GameObject();
+   #if UNITY_EDITOR
+            go.name = UPDATE_DISPATCHER;
+    #endif
             dispatcher = go.AddComponent<UpdateDispatcher>();
         }
 
