@@ -1,4 +1,5 @@
 ﻿using DCLServices.MapRendererV2.CoordsUtils;
+using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using NSubstitute;
@@ -13,6 +14,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
         private MapRendererV2.MapCameraController.MapCameraController mapCamera;
         private MapCameraObject mapCameraObject;
         private ICoordsUtils coordsUtils;
+        private IMapCullingController culling;
 
         [SetUp]
         public void SetUp()
@@ -21,8 +23,10 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             mapCameraObject = go.AddComponent<MapCameraObject>();
             mapCameraObject.mapCamera = go.AddComponent<Camera>();
             coordsUtils = Substitute.For<ICoordsUtils>();
+            culling = Substitute.For<IMapCullingController>();
+
             mapCamera = new MapRendererV2.MapCameraController.MapCameraController(
-                Substitute.For<IMapInteractivityControllerInternal>(), mapCameraObject, coordsUtils);
+                Substitute.For<IMapInteractivityControllerInternal>(), mapCameraObject, coordsUtils, culling);
         }
 
         [Test]
@@ -76,6 +80,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             mapCamera.SetZoom(zoom);
 
             Assert.AreEqual(expected, mapCameraObject.mapCamera.orthographicSize);
+            culling.Received().SetCameraDirty(mapCamera);
         }
 
         [Test]
@@ -86,6 +91,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             mapCamera.SetPosition(Vector2.one);
 
             Assert.AreEqual(new Vector3(10, mapCamera.CAMERA_HEIGHT_EXPOSED, 10), mapCameraObject.transform.localPosition);
+            culling.Received().SetCameraDirty(mapCamera);
         }
 
         [TestCase(true)]

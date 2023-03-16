@@ -5,6 +5,6 @@ namespace DCLServices.MapRendererV2.Culling
 {
     internal interface IMapCullingVisibilityChecker
     {
-        bool IsVisible<T>(T obj, IMapCameraControllerInternal camera) where T: IMapPositionProvider;
+        bool IsVisible<T>(T obj, CameraState camera) where T: IMapPositionProvider;
     }
 }
