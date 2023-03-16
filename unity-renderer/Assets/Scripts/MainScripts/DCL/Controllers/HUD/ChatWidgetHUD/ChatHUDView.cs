@@ -10,7 +10,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using WebGLIMEInput = WebGLSupport.WebGLInput;
 
