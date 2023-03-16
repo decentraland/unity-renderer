@@ -135,6 +135,7 @@ namespace DCL.Social.Chat
 
 #if (UNITY_WEBGL && !UNITY_EDITOR)
             SystemLanguage systemLanguage = Application.systemLanguage;
+            Debug.Log($"Current system language: {systemLanguage}");
 
             if (systemLanguage is not (SystemLanguage.Chinese
                 or SystemLanguage.ChineseSimplified
