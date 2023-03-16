@@ -16,7 +16,9 @@ import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalEr
 import {
   getAddedServers,
   getCatalystNodesEndpoint,
-  getDisabledCatalystConfig, getFeatureFlagVariantName, getFeatureFlagVariantValue,
+  getDisabledCatalystConfig,
+  getFeatureFlagVariantName,
+  getFeatureFlagVariantValue,
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
@@ -42,14 +44,14 @@ import { createAlgorithm } from './pick-realm-algorithm/index'
 import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
 import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
 import { ask, ping } from './utils/ping'
-import {store} from "../store/isolatedStore";
-import {trackEvent} from "../analytics/trackEvent";
-import {logger} from "../../entryPoints/logger";
-import {getCurrentUserProfile} from "../profiles/selectors";
-import {saveProfileDelta} from "../profiles/actions";
+import { store } from '../store/isolatedStore'
+import { trackEvent } from '../analytics/trackEvent'
+import { logger } from '../../entryPoints/logger'
+import { getCurrentUserProfile } from '../profiles/selectors'
+import { saveProfileDelta } from '../profiles/actions'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
-let IS_ONBOARDING = false;
+let IS_ONBOARDING = false
 
 function getLastRealmCacheKey(network: ETHEREUM_NETWORK) {
   return 'last_realm_string_' + network
@@ -154,8 +156,7 @@ function* selectRealm() {
     yield call(waitForCandidates)
   }
 
-  const realm: string | undefined =
-    OnboardingTutorialRealm() ||
+  const realm: string | undefined = yield call(onboardingTutorialRealm) ||
     // query param (dao candidates & cached)
     (yield call(qsRealm)) ||
     // preview mode
@@ -167,7 +168,6 @@ function* selectRealm() {
     // cached in local storage
     (yield call(getRealmFromLocalStorage, network))
 
-
   if (!realm) debugger
 
   console.log(`Trying to connect to realm `, realm)
@@ -175,15 +175,15 @@ function* selectRealm() {
   return realm
 }
 
-function OnboardingTutorialRealm(){
-  const profile = getCurrentUserProfile(store.getState())!
-  if(profile){
-    const NEEDS_TUTORIAL = RESET_TUTORIAL || !profile.tutorialStep
-    const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
-    const IS_NEW_TUTORIAL_DISABLED =
-      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
-      console.log("DEBUG" + profile.tutorialStep);
-    if(NEEDS_TUTORIAL && !IS_NEW_TUTORIAL_DISABLED){
+function* onboardingTutorialRealm() {
+  const profile = yield select(getCurrentUserProfile)
+  if (profile) {
+    const needs_tutorial = RESET_TUTORIAL || !profile.tutorialStep
+    const new_tutorial_feature_flag = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
+    const is_new_tutorial_disabled =
+      new_tutorial_feature_flag === 'disabled' || new_tutorial_feature_flag === 'undefined' || HAS_INITIAL_POSITION_MARK
+    console.log('DEBUG' + profile.tutorialStep)
+    if (needs_tutorial && !is_new_tutorial_disabled) {
       try {
         const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
         if (realm) {
@@ -261,8 +261,12 @@ function* cacheCatalystRealm() {
   const dao: string = yield select((state) => state.dao)
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
 
-  if(IS_ONBOARDING && realmAdapter.about.configurations?.realmName != getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')){
-    store.dispatch(saveProfileDelta({tutorialStep: 256}))
+  if (
+    IS_ONBOARDING &&
+    realmAdapter.about.configurations?.realmName !==
+      getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
+  ) {
+    store.dispatch(saveProfileDelta({ tutorialStep: 256 }))
     IS_ONBOARDING = false
   }
 
