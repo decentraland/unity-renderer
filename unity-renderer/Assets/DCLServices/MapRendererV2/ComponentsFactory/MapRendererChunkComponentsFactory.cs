@@ -20,16 +20,21 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 {
     public class MapRendererChunkComponentsFactory : IMapRendererComponentsFactory
     {
+        private readonly int parcelSize;
+        private readonly int atlasChunkSize;
         private const string ATLAS_CHUNK_ADDRESS = "AtlasChunk";
         private const string MAP_CONFIGURATION_ADDRESS = "MapRendererConfiguration";
         private const string MAP_CAMERA_OBJECT_ADDRESS = "MapCameraObject";
         private const string PARCEL_HIGHLIGHT_OBJECT_ADDRESS = "MapParcelHighlightMarker";
 
-        private const int ATLAS_CHUNK_SIZE = 250;
-        private const int PARCEL_SIZE = 20;
-
         private Service<IAddressableResourceProvider> addressablesProvider;
         private Service<IHotScenesFetcher> hotScenesFetcher;
+
+        public MapRendererChunkComponentsFactory(int parcelSize, int atlasChunkSize)
+        {
+            this.parcelSize = parcelSize;
+            this.atlasChunkSize = atlasChunkSize;
+        }
 
         internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; }
         internal SceneOfInterestsMarkersInstaller sceneOfInterestsMarkersInstaller { get; }
@@ -42,10 +47,10 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         async UniTask<MapRendererComponents> IMapRendererComponentsFactory.Create(CancellationToken cancellationToken)
         {
             var configuration = Object.Instantiate(await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken));
-            var coordsUtils = new ChunkCoordsUtils(PARCEL_SIZE);
+            var coordsUtils = new ChunkCoordsUtils(parcelSize);
 
             // TODO implement Culling Controller
-            IMapCullingController cullingController = null;
+            IMapCullingController cullingController = new MapCullingController(new DummyMapCullingControllerVisibilityChecker());
 
             var highlightMarkerPrefab = await GetParcelHighlightMarkerPrefab(cancellationToken);
 
@@ -91,7 +96,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 {
                     var atlasChunkPrefab = await GetAtlasChunkPrefab(cancellationToken);
 
-                    var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, MapRendererDrawOrder.ATLAS, ATLAS_CHUNK_SIZE,
+                    var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, MapRendererDrawOrder.ATLAS, atlasChunkSize,
                         coordsUtils, cullingController, ChunkController.CreateChunk);
 
                     // initialize Atlas but don't block the flow (to accelerate loading time)

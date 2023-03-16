@@ -29,6 +29,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             IPlayerMarker CreateMarker(Transform parent)
             {
                 var obj = Object.Instantiate(prefab, parent);
+                coordsUtils.SetObjectScale(obj);
                 obj.spriteRenderer.sortingOrder = MapRendererDrawOrder.PLAYER_MARKER;
                 return new PlayerMarker(obj);
             }

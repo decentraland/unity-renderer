@@ -11,6 +11,10 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         IMapInteractivityController GetInteractivityController();
 
+        float Zoom { get; }
+
+        Vector2 Position { get; }
+
         /// <summary>
         /// Zoom level normalized between 0 and 1
         /// </summary>

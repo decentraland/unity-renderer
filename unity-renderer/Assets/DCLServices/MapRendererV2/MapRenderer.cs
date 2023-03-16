@@ -31,6 +31,8 @@ namespace DCLServices.MapRendererV2
         private CancellationToken cancellationToken;
 
         private readonly IMapRendererComponentsFactory componentsFactory;
+        private readonly int parcelSize;
+        private readonly int chunkSize;
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
 
@@ -40,6 +42,8 @@ namespace DCLServices.MapRendererV2
         public MapRenderer(IMapRendererComponentsFactory componentsFactory)
         {
             this.componentsFactory = componentsFactory;
+            this.parcelSize = parcelSize;
+            this.chunkSize = chunkSize;
         }
 
         public void Initialize() { }

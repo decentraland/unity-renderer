@@ -44,7 +44,7 @@ namespace DCLServices.MapRendererV2.Culling
             ResolveDirtyObjects(count);
         }
 
-        internal partial class TrackedState<T> : TrackedState where T: IMapPositionProvider
+        internal partial class TrackedState<T> where T: IMapPositionProvider
         {
             internal int DirtyCamerasFlag
             {

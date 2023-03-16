@@ -3,18 +3,22 @@ using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using System;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Utils = DCL.Helpers.Utils;
 
 namespace DCLServices.MapRendererV2.MapCameraController
 {
     internal partial class MapCameraController : IMapCameraControllerInternal
     {
-        private const float CAMERA_HEIGHT = 10;
+        private const float CAMERA_HEIGHT = 0;
         public event Action<IMapCameraControllerInternal> OnReleasing;
 
         public MapLayer EnabledLayers { get; private set; }
+
         public Camera Camera => mapCameraObject.mapCamera;
+
+        public float Zoom => Mathf.InverseLerp(zoomValues.x, zoomValues.y, mapCameraObject.mapCamera.orthographicSize);
+
+        public Vector2 Position => mapCameraObject.mapCamera.transform.localPosition;
 
         private readonly IMapInteractivityControllerInternal interactivityBehavior;
         private readonly ICoordsUtils coordsUtils;
@@ -33,8 +37,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             this.interactivityBehavior = interactivityBehavior;
             this.coordsUtils = coordsUtils;
-            this.cullingController = cullingController;
             this.mapCameraObject = mapCameraObject;
+            this.cullingController = cullingController;
 
             mapCameraObject.transform.localPosition = Vector3.up * CAMERA_HEIGHT;
             mapCameraObject.mapCamera.orthographic = true;
@@ -45,6 +49,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
             renderTexture = new RenderTexture(textureResolution.x, textureResolution.x, 0);
             this.zoomValues = zoomValues;
             EnabledLayers = layers;
+
+            mapCameraObject.mapCamera.targetTexture = renderTexture;
 
             interactivityBehavior.Initialize(layers);
         }
@@ -57,7 +63,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
             return renderTexture;
         }
 
-        public IMapInteractivityController GetInteractivityController() => interactivityBehavior;
+        public IMapInteractivityController GetInteractivityController() =>
+            interactivityBehavior;
 
         public void SetZoom(float value)
         {
@@ -69,7 +76,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         public void SetPosition(Vector2 coordinates)
         {
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.position = new Vector3(position.x, CAMERA_HEIGHT, position.y);
+            mapCameraObject.transform.localPosition = new Vector3(position.x, position.y, CAMERA_HEIGHT);
             cullingController.SetCameraDirty(this);
         }
 
