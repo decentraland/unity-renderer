@@ -19,14 +19,14 @@ describe('pickWorldSpawnPoint unit tests', function () {
         }
       ]
     }
-    const basePosition = new Vector3(10 * parcelSize, 0, 10 * parcelSize)
+    const basePosition = new Vector3(10, 0, 10)
 
     const pick = pickWorldSpawnpoint(land, basePosition)
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 1 + basePosition.x, y: 2 + basePosition.y, z: 3 + basePosition.z },
-        cameraTarget: { x: 9 + basePosition.x, y: 8 + basePosition.y, z: 7 + basePosition.z }
+        position: { x: 1 + basePosition.x * parcelSize, y: 2 + basePosition.y * parcelSize, z: 3 + basePosition.z * parcelSize },
+        cameraTarget: { x: 9 + basePosition.x * parcelSize, y: 8 + basePosition.y * parcelSize, z: 7 + basePosition.z * parcelSize }
       })
     )
   })
@@ -49,14 +49,14 @@ describe('pickWorldSpawnPoint unit tests', function () {
         }
       ]
     }
-    const basePosition = new Vector3(11 * parcelSize, 0, 10 * parcelSize)
+    const basePosition = new Vector3(11, 0, 10)
 
     const pick = pickWorldSpawnpoint(land, basePosition)
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 2 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z },
-        cameraTarget: { x: 2 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z }
+        position: { x: 12 + basePosition.x * parcelSize, y: 2 + basePosition.y * parcelSize, z: 2 + basePosition.z * parcelSize },
+        cameraTarget: { x: 12 + basePosition.x * parcelSize, y: 2 + basePosition.y * parcelSize, z: 2 + basePosition.z * parcelSize }
       })
     )
   })
@@ -82,14 +82,14 @@ describe('pickWorldSpawnPoint unit tests', function () {
         }
       ]
     }
-    const basePosition = new Vector3(10 * parcelSize, 0, 10 * parcelSize)
+    const basePosition = new Vector3(10, 0, 10)
 
     const pick = pickWorldSpawnpoint(land, basePosition)
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 1 + basePosition.x, y: 2 + basePosition.y, z: 3 + basePosition.z },
-        cameraTarget: { x: 9 + basePosition.x, y: 8 + basePosition.y, z: 7 + basePosition.z }
+        position: { x: 1 + basePosition.x * parcelSize, y: 2 + basePosition.y * parcelSize, z: 3 + basePosition.z * parcelSize },
+        cameraTarget: { x: 9 + basePosition.x * parcelSize, y: 8 + basePosition.y * parcelSize, z: 7 + basePosition.z * parcelSize }
       })
     )
   })
@@ -120,14 +120,14 @@ describe('pickWorldSpawnPoint unit tests', function () {
         }
       ]
     }
-    const basePosition = new Vector3(11 * parcelSize, 0, 10 * parcelSize)
+    const basePosition = new Vector3(11, 0, 10)
 
     const pick = pickWorldSpawnpoint(land, basePosition)
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 2 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z },
-        cameraTarget: { x: 2 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z }
+        position: { x: 12 + basePosition.x * parcelSize, y: 2 + basePosition.y * parcelSize, z: 2 + basePosition.z * parcelSize },
+        cameraTarget: { x: 12 + basePosition.x * parcelSize, y: 2 + basePosition.y * parcelSize, z: 2 + basePosition.z * parcelSize }
       })
     )
   })
@@ -145,7 +145,7 @@ describe('pickWorldSpawnPoint unit tests', function () {
         }
       ]
     }
-    const basePosition = new Vector3(10 * parcelSize, 0, 10 * parcelSize)
+    const basePosition = new Vector3(10, 0, 10)
 
     const pick = pickWorldSpawnpoint(land, basePosition)
 

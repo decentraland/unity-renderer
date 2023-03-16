@@ -83,18 +83,17 @@ export function getInitialPositionFromUrl(): ReadOnlyVector2 | undefined {
  * The computation takes the spawning points defined in the scene document and computes the spawning point in the world based on the base parcel position.
  *
  * @param land Scene on which the player is spawning
+ * @param loadPosition Parcel position on which the player is teleporting to
  */
 export function pickWorldSpawnpoint(land: Scene, loadPosition: Vector3): InstancedSpawnPoint {
-  const spawnpoint = pickSpawnpoint(land, loadPosition)
-
+  
   const baseParcel = land.scene.base
   const [bx, by] = baseParcel.split(',')
-
   const basePosition = new Vector3()
-
-  const { position, cameraTarget } = spawnpoint
-
   gridToWorld(parseInt(bx, 10), parseInt(by, 10), basePosition)
+
+  const spawnpoint = pickSpawnpoint(land, loadPosition, basePosition)
+  const { position, cameraTarget } = spawnpoint
 
   return {
     position: basePosition.add(position),
@@ -102,7 +101,7 @@ export function pickWorldSpawnpoint(land: Scene, loadPosition: Vector3): Instanc
   }
 }
 
-function pickSpawnpoint(land: Scene, loadPosition: Vector3): InstancedSpawnPoint {
+function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition: Vector3): InstancedSpawnPoint {
   let spawnPoints = land.spawnPoints
   if (!Array.isArray(spawnPoints) || spawnPoints.length === 0) {
     spawnPoints = [
@@ -126,11 +125,13 @@ function pickSpawnpoint(land: Scene, loadPosition: Vector3): InstancedSpawnPoint
   const eligiblePoints = defaults.length === 0 ? spawnPoints : defaults
 
   // 3 - get the closest spawn point
-  const worldPosition = new Vector3(loadPosition.x * parcelSize, 0, loadPosition.z * parcelSize)
+  const targetWorldPosition = new Vector3(targetParcelPosition.x * parcelSize, 0, targetParcelPosition.z * parcelSize)
   let closestIndex = 0;
   let closestDist = Number.MAX_SAFE_INTEGER;
+
+  // we compare world positions from the target parcel and the spawn points
   const spawnDistances = eligiblePoints.map( (value: SpawnPoint, index: number , array: SpawnPoint[]) => { 
-    return Vector3.DistanceSquared(worldPosition, getSpawnPointCenter(value)) 
+    return Vector3.DistanceSquared(targetWorldPosition, getSpawnPointWorldPosition(value, basePosition)) 
   } )
 
   for(let i = 0; i < spawnDistances.length; i++)
@@ -202,7 +203,7 @@ function computeComponentValue(x: number | number[]) {
   return Math.random() * (max - min) + min
 }
 
-function getSpawnPointCenter(spawnPoint: SpawnPoint)
+function getSpawnPointWorldPosition(spawnPoint: SpawnPoint, basePosition: Vector3)
 {
   const x = spawnPoint.position.x;
   const y = spawnPoint.position.y;
@@ -210,8 +211,8 @@ function getSpawnPointCenter(spawnPoint: SpawnPoint)
 
   if (typeof x === "number" && typeof y === "number" && typeof z === "number")
   {
-    return new Vector3(x,y,z); 
+    return new Vector3(x, y ,z).add(basePosition); 
   } else {
-    return new Vector3(x[0], y[0], z[0]); 
+    return new Vector3(x[0], y[0], z[0]).add(basePosition); 
   }
 }
