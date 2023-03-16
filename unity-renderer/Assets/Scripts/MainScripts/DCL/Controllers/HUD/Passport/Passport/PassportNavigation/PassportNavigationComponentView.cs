@@ -90,16 +90,23 @@ namespace DCL.Social.Passports
         public event Action<PassportSection> OnClickedViewAll;
         public event Action<ParcelCoordinates> OnClickDescriptionCoordinates;
 
-        private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
-        private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_";
+        private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_Passport_";
+        private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_Passport_";
         private const int MAX_NFT_ICON_ENTRIES = 20;
         private const int MAX_NFT_PAGES_ENTRIES = 20;
         private const string COORD_LINK_ID = "coord://";
 
-        private List<PoolableObject> nftIconPoolableQueue = new List<PoolableObject>();
-        private List<PoolableObject> nftPagesPoolableQueue = new List<PoolableObject>();
+        private List<PoolableObject> nftIconPoolableQueue = new ();
+        private List<PoolableObject> nftWearablesPagesPoolableQueue = new ();
+        private List<PoolableObject> nftEmotesPagesPoolableQueue = new ();
+        private List<PoolableObject> nftNamesPagesPoolableQueue = new ();
+        private List<PoolableObject> nftLandsPagesPoolableQueue = new ();
+
         private Pool nftIconsEntryPool;
-        private Pool nftPagesEntryPool;
+        private Pool nftWearablesPagesEntryPool;
+        private Pool nftEmotesPagesEntryPool;
+        private Pool nftNamesPagesEntryPool;
+        private Pool nftLandsPagesEntryPool;
         private readonly List<NFTIconComponentView> equippedNftWearableViews = new List<NFTIconComponentView>();
         private readonly List<NftPageView> ownedNftWearablePageViews = new List<NftPageView>();
         private readonly List<NftPageView> ownedNftEmotePageViews = new List<NftPageView>();
@@ -167,10 +174,13 @@ namespace DCL.Social.Passports
 
         public void InitializeView()
         {
-            nftPagesEntryPool = GetNftPagesEntryPool();
+            nftWearablesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Wearables");
+            nftEmotesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Emotes");
+            nftNamesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Names");
+            nftLandsPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Lands");
             nftIconsEntryPool = GetNftIconEntryPool();
-            CleanWearables();
-            CleanEquippedWearables();
+            ReleaseAllNftPagesPoolObjects();
+            ReleaseAllNftIconsPoolObjects();
             SetInitialPage();
         }
 
@@ -311,7 +321,8 @@ namespace DCL.Social.Passports
         public void SetCollectibleWearables(WearableItem[] wearables)
         {
             nftWearablesCarousel.gameObject.SetActive(wearables.Length > 0);
-            nftWearablesCarousel.CleanInstantiatedItems();
+            nftWearablesCarousel.ExtractItems();
+            nftWearablesPagesEntryPool.ReleaseAll();
             emptyWearablesText.gameObject.SetActive(wearables.Length <= 0);
             ownedNftWearablePageViews.Clear();
 
@@ -329,7 +340,8 @@ namespace DCL.Social.Passports
         public void SetCollectibleEmotes(WearableItem[] wearables)
         {
             nftEmotesCarousel.gameObject.SetActive(wearables.Length > 0);
-            nftEmotesCarousel.CleanInstantiatedItems();
+            nftEmotesCarousel.ExtractItems();
+            nftEmotesPagesEntryPool.ReleaseAll();
             emptyEmotesText.gameObject.SetActive(wearables.Length <= 0);
 
             for (int i = 0; i < wearables.Length; i += PAGE_SIZE)
@@ -346,13 +358,14 @@ namespace DCL.Social.Passports
         public void SetCollectibleNames(NamesResponse.NameEntry[] names)
         {
             nftNamesCarousel.gameObject.SetActive(names.Length > 0);
-            nftNamesCarousel.CleanInstantiatedItems();
+            nftNamesCarousel.ExtractItems();
+            nftNamesPagesEntryPool.ReleaseAll();
             emptyNamesText.gameObject.SetActive(names.Length <= 0);
 
             for (int i = 0; i < names.Length; i += PAGE_SIZE)
             {
-                PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
-                nftPagesPoolableQueue.Add(nftPagePoolElement);
+                PoolableObject nftPagePoolElement = nftNamesPagesEntryPool.Get();
+                nftNamesPagesPoolableQueue.Add(nftPagePoolElement);
                 nftPagePoolElement.gameObject.transform.SetParent(nftNamesCarouselContent, false);
                 NftPageView nftPageView = CreateNamePageView(names, nftPagePoolElement, i);
                 nftNamesCarousel.AddItem(nftPageView);
@@ -365,7 +378,8 @@ namespace DCL.Social.Passports
         public void SetCollectibleLands(LandsResponse.LandEntry[] lands)
         {
             nftLandsCarousel.gameObject.SetActive(lands.Length > 0);
-            nftLandsCarousel.CleanInstantiatedItems();
+            nftLandsCarousel.ExtractItems();
+            nftLandsPagesEntryPool.ReleaseAll();
             emptyLandsText.gameObject.SetActive(lands.Length <= 0);
 
             for (int i = 0; i < lands.Length; i += PAGE_SIZE)
@@ -440,18 +454,25 @@ namespace DCL.Social.Passports
         private void FocusAnyNtfItem() =>
             CloseAllNFTItemInfos();
 
-        private void CleanEquippedWearables()
+        private void ReleaseAllNftIconsPoolObjects()
         {
-            foreach (var poolObject in nftIconPoolableQueue) { nftIconsEntryPool.Release(poolObject); }
-
-            nftIconPoolableQueue = new List<PoolableObject>();
+            ReleaseNftIconsPoolObjects(nftIconPoolableQueue);
         }
 
-        private void CleanWearables()
+        private void ReleaseNftIconsPoolObjects(List<PoolableObject> nftIconsPoolableQueue)
         {
-            foreach (var poolObject in nftPagesPoolableQueue) { nftPagesEntryPool.Release(poolObject); }
+            foreach (var poolObject in nftIconsPoolableQueue)
+                poolObject.Release();
 
-            nftPagesPoolableQueue = new List<PoolableObject>();
+            nftIconsPoolableQueue.Clear();
+        }
+
+        private void ReleaseAllNftPagesPoolObjects()
+        {
+            nftWearablesPagesEntryPool.ReleaseAll();
+            nftEmotesPagesEntryPool.ReleaseAll();
+            nftNamesPagesEntryPool.ReleaseAll();
+            nftLandsPagesEntryPool.ReleaseAll();
         }
 
         private Pool GetNftIconEntryPool()
@@ -470,13 +491,13 @@ namespace DCL.Social.Passports
             return pool;
         }
 
-        private Pool GetNftPagesEntryPool()
+        private Pool GetNftPagesEntryPool(string poolId)
         {
-            var pool = PoolManager.i.GetPool(NFT_PAGES_POOL_NAME_PREFIX + name + GetInstanceID());
+            var pool = PoolManager.i.GetPool(poolId);
             if (pool != null) return pool;
 
             pool = PoolManager.i.AddPool(
-                NFT_PAGES_POOL_NAME_PREFIX + name + GetInstanceID(),
+                poolId,
                 Instantiate(nftPageUIReferenceObject).gameObject,
                 maxPrewarmCount: MAX_NFT_PAGES_ENTRIES,
                 isPersistent: true);
@@ -559,8 +580,8 @@ namespace DCL.Social.Passports
 
         private NftPageView CreateWearablePageView(WearableItem[] wearables, int i)
         {
-            PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
-            nftPagesPoolableQueue.Add(nftPagePoolElement);
+            PoolableObject nftPagePoolElement = nftWearablesPagesEntryPool.Get();
+            nftWearablesPagesPoolableQueue.Add(nftPagePoolElement);
             nftPagePoolElement.gameObject.transform.SetParent(nftWearablesCarouselContent, false);
             NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
             nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
@@ -602,8 +623,8 @@ namespace DCL.Social.Passports
 
         private NftPageView CreateEmotePageView(WearableItem[] wearables, int i)
         {
-            PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
-            nftPagesPoolableQueue.Add(nftPagePoolElement);
+            PoolableObject nftPagePoolElement = nftEmotesPagesEntryPool.Get();
+            nftEmotesPagesPoolableQueue.Add(nftPagePoolElement);
             nftPagePoolElement.gameObject.transform.SetParent(nftEmotesCarouselContent, false);
             NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
             nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
@@ -646,8 +667,8 @@ namespace DCL.Social.Passports
 
         private NftPageView CreateLandPageView(LandsResponse.LandEntry[] lands, int i)
         {
-            PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
-            nftPagesPoolableQueue.Add(nftPagePoolElement);
+            PoolableObject nftPagePoolElement = nftLandsPagesEntryPool.Get();
+            nftLandsPagesPoolableQueue.Add(nftPagePoolElement);
             nftPagePoolElement.gameObject.transform.SetParent(nftLandsCarouselContent, false);
             NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
             nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
