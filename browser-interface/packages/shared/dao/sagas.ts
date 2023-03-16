@@ -49,6 +49,7 @@ import {getCurrentUserProfile} from "../profiles/selectors";
 import {saveProfileDelta} from "../profiles/actions";
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
+let IS_ONBOARDING = false;
 
 function getLastRealmCacheKey(network: ETHEREUM_NETWORK) {
   return 'last_realm_string_' + network
@@ -189,8 +190,9 @@ function OnboardingTutorialRealm(){
           trackEvent('onboarding_started', { onboardingRealm: realm })
           //We are using the previous tutorial flow. 256 meant complete in the previous tutorial.
           //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
+          //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
           //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
-          store.dispatch(saveProfileDelta({ tutorialStep: 256, version: 0 }))
+          IS_ONBOARDING = true
           return realm
         } else {
           logger.warn('No realm was provided for the onboarding experience.')
@@ -258,6 +260,11 @@ function* cacheCatalystRealm() {
   // PRINT DEBUG INFO
   const dao: string = yield select((state) => state.dao)
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+
+  if(IS_ONBOARDING && realmAdapter.about.configurations?.realmName != getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')){
+    store.dispatch(saveProfileDelta({tutorialStep: 256}))
+    IS_ONBOARDING = false
+  }
 
   if (realmAdapter) {
     yield call(saveToPersistentStorage, getLastRealmCacheKey(network), realmAdapter.baseUrl)
