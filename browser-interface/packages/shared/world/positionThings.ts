@@ -129,12 +129,13 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
   let closestIndex = 0
   let closestDist = Number.MAX_SAFE_INTEGER
 
+  console.log("[TEST] base position is " + basePosition)
   console.log("[TEST] Getting spawn points near " + targetWorldPosition.toString())
   // we compare world positions from the target parcel and the spawn points
   const spawnDistances = eligiblePoints.map( (value: SpawnPoint, index: number , array: SpawnPoint[]) => { 
-    const pos = getSpawnPointWorldPosition(value, basePosition)
-    const dist = Vector3.DistanceSquared(targetWorldPosition, pos) 
-    console.log("[TEST] spawn point at " + pos + " with distance " + dist)
+    const pos = getSpawnPointWorldPosition(value).add(basePosition);
+    const dist = Vector3.Distance(targetWorldPosition, pos) 
+    console.log("[TEST] Spawn point at " + pos + " with distance " + dist)
     return dist
   } )
 
@@ -164,7 +165,7 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
       z: basePosition.z + finalPosition.z
     }
 
-    console.log("[TEST] selected spawn point at index " + closestIndex + " with position " + finalPosition)
+    console.log("[TEST] selected spawn point at index " + closestIndex + " with position " + finalPosition.x + "," + finalPosition.y + "," + finalPosition.z)
 
     if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
       finalPosition.x = 1
@@ -206,7 +207,7 @@ function computeComponentValue(x: number | number[]) {
   return Math.random() * (max - min) + min
 }
 
-function getSpawnPointWorldPosition(spawnPoint: SpawnPoint, basePosition: Vector3)
+function getSpawnPointWorldPosition(spawnPoint: SpawnPoint)
 {
   const x = spawnPoint.position.x;
   const y = spawnPoint.position.y;
@@ -214,8 +215,8 @@ function getSpawnPointWorldPosition(spawnPoint: SpawnPoint, basePosition: Vector
 
   if (typeof x === "number" && typeof y === "number" && typeof z === "number")
   {
-    return new Vector3(x, y ,z).add(basePosition); 
+    return new Vector3(x, y ,z); 
   } else {
-    return new Vector3(x[0], y[0], z[0]).add(basePosition); 
+    return new Vector3(x[0], y[0], z[0]); 
   }
 }
