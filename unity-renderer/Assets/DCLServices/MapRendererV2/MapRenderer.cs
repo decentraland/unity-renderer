@@ -91,6 +91,7 @@ namespace DCLServices.MapRendererV2
             mapCameraController.Initialize(Vector2Int.FloorToInt(textureRes * factor), zoomValues, cameraInput.EnabledLayers);
             mapCameraController.SetZoom(cameraInput.Zoom);
             mapCameraController.SetPosition(cameraInput.Position);
+
             return mapCameraController;
         }
 
@@ -98,7 +99,6 @@ namespace DCLServices.MapRendererV2
         {
             mapCameraController.OnReleasing -= ReleaseCamera;
             DisableLayers(mapCameraController.EnabledLayers);
-            mapCameraPool.Release(mapCameraController);
         }
 
         private void EnableLayers(MapLayer mask)

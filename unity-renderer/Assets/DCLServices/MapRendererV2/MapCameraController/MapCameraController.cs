@@ -52,6 +52,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
             mapCameraObject.mapCamera.targetTexture = renderTexture;
 
+            cullingController.OnCameraAdded(this);
+
             interactivityBehavior.Initialize(layers);
         }
 
@@ -90,6 +92,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void Release()
         {
+            cullingController.OnCameraRemoved(this);
             renderTexture?.Release();
             interactivityBehavior.Release();
             OnReleasing?.Invoke(this);

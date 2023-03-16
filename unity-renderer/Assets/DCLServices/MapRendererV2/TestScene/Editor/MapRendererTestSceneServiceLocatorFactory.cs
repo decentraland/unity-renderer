@@ -25,7 +25,8 @@ namespace DCLServices.MapRendererV2.TestScene
             {
                 new MapRendererTestSceneCameraRentals(mapRenderer),
                 new MapRendererTestScenePlayerMarker(DataStore.i.player.playerWorldPosition, CommonScriptableObjects.cameraForward),
-                new MapRendererTestSceneHomePoint(DataStore.i.HUDs.homePoint)
+                new MapRendererTestSceneHomePoint(DataStore.i.HUDs.homePoint),
+                new MapRendererTestSceneScenesOfInterest(MinimapMetadata.GetMetadata())
             };
 
             return (result, elements);

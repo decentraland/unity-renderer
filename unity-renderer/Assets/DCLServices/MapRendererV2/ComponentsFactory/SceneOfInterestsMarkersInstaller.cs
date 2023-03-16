@@ -57,6 +57,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         {
             for (var i = 0; i < obj.renderers.Length; i++)
                 obj.renderers[i].sortingOrder = MapRendererDrawOrder.SCENES_OF_INTEREST;
+
+            obj.title.sortingOrder = MapRendererDrawOrder.SCENES_OF_INTEREST;
         }
 
         internal async UniTask<SceneOfInterestMarkerObject> GetPrefab(CancellationToken cancellationToken) =>
