@@ -49,9 +49,10 @@ describe('pickWorldSpawnPoint unit tests', function () {
         }
       ]
     }
-    const basePosition = new Vector3(11 * parcelSize, 0, 10 * parcelSize)
+    const basePosition = new Vector3(10 * parcelSize, 0, 10 * parcelSize)
+    const targetPosition = new Vector3(11 * parcelSize, 0, 10 * parcelSize)
 
-    const pick = pickWorldSpawnpoint(land, basePosition)
+    const pick = pickWorldSpawnpoint(land, targetPosition)
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
@@ -120,9 +121,10 @@ describe('pickWorldSpawnPoint unit tests', function () {
         }
       ]
     }
-    const basePosition = new Vector3(11 * parcelSize, 0, 10 * parcelSize)
+    const basePosition = new Vector3(10 * parcelSize, 0, 10 * parcelSize)
+    const targetPosition = new Vector3(11 * parcelSize, 0, 10 * parcelSize)
 
-    const pick = pickWorldSpawnpoint(land, basePosition)
+    const pick = pickWorldSpawnpoint(land, targetPosition)
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
