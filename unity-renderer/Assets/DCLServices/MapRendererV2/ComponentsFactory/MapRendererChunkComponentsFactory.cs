@@ -10,6 +10,7 @@ using DCLServices.MapRendererV2.MapLayers.Atlas;
 using DCLServices.MapRendererV2.MapLayers.ParcelHighlight;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -89,33 +90,31 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 x => x.Dispose()
             );
 
-            var enumerator = UniTaskAsyncEnumerable.Create<(MapLayer, IMapLayerController)>(async (writer, token) =>
+            var layers = new Dictionary<MapLayer, IMapLayerController>();
+
+            async UniTask CreateAtlas()
             {
+                var atlasChunkPrefab = await GetAtlasChunkPrefab(cancellationToken);
 
-                async UniTask CreateAtlas()
-                {
-                    var atlasChunkPrefab = await GetAtlasChunkPrefab(cancellationToken);
+                var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, MapRendererDrawOrder.ATLAS, atlasChunkSize,
+                    coordsUtils, cullingController, ChunkController.CreateChunk);
 
-                    var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, MapRendererDrawOrder.ATLAS, atlasChunkSize,
-                        coordsUtils, cullingController, ChunkController.CreateChunk);
+                // initialize Atlas but don't block the flow (to accelerate loading time)
+                chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
 
-                    // initialize Atlas but don't block the flow (to accelerate loading time)
-                    chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
+                layers.Add(MapLayer.Atlas, chunkAtlas);
+            }
 
-                    await writer.YieldAsync((MapLayer.Atlas, chunkAtlas));
-                }
+            await UniTask.WhenAll(
+                CreateAtlas(),
+                coldUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                sceneOfInterestsMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                playerMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                homePointMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken)
+                /* List of other creators that can be executed in parallel */);
 
-                await UniTask.WhenAll(
-                    CreateAtlas(),
-                    coldUsersMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
-                    sceneOfInterestsMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
-                    playerMarkerInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
-                    homePointMarkerInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
-                    hotUsersMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken)
-                    /* List of other creators that can be executed in parallel */);
-            });
-
-            return new MapRendererComponents(enumerator, cullingController, cameraControllersPool);
+            return new MapRendererComponents(layers, cullingController, cameraControllersPool);
         }
 
         internal async Task<SpriteRenderer> GetAtlasChunkPrefab(CancellationToken cancellationToken) =>

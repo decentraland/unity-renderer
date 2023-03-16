@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Providers;
 using DCLServices.MapRendererV2.ComponentsFactory;
+using KernelConfigurationTypes;
 using MainScripts.DCL.Controllers.HotScenes;
 using System.Collections.Generic;
 
@@ -21,12 +22,14 @@ namespace DCLServices.MapRendererV2.TestScene
             result.Register<IHotScenesFetcher>(() => container.hotScenesController);
             result.Register<IWebRequestController>(WebRequestController.Create);
 
+            KernelConfig.i.Set(new KernelConfigModel {comms = new Comms {commRadius = 2}});
+
             var elements = new IMapRendererTestSceneElementProvider[]
             {
                 new MapRendererTestSceneCameraRentals(mapRenderer),
                 new MapRendererTestScenePlayerMarker(DataStore.i.player.playerWorldPosition, CommonScriptableObjects.cameraForward),
                 new MapRendererTestSceneHomePoint(DataStore.i.HUDs.homePoint),
-                new MapRendererTestSceneScenesOfInterest(MinimapMetadata.GetMetadata())
+                new MapRendererTestSceneScenesOfInterest(MinimapMetadata.GetMetadata(), mapRenderer)
             };
 
             return (result, elements);

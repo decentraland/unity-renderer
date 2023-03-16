@@ -8,7 +8,9 @@ using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea;
 using MainScripts.DCL.Controllers.HotScenes;
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 namespace DCLServices.MapRendererV2.ComponentsFactory
 {
@@ -22,7 +24,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private Service<IAddressableResourceProvider> addressablesProvider;
 
         public async UniTask Install(
-            IAsyncWriter<(MapLayer, IMapLayerController)> writer,
+            Dictionary<MapLayer, IMapLayerController> writer,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -34,7 +36,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 hotScenesFetcher.Ref, DataStore.i.realm.realmName, CommonScriptableObjects.playerCoords, KernelConfig.i, coordsUtils, cullingController, MapRendererDrawOrder.COLD_USER_MARKERS, COLD_USER_MARKERS_LIMIT);
 
             await controller.Initialize(cancellationToken).SuppressCancellationThrow();
-            await writer.YieldAsync((MapLayer.ColdUsersMarkers, controller));
+            writer.Add(MapLayer.ColdUsersMarkers, controller);
         }
 
         internal async UniTask<ColdUserMarkerObject> GetPrefab(CancellationToken cancellationToken) =>

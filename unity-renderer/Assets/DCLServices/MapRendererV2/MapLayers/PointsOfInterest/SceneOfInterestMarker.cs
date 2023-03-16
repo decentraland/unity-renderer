@@ -11,6 +11,8 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 
         public Vector3 CurrentPosition => poolableBehavior.currentPosition;
 
+        public bool IsVisible => poolableBehavior.isVisible;
+
         internal string title { get; private set; }
 
         private MapMarkerPoolableBehavior<SceneOfInterestMarkerObject> poolableBehavior;

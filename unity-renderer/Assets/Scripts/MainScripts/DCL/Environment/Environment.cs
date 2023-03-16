@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
-using DCL.Controllers;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Threading;
-using UnityEngine.SceneManagement;
 
 namespace DCL
 {
@@ -21,6 +19,14 @@ namespace DCL
             i = new Model(serviceLocator);
             cancellationTokenSource = new CancellationTokenSource();
             serviceLocator.Initialize(cancellationTokenSource.Token).Forget();
+        }
+
+        public static UniTask SetupAsync(ServiceLocator serviceLocator)
+        {
+            i.Dispose();
+            i = new Model(serviceLocator);
+            cancellationTokenSource = new CancellationTokenSource();
+            return serviceLocator.Initialize(cancellationTokenSource.Token);
         }
 
         /// <summary>

@@ -35,21 +35,13 @@ namespace DCLServices.MapRendererV2.Tests
         {
             var componentsFactory = Substitute.For<IMapRendererComponentsFactory>();
 
-            componentsFactory.Create(Arg.Any<CancellationToken>()).Returns(
-                new UniTask<MapRendererComponents>(
-                new MapRendererComponents(
-                    UniTaskAsyncEnumerable.Create<(MapLayer, IMapLayerController)>(async (writer, token) =>
-                {
-                    layers = new Dictionary<MapLayer, IMapLayerController>();
-
-                    foreach (var layer in EnumUtils.Values<MapLayer>().Where(l => l != MapLayer.None))
-                    {
-                        var controller = Substitute.For<IMapLayerController>();
-                        layers[layer] = controller;
-                        await writer.YieldAsync((layer, controller));
-                    }
-                }), Substitute.For<IMapCullingController>(),
-                    Substitute.For<IObjectPool<IMapCameraControllerInternal>>())));
+            componentsFactory.Create(Arg.Any<CancellationToken>())
+                             .Returns(
+                                  new UniTask<MapRendererComponents>(
+                                      new MapRendererComponents(
+                                          EnumUtils.Values<MapLayer>().Where(l => l != MapLayer.None).ToDictionary(x => x, x => Substitute.For<IMapLayerController>()),
+                                          Substitute.For<IMapCullingController>(),
+                                          Substitute.For<IObjectPool<IMapCameraControllerInternal>>())));
 
             mapRenderer = new MapRenderer(componentsFactory);
             await mapRenderer.InitializeAsync(CancellationToken.None);

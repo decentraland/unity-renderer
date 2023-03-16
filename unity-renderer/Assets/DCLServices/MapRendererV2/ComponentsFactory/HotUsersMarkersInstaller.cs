@@ -7,8 +7,10 @@ using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea;
 using MainScripts.DCL.Helpers.Utils;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.ComponentsFactory
@@ -21,7 +23,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private Service<IAddressableResourceProvider> addressablesProvider;
 
         public async UniTask Install(
-            IAsyncWriter<(MapLayer, IMapLayerController)> writer,
+            Dictionary<MapLayer, IMapLayerController> writer,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -44,7 +46,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             var controller = new UsersMarkersHotAreaController(DataStore.i.player.otherPlayers, objectsPool, wrapsPool, HOT_USER_MARKERS_PREWARM_COUNT, configuration.HotUserMarkersRoot, coordsUtils, cullingController, MapRendererDrawOrder.HOT_USER_MARKERS);
 
             await controller.Initialize(cancellationToken);
-            await writer.YieldAsync((MapLayer.HotUsersMarkers, controller));
+            writer.Add(MapLayer.HotUsersMarkers, controller);
         }
 
         internal async Task<HotUserMarkerObject> GetPrefab(CancellationToken cancellationToken) =>

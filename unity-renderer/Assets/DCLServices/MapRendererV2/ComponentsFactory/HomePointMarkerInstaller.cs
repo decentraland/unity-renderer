@@ -6,6 +6,7 @@ using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.HomePoint;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private Service<IAddressableResourceProvider> addressablesProvider;
 
         public async UniTask Install(
-            IAsyncWriter<(MapLayer, IMapLayerController)> writer,
+            Dictionary<MapLayer, IMapLayerController> writer,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -43,7 +44,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 MapRendererDrawOrder.HOME_POINT);
 
             controller.Initialize();
-            await writer.YieldAsync((MapLayer.HomePoint, controller));
+            writer.Add(MapLayer.HomePoint, controller);
         }
 
         internal async UniTask<HomePointMarkerObject> GetPrefab(CancellationToken cancellationToken) =>

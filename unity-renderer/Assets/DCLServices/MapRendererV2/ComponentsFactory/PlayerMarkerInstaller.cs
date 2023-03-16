@@ -6,6 +6,7 @@ using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.PlayerMarker;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private Service<IAddressableResourceProvider> addressablesProvider;
 
         public async UniTask Install(
-            IAsyncWriter<(MapLayer, IMapLayerController)> writer,
+            Dictionary<MapLayer, IMapLayerController> writer,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -45,7 +46,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             );
 
             controller.Initialize();
-            await writer.YieldAsync((MapLayer.PlayerMarker, controller));
+            writer.Add(MapLayer.PlayerMarker, controller);
         }
 
         internal async UniTask<PlayerMarkerObject> GetPrefab(CancellationToken cancellationToken) =>

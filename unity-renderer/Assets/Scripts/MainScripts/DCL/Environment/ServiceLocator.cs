@@ -66,7 +66,7 @@ namespace DCL
             return services[type] as T;
         }
 
-        public async UniTaskVoid Initialize(CancellationToken cancellationToken = default)
+        public async UniTask Initialize(CancellationToken cancellationToken = default)
         {
             foreach ( var service in services )
             {

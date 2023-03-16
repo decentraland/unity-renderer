@@ -7,7 +7,9 @@ using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.PointsOfInterest;
 using MainScripts.DCL.Helpers.Utils;
+using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.ComponentsFactory
@@ -20,7 +22,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private Service<IAddressableResourceProvider> addressablesProvider;
 
         public async UniTask Install(
-            IAsyncWriter<(MapLayer, IMapLayerController)> writer,
+            Dictionary<MapLayer, IMapLayerController> writer,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -47,7 +49,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             );
 
             await controller.Initialize(cancellationToken);
-            await writer.YieldAsync((MapLayer.ScenesOfInterest, controller));
+            writer.Add(MapLayer.ScenesOfInterest, controller);
         }
 
         private static ISceneOfInterestMarker CreateMarker(IObjectPool<SceneOfInterestMarkerObject> objectsPool, IMapCullingController cullingController) =>

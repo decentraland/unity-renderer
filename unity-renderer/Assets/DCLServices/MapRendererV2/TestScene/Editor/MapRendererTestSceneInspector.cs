@@ -1,4 +1,5 @@
-﻿using DCL;
+﻿using Cysharp.Threading.Tasks;
+using DCL;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace DCLServices.MapRendererV2.TestScene
             testScene = (MapRendererTestScene)serializedObject.targetObject;
         }
 
-        private void Initialize()
+        private async UniTaskVoid Initialize()
         {
             if (testScene.initialized)
                 return;
@@ -30,9 +31,9 @@ namespace DCLServices.MapRendererV2.TestScene
 
             elementProviders = elementsProviders;
 
-            Environment.Setup(serviceLocator);
-
             testScene.initialized = true;
+
+            await Environment.SetupAsync(serviceLocator);
 
             DrawControls();
         }
@@ -75,7 +76,7 @@ namespace DCLServices.MapRendererV2.TestScene
                 }
                 else
                 {
-                    var initButton = new Button(Initialize) { text = "Initialize" };
+                    var initButton = new Button(() => Initialize().Forget()) { text = "Initialize" };
                     root.Add(initButton);
                 }
             }

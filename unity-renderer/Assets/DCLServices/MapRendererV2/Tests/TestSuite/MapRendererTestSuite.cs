@@ -1,5 +1,6 @@
 ﻿using DCLServices.MapRendererV2.MapLayers;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DCLServices.MapRendererV2
 {
@@ -9,6 +10,9 @@ namespace DCLServices.MapRendererV2
     public partial class MapRenderer
     {
         internal IReadOnlyCollection<MapLayer> initializedLayers_Test => layers.Keys;
+
+        // for testing purpose only
+        internal IReadOnlyList<IMapLayerController> layers_Test => layers.Select(l => l.Value.MapLayerController).ToList();
 
         internal void EnableLayers_Test(MapLayer mask) =>
             EnableLayers(mask);

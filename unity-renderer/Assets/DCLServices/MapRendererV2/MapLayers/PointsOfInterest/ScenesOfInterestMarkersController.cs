@@ -1,9 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
-using DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea;
 using MainScripts.DCL.Helpers.Utils;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;

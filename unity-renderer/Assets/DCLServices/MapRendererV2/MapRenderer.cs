@@ -6,6 +6,7 @@ using DCLServices.MapRendererV2.MapLayers;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -31,8 +32,6 @@ namespace DCLServices.MapRendererV2
         private CancellationToken cancellationToken;
 
         private readonly IMapRendererComponentsFactory componentsFactory;
-        private readonly int parcelSize;
-        private readonly int chunkSize;
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
 
@@ -42,8 +41,6 @@ namespace DCLServices.MapRendererV2
         public MapRenderer(IMapRendererComponentsFactory componentsFactory)
         {
             this.componentsFactory = componentsFactory;
-            this.parcelSize = parcelSize;
-            this.chunkSize = chunkSize;
         }
 
         public void Initialize() { }
@@ -59,8 +56,8 @@ namespace DCLServices.MapRendererV2
                 cullingController = components.CullingController;
                 mapCameraPool = components.MapCameraControllers;
 
-                await foreach (var (layerType, layer) in components.Layers)
-                    layers[layerType] = new MapLayerStatus(layer);
+                foreach (var pair in components.Layers)
+                    layers[pair.Key] = new MapLayerStatus(pair.Value);
             }
             catch (OperationCanceledException)
             {
