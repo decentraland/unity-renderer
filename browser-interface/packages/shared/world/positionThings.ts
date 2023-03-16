@@ -140,6 +140,7 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
     {
         closestDist = spawnDistances[i]
         closestIndex = i
+        console.log(i)
     }
   }
   const { position, cameraTarget } = eligiblePoints[closestIndex]
@@ -152,7 +153,7 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
   }
 
   // 5 - If the final position is outside the scene limits, we zero it
-  if (!DEBUG) {
+  /*if (!DEBUG) {
     const finalWorldPosition = {
       x: basePosition.x + finalPosition.x,
       y: finalPosition.y,
@@ -163,7 +164,7 @@ function pickSpawnpoint(land: Scene, targetParcelPosition: Vector3, basePosition
       finalPosition.x = 1
       finalPosition.z = 1
     }
-  }
+  }*/
 
   return {
     position: finalPosition,

@@ -55,7 +55,7 @@ describe('pickWorldSpawnPoint unit tests', function () {
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 16 + basePosition.x * parcelSize, y: 1 + basePosition.y * parcelSize, z: 21 + basePosition.z * parcelSize },
+        position: { x: 16 + basePosition.x * parcelSize, y: 1 + basePosition.y * parcelSize, z: 1 + basePosition.z * parcelSize },
         cameraTarget: { x: 16 + basePosition.x * parcelSize, y: 1 + basePosition.y * parcelSize, z: 1 + basePosition.z * parcelSize }
       })
     )
