@@ -132,6 +132,9 @@ namespace DCL.Social.Chat
             ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
             model.enableFadeoutMode = true;
             contextMenu.SetPassportOpenSource(true);
+
+            string currentKeyboardLayout = Keyboard.current.keyboardLayout;
+            Debug.Log($"Current keyboard layout: {currentKeyboardLayout}");
         }
 
         public override void OnEnable()
@@ -143,9 +146,6 @@ namespace DCL.Social.Chat
             nextMentionSuggestionInput.OnTriggered += HandleNextMentionSuggestionInput;
             previousMentionSuggestionInput.OnTriggered += HandlePreviousMentionSuggestionInput;
             closeMentionSuggestionsInput.OnTriggered += HandleCloseMentionSuggestionsInput;
-
-            string currentKeyboardLayout = Keyboard.current.keyboardLayout;
-            Debug.Log($"Current keyboard layout: {currentKeyboardLayout}");
         }
 
         public override void OnDisable()
