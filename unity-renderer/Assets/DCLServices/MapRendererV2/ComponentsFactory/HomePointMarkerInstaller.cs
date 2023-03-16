@@ -32,6 +32,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             {
                 var obj = Object.Instantiate(prefab, configuration.HomePointRoot);
                 obj.spriteRenderer.sortingOrder = MapRendererDrawOrder.HOME_POINT;
+                coordsUtils.SetObjectScale(obj);
                 return new HomePointMarker(obj);
             }
 
