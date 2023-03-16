@@ -134,8 +134,19 @@ namespace DCL.Social.Chat
             contextMenu.SetPassportOpenSource(true);
 
 #if (UNITY_WEBGL && !UNITY_EDITOR)
+            // WebGLInput plugin breaks many features:
+            // @mentions navigation with ARROW keys
+            // @mentions suggestions not hiding when pressing SPACE after @
+            // chat windows toggling with ENTER key
+            // chat history navigation with ARROW keys
+            // probably more...
+            // Key input events are not triggered anymore after focusing the input field
+            // One of the main reasons is because the plugin replaces the TMP_InputField for a native web input,
+            // overriding input handing, caret position handling, most of the input behaviour..
+            // To mitigate the issues for most of the non-asian users,
+            // we destroy the component because we assume that users dont need IME input
+            // Users with asian languages will keep experiencing the issues
             SystemLanguage systemLanguage = Application.systemLanguage;
-            Debug.Log($"Current system language: {systemLanguage}");
 
             if (systemLanguage is not (SystemLanguage.Chinese
                 or SystemLanguage.ChineseSimplified
