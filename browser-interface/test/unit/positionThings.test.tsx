@@ -40,12 +40,12 @@ describe('pickWorldSpawnPoint unit tests', function () {
       },
       spawnPoints: [
         {
-          position: { x: 1, y: 2, z: 3 },
-          cameraTarget: { x: 9, y: 8, z: 7 }
+          position: { x: 1, y: 1, z: 1 },
+          cameraTarget: { x: 1, y: 1, z: 1 }
         },
         {
-          position: { x: 11, y: 2, z: 13 },
-          cameraTarget: { x: 9, y: 8, z: 7 }
+          position: { x: 12, y: 2, z: 2 },
+          cameraTarget: { x: 12, y: 2, z: 2 }
         }
       ]
     }
@@ -55,8 +55,8 @@ describe('pickWorldSpawnPoint unit tests', function () {
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 11 + basePosition.x, y: 2 + basePosition.y, z: 13 + basePosition.z },
-        cameraTarget: { x: 9 + basePosition.x, y: 8 + basePosition.y, z: 7 + basePosition.z }
+        position: { x: 2 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z },
+        cameraTarget: { x: 2 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z }
       })
     )
   })
@@ -103,13 +103,13 @@ describe('pickWorldSpawnPoint unit tests', function () {
       },
       spawnPoints: [
         {
-          position: { x: 1, y: 2, z: 3 },
-          cameraTarget: { x: 9, y: 8, z: 7 },
+          position: { x: 1, y: 1, z: 1 },
+          cameraTarget: { x: 1, y: 1, z: 1 },
           default: true
         },
         {
-          position: { x: 11, y: 2, z: 13 },
-          cameraTarget: { x: 9, y: 8, z: 7 },
+          position: { x: 12, y: 2, z: 2 },
+          cameraTarget: { x: 12, y: 2, z: 2 },
           default: true
         },
         {
@@ -126,8 +126,8 @@ describe('pickWorldSpawnPoint unit tests', function () {
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 11 + basePosition.x, y: 2 + basePosition.y, z: 13 + basePosition.z },
-        cameraTarget: { x: 9 + basePosition.x, y: 8 + basePosition.y, z: 7 + basePosition.z }
+        position: { x: 2 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z },
+        cameraTarget: { x: 2 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z }
       })
     )
   })
