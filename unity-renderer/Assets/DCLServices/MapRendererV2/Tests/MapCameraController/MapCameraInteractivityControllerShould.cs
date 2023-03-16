@@ -75,7 +75,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             controller.Initialize(MapLayer.ParcelHoverHighlight);
             controller.HighlightParcel(norm);
 
-            marker.Received(1).SetPosition(expected);
+            marker.Received(1).SetCoordinates(Arg.Any<Vector2Int>(), expected);
         }
 
 

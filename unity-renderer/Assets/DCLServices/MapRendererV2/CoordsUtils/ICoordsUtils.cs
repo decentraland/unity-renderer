@@ -20,14 +20,5 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector3 CoordsToPosition(Vector2Int coords);
 
         public Vector3 CoordsToPositionWithOffset(Vector2 coords);
-
-        /// <summary>
-        /// Sets map object scale accordingly to the `ParcelSize`
-        /// </summary>
-        internal void SetObjectScale(MonoBehaviour obj)
-        {
-            var parcelSize = ParcelSize;
-            obj.transform.localScale = new Vector3(parcelSize, parcelSize, 1);
-        }
     }
 }

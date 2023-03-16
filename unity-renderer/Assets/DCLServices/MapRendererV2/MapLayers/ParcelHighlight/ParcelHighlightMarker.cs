@@ -13,8 +13,9 @@ namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
             Deactivate();
         }
 
-        public void SetPosition(Vector3 position)
+        public void SetCoordinates(Vector2Int coords, Vector3 position)
         {
+            obj.text.text = $"{coords.x}, {coords.y}";
             obj.transform.localPosition = position;
         }
 

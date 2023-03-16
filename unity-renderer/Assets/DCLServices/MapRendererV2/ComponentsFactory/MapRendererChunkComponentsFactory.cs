@@ -60,8 +60,11 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 {
                     var obj = Object.Instantiate(highlightMarkerPrefab, configuration.ParcelHighlightRoot);
                     obj.spriteRenderer.sortingOrder = MapRendererDrawOrder.PARCEL_HIGHLIGHT;
+                    obj.text.sortingOrder = MapRendererDrawOrder.PARCEL_HIGHLIGHT;
+                    coordsUtils.SetObjectScale(obj);
                     return new ParcelHighlightMarker(obj);
                 },
+                _ => {},
                 marker => marker.Deactivate(),
                 marker => marker.Dispose()
             );

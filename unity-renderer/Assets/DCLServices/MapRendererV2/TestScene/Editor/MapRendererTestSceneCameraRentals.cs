@@ -97,7 +97,38 @@ namespace DCLServices.MapRendererV2.TestScene
                 mapCameraControllers.Remove(cameraController);
             }) { text = "Release" });
 
+            controls.Add(GetInteractivityControls(cameraController));
+
             rents.Add(controls);
+        }
+
+        private VisualElement GetInteractivityControls(IMapCameraController mapCameraController)
+        {
+            var elements = new VisualElement();
+
+            var interactivityController = mapCameraController.GetInteractivityController();
+
+            var highlightEnabled = new Toggle("Highlight enabled");
+            highlightEnabled.binding = new GetterBinding<bool>(highlightEnabled, () => interactivityController.HighlightEnabled);
+            elements.Add(highlightEnabled);
+
+            var highlightCoordinates = new Vector2Field("Highlight normalized coords");
+
+            var highlightButton = new Button(() => interactivityController.HighlightParcel(highlightCoordinates.value))
+            {
+                text = "Highlight parcel"
+            };
+
+            elements.Add(highlightCoordinates);
+            elements.Add(highlightButton);
+
+            var removeHighlight = new Button(() => interactivityController.RemoveHighlight())
+            {
+                text = "Remove highlight"
+            };
+            elements.Add(removeHighlight);
+
+            return elements;
         }
 
         private VisualElement CreateExistingRentsControls()

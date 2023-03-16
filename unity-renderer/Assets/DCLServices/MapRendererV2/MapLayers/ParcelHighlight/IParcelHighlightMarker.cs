@@ -5,7 +5,7 @@ namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
 {
     internal interface IParcelHighlightMarker : IDisposable
     {
-        void SetPosition(Vector3 position);
+        void SetCoordinates(Vector2Int coords, Vector3 position);
 
         void Activate();
 

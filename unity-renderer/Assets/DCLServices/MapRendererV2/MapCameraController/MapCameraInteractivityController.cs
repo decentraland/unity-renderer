@@ -35,8 +35,11 @@ namespace DCLServices.MapRendererV2.MapCameraController
             if (marker == null)
                 return;
 
+            var localPosition = GetLocalPosition(normalizedCoordinates);
+            var mapCoords = coordsUtils.PositionToCoords(localPosition);
+
             marker.Activate();
-            marker.SetPosition(GetLocalPosition(normalizedCoordinates));
+            marker.SetCoordinates(mapCoords, localPosition);
         }
 
         public void Initialize(MapLayer layers)

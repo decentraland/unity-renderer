@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
 {
@@ -6,5 +7,8 @@ namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
     {
         [field: SerializeField]
         internal SpriteRenderer spriteRenderer { get; private set; }
+
+        [field: SerializeField]
+        internal TextMeshPro text { get; private set; }
     }
 }
