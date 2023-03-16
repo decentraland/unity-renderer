@@ -117,7 +117,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < cameraCount; i++)
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
 
                 culling.CameraStates.Add(new CameraState
                     {
@@ -184,7 +184,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
 
                 culling.CameraStates.Add(new CameraState
                     {
@@ -214,7 +214,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
 
                 culling.CameraStates.Add(new CameraState
                     {
@@ -248,7 +248,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
 
                 culling.CameraStates.Add(new CameraState
                     {
@@ -282,7 +282,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
 
                 culling.CameraStates.Add(new CameraState
                     {
@@ -312,7 +312,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustrumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
 
                 culling.CameraStates.Add(new CameraState
                     {

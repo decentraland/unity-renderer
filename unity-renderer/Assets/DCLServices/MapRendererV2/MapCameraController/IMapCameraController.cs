@@ -23,6 +23,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         void SetPosition(Vector2 coordinates);
 
+        void SetZoomAndPosition(Vector2 coordinates, float value);
+
         void Release();
     }
 }
