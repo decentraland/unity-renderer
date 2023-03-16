@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿/*
+using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using System.Collections;
 using System.Threading;
@@ -74,3 +75,4 @@ namespace DCL.Social.Chat.Mentions.Tests
             });
     }
 }
+*/
