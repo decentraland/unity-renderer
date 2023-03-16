@@ -187,7 +187,7 @@ function* onboardingTutorialRealm() {
     console.log('DEBUG' + profile.tutorialStep)
     if (needsTutorial && !isNewTutorialDisabled) {
       try {
-        const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
+        const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
         if (realm) {
           trackEvent('onboarding_started', { onboardingRealm: realm })
           //We are using the previous tutorial flow. 256 meant complete in the previous tutorial.
