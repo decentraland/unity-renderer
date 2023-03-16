@@ -37,5 +37,6 @@ import './sceneEvents/comms.spec'
 import './dao'
 
 declare let mocha: Mocha
+declare let globalThis: any
 
 mocha.run()

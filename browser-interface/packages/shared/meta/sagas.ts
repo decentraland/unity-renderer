@@ -1,19 +1,24 @@
 import { FeatureFlagsResult, fetchFlags } from '@dcl/feature-flags'
 import { ETHEREUM_NETWORK, getAssetBundlesBaseUrl, getServerConfigurations, PREVIEW, rootURLPreviewMode } from 'config'
-import defaultLogger from 'lib/logger'
-import { waitFor } from 'lib/redux'
-import { all, call, put, select, take } from 'redux-saga/effects'
+import { all, call, fork, put, select, take } from 'redux-saga/effects'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { SELECT_NETWORK } from 'shared/dao/actions'
 import { getSelectedNetwork } from 'shared/dao/selectors'
+import { addKernelPortableExperience } from 'shared/portableExperiences/actions'
 import { RootState } from 'shared/store/rootTypes'
+import { LoadableScene } from 'shared/types'
+import { getPortableExperienceFromUrn } from 'unity-interface/portableExperiencesUtils'
+import defaultLogger from 'lib/logger'
 import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
-import { isMetaConfigurationInitialized } from './selectors'
+import { getFeatureFlagVariantValue, isMetaConfigurationInitialized } from './selectors'
 import { FeatureFlagsName, MetaConfiguration } from './types'
 
-export const waitForMetaConfigurationInitialization = waitFor(
-  isMetaConfigurationInitialized,
-  META_CONFIGURATION_INITIALIZED
-)
+export function* waitForMetaConfigurationInitialization() {
+  const configInitialized: boolean = yield select(isMetaConfigurationInitialized)
+  if (!configInitialized) {
+    yield take(META_CONFIGURATION_INITIALIZED)
+  }
+}
 
 export function* waitForNetworkSelected() {
   while (!(yield select((state: RootState) => !!state.dao.network))) {
@@ -23,7 +28,7 @@ export function* waitForNetworkSelected() {
   return net
 }
 
-export function* metaSaga(): any {
+function* initMeta() {
   const net: ETHEREUM_NETWORK = yield call(waitForNetworkSelected)
 
   const [config, flagsAndVariants]: [Partial<MetaConfiguration>, FeatureFlagsResult] = yield all([
@@ -37,6 +42,38 @@ export function* metaSaga(): any {
   }
 
   yield put(metaConfigurationInitialized(merge))
+
+  yield fork(fetchInitialPortableExperiences)
+}
+
+function* fetchInitialPortableExperiences() {
+  yield waitForMetaConfigurationInitialization()
+
+  const qs = new URLSearchParams(globalThis.location.search)
+
+  const globalPortableExperiences: string[] = qs.has('GLOBAL_PX')
+    ? qs.getAll('GLOBAL_PX')
+    : yield select(getFeatureFlagVariantValue, 'initial_portable_experiences')
+
+  if (Array.isArray(globalPortableExperiences)) {
+    for (const id of globalPortableExperiences) {
+      try {
+        const px: LoadableScene = yield call(getPortableExperienceFromUrn, id)
+        yield put(addKernelPortableExperience(px))
+      } catch (err: any) {
+        console.error(err)
+        trackEvent('error', {
+          context: 'fetchInitialPortableExperiences',
+          message: err.message,
+          stack: err.stack
+        })
+      }
+    }
+  }
+}
+
+export function* metaSaga(): any {
+  yield call(initMeta)
 }
 
 async function fetchFeatureFlagsAndVariants(network: ETHEREUM_NETWORK): Promise<FeatureFlagsResult> {
