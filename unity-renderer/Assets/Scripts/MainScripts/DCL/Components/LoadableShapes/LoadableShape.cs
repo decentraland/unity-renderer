@@ -197,9 +197,19 @@ namespace DCL.Components
             }
             else
             {
+                var message = $"LoadableShape '{model.src}' not found";
+
+                if (DataStore.i.debugConfig.isDebugMode.Get())
+                {
+                    Debug.LogError(message);
+                }
+                else
+                {
 #if UNITY_EDITOR
-                Debug.LogWarning($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.sceneNumber}' mappings");
+                    Debug.LogWarning(message);
 #endif
+                }
+
                 failed = true;
             }
         }

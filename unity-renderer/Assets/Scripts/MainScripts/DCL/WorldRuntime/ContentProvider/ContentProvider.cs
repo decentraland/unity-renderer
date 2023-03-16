@@ -72,9 +72,9 @@ namespace DCL
 
         public virtual bool HasContentsUrl(string url)
         {
-            url = url.ToLower();
-
             if (string.IsNullOrEmpty(url)) { return false; }
+
+            url = url.ToLower();
 
 #if UNITY_EDITOR
             if (HasTestSchema(url)) { return true; }
