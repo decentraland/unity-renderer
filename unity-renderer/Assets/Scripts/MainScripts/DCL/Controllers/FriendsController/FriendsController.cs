@@ -39,15 +39,12 @@ namespace DCL.Social.Friends
         public FriendsController(IFriendsApiBridge apiBridge, IRPCSocialApiBridge rpcSocialApiBridge)
         {
             this.apiBridge = apiBridge;
-            apiBridge.OnInitialized += InitializeFriendships;
             apiBridge.OnFriendNotFound += FriendNotFound;
             apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
             apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
             apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
-            apiBridge.OnFriendRequestsAdded += AddFriendRequests; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-            apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
 
             this.socialApiBridge = rpcSocialApiBridge;
 
@@ -76,6 +73,7 @@ namespace DCL.Social.Friends
             this.friendRequests.Remove(userId);
         }
 
+        // TODO (Joni): Replace by AddFriendRequests, this is just for successful compilation
         private void AddFriendRequest(FriendRequest friendRequest)
         {
             this.friendRequests.Add(friendRequest.FriendRequestId, friendRequest);
@@ -84,11 +82,13 @@ namespace DCL.Social.Friends
         private void AddFriend(UserStatus friend)
         {
             this.friends.Add(friend.userId, friend);
+            // todo (Joni): call onTotalFriendCountUpdated
         }
 
         private void InternalRemoveFriend(string userId)
         {
             this.friends.Remove(userId);
+            // todo (Joni)
         }
 
         private void InitializeFriendships(FriendshipInitializationMessage msg)
@@ -352,6 +352,7 @@ namespace DCL.Social.Friends
             UpdateUserStatus(newUserStatus);
         }
 
+        // TODO (Joni): this should be called after AddFriendRequests / RemoveFriendRequest
         private void UpdateTotalFriendRequests(UpdateTotalFriendRequestsPayload msg)
         {
             TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
@@ -383,11 +384,13 @@ namespace DCL.Social.Friends
 
         private void ReceiveFriendRequest(FriendRequestPayload msg)
         {
+            // TODO (Joni): This will be called from RPCSocialBridge, modify accordingly
             FriendRequest request = ToFriendRequest(msg);
             friendRequests[msg.friendRequestId] = request;
             OnFriendRequestReceived?.Invoke(request);
         }
 
+        // TODO (Joni): Replace by according friend event from RPC Bridge
         private void HandleUpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
         {
             UpdateFriendshipStatus(msg);
@@ -471,6 +474,8 @@ namespace DCL.Social.Friends
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         private void AddFriendRequests(AddFriendRequestsPayload msg)
         {
+            // TODO (Joni): use the social bridge result
+            // this should be called from OnFriendRequestsAdded
             TotalReceivedFriendRequestCount = msg.totalReceivedFriendRequests;
             TotalSentFriendRequestCount = msg.totalSentFriendRequests;
             OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
