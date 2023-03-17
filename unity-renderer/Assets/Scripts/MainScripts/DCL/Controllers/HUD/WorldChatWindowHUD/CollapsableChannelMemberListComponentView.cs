@@ -76,6 +76,7 @@ public class CollapsableChannelMemberListComponentView : CollapsableSortedListCo
     {
         // Need to preload the full profile since kernel sends a minimal profile for every channel member
         // This allows to see the profile information when inspecting it in the UI
+        // It may be a race condition if you press the profile button before the profile is fetched, resulting in an incomplete profile in the passport UI
         // TODO: remove when we have a better way of managing profiles.. should be transparent for the UI
         preloadProfilesCancellationToken = preloadProfilesCancellationToken.SafeRestart();
         LoadFullProfileStrategy?.Invoke(model.userId, preloadProfilesCancellationToken.Token).Forget();
