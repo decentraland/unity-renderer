@@ -46,6 +46,7 @@ namespace DCL.GLTFast.Wrappers
 
         private static bool IsGltfBinary(byte[] data)
         {
+            if (data == null) return false;
             var gltfBinarySignature = BitConverter.ToUInt32(data, 0);
             return gltfBinarySignature == GLB_SIGNATURE;
         }

@@ -78,8 +78,15 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
                 asset.Setup(sceneAb, contentUrl);
             }
             catch (OperationCanceledException) { }
+            catch (UnityWebRequestException)
+            {
+                if (!IsEmptyScene())
+                    Debug.LogError("No Asset Bundles for scene " + finalUrl);
+            }
             finally { onSuccess(); }
         }
+
+        private bool IsEmptyScene() => hash.Contains(",");
 
         protected override void OnBeforeLoadOrReuse() { }
 
