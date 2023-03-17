@@ -81,7 +81,7 @@ namespace DCL.Components
             UIShape childComponent = updatedComponent as UIShape;
             Assert.IsTrue(childComponent != null, "This should never happen!!!!");
 
-            if (((UIShape.Model) childComponent.GetModel()).parentComponent != id)
+            if (((UIShape.Model)childComponent.GetModel()).parentComponent != this.id)
             {
                 MarkLayoutDirty();
                 return;
