@@ -265,7 +265,7 @@ function* cacheCatalystRealm() {
   if (
     isOnboarding &&
     realmAdapter.about.configurations?.realmName !==
-      getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
+      yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
   ) {
     yield put(saveProfileDelta({ tutorialStep: 256 }))
     isOnboarding = false
