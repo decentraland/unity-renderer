@@ -150,6 +150,12 @@ namespace DCL.Social.Passports
 
         private void AddPlayerAsFriend()
         {
+            if (userProfileBridge.GetOwn().isGuest)
+            {
+                dataStore.HUDs.connectWalletModalVisible.Set(true);
+                return;
+            }
+
             if (isNewFriendRequestsEnabled)
                 dataStore.HUDs.sendFriendRequest.Set(currentPlayerId, true);
             else
@@ -272,6 +278,12 @@ namespace DCL.Social.Passports
 
         private void WhisperUser(string userId)
         {
+            if (userProfileBridge.GetOwn().isGuest)
+            {
+                dataStore.HUDs.connectWalletModalVisible.Set(true);
+                return;
+            }
+
             dataStore.HUDs.openChat.Set(userId, true);
             socialAnalytics.SendStartedConversation(PlayerActionSource.Passport);
             OnClosePassport?.Invoke();
