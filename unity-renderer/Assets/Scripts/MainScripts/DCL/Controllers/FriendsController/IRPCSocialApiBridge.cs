@@ -29,10 +29,6 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody, CancellationToken cancellationToken = default);
 
-        string GetUserIdFromFriendRequestId(string friendRequestId);
-
-        string GetFriendRequestId(string userId, long createdAt);
-
         UniTask UpdateFriendship(UpdateFriendshipPayload updateFriendshipPayload, CancellationToken cancellationToken = default);
 
         void RemoveFriend(string userId);

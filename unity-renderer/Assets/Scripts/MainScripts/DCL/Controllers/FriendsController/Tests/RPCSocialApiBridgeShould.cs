@@ -5,6 +5,7 @@ using Decentraland.Social.Friendships;
 using Google.Protobuf.WellKnownTypes;
 using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -103,7 +104,6 @@ namespace DCL.Social.Friends
             return UniTask.ToCoroutine(async () =>
             {
                 var cancellationToken = new CancellationToken();
-
                 var friends = new Dictionary<string, UserStatus>();
                 var friendRequests = new Dictionary<string, FriendRequest>();
 
