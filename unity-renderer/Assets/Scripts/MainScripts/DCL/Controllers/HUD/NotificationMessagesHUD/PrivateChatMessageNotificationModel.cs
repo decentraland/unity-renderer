@@ -10,9 +10,10 @@ namespace DCL.Chat.Notifications
         public string PeerUsername { get; }
         public string ProfilePicture { get; }
         public bool ImTheSender { get; }
+        public bool IsOwnPlayerMentioned { get; }
 
         public PrivateChatMessageNotificationModel(string messageId, string targetId, string body, ulong timestamp, string senderUsername, string peerUsername,
-            bool imTheSender, string profilePicture = null)
+            bool imTheSender, bool isOwnPlayerMentioned, string profilePicture = null)
         {
             MessageId = messageId;
             TargetId = targetId;
@@ -21,6 +22,7 @@ namespace DCL.Chat.Notifications
             SenderUsername = senderUsername;
             PeerUsername = peerUsername;
             ImTheSender = imTheSender;
+            IsOwnPlayerMentioned = isOwnPlayerMentioned;
             ProfilePicture = profilePicture;
         }
     }

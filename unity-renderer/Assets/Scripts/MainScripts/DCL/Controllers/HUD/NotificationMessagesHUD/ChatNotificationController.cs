@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using System;
 using System.Collections.Generic;
@@ -149,6 +150,7 @@ namespace DCL.Chat.Notifications
         {
             string body = message.body;
             string openedChatId = openedChat.Get();
+            bool isOwnPlayerMentioned = MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, body);
 
             if (message.messageType == ChatMessage.Type.PRIVATE)
             {
@@ -160,8 +162,15 @@ namespace DCL.Chat.Notifications
                 string peerProfilePicture = peerProfile?.face256SnapshotURL;
                 string senderName = senderProfile?.userName ?? message.sender;
 
-                var privateModel = new PrivateChatMessageNotificationModel(message.messageId,
-                    isMyMessage ? peerId : message.sender, body, message.timestamp, senderName, peerName, isMyMessage,
+                var privateModel = new PrivateChatMessageNotificationModel(
+                    message.messageId,
+                    isMyMessage ? peerId : message.sender,
+                    body,
+                    message.timestamp,
+                    senderName,
+                    peerName,
+                    isMyMessage,
+                    isOwnPlayerMentioned,
                     peerProfilePicture);
 
                 mainChatNotificationView.AddNewChatNotification(privateModel);
@@ -169,6 +178,9 @@ namespace DCL.Chat.Notifications
                 if (message.sender != openedChatId && message.recipient != openedChatId)
                     if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                         topNotificationView.AddNewChatNotification(privateModel);
+
+                if (isOwnPlayerMentioned)
+                    AudioScriptableObjects.ChatReceiveMentionEvent.Play(true);
             }
             else if (message.messageType == ChatMessage.Type.PUBLIC)
             {
@@ -182,9 +194,15 @@ namespace DCL.Chat.Notifications
                     body = await profanityFilter.Filter(message.body, cancellationToken);
                 }
 
-                var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
-                    body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp,
-                    isMyMessage, senderName);
+                var publicModel = new PublicChannelMessageNotificationModel(
+                    message.messageId,
+                    body,
+                    channel?.Name ?? message.recipient,
+                    channel?.ChannelId,
+                    message.timestamp,
+                    isMyMessage,
+                    senderName,
+                    isOwnPlayerMentioned);
 
                 mainChatNotificationView.AddNewChatNotification(publicModel);
 

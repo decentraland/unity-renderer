@@ -2,12 +2,13 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using DCL.Social.Chat.Mentions;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
@@ -19,6 +20,10 @@ namespace DCL.Chat.HUD
         [SerializeField] internal bool showUserName = true;
         [SerializeField] private RectTransform hoverPanelPositionReference;
         [SerializeField] private RectTransform contextMenuPositionReference;
+        [SerializeField] private MentionLinkDetector mentionLinkDetector;
+        [SerializeField] private Color autoMentionBackgroundColor;
+        [SerializeField] private Image backgroundImage;
+        [SerializeField] internal UserProfile ownUserProfile;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -215,6 +220,9 @@ namespace DCL.Chat.HUD
         private void OnDestroy()
         {
             populationTaskCancellationTokenSource.Cancel();
+
+            if (mentionLinkDetector != null)
+                mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
         }
 
         public override void SetFadeout(bool enabled)
@@ -233,6 +241,16 @@ namespace DCL.Chat.HUD
         {
             panel.pivot = hoverPanelPositionReference.pivot;
             panel.position = hoverPanelPositionReference.position;
+        }
+
+        public override void ConfigureMentionLinkDetector(UserContextMenu userContextMenu)
+        {
+            if (mentionLinkDetector == null)
+                return;
+
+            mentionLinkDetector.SetContextMenu(userContextMenu);
+            mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
+            mentionLinkDetector.OnOwnPlayerMentioned += OnOwnPlayerMentioned;
         }
 
         private void Update()
@@ -297,6 +315,14 @@ namespace DCL.Chat.HUD
             //NOTE(Brian): ContentSizeFitter doesn't fare well with tabs, so i'm replacing these
             //             with spaces.
             return text.Replace("\t", "    ");
+        }
+
+        private void OnOwnPlayerMentioned()
+        {
+            if (model.senderId == ownUserProfile.userId)
+                return;
+
+            backgroundImage.color = autoMentionBackgroundColor;
         }
     }
 }

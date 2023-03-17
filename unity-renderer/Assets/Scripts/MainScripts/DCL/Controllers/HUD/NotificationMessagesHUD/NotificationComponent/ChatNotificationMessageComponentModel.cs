@@ -19,5 +19,6 @@ namespace DCL.Chat.Notifications
         public string notificationTargetId;
         public bool isImageVisible = true;
         public bool isDockedLeft = true;
+        public bool isOwnPlayerMentioned;
     }
 }

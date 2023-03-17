@@ -4,6 +4,8 @@ using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
+using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
@@ -162,7 +164,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             friendsController,
             socialAnalytics,
             Substitute.For<IMouseCatcher>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
+            Substitute.For<IChatMentionSuggestionProvider>());
 
         controller.Initialize(GivenView());
 
@@ -193,7 +195,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<ISocialAnalytics>(),
             Substitute.For<IChannelsFeatureFlagService>(),
             Substitute.For<IBrowserBridge>(),
-            CommonScriptableObjects.rendererState);
+            CommonScriptableObjects.rendererState,
+            new DataStore_Mentions());
 
         controller.Initialize(GivenView());
 
@@ -221,7 +224,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<IMouseCatcher>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
+            Substitute.For<IChatMentionSuggestionProvider>(),
+            Substitute.For<ISocialAnalytics>());
 
         controller.Initialize(GivenView());
 
@@ -295,9 +299,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             userProfileBridge,
             chatController,
             Substitute.For<IMouseCatcher>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             socialAnalytics,
-            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()));
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
+            Substitute.For<IChatMentionSuggestionProvider>());
 
         controller.Initialize(GivenView());
 

@@ -44,7 +44,6 @@ namespace DCL.Social.Passports
             passportApiBridge = Substitute.For<IPassportApiBridge>();
             friendsController = Substitute.For<IFriendsController>();
             playerInfoController = new PassportPlayerInfoComponentController(
-                                currentPlayerInfoCardId,
                                 Substitute.For<IPassportPlayerInfoComponentView>(),
                                 dataStore,
                                 profanityFilter,
@@ -77,7 +76,6 @@ namespace DCL.Social.Passports
                 playerInfoController,
                 playerPreviewController,
                 passportNavigationController,
-                currentPlayerInfoCardId,
                 userProfileBridge,
                 passportApiBridge,
                 socialAnalytics,

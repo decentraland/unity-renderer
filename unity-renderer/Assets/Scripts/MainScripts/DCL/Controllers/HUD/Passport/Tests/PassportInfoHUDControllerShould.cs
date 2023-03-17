@@ -1,12 +1,9 @@
-using AvatarSystem;
 using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Social.Passports
@@ -14,7 +11,6 @@ namespace DCL.Social.Passports
     public class PassportInfoHUDControllerShould
     {
         private PassportPlayerInfoComponentController playerInfoController;
-        private StringVariable currentPlayerInfoCardId;
         private IUserProfileBridge userProfileBridge;
         private ISocialAnalytics socialAnalytics;
         private DataStore dataStore;
@@ -26,7 +22,6 @@ namespace DCL.Social.Passports
         [SetUp]
         public void Setup()
         {
-            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
             dataStore = Substitute.For<DataStore>();
@@ -36,7 +31,6 @@ namespace DCL.Social.Passports
             playerInfoView = Substitute.For<IPassportPlayerInfoComponentView>();
 
             playerInfoController = new PassportPlayerInfoComponentController(
-                currentPlayerInfoCardId,
                 playerInfoView,
                 dataStore,
                 profanityFilter,
