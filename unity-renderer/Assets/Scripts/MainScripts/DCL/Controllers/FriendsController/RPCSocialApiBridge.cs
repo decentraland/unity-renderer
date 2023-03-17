@@ -46,13 +46,13 @@ namespace MainScripts.DCL.Controllers.FriendsController
             cancellationToken.ThrowIfCancellationRequested();
             var ownUserProfile = UserProfile.GetOwnUserProfile();
 
-            await UniTask.WaitUntil(() => ownUserProfile.userId != null);
+            await UniTask.WaitUntil(() => ownUserProfile.userId != null, PlayerLoopTiming.Update, cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
 
             var friendsStream = rpc.Social().GetFriends(new Empty());
 
-            await foreach (var friends in friendsStream)
+            await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
                 foreach (var friend in friends.Users_) { OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address }); }
             }
@@ -85,7 +85,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            await foreach (var item in stream)
+            await foreach (var item in stream.WithCancellation(cancellationToken))
             {
                 foreach (var friendshipEvent in item.Events)
                 {
@@ -145,10 +145,10 @@ namespace MainScripts.DCL.Controllers.FriendsController
             return new FriendRequest(GetFriendRequestId(friendUserId, createdAt), createdAt, "GET OWN ADDRESS", friendUserId, messageBody);
         }
 
-        public string GetUserIdFromFriendRequestId(string friendRequestId) =>
+        private static string GetUserIdFromFriendRequestId(string friendRequestId) =>
             friendRequestId.Split("-")[0];
 
-        public string GetFriendRequestId(string userId, long createdAt) =>
+        private static string GetFriendRequestId(string userId, long createdAt) =>
             $"{userId}-{createdAt}";
 
         public async UniTask UpdateFriendship(UpdateFriendshipPayload updateFriendshipPayload, CancellationToken cancellationToken = default)

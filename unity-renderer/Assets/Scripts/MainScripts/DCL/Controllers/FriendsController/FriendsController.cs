@@ -39,7 +39,7 @@ namespace DCL.Social.Friends
         public FriendsController(IFriendsApiBridge apiBridge, IRPCSocialApiBridge rpcSocialApiBridge)
         {
             this.apiBridge = apiBridge;
-            apiBridge.OnInitialized += Initialize;
+            apiBridge.OnInitialized += InitializeFriendships;
             apiBridge.OnFriendNotFound += FriendNotFound;
             apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
@@ -61,7 +61,7 @@ namespace DCL.Social.Friends
         {
             controllerCancellationTokenSource = new CancellationTokenSource();
 
-            socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.Initialize).Forget();
+            socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.InitializeFriendships).Forget();
             socialApiBridge.InitializeClient(controllerCancellationTokenSource.Token).Forget();
         }
 
@@ -91,7 +91,7 @@ namespace DCL.Social.Friends
             this.friends.Remove(userId);
         }
 
-        private void Initialize(FriendshipInitializationMessage msg)
+        private void InitializeFriendships(FriendshipInitializationMessage msg)
         {
             if (IsInitialized) return;
 
