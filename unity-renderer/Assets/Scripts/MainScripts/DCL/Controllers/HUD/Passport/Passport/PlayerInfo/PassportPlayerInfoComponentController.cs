@@ -148,8 +148,14 @@ namespace DCL.Social.Passports
             return dataStore.settings.profanityChatFilteringEnabled.Get();
         }
 
-        private void AddPlayerAsFriend()
+        internal void AddPlayerAsFriend()
         {
+            if (userProfileBridge.GetOwn().isGuest)
+            {
+                dataStore.HUDs.connectWalletModalVisible.Set(true);
+                return;
+            }
+
             if (isNewFriendRequestsEnabled)
                 dataStore.HUDs.sendFriendRequest.Set(currentPlayerId, true);
             else

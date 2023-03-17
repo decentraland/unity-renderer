@@ -77,17 +77,7 @@ namespace DCL.Social.Passports
             OnCurrentPlayerIdChanged(currentPlayerId, null);
 
             playerInfoController.OnClosePassport += ClosePassport;
-            dataStore.HUDs.closedWalletModal.OnChange += ClosedGuestWalletPanel;
             dataStore.HUDs.currentPassportSortingOrder.Set(view.PassportCurrentSortingOrder);
-        }
-
-        private void ClosedGuestWalletPanel(bool current, bool previous)
-        {
-            if (current)
-            {
-                ClosePassport();
-                dataStore.HUDs.closedWalletModal.Set(false, false);
-            }
         }
 
         private void ClosePassport()
@@ -129,7 +119,6 @@ namespace DCL.Social.Passports
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
             playerInfoController.OnClosePassport -= ClosePassport;
-            dataStore.HUDs.closedWalletModal.OnChange -= ClosedGuestWalletPanel;
 
             playerInfoController.Dispose();
             playerPreviewController.Dispose();
@@ -170,10 +159,6 @@ namespace DCL.Social.Passports
         {
             isOpen = visible;
 
-            if (visible && userProfileBridge.GetOwn().isGuest)
-            {
-                dataStore.HUDs.connectWalletModalVisible.Set(true);
-            }
             playerInfoCardVisibleState.Set(visible);
             view.SetPassportPanelVisibility(visible);
             playerPreviewController.SetPassportPanelVisibility(visible);
