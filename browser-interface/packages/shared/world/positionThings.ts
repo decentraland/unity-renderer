@@ -127,21 +127,28 @@ function pickSpawnpoint(land: Scene, targetWorldPosition: Vector3, basePosition:
   let closestIndex = 0
   let closestDist = Number.MAX_SAFE_INTEGER
 
-  targetWorldPosition.x += halfParcelSize
-  targetWorldPosition.z += halfParcelSize
+  const centeredWorldPos = new Vector3(
+    targetWorldPosition.x + halfParcelSize,
+    targetWorldPosition.y,
+    targetWorldPosition.z + halfParcelSize
+  )
 
   // we compare world positions from the target parcel and the spawn points
-  const spawnDistances = eligiblePoints.map((value: SpawnPoint) => {
-    const pos = getSpawnPointWorldPosition(value).add(basePosition)
-    const dist = Vector3.Distance(targetWorldPosition, pos)
-    return dist
-  })
+  if (eligiblePoints.length > 1) {
+    const spawnDistances = eligiblePoints.map((value: SpawnPoint) => {
+      const pos = getSpawnPointWorldPosition(value).add(basePosition)
+      const dist = Vector3.Distance(centeredWorldPos, pos)
+      return dist
+    })
 
-  for (let i = 0; i < spawnDistances.length; i++) {
-    if (spawnDistances[i] < closestDist) {
-      closestDist = spawnDistances[i]
-      closestIndex = i
+    for (let i = 0; i < spawnDistances.length; i++) {
+      if (spawnDistances[i] < closestDist) {
+        closestDist = spawnDistances[i]
+        closestIndex = i
+      }
     }
+  } else {
+    closestIndex = 0
   }
 
   const { position, cameraTarget } = eligiblePoints[closestIndex]
