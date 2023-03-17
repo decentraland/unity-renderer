@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IComponentModelConfig<NFTIconComponentModel>
 {
+    private const string NAME_TYPE = "name";
+    private const string PARCEL_TYPE = "parcel";
+    private const string ESTATE_TYPE = "estate";
 
     [SerializeField] internal ButtonComponentView marketplaceButton;
     [SerializeField] internal Button detailInfoButton;
@@ -35,8 +38,8 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     private NFTItemInfo.Model nftItemInfoCurrentModel;
     private bool showCategoryInfoOnNftItem;
     private string nftItemInfoRarity;
-    private static readonly List<string> landTypes = new () { "parcel", "estate" };
-    private static string nameType = "name";
+    private static readonly List<string> landTypes = new () { PARCEL_TYPE, ESTATE_TYPE };
+    private static string nameType = NAME_TYPE;
     private static readonly Vector3 LAND_IMAGE_SCALE = new (5, 5, 5);
     private static readonly Vector3 NORMAL_IMAGE_SCALE = new (1, 1, 1);
 
