@@ -12,13 +12,15 @@ namespace DCL.Chat.HUD
         private const int LOAD_TIMEOUT = 2;
         private const int LOAD_PAGE_SIZE = 30;
         private const int MINUTES_FOR_AUTOMATIC_RELOADING = 1;
+
         private readonly IChatController chatController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore_Channels dataStoreChannels;
-        private IChannelMembersComponentView view;
+        private readonly IChannelMembersComponentView view;
+
         internal DateTime loadStartedTimestamp = DateTime.MinValue;
-        private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
-        private CancellationTokenSource reloadingCancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource loadingCancellationToken = new ();
+        private CancellationTokenSource reloadingCancellationToken = new ();
         private CancellationTokenSource showMembersCancellationToken = new ();
         private string currentChannelId;
         private int lastLimitRequested;
@@ -35,6 +37,7 @@ namespace DCL.Chat.HUD
             DataStore_Channels dataStoreChannels)
         {
             this.view = view;
+            view.LoadFullProfileStrategy = userProfileBridge.RequestFullUserProfileAsync;
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
             this.dataStoreChannels = dataStoreChannels;
