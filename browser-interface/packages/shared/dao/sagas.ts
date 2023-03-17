@@ -21,10 +21,13 @@ import {
   getFeatureFlagVariantValue,
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
-import { SET_REALM_ADAPTER } from 'shared/realm/actions'
+import {SET_REALM_ADAPTER, setOnboardingState} from 'shared/realm/actions'
 import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
-import { getFetchContentServerFromRealmAdapter, getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
-import { IRealmAdapter } from 'shared/realm/types'
+import {
+  getFetchContentServerFromRealmAdapter, getOnboardingState,
+  getProfilesContentServerFromRealmAdapter
+} from 'shared/realm/selectors'
+import {IRealmAdapter, OnboardingState} from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
@@ -50,8 +53,6 @@ import { getCurrentUserProfile } from '../profiles/selectors'
 import { saveProfileDelta } from '../profiles/actions'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
-let isCurrentlyInOnboarding = false
-let onboardingRealmName = ""
 
 function getLastRealmCacheKey(network: ETHEREUM_NETWORK) {
   return 'last_realm_string_' + network
@@ -181,7 +182,7 @@ function* onboardingTutorialRealm() {
   const profile = yield select(getCurrentUserProfile)
   if (profile) {
     const needsTutorial = RESET_TUTORIAL || !profile.tutorialStep
-    onboardingRealmName = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
+    let onboardingRealmName = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
     const isNewTutorialDisabled =
       onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
     if (needsTutorial && !isNewTutorialDisabled) {
@@ -193,7 +194,7 @@ function* onboardingTutorialRealm() {
           //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
           //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
           //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
-          isCurrentlyInOnboarding = true
+          yield put(setOnboardingState({isInOnboarding: true, onboardingRealm: realm}))
           return realm
         } else {
           logger.warn('No realm was provided for the onboarding experience.')
@@ -260,9 +261,10 @@ function* cacheCatalystRealm() {
   // PRINT DEBUG INFO
   const dao: string = yield select((state) => state.dao)
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-  if (isCurrentlyInOnboarding && realmAdapter.about.configurations?.realmName !== onboardingRealmName) {
+  const onboardingInfo : OnboardingState = yield select(getOnboardingState)
+  if (onboardingInfo.isInOnboarding && realmAdapter.about.configurations?.realmName !== onboardingInfo.onboardingRealm) {
     yield put(saveProfileDelta({ tutorialStep: 256 }))
-    isCurrentlyInOnboarding = false
+    yield put(setOnboardingState({ isInOnboarding: false }))
   }
 
   if (realmAdapter) {
