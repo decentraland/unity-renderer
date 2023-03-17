@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using SocialFeaturesAnalytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -19,7 +20,7 @@ namespace DCL.Social.Passports
         private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, PARCEL_TYPE, ESTATE_TYPE };
 
         private readonly IPlayerPassportHUDView view;
-        private readonly StringVariable currentPlayerId;
+        private readonly BaseVariable<(string playerId, string source)> currentPlayerId;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IPassportApiBridge passportApiBridge;
         private readonly ISocialAnalytics socialAnalytics;
@@ -43,7 +44,6 @@ namespace DCL.Social.Passports
             PassportPlayerInfoComponentController playerInfoController,
             PassportPlayerPreviewComponentController playerPreviewController,
             PassportNavigationComponentController passportNavigationController,
-            StringVariable currentPlayerId,
             IUserProfileBridge userProfileBridge,
             IPassportApiBridge passportApiBridge,
             ISocialAnalytics socialAnalytics,
@@ -55,12 +55,12 @@ namespace DCL.Social.Passports
             this.playerInfoController = playerInfoController;
             this.playerPreviewController = playerPreviewController;
             this.passportNavigationController = passportNavigationController;
-            this.currentPlayerId = currentPlayerId;
             this.userProfileBridge = userProfileBridge;
             this.passportApiBridge = passportApiBridge;
             this.socialAnalytics = socialAnalytics;
             this.dataStore = dataStore;
             this.playerInfoCardVisibleState = playerInfoCardVisibleState;
+            this.currentPlayerId = dataStore.HUDs.currentPlayerId;
 
             view.Initialize(mouseCatcher);
             view.OnClose += ClosePassport;
@@ -74,7 +74,7 @@ namespace DCL.Social.Passports
             passportNavigationController.OnClickCollectibles += ClickedCollectibles;
 
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
-            OnCurrentPlayerIdChanged(currentPlayerId, null);
+            OnCurrentPlayerIdChanged(currentPlayerId.Get(), currentPlayerId.Get());
 
             playerInfoController.OnClosePassport += ClosePassport;
             dataStore.HUDs.currentPassportSortingOrder.Set(view.PassportCurrentSortingOrder);
@@ -93,7 +93,7 @@ namespace DCL.Social.Passports
             passportNavigationController.CloseAllNFTItemInfos();
             passportNavigationController.ResetNavigationTab();
             playerInfoController.ClosePassport();
-            currentPlayerId.Set(null);
+            currentPlayerId.Set((null, null));
         }
 
         /// <summary>
@@ -127,16 +127,16 @@ namespace DCL.Social.Passports
             view?.Dispose();
         }
 
-        private void OnCurrentPlayerIdChanged(string current, string previous)
+        private void OnCurrentPlayerIdChanged((string playerId, string source) current, (string playerId, string source) previous)
         {
             if (currentUserProfile != null)
                 currentUserProfile.OnUpdate -= UpdateUserProfile;
 
             ownedNftCollectionsL1 = new List<Nft>();
             ownedNftCollectionsL2 = new List<Nft>();
-            currentUserProfile = string.IsNullOrEmpty(current)
+            currentUserProfile = string.IsNullOrEmpty(current.playerId)
                 ? null
-                : userProfileBridge.Get(current);
+                : userProfileBridge.Get(current.playerId);
 
             if (currentUserProfile == null)
             {
@@ -147,7 +147,8 @@ namespace DCL.Social.Passports
             {
                 SetPassportPanelVisibility(true);
                 passportOpenStartTime = Time.realtimeSinceStartup;
-                socialAnalytics.SendPassportOpen();
+                Enum.TryParse(current.source, out AvatarOpenSource source);
+                socialAnalytics.SendPassportOpen(source: source);
                 QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;

@@ -5,7 +5,6 @@ using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.UIElements;
-using System;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIInput
@@ -78,6 +77,9 @@ namespace DCL.ECSComponents.UIInput
             uiElement.isReadOnly = isReadonly;
             uiElement.style.fontSize = model.GetFontSize();
             uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();
+
+            if (model.HasValue)
+                uiElement.SetValueWithoutNotify(model.Value);
 
             fontUpdater.Update(model.GetFont());
         }

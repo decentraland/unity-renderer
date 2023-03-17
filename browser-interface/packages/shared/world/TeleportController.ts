@@ -103,12 +103,6 @@ export class TeleportController {
       return { message: errorMessage, success: false }
     }
   }
-
-  public static LoadingHUDReadyForTeleport(_data: { x: number; y: number }) {
-    /// This doesn't work when the logic of activate/deactivate rendering is so tightly coupled with the loading
-    /// screen. The code needs rework
-    // store.dispatch(teleportToAction({ position: gridToWorld(data.x, data.y) }))
-  }
 }
 
 async function fetchHomePoint(): Promise<{ x: number; y: number }> {

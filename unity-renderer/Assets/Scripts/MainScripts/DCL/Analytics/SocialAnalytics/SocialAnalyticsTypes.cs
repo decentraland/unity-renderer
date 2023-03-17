@@ -15,6 +15,15 @@ namespace SocialFeaturesAnalytics
         ProfileEditHUD
     }
 
+    public enum AvatarOpenSource
+    {
+        FriendsHUD,
+        Mention,
+        World,
+        FriendRequest,
+        ProfileHUD
+    }
+
     public enum ItemType
     {
         Wearable,
@@ -32,5 +41,11 @@ namespace SocialFeaturesAnalytics
     {
         Shortcut,
         Button
+    }
+
+    public enum MentionCreationSource
+    {
+        SuggestionList,
+        ProfileContextMenu,
     }
 }

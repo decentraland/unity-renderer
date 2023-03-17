@@ -1,9 +1,10 @@
 ﻿using DCL;
+using DCL.Helpers;
 using System;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 /// <summary>
@@ -21,7 +22,7 @@ public static class InputProcessor
         NeedsPointerLocked = 0b0000001, // The pointer must be locked to the game
         FocusNotInInput = 0b0000010, // The game focus cannot be in an input field
         NotInStartMenu = 0b0000100, // The game focus cannot be in full-screen start menu
-        OnlyWithInputFocused = 0b0001000 // The game focus must be in an input field
+        OnlyWithInputFocused = 0b0001000, // The game focus must be in an input field
     }
 
     /// <summary>
@@ -70,7 +71,7 @@ public static class InputProcessor
     /// <returns></returns>
     private static bool PassModifiers(Modifier modifiers)
     {
-        if (IsModifierSet(modifiers, Modifier.NeedsPointerLocked) && !DCL.Helpers.Utils.IsCursorLocked)
+        if (IsModifierSet(modifiers, Modifier.NeedsPointerLocked) && !Utils.IsCursorLocked)
             return false;
 
         bool isInputFieldFocused = FocusIsInInputField();
@@ -219,7 +220,7 @@ public static class InputProcessor
 
         return EventSystem.current.currentSelectedGameObject != null &&
                (EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null ||
-                EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>() != null ||
+                EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null ||
                 FocusIsInTextField(EventSystem.current.currentSelectedGameObject));
     }
 
