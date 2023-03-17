@@ -1,4 +1,5 @@
 using DCL.Interface;
+using System.Runtime.InteropServices;
 using UnityEngine.Events;
 
 namespace DCL.HelpAndSupportHUD
@@ -38,8 +39,7 @@ namespace DCL.HelpAndSupportHUD
 #if UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern void OpenIntercom();
-
-        private static void OpenIntercom() { }
+        
 #endif
 
         public void Dispose()
