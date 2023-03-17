@@ -137,6 +137,7 @@ namespace Tests
         public void CreateSceneRootUIContainerCorrectly()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             // root scene ui component should not exist
             Assert.IsNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -148,7 +149,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, entityId, model);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // root scene ui component should exist now
             Assert.IsNotNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -179,6 +180,7 @@ namespace Tests
         public void ApplyParenting()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             const int childEntityId = 111;
             const int parentEntityId = 112;
@@ -189,7 +191,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // parent doesnt exist yet, so it shouldn't be any parenting
             Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
@@ -200,7 +202,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, parentEntityId, parentModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // parenting should be applied
             var parentEntityModel = uiContainerComponent.GetFor(scene, parentEntityId).model;
@@ -519,6 +521,7 @@ namespace Tests
         public void AvoidMovingNonUiContainerElementsWhenSorting()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             ECS7TestEntity baseParentEntity = scene.CreateEntity(110);
             ECS7TestEntity baseParentChildEntity = scene.CreateEntity(111);
@@ -562,7 +565,7 @@ namespace Tests
             });
 
             // Sort
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
             ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
 
             // Check the Label Ui Element keeps being the first child of baseParentChildEntity root element
@@ -578,6 +581,7 @@ namespace Tests
         {
             const int sceneNumber = 666;
             ECS7TestScene scene = sceneTestHelper.CreateScene(sceneNumber);
+            HashSet<IParcelScene> scenesToSortUi = new HashSet<IParcelScene>();
 
             const int entityId = 111;
 
@@ -585,7 +589,7 @@ namespace Tests
             entityModel.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 
-            HashSet<IParcelScene> scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, sceneNumber);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSortUi, uiDocument, uiContainerComponent, sceneNumber);
 
             // Since not `shouldSort` is flagged collection should be empty
             Assert.IsEmpty(scenesToSortUi);
@@ -594,7 +598,7 @@ namespace Tests
             entityModel.shouldSort = true;
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 
-            scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, sceneNumber);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSortUi, uiDocument, uiContainerComponent, sceneNumber);
 
             Assert.IsNotEmpty(scenesToSortUi);
         }
