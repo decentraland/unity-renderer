@@ -6,7 +6,7 @@ import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPo
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { DEBUG, playerHeight } from 'config'
 import { isInsideWorldLimits, Scene, SpawnPoint } from '@dcl/schemas'
-import { parcelSize } from 'lib/decentraland/parcels/limits'
+import { halfParcelSize } from 'lib/decentraland/parcels/limits'
 
 export type PositionReport = {
   /** Camera position, world space */
@@ -86,7 +86,6 @@ export function getInitialPositionFromUrl(): ReadOnlyVector2 | undefined {
  * @param loadPosition Parcel position on which the player is teleporting to
  */
 export function pickWorldSpawnpoint(land: Scene, loadPosition: Vector3): InstancedSpawnPoint {
-  
   const baseParcel = land.scene.base
   const [bx, by] = baseParcel.split(',')
   const basePosition = new Vector3()
@@ -128,19 +127,20 @@ function pickSpawnpoint(land: Scene, targetWorldPosition: Vector3, basePosition:
   let closestIndex = 0
   let closestDist = Number.MAX_SAFE_INTEGER
 
-  // we compare world positions from the target parcel and the spawn points
-  const spawnDistances = eligiblePoints.map( (value: SpawnPoint, index: number , array: SpawnPoint[]) => { 
-    const pos = getSpawnPointWorldPosition(value).add(basePosition);
-    const dist = Vector3.Distance(targetWorldPosition, pos) 
-    return dist
-  } )
+  targetWorldPosition.x += halfParcelSize
+  targetWorldPosition.z += halfParcelSize
 
-  for(let i = 0; i < spawnDistances.length; i++)
-  {
-    if (spawnDistances[i] < closestDist)
-    {
-        closestDist = spawnDistances[i]
-        closestIndex = i
+  // we compare world positions from the target parcel and the spawn points
+  const spawnDistances = eligiblePoints.map((value: SpawnPoint) => {
+    const pos = getSpawnPointWorldPosition(value).add(basePosition)
+    const dist = Vector3.Distance(targetWorldPosition, pos)
+    return dist
+  })
+
+  for (let i = 0; i < spawnDistances.length; i++) {
+    if (spawnDistances[i] < closestDist) {
+      closestDist = spawnDistances[i]
+      closestIndex = i
     }
   }
 
@@ -200,16 +200,36 @@ function computeComponentValue(x: number | number[]) {
   return Math.random() * (max - min) + min
 }
 
-function getSpawnPointWorldPosition(spawnPoint: SpawnPoint)
-{
-  const x = spawnPoint.position.x;
-  const y = spawnPoint.position.y;
-  const z = spawnPoint.position.z;
+function getSpawnPointWorldPosition(spawnPoint: SpawnPoint) {
+  const x = getMidPoint(spawnPoint.position.x)
+  const y = getMidPoint(spawnPoint.position.y)
+  const z = getMidPoint(spawnPoint.position.z)
+  return new Vector3(x, y, z)
+}
 
-  if (typeof x === "number" && typeof y === "number" && typeof z === "number")
-  {
-    return new Vector3(x, y ,z); 
-  } else {
-    return new Vector3(x[0], y[0], z[0]); 
+function getMidPoint(x: number | number[]) {
+  if (typeof x === 'number') {
+    return x
   }
+
+  const length = x.length
+  if (length === 0) {
+    return 0
+  } else if (length < 2) {
+    return x[0]
+  } else if (length > 2) {
+    x = [x[0], x[1]]
+  }
+
+  let [min, max] = x
+
+  if (min === max) return max
+
+  if (min > max) {
+    const aux = min
+    min = max
+    max = aux
+  }
+
+  return (max - min) / 2 + min
 }

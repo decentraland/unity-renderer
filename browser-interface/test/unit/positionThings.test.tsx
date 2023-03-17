@@ -26,7 +26,7 @@ describe('pickWorldSpawnPoint unit tests', function () {
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
         position: { x: 1 + basePosition.x, y: 2 + basePosition.y, z: 3 + basePosition.z },
-        cameraTarget: { x: 9 + basePosition.x , y: 8 + basePosition.y, z: 7 + basePosition.z }
+        cameraTarget: { x: 9 + basePosition.x, y: 8 + basePosition.y, z: 7 + basePosition.z }
       })
     )
   })
@@ -56,8 +56,8 @@ describe('pickWorldSpawnPoint unit tests', function () {
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 16 + basePosition.x, y: 1 + basePosition.y, z: 1 + basePosition.z},
-        cameraTarget: { x: 16 + basePosition.x, y: 1 + basePosition.y, z: 1 + basePosition.z}
+        position: { x: 16 + basePosition.x, y: 1 + basePosition.y, z: 1 + basePosition.z },
+        cameraTarget: { x: 16 + basePosition.x, y: 1 + basePosition.y, z: 1 + basePosition.z }
       })
     )
   })
@@ -128,8 +128,8 @@ describe('pickWorldSpawnPoint unit tests', function () {
 
     expect(JSON.stringify(pick)).to.deep.equal(
       JSON.stringify({
-        position: { x: 12 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z},
-        cameraTarget: { x: 12 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z}
+        position: { x: 12 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z },
+        cameraTarget: { x: 12 + basePosition.x, y: 2 + basePosition.y, z: 2 + basePosition.z }
       })
     )
   })
@@ -167,11 +167,11 @@ describe('pickWorldSpawnPoint unit tests', function () {
     const basePosition = new Vector3(10 * parcelSize, 0, 10 * parcelSize)
     const pick = pickWorldSpawnpoint(land, basePosition)
 
-    expect(pick.position.x).to.be.at.least(160) 
-    expect(pick.position.x).to.be.below(176) 
+    expect(pick.position.x).to.be.at.least(160)
+    expect(pick.position.x).to.be.below(176)
     expect(pick.position.y).to.equal(0)
-    expect(pick.position.z).to.be.at.least(160) 
-    expect(pick.position.z).to.be.below(176) 
+    expect(pick.position.z).to.be.at.least(160)
+    expect(pick.position.z).to.be.below(176)
     expect(pick.cameraTarget).to.equal(undefined)
   })
 })
