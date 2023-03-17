@@ -1,7 +1,7 @@
 import { AnyAction } from 'redux'
 
-import {OnboardingState, RealmState} from './types'
-import {SET_ONBOARDING_STATE, SET_REALM_ADAPTER} from './actions'
+import { OnboardingState, RealmState } from './types'
+import { SET_ONBOARDING_STATE, SET_REALM_ADAPTER } from './actions'
 
 const INITIAL_COMMS: RealmState = {
   realmAdapter: undefined,

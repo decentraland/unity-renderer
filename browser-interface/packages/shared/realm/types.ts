@@ -12,13 +12,13 @@ export type RealmState = {
 }
 
 export type OnboardingState = {
-  isInOnboarding : boolean
-  onboardingRealm : string | undefined
+  isInOnboarding: boolean
+  onboardingRealm: string | undefined
 }
 
 export type RootRealmState = {
-  realm: RealmState,
-  onboarding : OnboardingState
+  realm: RealmState
+  onboarding: OnboardingState
 }
 
 export type RealmConnectionEvents = {

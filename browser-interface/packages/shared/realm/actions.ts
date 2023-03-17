@@ -1,6 +1,6 @@
 import { IslandChangedMessage } from '@dcl/protocol/out-ts/decentraland/kernel/comms/v3/archipelago.gen'
 import { action } from 'typesafe-actions'
-import {IRealmAdapter, OnboardingState} from './types'
+import { IRealmAdapter, OnboardingState } from './types'
 
 // this action is triggered by the IBff, it is used to connect a comms adapter
 export const CONNECT_TO_COMMS = '[COMMS] ConnectTo'
@@ -14,7 +14,8 @@ export type SetRealmAdapterAction = ReturnType<typeof setRealmAdapter>
 
 // this action is triggered when the onboarding state changes
 export const SET_ONBOARDING_STATE = 'setOnboardingState'
-export const setOnboardingState = (onboardingState : Partial<OnboardingState>) => action(SET_ONBOARDING_STATE, onboardingState)
+export const setOnboardingState = (onboardingState: Partial<OnboardingState>) =>
+  action(SET_ONBOARDING_STATE, onboardingState)
 
 export const HANDLE_REALM_DISCONNECTION = '[COMMS] handleRealmDisconnection'
 export const handleRealmDisconnection = (context: IRealmAdapter) => action(HANDLE_REALM_DISCONNECTION, { context })

@@ -21,13 +21,14 @@ import {
   getFeatureFlagVariantValue,
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
-import {SET_REALM_ADAPTER, setOnboardingState} from 'shared/realm/actions'
+import { SET_REALM_ADAPTER, setOnboardingState } from 'shared/realm/actions'
 import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
 import {
-  getFetchContentServerFromRealmAdapter, getOnboardingState,
+  getFetchContentServerFromRealmAdapter,
+  getOnboardingState,
   getProfilesContentServerFromRealmAdapter
 } from 'shared/realm/selectors'
-import {IRealmAdapter, OnboardingState} from 'shared/realm/types'
+import { IRealmAdapter, OnboardingState } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
@@ -182,7 +183,7 @@ function* onboardingTutorialRealm() {
   const profile = yield select(getCurrentUserProfile)
   if (profile) {
     const needsTutorial = RESET_TUTORIAL || !profile.tutorialStep
-    let onboardingRealmName = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
+    const onboardingRealmName = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
     const isNewTutorialDisabled =
       onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
     if (needsTutorial && !isNewTutorialDisabled) {
@@ -194,7 +195,7 @@ function* onboardingTutorialRealm() {
           //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
           //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
           //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
-          yield put(setOnboardingState({isInOnboarding: true, onboardingRealm: realm}))
+          yield put(setOnboardingState({ isInOnboarding: true, onboardingRealm: realm }))
           return realm
         } else {
           logger.warn('No realm was provided for the onboarding experience.')
@@ -261,8 +262,11 @@ function* cacheCatalystRealm() {
   // PRINT DEBUG INFO
   const dao: string = yield select((state) => state.dao)
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-  const onboardingInfo : OnboardingState = yield select(getOnboardingState)
-  if (onboardingInfo.isInOnboarding && realmAdapter.about.configurations?.realmName !== onboardingInfo.onboardingRealm) {
+  const onboardingInfo: OnboardingState = yield select(getOnboardingState)
+  if (
+    onboardingInfo.isInOnboarding &&
+    realmAdapter.about.configurations?.realmName !== onboardingInfo.onboardingRealm
+  ) {
     yield put(saveProfileDelta({ tutorialStep: 256 }))
     yield put(setOnboardingState({ isInOnboarding: false }))
   }

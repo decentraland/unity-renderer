@@ -1,7 +1,7 @@
 import { FETCH_CONTENT_SERVICE, UPDATE_CONTENT_SERVICE } from 'config'
 import { realmToConnectionString, urlWithProtocol } from './resolver'
 import type { IRealmAdapter, RootRealmState } from './types'
-import {OFFLINE_REALM, OnboardingState} from './types'
+import { OFFLINE_REALM, OnboardingState } from './types'
 
 export const isWorldLoaderActive = (realmAdapter: IRealmAdapter) =>
   !!realmAdapter?.about.configurations?.scenesUrn?.length ||
@@ -43,4 +43,3 @@ export const getFetchContentUrlPrefixFromRealmAdapter = (adapter: IRealmAdapter)
 }
 
 export const getOnboardingState = (state: RootRealmState): OnboardingState => state.onboarding
-
