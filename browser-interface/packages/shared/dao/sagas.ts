@@ -51,6 +51,7 @@ import { saveProfileDelta } from '../profiles/actions'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 let isCurrentlyInOnboarding = false
+let onboardingRealmName = ""
 
 function getLastRealmCacheKey(network: ETHEREUM_NETWORK) {
   return 'last_realm_string_' + network
@@ -180,9 +181,9 @@ function* onboardingTutorialRealm() {
   const profile = yield select(getCurrentUserProfile)
   if (profile) {
     const needsTutorial = RESET_TUTORIAL || !profile.tutorialStep
-    const newTutorialFeatureFlag = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
+    onboardingRealmName = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
     const isNewTutorialDisabled =
-      newTutorialFeatureFlag === 'disabled' || newTutorialFeatureFlag === 'undefined' || HAS_INITIAL_POSITION_MARK
+      onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
     if (needsTutorial && !isNewTutorialDisabled) {
       try {
         const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
@@ -259,8 +260,7 @@ function* cacheCatalystRealm() {
   // PRINT DEBUG INFO
   const dao: string = yield select((state) => state.dao)
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-  const onboardingRealm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
-  if (isCurrentlyInOnboarding && realmAdapter.about.configurations?.realmName !== onboardingRealm) {
+  if (isCurrentlyInOnboarding && realmAdapter.about.configurations?.realmName !== onboardingRealmName) {
     yield put(saveProfileDelta({ tutorialStep: 256 }))
     isCurrentlyInOnboarding = false
   }
