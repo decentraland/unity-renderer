@@ -31,8 +31,9 @@ public class TeleportPromptHUDController : IHUD
 
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("TeleportPromptHUD")).GetComponent<TeleportPromptHUDView>();
         view.name = "_TeleportPromptHUD";
-        view.content.SetActive(false);
+        view.OnCloseEvent += view.SetOutAnimation;
         view.OnTeleportEvent += OnTeleportPressed;
+
         dataStore.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
         dataStore.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
     }
@@ -43,9 +44,6 @@ public class TeleportPromptHUDController : IHUD
 
         async UniTaskVoid SetCoordinatesAsync(ParcelCoordinates coordinates, CancellationToken cancellationToken)
         {
-            //view.ShowLoading();
-
-
             try
             {
                 MinimapMetadata.MinimapSceneInfo[] scenes = await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y),
@@ -54,21 +52,28 @@ public class TeleportPromptHUDController : IHUD
 
                 MinimapMetadata.MinimapSceneInfo sceneInfo = scenes.First(info => info.parcels.Exists(i => i.x == coordinates.x && i.y == coordinates.y));
                 view.ShowTeleportToCoords(coordinates.ToString(), sceneInfo.name, sceneInfo.owner, sceneInfo.previewImageUrl);
+                //view.SetParcelImage(sceneInfo.previewImageUrl);
+                teleportData = new TeleportData()
+                {
+                    destination = coordinates.ToString(),
+                    sceneData = sceneInfo,
+                    sceneEvent = null
+                };
                 UniTask.Delay(500, cancellationToken: cancellationToken);
                 view.SetLoadingCompleted();
             }
             catch (OperationCanceledException)
             {
-                //view.SetPanelInfo(coordinates, null);
+                teleportData = new TeleportData()
+                {
+                    destination = coordinates.ToString(),
+                    sceneData = null,
+                    sceneEvent = null
+                };
             }
             catch (Exception e)
             {
-                //view.SetPanelInfo(coordinates, null);
                 Debug.LogException(e);
-            }
-            finally
-            {
-                //view.HideLoading();
             }
         }
 
@@ -79,30 +84,24 @@ public class TeleportPromptHUDController : IHUD
     private void ChangeVisibility(bool current, bool previous)
     {
         SetVisibility(current);
+        if (current)
+        {
+            view.SetInAnimation();
+            AudioScriptableObjects.fadeIn.Play(true);
+        }
+        else
+        {
+            dataStore.HUDs.gotoPanelVisible.Set(false);
+            view.SetOutAnimation();
+        }
     }
 
     public void SetVisibility(bool visible)
     {
-        if (view.contentAnimator.isVisible && !visible)
-        {
-            Debug.Log("Hide");
-            view.SetOutAnimation();
-            view.contentAnimator.Hide();
-        }
-        else if (!view.contentAnimator.isVisible && visible)
-        {
-            view.content.SetActive(true);
-            view.contentAnimator.Show();
-
-            AudioScriptableObjects.fadeIn.Play(true);
-        }
     }
 
     public void RequestTeleport(string teleportDataJson)
     {
-        if (view.contentAnimator.isVisible)
-            return;
-
         Utils.UnlockCursor();
 
         view.Reset();

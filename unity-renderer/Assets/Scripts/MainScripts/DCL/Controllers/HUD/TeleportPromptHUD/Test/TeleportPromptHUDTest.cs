@@ -38,7 +38,6 @@ namespace Tests
             yield return null;
 
             Assert.IsTrue(controller.view.content.activeSelf, "teleport dialog should be visible");
-            controller.view.contentAnimator.Hide(true);
 
             yield return null;
             Assert.IsFalse(controller.view.content.activeSelf, "teleport dialog should not be visible");

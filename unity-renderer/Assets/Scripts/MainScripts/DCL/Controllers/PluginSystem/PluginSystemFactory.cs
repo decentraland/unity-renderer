@@ -6,7 +6,6 @@ using DCL.Emotes;
 using DCL.EmotesWheel;
 using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
-using DCL.GoToPanel;
 using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
 using DCL.Providers;
@@ -37,7 +36,6 @@ namespace DCL
             pluginSystem.Register<TransactionFeature>(() => new TransactionFeature());
             pluginSystem.Register<PreviewMenuPlugin>(() => new PreviewMenuPlugin());
             pluginSystem.Register<SkyboxController>(() => new SkyboxController());
-            pluginSystem.Register<GotoPanelPlugin>(() => new GotoPanelPlugin());
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
             pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());

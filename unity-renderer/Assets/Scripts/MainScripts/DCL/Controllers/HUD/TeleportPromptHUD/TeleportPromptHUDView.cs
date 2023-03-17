@@ -8,8 +8,8 @@ using DCL;
 public class TeleportPromptHUDView : MonoBehaviour
 {
     [SerializeField] internal GameObject content;
-    [SerializeField] internal ShowHideAnimator contentAnimator;
     [SerializeField] internal Animator teleportHUDAnimator;
+    [SerializeField] internal GraphicRaycaster teleportRaycaster;
 
     [Header("Images")]
     [SerializeField] private RawImage imageSceneThumbnail;
@@ -39,6 +39,7 @@ public class TeleportPromptHUDView : MonoBehaviour
 
     [SerializeField] private Button continueButton;
     [SerializeField] private Button cancelButton;
+    [SerializeField] private Button backgroundCatcher;
 
     public event Action OnCloseEvent;
     public event Action OnTeleportEvent;
@@ -48,13 +49,15 @@ public class TeleportPromptHUDView : MonoBehaviour
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
     private static readonly int IDLE = Animator.StringToHash("Idle");
     private static readonly int OUT = Animator.StringToHash("Out");
+    private static readonly int IN = Animator.StringToHash("In");
 
     private void Awake()
     {
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(content.GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         cancelButton.onClick.AddListener(OnClosePressed);
+        backgroundCatcher.onClick.AddListener(OnClosePressed);
         continueButton.onClick.AddListener(OnTeleportPressed);
-        contentAnimator.OnWillFinishHide += (animator) => Hide();
+        teleportRaycaster.enabled = false;
     }
 
     public void Reset()
@@ -75,8 +78,15 @@ public class TeleportPromptHUDView : MonoBehaviour
         teleportHUDAnimator.SetTrigger(IDLE);
     }
 
+    public void SetInAnimation()
+    {
+        teleportRaycaster.enabled = true;
+        teleportHUDAnimator.SetTrigger(IN);
+    }
+
     public void SetOutAnimation()
     {
+        teleportRaycaster.enabled = false;
         teleportHUDAnimator.SetTrigger(OUT);
     }
 
@@ -101,6 +111,7 @@ public class TeleportPromptHUDView : MonoBehaviour
         textSceneName.text = sceneName;
         textSceneOwner.text = sceneCreator;
 
+        Debug.Log($"prev {previewImageUrl}");
         FetchScenePreviewImage(previewImageUrl);
     }
 
@@ -144,18 +155,34 @@ public class TeleportPromptHUDView : MonoBehaviour
         });
     }
 
+    private AssetPromise_Texture texturePromise;
+    public void SetParcelImage(string imageUrl)
+    {
+        containerMagic.SetActive(false);
+        if (string.IsNullOrEmpty(imageUrl)) return;
+
+        if (texturePromise != null)
+            AssetPromiseKeeper_Texture.i.Forget(texturePromise);
+
+        texturePromise = new AssetPromise_Texture(imageUrl, storeTexAsNonReadable: false);
+        texturePromise.OnSuccessEvent += (textureAsset) => { DisplayThumbnail(textureAsset.texture); };
+        AssetPromiseKeeper_Texture.i.Keep(texturePromise);
+    }
+
+    private void DisplayThumbnail(Texture2D texture)
+    {
+        imageSceneThumbnail.texture = texture;
+    }
+
     private void OnClosePressed()
     {
         OnCloseEvent?.Invoke();
-        contentAnimator.Hide(true);
-
         AudioScriptableObjects.dialogClose.Play(true);
     }
 
     private void OnTeleportPressed()
     {
         OnTeleportEvent?.Invoke();
-        contentAnimator.Hide(true);
     }
 
     private void OnDestroy()
