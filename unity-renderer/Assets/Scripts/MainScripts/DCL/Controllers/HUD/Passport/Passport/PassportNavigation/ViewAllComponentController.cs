@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.NotificationModel;
 using DCL.Tasks;
 using DCLServices.Lambdas.LandsService;
@@ -23,7 +24,7 @@ public class ViewAllComponentController : IDisposable
 
     private readonly IWearablesCatalogService wearablesCatalogService;
     private readonly IViewAllComponentView view;
-    private readonly StringVariable currentPlayerId;
+    private readonly DataStore_HUDs hudsDataStore;
     private readonly ILandsService landsService;
     private readonly INamesService namesService;
     private readonly NotificationsController notificationsController;
@@ -32,14 +33,14 @@ public class ViewAllComponentController : IDisposable
 
     public ViewAllComponentController(
         IViewAllComponentView view,
-        StringVariable currentPlayerId,
+        DataStore_HUDs hudsDataStore,
         IWearablesCatalogService wearablesCatalogService,
         ILandsService landsService,
         INamesService namesService,
         NotificationsController notificationsController)
     {
         this.view = view;
-        this.currentPlayerId = currentPlayerId;
+        this.hudsDataStore = hudsDataStore;
         this.wearablesCatalogService = wearablesCatalogService;
         this.landsService = landsService;
         this.namesService = namesService;
@@ -100,13 +101,13 @@ public class ViewAllComponentController : IDisposable
         switch (section)
         {
             case PassportSection.Wearables:
-                RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, sectionsCts.Token).Forget();
+                RequestOwnedWearablesAsync(hudsDataStore.currentPlayerId.Get().playerId, pageNumber, pageSize, sectionsCts.Token).Forget();
                 break;
             case PassportSection.Names:
-                RequestOwnedNamesAsync(currentPlayerId, pageNumber, pageSize, sectionsCts.Token).Forget();
+                RequestOwnedNamesAsync(hudsDataStore.currentPlayerId.Get().playerId, pageNumber, pageSize, sectionsCts.Token).Forget();
                 break;
             case PassportSection.Lands:
-                RequestOwnedLandsAsync(currentPlayerId, pageNumber, pageSize, sectionsCts.Token).Forget();
+                RequestOwnedLandsAsync(hudsDataStore.currentPlayerId.Get().playerId, pageNumber, pageSize, sectionsCts.Token).Forget();
                 break;
         }
     }

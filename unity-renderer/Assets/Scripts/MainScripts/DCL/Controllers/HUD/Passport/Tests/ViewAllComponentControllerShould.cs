@@ -15,7 +15,6 @@ namespace DCL.Social.Passports
     {
         private ViewAllComponentController controller;
         private IViewAllComponentView view;
-        private StringVariable currentPlayerInfoCardId;
         private IWearablesCatalogService wearablesCatalogService;
         private ILandsService landsService;
         private INamesService namesService;
@@ -25,7 +24,6 @@ namespace DCL.Social.Passports
         public void SetUp()
         {
             view = Substitute.For<IViewAllComponentView>();
-            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
             wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
             landsService = Substitute.For<ILandsService>();
             namesService = Substitute.For<INamesService>();
@@ -33,7 +31,7 @@ namespace DCL.Social.Passports
 
             controller = new ViewAllComponentController(
                 view,
-                currentPlayerInfoCardId,
+                Substitute.For<DataStore_HUDs>(),
                 wearablesCatalogService,
                 landsService,
                 namesService,

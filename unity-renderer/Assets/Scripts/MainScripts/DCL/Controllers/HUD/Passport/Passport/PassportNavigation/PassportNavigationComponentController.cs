@@ -26,7 +26,6 @@ namespace DCL.Social.Passports
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
         private readonly ViewAllComponentController viewAllController;
-        private readonly StringVariable currentPlayerId;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
@@ -50,8 +49,7 @@ namespace DCL.Social.Passports
             ILandsService landsService,
             IUserProfileBridge userProfileBridge,
             DataStore dataStore,
-            ViewAllComponentController viewAllController,
-            StringVariable currentPlayerId)
+            ViewAllComponentController viewAllController)
         {
             const string NAME_TYPE = "name";
             const string PARCEL_TYPE = "parcel";
@@ -67,7 +65,6 @@ namespace DCL.Social.Passports
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
             this.viewAllController = viewAllController;
-            this.currentPlayerId = currentPlayerId;
 
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
@@ -281,7 +278,7 @@ namespace DCL.Social.Passports
             if (!confirmed) return;
             dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
             dataStore.exploreV2.isOpen.Set(false, true);
-            currentPlayerId.Set(null);
+            dataStore.HUDs.currentPlayerId.Set((null, null));
         }
     }
 }

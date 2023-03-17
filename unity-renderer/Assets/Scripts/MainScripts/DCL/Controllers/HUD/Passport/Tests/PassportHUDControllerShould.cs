@@ -19,7 +19,6 @@ namespace DCL.Social.Passports
         private PassportPlayerInfoComponentController playerInfoController;
         private PassportPlayerPreviewComponentController playerPreviewController;
         private PassportNavigationComponentController passportNavigationController;
-        private StringVariable currentPlayerInfoCardId;
         private IUserProfileBridge userProfileBridge;
         private ISocialAnalytics socialAnalytics;
         private IWearableItemResolver wearableItemResolver;
@@ -35,7 +34,6 @@ namespace DCL.Social.Passports
 
             view = Substitute.For<IPlayerPassportHUDView>();
 
-            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
             wearableItemResolver = Substitute.For<IWearableItemResolver>();
@@ -71,13 +69,11 @@ namespace DCL.Social.Passports
                                 dataStore,
                                 new ViewAllComponentController(
                                     Substitute.For<IViewAllComponentView>(),
-                                    currentPlayerInfoCardId,
+                                    Substitute.For<DataStore_HUDs>(),
                                     Substitute.For<IWearablesCatalogService>(),
                                     Substitute.For<ILandsService>(),
                                     Substitute.For<INamesService>(),
-                                    NotificationsController.i
-                                    ),
-                                currentPlayerInfoCardId);
+                                    NotificationsController.i));
 
             controller = new PlayerPassportHUDController(
                 view,
