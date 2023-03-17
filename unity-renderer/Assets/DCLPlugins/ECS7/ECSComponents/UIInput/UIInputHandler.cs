@@ -5,13 +5,15 @@ using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIInput
 {
     public class UIInputHandler : UIElementHandlerBase, IECSComponentHandler<PBUiInput>
     {
+        // The 'DCL.UIInput.uss' stylesheet loaded in DCLDefaultRuntimeTheme scriptable object uses this class
+        private const string USS_CLASS = "dcl-input";
+
         private UIFontUpdater fontUpdater;
         private readonly int resultComponentId;
         private readonly IInternalECSComponent<InternalUIInputResults> inputResults;
@@ -37,19 +39,8 @@ namespace DCL.ECSComponents.UIInput
         {
             // `TextField` contains a label as well but
             // passing a null string will actually make it invisible
-
             uiElement = new TextField();
-            var uiElementStyle = uiElement.style;
-            uiElementStyle.flexGrow = 1f;
-            uiElementStyle.marginBottom = 0;
-            uiElementStyle.marginTop = 0;
-            uiElementStyle.marginLeft = 0;
-            uiElementStyle.marginRight = 0;
-
-            // Set child element (automatically created) default values
-            uiElementStyle = uiElement.ElementAt(0).style;
-            uiElementStyle.backgroundColor = new StyleColor(new Color(1, 1, 1, 0));
-            uiElementStyle.marginLeft = 0;
+            uiElement.AddToClassList(USS_CLASS);
 
             placeholder = new TextFieldPlaceholder(uiElement);
 
