@@ -1,5 +1,6 @@
 using DCL.Interface;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace DCL.HelpAndSupportHUD
@@ -10,12 +11,8 @@ namespace DCL.HelpAndSupportHUD
 
         public event System.Action OnClose;
 
-        private const string PATH = "HelpAndSupportHUD";
-        private const string VIEW_OBJECT_NAME = "_HelpAndSupportHUD";
-        private const string JOIN_DISCORD_URL = "https://dcl.gg/discord";
-        private const string FAQ_URL = "https://docs.decentraland.org/decentraland/faq/";
-
         [SerializeField] private ShowHideAnimator helpAndSupportAnimator;
+        [SerializeField] private Button contactSupportButton;
         [SerializeField] private Button joinDiscordButton;
         [SerializeField] private Button visitFAQButton;
         [SerializeField] private Button closeButton;
@@ -25,19 +22,33 @@ namespace DCL.HelpAndSupportHUD
 
         private void Awake() { closeActionDelegate = (x) => SetVisibility(false); }
 
-        private void Initialize()
+        // private void Initialize_OLD()
+        // {
+        //     gameObject.name = VIEW_OBJECT_NAME;
+        //
+        //     joinDiscordButton.onClick.AddListener(() =>
+        //     {
+        //         WebInterface.OpenURL(JOIN_DISCORD_URL);
+        //     });
+        //
+        //     visitFAQButton.onClick.AddListener(() =>
+        //     {
+        //         WebInterface.OpenURL(FAQ_URL);
+        //     });
+        //
+        //     closeButton.onClick.AddListener(() =>
+        //     {
+        //         SetVisibility(false);
+        //     });
+        // }
+
+        private void Initialize(string viewObjectName, UnityAction contactDiscordAction, UnityAction joinDiscordAction, UnityAction visitFaqAction)
         {
-            gameObject.name = VIEW_OBJECT_NAME;
+            gameObject.name = viewObjectName;
 
-            joinDiscordButton.onClick.AddListener(() =>
-            {
-                WebInterface.OpenURL(JOIN_DISCORD_URL);
-            });
-
-            visitFAQButton.onClick.AddListener(() =>
-            {
-                WebInterface.OpenURL(FAQ_URL);
-            });
+            contactSupportButton.onClick.AddListener(contactDiscordAction);
+            joinDiscordButton.onClick.AddListener(joinDiscordAction);
+            visitFAQButton.onClick.AddListener(visitFaqAction);
 
             closeButton.onClick.AddListener(() =>
             {
@@ -45,10 +56,10 @@ namespace DCL.HelpAndSupportHUD
             });
         }
 
-        public static HelpAndSupportHUDView Create()
+        public static HelpAndSupportHUDView Create(string resourcePath, string viewObjectName, UnityAction contactDiscordAction, UnityAction joinDiscordAction, UnityAction visitFAQAction)
         {
-            HelpAndSupportHUDView view = Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<HelpAndSupportHUDView>();
-            view.Initialize();
+            HelpAndSupportHUDView view = Instantiate(Resources.Load<GameObject>(resourcePath)).GetComponent<HelpAndSupportHUDView>();
+            view.Initialize(viewObjectName, contactDiscordAction, joinDiscordAction, visitFAQAction);
             return view;
         }
 

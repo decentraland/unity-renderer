@@ -9,8 +9,9 @@ public class OpenIntercomTest : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            OpenIntercom();
+            // OpenIntercom();
             Debug.Log("I SHOULD BE OPENING INTERCOM");
+            OpenTestDesktop();
         }
     }
 
@@ -20,5 +21,11 @@ public class OpenIntercomTest : MonoBehaviour
 #else
 
     private static void OpenIntercom() { }
+
+    private static void OpenTestDesktop()
+    {
+        string url = "https://intercom.decentraland.org";
+        Application.OpenURL(url);
+    }
 #endif
 }
