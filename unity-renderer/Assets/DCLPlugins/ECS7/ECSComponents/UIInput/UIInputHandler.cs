@@ -39,10 +39,17 @@ namespace DCL.ECSComponents.UIInput
             // passing a null string will actually make it invisible
 
             uiElement = new TextField();
-            uiElement.style.flexGrow = 1f;
+            var uiElementStyle = uiElement.style;
+            uiElementStyle.flexGrow = 1f;
+            uiElementStyle.marginBottom = 0;
+            uiElementStyle.marginTop = 0;
+            uiElementStyle.marginLeft = 0;
+            uiElementStyle.marginRight = 0;
 
             // Set child element (automatically created) default values
-            uiElement.ElementAt(0).style.backgroundColor = new StyleColor(Color.white);
+            uiElementStyle = uiElement.ElementAt(0).style;
+            uiElementStyle.backgroundColor = new StyleColor(new Color(1, 1, 1, 0));
+            uiElementStyle.marginLeft = 0;
 
             placeholder = new TextFieldPlaceholder(uiElement);
 

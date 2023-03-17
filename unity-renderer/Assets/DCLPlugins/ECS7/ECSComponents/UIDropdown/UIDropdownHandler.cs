@@ -54,8 +54,16 @@ namespace DCL.ECSComponents.UIDropdown
             textField = uiElement.Q<TextElement>(className: TEXT_ELEMENT_CLASS);
             uiElement.styleSheets.Add(styleSheet);
             uiElement.AddToClassList(CLASS);
+            var uiElementStyle = uiElement.style;
+            uiElementStyle.flexGrow = 1;
+            uiElementStyle.marginBottom = 0;
+            uiElementStyle.marginTop = 0;
+            uiElementStyle.marginLeft = 0;
+            uiElementStyle.marginRight = 0;
 
-            uiElement.style.flexGrow = 1;
+            uiElementStyle = uiElement.ElementAt(0).style;
+            uiElementStyle.backgroundColor = new StyleColor(new Color(1, 1, 1, 0));
+            uiElementStyle.marginLeft = 0;
 
             AddElementToRoot(scene, entity, uiElement);
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
