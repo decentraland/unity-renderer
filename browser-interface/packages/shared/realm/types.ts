@@ -11,8 +11,14 @@ export type RealmState = {
   previousAdapter: IRealmAdapter | undefined
 }
 
+export type OnboardingState = {
+  isInOnboarding: boolean
+  onboardingRealm: string | undefined
+}
+
 export type RootRealmState = {
   realm: RealmState
+  onboarding: OnboardingState
 }
 
 export type RealmConnectionEvents = {
