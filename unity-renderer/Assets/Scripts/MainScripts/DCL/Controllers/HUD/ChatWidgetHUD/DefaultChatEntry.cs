@@ -112,8 +112,6 @@ namespace DCL.Chat.HUD
 
         private string GetCoordinatesLink(string body)
         {
-            if (!CoordinateUtils.HasValidTextCoordinates(body)) return body;
-
             return CoordinateUtils.ReplaceTextCoordinates(body, (text, coordinates) =>
                 $"</noparse><link={text}><color=#4886E3><u>{text}</u></color></link><noparse>");
         }
