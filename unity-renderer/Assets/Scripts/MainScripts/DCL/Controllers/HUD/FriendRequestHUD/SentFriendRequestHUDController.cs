@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -18,7 +17,7 @@ namespace DCL.Social.Friends
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IFriendsController friendsController;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly BaseVariable<KeyValuePair<string, string>> openPassportVariable;
+        private readonly BaseVariable<(string playerId, string source)> openPassportVariable;
 
         private CancellationTokenSource friendRequestOperationsCancellationToken = new ();
         private string friendRequestId;
@@ -137,7 +136,7 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            openPassportVariable.Set(new KeyValuePair<string, string>(friendRequest.To, OPEN_PASSPORT_SOURCE));
+            openPassportVariable.Set((friendRequest.To, OPEN_PASSPORT_SOURCE));
             view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
     }

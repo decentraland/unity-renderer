@@ -4,7 +4,6 @@ using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.Social.Chat.Mentions;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -24,6 +23,7 @@ namespace DCL.Chat.HUD
         [SerializeField] private MentionLinkDetector mentionLinkDetector;
         [SerializeField] private Color autoMentionBackgroundColor;
         [SerializeField] private Image backgroundImage;
+        [SerializeField] internal UserProfile ownUserProfile;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -321,7 +321,7 @@ namespace DCL.Chat.HUD
 
         private void OnOwnPlayerMentioned()
         {
-            if (model.senderId == UserProfile.GetOwnUserProfile().userId)
+            if (model.senderId == ownUserProfile.userId)
                 return;
 
             backgroundImage.color = autoMentionBackgroundColor;

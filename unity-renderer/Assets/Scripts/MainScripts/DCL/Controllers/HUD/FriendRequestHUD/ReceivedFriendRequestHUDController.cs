@@ -18,7 +18,7 @@ namespace DCL.Social.Friends
         private readonly FriendRequestHUDController friendRequestHUDController;
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
-        private readonly BaseVariable<KeyValuePair<string, string>> openPassportVariable;
+        private readonly BaseVariable<(string playerId, string source)> openPassportVariable;
         private readonly ISocialAnalytics socialAnalytics;
 
         private CancellationTokenSource showCancellationToken = new ();
@@ -123,7 +123,7 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            openPassportVariable.Set(new KeyValuePair<string, string>(friendRequest.From, OPEN_PASSPORT_SOURCE));
+            openPassportVariable.Set((friendRequest.From, OPEN_PASSPORT_SOURCE));
             view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
 

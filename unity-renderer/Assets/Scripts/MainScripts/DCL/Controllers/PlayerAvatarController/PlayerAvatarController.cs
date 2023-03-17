@@ -45,7 +45,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
     private Service<IEmotesCatalogService> emotesCatalog;
     private ISocialAnalytics socialAnalytics;
-    private BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
+    private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
     private IAvatar avatar;
 
     private void Start()
@@ -80,7 +80,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private void PlayerClicked()
     {
         if (currentAvatar == null) return;
-        currentPlayerInfoCardId.Set(new KeyValuePair<string, string>(currentAvatar.id, OPEN_PASSPORT_SOURCE));
+        currentPlayerInfoCardId.Set((currentAvatar.id, OPEN_PASSPORT_SOURCE));
     }
 
     private IAvatar GetStandardAvatar()

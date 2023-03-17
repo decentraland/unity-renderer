@@ -110,7 +110,7 @@ namespace DCL.Social.Chat.Mentions
             CheckOwnPlayerMentionAsync(textInfo.textComponent, cancellationToken.Token).Forget();
         }
 
-        internal async UniTask RefreshMentionPatterns(CancellationToken cancellationToken)
+        private async UniTask RefreshMentionPatterns(CancellationToken cancellationToken)
         {
             await UniTask.WaitForEndOfFrame(this, cancellationToken);
 

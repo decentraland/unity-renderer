@@ -39,7 +39,7 @@ namespace DCL
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
-        private BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
+        private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
 
         public bool everythingIsLoaded;
 
@@ -123,7 +123,7 @@ namespace DCL
             if (model == null)
                 return;
 
-            currentPlayerInfoCardId.Set(new KeyValuePair<string, string>(((AvatarModel)model).id, OPEN_PASSPORT_SOURCE));
+            currentPlayerInfoCardId.Set((((AvatarModel)model).id, OPEN_PASSPORT_SOURCE));
         }
 
         public void OnDestroy()

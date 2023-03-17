@@ -210,9 +210,6 @@ namespace DCL.Chat.Notifications
                     || (!string.IsNullOrEmpty(message.recipient) && openedChatId != message.recipient))
                     if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                         topNotificationView.AddNewChatNotification(publicModel);
-
-                if (isOwnPlayerMentioned)
-                    AudioScriptableObjects.ChatReceiveMentionEvent.Play(true);
             }
         }
 

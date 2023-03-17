@@ -15,7 +15,7 @@ namespace DCL.Social.Chat.Mentions
         }
 
         public static bool IsUserMentionedInText(string userName, string text) =>
-            text.ToLower().Contains($"@{userName.ToLower()}");
+            text.Contains($"@{userName.ToLower()}", StringComparison.InvariantCultureIgnoreCase);
 
         public static bool TextContainsMention(string text)
         {

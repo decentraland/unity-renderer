@@ -146,6 +146,7 @@ MonoBehaviour:
   mentionLinkDetector: {fileID: 9011161838670949205}
   autoMentionBackgroundColor: {r: 1, g: 0.9921569, b: 0.85098046, a: 1}
   backgroundImage: {fileID: 7437960684281325092}
+  ownUserProfile: {fileID: 11400000, guid: 25aec1357b37f3146b4dc1588cd4d1ca, type: 2}
 --- !u!114 &1514739545556520801
 MonoBehaviour:
   m_ObjectHideFlags: 0

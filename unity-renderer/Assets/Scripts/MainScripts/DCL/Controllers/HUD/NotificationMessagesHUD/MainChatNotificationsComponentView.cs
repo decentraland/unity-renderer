@@ -187,6 +187,9 @@ namespace DCL.Chat.Notifications
                 AnimateNewEntry(entry.gameObject.transform, animationCancellationToken.Token).Forget();
             }
 
+            if (model.IsOwnPlayerMentioned)
+                AudioScriptableObjects.ChatReceiveMentionEvent.Play(true);
+
             OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
             CheckNotificationCountAndRelease();
         }

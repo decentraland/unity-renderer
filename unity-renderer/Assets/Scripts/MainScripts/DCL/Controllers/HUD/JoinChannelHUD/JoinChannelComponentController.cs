@@ -18,7 +18,7 @@ namespace DCL.Social.Chat.Channels
         private readonly DataStore dataStore;
         internal readonly DataStore_Channels channelsDataStore;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
+        private readonly BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
         private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private CancellationTokenSource joinChannelCancellationToken = new ();
         private string channelName;
@@ -170,7 +170,7 @@ namespace DCL.Social.Chat.Channels
                 }
             }
 
-            if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get().Key))
+            if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get().playerId))
                 return ChannelLinkSource.Profile;
 
             var visibleTaskbarPanels = dataStore.HUDs.visibleTaskbarPanels.Get();

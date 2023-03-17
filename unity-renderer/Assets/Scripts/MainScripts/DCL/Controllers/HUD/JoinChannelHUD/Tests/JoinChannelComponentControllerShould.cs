@@ -25,7 +25,7 @@ namespace DCL.Social.Chat.Channels
         private IChatController chatController;
         private DataStore_Channels channelsDataStore;
         private DataStore dataStore;
-        private BaseVariable<KeyValuePair<string, string>> currentPlayerInfoCardId;
+        private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
         private ISocialAnalytics socialAnalytics;
         private IChannelsFeatureFlagService channelsFeatureFlagService;
 
@@ -218,7 +218,7 @@ namespace DCL.Social.Chat.Channels
             chatController.JoinOrCreateChannelAsync(CHANNEL_ID, Arg.Any<CancellationToken>())
                           .Returns(UniTask.FromResult(channel));
 
-            currentPlayerInfoCardId.Set(new KeyValuePair<string, string>("userId", OPEN_PASSPORT_SOURCE));
+            currentPlayerInfoCardId.Set(("userId", OPEN_PASSPORT_SOURCE));
             channelsDataStore.currentJoinChannelModal.Set(CHANNEL_ID, true);
             channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
 

@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace DCL.Social.Passports
         private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, "parcel", "estate" };
 
         private readonly IPlayerPassportHUDView view;
-        private readonly BaseVariable<KeyValuePair<string, string>> currentPlayerId;
+        private readonly BaseVariable<(string playerId, string source)> currentPlayerId;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IPassportApiBridge passportApiBridge;
         private readonly ISocialAnalytics socialAnalytics;
@@ -102,7 +101,7 @@ namespace DCL.Social.Passports
             passportNavigationController.CloseAllNFTItemInfos();
             passportNavigationController.SetViewInitialPage();
             playerInfoController.ClosePassport();
-            currentPlayerId.Set(new KeyValuePair<string, string>(null, null));
+            currentPlayerId.Set((null, null));
         }
 
         /// <summary>
@@ -137,16 +136,16 @@ namespace DCL.Social.Passports
             view?.Dispose();
         }
 
-        private void OnCurrentPlayerIdChanged(KeyValuePair<string, string> current, KeyValuePair<string, string> previous)
+        private void OnCurrentPlayerIdChanged((string playerId, string source) current, (string playerId, string source) previous)
         {
             if (currentUserProfile != null)
                 currentUserProfile.OnUpdate -= UpdateUserProfile;
 
             ownedNftCollectionsL1 = new List<Nft>();
             ownedNftCollectionsL2 = new List<Nft>();
-            currentUserProfile = string.IsNullOrEmpty(current.Key)
+            currentUserProfile = string.IsNullOrEmpty(current.playerId)
                 ? null
-                : userProfileBridge.Get(current.Key);
+                : userProfileBridge.Get(current.playerId);
 
             if (currentUserProfile == null)
             {
@@ -157,7 +156,7 @@ namespace DCL.Social.Passports
             {
                 SetPassportPanelVisibility(true);
                 passportOpenStartTime = Time.realtimeSinceStartup;
-                Enum.TryParse(current.Value, out AvatarOpenSource source);
+                Enum.TryParse(current.source, out AvatarOpenSource source);
                 socialAnalytics.SendPassportOpen(source: source);
                 QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);

@@ -82,7 +82,7 @@ public class UserContextMenu : MonoBehaviour
     public event Action<string> OnUnfriend;
     public event Action OnHide;
 
-    private static BaseVariable<KeyValuePair<string, string>> currentPlayerId;
+    private static BaseVariable<(string playerId, string source)> currentPlayerId;
     private string userId;
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
@@ -195,7 +195,7 @@ public class UserContextMenu : MonoBehaviour
     private void OnPassportButtonPressed()
     {
         OnPassport?.Invoke(userId);
-        currentPlayerId.Set(new KeyValuePair<string, string>(userId, isFreomMentionContextMenu ? OPEN_PASSPORT_MENTION_SOURCE : OPEN_PASSPORT_NORMAL_SOURCE));
+        currentPlayerId.Set((userId, isFreomMentionContextMenu ? OPEN_PASSPORT_MENTION_SOURCE : OPEN_PASSPORT_NORMAL_SOURCE));
         Hide();
 
         AudioScriptableObjects.dialogOpen.Play(true);

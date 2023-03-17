@@ -120,8 +120,7 @@ namespace DCL.Social.Friends
 
             view.OnOpenProfile += Raise.Event<Action>();
 
-
-            Assert.AreEqual(SENDER_ID, dataStore.HUDs.currentPlayerId.Get().Key);
+            Assert.AreEqual(SENDER_ID, dataStore.HUDs.currentPlayerId.Get().playerId);
         }
 
         [UnityTest]
