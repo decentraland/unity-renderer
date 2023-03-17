@@ -46,8 +46,6 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
-
             // Fetch texture
             if (!string.IsNullOrEmpty(model.source))
             {
@@ -67,10 +65,11 @@ namespace DCL.Components
                         dclTexture = downloadedTexture;
                         dclTexture.AttachTo(this);
 
-                        ConfigureUVRect(parentRecTransform, dclTexture?.resizingFactor ?? 1);
+                        ConfigureImage();
                     });
 
                     fetchRoutine = CoroutineStarter.Start(fetchIEnum);
+                    return null;
                 }
             }
             else
@@ -79,6 +78,16 @@ namespace DCL.Components
                 dclTexture?.DetachFrom(this);
                 dclTexture = null;
             }
+
+            ConfigureImage();
+            return null;
+        }
+
+        private void ConfigureImage()
+        {
+            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
+
+            ConfigureUVRect(parentRecTransform, dclTexture?.resizingFactor ?? 1);
 
             referencesContainer.image.enabled = model.visible;
             referencesContainer.image.color = Color.white;
@@ -92,7 +101,6 @@ namespace DCL.Components
             referencesContainer.paddingLayoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
 
             Utils.ForceRebuildLayoutImmediate(parentRecTransform);
-            return null;
         }
 
         private void ConfigureUVRect(RectTransform parentRecTransform, float resizingFactor)
