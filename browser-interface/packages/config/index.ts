@@ -213,7 +213,7 @@ export const setRunningTest = (test: boolean) => {
   testConfig.isRunningTest = test
 }
 export const isRunningTest = () => testConfig.isRunningTest
-export const PORTABLE_EXPERIENCES_DEBOUNCE_DELAY = () => isRunningTest() ? 1 : 100
+export const PORTABLE_EXPERIENCES_DEBOUNCE_DELAY = () => (isRunningTest() ? 1 : 100)
 
 function addHttpsIfNoProtocolIsSet(domain: string): string
 function addHttpsIfNoProtocolIsSet(domain: undefined): undefined

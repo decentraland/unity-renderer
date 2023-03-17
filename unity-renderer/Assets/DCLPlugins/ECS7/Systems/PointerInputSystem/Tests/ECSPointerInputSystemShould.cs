@@ -4,6 +4,7 @@ using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Interface;
 using DCL.Models;
 using ECSSystems.PointerInputSystem;
 using NSubstitute;
@@ -662,6 +663,19 @@ namespace Tests
             var enqueuedEvent1 = result.model.events.Dequeue();
             Assert.AreEqual(InputAction.IaPrimary, enqueuedEvent1.button);
             Assert.IsTrue(enqueuedEvent1.type == PointerEventType.PetDown);
+        }
+
+
+        [Test]
+        public void EnsureWebInterfaceAndProtobufInputEnumsMatch()
+        {
+            var inputActionsWebInterface = Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)) as int[];
+            var inputActionsProto = Enum.GetValues(typeof(InputAction)) as int[];
+            Assert.AreEqual(inputActionsProto!.Length, inputActionsWebInterface!.Length);
+            for (var i = 0; i < inputActionsWebInterface.Length; i++)
+            {
+                Assert.AreEqual(inputActionsWebInterface[i], inputActionsProto[i]);
+            }
         }
     }
 }
