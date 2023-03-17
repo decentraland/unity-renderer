@@ -10,6 +10,7 @@ namespace DCLServices.MapRendererV2.Culling
             public override IMapPositionProvider Obj => obj;
 
             private readonly IMapCullingListener<T> listener;
+            private bool? lastCalledWasVisible = null;
 
             public TrackedState(T obj, IMapCullingListener<T> listener)
             {
@@ -18,9 +19,19 @@ namespace DCLServices.MapRendererV2.Culling
                 this.listener = listener;
             }
 
-            public override void CallListener()
+            public override void CallListener(bool forceCall = false)
             {
-                if (visibleFlag > 0)
+                bool currentVisible = visibleFlag > 0;
+
+                if (!forceCall)
+                {
+                    if (currentVisible == lastCalledWasVisible)
+                        return;
+                }
+
+                lastCalledWasVisible = currentVisible;
+
+                if (currentVisible)
                     listener.OnMapObjectBecameVisible(obj);
                 else
                     listener.OnMapObjectCulled(obj);
@@ -37,7 +48,7 @@ namespace DCLServices.MapRendererV2.Culling
             protected int visibleFlag;
             protected int dirtyCamerasFlag;
 
-            public abstract void CallListener();
+            public abstract void CallListener(bool forceCall = false);
 
             public void SetCameraFlag(int value)
             {

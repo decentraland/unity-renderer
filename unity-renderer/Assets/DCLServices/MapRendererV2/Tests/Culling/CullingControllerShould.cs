@@ -1,6 +1,7 @@
 ﻿using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using System;
 using System.Linq;
@@ -10,6 +11,16 @@ namespace DCLServices.MapRendererV2.Tests.Culling
 {
     public class CullingControllerShould
     {
+        private Plane[] frustumPlanes = new Plane[6]
+        {
+            new Plane(Vector3.one, 1),
+            new Plane(Vector3.one, 1),
+            new Plane(Vector3.one, 1),
+            new Plane(Vector3.one, 1),
+            new Plane(Vector3.one, 1),
+            new Plane(Vector3.one, 1),
+        };
+
         private MapCullingController culling;
         private IMapCullingVisibilityChecker visibilityChecker;
 
@@ -67,9 +78,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = Substitute.For<IMapCameraControllerInternal>(),
-                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        FrustumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
                     }
                 );
+
                 culling.SetCameraDirtyInternal_Test(i);
             }
 
@@ -90,7 +102,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = Substitute.For<IMapCameraControllerInternal>(),
-                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        FrustumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
                     }
                 );
             }
@@ -117,12 +129,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < cameraCount; i++)
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                mapCameraControllerInternal.Configure()
+                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
+                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
 
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        FrustumPlanes = new Plane[6],
                     }
                 );
             }
@@ -163,6 +178,48 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             Assert.AreEqual(listener, ((MapCullingController.TrackedState<IMapPositionProvider>)culling.TrackedObjs[obj]).Listener);
         }
 
+        [TestCase(1)]
+        [TestCase(3)]
+        [TestCase(10)]
+        public void StopTrackingObjectNotDirty(int initialTrackedCount)
+        {
+            for (int i = 0; i < initialTrackedCount; i++)
+            {
+                var posProvider = Substitute.For<IMapPositionProvider>();
+                culling.TrackedObjs.Add(posProvider, new MapCullingController.TrackedState<IMapPositionProvider>(posProvider, Substitute.For<IMapCullingListener<IMapPositionProvider>>()));
+
+                if (i != 0) // set dirty all but the first one (the one we will check)
+                    culling.DirtyObjects.AddLast(culling.TrackedObjs[posProvider]);
+            }
+
+            IMapPositionProvider obj = culling.TrackedObjs.Keys.First();
+
+            culling.StopTracking(obj);
+
+            Assert.AreEqual(initialTrackedCount - 1, culling.TrackedObjs.Count);
+            Assert.AreEqual(initialTrackedCount - 1, culling.DirtyObjects.Count);
+        }
+
+        [TestCase(1)]
+        [TestCase(3)]
+        [TestCase(10)]
+        public void StopTrackingObjectDirty(int initialTrackedCount)
+        {
+            for (int i = 0; i < initialTrackedCount; i++)
+            {
+                var posProvider = Substitute.For<IMapPositionProvider>();
+                culling.TrackedObjs.Add(posProvider, new MapCullingController.TrackedState<IMapPositionProvider>(posProvider, Substitute.For<IMapCullingListener<IMapPositionProvider>>()));
+                culling.DirtyObjects.AddLast(culling.TrackedObjs[posProvider].nodeInQueue);
+            }
+
+            IMapPositionProvider obj = culling.TrackedObjs.Keys.First();
+
+            culling.StopTracking(obj);
+
+            Assert.AreEqual(initialTrackedCount - 1, culling.TrackedObjs.Count);
+            Assert.AreEqual(initialTrackedCount - 1, culling.DirtyObjects.Count);
+        }
+
         [Test]
         public void SetDirtyNewTrackedObjects()
         {
@@ -184,12 +241,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                mapCameraControllerInternal.Configure()
+                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
+                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
 
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        FrustumPlanes = new Plane[6],
                     }
                 );
             }
@@ -214,12 +274,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                mapCameraControllerInternal.Configure()
+                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
+                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
 
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        FrustumPlanes = new Plane[6],
                     }
                 );
             }
@@ -248,12 +311,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                mapCameraControllerInternal.Configure()
+                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
+                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
 
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        FrustumPlanes = new Plane[6],
                     }
                 );
             }
@@ -282,12 +348,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                mapCameraControllerInternal.Configure()
+                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
+                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
 
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        FrustumPlanes = new Plane[6],
                     }
                 );
             }
@@ -312,12 +381,15 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             for (int i = 0; i < 3; i++) // Simulate 3 cameras
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
-                mapCameraControllerInternal.GetFrustumPlanes().Returns(x => new[] { new Plane(Vector3.one, i) });
+
+                mapCameraControllerInternal.Configure()
+                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
+                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
 
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustrumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        FrustumPlanes = new Plane[6],
                     }
                 );
             }

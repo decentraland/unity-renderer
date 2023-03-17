@@ -85,6 +85,7 @@ namespace DCLServices.MapRendererV2
             EnableLayers(cameraInput.EnabledLayers);
             var mapCameraController = mapCameraPool.Get();
             mapCameraController.OnReleasing += ReleaseCamera;
+            cullingController.OnCameraAdded(mapCameraController);
             mapCameraController.Initialize(Vector2Int.FloorToInt(textureRes * factor), zoomValues, cameraInput.EnabledLayers);
             mapCameraController.SetZoom(cameraInput.Zoom);
             mapCameraController.SetPosition(cameraInput.Position);
@@ -94,6 +95,7 @@ namespace DCLServices.MapRendererV2
 
         private void ReleaseCamera(IMapCameraControllerInternal mapCameraController)
         {
+            cullingController.OnCameraRemoved(mapCameraController);
             mapCameraController.OnReleasing -= ReleaseCamera;
             DisableLayers(mapCameraController.EnabledLayers);
         }

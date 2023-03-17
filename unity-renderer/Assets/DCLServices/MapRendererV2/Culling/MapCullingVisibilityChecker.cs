@@ -14,6 +14,6 @@ namespace DCLServices.MapRendererV2.Culling
         }
 
         public bool IsVisible<T>(T obj, CameraState cameraState) where T: IMapPositionProvider =>
-            GeometryUtility.TestPlanesAABB(cameraState.FrustrumPlanes, new Bounds(obj.CurrentPosition, Vector3.one * size));
+            GeometryUtility.TestPlanesAABB(cameraState.FrustumPlanes, new Bounds(obj.CurrentPosition, Vector3.one * size));
     }
 }

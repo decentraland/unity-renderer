@@ -34,7 +34,14 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             var objectsPool = new UnityObjectPool<SceneOfInterestMarkerObject>(
                 prefab,
                 configuration.ScenesOfInterestMarkersRoot,
-                actionOnCreate: SetSortingOrder,
+                actionOnCreate: (obj) =>
+                {
+                    for (var i = 0; i < obj.renderers.Length; i++)
+                        obj.renderers[i].sortingOrder = MapRendererDrawOrder.SCENES_OF_INTEREST;
+
+                    obj.title.sortingOrder = MapRendererDrawOrder.SCENES_OF_INTEREST;
+                    coordsUtils.SetObjectScale(obj);
+                },
                 defaultCapacity: PREWARM_COUNT);
 
             var controller = new ScenesOfInterestMarkersController(
@@ -54,14 +61,6 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         private static ISceneOfInterestMarker CreateMarker(IObjectPool<SceneOfInterestMarkerObject> objectsPool, IMapCullingController cullingController) =>
             new SceneOfInterestMarker(objectsPool, cullingController);
-
-        private void SetSortingOrder(SceneOfInterestMarkerObject obj)
-        {
-            for (var i = 0; i < obj.renderers.Length; i++)
-                obj.renderers[i].sortingOrder = MapRendererDrawOrder.SCENES_OF_INTEREST;
-
-            obj.title.sortingOrder = MapRendererDrawOrder.SCENES_OF_INTEREST;
-        }
 
         internal async UniTask<SceneOfInterestMarkerObject> GetPrefab(CancellationToken cancellationToken) =>
             await addressablesProvider.Ref.GetAddressable<SceneOfInterestMarkerObject>(SCENE_OF_INTEREST_MARKER_ADDRESS, cancellationToken);

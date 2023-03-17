@@ -20,8 +20,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public Vector2 Position => mapCameraObject.mapCamera.transform.localPosition;
 
-        private readonly Plane[] frustumPlanes = new Plane[6];
-
         private readonly IMapInteractivityControllerInternal interactivityBehavior;
         private readonly ICoordsUtils coordsUtils;
         private readonly IMapCullingController cullingController;
@@ -99,10 +97,9 @@ namespace DCLServices.MapRendererV2.MapCameraController
             mapCameraObject.gameObject.SetActive(active);
         }
 
-        public Plane[] GetFrustumPlanes()
+        public void GetFrustumPlanes(Plane[] planes)
         {
-            GeometryUtility.CalculateFrustumPlanes(Camera, frustumPlanes);
-            return frustumPlanes;
+            GeometryUtility.CalculateFrustumPlanes(Camera, planes);
         }
 
         public void Release()

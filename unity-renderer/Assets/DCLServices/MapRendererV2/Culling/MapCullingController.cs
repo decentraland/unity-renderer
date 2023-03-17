@@ -3,6 +3,7 @@ using DCLServices.MapRendererV2.MapCameraController;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 namespace DCLServices.MapRendererV2.Culling
 {
@@ -40,7 +41,14 @@ namespace DCLServices.MapRendererV2.Culling
 
             SetCameraDirtyInternal(cameraStates.Count);
 
-            cameraStates.Add(new CameraState { CameraController = cameraController, FrustrumPlanes = cameraController.GetFrustumPlanes() });
+            var cameraState = new CameraState
+            {
+                CameraController = cameraController,
+                FrustumPlanes = new Plane[6],
+            };
+
+            cameraController.GetFrustumPlanes(cameraState.FrustumPlanes);
+            cameraStates.Add(cameraState);
         }
 
         void IMapCullingController.OnCameraRemoved(IMapCameraControllerInternal cameraController)
@@ -66,7 +74,7 @@ namespace DCLServices.MapRendererV2.Culling
                 throw new Exception($"Tried to set not tracked camera dirty");
 
             SetCameraDirtyInternal(index);
-            cameraStates[index].FrustrumPlanes = cameraController.GetFrustumPlanes();
+            cameraController.GetFrustumPlanes(cameraStates[index].FrustumPlanes);
         }
 
         public void SetTrackedObjectPositionDirty<T>(T obj) where T: IMapPositionProvider
@@ -85,7 +93,7 @@ namespace DCLServices.MapRendererV2.Culling
             if (IsTrackedStateDirty(state))
                 return;
 
-            dirtyObjects.AddLast(state);
+            dirtyObjects.AddLast(state.nodeInQueue);
         }
 
         void IMapCullingController.StartTracking<T>(T obj, IMapCullingListener<T> listener)
@@ -100,8 +108,11 @@ namespace DCLServices.MapRendererV2.Culling
 
         public void StopTracking<T>(T obj) where T: IMapPositionProvider
         {
-            if (trackedObjs.TryGetValue(obj, out var state)) { dirtyObjects.Remove(state.nodeInQueue); }
+            if (!trackedObjs.TryGetValue(obj, out var state))
+                return;
 
+            if (IsTrackedStateDirty(state))
+                dirtyObjects.Remove(state.nodeInQueue);
             trackedObjs.Remove(obj);
         }
 
@@ -130,6 +141,7 @@ namespace DCLServices.MapRendererV2.Culling
                     bool visible = i < cameraStates.Count && cullingVisibilityChecker.IsVisible(obj, cameraStates[i]);
                     cullable.SetVisibleFlag(i, visible);
                     cullable.SetCameraFlag(i, false);
+                    cullable.CallListener();
                 }
             }
 
@@ -179,6 +191,7 @@ namespace DCLServices.MapRendererV2.Culling
                 bool visible = i < cameraStates.Count && cullingVisibilityChecker.IsVisible(state.Obj, cameraStates[i]);
                 state.SetVisibleFlag(i, visible);
                 state.SetCameraFlag(i, false);
+                state.CallListener();
             }
         }
 
