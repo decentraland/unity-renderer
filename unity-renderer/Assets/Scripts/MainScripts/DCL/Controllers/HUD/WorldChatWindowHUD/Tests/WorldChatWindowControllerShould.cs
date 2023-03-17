@@ -56,7 +56,8 @@ public class WorldChatWindowControllerShould
             socialAnalytics,
             channelsFeatureFlagService,
             browserBridge,
-            CommonScriptableObjects.rendererState);
+            CommonScriptableObjects.rendererState,
+            new DataStore_Mentions());
 
         view = Substitute.For<IWorldChatWindowView>();
     }

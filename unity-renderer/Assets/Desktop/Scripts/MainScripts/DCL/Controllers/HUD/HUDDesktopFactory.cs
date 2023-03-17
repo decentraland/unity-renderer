@@ -25,7 +25,8 @@ public class HUDDesktopFactory : HUDFactory
                 hudElement = new ProfileHUDControllerDesktop(new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    DataStore.i);
                 break;
             case HUDElementID.MINIMAP:
                 hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);

@@ -58,8 +58,7 @@ namespace DCL.Social.Friends
                 dataStore,
                 userProfileBridge,
                 friendsController,
-                Substitute.For<ISocialAnalytics>(),
-                ScriptableObject.CreateInstance<StringVariable>());
+                Substitute.For<ISocialAnalytics>());
 
             view.ClearReceivedCalls();
         }
