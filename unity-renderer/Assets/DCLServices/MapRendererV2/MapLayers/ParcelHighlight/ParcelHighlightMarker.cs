@@ -7,6 +7,8 @@ namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
     {
         private readonly ParcelHighlightMarkerObject obj;
 
+        public Vector2 Pivot => obj.pivot;
+
         public ParcelHighlightMarker(ParcelHighlightMarkerObject obj)
         {
             this.obj = obj;

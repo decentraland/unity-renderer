@@ -45,7 +45,11 @@ namespace DCLServices.MapRendererV2.TestScene
                 {
                     var v2Field = (Vector2IntField)element;
                     v2Field.value = this.parcels[i];
-                    v2Field.RegisterValueChangedCallback(evt => this.parcels[i] = evt.newValue);
+                    v2Field.RegisterValueChangedCallback(evt =>
+                    {
+                        if (i > this.parcels.Count) return;
+                        this.parcels[i] = evt.newValue;
+                    });
                 });
 
             parcelsView.showAddRemoveFooter = true;
