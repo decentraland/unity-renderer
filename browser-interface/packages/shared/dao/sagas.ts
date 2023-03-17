@@ -44,14 +44,13 @@ import { createAlgorithm } from './pick-realm-algorithm/index'
 import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
 import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
 import { ask, ping } from './utils/ping'
-import { store } from '../store/isolatedStore'
 import { trackEvent } from '../analytics/trackEvent'
 import { logger } from '../../entryPoints/logger'
 import { getCurrentUserProfile } from '../profiles/selectors'
 import { saveProfileDelta } from '../profiles/actions'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
-let isOnboarding = false
+let isCurrentlyInOnboarding = false
 
 function getLastRealmCacheKey(network: ETHEREUM_NETWORK) {
   return 'last_realm_string_' + network
@@ -184,7 +183,6 @@ function* onboardingTutorialRealm() {
     const newTutorialFeatureFlag = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
     const isNewTutorialDisabled =
       newTutorialFeatureFlag === 'disabled' || newTutorialFeatureFlag === 'undefined' || HAS_INITIAL_POSITION_MARK
-    console.log('DEBUG' + profile.tutorialStep)
     if (needsTutorial && !isNewTutorialDisabled) {
       try {
         const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
@@ -194,7 +192,7 @@ function* onboardingTutorialRealm() {
           //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
           //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
           //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
-          isOnboarding = true
+          isCurrentlyInOnboarding = true
           return realm
         } else {
           logger.warn('No realm was provided for the onboarding experience.')
@@ -261,14 +259,10 @@ function* cacheCatalystRealm() {
   // PRINT DEBUG INFO
   const dao: string = yield select((state) => state.dao)
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-
-  if (
-    isOnboarding &&
-    realmAdapter.about.configurations?.realmName !==
-      yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
-  ) {
+  const onboardingRealm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
+  if (isCurrentlyInOnboarding && realmAdapter.about.configurations?.realmName !== onboardingRealm) {
     yield put(saveProfileDelta({ tutorialStep: 256 }))
-    isOnboarding = false
+    isCurrentlyInOnboarding = false
   }
 
   if (realmAdapter) {
