@@ -35,8 +35,7 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.HotArea
                 PREWARM_COUNT,
                 null,
                 Substitute.For<ICoordsUtils>(),
-                cullingController = Substitute.For<IMapCullingController>(),
-                10);
+                cullingController = Substitute.For<IMapCullingController>());
 
             wrapsPool.Get().Returns(Substitute.For<IHotUserMarker>());
 

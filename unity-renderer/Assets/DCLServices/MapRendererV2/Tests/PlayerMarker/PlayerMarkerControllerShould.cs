@@ -36,8 +36,7 @@ namespace DCLServices.MapRendererV2.Tests.PlayerMarker
                 rotation = ScriptableObject.CreateInstance<Vector3Variable>(),
                 null,
                 coordUtils,
-                Substitute.For<IMapCullingController>(),
-                100
+                Substitute.For<IMapCullingController>()
             );
 
             controller.Initialize();

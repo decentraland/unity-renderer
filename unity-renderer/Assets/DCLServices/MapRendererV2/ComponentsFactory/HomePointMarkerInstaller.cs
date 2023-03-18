@@ -41,8 +41,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 CreateMarker,
                 configuration.HomePointRoot,
                 coordsUtils,
-                cullingController,
-                MapRendererDrawOrder.HOME_POINT);
+                cullingController);
 
             controller.Initialize();
             writer.Add(MapLayer.HomePoint, controller);

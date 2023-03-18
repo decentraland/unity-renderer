@@ -31,8 +31,8 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 
         public ScenesOfInterestMarkersController(MinimapMetadata minimapMetadata,
             IUnityObjectPool<SceneOfInterestMarkerObject> objectsPool, SceneOfInterestMarkerBuilder builder,
-            int prewarmCount, Transform instantiationParent, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder)
-            : base(instantiationParent, coordsUtils, cullingController, drawOrder)
+            int prewarmCount, Transform instantiationParent, ICoordsUtils coordsUtils, IMapCullingController cullingController)
+            : base(instantiationParent, coordsUtils, cullingController)
         {
             this.minimapMetadata = minimapMetadata;
             this.objectsPool = objectsPool;

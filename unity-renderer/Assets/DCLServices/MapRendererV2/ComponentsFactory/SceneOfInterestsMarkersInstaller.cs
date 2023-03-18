@@ -51,8 +51,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 PREWARM_COUNT,
                 configuration.ScenesOfInterestMarkersRoot,
                 coordsUtils,
-                cullingController,
-                MapRendererDrawOrder.SCENES_OF_INTEREST
+                cullingController
             );
 
             await controller.Initialize(cancellationToken);

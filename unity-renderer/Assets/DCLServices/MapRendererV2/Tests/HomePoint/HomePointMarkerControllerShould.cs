@@ -31,8 +31,7 @@ namespace DCLServices.MapRendererV2.Tests.HomePoint
                 builder,
                 null,
                 coordUtils,
-                Substitute.For<IMapCullingController>(),
-                100);
+                Substitute.For<IMapCullingController>());
 
             controller.Initialize();
         }

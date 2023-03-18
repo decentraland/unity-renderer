@@ -29,8 +29,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
 
         public UsersMarkersHotAreaController(BaseDictionary<string, Player> otherPlayers,
             IUnityObjectPool<HotUserMarkerObject> objectsPool, IObjectPool<IHotUserMarker> wrapsPool,
-            int prewarmCount, Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder)
-            : base(parent, coordsUtils, cullingController, drawOrder)
+            int prewarmCount, Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController)
+            : base(parent, coordsUtils, cullingController)
         {
             this.otherPlayers = otherPlayers;
             this.objectsPool = objectsPool;

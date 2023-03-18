@@ -20,9 +20,8 @@ namespace DCLServices.MapRendererV2.MapLayers.HomePoint
             HomePointMarkerBuilder builder,
             Transform instantiationParent,
             ICoordsUtils coordsUtils,
-            IMapCullingController cullingController,
-            int drawOrder)
-            : base(instantiationParent, coordsUtils, cullingController, drawOrder)
+            IMapCullingController cullingController)
+            : base(instantiationParent, coordsUtils, cullingController)
         {
             this.homePointCoordinates = homePointCoordinates;
             this.builder = builder;

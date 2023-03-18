@@ -33,8 +33,7 @@ namespace DCLServices.MapRendererV2.Tests.PointsOfInterest
                 PREWARM_COUNT,
                 null,
                 coordsUtils = Substitute.For<ICoordsUtils>(),
-                mapCullingController = Substitute.For<IMapCullingController>(),
-                100
+                mapCullingController = Substitute.For<IMapCullingController>()
             );
 
             await controller.Initialize(CancellationToken.None);

@@ -33,7 +33,7 @@ namespace DCLServices.MapRendererV2.Tests
 
             builder = Substitute.For<ChunkAtlasController.ChunkBuilder>();
 
-            atlasController = new ChunkAtlasController(null, null, 1, CHUNK_SIZE, coordUtils, Substitute.For<IMapCullingController>(), builder);
+            atlasController = new ChunkAtlasController(null, null, 1, coordUtils, Substitute.For<IMapCullingController>(), builder);
 
             var parcelsInsideChunk = CHUNK_SIZE / PARCEL_SIZE;
 
@@ -45,8 +45,7 @@ namespace DCLServices.MapRendererV2.Tests
         [Test]
         public async Task PerformsCorrectNumberOfIterations()
         {
-            builder.Invoke(Arg.Any<Vector3>(), Arg.Any<int>(), Arg.Any<int>(),
-                        Arg.Any<int>(), Arg.Any<Vector2Int>(), null, null, Arg.Any<CancellationToken>())
+            builder.Invoke(Arg.Any<Vector3>(), Arg.Any<Vector2Int>(), Arg.Any<Transform>(), Arg.Any<CancellationToken>())
                    .Returns(_ => UniTask.DelayFrame(FRAME_DELAY).ContinueWith(() => Substitute.For<IChunkController>()));
 
             await atlasController.Initialize(CancellationToken.None);
@@ -68,8 +67,7 @@ namespace DCLServices.MapRendererV2.Tests
 
             EditorApplication.update += CountEditorFrames;
 
-            builder.Invoke(Arg.Any<Vector3>(), Arg.Any<int>(), Arg.Any<int>(),
-                        Arg.Any<int>(), Arg.Any<Vector2Int>(), null, null, Arg.Any<CancellationToken>())
+            builder.Invoke(Arg.Any<Vector3>(), Arg.Any<Vector2Int>(), Arg.Any<Transform>(), Arg.Any<CancellationToken>())
                    .Returns(_ =>
                         UniTask.DelayFrame(FRAME_DELAY)
                                .ContinueWith(() => invocationFrames.Add(frameNumber))

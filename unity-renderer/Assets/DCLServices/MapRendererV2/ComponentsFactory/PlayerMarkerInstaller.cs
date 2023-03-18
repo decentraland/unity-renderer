@@ -41,8 +41,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 CommonScriptableObjects.cameraForward,
                 configuration.PlayerMarkerRoot,
                 coordsUtils,
-                cullingController,
-                MapRendererDrawOrder.PLAYER_MARKER
+                cullingController
             );
 
             controller.Initialize();

@@ -7,16 +7,14 @@ namespace DCLServices.MapRendererV2.MapLayers
 {
     internal abstract class MapLayerControllerBase
     {
-        protected int drawOrder { get; }
         protected ICoordsUtils coordsUtils { get; }
         protected CancellationTokenSource ctsDisposing { get; }
         protected Transform instantiationParent { get; }
         protected IMapCullingController mapCullingController { get; }
 
-        protected MapLayerControllerBase(Transform instantiationParent, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder)
+        protected MapLayerControllerBase(Transform instantiationParent, ICoordsUtils coordsUtils, IMapCullingController cullingController)
         {
             ctsDisposing = new CancellationTokenSource();
-            this.drawOrder = drawOrder;
             this.coordsUtils = coordsUtils;
             this.instantiationParent = instantiationParent;
             this.mapCullingController = cullingController;

@@ -13,16 +13,9 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         private bool active;
         private bool culled;
 
-        private ColdUserMarker(ColdUserMarkerObject instance)
+        public ColdUserMarker(ColdUserMarkerObject instance)
         {
             this.instance = instance;
-        }
-
-        public static IColdUserMarker Create(ColdUserMarkerObject prefab, Transform parent, int drawOrder)
-        {
-            var instance = Object.Instantiate(prefab, parent);
-            instance.sprite.sortingOrder = drawOrder;
-            return new ColdUserMarker(instance);
         }
 
         public Vector3 CurrentPosition => instance.transform.localPosition;
@@ -36,7 +29,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 
         public void OnRealmChanged(string realm)
         {
-            instance.sprite.color =
+            instance.innerCircle.color =
                 string.Equals(realm, markerRealm, StringComparison.OrdinalIgnoreCase) ? instance.sameRealmColor : instance.otherRealmColor;
         }
 

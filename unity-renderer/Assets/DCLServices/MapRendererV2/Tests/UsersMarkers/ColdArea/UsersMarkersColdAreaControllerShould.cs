@@ -47,7 +47,6 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.ColdArea
                 KernelConfig.i,
                 coordsUtils = Substitute.For<ICoordsUtils>(),
                 cullingController = Substitute.For<IMapCullingController>(),
-                10,
                 MAX_MARKERS);
         }
 
@@ -73,7 +72,7 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.ColdArea
             {
                 EditorApplication.update += CountEditorFrames;
 
-                builder.Invoke(Arg.Any<ColdUserMarkerObject>(), Arg.Any<Transform>(), Arg.Any<int>())
+                builder.Invoke(Arg.Any<ColdUserMarkerObject>(), Arg.Any<Transform>())
                        .Returns(_ =>
                         {
                             invocationFrames.Add(frameNumber);
@@ -110,7 +109,7 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.ColdArea
         [Test]
         public async Task CreateCorrectNumberOfMarkers()
         {
-            builder.Invoke(Arg.Any<ColdUserMarkerObject>(), Arg.Any<Transform>(), Arg.Any<int>())
+            builder.Invoke(Arg.Any<ColdUserMarkerObject>(), Arg.Any<Transform>())
                    .Returns(_ => Substitute.For<IColdUserMarker>());
 
             await controller.Initialize(CancellationToken.None);

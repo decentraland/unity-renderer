@@ -10,12 +10,8 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
     internal class ChunkAtlasController : MapLayerControllerBase, IAtlasController
     {
         public delegate UniTask<IChunkController> ChunkBuilder(Vector3 chunkLocalPosition,
-            int chunkSize,
-            int parcelSize,
-            int drawOrder,
             Vector2Int coordsCenter,
             Transform parent,
-            SpriteRenderer prefab,
             CancellationToken ct);
 
         public const int CHUNKS_CREATED_PER_BATCH = 10;
@@ -28,9 +24,9 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         private int parcelSize => coordsUtils.ParcelSize;
 
-        public ChunkAtlasController(Transform parent, SpriteRenderer prefab, int drawOrder, int chunkSize,
+        public ChunkAtlasController(Transform parent, SpriteRenderer prefab, int chunkSize,
             ICoordsUtils coordsUtils, IMapCullingController cullingController, ChunkBuilder chunkBuilder)
-            : base(parent, coordsUtils, cullingController, drawOrder)
+            : base(parent, coordsUtils, cullingController)
         {
             this.prefab = prefab;
             this.chunkSize = chunkSize;
@@ -66,7 +62,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
                     // Subtract half parcel size to displace the pivot, this allow easier PositionToCoords calculations.
                     Vector3 localPosition = new Vector3((parcelSize * i) - halfParcelSize, (parcelSize * j) - halfParcelSize, 0);
 
-                    var instance = chunkBuilder.Invoke(localPosition, chunkSize, coordsUtils.ParcelSize, drawOrder, coordsCenter, instantiationParent, prefab, linkedCt);
+                    var instance = chunkBuilder.Invoke(localPosition, coordsCenter, instantiationParent, linkedCt);
                     chunksCreating.Add(instance);
                 }
             }

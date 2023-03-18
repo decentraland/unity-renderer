@@ -18,32 +18,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         private Service<IWebRequestController> webRequestController;
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="coordsCenter">0,0 will be considered at bottom left</param>
-        /// <param name="parent"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static async UniTask<IChunkController> CreateChunk(
-            Vector3 chunkLocalPosition,
-            int chunkSize,
-            int parcelSize,
-            int drawOrder,
-            Vector2Int coordsCenter,
-            Transform parent,
-            SpriteRenderer prefab,
-            CancellationToken ct)
-        {
-            var chunk = new ChunkController(prefab, chunkLocalPosition, chunkSize, coordsCenter, parent);
-            chunk.SetDrawOrder(drawOrder);
-            await chunk.LoadImage(chunkSize, parcelSize, coordsCenter, ct);
-            return chunk;
-        }
-
-        private ChunkController(SpriteRenderer prefab, Vector3 chunkLocalPosition, int chunkSize, Vector2Int coordsCenter, Transform parent)
+        public ChunkController(SpriteRenderer prefab, Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent)
         {
             spriteRenderer = Object.Instantiate(prefab, parent);
 #if UNITY_EDITOR
@@ -55,7 +30,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             transform.localPosition = chunkLocalPosition;
         }
 
-        private async UniTask LoadImage(int chunkSize, int parcelSize, Vector2Int mapPosition, CancellationToken ct)
+        public async UniTask LoadImage(int chunkSize, int parcelSize, Vector2Int mapPosition, CancellationToken ct)
         {
             string url = $"{CHUNKS_API}?center={mapPosition.x},{mapPosition.y}&width={chunkSize}&height={chunkSize}&size={parcelSize}";
 
@@ -73,7 +48,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
                 Utils.SafeDestroy(spriteRenderer.gameObject);
         }
 
-        private void SetDrawOrder(int order)
+        public void SetDrawOrder(int order)
         {
             spriteRenderer.sortingOrder = order;
         }

@@ -20,8 +20,8 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         public PlayerMarkerController(
             PlayerMarkerBuilder builder,
             BaseVariable<Vector3> playerWorldPosition, Vector3Variable playerRotation,
-            Transform instantiationParent, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder)
-            : base(instantiationParent, coordsUtils, cullingController, drawOrder)
+            Transform instantiationParent, ICoordsUtils coordsUtils, IMapCullingController cullingController)
+            : base(instantiationParent, coordsUtils, cullingController)
         {
             this.builder = builder;
             this.playerWorldPosition = playerWorldPosition;

@@ -19,8 +19,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
     {
         internal delegate IColdUserMarker ColdUserMarkerBuilder(
             ColdUserMarkerObject prefab,
-            Transform parent,
-            int drawOrder);
+            Transform parent);
 
         internal const int CREATE_PER_BATCH = 20;
         internal const int COMMS_RADIUS_THRESHOLD = 2;
@@ -40,8 +39,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 
         public UsersMarkersColdAreaController(Transform parent, ColdUserMarkerObject prefab, ColdUserMarkerBuilder builder,
             IHotScenesFetcher hotScenesFetcher, BaseVariable<string> realmName, Vector2IntVariable userPosition,
-            KernelConfig kernelConfig, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder, int maxMarkers)
-            : base(parent, coordsUtils, cullingController, drawOrder)
+            KernelConfig kernelConfig, ICoordsUtils coordsUtils, IMapCullingController cullingController, int maxMarkers)
+            : base(parent, coordsUtils, cullingController)
         {
             this.prefab = prefab;
             this.maxMarkers = maxMarkers;
@@ -68,7 +67,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 
                     for (var j = 0; j < batchSize; j++)
                     {
-                        var marker = builder(prefab, instantiationParent, drawOrder);
+                        var marker = builder(prefab, instantiationParent);
                         marker.SetActive(false);
                         instances[i] = marker;
                         i++;

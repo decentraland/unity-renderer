@@ -32,8 +32,21 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         {
             var prefab = await GetPrefab(cancellationToken);
 
-            var controller = new UsersMarkersColdAreaController(configuration.ColdUserMarkersRoot, prefab, ColdUserMarker.Create,
-                hotScenesFetcher.Ref, DataStore.i.realm.realmName, CommonScriptableObjects.playerCoords, KernelConfig.i, coordsUtils, cullingController, MapRendererDrawOrder.COLD_USER_MARKERS, COLD_USER_MARKERS_LIMIT);
+            IColdUserMarker CreateUserMarker(ColdUserMarkerObject prefab, Transform parent)
+            {
+                const int SORTING_ORDER = MapRendererDrawOrder.COLD_USER_MARKERS;
+
+                var instance = UnityEngine.Object.Instantiate(prefab, parent);
+                instance.innerCircle.sortingOrder = SORTING_ORDER;
+                instance.outerCircle.sortingOrder = SORTING_ORDER;
+
+                coordsUtils.SetObjectScale(instance);
+
+                return new ColdUserMarker(instance);
+            }
+
+            var controller = new UsersMarkersColdAreaController(configuration.ColdUserMarkersRoot, prefab, CreateUserMarker,
+                hotScenesFetcher.Ref, DataStore.i.realm.realmName, CommonScriptableObjects.playerCoords, KernelConfig.i, coordsUtils, cullingController, COLD_USER_MARKERS_LIMIT);
 
             await controller.Initialize(cancellationToken).SuppressCancellationThrow();
             writer.Add(MapLayer.ColdUsersMarkers, controller);

@@ -99,8 +99,20 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             {
                 var atlasChunkPrefab = await GetAtlasChunkPrefab(cancellationToken);
 
-                var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, MapRendererDrawOrder.ATLAS, atlasChunkSize,
-                    coordsUtils, cullingController, ChunkController.CreateChunk);
+                async UniTask<IChunkController> CreateChunk(
+                    Vector3 chunkLocalPosition,
+                    Vector2Int coordsCenter,
+                    Transform parent,
+                    CancellationToken ct)
+                {
+                    var chunk = new ChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
+                    chunk.SetDrawOrder(MapRendererDrawOrder.ATLAS);
+                    await chunk.LoadImage(atlasChunkSize, parcelSize, coordsCenter, ct);
+                    return chunk;
+                }
+
+                var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, atlasChunkSize,
+                    coordsUtils, cullingController, CreateChunk);
 
                 // initialize Atlas but don't block the flow (to accelerate loading time)
                 chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
