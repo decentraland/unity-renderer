@@ -2,7 +2,6 @@
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using MainScripts.DCL.Helpers.Utils;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -13,7 +12,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
     /// <summary>
     /// Updates players' positions within the comms radius
     /// </summary>
-    internal class UsersMarkersHotAreaController : MapLayerControllerBase, IMapCullingListener<IHotUserMarker>, IMapLayerController
+    internal class UsersMarkersHotAreaController : MapLayerControllerBase, IMapLayerController
     {
         internal const int PREWARM_PER_FRAME = 20;
 
@@ -59,7 +58,6 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
         {
             var wrap = wrapsPool.Get();
             wrap.TrackPlayer(player);
-            mapCullingController.StartTracking(wrap, this);
             markers.Add(id, wrap);
         }
 
@@ -70,16 +68,6 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
                 wrapsPool.Release(marker);
                 markers.Remove(id);
             }
-        }
-
-        public void OnMapObjectBecameVisible(IHotUserMarker obj)
-        {
-            obj.OnBecameVisible();
-        }
-
-        public void OnMapObjectCulled(IHotUserMarker obj)
-        {
-            obj.OnBecameInvisible();
         }
 
         public UniTask Enable(CancellationToken cancellationToken)

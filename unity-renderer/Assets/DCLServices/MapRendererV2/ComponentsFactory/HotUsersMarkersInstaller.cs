@@ -31,12 +31,15 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         {
             var prefab = await GetPrefab(cancellationToken);
 
-            void SetSortingOrder(HotUserMarkerObject obj)
+            void OnCreate(HotUserMarkerObject obj)
             {
-                obj.sprite.sortingOrder = MapRendererDrawOrder.HOT_USER_MARKERS;
+                for (var i = 0; i < obj.spriteRenderers.Length; i++)
+                    obj.spriteRenderers[i].sortingOrder = MapRendererDrawOrder.HOT_USER_MARKERS;
+
+                coordsUtils.SetObjectScale(obj);
             }
 
-            var objectsPool = new UnityObjectPool<HotUserMarkerObject>(prefab, configuration.HotUserMarkersRoot, actionOnCreate: SetSortingOrder, defaultCapacity: HOT_USER_MARKERS_PREWARM_COUNT);
+            var objectsPool = new UnityObjectPool<HotUserMarkerObject>(prefab, configuration.HotUserMarkersRoot, actionOnCreate: OnCreate, defaultCapacity: HOT_USER_MARKERS_PREWARM_COUNT);
 
             IHotUserMarker CreateWrap() =>
                 new HotUserMarker(objectsPool, cullingController, coordsUtils, CommonScriptableObjects.worldOffset);

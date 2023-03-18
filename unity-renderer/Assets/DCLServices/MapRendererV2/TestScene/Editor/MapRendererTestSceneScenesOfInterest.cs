@@ -16,6 +16,7 @@ namespace DCLServices.MapRendererV2.TestScene
 
         private string name = "fancy scene name";
         private readonly List<ListViewValueTypeContainer<Vector2Int>> parcels = new ();
+        private readonly Dictionary<VisualElement, EventCallback<ChangeEvent<Vector2Int>>> callbacks = new ();
 
         public MapRendererTestSceneScenesOfInterest(MinimapMetadata minimapMetadata, MapRenderer mapRenderer)
         {
@@ -43,16 +44,25 @@ namespace DCLServices.MapRendererV2.TestScene
             var parcelsView = new ListView(this.parcels, 18, makeItem: () => new Vector2IntField("parcel"), bindItem:
                 (element, i) =>
                 {
+                    // TODO does not work properly, find how to make it work
                     var v2Field = (Vector2IntField)element;
-                    v2Field.value = this.parcels[i];
-                    v2Field.RegisterValueChangedCallback(evt =>
-                    {
-                        if (i > this.parcels.Count) return;
-                        this.parcels[i] = evt.newValue;
-                    });
+                    v2Field.SetValueWithoutNotify(this.parcels[i]);
+
+                    EventCallback<ChangeEvent<Vector2Int>> callback = evt => this.parcels[i] = evt.newValue;
+                    callbacks[v2Field] = callback;
+                    v2Field.RegisterValueChangedCallback(callback);
                 });
 
+            parcelsView.unbindItem = (element, i) =>
+            {
+                if (callbacks.TryGetValue(element, out var callback))
+                    ((Vector2IntField)element).UnregisterValueChangedCallback(callback);
+
+                callbacks.Remove(element);
+            };
+            
             parcelsView.showAddRemoveFooter = true;
+            parcelsView.showBoundCollectionSize = true;
 
             parcels.Add(parcelsView);
             root.Add(parcels);

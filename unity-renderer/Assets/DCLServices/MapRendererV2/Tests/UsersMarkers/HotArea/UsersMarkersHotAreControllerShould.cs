@@ -44,24 +44,6 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.HotArea
         }
 
         [Test]
-        public void SetCulled()
-        {
-            var marker = Substitute.For<IHotUserMarker>();
-            controller.OnMapObjectCulled(marker);
-
-            marker.Received(1).OnBecameInvisible();
-        }
-
-        [Test]
-        public void SetVisible()
-        {
-            var marker = Substitute.For<IHotUserMarker>();
-            controller.OnMapObjectBecameVisible(marker);
-
-            marker.Received(1).OnBecameVisible();
-        }
-
-        [Test]
         public async Task AddPlayer()
         {
             wrapsPool.ClearReceivedCalls();
@@ -166,7 +148,7 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.HotArea
         private void AssertPlayerAdded(Player player)
         {
             controller.Markers[player.id].Received(1).TrackPlayer(player);
-            cullingController.Received().StartTracking(controller.Markers[player.id], controller);
+            cullingController.Received().StartTracking(controller.Markers[player.id], controller.Markers[player.id]);
         }
 
         private IReadOnlyList<Player> CreatePlayers(int count)

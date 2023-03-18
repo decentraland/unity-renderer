@@ -3,9 +3,9 @@ using DCL.Helpers;
 using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using MainScripts.DCL.Helpers.Utils;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
 {
@@ -21,13 +21,16 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
         public string CurrentPlayerId { get; private set; }
         public Vector3 CurrentPosition => poolableBehavior.currentPosition;
 
+        public Vector2 Pivot { get; }
+
         private MapMarkerPoolableBehavior<HotUserMarkerObject> poolableBehavior;
 
-        internal HotUserMarker(IObjectPool<HotUserMarkerObject> pool, IMapCullingController mapCullingController, ICoordsUtils coordsUtils, Vector3Variable worldOffset)
+        internal HotUserMarker(IUnityObjectPool<HotUserMarkerObject> pool, IMapCullingController mapCullingController, ICoordsUtils coordsUtils, Vector3Variable worldOffset)
         {
             this.coordsUtils = coordsUtils;
             this.worldOffset = worldOffset;
             this.cullingController = mapCullingController;
+            this.Pivot = pool.Prefab.pivot;
 
             poolableBehavior = new MapMarkerPoolableBehavior<HotUserMarkerObject>(pool);
         }
@@ -40,20 +43,10 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
             TrackPosition(player, cts.Token).Forget();
         }
 
-        public void OnBecameInvisible()
-        {
-            poolableBehavior.OnBecameInvisible();
-
-            // Keep tracking position
-        }
-
-        public void OnBecameVisible()
-        {
-            poolableBehavior.OnBecameVisible();
-        }
-
         private async UniTaskVoid TrackPosition(Player player, CancellationToken ct)
         {
+            var startedTracking = false;
+
             // it takes the first value
             await foreach (var position in player.WorldPositionProp)
             {
@@ -61,9 +54,15 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
                     return;
 
                 var gridPosition = Utils.WorldToGridPositionUnclamped(position + worldOffset.Get());
-                poolableBehavior.SetCurrentPosition(coordsUtils.CoordsToPositionUnclamped(gridPosition));
+                poolableBehavior.SetCurrentPosition(coordsUtils.PivotPosition(this, coordsUtils.CoordsToPositionUnclamped(gridPosition)));
 
-                cullingController.SetTrackedObjectPositionDirty(this);
+                if (startedTracking)
+                    cullingController.SetTrackedObjectPositionDirty(this);
+                else
+                {
+                    cullingController.StartTracking(this, this);
+                    startedTracking = true;
+                }
             }
         }
 
@@ -76,9 +75,20 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
 
         public void Dispose()
         {
-            OnBecameInvisible();
+            OnMapObjectCulled(this);
             cullingController.StopTracking(this);
             ResetPlayer();
+        }
+
+        public void OnMapObjectBecameVisible(IHotUserMarker obj)
+        {
+            poolableBehavior.OnBecameVisible();
+        }
+
+        public void OnMapObjectCulled(IHotUserMarker obj)
+        {
+            poolableBehavior.OnBecameInvisible();
+            // Keep tracking position
         }
     }
 }

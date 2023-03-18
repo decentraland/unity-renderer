@@ -9,6 +9,8 @@ namespace MainScripts.DCL.Helpers.Utils
 {
     public interface IUnityObjectPool<T> : IObjectPool<T> where T : Component
     {
+        T Prefab { get; }
+
         void Prewarm(int count);
 
         UniTask PrewarmAsync(int count, int createPerFrame, CancellationToken ct);
@@ -52,6 +54,8 @@ namespace MainScripts.DCL.Helpers.Utils
                 maxSize
             );
         }
+
+        T IUnityObjectPool<T>.Prefab => prefab;
 
         public void Prewarm(int count)
         {
