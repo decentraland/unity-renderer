@@ -60,7 +60,7 @@ namespace DCLServices.MapRendererV2.TestScene
 
                 callbacks.Remove(element);
             };
-            
+
             parcelsView.showAddRemoveFooter = true;
             parcelsView.showBoundCollectionSize = true;
 
@@ -73,7 +73,7 @@ namespace DCLServices.MapRendererV2.TestScene
                 {
                     name = this.name,
                     isPOI = true,
-                    parcels = this.parcels.Select(p => p.Value).ToList(),
+                    parcels = this.parcels.Select(p => (Vector2Int) p).ToList(),
                     description = "",
                     owner = "",
                     previewImageUrl = ""

@@ -200,7 +200,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e593d0d39b0945da869d328cbb8d4d35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneInfos: []
+  sceneInfos:
+  - id: 
+    name: 
+    creator: 
+    description: 
+    thumbnail: 
+    baseCoords: {x: 0, y: 0}
+    parcels: []
+    usersTotalCount: 6
+    realms:
+    - serverName: Realm 1
+      layer: 
+      usersCount: 2
+      maxUsers: 10
+      userParcels:
+      - {x: 2, y: 3}
+      - {x: 10, y: 30}
+      - {x: -10, y: -10}
+      - {x: 70, y: 80}
+      - {x: 0, y: 1}
+    - serverName: Realm 2
+      layer: 
+      usersCount: 1
+      maxUsers: 10
+      userParcels:
+      - {x: -5, y: 50}
 --- !u!114 &1078731717
 MonoBehaviour:
   m_ObjectHideFlags: 0

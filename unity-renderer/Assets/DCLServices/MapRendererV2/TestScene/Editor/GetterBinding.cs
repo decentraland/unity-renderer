@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace DCLServices.MapRendererV2.TestScene

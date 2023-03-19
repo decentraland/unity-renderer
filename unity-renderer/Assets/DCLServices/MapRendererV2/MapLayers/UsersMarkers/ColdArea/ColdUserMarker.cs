@@ -13,6 +13,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         private bool active;
         private bool culled;
 
+        public Vector2 Pivot => instance.pivot;
+
         public ColdUserMarker(ColdUserMarkerObject instance)
         {
             this.instance = instance;

@@ -12,6 +12,12 @@ namespace DCLServices.MapRendererV2.CoordsUtils
             return new Vector3(obj2dPos.x, obj2dPos.y, objPosition.z);
         }
 
+        /// <summary>
+        /// Translates Coords into position and makes an offset according to the object's pivot
+        /// </summary>
+        public static Vector3 CoordsToPosition(this ICoordsUtils coordsUtils, Vector2Int coords, IMapRendererMarker marker) =>
+            coordsUtils.PivotPosition(marker, coordsUtils.CoordsToPosition(coords));
+
         public static void SetObjectScale(this ICoordsUtils coordsUtils, MonoBehaviour obj)
         {
             var parcelSize = coordsUtils.ParcelSize;

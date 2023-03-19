@@ -9,12 +9,12 @@ namespace DCLServices.MapRendererV2.TestScene
     /// <typeparam name="T"></typeparam>
     internal class ListViewValueTypeContainer<T> where T: struct
     {
-        public T Value { get; set; }
+        private T Value { get; set; }
 
         public static implicit operator T(ListViewValueTypeContainer<T> container) =>
             container?.Value ?? default;
 
         public static implicit operator ListViewValueTypeContainer<T>(T value) =>
-            new () {Value = value};
+            new () { Value = value };
     }
 }

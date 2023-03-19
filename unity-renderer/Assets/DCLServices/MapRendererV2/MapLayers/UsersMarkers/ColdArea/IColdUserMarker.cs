@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 {
-    internal interface IColdUserMarker : IMapPositionProvider, IDisposable
+    internal interface IColdUserMarker : IMapPositionProvider, IMapRendererMarker, IDisposable
     {
         Vector2Int Coords { get; }
 

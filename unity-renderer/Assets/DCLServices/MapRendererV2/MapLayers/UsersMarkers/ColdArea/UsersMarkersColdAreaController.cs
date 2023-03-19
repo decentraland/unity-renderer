@@ -92,7 +92,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
                 RandomizeCoord(data.coords.x),
                 RandomizeCoord(data.coords.y));
 
-            var position = coordsUtils.CoordsToPosition(randomizedCoords);
+            var position = coordsUtils.CoordsToPosition(randomizedCoords, marker);
             marker.SetData(data.realmServer, realmName.Get(), data.coords, position);
             ResolveVisibility(marker);
         }

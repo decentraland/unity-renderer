@@ -30,7 +30,8 @@ namespace DCLServices.MapRendererV2.TestScene
                 new MapRendererTestScenePlayerMarker(DataStore.i.player.playerWorldPosition, CommonScriptableObjects.cameraForward),
                 new MapRendererTestSceneHomePoint(DataStore.i.HUDs.homePoint),
                 new MapRendererTestSceneScenesOfInterest(MinimapMetadata.GetMetadata(), mapRenderer),
-                new MapRendererTestSceneHotAreaUsers(DataStore.i.player.otherPlayers)
+                new MapRendererTestSceneHotAreaUsers(DataStore.i.player.otherPlayers),
+                new MapRendererTestSceneColdAreaUsers(DataStore.i.realm.realmName, CommonScriptableObjects.playerCoords, container.hotScenesController)
             };
 
             return (result, elements);

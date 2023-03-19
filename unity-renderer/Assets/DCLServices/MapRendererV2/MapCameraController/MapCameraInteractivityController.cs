@@ -39,8 +39,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             var mapCoords = coordsUtils.PositionToCoords(localPosition);
 
             // make position discrete
-            localPosition = coordsUtils.CoordsToPosition(mapCoords);
-            localPosition = coordsUtils.PivotPosition(marker, localPosition);
+            localPosition = coordsUtils.CoordsToPosition(mapCoords, marker);
 
             marker.Activate();
             marker.SetCoordinates(mapCoords, localPosition);
