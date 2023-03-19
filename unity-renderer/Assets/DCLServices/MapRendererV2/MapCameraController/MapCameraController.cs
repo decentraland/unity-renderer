@@ -46,8 +46,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         void IMapCameraControllerInternal.Initialize(Vector2Int textureResolution, Vector2Int zoomValues, MapLayer layers)
         {
-            renderTexture = new RenderTexture(textureResolution.x, textureResolution.x, 0);
-            this.zoomValues = zoomValues;
+            renderTexture = new RenderTexture(textureResolution.x, textureResolution.y, 0);
+            this.zoomValues = zoomValues * coordsUtils.ParcelSize;
             EnabledLayers = layers;
 
             mapCameraObject.mapCamera.targetTexture = renderTexture;

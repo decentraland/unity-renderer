@@ -10,6 +10,7 @@ namespace DCLServices.MapRendererV2.Culling
     public partial class MapCullingController : IMapCullingController
     {
         private const int MAX_DIRTY_OBJECTS_PER_FRAME = 10;
+        private const int MAX_CAMERAS_COUNT = sizeof(int) * 8;
 
         private readonly IMapCullingVisibilityChecker cullingVisibilityChecker;
         private readonly List<CameraState> cameraStates = new ();
@@ -36,7 +37,7 @@ namespace DCLServices.MapRendererV2.Culling
 
         void IMapCullingController.OnCameraAdded(IMapCameraControllerInternal cameraController)
         {
-            if (cameraStates.Count == sizeof(int))
+            if (cameraStates.Count == MAX_CAMERAS_COUNT)
                 throw new Exception("Camera out of range");
 
             SetCameraDirtyInternal(cameraStates.Count);

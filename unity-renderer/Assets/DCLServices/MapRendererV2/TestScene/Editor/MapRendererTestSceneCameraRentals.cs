@@ -38,7 +38,7 @@ namespace DCLServices.MapRendererV2.TestScene
             var position = new Vector2IntField("Position");
             var zoom = new FloatField("Zoom") { value = 1 };
             var texRes = new Vector2IntField("Texture Resolution") { value = new Vector2Int(512, 512) };
-            var zoomThreshold = new Vector2IntField("Zoom thresholds") { value = new Vector2Int(100, 500) };
+            var zoomThreshold = new Vector2IntField("Zoom thresholds") { value = new Vector2Int(5, 20) };
 
             void CreateNewRent()
             {

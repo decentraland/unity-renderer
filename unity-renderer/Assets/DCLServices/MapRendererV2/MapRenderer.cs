@@ -72,8 +72,8 @@ namespace DCLServices.MapRendererV2
         public IMapCameraController RentCamera(in MapCameraInput cameraInput)
         {
             const int MAX_TEXTURE_SIZE = 2048;
-            const int MIN_ZOOM = 100;
-            const int MAX_ZOOM = 500;
+            const int MIN_ZOOM = 5;
+            const int MAX_ZOOM = 300;
 
             // Clamp texture to the maximum size allowed, preserving aspect ratio
             Vector2Int zoomValues = cameraInput.ZoomValues;
@@ -85,7 +85,6 @@ namespace DCLServices.MapRendererV2
             EnableLayers(cameraInput.EnabledLayers);
             var mapCameraController = mapCameraPool.Get();
             mapCameraController.OnReleasing += ReleaseCamera;
-            cullingController.OnCameraAdded(mapCameraController);
             mapCameraController.Initialize(Vector2Int.FloorToInt(textureRes * factor), zoomValues, cameraInput.EnabledLayers);
             mapCameraController.SetZoom(cameraInput.Zoom);
             mapCameraController.SetPosition(cameraInput.Position);
@@ -95,9 +94,9 @@ namespace DCLServices.MapRendererV2
 
         private void ReleaseCamera(IMapCameraControllerInternal mapCameraController)
         {
-            cullingController.OnCameraRemoved(mapCameraController);
             mapCameraController.OnReleasing -= ReleaseCamera;
             DisableLayers(mapCameraController.EnabledLayers);
+            mapCameraPool.Release(mapCameraController);
         }
 
         private void EnableLayers(MapLayer mask)
