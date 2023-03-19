@@ -26,6 +26,8 @@ namespace DCL.Chat.HUD
         private ChatHUDController chatHudController;
         private string channelId;
         private bool skipChatInputTrigger;
+        private NearbyMembersHUDController nearbyMembersHUDController;
+
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
         private bool isVisible;
@@ -56,6 +58,7 @@ namespace DCL.Chat.HUD
             view.OnClose += HandleViewClosed;
             view.OnBack += HandleViewBacked;
             view.OnMuteChanged += MuteChannel;
+            view.OnGoToCrowd += GoToCrowd;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += Hide;
@@ -78,6 +81,10 @@ namespace DCL.Chat.HUD
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
 
+            view.OnShowMembersList += ShowMembersList;
+            view.OnHideMembersList += HideMembersList;
+            nearbyMembersHUDController = new NearbyMembersHUDController(view.ChannelMembersHUD, dataStore.player, userProfileBridge);
+
             SetVisibility(isVisible);
             this.isVisible = isVisible;
         }
@@ -98,6 +105,7 @@ namespace DCL.Chat.HUD
             View.OnClose -= HandleViewClosed;
             View.OnBack -= HandleViewBacked;
             View.OnMuteChanged -= MuteChannel;
+            View.OnGoToCrowd -= GoToCrowd;
 
             if (chatController != null)
             {
@@ -115,6 +123,7 @@ namespace DCL.Chat.HUD
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
 
             View?.Dispose();
+            nearbyMembersHUDController.Dispose();
         }
 
         public void SetVisibility(bool visible, bool focusInputField)
@@ -281,5 +290,14 @@ namespace DCL.Chat.HUD
 
             View.ChatHUD.AddTextIntoInputField(mention);
         }
+
+        private void ShowMembersList() =>
+            nearbyMembersHUDController.SetVisibility(true);
+
+        private void HideMembersList() =>
+            nearbyMembersHUDController.SetVisibility(false);
+
+        private void GoToCrowd() =>
+            Environment.i.world.teleportController.GoToCrowd();
     }
 }

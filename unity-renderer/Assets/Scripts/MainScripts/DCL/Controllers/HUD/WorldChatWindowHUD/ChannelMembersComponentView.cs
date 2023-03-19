@@ -50,7 +50,7 @@ namespace DCL.Chat.HUD
                 ((RectTransform)scroll.transform).ForceUpdateLayout();
 
             isLayoutDirty = false;
-            
+
             SetQueuedEntries();
 
             if (isSortDirty)
@@ -82,6 +82,13 @@ namespace DCL.Chat.HUD
         }
 
         public void Set(ChannelMemberEntryModel user) => queuedEntries.Enqueue(user);
+
+        public void Remove(string userId)
+        {
+            memberList.Remove(userId);
+            UpdateLayout();
+            UpdateHeaders();
+        }
 
         public override void Show(bool instant = false) => gameObject.SetActive(true);
 
@@ -122,7 +129,7 @@ namespace DCL.Chat.HUD
 
         private void LoadMoreEntries(Vector2 scrollPosition)
         {
-            if (scrollPosition.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && 
+            if (scrollPosition.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD &&
                 lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
             {
                 if (requireMoreEntriesRoutine != null)
@@ -141,11 +148,11 @@ namespace DCL.Chat.HUD
             loadMoreSpinner.SetActive(false);
             OnRequestMoreMembers?.Invoke();
         }
-        
+
         private void SetQueuedEntries()
         {
             if (queuedEntries.Count <= 0) return;
-            
+
             for (var i = 0; i < ENTRIES_THROTTLING && queuedEntries.Count > 0; i++)
             {
                 var user = queuedEntries.Dequeue();
