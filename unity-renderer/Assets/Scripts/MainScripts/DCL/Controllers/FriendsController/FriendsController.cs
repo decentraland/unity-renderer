@@ -43,15 +43,16 @@ namespace DCL.Social.Friends
             apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
             apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
-            apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
 
             this.socialApiBridge = rpcSocialApiBridge;
 
             socialApiBridge.OnFriendAdded += AddFriend;
             socialApiBridge.OnFriendRemoved += InternalRemoveFriend;
-            socialApiBridge.OnFriendRequestAdded += AddFriendRequest;
+            socialApiBridge.OnIncomingFriendRequestAdded += AddIncomingFriendRequest;
+            socialApiBridge.OnOutgoingFriendRequestAdded += AddOutgoingFriendRequest;
             socialApiBridge.OnFriendRequestRemoved += RemoveFriendRequest;
+            socialApiBridge.OnReceivedFriendshipEvent += HandleUpdateFriendshipStatus;
         }
 
         public void Initialize()
@@ -73,22 +74,16 @@ namespace DCL.Social.Friends
             this.friendRequests.Remove(userId);
         }
 
-        // TODO (Joni): Replace by AddFriendRequests, this is just for successful compilation
-        private void AddFriendRequest(FriendRequest friendRequest)
-        {
-            this.friendRequests.Add(friendRequest.FriendRequestId, friendRequest);
-        }
-
         private void AddFriend(UserStatus friend)
         {
             this.friends.Add(friend.userId, friend);
+
             // todo (Joni): call onTotalFriendCountUpdated
         }
 
         private void InternalRemoveFriend(string userId)
         {
             this.friends.Remove(userId);
-            // todo (Joni)
         }
 
         private void InitializeFriendships(FriendshipInitializationMessage msg)
@@ -429,6 +424,24 @@ namespace DCL.Social.Friends
                    && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;
         }
 
+        private void AddIncomingFriendRequest(FriendRequest friendRequest)
+        {
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.REQUESTED_FROM, userId = friendRequest.From });
+
+            TotalReceivedFriendRequestCount += 1;
+            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+        }
+
+        private void AddOutgoingFriendRequest(FriendRequest friendRequest)
+        {
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.To });
+
+            TotalSentFriendRequestCount += 1;
+            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+        }
+
         private static FriendshipStatus ToFriendshipStatus(FriendshipAction action)
         {
             switch (action)
@@ -470,28 +483,6 @@ namespace DCL.Social.Friends
                 friendRequest.from,
                 friendRequest.to,
                 friendRequest.messageBody);
-
-        // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-        private void AddFriendRequests(AddFriendRequestsPayload msg)
-        {
-            // TODO (Joni): use the social bridge result
-            // this should be called from OnFriendRequestsAdded
-            TotalReceivedFriendRequestCount = msg.totalReceivedFriendRequests;
-            TotalSentFriendRequestCount = msg.totalSentFriendRequests;
-            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
-
-            foreach (var userId in msg.requestedFrom)
-            {
-                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                    { action = FriendshipAction.REQUESTED_FROM, userId = userId });
-            }
-
-            foreach (var userId in msg.requestedTo)
-            {
-                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                    { action = FriendshipAction.REQUESTED_TO, userId = userId });
-            }
-        }
 
         private FriendshipAction ToFriendshipAction(FriendshipStatus status)
         {

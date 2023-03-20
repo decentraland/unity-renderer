@@ -13,7 +13,9 @@ namespace MainScripts.DCL.Controllers.FriendsController
     {
         event Action<UserStatus> OnFriendAdded;
         event Action<string> OnFriendRemoved;
-        event Action<FriendRequest> OnFriendRequestAdded;
+        event Action<FriendRequest> OnIncomingFriendRequestAdded;
+        event Action<FriendRequest> OnOutgoingFriendRequestAdded;
+        event Action<FriendshipUpdateStatusMessage> OnReceivedFriendshipEvent;
         event Action<string> OnFriendRequestRemoved;
         event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
         event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;

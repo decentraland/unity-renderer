@@ -24,7 +24,9 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         public event Action<UserStatus> OnFriendAdded;
         public event Action<string> OnFriendRemoved;
-        public event Action<FriendRequest> OnFriendRequestAdded;
+        public event Action<FriendRequest> OnIncomingFriendRequestAdded;
+        public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
+        public event Action<FriendshipUpdateStatusMessage> OnReceivedFriendshipEvent;
         public event Action<string> OnFriendRequestRemoved;
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
@@ -63,13 +65,13 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
             foreach (var friendRequest in requestEvents.Incoming.Items)
             {
-                OnFriendRequestAdded?.Invoke(new FriendRequest(
+                OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
                     GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, friendRequest.User.Address, ownUserProfile.userId, friendRequest.Message));
             }
 
             foreach (var friendRequest in requestEvents.Outgoing.Items)
             {
-                OnFriendRequestAdded?.Invoke(new FriendRequest(
+                OnOutgoingFriendRequestAdded?.Invoke(new FriendRequest(
                     GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, ownUserProfile.userId, friendRequest.User.Address, friendRequest.Message));
             }
 
@@ -81,6 +83,10 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         public async UniTask ListenToFriendEvents(CancellationToken cancellationToken = default)
         {
+            var ownUserProfile = UserProfile.GetOwnUserProfile();
+
+            await UniTask.WaitUntil(() => ownUserProfile.userId != null, PlayerLoopTiming.Update, cancellationToken);
+
             var stream = rpc.Social().SubscribeFriendshipEventsUpdates(new Empty());
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -89,16 +95,13 @@ namespace MainScripts.DCL.Controllers.FriendsController
             {
                 foreach (var friendshipEvent in item.Events)
                 {
-                    switch (friendshipEvent.BodyCase)
+                    var action = ToFriendshipAction(friendshipEvent.BodyCase);
+                    OnReceivedFriendshipEvent?.Invoke(new FriendshipUpdateStatusMessage()
                     {
-                        case FriendshipEventResponse.BodyOneofCase.None: break;
-                        case FriendshipEventResponse.BodyOneofCase.Request: break;
-                        case FriendshipEventResponse.BodyOneofCase.Accept: break;
-                        case FriendshipEventResponse.BodyOneofCase.Reject: break;
-                        case FriendshipEventResponse.BodyOneofCase.Delete: break;
-                        case FriendshipEventResponse.BodyOneofCase.Cancel: break;
-                        default: throw new ArgumentOutOfRangeException();
-                    }
+                        // TODO: Get User Id from friendshipEvent
+                        userId = "action",
+                        action = ToFriendshipAction(friendshipEvent.BodyCase)
+                    });
                 }
             }
         }
@@ -257,6 +260,26 @@ namespace MainScripts.DCL.Controllers.FriendsController
                     return FriendRequestErrorCodes.NotEnoughTimePassed;
                 case FriendshipErrorCode.TooManyRequestsSent:
                     return FriendRequestErrorCodes.TooManyRequestsSent;
+            }
+        }
+
+        private static FriendshipAction ToFriendshipAction(FriendshipEventResponse.BodyOneofCase body, bool sent_request = false)
+        {
+            switch (body)
+            {
+                case FriendshipEventResponse.BodyOneofCase.None:
+                    return FriendshipAction.NONE;
+                case FriendshipEventResponse.BodyOneofCase.Request:
+                    return sent_request ? FriendshipAction.REQUESTED_TO : FriendshipAction.REQUESTED_FROM;
+                case FriendshipEventResponse.BodyOneofCase.Accept:
+                    return FriendshipAction.APPROVED;
+                case FriendshipEventResponse.BodyOneofCase.Reject:
+                    return FriendshipAction.REJECTED;
+                case FriendshipEventResponse.BodyOneofCase.Delete:
+                    return FriendshipAction.DELETED;
+                case FriendshipEventResponse.BodyOneofCase.Cancel:
+                    return FriendshipAction.CANCELLED;
+                default: throw new ArgumentOutOfRangeException(nameof(body), body, null);
             }
         }
     }
