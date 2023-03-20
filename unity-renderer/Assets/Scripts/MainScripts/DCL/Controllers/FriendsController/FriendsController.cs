@@ -13,6 +13,7 @@ namespace DCL.Social.Friends
         private readonly IFriendsApiBridge apiBridge;
         private readonly IRPCSocialApiBridge socialApiBridge;
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
+        private readonly Dictionary<string, string[]> friendEventsByUserId = new ();
         private readonly Dictionary<string, UserStatus> friends = new ();
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
@@ -123,6 +124,7 @@ namespace DCL.Social.Friends
             return friendRequest;
         }
 
+        // TODO: Call socialBrige
         public void RequestFriendship(string friendUserId) =>
             apiBridge.RequestFriendship(friendUserId);
 
@@ -132,6 +134,8 @@ namespace DCL.Social.Friends
         public async UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            // TODO: Call socialBridge
 
             AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
 
@@ -145,6 +149,7 @@ namespace DCL.Social.Friends
             return request;
         }
 
+        // TODO: Call socialBridge
         public void RejectFriendship(string friendUserId) =>
             apiBridge.RejectFriendship(friendUserId);
 
@@ -385,7 +390,7 @@ namespace DCL.Social.Friends
             OnFriendRequestReceived?.Invoke(request);
         }
 
-        // TODO (Joni): Replace by according friend event from RPC Bridge
+        // TODO (Joni): Discuss with unity if we should remove the friend notification
         private void HandleUpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
         {
             UpdateFriendshipStatus(msg);

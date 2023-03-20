@@ -99,7 +99,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
                     OnReceivedFriendshipEvent?.Invoke(new FriendshipUpdateStatusMessage()
                     {
                         // TODO: Get User Id from friendshipEvent
-                        userId = "action",
+                        userId = "get userId",
                         action = ToFriendshipAction(friendshipEvent.BodyCase)
                     });
                 }
