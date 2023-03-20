@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using System.Collections;
 using NSubstitute;
@@ -16,6 +17,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
 
     private IChatController chatController;
     private UnreadNotificationBadge unreadNotificationBadge;
+    private DataStore_Mentions mentionDataStore;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
@@ -24,7 +26,8 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
         unreadNotificationBadge = go.GetComponent<UnreadNotificationBadge>();
         chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(0);
-        unreadNotificationBadge.Initialize(chatController, TEST_USER_ID);
+        mentionDataStore = new DataStore_Mentions();
+        unreadNotificationBadge.Initialize(chatController, TEST_USER_ID, mentionDataStore);
 
         Assert.AreEqual(0, unreadNotificationBadge.CurrentUnreadMessages,
             "There shouldn't be any unread notification after initialization");
@@ -58,7 +61,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
         const int unreadNotificationCount = 10;
         chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(unreadNotificationCount);
         unreadNotificationBadge.maxNumberToShow = 9;
-        
+
         for (var i = 1; i <= unreadNotificationCount; i++)
             chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, i);
 
@@ -87,9 +90,9 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     {
         chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(1);
         chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, 1);
-        
+
         Assert.AreEqual(1, unreadNotificationBadge.CurrentUnreadMessages, "There should be one notification");
-        
+
         chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(0);
         chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, 0);
 
@@ -103,7 +106,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     {
         chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(1);
         chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, 1);
-        
+
         chatController.GetAllocatedUnseenMessages(INVALID_TEST_USER_ID).Returns(0);
         chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(INVALID_TEST_USER_ID, 0);
 
@@ -116,7 +119,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void ReceiveOneUnreadChannelNotification()
     {
-        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID, mentionDataStore);
         chatController.GetAllocatedUnseenChannelMessages(TEST_CHANNEL_ID).Returns(1);
         chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_CHANNEL_ID, 1);
 
@@ -130,7 +133,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     public void ReceiveSeveralUnreadChannelNotifications()
     {
         const int unreadNotificationCount = 10;
-        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID, mentionDataStore);
         chatController.GetAllocatedUnseenMessages(TEST_CHANNEL_ID).Returns(unreadNotificationCount);
         unreadNotificationBadge.maxNumberToShow = 9;
 
@@ -149,7 +152,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void NotReceiveUnreadChannelNotificationsBecauseOfDifferentUser()
     {
-        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID, mentionDataStore);
         chatController.GetAllocatedUnseenChannelMessages(INVALID_TEST_CHANNEL_ID).Returns(1);
         chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(INVALID_TEST_CHANNEL_ID, 1);
 
@@ -161,7 +164,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void CleanAllUnreadChannelNotifications()
     {
-        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID, mentionDataStore);
         chatController.GetAllocatedUnseenChannelMessages(TEST_CHANNEL_ID).Returns(1);
         chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_CHANNEL_ID, 1);
 
@@ -178,7 +181,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void NotCleanUnreadChannelNotificationsBecauseOfDifferentUser()
     {
-        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID, mentionDataStore);
         chatController.GetAllocatedUnseenChannelMessages(TEST_CHANNEL_ID).Returns(1);
         chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_CHANNEL_ID, 1);
 

@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
-using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
-using DCLServices.WearablesCatalogService;
-using GPUSkinning;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.ExceptionServices;
+using System.Threading;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
 
@@ -54,8 +51,8 @@ namespace DCL.ECSComponents
     {
         private const float AVATAR_Y_AXIS_OFFSET = -0.72f;
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
-        private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         internal const string IN_HIDE_AREA = "IN_HIDE_AREA";
+        private const string OPEN_PASSPORT_SOURCE = "World";
 
         [SerializeField] private GameObject avatarContainer;
         [SerializeField] internal Collider avatarCollider;
@@ -70,7 +67,7 @@ namespace DCL.ECSComponents
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
-        private StringVariable currentPlayerInfoCardId;
+        private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
 
         internal bool initializedPosition = false;
 
@@ -98,7 +95,7 @@ namespace DCL.ECSComponents
             // TODO: avoid instantiation, user profile bridge should be retrieved from the service locator
             userProfileBridge = new UserProfileWebInterfaceBridge();
 
-            currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+            currentPlayerInfoCardId = DataStore.i.HUDs.currentPlayerId;
             Visibility visibility = new Visibility();
             avatarMovementController.SetAvatarTransform(transform);
 
@@ -120,7 +117,7 @@ namespace DCL.ECSComponents
         public void Init()
         {
             // The avatars have an offset in the Y axis, so we set the offset after the avatar has been restored from the pool
-            transform.position = new UnityEngine.Vector3(transform.position.x, AVATAR_Y_AXIS_OFFSET, transform.position.z);
+            transform.position = new Vector3(transform.position.x, AVATAR_Y_AXIS_OFFSET, transform.position.z);
             SetPlayerNameReference();
         }
 
@@ -136,7 +133,7 @@ namespace DCL.ECSComponents
         {
             if (model == null)
                 return;
-            currentPlayerInfoCardId.Set(model.Id);
+            currentPlayerInfoCardId.Set((model.Id, OPEN_PASSPORT_SOURCE));
         }
 
         public void OnDestroy()
@@ -206,7 +203,7 @@ namespace DCL.ECSComponents
             UpdatePlayerStatus(entity, model);
 
             onPointerDown.Initialize(
-                new OnPointerDown.Model()
+                new OnPointerEvent.Model()
                 {
                     type = OnPointerDown.NAME,
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
@@ -215,7 +212,7 @@ namespace DCL.ECSComponents
                 entity, player
             );
 
-            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, player.avatar);
+            outlineOnHover.Initialize(new OnPointerEvent.Model(), entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -373,7 +370,7 @@ namespace DCL.ECSComponents
             OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
         }
 
-        private void OnEntityTransformChanged(in UnityEngine.Vector3 position, in Quaternion rotation, bool inmediate)
+        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
             if (entity == null)
                 return;
@@ -384,7 +381,7 @@ namespace DCL.ECSComponents
             }
             else
             {
-                var scenePosition = DCL.Helpers.Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
+                var scenePosition = Helpers.Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
                 avatarMovementController.OnTransformChanged(scenePosition + position, rotation, inmediate);
             }
             initializedPosition = true;
