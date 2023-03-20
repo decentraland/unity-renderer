@@ -74,7 +74,8 @@ namespace DCLServices.Lambdas
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
             urlBuilder.Append(GetLambdasUrl());
-            urlBuilder.Append('/');
+            if (!urlBuilder.ToString().EndsWith('/'))
+                urlBuilder.Append('/');
 
             var endPointSpan = endPoint.AsSpan();
 
