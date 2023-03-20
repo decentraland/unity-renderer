@@ -1552,11 +1552,11 @@ function getTotalFriendsAndSocialData(rootState: RootState, userId: string) {
   return {
     client,
     rendererModules,
-    friendsPromise: getFriendIds(client),
+    friendsPromise: () => getFriendIds(client),
     newFriendRequestFlow: isNewFriendRequestEnabled(rootState),
     state: getPrivateMessaging(rootState),
     socialData: findPrivateMessagingFriendsByUserId(rootState, userId),
-    conversationIdPromise: getConversationId(client, getUserIdFromMatrix(userId)),
+    conversationIdPromise: () => getConversationId(client, getUserIdFromMatrix(userId)),
     updateTotalFriendRequestsPayload: getTotalFriendRequests(rootState),
     totalFriends: getTotalFriends(rootState)
   }

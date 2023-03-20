@@ -11,13 +11,14 @@ import {
   ETHEREUM_NETWORK,
   FORCE_SEND_MESSAGE,
   getAssetBundlesBaseUrl,
+  PIPE_SCENE_CONSOLE,
   playerHeight,
   WSS_ENABLED
 } from 'config'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
-import defaultLogger, { createDummyLogger, createLogger, ILogger } from 'lib/logger'
+import defaultLogger, { createDummyLogger, createForwardedLogger, createLogger, ILogger } from 'lib/logger'
 import mitt from 'mitt'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { registerServices } from 'shared/apis/host'
@@ -147,7 +148,11 @@ export class SceneWorker {
 
     const loggerName = getSceneNameFromJsonData(this.metadata) || loadableScene.id
     const loggerPrefix = `scene: [${loggerName}]`
-    this.logger = DEBUG_SCENE_LOG ? createLogger(loggerPrefix) : createDummyLogger()
+    this.logger = DEBUG_SCENE_LOG
+      ? PIPE_SCENE_CONSOLE
+        ? createForwardedLogger('kernel', loggerPrefix)
+        : createLogger(loggerPrefix)
+      : createDummyLogger()
 
     if (!Scene.validate(loadableScene.entity.metadata)) {
       defaultLogger.error('Invalid scene metadata', loadableScene.entity.metadata, Scene.validate.errors)
@@ -324,7 +329,7 @@ export class SceneWorker {
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
 
-    const WORKER_TIMEOUT = 90_000 // ninety seconds to mars
+    const WORKER_TIMEOUT = 120_000
     setTimeout(() => this.onLoadTimeout(), WORKER_TIMEOUT)
   }
 

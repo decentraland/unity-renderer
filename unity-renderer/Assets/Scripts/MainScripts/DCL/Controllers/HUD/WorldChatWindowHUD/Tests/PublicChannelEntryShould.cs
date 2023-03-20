@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Chat.HUD;
 using NSubstitute;
 using NUnit.Framework;
@@ -10,7 +11,7 @@ public class PublicChannelEntryShould
     public void SetUp()
     {
         view = PublicChatEntry.Create();
-        view.Initialize(Substitute.For<IChatController>());
+        view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
     }
 
     [TearDown]
@@ -35,9 +36,9 @@ public class PublicChannelEntryShould
     {
         var called = false;
         view.OnOpenChat += entry => called = true;
-        
+
         view.openChatButton.onClick.Invoke();
-        
+
         Assert.IsTrue(called);
     }
 

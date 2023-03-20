@@ -8,9 +8,7 @@ import { getAuthChainSignature } from 'lib/decentraland/authentication/signedFet
 import { RendererProtocolContext } from '../context'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function registerSignRequestService<Context extends {}>(
-  port: RpcServerPort<RendererProtocolContext>
-) {
+export function registerSignRequestService<_ extends {}>(port: RpcServerPort<RendererProtocolContext>) {
   codegen.registerService(port, SignRequestKernelServiceDefinition, async () => ({
     async getRequestSignature(req, _) {
       const url = new URL(req.url)
@@ -19,18 +17,15 @@ export function registerSignRequestService<Context extends {}>(
         throw new Error(`Signature requested before the user has been initialized`)
       }
 
-      const signature = getAuthChainSignature(
-        requestMethodToJSON(req.method),
-        url.pathname,
-        req.metadata,
-        (payload) => Authenticator.signPayload(identity, payload)
+      const signature = getAuthChainSignature(requestMethodToJSON(req.method), url.pathname, req.metadata, (payload) =>
+        Authenticator.signPayload(identity, payload)
       )
       // const response: SignBodyResponse = {}
 
       return {
-        authChain: signature.authChain.map(item => JSON.stringify(item)),
+        authChain: signature.authChain.map((item) => JSON.stringify(item)),
         timestamp: signature.timestamp,
-        metadata: signature.metadata,
+        metadata: signature.metadata
       } as SignBodyResponse
     }
   }))

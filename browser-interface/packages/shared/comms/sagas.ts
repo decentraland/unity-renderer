@@ -55,8 +55,6 @@ import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
-const CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS = 10_000
-
 // this interval should be fast because this will be the delay other people around
 // you will experience to fully show your avatar. i.e. if we set it to 10sec, people
 // in the genesis plaza will have to wait up to 10 seconds (if already connected) to
@@ -400,17 +398,16 @@ function stripSnapshots(profile: Avatar): Avatar {
  * This saga handle reconnections of comms contexts.
  */
 function* handleCommsReconnectionInterval() {
-  yield call(waitForMetaConfigurationInitialization)
-  const isUnexpectedDisconnectionCheckEnabled = yield select(getFeatureFlagEnabled, 'unexpected-disconnection-check')
-
   while (true) {
-    const reason = yield race({
+    const reason: any = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
       USER_AUTHENTICATED: take(USER_AUTHENTICATED),
-      timeout: isUnexpectedDisconnectionCheckEnabled ? delay(CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS) : undefined
+      timeout: delay(1000)
     })
-
+    // TODO: Why are we not doing `if (reason === undefined) continue`?
+    // The timeout makes no sense, except to avoid a logical error
+    // in the saga flow that leads to some race condition.
     const { commsConnection, realmAdapter, hasFatalError, identity } = yield select(reconnectionState)
 
     const shouldReconnect = !commsConnection && !hasFatalError && identity?.address && !realmAdapter
@@ -501,6 +498,7 @@ export async function disconnectRoom(context: RoomConnection) {
 function* handleRoomDisconnectionSaga(action: HandleRoomDisconnection) {
   const room: RoomConnection = yield select(getCommsRoom)
 
+  // and only acts if the disconnected room is the current room
   if (room && room === action.payload.context) {
     // this also remove the context
     yield put(setRoomConnection(undefined))

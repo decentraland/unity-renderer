@@ -45,7 +45,6 @@ namespace DCL.Chat.Notifications
             offsetHeaderXPos = NORMAL_HEADER_X_POS - X_OFFSET;
 
             chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
-            chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
             notificationRect = chatNotificationComponentView.gameObject.GetComponent<RectTransform>();
             chatNotificationComponentView.shouldAnimateFocus = false;
             chatNotificationComponentView.SetIsPrivate(true);
@@ -81,7 +80,6 @@ namespace DCL.Chat.Notifications
             {
                 OnResetFade?.Invoke(true);
                 PopulateMultipleNotification();
-                chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
                 AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
                 return;
             }
@@ -89,7 +87,6 @@ namespace DCL.Chat.Notifications
             stackedNotifications--;
             OnResetFade?.Invoke(true);
             PopulatePrivateNotification(model);
-            chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
             ShowNotificationCooldown().Forget();
         }
@@ -115,7 +112,6 @@ namespace DCL.Chat.Notifications
             {
                 OnResetFade?.Invoke(true);
                 PopulateMultipleNotification();
-                chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
                 AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
                 return;
             }
@@ -123,7 +119,6 @@ namespace DCL.Chat.Notifications
             stackedNotifications--;
             OnResetFade?.Invoke(true);
             PopulatePublicNotification(model);
-            chatNotificationComponentView.SetPositionOffset(offsetHeaderXPos, offsetContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
             ShowNotificationCooldown().Forget();
         }
@@ -210,7 +205,9 @@ namespace DCL.Chat.Notifications
             chatNotificationComponentView.SetNotificationHeader($"DM - {model.PeerUsername}");
             chatNotificationComponentView.SetNotificationSender($"{senderName}:");
             chatNotificationComponentView.SetNotificationTargetId(model.TargetId);
-            chatNotificationComponentView.SetImageVisibility(false);
+            chatNotificationComponentView.SetImageVisibility(true);
+            chatNotificationComponentView.SetOwnPlayerMention(model.IsOwnPlayerMentioned);
+            chatNotificationComponentView.SetImage(model.ProfilePicture);
         }
 
         private void PopulatePublicNotification(PublicChannelMessageNotificationModel model)

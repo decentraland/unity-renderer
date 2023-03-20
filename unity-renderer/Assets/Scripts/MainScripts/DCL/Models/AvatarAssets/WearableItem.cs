@@ -293,6 +293,13 @@ public class WearableItem
 
     public bool IsEmote() { return emoteDataV0 != null; }
 
+    public NftInfo GetNftInfo() =>
+        new ()
+        {
+            Id = id,
+            Category = IsEmote() ? "emote" : data?.category,
+        };
+
     public virtual bool ShowInBackpack() { return true; }
 
     public override string ToString() { return id; }

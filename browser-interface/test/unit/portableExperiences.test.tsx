@@ -1,23 +1,20 @@
-import { expectSaga } from 'redux-saga-test-plan'
-import { delay, call, select } from 'redux-saga/effects'
-
-import { portableExperienceSaga } from '../../packages/shared/portableExperiences/sagas'
-import {
-  addScenePortableExperience,
-  denyPortableExperiences,
-  updateEnginePortableExperiences,
-  removeScenePortableExperience,
-  reloadScenePortableExperience,
-  killAllPortableExperiences,
-  activateAllPortableExperiences
-} from 'shared/portableExperiences/actions'
-import { LoadableScene } from 'shared/types'
-import { getDesiredPortableExperiences } from 'shared/portableExperiences/selectors'
-import { declareWantedPortableExperiences } from 'unity-interface/portableExperiencesUtils'
-import { RootPortableExperiencesState } from 'shared/portableExperiences/types'
-import { reducers } from 'shared/store/rootReducer'
-import { expect } from 'chai'
 import { EntityType } from '@dcl/schemas'
+import { expect } from 'chai'
+import { PORTABLE_EXPERIENCES_DEBOUNCE_DELAY } from 'config'
+import { expectSaga } from 'redux-saga-test-plan'
+import { call, delay, select } from 'redux-saga/effects'
+import { isMetaConfigurationInitialized } from 'shared/meta/selectors'
+import {
+  activateAllPortableExperiences, addScenePortableExperience,
+  denyPortableExperiences, killAllPortableExperiences, reloadScenePortableExperience, removeScenePortableExperience, updateEnginePortableExperiences
+} from 'shared/portableExperiences/actions'
+import { fetchInitialPortableExperiences, portableExperienceSaga } from 'shared/portableExperiences/sagas'
+import { getDesiredPortableExperiences } from 'shared/portableExperiences/selectors'
+import { RootPortableExperiencesState } from 'shared/portableExperiences/types'
+import { getClient } from 'shared/renderer/selectors'
+import { reducers } from 'shared/store/rootReducer'
+import { LoadableScene } from 'shared/types'
+import { declareWantedPortableExperiences } from 'unity-interface/portableExperiencesUtils'
 
 describe('Portable experiences sagas test', () => {
   const createLoadablePX = (urn: string): LoadableScene => ({
@@ -41,12 +38,15 @@ describe('Portable experiences sagas test', () => {
 
     return expectSaga(portableExperienceSaga)
       .provide([
+        [select(isMetaConfigurationInitialized), false],
+        [select(getClient), true],
         [select(getDesiredPortableExperiences), []],
         [call(declareWantedPortableExperiences, []), []]
       ])
       .dispatch(action)
       .put(updateEnginePortableExperiences([]))
-      .run()
+      .fork(fetchInitialPortableExperiences)
+      .silentRun(0)
   })
 
   it('returning one PX in debug', () => {
@@ -55,12 +55,14 @@ describe('Portable experiences sagas test', () => {
 
     return expectSaga(portableExperienceSaga)
       .provide([
+        [select(isMetaConfigurationInitialized), false],
+        [select(getClient), [true]],
         [select(getDesiredPortableExperiences), [px]],
         [call(declareWantedPortableExperiences, [px]), []]
       ])
       .dispatch(action)
       .put(updateEnginePortableExperiences([px]))
-      .run()
+      .silentRun(0)
   })
 
   it('reload PX should call declare wanted once empty and again with the desired px', () => {
@@ -69,6 +71,8 @@ describe('Portable experiences sagas test', () => {
 
     return expectSaga(portableExperienceSaga)
       .provide([
+        [select(isMetaConfigurationInitialized), false],
+        [select(getClient), [true]],
         [select(getDesiredPortableExperiences), [px]],
         [call(declareWantedPortableExperiences, []), []],
         [delay(250), []],
@@ -78,19 +82,23 @@ describe('Portable experiences sagas test', () => {
       .call(declareWantedPortableExperiences, [])
       .delay(250)
       .call(declareWantedPortableExperiences, [px])
-      .run()
+      .silentRun(0)
   })
 
   it('updateEnginePortableExperiences triggers a change in the engine (debounced)', () => {
     const px = createLoadablePX('urn')
 
     return expectSaga(portableExperienceSaga)
-      .provide([[call(declareWantedPortableExperiences, [px]), []]])
+      .provide([
+        [select(isMetaConfigurationInitialized), false],
+        [select(getClient), [true]],
+        [call(declareWantedPortableExperiences, [px]), []]
+      ])
       .dispatch(updateEnginePortableExperiences([])) // this one should not be triggered
       .dispatch(updateEnginePortableExperiences([px]))
       .not.call(declareWantedPortableExperiences, [])
       .call(declareWantedPortableExperiences, [px])
-      .run()
+      .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY())
   })
 
   it('returning a PX multiple times should dedup the px', () => {
@@ -142,7 +150,10 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
-        .provide([[call(declareWantedPortableExperiences, [pxOld, pxDenied]), []]])
+        .provide([
+          [select(getClient), [true]],
+          [call(declareWantedPortableExperiences, [pxOld, pxDenied]), []]
+        ])
         .dispatch(denyPortableExperiences([]))
         .call(declareWantedPortableExperiences, [pxOld, pxDenied])
         .hasFinalState(
@@ -159,7 +170,7 @@ describe('Portable experiences sagas test', () => {
           })
         )
         .put(updateEnginePortableExperiences([pxOld, pxDenied]))
-        .run()
+        .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY())
     })
 
     it('adding a denied PX should not trigger any action', () => {
@@ -180,7 +191,10 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
-        .provide([[call(declareWantedPortableExperiences, [pxOld]), []]])
+        .provide([
+          [select(getClient), [true]],
+          [call(declareWantedPortableExperiences, [pxOld]), []]
+        ])
         .dispatch(addScenePortableExperience(pxDenied))
         .call(declareWantedPortableExperiences, [pxOld])
         .hasFinalState(
@@ -197,7 +211,7 @@ describe('Portable experiences sagas test', () => {
           })
         )
         .put(updateEnginePortableExperiences([pxOld]))
-        .run()
+        .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY())
     })
 
     it('removing a scene-created PX should remove it from the final list', () => {
@@ -217,7 +231,10 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
-        .provide([[call(declareWantedPortableExperiences, []), []]])
+        .provide([
+          [select(getClient), [true]],
+          [call(declareWantedPortableExperiences, []), []]
+        ])
         .dispatch(removeScenePortableExperience(pxOld.id))
         .call(declareWantedPortableExperiences, [])
         .hasFinalState(
@@ -231,7 +248,7 @@ describe('Portable experiences sagas test', () => {
           })
         )
         .put(updateEnginePortableExperiences([]))
-        .run()
+        .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY())
     })
   })
 
@@ -252,7 +269,10 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
-        .provide([[call(declareWantedPortableExperiences, [px]), []]])
+        .provide([
+          [call(declareWantedPortableExperiences, [px]), []],
+          [select(getClient), [true]],
+        ])
         .dispatch(addScenePortableExperience(px))
         .call(declareWantedPortableExperiences, [px])
         .hasFinalState(
@@ -268,7 +288,7 @@ describe('Portable experiences sagas test', () => {
           })
         )
         .put(updateEnginePortableExperiences([px]))
-        .run())
+        .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY()))
 
     // deny list it
     it('add it to the denylist, now the desired PX should be an empty list', () =>
@@ -286,7 +306,10 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
-        .provide([[call(declareWantedPortableExperiences, []), []]])
+        .provide([
+          [select(getClient), [true]],
+          [call(declareWantedPortableExperiences, []), []]
+        ])
         .dispatch(denyPortableExperiences([px.id]))
         .call(declareWantedPortableExperiences, [])
         .hasFinalState(
@@ -302,7 +325,7 @@ describe('Portable experiences sagas test', () => {
           })
         )
         .put(updateEnginePortableExperiences([]))
-        .run())
+        .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY()))
 
     // remove from deny list
     it('remove it from the denylist, the desired PX should include the allowed PX', () =>
@@ -320,7 +343,10 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
-        .provide([[call(declareWantedPortableExperiences, [px]), []]])
+        .provide([
+          [select(getClient), [true]],
+          [call(declareWantedPortableExperiences, [px]), []]
+        ])
         .dispatch(denyPortableExperiences([]))
         .call(declareWantedPortableExperiences, [px])
         .hasFinalState(
@@ -336,7 +362,7 @@ describe('Portable experiences sagas test', () => {
           })
         )
         .put(updateEnginePortableExperiences([px]))
-        .run())
+        .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY()))
 
     it('shutdown the PX, this should shutdown all the PX', () =>
       expectSaga(portableExperienceSaga)
@@ -353,6 +379,9 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
+        .provide([
+          [select(getClient), [true]],
+        ])
         .dispatch(killAllPortableExperiences())
         .hasFinalState(
           state({
@@ -366,7 +395,7 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
-        .run())
+        .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY()))
 
     it('activate the PX, this should activate all the PX that has been shutdown', () =>
       expectSaga(portableExperienceSaga)
@@ -381,6 +410,9 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
+        .provide([
+          [select(getClient), [true]],
+        ])
         .dispatch(activateAllPortableExperiences())
         .hasFinalState(
           state({
@@ -392,6 +424,6 @@ describe('Portable experiences sagas test', () => {
             }
           })
         )
-        .run())
+        .silentRun(PORTABLE_EXPERIENCES_DEBOUNCE_DELAY()))
   })
 })

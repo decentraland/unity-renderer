@@ -24,7 +24,6 @@ public class JoinChannelModalPlugin : IPlugin
             new SocialAnalytics(
                 Environment.i.platform.serviceProviders.analytics,
                 new UserProfileWebInterfaceBridge()),
-            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
             serviceLocator.Get<IChannelsFeatureFlagService>());
     }
 

@@ -2,6 +2,7 @@ using DCL;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private const float COPY_TOAST_VISIBLE_TIME = 3;
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
+    private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] internal GameObject loadingSpinner;
@@ -80,11 +82,11 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private InputAction_Trigger.Triggered closeActionDelegate;
 
-    private Coroutine copyToastRoutine = null;
-    private UserProfile profile = null;
+    private Coroutine copyToastRoutine;
+    private UserProfile profile;
     private string description;
     private string userId;
-    private StringVariable currentPlayerId;
+    private BaseVariable<(string playerId, string source)> currentPlayerId;
 
     public event EventHandler ClaimNamePressed;
     public event EventHandler SignedUpPressed;
@@ -105,113 +107,9 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public RectTransform ExpandedMenu => mainRootLayout;
     public RectTransform TutorialReference => tutorialTooltipReference;
 
-
-    public bool HasManaCounterView() => manaCounterView != null;
-    public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
-    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionInputText.characterLimit < descriptionInputText.text.Length;
-    public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
-    public void SetPolygonBalance(double balance) => polygonManaCounterView.SetBalance(balance);
-    public void SetWalletSectionEnabled(bool isEnabled) => connectedWalletSection.SetActive(isEnabled);
-    public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
-    public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
-    public override void RefreshControl() { }
-
-
-    public void SetProfile(UserProfile userProfile)
+    public override void Awake()
     {
-        UpdateLayoutByProfile(userProfile);
-        if (profile == null)
-        {
-            description = userProfile.description;
-            descriptionInputText.text = description;
-            UpdateLinksInformation(description);
-        }
-
-        profile = userProfile;
-    }
-
-    private void UpdateLayoutByProfile(UserProfile userProfile)
-    {
-        if (userProfile.hasClaimedName)
-            HandleClaimedProfileName(userProfile);
-        else
-            HandleUnverifiedProfileName(userProfile);
-
-        SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
-        HandleProfileAddress(userProfile);
-        HandleProfileSnapshot(userProfile);
-        SetDescriptionEnabled(userProfile.hasConnectedWeb3);
-        SetUserId(userProfile);
-
-        string[] nameSplits = userProfile.userName.Split('#');
-        if (nameSplits.Length >= 2)
-        {
-            textName.text = nameSplits[0];
-            textPostfix.text = $"#{nameSplits[1]};";
-        }
-        else
-        {
-            textName.text = userProfile.userName;
-            textPostfix.text = userProfile.userId;
-        }
-    }
-
-    private void SetUserId(UserProfile userProfile)
-    {
-        userId = userProfile.userId;
-    }
-
-    private void OpenStartMenu()
-    {
-        if (isStartMenuInitialized)
-        {
-            if (!DataStore.i.exploreV2.isOpen.Get())
-            {
-                var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
-                exploreV2Analytics.SendStartMenuVisibility(
-                    true,
-                    ExploreUIVisibilityMethod.FromClick);
-            }
-            DataStore.i.exploreV2.isOpen.Set(true);
-        }
-    }
-
-    public void ShowProfileIcon(bool show)
-    {
-        profilePicObject.SetActive(show);
-    }
-
-    public void ShowExpanded(bool show)
-    {
-        expandedObject.SetActive(show);
-        if (show && profile)
-            UpdateLayoutByProfile(profile);
-    }
-
-    public void ActivateProfileNameEditionMode(bool activate)
-    {
-        if (profile != null && profile.hasClaimedName)
-            return;
-
-        textName.gameObject.SetActive(!activate);
-        inputName.gameObject.SetActive(activate);
-
-        if (activate)
-        {
-            inputName.text = textName.text;
-            inputName.Select();
-        }
-    }
-
-    public void SetDescriptionCharLiitEnabled(bool enabled)
-    {
-        charLimitDescriptionContainer.SetActive(enabled);
-    }
-
-    private void Awake()
-    {
-        if (currentPlayerId == null)
-            currentPlayerId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        currentPlayerId = DataStore.i.HUDs.currentPlayerId;
 
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
         buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
@@ -277,13 +175,121 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         Show(false);
     }
 
+    public bool HasManaCounterView() => manaCounterView != null;
+    public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
+    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionInputText.characterLimit < descriptionInputText.text.Length;
+    public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
+    public void SetPolygonBalance(double balance) => polygonManaCounterView.SetBalance(balance);
+    public void SetWalletSectionEnabled(bool isEnabled) => connectedWalletSection.SetActive(isEnabled);
+    public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
+    public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
+    public override void RefreshControl() { }
+
+    public void SetProfile(UserProfile userProfile)
+    {
+        UpdateLayoutByProfile(userProfile);
+        if (profile == null)
+        {
+            description = userProfile.description;
+            descriptionInputText.text = description;
+            UpdateLinksInformation(description);
+        }
+
+        profile = userProfile;
+    }
+
+    public void ShowProfileIcon(bool show)
+    {
+        profilePicObject.SetActive(show);
+    }
+
+    public void ShowExpanded(bool show)
+    {
+        expandedObject.SetActive(show);
+        if (show && profile)
+            UpdateLayoutByProfile(profile);
+    }
+
+    public void SetDescriptionIsEditing(bool isEditing)
+    {
+        SetDescriptionCharLimitEnabled(isEditing);
+        descriptionStartEditingGo.SetActive(!isEditing);
+        descriptionIsEditingGo.SetActive(isEditing);
+    }
+
+    private void UpdateLayoutByProfile(UserProfile userProfile)
+    {
+        if (userProfile.hasClaimedName)
+            HandleClaimedProfileName(userProfile);
+        else
+            HandleUnverifiedProfileName(userProfile);
+
+        SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
+        HandleProfileAddress(userProfile);
+        HandleProfileSnapshot(userProfile);
+        SetDescriptionEnabled(userProfile.hasConnectedWeb3);
+        SetUserId(userProfile);
+
+        string[] nameSplits = userProfile.userName.Split('#');
+        if (nameSplits.Length >= 2)
+        {
+            textName.text = nameSplits[0];
+            textPostfix.text = $"#{nameSplits[1]};";
+        }
+        else
+        {
+            textName.text = userProfile.userName;
+            textPostfix.text = userProfile.userId;
+        }
+    }
+
+    private void SetUserId(UserProfile userProfile)
+    {
+        userId = userProfile.userId;
+    }
+
+    private void OpenStartMenu()
+    {
+        if (isStartMenuInitialized)
+        {
+            if (!DataStore.i.exploreV2.isOpen.Get())
+            {
+                var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+                exploreV2Analytics.SendStartMenuVisibility(
+                    true,
+                    ExploreUIVisibilityMethod.FromClick);
+            }
+            DataStore.i.exploreV2.isOpen.Set(true);
+        }
+    }
+
+    private void ActivateProfileNameEditionMode(bool activate)
+    {
+        if (profile != null && profile.hasClaimedName)
+            return;
+
+        textName.gameObject.SetActive(!activate);
+        inputName.gameObject.SetActive(activate);
+
+        if (activate)
+        {
+            inputName.text = textName.text;
+            inputName.Select();
+        }
+    }
+
+    private void SetDescriptionCharLimitEnabled(bool enabled)
+    {
+        charLimitDescriptionContainer.SetActive(enabled);
+    }
+
     private void OpenPassport()
     {
         if (string.IsNullOrEmpty(userId))
             return;
 
         ShowExpanded(false);
-        currentPlayerId.Set(userId);
+        currentPlayerId.Set((userId, OPEN_PASSPORT_SOURCE));
     }
 
     private void HandleProfileSnapshot(UserProfile userProfile)
@@ -367,13 +373,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         descriptionContainer.SetActive(enabled);
     }
 
-    public void SetDescriptionIsEditing(bool isEditing)
-    {
-        SetDescriptionCharLiitEnabled(isEditing);
-        descriptionStartEditingGo.SetActive(!isEditing);
-        descriptionIsEditingGo.SetActive(isEditing);
-    }
-
     private void UpdateDescriptionCharLimit(string description) =>
         textCharLimitDescription.text = $"{description.Length}/{descriptionInputText.characterLimit}";
 
@@ -432,11 +431,5 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         copyToast.Show();
         yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
         copyToast.Hide();
-    }
-
-    private IEnumerator EnableNextFrame(GameObject go, bool shouldEnable)
-    {
-        yield return null;
-        go.SetActive(shouldEnable);
     }
 }

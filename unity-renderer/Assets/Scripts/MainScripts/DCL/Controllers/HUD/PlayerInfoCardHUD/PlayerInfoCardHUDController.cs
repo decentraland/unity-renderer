@@ -403,11 +403,11 @@ public class PlayerInfoCardHUDController : IHUD
                 true,
                 cancellationToken);
 
-            string[] wearableIds = ownedWearables.Select(x => x.id).ToArray();
+            string[] wearableIds = ownedWearables.wearables.Select(x => x.id).ToArray();
             userProfile.SetInventory(wearableIds);
             loadedWearables.AddRange(wearableIds);
 
-            var containedWearables = ownedWearables
+            var containedWearables = ownedWearables.wearables
                 // this makes any sense?
                .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id));
 

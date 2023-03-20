@@ -183,7 +183,12 @@ public class PlayerName : MonoBehaviour, IPlayerName
         isNameClaimed = isClaimed;
         isUserGuest = isGuest;
 
-        if (name == null) return;
+        if (string.IsNullOrEmpty(name))
+        {
+            background.rectTransform.sizeDelta = Vector3.zero;
+            nameText.text = name;
+            return;
+        }
 
         name = await FilterName(currentName);
         nameText.text = GetNameWithColorCodes(isClaimed, isGuest, name);

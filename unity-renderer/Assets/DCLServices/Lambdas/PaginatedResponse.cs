@@ -8,8 +8,10 @@ namespace DCLServices.Lambdas
     {
         [SerializeField] internal int pageNum;
         [SerializeField] internal int pageSize;
+        [SerializeField] internal int totalAmount;
 
         public int PageNum => pageNum;
         public int PageSize => pageSize;
+        public int TotalAmount => totalAmount;
     }
 }

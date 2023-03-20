@@ -20,8 +20,9 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject openChatContainer;
         [SerializeField] internal GameObject joinedContainer;
         [SerializeField] internal Toggle muteNotificationsToggle;
-    
+
         private IChatController chatController;
+        private DataStore_Mentions mentionsDataStore;
 
         public PublicChatEntryModel Model => model;
 
@@ -39,20 +40,23 @@ namespace DCL.Chat.HUD
         {
             base.Awake();
             openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
-        
+
             if (optionsButton)
                 optionsButton.onClick.AddListener(() => OnOpenOptions?.Invoke(this));
-        
+
             if (leaveButton)
                 leaveButton.onClick.AddListener(() => OnLeave?.Invoke(this));
-            
+
             if (joinButton)
                 joinButton.onClick.AddListener(() => OnJoin?.Invoke(this));
         }
 
-        public void Initialize(IChatController chatController)
+        public void Initialize(
+            IChatController chatController,
+            DataStore_Mentions mentionsDataStore)
         {
             this.chatController = chatController;
+            this.mentionsDataStore = mentionsDataStore;
         }
 
         public void Configure(PublicChatEntryModel newModel)
@@ -65,7 +69,7 @@ namespace DCL.Chat.HUD
         {
             nameLabel.text = $"{namePrefix}{model.name}";
             if (unreadNotifications)
-                unreadNotifications.Initialize(chatController, model.channelId);
+                unreadNotifications.Initialize(chatController, model.channelId, mentionsDataStore);
             if (memberCountLabel)
                 memberCountLabel.SetText($"{model.memberCount} members {(model.showOnlyOnlineMembers ? "online" : "joined")}");
             if (joinedContainer)
