@@ -39,10 +39,7 @@ namespace DCL.HelpAndSupportHUD
 
         private void OpenSupport()
         {
-            if (!Application.isEditor && Application.platform == RuntimePlatform.WebGLPlayer)
-                OpenIntercom();
-            else
-                OpenURL(CONTACT_SUPPORT_URL);
+            OpenIntercom();
         }
 
         internal void OpenURL(string url)
@@ -63,6 +60,11 @@ namespace DCL.HelpAndSupportHUD
 #if UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern void OpenIntercom();
+#else
+        private void OpenIntercom()
+        {
+            OpenURL(CONTACT_SUPPORT_URL);
+        }
 #endif
     }
 }
