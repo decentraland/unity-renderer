@@ -9,8 +9,6 @@ var IntercomWindow = {
     const left = Math.max(windowWidth - popupWidth - 20, 0)
     
     window.open('https://intercom.decentraland.org', 'intercom', `popup,top=${top},left=${left},width=${popupWidth},height=${popupHeight}`)
-    
-    console.log("I SHOULD BE OPENING INTERCOM 2")
   }
 };
 
