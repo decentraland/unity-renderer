@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5971253070446279769}
   - component: {fileID: 2378163919052972477}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: HomePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,7 +56,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1001718254557296128}
   - component: {fileID: 5325246386951915221}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: 1Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}

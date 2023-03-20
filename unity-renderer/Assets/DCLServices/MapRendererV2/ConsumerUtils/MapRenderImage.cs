@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using DCLServices.MapRendererV2.MapCameraController;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace DCLServices.MapRendererV2.MapCameraController
+namespace DCLServices.MapRendererV2.ConsumerUtils
 {
     /// <summary>
     /// Extends <see cref="RawImage"/> to provide interactivity functionality

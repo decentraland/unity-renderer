@@ -57,7 +57,7 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         private void SetPosition()
         {
             var gridPosition = Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get());
-            playerMarker.SetPosition(coordsUtils.CoordsToPositionWithOffset(gridPosition));
+            playerMarker.SetPosition(coordsUtils.PivotPosition(playerMarker, coordsUtils.CoordsToPositionWithOffset(gridPosition)));
         }
 
         private void OnPlayerRotationChange(Vector3 current, Vector3 previous)

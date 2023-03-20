@@ -80,6 +80,7 @@ namespace DCL
             new WorldRange(-150, -150, 150, 150) // default range
         };
 
+        [Obsolete]
         public static MapRenderer i { get; private set; }
 
         private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;

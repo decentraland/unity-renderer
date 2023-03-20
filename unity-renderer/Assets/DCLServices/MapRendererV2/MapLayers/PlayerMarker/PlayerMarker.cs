@@ -7,6 +7,8 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
     {
         private readonly PlayerMarkerObject markerObject;
 
+        public Vector2 Pivot => markerObject.pivot;
+
         public PlayerMarker(PlayerMarkerObject markerObject)
         {
             this.markerObject = markerObject;

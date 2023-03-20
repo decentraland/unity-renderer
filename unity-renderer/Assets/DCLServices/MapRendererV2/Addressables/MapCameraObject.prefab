@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2931492782547755835}
   - component: {fileID: 7214757145108451267}
   - component: {fileID: 4080206017818855762}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: MapCameraObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,7 +78,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 134217728
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

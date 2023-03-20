@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8974767756704403402}
   - component: {fileID: 2467749465983235452}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Sprite-1Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1389453839309178053}
   - component: {fileID: 7407565857618779872}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: PlayerMarkerObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,4 +129,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4c1a438cbc248f5b62cb170114a7f67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <pivot>k__BackingField: {x: 0.5, y: 0.5}
   <spriteRenderer>k__BackingField: {fileID: 2467749465983235452}

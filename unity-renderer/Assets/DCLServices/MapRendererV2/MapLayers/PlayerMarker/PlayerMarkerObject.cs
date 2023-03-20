@@ -2,7 +2,7 @@
 
 namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
 {
-    public class PlayerMarkerObject : MonoBehaviour
+    internal class PlayerMarkerObject : MapRendererMarkerBase
     {
         [field: SerializeField]
         internal SpriteRenderer spriteRenderer { get; private set; }

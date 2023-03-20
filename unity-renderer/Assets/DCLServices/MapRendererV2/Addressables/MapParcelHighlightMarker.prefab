@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1256847279345567553}
   - component: {fileID: 8705202859115745523}
   - component: {fileID: 5411492578616019193}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: TextMeshPro
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   m_Component:
   - component: {fileID: 346467305735913728}
   - component: {fileID: 4690477303264574089}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: MapParcelHighlightMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,6 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a70c562b494a2083a5902cc61d5e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <pivot>k__BackingField: {x: 0.5, y: 0.5}
   <spriteRenderer>k__BackingField: {fileID: 1398167194129740677}
   <text>k__BackingField: {fileID: 5411492578616019193}
 --- !u!1 &6624931977684668233
@@ -230,7 +231,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1815481740977465462}
   - component: {fileID: 1398167194129740677}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,7 +314,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6944514037414391958}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: 1Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}

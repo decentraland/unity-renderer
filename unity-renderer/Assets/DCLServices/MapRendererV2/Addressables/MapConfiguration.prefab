@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7602335780465532640}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Cameras
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7640763729826473348}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Home Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3920442518738607191}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Hot Users
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5875728896453813345}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Parcel Highlights
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5694240695484966351}
   - component: {fileID: 55686573016235340}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: MapConfiguration
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,7 +193,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 195609709436987355}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Scenes Of Interests
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7964758222206947239}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Atlas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -255,7 +255,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3838431434337016036}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Player Marker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,7 +286,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5609044988966314515}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Cold Users
   m_TagString: Untagged
   m_Icon: {fileID: 0}

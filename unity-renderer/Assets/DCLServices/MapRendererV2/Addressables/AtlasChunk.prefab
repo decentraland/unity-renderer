@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3411168687818266164}
   - component: {fileID: 5191401156417962899}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: AtlasChunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 449760094461591625}
   - component: {fileID: 7949636927283127459}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Inner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 556950771893902860}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: 1Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8341988840855154477}
   - component: {fileID: 8045687558356794072}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Outer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6687807070680576814}
   - component: {fileID: 7593352067999951176}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: ColdUserMarkerObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -246,6 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c8a827876884e69b66ff4fd63eeff43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <pivot>k__BackingField: {x: 0.5, y: 0.5}
   outerCircle: {fileID: 8045687558356794072}
   innerCircle: {fileID: 7949636927283127459}
   sameRealmColor: {r: 1, g: 0.07058824, b: 0.38431373, a: 1}

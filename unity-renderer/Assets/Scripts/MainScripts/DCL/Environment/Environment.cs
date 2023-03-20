@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using System;
 using System.Threading;
 
@@ -10,6 +11,11 @@ namespace DCL
 
         private static CancellationTokenSource cancellationTokenSource;
 
+        private static bool initialized;
+
+        public static UniTask WaitUntilInitialized() =>
+            UniTaskUtils.WaitForBoolean(ref initialized, cancellationToken: cancellationTokenSource?.Token ?? CancellationToken.None);
+
         /// <summary>
         /// Setup the environment with the configured builder funcs.
         /// </summary>
@@ -18,7 +24,7 @@ namespace DCL
             i.Dispose();
             i = new Model(serviceLocator);
             cancellationTokenSource = new CancellationTokenSource();
-            serviceLocator.Initialize(cancellationTokenSource.Token).Forget();
+            serviceLocator.Initialize(cancellationTokenSource.Token).ContinueWith(() => initialized = true).Forget();
         }
 
         public static UniTask SetupAsync(ServiceLocator serviceLocator)
@@ -26,7 +32,7 @@ namespace DCL
             i.Dispose();
             i = new Model(serviceLocator);
             cancellationTokenSource = new CancellationTokenSource();
-            return serviceLocator.Initialize(cancellationTokenSource.Token);
+            return serviceLocator.Initialize(cancellationTokenSource.Token).ContinueWith(() => initialized = true);
         }
 
         /// <summary>
@@ -37,6 +43,7 @@ namespace DCL
             i?.Dispose();
             cancellationTokenSource?.Cancel();
             cancellationTokenSource?.Dispose();
+            initialized = false;
         }
 
         public class Model : IDisposable

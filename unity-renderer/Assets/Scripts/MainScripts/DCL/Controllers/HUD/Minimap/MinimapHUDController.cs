@@ -1,5 +1,9 @@
 using DCL;
 using DCL.Interface;
+using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.ConsumerUtils;
+using DCLServices.MapRendererV2.MapCameraController;
+using DCLServices.MapRendererV2.MapLayers;
 using UnityEngine;
 
 public class MinimapHUDController : IHUD
@@ -16,6 +20,13 @@ public class MinimapHUDController : IHUD
     private IHomeLocationController locationController;
     private DCL.Environment.Model environment;
     private BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
+
+    private static readonly MapLayer RENDER_LAYERS
+        = MapLayer.Atlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest;
+
+    private Service<IMapRenderer> mapRenderer;
+    private IMapCameraController mapCameraController;
+    private MapRendererTrackPlayerPosition mapRendererTrackPlayerPosition;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
 
@@ -36,23 +47,52 @@ public class MinimapHUDController : IHUD
 
     protected internal virtual MinimapHUDView CreateView() { return MinimapHUDView.Create(this); }
 
-    public void Initialize() 
+    public void Initialize()
     {
         view = CreateView();
+        InitializeMapRenderer();
         UpdateData(model);
     }
 
     public void Dispose()
     {
         if (view != null)
-            UnityEngine.Object.Destroy(view.gameObject);
+        {
+            DisposeMapRenderer();
+            Object.Destroy(view.gameObject);
+        }
 
         CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChange;
         MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
-        
+
         if (metadataController != null)
             metadataController.OnHomeChanged -= SetNewHome;
         minimapVisible.OnChange -= SetVisibility;
+    }
+
+    private void InitializeMapRenderer()
+    {
+        var targetRectSize = view.mapRendererTargetImage.rectTransform.rect.size;
+        var texRes = new Vector2Int(view.mapRendererTextureResolution, (int) (view.mapRendererTextureResolution * (targetRectSize.y / targetRectSize.x)));
+
+        mapCameraController = mapRenderer.Ref.RentCamera(
+            new MapCameraInput(RENDER_LAYERS, playerCoords.Get(),
+                1,
+                texRes,
+                new Vector2Int(view.mapRendererVisibleParcels, view.mapRendererVisibleParcels)));
+
+        mapRendererTrackPlayerPosition = new MapRendererTrackPlayerPosition(mapCameraController, DataStore.i.player.playerWorldPosition);
+        view.mapRendererTargetImage.texture = mapCameraController.GetRenderTexture();
+    }
+
+    private void DisposeMapRenderer()
+    {
+        if (mapCameraController != null)
+        {
+            mapRendererTrackPlayerPosition.Dispose();
+            mapCameraController.Release();
+            mapCameraController = null;
+        }
     }
 
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)
@@ -137,13 +177,16 @@ public class MinimapHUDController : IHUD
                 locationController.SetHomeScene(new Vector2(0,0));
         }
         else
-        { 
+        {
             if(isOn)
                 locationController.SetHomeScene(new Vector2(coords.x,coords.y));
         }
     }
 
-    public void SetVisibility(bool visible) { view.SetVisibility(visible); }
+    public void SetVisibility(bool visible)
+    {
+        view.SetVisibility(visible);
+    }
 
     /// <summary>
     /// Enable user's around button/indicator that shows the amount of users around player
@@ -166,7 +209,7 @@ public class MinimapHUDController : IHUD
             UpdateSceneName(sceneInfo.name);
         }
     }
-    
-    private void SetVisibility(bool current, bool _) => 
+
+    private void SetVisibility(bool current, bool _) =>
         SetVisibility(current);
 }

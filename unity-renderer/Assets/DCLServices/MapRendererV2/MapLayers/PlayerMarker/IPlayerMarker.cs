@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
 {
-    internal interface IPlayerMarker : IDisposable
+    internal interface IPlayerMarker : IMapRendererMarker, IDisposable
     {
         void SetPosition(Vector3 position);
 

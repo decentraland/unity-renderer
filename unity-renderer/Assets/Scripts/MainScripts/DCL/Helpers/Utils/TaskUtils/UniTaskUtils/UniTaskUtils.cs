@@ -1,6 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
+
+[assembly: InternalsVisibleTo("TaskUtilsTests")]
 
 namespace DCL.Helpers
 {

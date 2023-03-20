@@ -21,6 +21,10 @@ namespace DCLServices.MapRendererV2.MapCameraController
         /// <param name="value"></param>
         void SetZoom(float value);
 
+        /// <summary>
+        /// Sets Camera Position
+        /// </summary>
+        /// <param name="coordinates">Parcel-based unclamped coordinates</param>
         void SetPosition(Vector2 coordinates);
 
         void SetZoomAndPosition(Vector2 coordinates, float value);

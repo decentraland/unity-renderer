@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8293322612040113748}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: 1Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6490643975463183000}
   - component: {fileID: 6723780352267149330}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: HotUserMarkerObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,6 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f60e06b3934c4de7a0510b1760259fad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <pivot>k__BackingField: {x: 0.5, y: 0.5}
   <spriteRenderers>k__BackingField:
   - {fileID: 6574531059262994368}
   - {fileID: 6527134346746202169}
@@ -91,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3972535992487305214}
   - component: {fileID: 6574531059262994368}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Outer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,7 +176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1882238951119396974}
   - component: {fileID: 6527134346746202169}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Inner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
