@@ -152,7 +152,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CONTROLS_HUD:
                 return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:
-                return new HelpAndSupportHUDController();
+                return new HelpAndSupportHUDController(await CreateHUDView<IHelpAndSupportHUDView>(HELP_AND_SUPPORT_HUD, cancellationToken));
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 return new VoiceChatWindowController(
                     new UserProfileWebInterfaceBridge(),

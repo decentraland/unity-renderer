@@ -1,16 +1,13 @@
 using DCL.Interface;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace DCL.HelpAndSupportHUD
 {
-    public class HelpAndSupportHUDView : MonoBehaviour
+    public class HelpAndSupportHUDView : MonoBehaviour, IHelpAndSupportHUDView
     {
-        public bool isOpen { get; private set; } = false;
-
-        public event System.Action OnClose;
-
         [SerializeField] private ShowHideAnimator helpAndSupportAnimator;
         [SerializeField] private Button contactSupportButton;
         [SerializeField] private Button joinDiscordButton;
@@ -20,47 +17,19 @@ namespace DCL.HelpAndSupportHUD
 
         private InputAction_Trigger.Triggered closeActionDelegate;
 
-        private void Awake() { closeActionDelegate = (x) => SetVisibility(false); }
+        public event Action OnDiscordButtonPressed;
+        public event Action OnFaqButtonPressed;
+        public event Action OnSupportButtonPressed;
 
-        // private void Initialize_OLD()
-        // {
-        //     gameObject.name = VIEW_OBJECT_NAME;
-        //
-        //     joinDiscordButton.onClick.AddListener(() =>
-        //     {
-        //         WebInterface.OpenURL(JOIN_DISCORD_URL);
-        //     });
-        //
-        //     visitFAQButton.onClick.AddListener(() =>
-        //     {
-        //         WebInterface.OpenURL(FAQ_URL);
-        //     });
-        //
-        //     closeButton.onClick.AddListener(() =>
-        //     {
-        //         SetVisibility(false);
-        //     });
-        // }
-
-        private void Initialize(string viewObjectName, UnityAction contactDiscordAction, UnityAction joinDiscordAction, UnityAction visitFaqAction)
+        public void Initialize()
         {
-            gameObject.name = viewObjectName;
+            closeActionDelegate = (x) => SetVisibility(false);
 
-            contactSupportButton.onClick.AddListener(contactDiscordAction);
-            joinDiscordButton.onClick.AddListener(joinDiscordAction);
-            visitFAQButton.onClick.AddListener(visitFaqAction);
+            contactSupportButton.onClick.AddListener(() => OnSupportButtonPressed?.Invoke());
+            joinDiscordButton.onClick.AddListener(() => OnDiscordButtonPressed?.Invoke());
+            visitFAQButton.onClick.AddListener(() => OnFaqButtonPressed?.Invoke());
 
-            closeButton.onClick.AddListener(() =>
-            {
-                SetVisibility(false);
-            });
-        }
-
-        public static HelpAndSupportHUDView Create(string resourcePath, string viewObjectName, UnityAction contactDiscordAction, UnityAction joinDiscordAction, UnityAction visitFAQAction)
-        {
-            HelpAndSupportHUDView view = Instantiate(Resources.Load<GameObject>(resourcePath)).GetComponent<HelpAndSupportHUDView>();
-            view.Initialize(viewObjectName, contactDiscordAction, joinDiscordAction, visitFAQAction);
-            return view;
+            closeButton.onClick.AddListener(() => { SetVisibility(false); });
         }
 
         public void SetVisibility(bool visible)
@@ -68,6 +37,7 @@ namespace DCL.HelpAndSupportHUD
             DataStore.i.exploreV2.isSomeModalOpen.Set(visible);
 
             closeAction.OnTriggered -= closeActionDelegate;
+
             if (visible)
             {
                 helpAndSupportAnimator.Show();
@@ -75,11 +45,19 @@ namespace DCL.HelpAndSupportHUD
             }
             else
                 helpAndSupportAnimator.Hide();
+        }
 
-            if (!visible && isOpen)
-                OnClose?.Invoke();
+        public void Dispose()
+        {
+            contactSupportButton.onClick.RemoveAllListeners();
+            joinDiscordButton.onClick.RemoveAllListeners();
+            visitFAQButton.onClick.RemoveAllListeners();
+            closeButton.onClick.RemoveAllListeners();
 
-            isOpen = visible;
+            closeAction.OnTriggered -= closeActionDelegate;
+            closeActionDelegate = null;
+
+            Destroy(gameObject);
         }
     }
 }
