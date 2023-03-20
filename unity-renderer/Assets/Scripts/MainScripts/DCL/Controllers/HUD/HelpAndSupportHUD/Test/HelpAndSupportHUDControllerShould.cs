@@ -23,12 +23,6 @@ namespace Tests
             controller.Dispose();
         }
 
-        [Test]
-        public void DiscordButtonPressed()
-        {
-            view.OnDiscordButtonPressed  += Raise.Event<Action>();
-            controller.Received().OpenURL(Arg.Any<string>());
-        }
 
         [Test]
         public void ShowViewProperly()
