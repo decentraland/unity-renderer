@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7363362524543359033}
   - component: {fileID: 3130431528363719345}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 8034716064584399077}
   - component: {fileID: 8094368153510740096}
   - component: {fileID: 4613185049253147113}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -269,7 +269,7 @@ GameObject:
   m_Component:
   - component: {fileID: 401758791842004506}
   - component: {fileID: 3220528582211459205}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: SceneOfInterest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -320,7 +320,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3757444117798041812}
   - component: {fileID: 7726644933239631887}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -404,7 +404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 773522447533083230}
   - component: {fileID: 6567910634216501126}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: Foreground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
