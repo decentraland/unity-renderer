@@ -326,7 +326,12 @@ namespace DCLServices.WearablesCatalogService
                 foreach (var representation in wearable.data.representations)
                 {
                     foreach (var representationContent in representation.contents)
+                    {
+                        if (string.IsNullOrEmpty(representationContent.url))
+                            continue;
+
                         representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
+                    }
                 }
 
                 string thumbnail = wearable.thumbnail ?? "";
