@@ -25,8 +25,7 @@ namespace DCL.Social.Passports
         private readonly ILandsService landsService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
-        private readonly StringVariable currentPlayerId;
-        private readonly List<string> loadedWearables = new ();
+        private readonly ViewAllComponentController viewAllController;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
@@ -50,8 +49,12 @@ namespace DCL.Social.Passports
             ILandsService landsService,
             IUserProfileBridge userProfileBridge,
             DataStore dataStore,
-            StringVariable currentPlayerId)
+            ViewAllComponentController viewAllController)
         {
+            const string NAME_TYPE = "name";
+            const string PARCEL_TYPE = "parcel";
+            const string ESTATE_TYPE = "estate";
+
             this.view = view;
             this.profanityFilter = profanityFilter;
             this.wearableItemResolver = wearableItemResolver;
@@ -61,10 +64,27 @@ namespace DCL.Social.Passports
             this.landsService = landsService;
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
-            this.currentPlayerId = currentPlayerId;
-            view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
+            this.viewAllController = viewAllController;
+
+            view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
+            view.OnClickedViewAll += ClickedViewAll;
             view.OnClickDescriptionCoordinates += OpenGoToPanel;
+            viewAllController.OnBackFromViewAll += BackFromViewAll;
+            viewAllController.OnClickBuyNft += (nftId) => OnClickBuyNft?.Invoke(nftId.Category is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : nftId.Id, nftId.Category);
+        }
+
+        private void BackFromViewAll()
+        {
+            view.OpenCollectiblesTab();
+        }
+
+        private void ClickedViewAll(PassportSection section)
+        {
+            view.CloseAllSections();
+            viewAllController.SetViewAllVisibility(true);
+            viewAllController.OpenViewAllSection(section);
+
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile)
@@ -73,7 +93,6 @@ namespace DCL.Social.Passports
             {
                 var ct = cts.Token;
                 currentUserId = userProfile.userId;
-                wearablesCatalogService.RemoveWearablesInUse(loadedWearables);
                 string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
                 view.SetGuestUser(userProfile.isGuest);
                 view.SetName(filteredName);
@@ -99,8 +118,11 @@ namespace DCL.Social.Passports
         public void CloseAllNFTItemInfos() =>
             view.CloseAllNFTItemInfos();
 
-        public void SetViewInitialPage() =>
+        public void ResetNavigationTab()
+        {
             view.SetInitialPage();
+            viewAllController.SetViewAllVisibility(false);
+        }
 
         public void Dispose()
         {
@@ -134,40 +156,42 @@ namespace DCL.Social.Passports
         {
             async UniTaskVoid RequestOwnedWearablesAsync(CancellationToken ct)
             {
+                WearableItem[] containedWearables = Array.Empty<WearableItem>();
+
                 try
                 {
+                    view.SetCollectibleWearablesLoadingActive(true);
+                    view.SetViewAllButtonActive(PassportSection.Wearables, false);
                     var wearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
                         userProfile.userId,
                         1,
-                        int.MaxValue,
+                        MAX_NFT_COUNT,
                         true,
                         ct);
 
-                    IGrouping<string, WearableItem>[] wearableItems = wearables.GroupBy(i => i.id).ToArray();
-                    string[] wearableIds = wearableItems.Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
-                    userProfile.SetInventory(wearableIds);
-                    loadedWearables.AddRange(wearableIds);
+                    view.SetViewAllButtonActive(PassportSection.Wearables, wearables.totalAmount > MAX_NFT_COUNT);
+                    var wearableItems = wearables.wearables.GroupBy(i => i.id);
 
-                    var containedWearables = wearableItems
-                                            .Select(g => g.First())
-                                            .Take(MAX_NFT_COUNT)
-                                            .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id));
-
-                    view.SetCollectibleWearables(containedWearables.ToArray());
-                    view.SetCollectibleWearablesLoadingActive(false);
+                    containedWearables = wearableItems
+                                        .Select(g => g.First())
+                                        .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id))
+                                        .ToArray();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogError(e.Message); }
+                finally
+                {
+                    view.SetCollectibleWearables(containedWearables);
+                    view.SetCollectibleWearablesLoadingActive(false);
+                }
             }
 
-            view.SetCollectibleWearablesLoadingActive(true);
             RequestOwnedWearablesAsync(cts.Token).Forget();
         }
 
         private async UniTask LoadAndShowOwnedEmotes(UserProfile userProfile)
         {
             view.SetCollectibleEmotesLoadingActive(true);
-
             WearableItem[] emotes = await emotesCatalogService.RequestOwnedEmotesAsync(userProfile.userId, cts.Token);
             WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
             view.SetCollectibleEmotes(emoteItems);
@@ -176,36 +200,60 @@ namespace DCL.Social.Passports
 
         private async UniTask LoadAndShowOwnedNamesAsync(UserProfile userProfile, CancellationToken ct)
         {
-            view.SetCollectibleNamesLoadingActive(true);
-            using var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
-            var response = await pagePointer.GetPageAsync(1, ct);
-            var namesResult = Array.Empty<NamesResponse.NameEntry>();
+            NamesResponse.NameEntry[] namesResult = Array.Empty<NamesResponse.NameEntry>();
+            var showViewAllButton = false;
 
-            if (response.success)
-                namesResult = response.response.Names.ToArray();
-            else
-                Debug.LogError("Error requesting names lambdas!");
+            try
+            {
+                view.SetCollectibleNamesLoadingActive(true);
+                view.SetViewAllButtonActive(PassportSection.Names, false);
+                var names = await namesService.RequestOwnedNamesAsync(
+                    userProfile.userId,
+                    1,
+                    MAX_NFT_COUNT,
+                    true,
+                    ct);
 
-            view.SetCollectibleNames(namesResult);
-            view.SetCollectibleNamesLoadingActive(false);
+                namesResult = names.names.ToArray();
+                showViewAllButton = names.totalAmount > MAX_NFT_COUNT;
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e) { Debug.LogError(e.Message); }
+            finally
+            {
+                view.SetCollectibleNames(namesResult);
+                view.SetCollectibleNamesLoadingActive(false);
+                view.SetViewAllButtonActive(PassportSection.Names, showViewAllButton);
+            }
         }
 
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile, CancellationToken ct)
         {
-            view.SetCollectibleLandsLoadingActive(true);
+            LandsResponse.LandEntry[] landsResult = Array.Empty<LandsResponse.LandEntry>();
+            var showViewAllButton = false;
 
-            // TODO (Santi): Use userProfile.userId here!!
-            using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
-            var response = await pagePointer.GetPageAsync(1, ct);
-            var landsResult = Array.Empty<LandsResponse.LandEntry>();
+            try
+            {
+                view.SetCollectibleLandsLoadingActive(true);
+                view.SetViewAllButtonActive(PassportSection.Lands, false);
+                var lands = await landsService.RequestOwnedLandsAsync(
+                    userProfile.userId,
+                    1,
+                    MAX_NFT_COUNT,
+                    true,
+                    ct);
 
-            if (response.success)
-                landsResult = response.response.Lands.ToArray();
-            else
-                Debug.LogError("Error requesting lands lambdas!");
-
-            view.SetCollectibleLands(landsResult);
-            view.SetCollectibleLandsLoadingActive(false);
+                landsResult = lands.lands.ToArray();
+                showViewAllButton = lands.totalAmount > MAX_NFT_COUNT;
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e) { Debug.LogError(e.Message); }
+            finally
+            {
+                view.SetCollectibleLands(landsResult);
+                view.SetCollectibleLandsLoadingActive(false);
+                view.SetViewAllButtonActive(PassportSection.Lands, showViewAllButton);
+            }
         }
 
         private async UniTask<string> FilterContentAsync(string filterContent) =>
@@ -230,7 +278,7 @@ namespace DCL.Social.Passports
             if (!confirmed) return;
             dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
             dataStore.exploreV2.isOpen.Set(false, true);
-            currentPlayerId.Set(null);
+            dataStore.HUDs.currentPlayerId.Set((null, null));
         }
     }
 }

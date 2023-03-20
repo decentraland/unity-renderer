@@ -21,7 +21,6 @@ namespace DCL.Social.Friends
         private IReceivedFriendRequestHUDView view;
         private IFriendsController friendsController;
         private IUserProfileBridge userProfileBridge;
-        private StringVariable openPassportVariable;
         private DataStore dataStore;
         private IFriendRequestHUDView friendRequestHUDView;
 
@@ -62,7 +61,6 @@ namespace DCL.Social.Friends
 
             userProfileBridge.GetOwn().Returns(ownProfile);
             userProfileBridge.Get(SENDER_ID).Returns(recipientProfile);
-            openPassportVariable = ScriptableObject.CreateInstance<StringVariable>();
             dataStore = new DataStore();
 
             friendRequestHUDView = Substitute.For<IFriendRequestHUDView>();
@@ -72,7 +70,6 @@ namespace DCL.Social.Friends
                 new FriendRequestHUDController(friendRequestHUDView),
                 friendsController,
                 userProfileBridge,
-                openPassportVariable,
                 Substitute.For<ISocialAnalytics>());
 
             view.ClearReceivedCalls();
@@ -123,7 +120,7 @@ namespace DCL.Social.Friends
 
             view.OnOpenProfile += Raise.Event<Action>();
 
-            Assert.AreEqual(SENDER_ID, openPassportVariable.Get());
+            Assert.AreEqual(SENDER_ID, dataStore.HUDs.currentPlayerId.Get().playerId);
         }
 
         [UnityTest]

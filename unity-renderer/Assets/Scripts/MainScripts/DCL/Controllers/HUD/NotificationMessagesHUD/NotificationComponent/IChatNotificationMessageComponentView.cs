@@ -58,16 +58,15 @@ namespace DCL.Chat.Notifications
         void SetMaxHeaderCharacters(int maxHeaderCharacters);
 
         /// <summary>
-        /// Set an offset to header and content
-        /// </summary>
-        /// <param name="xPosHeader">x position of the header</param>
-        /// <param name="xPosContent">x position of the content</param>
-        void SetPositionOffset(float xPosHeader, float xPosContent);
-
-        /// <summary>
         /// Set the notification target id (either a channel or a user id)
         /// </summary>
         /// <param name="notificationTargetId">New target id.</param>
         void SetNotificationTargetId(string notificationTargetId);
+
+        /// <summary>
+        /// Set if the own player is mentioned in the notification message.
+        /// </summary>
+        /// <param name="isMentioned">If the own player is mentioned or not.</param>
+        void SetOwnPlayerMention(bool isMentioned);
     }
 }

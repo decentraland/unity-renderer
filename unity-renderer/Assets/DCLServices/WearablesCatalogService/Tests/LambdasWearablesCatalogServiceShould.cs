@@ -185,12 +185,12 @@ namespace DCLServices.WearablesCatalogService
         public IEnumerator RequestFirstPageOfThirdPartyCollection() =>
             UniTask.ToCoroutine(async () =>
             {
-                IReadOnlyList<WearableItem> wearables = await service.RequestThirdPartyWearablesByCollectionAsync(USER_ID, TPW_COLLECTION_ID,
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) wearablesWithAmount = await service.RequestThirdPartyWearablesByCollectionAsync(USER_ID, TPW_COLLECTION_ID,
                     0, 10, true, default(CancellationToken));
 
                 lambdasService.Received(1)
-                              .Get<WearableWithDefinitionResponse>("nfts/wearables/",
-                                   $"nfts/wearables/{USER_ID}?collectionId={TPW_COLLECTION_ID}",
+                              .Get<WearableWithDefinitionResponse>("users/",
+                                   $"users/{USER_ID}/third-party-wearables/{TPW_COLLECTION_ID}",
                                    45,
                                    3,
                                    Arg.Any<CancellationToken>(),
@@ -198,7 +198,7 @@ namespace DCLServices.WearablesCatalogService
                                    ("pageNum", "0"),
                                    ("includeDefinitions", "true"));
 
-                WearableItem firstWearable = wearables[0];
+                WearableItem firstWearable = wearablesWithAmount.wearables[0];
                 Assert.AreEqual(VALID_WEARABLE_ID, firstWearable.id);
                 Assert.AreEqual("description", firstWearable.description);
                 Assert.AreEqual("rare", firstWearable.rarity);
@@ -209,7 +209,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.IsNull(firstWearable.emoteDataV0);
                 Assert.AreEqual(firstWearable, service.WearablesCatalog[VALID_WEARABLE_ID]);
 
-                WearableItem secondWearable = wearables[1];
+                WearableItem secondWearable = wearablesWithAmount.wearables[1];
                 Assert.AreEqual(WEARABLE_WITHOUT_THUMBNAIL, secondWearable.id);
                 Assert.AreEqual("description", secondWearable.description);
                 Assert.AreEqual("rare", secondWearable.rarity);
@@ -225,11 +225,11 @@ namespace DCLServices.WearablesCatalogService
         public IEnumerator RequestOwnedWearables() =>
             UniTask.ToCoroutine(async () =>
             {
-                IReadOnlyList<WearableItem> wearables = await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, true, default(CancellationToken));
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) wearables = await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, true, default(CancellationToken));
 
                 lambdasService.Received(1)
-                              .Get<WearableWithDefinitionResponse>("nfts/wearables/",
-                                   $"nfts/wearables/{USER_ID}",
+                              .Get<WearableWithDefinitionResponse>("users/",
+                                   $"users/{USER_ID}/wearables",
                                    45,
                                    3,
                                    Arg.Any<CancellationToken>(),
@@ -237,7 +237,7 @@ namespace DCLServices.WearablesCatalogService
                                    ("pageNum", "0"),
                                    ("includeDefinitions", "true"));
 
-                WearableItem firstWearable = wearables[0];
+                WearableItem firstWearable = wearables.wearables[0];
                 Assert.AreEqual(VALID_WEARABLE_ID, firstWearable.id);
                 Assert.AreEqual("description", firstWearable.description);
                 Assert.AreEqual("rare", firstWearable.rarity);
@@ -248,7 +248,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.IsNull(firstWearable.emoteDataV0);
                 Assert.AreEqual(firstWearable, service.WearablesCatalog[VALID_WEARABLE_ID]);
 
-                WearableItem secondWearable = wearables[1];
+                WearableItem secondWearable = wearables.wearables[1];
                 Assert.AreEqual(WEARABLE_WITHOUT_THUMBNAIL, secondWearable.id);
                 Assert.AreEqual("description", secondWearable.description);
                 Assert.AreEqual("rare", secondWearable.rarity);
@@ -319,7 +319,7 @@ namespace DCLServices.WearablesCatalogService
         private void GivenPaginatedCollectionInLambdas(string collectionId, List<WearableDefinition> wearables)
         {
             lambdasService.Get<WearableWithDefinitionResponse>(Arg.Any<string>(),
-                               $"nfts/wearables/{USER_ID}?collectionId={collectionId}",
+                               $"users/{USER_ID}/third-party-wearables/{collectionId}",
                                Arg.Any<int>(),
                                Arg.Any<int>(),
                                Arg.Any<CancellationToken>(),
@@ -329,14 +329,14 @@ namespace DCLServices.WearablesCatalogService
                           .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
                                (new WearableWithDefinitionResponse
                                {
-                                   wearables = wearables
+                                   elements = wearables
                                }, true)));
         }
 
         private void GivenPaginatedWearableInLambdas(List<WearableDefinition> wearables)
         {
             lambdasService.Get<WearableWithDefinitionResponse>(Arg.Any<string>(),
-                               $"nfts/wearables/{USER_ID}",
+                               $"users/{USER_ID}/wearables",
                                Arg.Any<int>(),
                                Arg.Any<int>(),
                                Arg.Any<CancellationToken>(),
@@ -346,7 +346,7 @@ namespace DCLServices.WearablesCatalogService
                           .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
                                (new WearableWithDefinitionResponse
                                {
-                                   wearables = wearables
+                                   elements = wearables
                                }, true)));
         }
 

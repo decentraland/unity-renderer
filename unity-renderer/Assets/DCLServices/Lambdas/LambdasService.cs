@@ -74,6 +74,8 @@ namespace DCLServices.Lambdas
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
             urlBuilder.Append(GetLambdasUrl());
+            if (!urlBuilder.ToString().EndsWith('/'))
+                urlBuilder.Append('/');
 
             var endPointSpan = endPoint.AsSpan();
 
@@ -124,7 +126,7 @@ namespace DCLServices.Lambdas
         }
 
         internal string GetLambdasUrl() =>
-            "https://peer.decentraland.org/lambdas/";
+            catalyst.lambdasUrl;
 
         private static void PrintError<TResponse>(string endPoint, string message)
         {

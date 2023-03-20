@@ -1,3 +1,4 @@
+using DCL;
 using System.Collections;
 using DCL.Chat.HUD;
 using DCL.Interface;
@@ -14,7 +15,7 @@ public class WorldChatWindowComponentViewShould
     public void SetUp()
     {
         view = WorldChatWindowComponentView.Create();
-        view.Initialize(Substitute.For<IChatController>());
+        view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
     }
 
     [TearDown]
