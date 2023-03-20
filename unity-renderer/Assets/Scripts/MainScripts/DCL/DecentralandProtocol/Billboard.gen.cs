@@ -41,17 +41,31 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
+  /// <summary>
+  /// BillboardMode indicates one or more axis for automatic rotation, in OR-able bit flag form.
+  /// </summary>
   public enum BillboardMode {
     [pbr::OriginalName("BM_NONE")] BmNone = 0,
     [pbr::OriginalName("BM_X")] BmX = 1,
     [pbr::OriginalName("BM_Y")] BmY = 2,
     [pbr::OriginalName("BM_Z")] BmZ = 4,
+    /// <summary>
+    /// bitwise combination BM_X | BM_Y | BM_Z
+    /// </summary>
     [pbr::OriginalName("BM_ALL")] BmAll = 7,
   }
 
   #endregion
 
   #region Messages
+  /// <summary>
+  /// The Billboard component makes an Entity automatically reorient its rotation to face the camera. 
+  /// As the name indicates, it’s used to display in-game billboards and frequently combined with 
+  /// the TextShape component.
+  ///
+  /// Billboard only affects the Entity's rotation. Its scale and position are still determined by its
+  /// Transform.
+  /// </summary>
   public sealed partial class PBBillboard : pb::IMessage<PBBillboard>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -102,7 +116,7 @@ namespace DCL.ECSComponents {
     public const int BillboardModeFieldNumber = 1;
     private global::DCL.ECSComponents.BillboardMode billboardMode_;
     /// <summary>
-    /// default=BM_ALL
+    /// the BillboardMode (default: BM_ALL)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
