@@ -4,7 +4,10 @@ namespace MainScripts.DCL.Helpers.UIHelpers
 {
     public class StandaloneInputModuleDCL : StandaloneInputModule
     {
-        public PointerEventData GetPointerData() =>
-            m_PointerData[kMouseLeftId];
+        public PointerEventData GetPointerData()
+        {
+            GetPointerData(kMouseLeftId, out PointerEventData data, true);
+            return data;
+        }
     }
 }
