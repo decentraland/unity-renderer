@@ -10,7 +10,7 @@ The message exchange is defined by RPC calls, which are bi-directional Services.
 
 ## How to add a message
 
-To add a message to the Renderer Protocol, you must first modify the [Renderer Protocol](https://github.com/decentraland/unity-renderer/tree/dev/renderer-protocol)
+To add a message to the Renderer Protocol, you must first add it to the [protocol definition](https://github.com/decentraland/unity-renderer/tree/dev/renderer-protocol)
 
 [Example](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/renderer_services/emotes_renderer.proto) of `RendererService`.
 
