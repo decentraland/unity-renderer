@@ -1,6 +1,6 @@
 import { createLogger } from 'lib/logger'
-import { IslandChangedMessage } from '@dcl/protocol/out-ts/decentraland/kernel/comms/v3/archipelago.gen'
-import { Heartbeat } from '@dcl/protocol/out-ts/decentraland/bff/comms_director_service.gen'
+import { IslandChangedMessage } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
+import { Heartbeat } from 'shared/protocol/decentraland/bff/comms_director_service.gen'
 import { store } from 'shared/store/isolatedStore'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import {

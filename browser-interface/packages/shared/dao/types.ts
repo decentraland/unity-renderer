@@ -1,5 +1,5 @@
 import type { ETHEREUM_NETWORK } from 'config'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 
 export enum ServerConnectionStatus {
   OK,

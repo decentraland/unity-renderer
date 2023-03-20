@@ -1,0 +1,54 @@
+syntax = "proto3";
+package decentraland.renderer.renderer_services;
+import "decentraland/common/entity.proto";
+
+message LoadSceneMessage {
+  // entity and content mappings of the scene (string scene_id = 1; THIS IS NOW entity.id)
+  decentraland.common.Entity entity = 1;
+  // scene number is used to refer to the scene internally in kernel
+  int32 scene_number = 2;
+  // name for the UI, handy for portable experiences
+  string scene_name = 3;
+  // baseUrl to be used to resolve the entity's content mappings
+  string base_url = 4;
+  // if present, this scene will try to download asset bundles
+  string base_url_asset_bundles = 5;
+  // this scene is bound to a wearable
+  bool is_portable_experience = 6;
+  // this scene is a global scene, like the avatar scene
+  bool is_global_scene = 7;
+  // this scene uses the new runtime
+  bool sdk7 = 8;
+}
+
+message LoadSceneResult {
+  // if false, the port should be closed and resources released.
+  bool success = 1;
+}
+
+message GetCurrentStateMessage {}
+message UnloadSceneMessage {}
+message UnloadSceneResult {}
+
+message CRDTSceneMessage {
+  bytes	payload = 1;
+}
+
+message CRDTSceneCurrentState {
+  bool has_own_entities = 1;
+  bytes	payload = 2;
+}
+
+
+// The SceneController exists once per RPC port. Every scene is a independent
+// port and thus, rpcContext and its lifecycle is controlled by the SceneController.
+service RpcSceneControllerService {
+  // creates a scene in the renderer
+  rpc LoadScene(LoadSceneMessage) returns (LoadSceneResult){}
+  // unloads the scene and releases its resources
+  rpc UnloadScene(UnloadSceneMessage) returns (UnloadSceneResult){}
+  // back and forth of CRDT messages
+  rpc SendCrdt(CRDTSceneMessage) returns (CRDTSceneMessage) {}
+  // back and forth of CRDT messages
+  rpc GetCurrentState(GetCurrentStateMessage) returns (CRDTSceneCurrentState) {}
+}

@@ -84,12 +84,11 @@ When the steps are followed, you will be able to run the local Unity build by go
 ### Steps
 
 1. Make sure you have the proper Unity version up and running
-2. Make sure you have [Kernel repository](https://github.com/decentraland/kernel) cloned.
-3. Make sure you are running kernel through `make watch` command in the cloned repo directory (`npm i` first just in case).
-4. Produce a Unity wasm targeted build using the Build menu.
-5. When the build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `kernel/node_modules/@dcl/unity-renderer`.
-6. Run the browser explorer through `localhost:8080&ENABLE_WEB3`. Now, it should use your local Unity build. Don't mind the white screen at the beginning, that's because the website repo is not being used and it's only loading Kernel with the build.
-7. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process.
+2. Make sure you are running browser-interface through `make watch` command in the browser-interface directory (`npm i` first just in case).
+3. Produce a Unity wasm targeted build using the Build menu.
+4. When the build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `browser-interface/node_modules/@dcl/unity-renderer`.
+5. Run the browser explorer through `localhost:8080&ENABLE_WEB3`. Now, it should use your local Unity build. Don't mind the white screen at the beginning, that's because the website repo is not being used and it's only loading Browser Interface with the build.
+6. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process.
 
 Alternatively you can go through these 2 steps after step 3 and load the build locally using `localhost:3000` 
 1. Make sure you have the [explorer website repository](https://github.com/decentraland/explorer-website) cloned.
