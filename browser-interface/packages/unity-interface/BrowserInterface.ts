@@ -110,6 +110,7 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -1049,8 +1050,18 @@ export class BrowserInterface {
     store.dispatch(emotesRequest(newFilters, context))
   }
 
-  public RequestUserProfile(userIdPayload: { value: string }) {
-    retrieveProfile(userIdPayload.value, undefined).catch(defaultLogger.error)
+  public async RequestUserProfile(userIdPayload: { value: string }) {
+    const profile = await retrieveProfile(userIdPayload.value, undefined).catch(defaultLogger.error)
+
+    if (!profile) {
+      return
+    }
+
+    const realmAdapter = await ensureRealmAdapter()
+    const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
+    const profileForRenderer = profileToRendererFormat(profile, { baseUrl: fetchContentServerWithPrefix })
+
+    getUnityInstance().AddUserProfileToCatalog(profileForRenderer)
   }
 
   public ReportAvatarFatalError(payload: any) {
