@@ -20,9 +20,9 @@ namespace Tests
         {
             byte[] bytes =
             {
-                0, 0, 0, 64, 0, 0, 0, 1, 0, 0, 2, 154,
-                0, 0, 0, 1, 0, 0, 29, 242,
-                0, 0, 0, 40
+                64, 0, 0, 0, 1, 0, 0, 0, 154, 2, 0, 0,
+                1, 0, 0, 0, 242, 29, 0, 0,
+                40, 0, 0, 0
             };
 
             bytes = bytes.Concat(componentDataBytes).ToArray();
@@ -44,17 +44,17 @@ namespace Tests
         {
             byte[] bytesMsgA =
             {
-                0, 0, 0, 64, 0, 0, 0, 1, 0, 0, 2, 154,
-                0, 0, 0, 1, 0, 0, 29, 242,
-                0, 0, 0, 40,
+                64, 0, 0, 0, 1, 0, 0, 0, 154, 2, 0, 0,
+                1, 0, 0, 0, 242, 29, 0, 0,
+                40, 0, 0, 0
             };
             bytesMsgA = bytesMsgA.Concat(componentDataBytes).ToArray();
 
             byte[] bytesMsgB =
             {
-                0, 0, 0, 64, 0, 0, 0, 1, 0, 0, 2, 154,
-                0, 0, 0, 1, 0, 0, 29, 242,
-                0, 0, 0, 40
+                64, 0, 0, 0, 1, 0, 0, 0, 154, 2, 0, 0,
+                1, 0, 0, 0, 242, 29, 0, 0,
+                40, 0, 0, 0
             };
             bytesMsgB = bytesMsgB.Concat(componentDataBytes).ToArray();
 

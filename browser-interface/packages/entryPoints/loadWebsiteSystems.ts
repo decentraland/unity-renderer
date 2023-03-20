@@ -1,13 +1,11 @@
 import type { KernelOptions } from 'kernel-web-interface'
-import { trackEvent } from 'shared/analytics/trackEvent'
-import { changeRealm, realmInitialized } from 'shared/dao'
+import { realmInitialized } from 'shared/dao'
 import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import {
   getFeatureFlagEnabled,
   getFeatureFlags,
   getFeatureFlagVariantName,
-  getFeatureFlagVariantValue,
   getWorldConfig
 } from 'shared/meta/selectors'
 import type { WorldConfig } from 'shared/meta/types'
@@ -18,10 +16,9 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { HUDElementID } from 'shared/types'
 import { foregroundChangeObservable, isForeground } from 'shared/world/worldState'
-import { HAS_INITIAL_POSITION_MARK, OPEN_AVATAR_EDITOR, RESET_TUTORIAL } from 'config'
+import { HAS_INITIAL_POSITION_MARK, RESET_TUTORIAL } from 'config'
 import { renderingInBackground, renderingInForeground } from 'shared/loadingScreen/types'
 import { kernelConfigForRenderer } from 'unity-interface/kernelConfigForRenderer'
-import { logger } from './logger'
 import { startPreview } from './startPreview'
 
 export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']) {
@@ -49,7 +46,7 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
 
   renderer.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
   renderer.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: true })
-  renderer.ConfigureHUDElement(HUDElementID.AVATAR_EDITOR, { active: true, visible: OPEN_AVATAR_EDITOR })
+  renderer.ConfigureHUDElement(HUDElementID.AVATAR_EDITOR, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.SIGNUP, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.LOADING_HUD, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.AVATAR_NAMES, { active: true, visible: true })
@@ -109,18 +106,6 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
       }
 
       renderer.ConfigureTutorial(profile.tutorialStep, tutorialConfig)
-    } else {
-      try {
-        const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
-        if (realm) {
-          await changeRealm(realm)
-          trackEvent('onboarding_started', { onboardingRealm: realm })
-        } else {
-          logger.warn('No realm was provided for the onboarding experience.')
-        }
-      } catch (err) {
-        console.error(err)
-      }
     }
   }
 

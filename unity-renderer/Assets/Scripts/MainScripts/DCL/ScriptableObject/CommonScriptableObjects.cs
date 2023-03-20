@@ -75,6 +75,9 @@ public static class AudioScriptableObjects
     private static AudioEvent chatReceivePrivateEvent;
     public static AudioEvent chatReceivePrivate => CommonScriptableObjects.GetOrLoad(ref chatReceivePrivateEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceivePrivate");
 
+    private static AudioEvent chatReceiveMentionEvent;
+    public static AudioEvent ChatReceiveMentionEvent => CommonScriptableObjects.GetOrLoad(ref chatReceiveMentionEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceiveMention");
+
     private static AudioEvent chatSendEvent;
     public static AudioEvent chatSend => CommonScriptableObjects.GetOrLoad(ref chatSendEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatSend");
 
@@ -127,6 +130,7 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(listItemAppearEvent);
         Resources.UnloadAsset(chatReceiveGlobalEvent);
         Resources.UnloadAsset(chatReceivePrivateEvent);
+        Resources.UnloadAsset(chatReceiveMentionEvent);
         Resources.UnloadAsset(chatSendEvent);
         Resources.UnloadAsset(joinChannelEvent);
         Resources.UnloadAsset(leaveChannelEvent);

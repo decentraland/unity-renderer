@@ -200,6 +200,7 @@ namespace AvatarSystem
             }
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
+            avatarMeshCombiner.container.transform.localScale = Vector3.one;
             return avatarMeshCombiner.renderer;
         }
 

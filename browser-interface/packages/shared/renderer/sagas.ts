@@ -1,5 +1,5 @@
 import { RpcClient, RpcClientPort, Transport } from '@dcl/rpc'
-import type { UnityGame } from '@dcl/unity-renderer/src/index'
+import type { UnityGame } from 'unity-interface/loader'
 import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
 import { deepEqual } from 'lib/javascript/deepEqual'
@@ -25,7 +25,7 @@ import { SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { isFeatureToggleEnabled } from 'shared/selectors'
+import { isSceneFeatureToggleEnabled } from 'lib/decentraland/sceneJson/isSceneFeatureToggleEnabled'
 import { SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
 import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
@@ -196,8 +196,8 @@ function* listenToWhetherSceneSupportsVoiceChat(data: SetCurrentScene) {
     : undefined
 
   const nowEnabled = currentScene
-    ? isFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE, currentScene?.metadata)
-    : isFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE)
+    ? isSceneFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE, currentScene?.metadata)
+    : isSceneFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE)
 
   yield call(waitForRendererInstance)
 

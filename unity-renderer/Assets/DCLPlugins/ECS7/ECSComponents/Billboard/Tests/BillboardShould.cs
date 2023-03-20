@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -55,7 +56,7 @@ namespace DCL.ECSComponents.Test
 
             ECSComponentsFactory componentFactory = new ECSComponentsFactory();
             ECSComponentsManager componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
-            var internalComponents = new InternalECSComponents(componentsManager, componentFactory);
+            var internalComponents = new InternalECSComponents(componentsManager, componentFactory, new Dictionary<int, ICRDTExecutor>());
             var componentsComposer = new ECS7ComponentsComposer(componentFactory,
                 Substitute.For<IECSComponentWriter>(), internalComponents);
 

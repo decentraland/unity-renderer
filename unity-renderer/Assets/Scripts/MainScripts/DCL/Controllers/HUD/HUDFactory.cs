@@ -10,7 +10,7 @@ using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
-using DCL.Social.Chat;
+using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
 using SignupHUD;
@@ -18,8 +18,6 @@ using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEditor;
-using UnityEngine;
 using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
 
@@ -64,7 +62,8 @@ public class HUDFactory : IHUDFactory
                 return new ProfileHUDController(new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    DataStore.i);
             case HUDElementID.NOTIFICATION:
                 return new NotificationHUDController();
             case HUDElementID.AVATAR_EDITOR:
@@ -97,7 +96,8 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
                     new WebInterfaceBrowserBridge(),
-                    CommonScriptableObjects.rendererState);
+                    CommonScriptableObjects.rendererState,
+                    DataStore.i.mentions);
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 return new PrivateChatWindowController(
                     DataStore.i,
@@ -108,7 +108,7 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i));
             case HUDElementID.PUBLIC_CHAT:
                 return new PublicChatWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),
@@ -116,18 +116,21 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
             case HUDElementID.CHANNELS_CHAT:
                 return new ChatChannelHUDController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    Environment.i.serviceLocator.Get<IProfanityFilter>());
+                    Environment.i.serviceLocator.Get<IProfanityFilter>(),
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i));
             case HUDElementID.CHANNELS_SEARCH:
                 return new SearchChannelsWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),
@@ -152,7 +155,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CONTROLS_HUD:
                 return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:
-                return new HelpAndSupportHUDController();
+                return new HelpAndSupportHUDController(await CreateHUDView<IHelpAndSupportHUDView>(HELP_AND_SUPPORT_HUD, cancellationToken));
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 return new VoiceChatWindowController(
                     new UserProfileWebInterfaceBridge(),

@@ -187,6 +187,9 @@ namespace DCL.Chat.Notifications
                 AnimateNewEntry(entry.gameObject.transform, animationCancellationToken.Token).Forget();
             }
 
+            if (model.IsOwnPlayerMentioned)
+                AudioScriptableObjects.ChatReceiveMentionEvent.Play(true);
+
             OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
             CheckNotificationCountAndRelease();
         }
@@ -293,6 +296,7 @@ namespace DCL.Chat.Notifications
             view.SetNotificationSender($"{senderName}:");
             view.SetNotificationTargetId(model.TargetId);
             view.SetImageVisibility(!model.ImTheSender);
+            view.SetOwnPlayerMention(model.IsOwnPlayerMentioned);
 
             if (!string.IsNullOrEmpty(model.ProfilePicture))
                 view.SetImage(model.ProfilePicture);
@@ -317,6 +321,7 @@ namespace DCL.Chat.Notifications
             view.SetNotificationHeader(channelName);
             view.SetNotificationSender($"{senderName}:");
             view.SetImageVisibility(false);
+            view.SetOwnPlayerMention(model.IsOwnPlayerMentioned);
 
             if (model.ImTheSender)
                 view.DockRight();

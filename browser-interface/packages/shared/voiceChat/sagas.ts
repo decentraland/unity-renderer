@@ -46,7 +46,7 @@ import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
 import { RoomConnection } from 'shared/comms/interface'
 import { getCommsRoom } from 'shared/comms/selectors'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
-import { incrementCounter } from 'shared/occurences'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { RootWorldState } from 'shared/world/types'
 
 let audioRequestInitialized = false

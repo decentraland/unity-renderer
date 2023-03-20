@@ -21,11 +21,12 @@ namespace DCL.Chat.HUD
 
         private UserContextMenu userContextMenu;
         private IChatController chatController;
+        private DataStore_Mentions mentionsDataStore;
 
         public PrivateChatEntryModel Model => model;
 
         public event Action<PrivateChatEntry> OnOpenChat;
-    
+
         public static PrivateChatEntry Create()
         {
             return Instantiate(Resources.Load<PrivateChatEntry>("SocialBarV1/WhisperChannelElement"));
@@ -39,7 +40,7 @@ namespace DCL.Chat.HUD
                 userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
             });
-            openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this)); 
+            openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
             onFocused += isFocused =>
             {
                 if (optionsButton == null) return;
@@ -51,16 +52,18 @@ namespace DCL.Chat.HUD
         }
 
         public void Initialize(IChatController chatController,
-            UserContextMenu userContextMenu)
+            UserContextMenu userContextMenu,
+            DataStore_Mentions mentionsDataStore)
         {
             this.chatController = chatController;
             this.userContextMenu = userContextMenu;
+            this.mentionsDataStore = mentionsDataStore;
             userContextMenu.OnHide -= HandleContextMenuHidden;
             userContextMenu.OnHide += HandleContextMenuHidden;
             userContextMenu.OnBlock -= HandleUserBlocked;
             userContextMenu.OnBlock += HandleUserBlocked;
         }
-    
+
         public void Configure(PrivateChatEntryModel newModel)
         {
             model = newModel;
@@ -74,14 +77,14 @@ namespace DCL.Chat.HUD
             lastMessageLabel.gameObject.SetActive(!string.IsNullOrEmpty(model.lastMessage));
             SetBlockStatus(model.isBlocked);
             SetPresence(model.isOnline);
-            unreadNotifications.Initialize(chatController, model.userId);
-        
+            unreadNotifications.Initialize(chatController, model.userId, mentionsDataStore);
+
             if (model.imageFetchingEnabled)
                 EnableAvatarSnapshotFetching();
             else
                 DisableAvatarSnapshotFetching();
         }
-    
+
         private void HandleUserBlocked(string userId, bool blocked)
         {
             if (userId != model.userId) return;
@@ -107,7 +110,7 @@ namespace DCL.Chat.HUD
             menuTransform.pivot = userContextMenuPositionReference.pivot;
             menuTransform.position = userContextMenuPositionReference.position;
         }
-    
+
         public bool IsVisible(RectTransform container)
         {
             if (!gameObject.activeSelf) return false;
@@ -127,7 +130,7 @@ namespace DCL.Chat.HUD
             picture.SetImage((string) null);
             model.imageFetchingEnabled = false;
         }
-        
+
         private void HandleContextMenuHidden()
         {
             optionsButton.gameObject.SetActive(false);

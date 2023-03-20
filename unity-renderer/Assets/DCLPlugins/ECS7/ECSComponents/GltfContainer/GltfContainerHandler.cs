@@ -89,11 +89,9 @@ namespace DCL.ECSComponents
             (pointerColliders, renderers) = SetUpPointerCollidersAndRenderers(rendereable.renderers);
 
             // set colliders and renderers
-            for (int i = 0; i < pointerColliders.Count; i++) { pointerColliderComponent.AddCollider(scene, entity, pointerColliders[i]); }
-
-            for (int i = 0; i < physicColliders.Count; i++) { physicColliderComponent.AddCollider(scene, entity, physicColliders[i]); }
-
-            for (int i = 0; i < renderers.Count; i++) { renderersComponent.AddRenderer(scene, entity, renderers[i]); }
+            pointerColliderComponent.AddColliders(scene, entity, pointerColliders);
+            physicColliderComponent.AddColliders(scene, entity, physicColliders);
+            renderersComponent.AddRenderers(scene, entity, renderers);
 
             // TODO: modify Animator component to remove `AddShapeReady` usage
             dataStoreEcs7.AddShapeReady(entity.entityId, gameObject);

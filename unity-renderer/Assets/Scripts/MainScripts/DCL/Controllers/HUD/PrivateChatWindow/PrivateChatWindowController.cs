@@ -4,7 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
-using DCl.Social.Friends;
+using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -23,10 +23,9 @@ public class PrivateChatWindowController : IHUD
     private readonly IFriendsController friendsController;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
-    private readonly InputAction_Trigger toggleChatTrigger;
+    private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
-    private bool skipChatInputTrigger;
     private float lastRequestTime;
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
     private bool shouldRequestMessages;
@@ -44,7 +43,7 @@ public class PrivateChatWindowController : IHUD
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics,
         IMouseCatcher mouseCatcher,
-        InputAction_Trigger toggleChatTrigger)
+        IChatMentionSuggestionProvider chatMentionSuggestionProvider)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
@@ -52,7 +51,7 @@ public class PrivateChatWindowController : IHUD
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
-        this.toggleChatTrigger = toggleChatTrigger;
+        this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
     }
 
     public void Initialize(IPrivateChatComponentView view = null)
@@ -72,7 +71,18 @@ public class PrivateChatWindowController : IHUD
 
         view.OnRequireMoreMessages += RequestOldConversations;
 
-        chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
+        dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
+
+        chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
+            async (name, count, ct) =>
+            {
+                return await chatMentionSuggestionProvider.GetProfilesStartingWith(name, count, new[]
+                {
+                    userProfileBridge.GetOwn(),
+                    userProfileBridge.Get(conversationUserId)
+                }, ct);
+            },
+          socialAnalytics);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
         chatHudController.OnSendMessage += HandleSendChatMessage;
@@ -80,8 +90,6 @@ public class PrivateChatWindowController : IHUD
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
-
-        toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
     }
 
     public void Setup(string newConversationUserId)
@@ -103,6 +111,8 @@ public class PrivateChatWindowController : IHUD
             return;
 
         SetVisiblePanelList(visible);
+        chatHudController.SetVisibility(visible);
+        dataStore.HUDs.chatInputVisible.Set(visible);
 
         if (visible)
         {
@@ -145,6 +155,7 @@ public class PrivateChatWindowController : IHUD
             chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
             chatHudController.OnSendMessage -= HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
+            chatHudController.Dispose();
         }
 
         if (chatController != null)
@@ -152,8 +163,6 @@ public class PrivateChatWindowController : IHUD
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= Hide;
-
-        toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
         if (View != null)
         {
@@ -165,6 +174,8 @@ public class PrivateChatWindowController : IHUD
             View.OnRequireMoreMessages -= RequestOldConversations;
             View.Dispose();
         }
+
+        dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
     }
 
     private void HandleSendChatMessage(ChatMessage message)
@@ -203,8 +214,12 @@ public class PrivateChatWindowController : IHUD
     {
         var messageLogUpdated = false;
 
+        var ownPlayerAlreadyMentioned = false;
         foreach (var message in messages)
         {
+            if (!ownPlayerAlreadyMentioned)
+                ownPlayerAlreadyMentioned = CheckOwnPlayerMentionInDMs(message);
+
             if (!IsMessageFomCurrentConversation(message)) continue;
 
             chatHudController.AddChatMessage(message, limitMaxEntries: false);
@@ -226,6 +241,20 @@ public class PrivateChatWindowController : IHUD
 
         if (View.IsActive && messageLogUpdated)
             MarkUserChatMessagesAsRead();
+    }
+
+    private bool CheckOwnPlayerMentionInDMs(ChatMessage message)
+    {
+        var ownUserProfile = userProfileBridge.GetOwn();
+
+        if (message.sender == ownUserProfile.userId ||
+            (message.sender == conversationUserId && View.IsActive) ||
+            message.messageType != ChatMessage.Type.PRIVATE ||
+            !MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, message.body))
+            return false;
+
+        dataStore.mentions.ownPlayerMentionedInDM.Set(message.sender, true);
+        return true;
     }
 
     private void Hide()
@@ -288,21 +317,6 @@ public class PrivateChatWindowController : IHUD
         visibleTaskbarPanels.Set(newSet, true);
     }
 
-    private void HandleChatInputTriggered(DCLAction_Trigger action)
-    {
-        // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
-        // chat input trigger is the same key as sending the chat message from the input field
-        if (skipChatInputTrigger)
-        {
-            skipChatInputTrigger = false;
-            return;
-        }
-
-        if (!View.IsActive)
-            return;
-        chatHudController.FocusInputField();
-    }
-
     internal void RequestPrivateMessages(string userId, int limit, string fromMessageId)
     {
         View?.SetLoadingMessagesActive(true);
@@ -359,5 +373,13 @@ public class PrivateChatWindowController : IHUD
     {
         chatHudController.FocusInputField();
         MarkUserChatMessagesAsRead();
+    }
+
+    private void SomeoneMentionedFromContextMenu(string mention, string _)
+    {
+        if (!View.IsActive)
+            return;
+
+        View.ChatHUD.AddTextIntoInputField(mention);
     }
 }

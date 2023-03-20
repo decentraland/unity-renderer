@@ -1,11 +1,11 @@
-import { Vector2 } from '@dcl/ecs-math'
+import { Vector2, Vector3 } from '@dcl/ecs-math'
 import { ENABLE_EMPTY_SCENES, isRunningTest } from 'config'
 import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { waitFor } from 'lib/redux'
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
-import { BEFORE_UNLOAD } from 'shared/actions'
+import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { SceneFail, SceneStart, SceneUnload, SCENE_FAIL, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
 import { getResourcesURL } from 'shared/location'
@@ -142,7 +142,7 @@ function* teleportHandler(action: TeleportToAction) {
 
       const scene: SceneWorker | undefined = yield call(getSceneWorkerBySceneID, settlerScene)
 
-      const spawnPoint = pickWorldSpawnpoint(scene?.metadata || command.scenes[0].entity.metadata) || action.payload
+      const spawnPoint = pickWorldSpawnpoint(scene?.metadata || command.scenes[0].entity.metadata, new Vector3(action.payload.position.x, action.payload.position.y, action.payload.position.z)) || action.payload
       if (scene?.isStarted()) {
         // if the scene is loaded then there is no unsettlement of the position
         // we teleport directly to that scene
