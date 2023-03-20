@@ -8,6 +8,7 @@ namespace DCL.Chat.HUD
         private readonly DataStore_Player playerDataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private bool isVisible;
+        private string currentSearchText;
 
         public NearbyMembersHUDController(
             IChannelMembersComponentView view,
@@ -20,6 +21,7 @@ namespace DCL.Chat.HUD
 
             playerDataStore.otherPlayers.OnAdded += OnNearbyPlayersAdded;
             playerDataStore.otherPlayers.OnRemoved += OnNearbyPlayersRemoved;
+            view.OnSearchUpdated += OnSearchPlayers;
         }
 
         public void SetVisibility(bool visible)
@@ -29,6 +31,7 @@ namespace DCL.Chat.HUD
             if (visible)
             {
                 view.Show();
+                view.ClearSearchInput(false);
                 LoadCurrentNearbyPlayers();
             }
             else
@@ -39,20 +42,31 @@ namespace DCL.Chat.HUD
         {
             playerDataStore.otherPlayers.OnAdded -= OnNearbyPlayersAdded;
             playerDataStore.otherPlayers.OnRemoved -= OnNearbyPlayersRemoved;
+            view.OnSearchUpdated -= OnSearchPlayers;
             view.Dispose();
         }
 
-        private void LoadCurrentNearbyPlayers()
+        private void LoadCurrentNearbyPlayers(string textFilter = "")
         {
             view.ClearAllEntries();
 
             foreach (var player in playerDataStore.otherPlayers.Get())
+            {
+                if (!string.IsNullOrEmpty(textFilter) &&
+                    !player.Value.name.ToLower().Contains(textFilter.ToLower()))
+                    continue;
+
                 OnNearbyPlayersAdded(player.Key, player.Value);
+            }
         }
 
-        private void OnNearbyPlayersAdded(string userId, Player _)
+        private void OnNearbyPlayersAdded(string userId, Player player)
         {
-            if(!isVisible)
+            if (!isVisible)
+                return;
+
+            if (!string.IsNullOrEmpty(currentSearchText) &&
+                !player.name.ToLower().Contains(currentSearchText.ToLower()))
                 return;
 
             var otherProfile = userProfileBridge.Get(userId);
@@ -74,10 +88,16 @@ namespace DCL.Chat.HUD
 
         private void OnNearbyPlayersRemoved(string userId, Player _)
         {
-            if(!isVisible)
+            if (!isVisible)
                 return;
 
             view.Remove(userId);
+        }
+
+        private void OnSearchPlayers(string searchText)
+        {
+            currentSearchText = searchText;
+            LoadCurrentNearbyPlayers(searchText);
         }
     }
 }

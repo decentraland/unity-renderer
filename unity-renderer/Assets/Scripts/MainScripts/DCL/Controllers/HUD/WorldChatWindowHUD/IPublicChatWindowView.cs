@@ -18,4 +18,5 @@ public interface IPublicChatWindowView
     void Hide();
     void Show();
     void Configure(PublicChatModel model);
+    void UpdateMembersCount(int membersAmount);
 }

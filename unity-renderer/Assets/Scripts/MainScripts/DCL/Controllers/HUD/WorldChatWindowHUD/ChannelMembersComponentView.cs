@@ -21,6 +21,8 @@ namespace DCL.Chat.HUD
         [SerializeField] internal SearchBarComponentView searchBar;
         [SerializeField] internal GameObject loadMoreContainer;
         [SerializeField] internal GameObject loadMoreSpinner;
+        [SerializeField] internal GameObject emptyStateForCommon;
+        [SerializeField] internal GameObject emptyStateForSearch;
 
         private readonly Queue<ChannelMemberEntryModel> queuedEntries = new Queue<ChannelMemberEntryModel>();
         private bool isLayoutDirty;
@@ -37,7 +39,16 @@ namespace DCL.Chat.HUD
         {
             base.Awake();
 
-            searchBar.OnSearchText += s => OnSearchUpdated?.Invoke(s);
+            searchBar.OnSearchText += s =>
+            {
+                if (emptyStateForCommon != null)
+                    emptyStateForCommon.SetActive(string.IsNullOrEmpty(s));
+
+                if (emptyStateForSearch != null)
+                    emptyStateForSearch.SetActive(!string.IsNullOrEmpty(s));
+
+                OnSearchUpdated?.Invoke(s);
+            };
             memberList.SortingMethod = (a, b) => a.Model.userName.CompareTo(b.Model.userName);
             scroll.onValueChanged.AddListener(LoadMoreEntries);
         }

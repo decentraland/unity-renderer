@@ -21,6 +21,8 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     [SerializeField] internal ButtonComponentView collapseMembersListButton;
     [SerializeField] internal ChannelMembersComponentView membersList;
     [SerializeField] internal ButtonComponentView goToCrowdButton;
+    [SerializeField] internal TMP_Text memberCountLabel;
+    [SerializeField] internal Button membersIconButton;
 
     private Coroutine alphaRoutine;
 
@@ -44,6 +46,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     private bool isMembersSectionOpen;
     private float collapsableAreaOriginalWidth;
+    private Color targetGraphicColor;
 
     public static PublicChatWindowComponentView Create()
     {
@@ -60,6 +63,8 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
         expandMembersListButton.onClick.AddListener(ToggleMembersSection);
         collapseMembersListButton.onClick.AddListener(ToggleMembersSection);
         collapsableAreaOriginalWidth = collapsableArea.sizeDelta.x;
+        membersIconButton.onClick.AddListener(ToggleMembersSection);
+        targetGraphicColor = membersIconButton.targetGraphic.color;
 
         if (goToCrowdButton != null)
             goToCrowdButton.onClick.AddListener(() => OnGoToCrowd?.Invoke());
@@ -68,6 +73,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     public override void RefreshControl()
     {
         nameLabel.text = $"~{model.name}";
+        memberCountLabel.text = model.memberCount.ToString();
         muteToggle.SetIsOnWithoutNotify(model.muted);
     }
 
@@ -89,6 +95,9 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     public void OnPointerDown(PointerEventData eventData) => OnClickOverWindow?.Invoke();
 
+    public void UpdateMembersCount(int membersAmount) =>
+        memberCountLabel.text = membersAmount.ToString();
+
     private void ToggleMembersSection()
     {
         isMembersSectionOpen = !isMembersSectionOpen;
@@ -103,9 +112,16 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
             collapsableArea.sizeDelta.y);
 
         if (isMembersSectionOpen)
+        {
+            targetGraphicColor.a = 1f;
+            membersIconButton.targetGraphic.color = targetGraphicColor;
             OnShowMembersList?.Invoke();
+        }
         else
+        {
+            targetGraphicColor.a = 0f;
+            membersIconButton.targetGraphic.color = targetGraphicColor;
             OnHideMembersList?.Invoke();
+        }
     }
-
 }

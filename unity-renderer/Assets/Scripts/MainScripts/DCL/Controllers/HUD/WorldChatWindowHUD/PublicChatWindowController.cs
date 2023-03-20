@@ -29,6 +29,7 @@ namespace DCL.Chat.HUD
         private NearbyMembersHUDController nearbyMembersHUDController;
 
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
+        private int nearbyPlayersCount => dataStore.player.otherPlayers.Count();
 
         private bool isVisible;
 
@@ -80,6 +81,8 @@ namespace DCL.Chat.HUD
             chatController.OnChannelUpdated += HandleChannelUpdated;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
+            dataStore.player.otherPlayers.OnAdded += UpdateMembersCount;
+            dataStore.player.otherPlayers.OnRemoved += UpdateMembersCount;
 
             view.OnShowMembersList += ShowMembersList;
             view.OnHideMembersList += HideMembersList;
@@ -121,6 +124,8 @@ namespace DCL.Chat.HUD
                 mouseCatcher.OnMouseLock -= Hide;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
+            dataStore.player.otherPlayers.OnAdded -= UpdateMembersCount;
+            dataStore.player.otherPlayers.OnRemoved -= UpdateMembersCount;
 
             View?.Dispose();
             nearbyMembersHUDController.Dispose();
@@ -266,16 +271,14 @@ namespace DCL.Chat.HUD
                 chatController.UnmuteChannel(channelId);
         }
 
-        private PublicChatModel ToPublicChatModel(Channel channel)
-        {
-            return new PublicChatModel(channel.ChannelId,
+        private PublicChatModel ToPublicChatModel(Channel channel) =>
+            new (channel.ChannelId,
                 channel.Name,
                 channel.Description,
                 channel.Joined,
-                channel.MemberCount,
+                nearbyPlayersCount,
                 channel.Muted,
                 showOnlyOnlineMembersOnPublicChannels);
-        }
 
         private void HandleChannelUpdated(Channel updatedChannel)
         {
@@ -299,5 +302,8 @@ namespace DCL.Chat.HUD
 
         private void GoToCrowd() =>
             Environment.i.world.teleportController.GoToCrowd();
+
+        private void UpdateMembersCount(string userId, Player player) =>
+            View.UpdateMembersCount(nearbyPlayersCount);
     }
 }
