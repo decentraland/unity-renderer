@@ -137,7 +137,12 @@ public class UserContextMenu : MonoBehaviour
 
         if (userProfile != null)
         {
-            Setup(userProfile.userId, menuConfigFlags);
+            if (!Setup(userProfile.userId, menuConfigFlags))
+            {
+                ShowUserNotificationError(userName);
+                return;
+            }
+
             Show(userProfile.userId, currentConfigFlags);
         }
         else
@@ -325,12 +330,6 @@ public class UserContextMenu : MonoBehaviour
         Hide();
     }
 
-    private void UpdateBlockButton()
-    {
-        blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
-        messageButton.gameObject.SetActive(!isBlocked && enableSendMessage);
-    }
-
     private void HideIfClickedOutside()
     {
         if (!Input.GetMouseButtonDown(0)) return;
@@ -385,7 +384,7 @@ public class UserContextMenu : MonoBehaviour
         if ((configFlags & MenuConfigFlags.Block) != 0)
         {
             isBlocked = UserProfile.GetOwnUserProfile().blocked.Contains(userId);
-            UpdateBlockButton();
+            blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
         }
 
         if ((configFlags & MenuConfigFlags.Name) != 0)
