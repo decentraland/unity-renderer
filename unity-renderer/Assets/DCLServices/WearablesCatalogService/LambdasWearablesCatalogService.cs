@@ -323,25 +323,32 @@ namespace DCLServices.WearablesCatalogService
         {
             foreach (var wearable in wearablesFromLambdas)
             {
-                foreach (var representation in wearable.data.representations)
+                try
                 {
-                    foreach (var representationContent in representation.contents)
+                    foreach (var representation in wearable.data.representations)
                     {
-                        if (string.IsNullOrEmpty(representationContent.url))
-                            continue;
+                        foreach (var representationContent in representation.contents)
+                        {
+                            if (string.IsNullOrEmpty(representationContent.url))
+                                continue;
 
-                        representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
+                            representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
+                        }
                     }
-                }
 
-                string thumbnail = wearable.thumbnail ?? "";
-                int index = thumbnail.LastIndexOf('/');
-                string newThumbnail = thumbnail[(index + 1)..];
-                string newBaseUrl = thumbnail[..(index + 1)];
-                wearable.thumbnail = newThumbnail;
-                wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
-                wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
-                wearable.emoteDataV0 = null;
+                    string thumbnail = wearable.thumbnail ?? "";
+                    int index = thumbnail.LastIndexOf('/');
+                    string newThumbnail = thumbnail[(index + 1)..];
+                    string newBaseUrl = thumbnail[..(index + 1)];
+                    wearable.thumbnail = newThumbnail;
+                    wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
+                    wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
+                    wearable.emoteDataV0 = null;
+                }
+                catch
+                {
+                    // Skip wearable in case the mapping fails
+                }
             }
         }
 
