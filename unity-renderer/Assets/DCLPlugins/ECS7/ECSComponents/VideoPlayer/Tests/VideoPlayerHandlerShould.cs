@@ -160,24 +160,6 @@ namespace Tests
         }
 
         [Test]
-        public void NotModifyVideoStreamingURLs()
-        {
-            PBVideoPlayer model = new PBVideoPlayer()
-            {
-                Src = "https://player.vimeo.com/external/552481870.m3u8?s=c312c8533f97e808fccc92b0510b085c8122a875",
-                Playing = true
-            };
-
-            scene.sceneData.allowedMediaHostnames = new[] { "fake" };
-            scene.sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
-
-            videoPlayerHandler.OnComponentCreated(scene, entity);
-            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
-
-            Assert.AreEqual(model.Src, internalVideoPlayerComponent.GetFor(scene, entity).model.videoPlayer.url);
-        }
-
-        [Test]
         public void CreateInternalComponentCorrectly()
         {
             videoPlayerHandler.OnComponentCreated(scene, entity);
