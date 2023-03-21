@@ -2,7 +2,7 @@ import type { Avatar } from '@dcl/schemas'
 import { FETCH_REMOTE_PROFILE_RETRIES } from 'config'
 import { generateRandomUserProfile } from 'lib/decentraland/profiles/generateRandomUserProfile'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
-import { call, put, select } from 'redux-saga/effects'
+import { call, CallEffect, put, race, select } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import type { RoomConnection } from 'shared/comms/interface'
 import { getCommsRoom } from 'shared/comms/selectors'
@@ -74,22 +74,46 @@ function* fetchWithBestStrategy(
   }
 ) {
   const version = +(options.minimumVersion || 0)
+
+  const fetches: { [k: string]: Generator<CallEffect<Avatar | null>> } = {}
   if (options.canFetchFromComms && !!options.roomConnection) {
-    // Retry three times
-    for (let i = 0; i < FETCH_REMOTE_PROFILE_RETRIES; i++) {
-      const remote = yield call(fetchPeerProfile, options.roomConnection, userId, version)
-      if (remote) {
-        return remote
-      }
-    }
+    fetches.comms = fetchFromComms(options.roomConnection, userId, version)
   }
   if (options.canFetchFromCatalyst) {
-    const catalyst = yield call(fetchCatalystProfile, userId, version)
-    if (catalyst) {
+    fetches.catalyst = fetchFromCatalyst(userId, version)
+  }
+
+  // If any of the fetching options is available, race against them and return the one that retrieves the profile quicker and with the correct content
+  if (fetches) {
+    const { comms, catalyst } = yield race(fetches)
+    if (comms) {
+      return comms
+    } else if (catalyst) {
       return catalyst
     }
   }
+
+  // If no other choice is available, generate a random user profile
   return generateRandomUserProfile(userId)
+}
+
+function* fetchFromComms(roomConnection: RoomConnection, userId: string, version: number) {
+  // Retry three times
+  for (let i = 0; i < FETCH_REMOTE_PROFILE_RETRIES; i++) {
+    const remote = yield call(fetchPeerProfile, roomConnection, userId, version)
+    if (remote) {
+      return remote
+    }
+  }
+  return null
+}
+
+function* fetchFromCatalyst(userId: string, version: number) {
+  const catalyst: Avatar | null = yield call(fetchCatalystProfile, userId, version)
+  if (catalyst && catalyst.version >= version) {
+    return catalyst
+  }
+  return null
 }
 
 export function getInformationToFetchProfileFromStore(state: RootState, action: ProfileRequestAction) {
