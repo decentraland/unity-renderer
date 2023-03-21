@@ -1,5 +1,3 @@
-using Cysharp.Threading.Tasks;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +20,6 @@ namespace DCL.Chat.HUD
         private UserContextMenu userContextMenu;
 
         public ChannelMemberEntryModel Model => model;
-        public event Action<ChannelMemberEntryModel> OnProfileOptionsClicked;
 
         public override void Awake()
         {
@@ -30,7 +27,6 @@ namespace DCL.Chat.HUD
 
             optionsButton.onClick.AddListener(() =>
             {
-                OnProfileOptionsClicked?.Invoke(model);
                 userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
             });

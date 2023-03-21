@@ -1,9 +1,7 @@
-using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
-using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,7 +22,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject loadMoreContainer;
         [SerializeField] internal GameObject loadMoreSpinner;
 
-        private readonly Queue<ChannelMemberEntryModel> queuedEntries = new ();
+        private readonly Queue<ChannelMemberEntryModel> queuedEntries = new Queue<ChannelMemberEntryModel>();
         private bool isLayoutDirty;
         private bool isSortDirty;
         private Vector2 lastScrollPosition;
@@ -32,11 +30,6 @@ namespace DCL.Chat.HUD
 
         public event Action<string> OnSearchUpdated;
         public event Action OnRequestMoreMembers;
-
-        public Func<string, CancellationToken, UniTask<UserProfile>> LoadFullProfileStrategy
-        {
-            set => memberList.LoadFullProfileStrategy = value;
-        }
 
         public int EntryCount => memberList.Count() + queuedEntries.Count;
 
@@ -57,7 +50,7 @@ namespace DCL.Chat.HUD
                 ((RectTransform)scroll.transform).ForceUpdateLayout();
 
             isLayoutDirty = false;
-
+            
             SetQueuedEntries();
 
             if (isSortDirty)
@@ -129,7 +122,7 @@ namespace DCL.Chat.HUD
 
         private void LoadMoreEntries(Vector2 scrollPosition)
         {
-            if (scrollPosition.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD &&
+            if (scrollPosition.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && 
                 lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
             {
                 if (requireMoreEntriesRoutine != null)
@@ -148,11 +141,11 @@ namespace DCL.Chat.HUD
             loadMoreSpinner.SetActive(false);
             OnRequestMoreMembers?.Invoke();
         }
-
+        
         private void SetQueuedEntries()
         {
             if (queuedEntries.Count <= 0) return;
-
+            
             for (var i = 0; i < ENTRIES_THROTTLING && queuedEntries.Count > 0; i++)
             {
                 var user = queuedEntries.Dequeue();

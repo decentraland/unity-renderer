@@ -1,11 +1,7 @@
-using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DCL;
 using DCL.Chat.HUD;
-using DCL.Tasks;
-using System;
-using System.Threading;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 
@@ -16,17 +12,8 @@ public class CollapsableChannelMemberListComponentView : CollapsableSortedListCo
     [SerializeField] private ChannelMemberEntry entryPrefab;
     [SerializeField] private UserContextMenu userContextMenu;
 
-    private readonly Dictionary<string, PoolableObject> pooleableEntries = new ();
+    private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
-    private CancellationTokenSource preloadProfilesCancellationToken = new ();
-
-    public Func<string, CancellationToken, UniTask<UserProfile>> LoadFullProfileStrategy { private get; set; }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-        preloadProfilesCancellationToken.SafeCancelAndDispose();
-    }
 
     public void Filter(string search)
     {
@@ -67,18 +54,6 @@ public class CollapsableChannelMemberListComponentView : CollapsableSortedListCo
         var entry = newFriendEntry.gameObject.GetComponent<ChannelMemberEntry>();
         entry.SetUserContextMenu(userContextMenu);
         Add(userId, entry);
-
-        entry.OnProfileOptionsClicked -= HandleProfileOptionsClicked;
-        entry.OnProfileOptionsClicked += HandleProfileOptionsClicked;
-    }
-
-    private void HandleProfileOptionsClicked(ChannelMemberEntryModel model)
-    {
-        // Need to preload the full profile since kernel sends a minimal profile for every channel member
-        // This allows to see the profile information when inspecting it in the UI
-        // TODO: remove when we have a better way of managing profiles.. should be transparent for the UI
-        preloadProfilesCancellationToken = preloadProfilesCancellationToken.SafeRestart();
-        LoadFullProfileStrategy?.Invoke(model.userId, preloadProfilesCancellationToken.Token).Forget();
     }
 
     private Pool GetEntryPool()
