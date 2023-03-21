@@ -1,13 +1,15 @@
 using DCL;
 using DCL.Components;
 using DCL.Components.Video.Plugin;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
-using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -31,10 +33,14 @@ namespace Tests
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
             DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;
 
-            internalVideoPlayerComponent = Substitute.For<IInternalECSComponent<InternalVideoPlayer>>();
+            var componentsFactory = new ECSComponentsFactory();
+            var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
+            internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
 
             videoPlayerHandler = new VideoPlayerHandler(internalVideoPlayerComponent);
-            testUtils = new ECS7TestUtilsScenesAndEntities();
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
 
@@ -117,7 +123,7 @@ namespace Tests
         }
 
         [Test]
-        public void DontAllowExternalVideoWithoutPermissionsSet()
+        public void NotAllowExternalVideoWithoutPermissionsSet()
         {
             PBVideoPlayer model = new PBVideoPlayer()
             {
@@ -151,6 +157,43 @@ namespace Tests
                 scene.sceneData.allowedMediaHostnames);
 
             Assert.AreEqual(model.Src, outputUrl);
+        }
+
+        [Test]
+        public void NotModifyVideoStreamingURLs()
+        {
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "https://player.vimeo.com/external/552481870.m3u8?s=c312c8533f97e808fccc92b0510b085c8122a875",
+                Playing = true
+            };
+
+            scene.sceneData.allowedMediaHostnames = new[] { "fake" };
+            scene.sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
+
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+
+            Assert.AreEqual(model.Src, internalVideoPlayerComponent.GetFor(scene, entity).model.videoPlayer.url);
+        }
+
+        [Test]
+        public void CreateInternalComponentCorrectly()
+        {
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
+            {
+                Src = "http://fake/video.mp4",
+                Playing = true
+            });
+
+            Assert.NotNull(internalVideoPlayerComponent.GetFor(scene, entity));
+
+            // remove component, internal component should be removed too
+            videoPlayerHandler.OnComponentRemoved(scene, entity);
+
+            Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
         }
     }
 }
