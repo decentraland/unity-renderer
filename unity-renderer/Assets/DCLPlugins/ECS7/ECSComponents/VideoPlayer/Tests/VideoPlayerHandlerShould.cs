@@ -133,6 +133,8 @@ namespace Tests
 
             scene.sceneData.allowedMediaHostnames = new[] { "fake" };
 
+            LogAssert.Expect(LogType.Error, "Video playback aborted: 'allowedMediaHostnames' missing in scene.json file.");
+
             string outputUrl = model.GetVideoUrl(scene.contentProvider,
                 scene.sceneData.requiredPermissions,
                 scene.sceneData.allowedMediaHostnames);
@@ -141,7 +143,7 @@ namespace Tests
         }
 
         [Test]
-        public void AllowExternalVideoWithPermissionsSet()
+        public void AllowExternalVideoWithRightPermissionsSet()
         {
             PBVideoPlayer model = new PBVideoPlayer()
             {
@@ -160,14 +162,36 @@ namespace Tests
         }
 
         [Test]
+        public void NotAllowExternalVideoWithWrongHostName()
+        {
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "http://fake/video.mp4",
+                Playing = true,
+            };
+
+            scene.sceneData.allowedMediaHostnames = new[] { "fakes" };
+            scene.sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
+
+            LogAssert.Expect(LogType.Error, $"Video playback aborted: '{model.Src}' host name is not in 'allowedMediaHostnames' in scene.json file.");
+
+            string outputUrl = model.GetVideoUrl(scene.contentProvider,
+                scene.sceneData.requiredPermissions,
+                scene.sceneData.allowedMediaHostnames);
+
+            Assert.AreEqual(string.Empty, outputUrl);
+        }
+
+        [Test]
         public void CreateInternalComponentCorrectly()
         {
             videoPlayerHandler.OnComponentCreated(scene, entity);
 
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
-                Src = "http://fake/video.mp4",
-                Playing = true
+                Src = "other-video.mp4",
+                Playing = true,
+                Volume = 0.5f,
             });
 
             Assert.NotNull(internalVideoPlayerComponent.GetFor(scene, entity));
