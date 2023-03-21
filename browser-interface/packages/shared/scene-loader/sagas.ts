@@ -142,7 +142,11 @@ function* teleportHandler(action: TeleportToAction) {
 
       const scene: SceneWorker | undefined = yield call(getSceneWorkerBySceneID, settlerScene)
 
-      const spawnPoint = pickWorldSpawnpoint(scene?.metadata || command.scenes[0].entity.metadata, new Vector3(action.payload.position.x, action.payload.position.y, action.payload.position.z)) || action.payload
+      const spawnPoint =
+        pickWorldSpawnpoint(
+          scene?.metadata || command.scenes[0].entity.metadata,
+          new Vector3(action.payload.position.x, action.payload.position.y, action.payload.position.z)
+        ) || action.payload
       if (scene?.isStarted()) {
         // if the scene is loaded then there is no unsettlement of the position
         // we teleport directly to that scene
