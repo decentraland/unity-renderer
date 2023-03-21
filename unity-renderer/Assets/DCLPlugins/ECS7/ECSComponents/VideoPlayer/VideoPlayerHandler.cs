@@ -44,7 +44,6 @@ namespace DCL.ECSComponents
 
                 var id = entity.entityId.ToString();
                 bool isStream = !NO_STREAM_EXTENSIONS.Any(x => model.Src.EndsWith(x));
-                // string videoUrl = isStream ? model.Src : model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames);
                 string videoUrl = model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames);
                 videoPlayer = new WebVideoPlayer(id, videoUrl, isStream, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
 
