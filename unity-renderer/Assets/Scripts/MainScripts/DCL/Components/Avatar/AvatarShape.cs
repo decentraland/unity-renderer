@@ -164,8 +164,6 @@ namespace DCL
 
             yield return new UnityEngine.WaitUntil(PositionCorrectlyInitialized);
             
-            Debug.Log("DEBUG: " + entity.gameObject.transform.localPosition);
-            
             OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                 entity.gameObject.transform.localRotation, true);
 
