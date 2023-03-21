@@ -23,7 +23,7 @@ export async function fetchPeerProfile(
         return state.profiles.userInfo[userId]!.data
       }
     }),
-    sleep(COMMS_PROFILE_TIMEOUT).then(() => null)
+    sleep(COMMS_PROFILE_TIMEOUT)
   ])
   incrementCounter(result ? 'profile-over-comms-succesful' : 'profile-over-comms-failed')
   if (!result) {
