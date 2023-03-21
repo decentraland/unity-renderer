@@ -1,0 +1,14 @@
+.dcl-input {
+    flex-grow: 1;
+    margin : 0;
+}
+
+.dcl-input > .unity-base-text-field__input {
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-color: #959595;
+}
+
+.dcl-input:hover > .unity-base-text-field__input {
+    border-color: #808080;
+}

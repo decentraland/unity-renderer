@@ -1,4 +1,4 @@
-import * as proto from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { MAXIMUM_NETWORK_MSG_LENGTH } from 'config'
 import future from 'fp-future'
 import { DataPacket_Kind, DisconnectReason, Participant, RemoteParticipant, Room, RoomEvent } from 'livekit-client'
@@ -31,14 +31,22 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     this.room = new Room()
 
     this.room
+      .on(RoomEvent.ParticipantConnected, (_: RemoteParticipant) => {
+        this.config.logger.log('remote participant joined', _.identity)
+      })
       .on(RoomEvent.ParticipantDisconnected, (_: RemoteParticipant) => {
         this.events.emit('PEER_DISCONNECTED', {
           address: _.identity
         })
-        this.config.logger.log('remote participant left')
+        this.config.logger.log('remote participant left', _.identity)
       })
       .on(RoomEvent.Disconnected, (_reason: DisconnectReason | undefined) => {
-        this.config.logger.log('disconnected from room')
+        this.config.logger.log('disconnected from room', _reason)
+        trackEvent('error', {
+          context: 'livekit-adapter',
+          message: `Got RoomEvent.Disconnected. Reason: ${_reason}`,
+          stack: ""
+        })
         this.disconnect().catch((err) => {
           this.config.logger.error(`error during disconnection ${err.toString()}`)
         })
@@ -81,6 +89,11 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         }
       }
     } catch (err: any) {
+      trackEvent('error', {
+        context: 'livekit-adapter',
+        message: `Error trying to send data. Reason: ${err.message}`,
+        stack: err.stack
+      })
       // this fails in some cases, catch is needed
       this.config.logger.error(err)
     }

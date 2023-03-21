@@ -43,6 +43,9 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
+  /// <summary>
+  /// RaycastQueryType indicates whether the ray should stop on the first collition, or continue.
+  /// </summary>
   public enum RaycastQueryType {
     [pbr::OriginalName("RQT_HIT_FIRST")] RqtHitFirst = 0,
     [pbr::OriginalName("RQT_QUERY_ALL")] RqtQueryAll = 1,
@@ -51,6 +54,10 @@ namespace DCL.ECSComponents {
   #endregion
 
   #region Messages
+  /// <summary>
+  /// The Raycast component allows scenes to request raycasting from the game engine. The results will
+  /// be available in a RaycastResult component set later on the same Entity.
+  /// </summary>
   public sealed partial class PBRaycast : pb::IMessage<PBRaycast>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -101,6 +108,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "origin" field.</summary>
     public const int OriginFieldNumber = 2;
     private global::Decentraland.Common.Vector3 origin_;
+    /// <summary>
+    /// the starting point of the ray in 3D space
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Origin {
@@ -113,6 +123,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "direction" field.</summary>
     public const int DirectionFieldNumber = 3;
     private global::Decentraland.Common.Vector3 direction_;
+    /// <summary>
+    /// the direction of the ray in 3D space
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Direction {
@@ -125,6 +138,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "max_distance" field.</summary>
     public const int MaxDistanceFieldNumber = 4;
     private float maxDistance_;
+    /// <summary>
+    /// the maximum length of the ray
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MaxDistance {
@@ -137,6 +153,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "query_type" field.</summary>
     public const int QueryTypeFieldNumber = 5;
     private global::DCL.ECSComponents.RaycastQueryType queryType_ = global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst;
+    /// <summary>
+    /// the RaycastQueryType behavior (see above)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.RaycastQueryType QueryType {

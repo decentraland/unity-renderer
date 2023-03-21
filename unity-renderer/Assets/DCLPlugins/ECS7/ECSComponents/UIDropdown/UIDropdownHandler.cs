@@ -5,23 +5,21 @@ using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIDropdown
 {
     public class UIDropdownHandler : UIElementHandlerBase, IECSComponentHandler<PBUiDropdown>
     {
+        // The 'DCL.UIDropdown.uss' stylesheet loaded in DCLDefaultRuntimeTheme scriptable object uses these classes
         private const string READONLY_CLASS = "dcl-dropdown-readonly";
         private const string CLASS = "dcl-dropdown";
-
         private const string TEXT_ELEMENT_CLASS = "unity-base-popup-field__text";
 
         private UIFontUpdater fontUpdater;
         private readonly int resultComponentId;
         private readonly IInternalECSComponent<InternalUIInputResults> inputResults;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
-        private StyleSheet styleSheet;
 
         private EventCallback<ChangeEvent<string>> onValueChanged;
 
@@ -41,9 +39,6 @@ namespace DCL.ECSComponents.UIDropdown
             this.resultComponentId = resultComponentId;
             this.inputResults = inputResults;
             this.fontPromiseKeeper = fontPromiseKeeper;
-
-            // it is temporary until we decide on how to handle styles properly
-            styleSheet = Resources.Load<StyleSheet>("DCL.UIDropdown");
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -52,10 +47,7 @@ namespace DCL.ECSComponents.UIDropdown
             // passing a null string will actually make it invisible
             uiElement = new DropdownField(null);
             textField = uiElement.Q<TextElement>(className: TEXT_ELEMENT_CLASS);
-            uiElement.styleSheets.Add(styleSheet);
             uiElement.AddToClassList(CLASS);
-
-            uiElement.style.flexGrow = 1;
 
             AddElementToRoot(scene, entity, uiElement);
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);

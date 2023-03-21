@@ -53,7 +53,7 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                     Arg.Any<int>(),
                     Arg.Any<bool>(),
                     Arg.Any<CancellationToken>())
-               .Returns(_ => UniTask.FromResult<IReadOnlyList<WearableItem>>(new List<WearableItem>()));
+               .Returns(_ => UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
 
             wearablesCatalogService
                .RequestBaseWearablesAsync(Arg.Any<CancellationToken>())
@@ -67,7 +67,7 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                     Arg.Any<int>(),
                     Arg.Any<bool>(),
                     Arg.Any<CancellationToken>())
-               .Returns(_ => UniTask.FromResult<IReadOnlyList<WearableItem>>(new List<WearableItem>()));
+               .Returns(_ => UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
 
             wearablesCatalogService
                .RequestWearableAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())

@@ -66,7 +66,8 @@ export function getPortableExperiencesLoaded() {
 }
 
 /**
- * Kills all portable experiences that are not present in the given list
+ * Kills all portable experiences that are not present in the given list.
+ * This function requires the rpcClient to be already connected.
  */
 export async function declareWantedPortableExperiences(pxs: LoadableScene[]) {
   const immutableListOfRunningPx = new Set(currentPortableExperiences.keys())

@@ -10,7 +10,7 @@ using UnityEngine;
 public class DateSeparatorEntry : ChatEntry
 {
     [SerializeField] internal TextMeshProUGUI title;
-    
+
     private DateTime timestamp;
     private ChatEntryModel chatEntryModel;
 
@@ -43,6 +43,10 @@ public class DateSeparatorEntry : ChatEntry
     {
     }
 
+    public override void ConfigureMentionLinkDetector(UserContextMenu userContextMenu)
+    {
+    }
+
     private string GetDateFormat(DateTime date)
     {
         string result = string.Empty;
@@ -60,7 +64,7 @@ public class DateSeparatorEntry : ChatEntry
 
         return result;
     }
-    
+
     private DateTime GetDateTimeFromUnixTimestampMilliseconds(ulong milliseconds)
     {
         DateTime result = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

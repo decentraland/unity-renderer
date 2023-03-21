@@ -13,7 +13,7 @@ namespace DCL
 
             public void Add(Action action)
             {
-                if ( eventHashset.Contains(action))
+                if (Contains(action))
                     return;
 
                 eventList.Add(action);
@@ -22,17 +22,31 @@ namespace DCL
 
             public void Remove(Action action)
             {
-                if ( !eventHashset.Contains(action))
-                    return;
-
-                eventList.Remove(action);
-                eventHashset.Remove(action);
+                int count = eventList.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    if (eventList[i] == action)
+                    {
+                        eventList.RemoveAt(i);
+                        eventHashset.Remove(action);
+                        return;
+                    }
+                }
             }
 
             public bool Contains(Action action)
             {
-                return eventHashset.Contains(action);
+                int count = eventList.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    if (eventList[i] == action)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
+
         }
 
         public Dictionary<IUpdateEventHandler.EventType, UpdateEventCollection> eventCollections = new Dictionary<IUpdateEventHandler.EventType, UpdateEventCollection>();
@@ -45,10 +59,24 @@ namespace DCL
             EnsureEventType(IUpdateEventHandler.EventType.OnDestroy);
         }
 
-        void EnsureEventType( IUpdateEventHandler.EventType eventType )
+        void EnsureEventType(IUpdateEventHandler.EventType eventType)
         {
-            if ( !eventCollections.ContainsKey(eventType) )
+            if (!ContainsEventType(eventType))
+            {
                 eventCollections.Add(eventType, new UpdateEventCollection());
+            }
+        }
+
+        private bool ContainsEventType(IUpdateEventHandler.EventType eventType)
+        {
+            foreach (var key in eventCollections.Keys)
+            {
+                if (key == eventType)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         void Dispatch( IUpdateEventHandler.EventType eventType )

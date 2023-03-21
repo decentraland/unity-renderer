@@ -19,7 +19,7 @@ export function getAuthChainSignature(
   return {
     authChain,
     metadata,
-    timestamp,
+    timestamp
   }
 }
 
@@ -29,8 +29,7 @@ export function getSignedHeaders(
   metadata: Record<string, any>,
   chainProvider: (payload: string) => AuthChain
 ) {
-
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {}
   const signature = getAuthChainSignature(method, path, JSON.stringify(metadata), chainProvider)
   signature.authChain.forEach((link, index) => {
     headers[`${AUTH_CHAIN_HEADER_PREFIX}${index}`] = JSON.stringify(link)

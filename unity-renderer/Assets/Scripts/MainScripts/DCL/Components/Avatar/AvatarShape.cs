@@ -19,10 +19,10 @@ namespace DCL
 {
     public class AvatarShape : BaseComponent, IHideAvatarAreaHandler, IHidePassportAreaHandler, IOutOfSceneBoundariesHandler
     {
-        private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         private const string VISIBILITY_CONSTRAINT_HIDE_AREA = "IN_HIDE_AREA";
         private const string VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS = "OUTSIDE_SCENE_BOUNDS";
+        private const string OPEN_PASSPORT_SOURCE = "World";
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -39,7 +39,7 @@ namespace DCL
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
-        private StringVariable currentPlayerInfoCardId;
+        private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
 
         public bool everythingIsLoaded;
 
@@ -62,7 +62,7 @@ namespace DCL
         private void Awake()
         {
             model = new AvatarModel();
-            currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+            currentPlayerInfoCardId = DataStore.i.HUDs.currentPlayerId;
             // TODO: user profile bridge should be retrieved from the service locator
             userProfileBridge = new UserProfileWebInterfaceBridge();
 
@@ -122,7 +122,8 @@ namespace DCL
         {
             if (model == null)
                 return;
-            currentPlayerInfoCardId.Set(((AvatarModel) model).id);
+
+            currentPlayerInfoCardId.Set((((AvatarModel)model).id, OPEN_PASSPORT_SOURCE));
         }
 
         public void OnDestroy()
