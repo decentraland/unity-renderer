@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,8 @@ namespace DCL.Social.Passports
         private List<Nft> ownedNftCollectionsL1 = new ();
         private List<Nft> ownedNftCollectionsL2 = new ();
         private double passportOpenStartTime;
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private CancellationTokenSource cts = new ();
+        private CancellationTokenSource fetchProfileCancellationToken = new ();
 
         private bool isOpen;
 
@@ -150,8 +152,13 @@ namespace DCL.Social.Passports
                 Enum.TryParse(current.source, out AvatarOpenSource source);
                 socialAnalytics.SendPassportOpen(source: source);
                 QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
-                userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
+
+                fetchProfileCancellationToken = fetchProfileCancellationToken.SafeRestart();
                 currentUserProfile.OnUpdate += UpdateUserProfile;
+                userProfileBridge.RequestFullUserProfileAsync(currentUserProfile.userId, fetchProfileCancellationToken.Token)
+                                 .ContinueWith(UpdateUserProfile)
+                                 .Forget();
+
                 UpdateUserProfile(currentUserProfile, true);
             }
         }

@@ -9,8 +9,6 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public void SaveDescription(string description) => WebInterface.SendSaveUserDescription(description);
 
-    public void RequestFullUserProfile(string userId) => WebInterface.SendRequestUserProfile(userId);
-
     public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken) =>
         UserProfileController.i.RequestFullUserProfileAsync(userId, cancellationToken);
 
