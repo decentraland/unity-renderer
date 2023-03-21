@@ -2,6 +2,7 @@ import type { Avatar } from '@dcl/schemas'
 import { FETCH_REMOTE_PROFILE_RETRIES } from 'config'
 import { generateRandomUserProfile } from 'lib/decentraland/profiles/generateRandomUserProfile'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
+import defaultLogger from 'lib/logger'
 import { call, CallEffect, put, race, select } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import type { RoomConnection } from 'shared/comms/interface'
@@ -110,8 +111,12 @@ function* fetchFromComms(roomConnection: RoomConnection, userId: string, version
 
 function* fetchFromCatalyst(userId: string, version: number) {
   const catalyst: Avatar | null = yield call(fetchCatalystProfile, userId, version)
-  if (catalyst && catalyst.version >= version) {
-    return catalyst
+  if (catalyst) {
+    if (catalyst.version >= version) {
+      return catalyst
+    }
+
+    defaultLogger.warn(`expected profile min version ${version} from catalyst but got ${catalyst.version}`)
   }
   return null
 }
