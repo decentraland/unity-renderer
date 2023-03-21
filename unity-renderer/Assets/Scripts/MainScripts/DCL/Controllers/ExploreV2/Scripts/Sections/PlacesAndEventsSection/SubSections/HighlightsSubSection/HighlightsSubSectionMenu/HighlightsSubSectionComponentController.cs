@@ -29,7 +29,12 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal List<PlaceInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
 
-    public HighlightsSubSectionComponentController(IHighlightsSubSectionComponentView view, IPlacesAPIController placesAPI, IEventsAPIController eventsAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics,
+    public HighlightsSubSectionComponentController(
+        IHighlightsSubSectionComponentView view,
+        IPlacesAPIController placesAPI,
+        IEventsAPIController eventsAPI,
+        IFriendsController friendsController,
+        IExploreV2Analytics exploreV2Analytics,
         DataStore dataStore)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
@@ -88,8 +93,18 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         cardsReloader.Dispose();
     }
 
-    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite) =>
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    {
+        if (isFavorite)
+        {
+            exploreV2Analytics.AddFavorite(placeUUID);
+        }
+        else
+        {
+            exploreV2Analytics.RemoveFavorite(placeUUID);
+        }
         placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
+    }
 
     private void FirstLoading()
     {

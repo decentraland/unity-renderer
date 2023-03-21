@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
@@ -51,8 +52,18 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         view.ConfigurePools();
     }
 
-    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite) =>
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    {
+        if (isFavorite)
+        {
+            exploreV2Analytics.AddFavorite(placeUUID);
+        }
+        else
+        {
+            exploreV2Analytics.RemoveFavorite(placeUUID);
+        }
         placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
+    }
 
     public void Dispose()
     {
@@ -133,11 +144,37 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     internal void OnJumpInToPlace(PlaceInfo placeFromAPI)
     {
+        JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        //TODO define if this will be integrated and how
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, Utils.ConvertStringToVector(placeFromAPI.base_position));
+        exploreV2Analytics.TeleportToPlaceFromFavorite(placeFromAPI.id, placeFromAPI.title);
+    }
+
+    public static void JumpInToPlace(PlaceInfo placeFromAPI)
+    {
+        PlaceInfo.Realm realm = new PlaceInfo.Realm() { layer = null, serverName = null };
+        placeFromAPI.realms_detail = placeFromAPI.realms_detail.OrderByDescending(x => x.usersCount).ToArray();
+
+        for (int i = 0; i < placeFromAPI.realms_detail.Length; i++)
+        {
+            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms_detail[i].layer);
+
+            if (isArchipelagoRealm || placeFromAPI.realms_detail[i].usersCount < placeFromAPI.realms_detail[i].maxUsers)
+            {
+                realm = placeFromAPI.realms_detail[i];
+                break;
+            }
+        }
+
+        Vector2Int position = Utils.ConvertStringToVector(placeFromAPI.base_position);
+
+        if (string.IsNullOrEmpty(realm.serverName))
+            Environment.i.world.teleportController.Teleport(position.x, position.y);
+        else
+            Environment.i.world.teleportController.JumpIn(position.x, position.y, realm.serverName, realm.layer);
     }
 
     private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>

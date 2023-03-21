@@ -30,7 +30,7 @@ public interface IPlacesAPIController
 [ExcludeFromCodeCoverage]
 public class PlacesAPIController : IPlacesAPIController
 {
-    private const string FAVORITE_PLACES_URL = "https://places.decentraland.org/api/places?only_favorites=true";
+    private const string FAVORITE_PLACES_URL = "https://places.decentraland.org/api/places?only_favorites=true&with_realms_detail=true";
     private const string PLACES_URL = "https://places.decentraland.org/api/places?order_by=most_active&order=desc&with_realms_detail=true";
     private const string FAVORITE_SET_URL_START = "https://places.decentraland.org/api/places/";
     private const string FAVORITE_SET_URL_END = "/favorites";

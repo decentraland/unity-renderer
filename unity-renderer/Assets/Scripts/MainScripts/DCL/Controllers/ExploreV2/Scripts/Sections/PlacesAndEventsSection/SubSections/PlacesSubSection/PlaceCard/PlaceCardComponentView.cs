@@ -206,7 +206,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private void SetFavoriteButton(bool isFavorite, string placeId)
     {
-        Debug.Log($"Set fav {isFavorite}");
         if (favoriteButton == null)
             return;
 
@@ -222,7 +221,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
     {
-        Debug.Log($"fav changed to {isFavorite}");
         OnFavoriteChanged?.Invoke(placeUUID, isFavorite);
     }
 

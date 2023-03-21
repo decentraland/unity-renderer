@@ -70,8 +70,18 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         cardsReloader.Dispose();
     }
 
-    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite) =>
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    {
+        if (isFavorite)
+        {
+            exploreV2Analytics.AddFavorite(placeUUID);
+        }
+        else
+        {
+            exploreV2Analytics.RemoveFavorite(placeUUID);
+        }
         placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
+    }
 
     private void FirstLoading()
     {
