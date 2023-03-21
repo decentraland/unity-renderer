@@ -13,7 +13,7 @@ import { validateAvatar } from '../schemaValidation'
 import { getCurrentUserProfileDirty } from '../selectors'
 import { localProfilesRepo } from './local/localProfilesRepo'
 
-function getInformationForSaveAvatar(state: RootState) {
+export function getInformationForSaveAvatar(state: RootState) {
   return {
     userId: getCurrentUserId(state),
     savedProfile: getCurrentUserProfileDirty(state),
@@ -56,7 +56,7 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
       // Prevent unwanted override of these values
       userId,
       ethAddress: userId,
-      hasConnectedWeb3: identity?.hasConnectedWeb3,
+      hasConnectedWeb3: identity?.hasConnectedWeb3
     } as Avatar
 
     if (deepEqual(savedProfile, profile)) {
@@ -91,7 +91,7 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
     yield put(profileSuccess(profile))
 
     // Update profile for other users if the user has a wallet
-    if (profile.hasConnectedWeb3) {
+    if (identity!.hasConnectedWeb3) {
       yield put(deployProfile(profile))
     }
   } catch (error: any) {
