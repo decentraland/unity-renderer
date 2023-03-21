@@ -2,6 +2,7 @@ using DCL;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 /*
 * Scene utils file for media related stuff
@@ -43,6 +44,7 @@ public static partial class UtilsScene
         if (string.IsNullOrEmpty(inputUrl))
         {
             url = string.Empty;
+            Debug.LogError("Video URL is empty.");
             return false;
         }
 
@@ -54,6 +56,7 @@ public static partial class UtilsScene
         if (sceneRequiredPermissions == null || sceneAllowedMediaHostnames == null)
         {
             url = string.Empty;
+            Debug.LogError("Video URL nullified due to not having 'allowedMediaHostnames' scene.json file.");
             return false;
         }
 
@@ -63,6 +66,8 @@ public static partial class UtilsScene
             url = inputUrl;
             return true;
         }
+
+        Debug.LogError("Video URL nullified due to its host domain not being in scene's 'allowedMediaHostnames'. Please add the video's host domain in 'allowedMediaHostnames' in the scene.json file.");
 
         url = string.Empty;
         return false;
