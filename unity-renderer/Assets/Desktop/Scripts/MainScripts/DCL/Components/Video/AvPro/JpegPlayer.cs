@@ -31,7 +31,7 @@ public class JpegPlayer : IVideoPlayer, IDisposable
                 image = new Texture2D(1, 1);
                 try
                 {
-                    texture2D.LoadImage(request.downloadHandler.data);
+                    image.LoadImage(request.downloadHandler.data);
                     currentState = VideoState.READY;
                 }
                 catch (Exception e)
