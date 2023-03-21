@@ -1,4 +1,3 @@
-using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,7 +30,7 @@ namespace DCL.FPSDisplay
             sceneDebugMetricModule = new SceneDebugMetricModule();
             debugMetricsModules = new List<IDebugMetricModule>
             {
-                new FPSDebugMetricModule(performanceData, Environment.i.serviceLocator.Get<IProfilerRecordsService>()),
+                new FPSDebugMetricModule(performanceData),
                 new SkyboxDebugMetricModule(),
                 new MemoryJSDebugMetricModule(),
                 new MemoryDesktopDebugMetricModule(),

@@ -10,15 +10,15 @@ public class FPSDebugMetricModule : IDebugMetricModule
     private const string TWO_DECIMALS = "##.00";
 
     private readonly PerformanceMetricsDataVariable performanceData;
-    private readonly IProfilerRecordsService profilerRecordsService;
 
     private float fps;
     private string fpsColor;
 
-    public FPSDebugMetricModule(PerformanceMetricsDataVariable performanceData, IProfilerRecordsService profilerRecordsService)
+    private Service<IProfilerRecordsService> profilerRecordsService;
+
+    public FPSDebugMetricModule(PerformanceMetricsDataVariable performanceData)
     {
         this.performanceData = performanceData;
-        this.profilerRecordsService = profilerRecordsService;
     }
 
     public void Dispose() { }
@@ -43,7 +43,7 @@ public class FPSDebugMetricModule : IDebugMetricModule
 
     private string GetFPSCount()
     {
-        (float FrameTime, float FPS) averageData = profilerRecordsService.AverageData;
+        (float FrameTime, float FPS) averageData = profilerRecordsService.Ref.AverageData;
 
         var fpsFormatted = averageData.FPS.ToString("##");
         var msFormatted =  averageData.FrameTime.ToString("##");
