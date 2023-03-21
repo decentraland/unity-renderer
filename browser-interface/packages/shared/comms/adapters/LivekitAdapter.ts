@@ -43,10 +43,9 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
         this.config.logger.log('disconnected from room', reason)
         if (!this.disconnected) {
-          trackEvent('error', {
+          trackEvent('disconnection_cause', {
             context: 'livekit-adapter',
             message: `Got RoomEvent.Disconnected. Reason: ${reason}`,
-            stack: ""
           })
         }
         this.disconnect().catch((err) => {
