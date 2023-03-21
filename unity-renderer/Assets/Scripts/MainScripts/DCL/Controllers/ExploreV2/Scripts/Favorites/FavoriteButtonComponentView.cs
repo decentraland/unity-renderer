@@ -31,6 +31,9 @@ public class FavoriteButtonComponentView : BaseComponentView, IComponentModelCon
         SetFavorite(model.isFavorite);
     }
 
+    public bool IsFavorite() =>
+        model?.isFavorite ?? false;
+
     private void SetFavoriteFromButton()
     {
         model.isFavorite = !model.isFavorite;

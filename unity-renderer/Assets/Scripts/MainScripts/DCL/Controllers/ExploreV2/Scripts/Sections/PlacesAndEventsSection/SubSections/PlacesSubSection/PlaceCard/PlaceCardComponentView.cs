@@ -199,11 +199,14 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
                 favoriteButtonContainer.SetActive(false);
         }
 
+        ShowFavoriteButton(false);
+
         RebuildCardLayouts();
     }
 
     private void SetFavoriteButton(bool isFavorite, string placeId)
     {
+        Debug.Log($"Set fav {isFavorite}");
         if (favoriteButton == null)
             return;
 
@@ -219,6 +222,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
     {
+        Debug.Log($"fav changed to {isFavorite}");
         OnFavoriteChanged?.Invoke(placeUUID, isFavorite);
     }
 
@@ -229,7 +233,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(true);
 
-        cardAnimator?.Focus();
+        ShowFavoriteButton(true);
+
+        if(cardAnimator != null)
+            cardAnimator.Focus();
     }
 
     public override void OnLoseFocus()
@@ -239,7 +246,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(false);
 
-        cardAnimator?.Idle();
+        ShowFavoriteButton(false);
+
+        if(cardAnimator != null)
+            cardAnimator.Idle();
     }
 
     public override void Show(bool instant = false)
@@ -286,6 +296,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if(favoriteButton != null)
             favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
+    }
+
+    private void ShowFavoriteButton(bool show)
+    {
+        if(favoriteButton != null && !favoriteButton.IsFavorite())
+            favoriteButton.gameObject.SetActive(show);
     }
 
     public void SetPlacePicture(Sprite sprite)

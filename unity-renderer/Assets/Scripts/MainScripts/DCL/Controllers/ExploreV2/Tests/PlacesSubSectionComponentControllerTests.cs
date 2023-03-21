@@ -139,7 +139,7 @@ public class PlacesSubSectionComponentControllerTests
 
         // Assert
         placesSubSectionComponentView.Received().ShowPlaceModal(testPlaceCardModel);
-        exploreV2Analytics.Received().SendClickOnPlaceInfo(testPlaceCardModel.hotSceneInfo.id, testPlaceCardModel.placeName);
+        exploreV2Analytics.Received().SendClickOnPlaceInfo(testPlaceCardModel.placeInfo.id, testPlaceCardModel.placeName);
     }
 
     [Test]
