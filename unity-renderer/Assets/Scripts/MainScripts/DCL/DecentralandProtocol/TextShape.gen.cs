@@ -62,6 +62,14 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The TextShape component renders customizable floating text.
+  ///
+  /// The position and rotation of the text are defined by the Entity's Transform, while its size
+  /// can either scale with the Transform or be fixed by a font size.
+  ///
+  /// Several options can be configured, including color, padding, line spacing and drop shadows.
+  /// </summary>
   public sealed partial class PBTextShape : pb::IMessage<PBTextShape>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -131,6 +139,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "text" field.</summary>
     public const int TextFieldNumber = 1;
     private string text_ = "";
+    /// <summary>
+    /// the content
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Text {
@@ -144,7 +155,7 @@ namespace DCL.ECSComponents {
     public const int FontFieldNumber = 2;
     private global::DCL.ECSComponents.Font font_;
     /// <summary>
-    /// default=F_SANS_SERIF
+    /// the font (default F_SANS_SERIF)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -172,7 +183,7 @@ namespace DCL.ECSComponents {
     public const int FontSizeFieldNumber = 3;
     private float fontSize_;
     /// <summary>
-    /// default=10
+    /// the font size (default 10)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -199,6 +210,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "font_auto_size" field.</summary>
     public const int FontAutoSizeFieldNumber = 4;
     private bool fontAutoSize_;
+    /// <summary>
+    /// override `font_size` to automatically fit in `width`/`height`
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool FontAutoSize {
@@ -225,7 +239,7 @@ namespace DCL.ECSComponents {
     public const int TextAlignFieldNumber = 5;
     private global::DCL.ECSComponents.TextAlignMode textAlign_;
     /// <summary>
-    /// default=TAM_CENTER_CENTER
+    /// X and Y alignment (default TAM_CENTER_CENTER)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -253,7 +267,7 @@ namespace DCL.ECSComponents {
     public const int WidthFieldNumber = 6;
     private float width_;
     /// <summary>
-    /// default=1
+    /// available horizontal space (default 1)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -281,7 +295,7 @@ namespace DCL.ECSComponents {
     public const int HeightFieldNumber = 7;
     private float height_;
     /// <summary>
-    /// default=1
+    /// available vertical space (default 1)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -308,6 +322,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "padding_top" field.</summary>
     public const int PaddingTopFieldNumber = 8;
     private float paddingTop_;
+    /// <summary>
+    /// distance from text to top border (default 0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingTop {
@@ -333,6 +350,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "padding_right" field.</summary>
     public const int PaddingRightFieldNumber = 9;
     private float paddingRight_;
+    /// <summary>
+    /// distance from text to right border (default 0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingRight {
@@ -358,6 +378,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "padding_bottom" field.</summary>
     public const int PaddingBottomFieldNumber = 10;
     private float paddingBottom_;
+    /// <summary>
+    /// distance from text to bottom border (default 0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingBottom {
@@ -383,6 +406,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "padding_left" field.</summary>
     public const int PaddingLeftFieldNumber = 11;
     private float paddingLeft_;
+    /// <summary>
+    /// distance from text to left border (default 0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingLeft {
@@ -409,7 +435,7 @@ namespace DCL.ECSComponents {
     public const int LineSpacingFieldNumber = 12;
     private float lineSpacing_;
     /// <summary>
-    /// The amount of additional spacing to add between each lines of text.
+    /// extra distance between lines (default 0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -437,7 +463,7 @@ namespace DCL.ECSComponents {
     public const int LineCountFieldNumber = 13;
     private int lineCount_;
     /// <summary>
-    /// Allows control over how many lines of text are displayed.
+    /// maximum number of lines to display
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -465,7 +491,7 @@ namespace DCL.ECSComponents {
     public const int TextWrappingFieldNumber = 14;
     private bool textWrapping_;
     /// <summary>
-    /// Enables text wrapping
+    /// wrap text when the border is reached (default false)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -492,6 +518,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "shadow_blur" field.</summary>
     public const int ShadowBlurFieldNumber = 15;
     private float shadowBlur_;
+    /// <summary>
+    /// blurriness of the drop shadow (default 0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowBlur {
@@ -517,6 +546,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "shadow_offset_x" field.</summary>
     public const int ShadowOffsetXFieldNumber = 16;
     private float shadowOffsetX_;
+    /// <summary>
+    /// horizontal length of the shadow (default 0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowOffsetX {
@@ -542,6 +574,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "shadow_offset_y" field.</summary>
     public const int ShadowOffsetYFieldNumber = 17;
     private float shadowOffsetY_;
+    /// <summary>
+    /// vertical length of the shadow (default 0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowOffsetY {
@@ -567,6 +602,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "outline_width" field.</summary>
     public const int OutlineWidthFieldNumber = 18;
     private float outlineWidth_;
+    /// <summary>
+    /// width of the stroke outlining each letter (default 0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float OutlineWidth {
@@ -593,7 +631,7 @@ namespace DCL.ECSComponents {
     public const int ShadowColorFieldNumber = 19;
     private global::Decentraland.Common.Color3 shadowColor_;
     /// <summary>
-    /// default=(1.0,1.0,1.0)
+    /// drop shadow color (default [1.0, 1.0, 1.0])
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -608,7 +646,7 @@ namespace DCL.ECSComponents {
     public const int OutlineColorFieldNumber = 20;
     private global::Decentraland.Common.Color3 outlineColor_;
     /// <summary>
-    /// default=(1.0,1.0,1.0)
+    /// outline stroke color (default [1.0, 1.0, 1.0])
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -623,7 +661,7 @@ namespace DCL.ECSComponents {
     public const int TextColorFieldNumber = 21;
     private global::Decentraland.Common.Color4 textColor_;
     /// <summary>
-    /// default=(1.0,1.0,1.0)
+    /// text color (default [1.0, 1.0, 1.0])
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

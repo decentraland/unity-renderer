@@ -1,4 +1,4 @@
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { expect } from 'chai'
 import mitt from 'mitt'
 import { expectSaga } from 'redux-saga-test-plan'

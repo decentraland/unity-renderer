@@ -303,8 +303,8 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
                .RequestOwnedWearablesAsync(id, Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                .Returns(_ =>
                 {
-                    UniTaskCompletionSource<IReadOnlyList<WearableItem>> mockedResult = new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
-                    mockedResult.TrySetResult(wearables);
+                    UniTaskCompletionSource<(IReadOnlyList<WearableItem> wearables, int totalAmount)> mockedResult = new UniTaskCompletionSource<(IReadOnlyList<WearableItem> wearables, int totalAmount)>();
+                    mockedResult.TrySetResult((wearables, wearables.Length));
                     return mockedResult.Task;
                 });
         }

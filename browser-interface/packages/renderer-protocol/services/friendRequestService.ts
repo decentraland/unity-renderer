@@ -1,6 +1,6 @@
 import { RpcClientPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { FriendRequestRendererServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
+import { FriendRequestRendererServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/friend_request_renderer.gen'
 import defaultLogger from 'lib/logger'
 
 // eslint-disable-next-line @typescript-eslint/ban-types

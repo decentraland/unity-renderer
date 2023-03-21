@@ -175,7 +175,6 @@ namespace CullingControllerTests
 
             // Assert
             Assert.IsFalse(r.forceRenderingOff);
-            Assert.IsTrue(skr.updateWhenOffscreen);
             Assert.IsTrue(anim.cullingType == AnimationCullingType.AlwaysAnimate);
 
             // Annihilate

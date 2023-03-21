@@ -28,7 +28,7 @@ namespace DCL.Chat.HUD
 
             Assert.AreEqual($"{members} members joined", view.memberCountLabel.text);
         }
-        
+
         [TestCase(567)]
         [TestCase(3)]
         public void SetMemberCountWhenShowingOnlyOnline(int members)
@@ -43,7 +43,7 @@ namespace DCL.Chat.HUD
         public void SetName(string name)
         {
             view.Configure(new PublicChatEntryModel("channelId", name, true, 0, false, false));
-            
+
             Assert.AreEqual($"#{name}", view.nameLabel.text);
         }
 
@@ -51,15 +51,15 @@ namespace DCL.Chat.HUD
         public void EnableJoinedContainerWhenIsJoined()
         {
             view.Configure(new PublicChatEntryModel("channelId", "bleh", true, 0, false, false));
-            
+
             Assert.IsTrue(view.joinedContainer.activeSelf);
         }
-        
+
         [Test]
         public void DisableJoinedContainerWhenIsNotJoined()
         {
             view.Configure(new PublicChatEntryModel("channelId", "bleh", false, 0, false, false));
-            
+
             Assert.IsFalse(view.joinedContainer.activeSelf);
         }
 
@@ -69,9 +69,9 @@ namespace DCL.Chat.HUD
             view = PublicChatEntry.Create();
             var chatController = Substitute.For<IChatController>();
             chatController.GetAllocatedUnseenChannelMessages("channelId").Returns(5);
-            view.Initialize(chatController);
+            view.Initialize(chatController, new DataStore_Mentions());
             view.Configure(new PublicChatEntryModel("channelId", "bleh", true, 0, false, false));
-            
+
             Assert.AreEqual("5", view.unreadNotifications.notificationText.text);
         }
 
@@ -80,9 +80,9 @@ namespace DCL.Chat.HUD
         {
             view = PublicChatEntry.Create();
             var called = false;
-            view.OnOpenChat += entry => called = true; 
+            view.OnOpenChat += entry => called = true;
             view.openChatButton.onClick.Invoke();
-            
+
             Assert.IsTrue(called);
         }
 
@@ -94,7 +94,7 @@ namespace DCL.Chat.HUD
             var called = false;
             view.OnOpenOptions += entry => called = true;
             view.optionsButton.onClick.Invoke();
-            
+
             Assert.IsTrue(called);
         }
 
@@ -102,15 +102,15 @@ namespace DCL.Chat.HUD
         public void EnableLeaveOptionWhenIsJoined()
         {
             view.Configure(new PublicChatEntryModel("channelId", "bleh", true, 0, false, false));
-            
+
             Assert.IsTrue(view.joinedContainer.activeSelf);
         }
-        
+
         [Test]
         public void DisableLeaveOptionWhenIsNotJoined()
         {
             view.Configure(new PublicChatEntryModel("channelId", "bleh", false, 0, false, false));
-            
+
             Assert.IsFalse(view.joinedContainer.activeSelf);
         }
 
@@ -118,11 +118,11 @@ namespace DCL.Chat.HUD
         public void TriggerLeave()
         {
             var called = false;
-            view.OnLeave += entry => called = entry == view; 
+            view.OnLeave += entry => called = entry == view;
             view.Configure(new PublicChatEntryModel("channelId", "bleh", true, 0, false, false));
-            
+
             view.leaveButton.onClick.Invoke();
-            
+
             Assert.IsTrue(called);
         }
     }
