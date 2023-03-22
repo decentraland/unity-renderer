@@ -1,25 +1,29 @@
 using DCL.Chat.HUD;
 using DCL.Interface;
+using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using Tests;
 using UnityEngine.TestTools;
 
 namespace DCL.Social.Chat
 {
-    public class ChatHUDViewShould
+    public class ChatHUDViewShould : IntegrationTestSuite
     {
         private ChatHUDView view;
 
-        [SetUp]
-        public void SetUp()
+        protected override IEnumerator SetUp()
         {
+            yield return base.SetUp();
             view = ChatHUDView.Create();
+            IWebRequestAsyncOperation webRequestAsyncOperation = Substitute.For<IWebRequestAsyncOperation>();
+            Environment.i.platform.webRequest.GetTexture(default).ReturnsForAnyArgs(webRequestAsyncOperation);
         }
 
-        [TearDown]
-        public void TearDown()
+        protected override IEnumerator TearDown()
         {
+            yield return base.TearDown();
             view.Dispose();
         }
 
