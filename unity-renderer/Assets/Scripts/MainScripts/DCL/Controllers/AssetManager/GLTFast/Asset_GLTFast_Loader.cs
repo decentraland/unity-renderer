@@ -29,7 +29,7 @@ namespace DCL
                     {
                         var go = new GameObject($"{containerTransform.name}_{i}");
                         Transform goTransform = go.transform;
-                        goTransform.SetParent(containerTransform.parent, false);
+                        goTransform.SetParent(containerTransform, false);
                         targetTransform = goTransform;
                     }
 
