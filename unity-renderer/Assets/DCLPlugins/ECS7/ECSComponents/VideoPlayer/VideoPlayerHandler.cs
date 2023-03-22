@@ -7,6 +7,7 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -14,30 +15,54 @@ namespace DCL.ECSComponents
     {
         private static readonly string[] NO_STREAM_EXTENSIONS = new[] { ".mp4", ".ogg", ".mov", ".webm" };
 
+        private IParcelScene scene;
         private PBVideoPlayer lastModel = null;
         internal WebVideoPlayer videoPlayer;
 
+        // Flags to check if we can activate the video
+        internal bool isInsideScene = false;
+        internal bool isRendererActive = false;
+        internal bool hadUserInteraction = false;
+        internal bool isValidUrl = false;
+
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
+        private bool canVideoBePlayed => isInsideScene && isRendererActive && hadUserInteraction && isValidUrl;
 
         public VideoPlayerHandler(IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
         }
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
+        {
+            this.scene = scene;
+            isRendererActive = CommonScriptableObjects.rendererState.Get();
+            isInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
+
+            // Browsers don't allow streaming if the user didn't interact first, ending up in a fake 'playing' state.
+            hadUserInteraction = Helpers.Utils.IsCursorLocked;
+            if (!hadUserInteraction)
+                Helpers.Utils.OnCursorLockChanged += OnCursorLockChanged;
+
+            if (!scene.isPersistent)
+                CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
+
+            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
+            Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
+            CommonScriptableObjects.sceneNumber.OnChange -= OnSceneChanged;
+            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
+
             videoPlayerInternalComponent.RemoveFor(scene, entity);
             videoPlayer?.Dispose();
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBVideoPlayer model)
         {
-            if (lastModel != null && lastModel.Equals(model))
-                return;
-
-            // detect change of the state
+            // Setup video player
             if (lastModel == null || lastModel.Src != model.Src)
             {
                 videoPlayer?.Dispose();
@@ -46,7 +71,7 @@ namespace DCL.ECSComponents
                 bool isStream = !NO_STREAM_EXTENSIONS.Any(x => model.Src.EndsWith(x));
                 string videoUrl = model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames);
                 videoPlayer = new WebVideoPlayer(id, videoUrl, isStream, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
-
+                isValidUrl = !string.IsNullOrEmpty(videoPlayer.url);
                 videoPlayerInternalComponent.PutFor(scene, entity, new InternalVideoPlayer()
                 {
                     videoPlayer = videoPlayer,
@@ -54,28 +79,50 @@ namespace DCL.ECSComponents
                 });
             }
 
-            // detect change of the state
-            if (lastModel == null || lastModel.IsPlaying() != model.IsPlaying())
-            {
-                if (model.IsPlaying()) { videoPlayer.Play(); }
-                else { videoPlayer.Pause(); }
-            }
-
-            // detect change of the state
+            // Apply model values except 'Playing'
             float lastPosition = lastModel?.GetPosition() ?? 0.0f;
-
             if (Math.Abs(lastPosition - model.GetPosition()) > 0.01f) // 0.01s of tolerance
-            {
                 videoPlayer.SetTime(model.GetPosition());
-            }
-
             videoPlayer.SetVolume(model.GetVolume());
-
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
-
             videoPlayer.SetLoop(model.GetLoop());
 
             lastModel = model;
+
+            ConditionsToPlayVideoChanged();
+        }
+
+        private void ConditionsToPlayVideoChanged()
+        {
+            bool shouldBePlaying = lastModel.IsPlaying() && canVideoBePlayed;
+            if (shouldBePlaying != videoPlayer.playing)
+            {
+                if (shouldBePlaying)
+                    videoPlayer.Play();
+                else
+                    videoPlayer.Pause();
+            }
+        }
+
+        private void OnCursorLockChanged(bool isLocked)
+        {
+            if (!isLocked) return;
+
+            hadUserInteraction = true;
+            Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
+            ConditionsToPlayVideoChanged();
+        }
+
+        private void OnSceneChanged(int sceneNumber, int prevSceneNumber)
+        {
+            isInsideScene = sceneNumber == scene.sceneData.sceneNumber;
+            ConditionsToPlayVideoChanged();
+        }
+
+        private void OnRendererStateChanged(bool isEnable, bool prevState)
+        {
+            isRendererActive = isEnable;
+            ConditionsToPlayVideoChanged();
         }
     }
 }
