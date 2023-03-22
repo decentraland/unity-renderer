@@ -4,8 +4,8 @@ export const RENDERER_INITIALIZED_CORRECTLY = '[RENDERER] Renderer initialized c
 export const PARCEL_LOADING_STARTED = '[RENDERER] Parcel loading started'
 export const RENDERER_INITIALIZE = '[RENDERER] Initializing'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { EmotesRendererServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/emotes_renderer.gen'
-import { FriendRequestRendererServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/friend_request_renderer.gen'
+import { EmotesRendererServiceDefinition } from 'protocol-gen/decentraland/renderer/renderer_services/emotes_renderer.gen'
+import { FriendRequestRendererServiceDefinition } from 'protocol-gen/decentraland/renderer/renderer_services/friend_request_renderer.gen'
 
 export type RendererState = {
   initialized: boolean

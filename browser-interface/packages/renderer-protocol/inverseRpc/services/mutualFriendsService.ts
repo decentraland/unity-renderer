@@ -1,7 +1,7 @@
 import {
   GetMutualFriendsResponse,
   MutualFriendsKernelServiceDefinition
-} from 'shared/protocol/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
+} from 'protocol-gen/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { RpcServerPort } from '@dcl/rpc/dist/types'
 import { getMutualFriends } from 'shared/friends/sagas'

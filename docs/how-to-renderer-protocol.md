@@ -78,7 +78,7 @@ To run this code in the Browser Interface, we need first create the file `packag
 ```ts
 import { RpcClientPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { EmotesRendererServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/emotes_renderer.gen'
+import { EmotesRendererServiceDefinition } from 'protocol-gen/decentraland/renderer/renderer_services/emotes_renderer.gen'
 import defaultLogger from 'shared/logger'
 
 export function registerEmotesService<Context>(
@@ -133,7 +133,7 @@ In: `packages/renderer-protocol/inverseRpc/services/emotesService.ts`
 import { RpcServerPort } from '@dcl/rpc'
 import { RendererProtocolContext } from '../context'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { EmotesKernelServiceDefinition } from 'shared/protocol/decentraland/renderer/kernel_services/emotes_kernel.gen'
+import { EmotesKernelServiceDefinition } from 'protocol-gen/decentraland/renderer/kernel_services/emotes_kernel.gen'
 import { allScenesEvent } from '../../../shared/world/parcelSceneManager'
 import { sendPublicChatMessage } from '../../../shared/comms'
 

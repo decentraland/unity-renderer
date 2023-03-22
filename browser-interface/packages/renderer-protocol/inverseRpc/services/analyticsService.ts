@@ -1,7 +1,7 @@
 import { RpcServerPort } from '@dcl/rpc'
 import { RendererProtocolContext } from '../context'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { AnalyticsKernelServiceDefinition } from 'shared/protocol/decentraland/renderer/kernel_services/analytics.gen'
+import { AnalyticsKernelServiceDefinition } from 'protocol-gen/decentraland/renderer/kernel_services/analytics.gen'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { trackEvent } from 'shared/analytics/trackEvent'

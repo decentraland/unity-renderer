@@ -1,5 +1,5 @@
 import { Vector3 } from '@dcl/ecs-math'
-import { PermissionItem, permissionItemToJSON } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
+import { PermissionItem, permissionItemToJSON } from 'protocol-gen/decentraland/kernel/apis/permissions.gen'
 import { EntityType, Scene } from '@dcl/schemas'
 import { expect } from 'chai'
 import { PortContext } from 'shared/apis/host/context'

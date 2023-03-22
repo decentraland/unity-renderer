@@ -9,7 +9,7 @@ import type { RpcServerPort } from '@dcl/rpc'
 import type { PortContext } from './context'
 import * as codegen from '@dcl/rpc/dist/codegen'
 
-import { SignedFetchServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/signed_fetch.gen'
+import { SignedFetchServiceDefinition } from 'protocol-gen/decentraland/kernel/apis/signed_fetch.gen'
 import { getRealmAdapter } from 'shared/realm/selectors'
 import type { Realm } from 'shared/dao/types'
 

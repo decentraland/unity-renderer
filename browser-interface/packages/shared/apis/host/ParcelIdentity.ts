@@ -8,8 +8,8 @@ import type {
   GetIsEmptyResponse,
   GetIsEmptyRequest,
   GetSceneIdResponse
-} from 'shared/protocol/decentraland/kernel/apis/parcel_identity.gen'
-import { ParcelIdentityServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/parcel_identity.gen'
+} from 'protocol-gen/decentraland/kernel/apis/parcel_identity.gen'
+import { ParcelIdentityServiceDefinition } from 'protocol-gen/decentraland/kernel/apis/parcel_identity.gen'
 import type { PortContext } from './context'
 
 async function getParcel(_req: GetParcelRequest, ctx: PortContext): Promise<GetParcelResponse> {

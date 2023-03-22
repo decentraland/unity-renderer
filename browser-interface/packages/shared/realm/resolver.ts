@@ -1,5 +1,5 @@
 import { Candidate, Realm } from 'shared/dao/types'
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'protocol-gen/decentraland/bff/http_endpoints.gen'
 import { ExplorerIdentity } from 'shared/session/types'
 import { createBffRpcConnection } from './connections/BFFConnection'
 import { localBff } from './connections/BFFLegacy'

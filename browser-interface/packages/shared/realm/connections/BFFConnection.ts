@@ -6,14 +6,14 @@ import { loadService } from '@dcl/rpc/dist/codegen'
 import {
   BffAuthenticationServiceDefinition,
   WelcomePeerInformation
-} from 'shared/protocol/decentraland/bff/authentication_service.gen'
-import { CommsServiceDefinition } from 'shared/protocol/decentraland/bff/comms_service.gen'
+} from 'protocol-gen/decentraland/bff/authentication_service.gen'
+import { CommsServiceDefinition } from 'protocol-gen/decentraland/bff/comms_service.gen'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { ExplorerIdentity } from 'shared/session/types'
 import { RealmConnectionEvents, BffServices, IRealmAdapter } from '../types'
 import mitt from 'mitt'
 import { legacyServices } from '../local-services/legacy'
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'protocol-gen/decentraland/bff/http_endpoints.gen'
 
 export type TopicData = {
   peerId: string

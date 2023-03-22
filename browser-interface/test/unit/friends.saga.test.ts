@@ -1,16 +1,16 @@
 import {
   FriendRequestInfo,
   FriendshipErrorCode
-} from 'shared/protocol/decentraland/renderer/common/friend_request_common.gen'
+} from 'protocol-gen/decentraland/renderer/common/friend_request_common.gen'
 import {
   FriendshipStatus,
   GetFriendshipStatusRequest
-} from 'shared/protocol/decentraland/renderer/kernel_services/friends_kernel.gen'
+} from 'protocol-gen/decentraland/renderer/kernel_services/friends_kernel.gen'
 import {
   CancelFriendRequestPayload,
   GetFriendRequestsReplyOk,
   SendFriendRequestPayload
-} from 'shared/protocol/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+} from 'protocol-gen/decentraland/renderer/kernel_services/friend_request_kernel.gen'
 import {
   Conversation,
   ConversationType,
@@ -48,7 +48,7 @@ import {
 } from 'shared/types'
 import sinon, { assert } from 'sinon'
 import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
-import { GetMutualFriendsRequest } from 'shared/protocol/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
+import { GetMutualFriendsRequest } from 'protocol-gen/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 function getMockedAvatar(userId: string, name: string): ProfileUserInfo {
   return {

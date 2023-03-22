@@ -10,8 +10,8 @@ import {
   requestFriendship
 } from 'shared/friends/sagas'
 import defaultLogger from 'lib/logger'
-import { FriendshipErrorCode } from 'shared/protocol/decentraland/renderer/common/friend_request_common.gen'
-import { FriendRequestKernelServiceDefinition } from 'shared/protocol/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import { FriendshipErrorCode } from 'protocol-gen/decentraland/renderer/common/friend_request_common.gen'
+import { FriendRequestKernelServiceDefinition } from 'protocol-gen/decentraland/renderer/kernel_services/friend_request_kernel.gen'
 
 export function registerFriendRequestKernelService(port: RpcServerPort<RendererProtocolContext>) {
   codegen.registerService(port, FriendRequestKernelServiceDefinition, async () => ({

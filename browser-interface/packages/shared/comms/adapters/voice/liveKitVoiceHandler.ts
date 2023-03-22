@@ -1,4 +1,4 @@
-import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
+import * as rfc4 from 'protocol-gen/decentraland/kernel/comms/rfc4/comms.gen'
 import { isChrome } from 'lib/browser/isChrome'
 import { createLogger } from 'lib/logger'
 import {

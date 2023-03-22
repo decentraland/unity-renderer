@@ -1,5 +1,5 @@
 import { Package } from './types'
-import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
+import * as proto from 'protocol-gen/decentraland/kernel/comms/rfc4/comms.gen'
 import { Emitter } from 'mitt'
 import { CommsAdapterEvents } from '../adapters/types'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'

@@ -1,8 +1,8 @@
 import { RpcClientModule } from '@dcl/rpc/dist/codegen'
 import { Emitter } from 'mitt'
-import { CommsServiceDefinition } from 'shared/protocol/decentraland/bff/comms_service.gen'
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
-import { IslandChangedMessage } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
+import { CommsServiceDefinition } from 'protocol-gen/decentraland/bff/comms_service.gen'
+import { AboutResponse } from 'protocol-gen/decentraland/bff/http_endpoints.gen'
+import { IslandChangedMessage } from 'protocol-gen/decentraland/kernel/comms/v3/archipelago.gen'
 
 export const OFFLINE_REALM = 'offline'
 

@@ -1,4 +1,4 @@
-import { IslandChangedMessage } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
+import { IslandChangedMessage } from 'protocol-gen/decentraland/kernel/comms/v3/archipelago.gen'
 import { action } from 'typesafe-actions'
 import { IRealmAdapter, OnboardingState } from './types'
 

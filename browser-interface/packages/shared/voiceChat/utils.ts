@@ -1,5 +1,5 @@
 import { VoiceSpatialParams } from './VoiceCommunicator'
-import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
+import * as rfc4 from 'protocol-gen/decentraland/kernel/comms/rfc4/comms.gen'
 import { Quaternion, Vector3 } from '@dcl/ecs-math'
 
 export function getSpatialParamsFor(position: rfc4.Position): VoiceSpatialParams {

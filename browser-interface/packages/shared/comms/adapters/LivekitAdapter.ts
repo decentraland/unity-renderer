@@ -1,4 +1,4 @@
-import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
+import * as proto from 'protocol-gen/decentraland/kernel/comms/rfc4/comms.gen'
 import { MAXIMUM_NETWORK_MSG_LENGTH } from 'config'
 import future from 'fp-future'
 import { DataPacket_Kind, DisconnectReason, Participant, RemoteParticipant, Room, RoomEvent } from 'livekit-client'

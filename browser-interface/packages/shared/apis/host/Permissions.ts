@@ -5,8 +5,8 @@ import {
   PermissionsServiceDefinition,
   permissionItemFromJSON,
   permissionItemToJSON
-} from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
-import { PermissionItem } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
+} from 'protocol-gen/decentraland/kernel/apis/permissions.gen'
+import { PermissionItem } from 'protocol-gen/decentraland/kernel/apis/permissions.gen'
 import type { PortContext } from './context'
 
 export const defaultParcelPermissions: PermissionItem[] = [

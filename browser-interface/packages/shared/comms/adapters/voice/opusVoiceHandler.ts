@@ -5,7 +5,7 @@ import { commConfigurations } from 'config'
 import Html from './Html'
 import { getCommsRoom } from 'shared/comms/selectors'
 import { getSpatialParamsFor } from 'shared/voiceChat/utils'
-import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
+import * as rfc4 from 'protocol-gen/decentraland/kernel/comms/rfc4/comms.gen'
 import { store } from 'shared/store/isolatedStore'
 import withCache from 'lib/javascript/withCache'
 

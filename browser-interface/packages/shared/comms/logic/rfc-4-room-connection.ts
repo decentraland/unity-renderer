@@ -1,4 +1,4 @@
-import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
+import * as proto from 'protocol-gen/decentraland/kernel/comms/rfc4/comms.gen'
 import { CommsEvents, RoomConnection } from '../interface'
 import mitt from 'mitt'
 import { AdapterMessageEvent, MinimumCommunicationsAdapter } from '../adapters/types'

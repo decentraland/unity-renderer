@@ -1,4 +1,4 @@
-import { UserActionModuleServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/user_action_module.gen'
+import { UserActionModuleServiceDefinition } from 'protocol-gen/decentraland/kernel/apis/user_action_module.gen'
 import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import type { Scene } from '@dcl/schemas'
