@@ -50,11 +50,11 @@
       "hash": "434f7c2dd0a831d259858e6ba3482ffcc24b7268"
     },
     "com.decentraland.unity-shared-dependencies": {
-      "version": "https://github.com/decentraland/unity-shared-dependencies.git#fix/disable-ssao-in-transparents",
+      "version": "https://github.com/decentraland/unity-shared-dependencies.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "232a4d1cdb88311a1d9163d5c3ec8be4b9e43d12"
+      "hash": "1b462119ed2ca0a100d22cea1e482d28dde41dc8"
     },
     "com.decentraland.videoplayer": {
       "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
