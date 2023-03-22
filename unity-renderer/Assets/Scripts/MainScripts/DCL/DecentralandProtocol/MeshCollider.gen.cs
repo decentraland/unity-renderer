@@ -37,9 +37,14 @@ namespace DCL.ECSComponents {
             "YWRpdXNfdG9wGAEgASgCSACIAQESGgoNcmFkaXVzX2JvdHRvbRgCIAEoAkgB",
             "iAEBQg0KC19yYWRpdXNfdG9wQhAKDl9yYWRpdXNfYm90dG9tGgsKCVBsYW5l",
             "TWVzaBoMCgpTcGhlcmVNZXNoQgYKBG1lc2hCEQoPX2NvbGxpc2lvbl9tYXNr",
-            "KjwKDUNvbGxpZGVyTGF5ZXISCwoHQ0xfTk9ORRAAEg4KCkNMX1BPSU5URVIQ",
-            "ARIOCgpDTF9QSFlTSUNTEAJCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
-            "bzM="));
+            "KrgCCg1Db2xsaWRlckxheWVyEgsKB0NMX05PTkUQABIOCgpDTF9QT0lOVEVS",
+            "EAESDgoKQ0xfUEhZU0lDUxACEhUKEUNMX1ZJU0lCTEVfTUVTSEVTEAQSEAoM",
+            "Q0xfUkVTRVJWRUQyEAgSEAoMQ0xfUkVTRVJWRUQzEBASEAoMQ0xfUkVTRVJW",
+            "RUQ0ECASEAoMQ0xfUkVTRVJWRUQ1EEASEQoMQ0xfUkVTRVJWRUQ2EIABEg8K",
+            "CkNMX0NVU1RPTTEQgAISDwoKQ0xfQ1VTVE9NMhCABBIPCgpDTF9DVVNUT00z",
+            "EIAIEg8KCkNMX0NVU1RPTTQQgBASDwoKQ0xfQ1VTVE9NNRCAIBIPCgpDTF9D",
+            "VVNUT002EIBAEhAKCkNMX0NVU1RPTTcQgIABEhAKCkNMX0NVU1RPTTgQgIAC",
+            "QhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.ColliderLayer), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -66,9 +71,26 @@ namespace DCL.ECSComponents {
     /// </summary>
     [pbr::OriginalName("CL_POINTER")] ClPointer = 1,
     /// <summary>
-    /// colission with Avatars
+    /// collision affecting your player's physics i.e. walls, floor, moving platfroms
     /// </summary>
     [pbr::OriginalName("CL_PHYSICS")] ClPhysics = 2,
+    /// <summary>
+    /// all visible meshes, use with extreme care since the performance penalty is high
+    /// </summary>
+    [pbr::OriginalName("CL_VISIBLE_MESHES")] ClVisibleMeshes = 4,
+    [pbr::OriginalName("CL_RESERVED2")] ClReserved2 = 8,
+    [pbr::OriginalName("CL_RESERVED3")] ClReserved3 = 16,
+    [pbr::OriginalName("CL_RESERVED4")] ClReserved4 = 32,
+    [pbr::OriginalName("CL_RESERVED5")] ClReserved5 = 64,
+    [pbr::OriginalName("CL_RESERVED6")] ClReserved6 = 128,
+    [pbr::OriginalName("CL_CUSTOM1")] ClCustom1 = 256,
+    [pbr::OriginalName("CL_CUSTOM2")] ClCustom2 = 512,
+    [pbr::OriginalName("CL_CUSTOM3")] ClCustom3 = 1024,
+    [pbr::OriginalName("CL_CUSTOM4")] ClCustom4 = 2048,
+    [pbr::OriginalName("CL_CUSTOM5")] ClCustom5 = 4096,
+    [pbr::OriginalName("CL_CUSTOM6")] ClCustom6 = 8192,
+    [pbr::OriginalName("CL_CUSTOM7")] ClCustom7 = 16384,
+    [pbr::OriginalName("CL_CUSTOM8")] ClCustom8 = 32768,
   }
 
   #endregion

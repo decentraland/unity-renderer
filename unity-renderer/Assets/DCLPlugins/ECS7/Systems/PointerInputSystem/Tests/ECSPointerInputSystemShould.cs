@@ -616,7 +616,7 @@ namespace Tests
                 X = entityLocalPosition.x,
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z - 3
-            }, enqueuedEvent.hit.Origin);
+            }, enqueuedEvent.hit.GlobalOrigin);
 
             // 6. Clean up
             Object.DestroyImmediate(testEntityCollider.gameObject);

@@ -48,7 +48,7 @@ namespace DCL.ECSComponents
                 type = pointerEventType,
                 hit = new RaycastHit
                 {
-                    EntityId = dclEntity.entityId,
+                    EntityId = (uint)dclEntity.entityId,
                     Length = 0,
                     Position = ProtoConvertUtils.UnityVectorToPBVector(evt.position)
                 }
