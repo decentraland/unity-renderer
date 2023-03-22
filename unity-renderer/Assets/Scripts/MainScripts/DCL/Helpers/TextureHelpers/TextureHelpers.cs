@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 public static class TextureHelpers
 {
-    public static Texture2D ClampSize(Texture2D source, int maxTextureSize, 
+    public static Texture2D ClampSize(Texture2D source, int maxTextureSize,
         bool linear = false, bool useGPUCopy = true)
     {
         if (source.width <= maxTextureSize && source.height <= maxTextureSize)
@@ -14,7 +14,7 @@ public static class TextureHelpers
 
         float factor = GetScalingFactor(width, height, maxTextureSize);
 
-        Texture2D dstTex = Resize(source, (int) (width * factor), 
+        Texture2D dstTex = Resize(source, (int) (width * factor),
             (int) (height * factor), linear, useGPUCopy);
 
         if (Application.isPlaying)
@@ -38,7 +38,7 @@ public static class TextureHelpers
     {
         newWidth = Mathf.Max(1, newWidth);
         newHeight = Mathf.Max(1, newHeight);
-        
+
         // RenderTexture default format is ARGB32
         Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, 1, linear);
         nTex.filterMode = source.filterMode;
@@ -68,14 +68,22 @@ public static class TextureHelpers
 
         return nTex;
     }
-    
+
     public static Texture2D CopyTexture(Texture2D sourceTexture)
     {
-        Texture2D texture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
-        
-        // Note: Surprisingly this works in WebGL here but it doesn't work in Resize()
-        Graphics.CopyTexture(sourceTexture, texture);
-        
-        return texture;
+        Texture2D destTexture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
+
+        if (sourceTexture.mipmapCount > 1)
+        {
+            // Copy the source texture with mips to the destination texture without mips
+            Graphics.CopyTexture(sourceTexture, 0, 0, 0, 0, sourceTexture.width, sourceTexture.height, destTexture, 0, 0, 0, 0);
+        }
+        else
+        {
+            // Note: Surprisingly this works in WebGL here but it doesn't work in Resize()
+            Graphics.CopyTexture(sourceTexture, destTexture);
+        }
+
+        return destTexture;
     }
 }
