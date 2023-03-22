@@ -54,6 +54,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void OnSceneAdded(IParcelScene scene)
         {
+            // global scenes do not have boundaries to check
             if (scene.isPersistent)
                 return;
 
