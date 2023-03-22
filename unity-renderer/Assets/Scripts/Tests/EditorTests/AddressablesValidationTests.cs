@@ -59,8 +59,8 @@ namespace Tests.ValidationTests
             {
                 string[] dSplit = duplicate.resultName.Split(':');
 
-                string dAsset = isCustomGroupsRule && Application.isBatchMode ? dSplit[1] : dSplit[0];
-                string dBundle = isCustomGroupsRule && Application.isBatchMode ? dSplit[0] : dSplit[1];
+                string dAsset = isCustomGroupsRule && Application.isBatchMode ? dSplit[^1] : dSplit[0];
+                string dBundle = dSplit[1];
 
                 if (!bundlesByAsset.ContainsKey(dAsset))
                     bundlesByAsset.Add(dAsset, new List<string> { dBundle });
