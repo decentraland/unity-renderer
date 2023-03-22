@@ -4,6 +4,7 @@ using DCL.Chat;
 using DCL.Chat.HUD;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
@@ -42,11 +43,11 @@ public class ChatHUDController : IHUD
     private int mentionLength;
     private int mentionFromIndex;
     private Dictionary<string, UserProfile> mentionSuggestedProfiles;
-    private Comparison<ChatEntryModel> sortingStrategy;
+    private IComparer<ChatEntryModel> sortingStrategy;
 
     private bool isMentionsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("chat_mentions_enabled");
 
-    public Comparison<ChatEntryModel> SortingStrategy
+    public IComparer<ChatEntryModel> SortingStrategy
     {
         get => sortingStrategy;
 
@@ -76,7 +77,7 @@ public class ChatHUDController : IHUD
         this.getSuggestedUserProfiles = getSuggestedUserProfiles;
         this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
-        SortingStrategy = (a, b) => a.timestamp.CompareTo(b.timestamp);
+        SortingStrategy = new ChatEntrySortingByTimestamp();
     }
 
     public void Initialize(IChatHUDComponentView view)

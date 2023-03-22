@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using SocialFeaturesAnalytics;
 using Channel = DCL.Chat.Channels.Channel;
@@ -66,9 +67,9 @@ namespace DCL.Chat.HUD
                 (name, count, ct) => chatMentionSuggestionProvider.GetNearbyProfilesStartingWith(name, count, ct),
                 socialAnalytics,
                 profanityFilter);
-            // Keep messages sequentally, without any sorting
+            // Keep messages sequentially, without any sorting
             // Comms cannot calculate a server timestamp for each message, so we assume that the arrival time is the correct order
-            chatHudController.SortingStrategy = (a, b) => 0;
+            chatHudController.SortingStrategy = new ChatEntrySortingSequentially();
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += SendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;

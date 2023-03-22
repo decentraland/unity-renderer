@@ -151,7 +151,7 @@ namespace DCL.Social.Chat
         [UnityTest]
         public IEnumerator DontSortEntries()
         {
-            view.SortingStrategy = (a, b) => 0;
+            view.SortingStrategy = new ChatEntrySortingSequentially();
 
             var msg1 = new ChatEntryModel
             {
