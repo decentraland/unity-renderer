@@ -54,6 +54,9 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void OnSceneAdded(IParcelScene scene)
         {
+            if (scene.isPersistent)
+                return;
+
             IReadOnlyList<Vector2Int> parcels = scene.sceneData.parcels;
             var sceneNumber = scene.sceneData.sceneNumber;
 
