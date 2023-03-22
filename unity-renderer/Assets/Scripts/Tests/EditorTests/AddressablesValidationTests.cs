@@ -1,17 +1,9 @@
 ﻿using UnityEditor.AddressableAssets;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEditor.AddressableAssets.Build.AnalyzeRules;
-using UnityEditor.AddressableAssets.Build.DataBuilders;
-using UnityEditor.AddressableAssets.Settings;
-using UnityEditor.AddressableAssets.Settings.GroupSchemas;
-using UnityEditor.Build.Content;
-using UnityEditor.Build.Pipeline.Utilities;
 using UnityEngine;
 
 namespace Tests.ValidationTests
@@ -26,8 +18,8 @@ namespace Tests.ValidationTests
             CheckBundleDupeDependencies rule = new CheckBundleDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-            Dictionary<string, List<string>> bundlesByAsset = GroupDuplicatesByAssets(duplicates, isCustomGroupsRule: true);
-            string msg = CreateDuplicatesMessage(bundlesByAsset);
+            Dictionary<string, List<string>> bundlesByAsset = GroupBundlesByDuplicatedAssets(duplicates, isCustomGroupsRule: true);
+            string msg = CreateDuplicatesMessage(bundlesByAsset, EXCLUDED_FILE_TYPES);
 
             Assert.That(msg, Is.Empty,
                 message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies"));
@@ -39,8 +31,8 @@ namespace Tests.ValidationTests
             CheckResourcesDupeDependencies rule = new CheckResourcesDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-            Dictionary<string, List<string>> bundlesByResource = GroupDuplicatesByAssets(duplicates);
-            string msg = CreateDuplicatesMessage(bundlesByResource);
+            Dictionary<string, List<string>> bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
+            string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES);
 
             Assert.That(msg, Is.Empty,
                 message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies"));
@@ -53,13 +45,13 @@ namespace Tests.ValidationTests
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
             Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset = GroupScenesAndBundlesByDuplicatedAsset(duplicates);
-            string msg = CreateScenesDuplicatesMessage(scenesAndBundlesByAsset);
+            string msg = CreateScenesDuplicatesMessage(scenesAndBundlesByAsset, EXCLUDED_FILE_TYPES);
 
             Assert.That(msg, Is.Empty,
                 message: ComposeAssertMessage(msg, analyzeRule: "Check Scene to Addressable Duplicate Dependencies"));
         }
 
-        private static Dictionary<string, List<string>> GroupDuplicatesByAssets(List<AnalyzeRule.AnalyzeResult> duplicates, bool isCustomGroupsRule = false)
+        private static Dictionary<string, List<string>> GroupBundlesByDuplicatedAssets(List<AnalyzeRule.AnalyzeResult> duplicates, bool isCustomGroupsRule = false)
         {
             Dictionary<string, List<string>> bundlesByAsset = new ();
 
@@ -67,8 +59,8 @@ namespace Tests.ValidationTests
             {
                 string[] dSplit = duplicate.resultName.Split(':');
 
-                string dAsset = isCustomGroupsRule && Application.isBatchMode ? dSplit[^1] : dSplit[0];
-                string dBundle = isCustomGroupsRule && Application.isBatchMode ? dSplit[0] : dSplit[^1];
+                string dAsset = isCustomGroupsRule && Application.isBatchMode ? dSplit[1] : dSplit[0];
+                string dBundle = isCustomGroupsRule && Application.isBatchMode ? dSplit[0] : dSplit[1];
 
                 if (!bundlesByAsset.ContainsKey(dAsset))
                     bundlesByAsset.Add(dAsset, new List<string> { dBundle });
@@ -106,17 +98,18 @@ namespace Tests.ValidationTests
             return scenesAndBundlesByAsset;
         }
 
-        private static string CreateDuplicatesMessage(Dictionary<string, List<string>> bundlesByAsset)
+        private static string CreateDuplicatesMessage(Dictionary<string, List<string>> bundlesByAsset, string[] excludedFileTypesFilter)
         {
             StringBuilder message = new StringBuilder();
 
             foreach (var keyValuePair in bundlesByAsset
-                        .Where(keyValuePair => !EXCLUDED_FILE_TYPES.Contains(keyValuePair.Key.Split('.')[^1])))
+                        .Where(keyValuePair => !excludedFileTypesFilter.Contains(keyValuePair.Key.Split('.')[^1])))
             {
-                message.Append("ASSET: " + keyValuePair.Key + " - GROUPS: ");
+                message.Append("ASSET: " + keyValuePair.Key);
 
-                foreach (string group in keyValuePair.Value)
-                    message.Append(group + ", ");
+                message.Append(" - BUNDLES: ");
+                foreach (string bundle in keyValuePair.Value)
+                    message.Append(bundle.Split('.')[0] + ", ");
 
                 message.Remove(message.Length - 2, 2);
                 message.Append(";\n");
@@ -125,22 +118,22 @@ namespace Tests.ValidationTests
             return message.ToString();
         }
 
-        private static string CreateScenesDuplicatesMessage(Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset)
+        private static string CreateScenesDuplicatesMessage(Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset, string[] excludedFileTypesFilter)
         {
             StringBuilder message = new StringBuilder();
 
             foreach (var keyValuePair in scenesAndBundlesByAsset
-                        .Where(keyValuePair => !EXCLUDED_FILE_TYPES.Contains(keyValuePair.Key.Split('.')[^1])))
+                        .Where(keyValuePair => !excludedFileTypesFilter.Contains(keyValuePair.Key.Split('.')[^1])))
             {
-                message.Append("ASSET: " + keyValuePair.Key + " - SCENES: ");
+                message.Append("ASSET: " + keyValuePair.Key);
 
-                foreach (string group in keyValuePair.Value.Scenes)
-                    message.Append(group + ", ");
+                message.Append(" - SCENES: ");
+                foreach (string scene in keyValuePair.Value.Scenes)
+                    message.Append(scene + ", ");
 
                 message.Append("- BUNDLES: ");
-
-                foreach (string group in keyValuePair.Value.Bundles)
-                    message.Append(group + ", ");
+                foreach (string bundle in keyValuePair.Value.Bundles)
+                    message.Append(bundle.Split('.')[0] + ", ");
 
                 message.Remove(message.Length - 2, 2);
                 message.Append(";\n");
