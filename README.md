@@ -63,13 +63,13 @@ To test against a build made on this repository, you can use a link with this fo
 
 In order to run browser interface in any platform follow the next instructions
 
-### Steps
+### How to run `make watch`
 
 1. Open browser-interface with `Visual Studio Code`
 2. Make sure you have the `devcontainers` extension installed
 3. Make sure [Docker Desktop](https://www.docker.com/) is running
-4. `At Visual Studio Code` you will find a green button at the bottom-left corner of your screen, if you press it, a menu will appear and you have to press `Reopen in Container`
-5. Once the process ends, open a terminal with `cltr+j` or `cmd+j` and enter `make watch` 
+4. `At Visual Studio Code` press `F1` execute `Reopen in Container` and wait for it to finish.
+5. Go to `Terminal > New Terminal` menu and run `make watch` command. 
 
 ## How to run browser-interface unit tests
 
