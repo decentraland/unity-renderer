@@ -123,8 +123,8 @@ namespace Tests.ValidationTests
                 Debug.Log(duplicate.resultName);
                 string[] dSplit = duplicate.resultName.Split(':');
 
-                string dBundle = Application.isBatchMode ? dSplit[^1] : dSplit[0];
-                string dAsset = Application.isBatchMode ? dSplit[0] : dSplit[^1];
+                string dBundle = Application.isBatchMode ? dSplit[0] : dSplit[^1];
+                string dAsset = Application.isBatchMode ? dSplit[^1] : dSplit[0];
 
                 if (!bundlesByAsset.ContainsKey(dAsset))
                     bundlesByAsset.Add(dAsset, new List<string> { dBundle });
