@@ -1,6 +1,6 @@
 import type { Avatar } from '@dcl/schemas'
 import type { EventChannel } from 'redux-saga'
-import { call, put, select, take } from 'redux-saga/effects'
+import { call, put, select, spawn, take } from 'redux-saga/effects'
 import { createReceiveProfileOverCommsChannel, createVersionUpdateOverCommsChannel } from 'shared/comms/handlers'
 import { getCommsRoom } from 'shared/comms/selectors'
 import { profileSuccess } from '../actions'
@@ -43,7 +43,7 @@ export function* handleCommsVersionUpdates() {
 
     if (!existingProfile || existingProfile.data?.version <= version) {
       const roomConnection = yield select(getCommsRoom)
-      yield call(fetchPeerProfile, roomConnection, userId, version)
+      yield spawn(fetchPeerProfile, roomConnection, userId, version)
     }
   }
 }
