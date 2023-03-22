@@ -26,7 +26,37 @@ namespace Tests.ValidationTests
             CheckResourcesDupeDependencies rule = new CheckResourcesDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-            foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates) { Debug.Log(duplicate.resultName); }
+            Dictionary<string, List<string>> bundlesByResource = new ();
+
+            foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
+            {
+                Debug.Log(duplicate.resultName);
+                string[] dSplit = duplicate.resultName.Split(':');
+
+                string dAsset = dSplit[0];
+                string dBundle = dSplit[1];
+
+                if (!bundlesByResource.ContainsKey(dAsset))
+                    bundlesByResource.Add(dAsset, new List<string> { dBundle });
+                else if (!bundlesByResource[dAsset].Contains(dBundle))
+                    bundlesByResource[dAsset].Add(dBundle);
+            }
+
+            StringBuilder message = new StringBuilder();
+
+            foreach (var keyValuePair in bundlesByResource
+                        .Where(keyValuePair => !EXCLUDED_FILE_TYPES.Contains(keyValuePair.Key.Split('.')[^1])))
+            {
+                message.Append("ASSET: " + keyValuePair.Key + " - GROUPS: ");
+
+                foreach (string group in keyValuePair.Value)
+                    message.Append(group + ", ");
+
+                message.Remove(message.Length - 2, 2);
+                message.Append(";\n");
+            }
+
+            Assert.That(message.ToString(), Is.Empty, message: $"Found {message.ToString().Split(';').Length} assets being duplicated between Resources and Bundles: \n{message}");
         }
 
         [Test]
@@ -35,7 +65,7 @@ namespace Tests.ValidationTests
             CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-            Dictionary<string, (List<string> Scenes, List<string> Bundles)> entriesToGroups = new ();
+            Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset = new ();
 
             foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
             {
@@ -46,29 +76,29 @@ namespace Tests.ValidationTests
                 string dBundle = dSplit[1];
                 string dAsset = dSplit[2];
 
-                if (!entriesToGroups.ContainsKey(dAsset))
-                    entriesToGroups.Add(dAsset, (new List<string> { dScene } ,new List<string> { dBundle }));
+                if (!scenesAndBundlesByAsset.ContainsKey(dAsset))
+                    scenesAndBundlesByAsset.Add(dAsset, (new List<string> { dScene } ,new List<string> { dBundle }));
                 else
                 {
-                    if (!entriesToGroups[dAsset].Scenes.Contains(dScene))
-                        entriesToGroups[dAsset].Scenes.Add(dScene);
+                    if (!scenesAndBundlesByAsset[dAsset].Scenes.Contains(dScene))
+                        scenesAndBundlesByAsset[dAsset].Scenes.Add(dScene);
 
-                    if (!entriesToGroups[dAsset].Bundles.Contains(dBundle))
-                        entriesToGroups[dAsset].Bundles.Add(dBundle);
+                    if (!scenesAndBundlesByAsset[dAsset].Bundles.Contains(dBundle))
+                        scenesAndBundlesByAsset[dAsset].Bundles.Add(dBundle);
                 }
             }
 
             StringBuilder message = new StringBuilder();
 
-            foreach (var keyValuePair in entriesToGroups
+            foreach (var keyValuePair in scenesAndBundlesByAsset
                         .Where(keyValuePair => !EXCLUDED_FILE_TYPES.Contains(keyValuePair.Key.Split('.')[^1])))
             {
-                message.Append(keyValuePair.Key + " - SCENES: ");
+                message.Append("ASSET: " + keyValuePair.Key + " - SCENES: ");
 
                 foreach (string group in keyValuePair.Value.Scenes)
                     message.Append(group + ", ");
 
-                message.Append(" - BUNDLES: ");
+                message.Append("- BUNDLES: ");
                 foreach (string group in keyValuePair.Value.Bundles)
                     message.Append(group + ", ");
 
@@ -86,28 +116,28 @@ namespace Tests.ValidationTests
             CheckBundleDupeDependencies rule = new CheckBundleDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-            Dictionary<string, List<string>> entriesToGroups = new ();
+            Dictionary<string, List<string>> bundlesByAsset = new ();
 
             foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
             {
                 Debug.Log(duplicate.resultName);
                 string[] dSplit = duplicate.resultName.Split(':');
 
-                string dBundle = Application.isEditor ? dSplit[^1] : dSplit[0];
-                string dAsset = Application.isEditor ? dSplit[0] : dSplit[^1];
+                string dBundle = Application.isBatchMode ? dSplit[^1] : dSplit[0];
+                string dAsset = Application.isBatchMode ? dSplit[0] : dSplit[^1];
 
-                if (!entriesToGroups.ContainsKey(dAsset))
-                    entriesToGroups.Add(dAsset, new List<string> { dBundle });
-                else if (!entriesToGroups[dAsset].Contains(dBundle))
-                    entriesToGroups[dAsset].Add(dBundle);
+                if (!bundlesByAsset.ContainsKey(dAsset))
+                    bundlesByAsset.Add(dAsset, new List<string> { dBundle });
+                else if (!bundlesByAsset[dAsset].Contains(dBundle))
+                    bundlesByAsset[dAsset].Add(dBundle);
             }
 
             StringBuilder message = new StringBuilder();
 
-            foreach (var keyValuePair in entriesToGroups
+            foreach (var keyValuePair in bundlesByAsset
                         .Where(keyValuePair => !EXCLUDED_FILE_TYPES.Contains(keyValuePair.Key.Split('.')[^1])))
             {
-                message.Append(keyValuePair.Key + " - GROUPS: ");
+                message.Append("ASSET: " + keyValuePair.Key + " - GROUPS: ");
 
                 foreach (string group in keyValuePair.Value)
                     message.Append(group + ", ");
@@ -116,7 +146,7 @@ namespace Tests.ValidationTests
                 message.Append(";\n");
             }
 
-            Assert.That(message.ToString(), Is.Empty, message: $"Found {message.ToString().Split(';').Length} assets being duplicated between groups: \n{message}");
+            Assert.That(message.ToString(), Is.Empty, message: $"Found {message.ToString().Split(';').Length} assets being duplicated between bundle groups: \n{message}");
         }
     }
 }
