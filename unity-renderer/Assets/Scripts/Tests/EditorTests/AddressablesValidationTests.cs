@@ -25,13 +25,24 @@ namespace Tests.ValidationTests
         {
             CheckResourcesDupeDependencies rule = new CheckResourcesDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
-       }
+
+
+            foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
+            {
+                Debug.Log("Duplicate - " + duplicate.resultName);
+            }
+        }
 
         [Test]
         public void ValidateScenesToAddressableDuplicateDependencies()
         {
             CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
+
+            foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
+            {
+                Debug.Log("Duplicate - " + duplicate.resultName);
+            }
         }
 
         [Test]
@@ -44,6 +55,7 @@ namespace Tests.ValidationTests
 
             foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
             {
+                Debug.Log("Duplicate - " + duplicate.resultName);
                 string[] dSplit = duplicate.resultName.Split(':');
                 string dPath = dSplit[0];
                 string dBundle = dSplit[^1];
