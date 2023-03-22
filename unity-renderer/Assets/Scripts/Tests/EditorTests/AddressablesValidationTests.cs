@@ -11,12 +11,16 @@ namespace Tests.ValidationTests
     public class AddressablesValidationTests
     {
         private static readonly string[] EXCLUDED_FILE_TYPES = { }; // "shader", "png", "jpg"
+        private const string NO_ISSUES_FOUND = "No issues found";
 
         [Test]
         public void ValidateDuplicateBundleDependencies()
         {
             CheckBundleDupeDependencies rule = new CheckBundleDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
+
+            if(duplicates[0].resultName == NO_ISSUES_FOUND)
+                return;
 
             Dictionary<string, List<string>> bundlesByAsset = GroupBundlesByDuplicatedAssets(duplicates, isCustomGroupsRule: true);
             string msg = CreateDuplicatesMessage(bundlesByAsset, EXCLUDED_FILE_TYPES);
@@ -31,6 +35,9 @@ namespace Tests.ValidationTests
             CheckResourcesDupeDependencies rule = new CheckResourcesDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
+            if(duplicates[0].resultName == NO_ISSUES_FOUND)
+                return;
+
             Dictionary<string, List<string>> bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
             string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES);
 
@@ -43,6 +50,9 @@ namespace Tests.ValidationTests
         {
             CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
+
+            if(duplicates[0].resultName == NO_ISSUES_FOUND)
+                return;
 
             Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset = GroupScenesAndBundlesByDuplicatedAsset(duplicates);
             string msg = CreateScenesDuplicatesMessage(scenesAndBundlesByAsset, EXCLUDED_FILE_TYPES);
