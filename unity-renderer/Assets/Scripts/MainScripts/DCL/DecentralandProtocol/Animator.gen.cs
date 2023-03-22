@@ -44,6 +44,14 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The Animator component is a container for multiple potential animations an Entity can display,
+  /// separately or at the same time. It can be used to start, stop or blend animations; as well as
+  /// to inspect their playback state.
+  ///
+  /// Animations have a `weight` property, which determines how pronounced the animation will be. This
+  /// can be adjusted to blend animations together, or gracefully transition from one to the next.
+  /// </summary>
   public sealed partial class PBAnimator : pb::IMessage<PBAnimator>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -93,6 +101,9 @@ namespace DCL.ECSComponents {
     private static readonly pb::FieldCodec<global::DCL.ECSComponents.PBAnimationState> _repeated_states_codec
         = pb::FieldCodec.ForMessage(10, global::DCL.ECSComponents.PBAnimationState.Parser);
     private readonly pbc::RepeatedField<global::DCL.ECSComponents.PBAnimationState> states_ = new pbc::RepeatedField<global::DCL.ECSComponents.PBAnimationState>();
+    /// <summary>
+    /// a collection of animations and their current state
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::DCL.ECSComponents.PBAnimationState> States {
@@ -222,6 +233,9 @@ namespace DCL.ECSComponents {
 
   }
 
+  /// <summary>
+  /// AnimationState indicates the status and configuration of one available animation.
+  /// </summary>
   public sealed partial class PBAnimationState : pb::IMessage<PBAnimationState>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -277,6 +291,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "name" field.</summary>
     public const int NameFieldNumber = 1;
     private string name_ = "";
+    /// <summary>
+    /// the identifier for this animation, to use in scene code
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Name {
@@ -289,6 +306,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "clip" field.</summary>
     public const int ClipFieldNumber = 2;
     private string clip_ = "";
+    /// <summary>
+    /// the animation path in the `files` array of the scene manifest
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Clip {
@@ -301,6 +321,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "playing" field.</summary>
     public const int PlayingFieldNumber = 3;
     private bool playing_;
+    /// <summary>
+    /// whether this animation is currently playing
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Playing {
@@ -327,7 +350,7 @@ namespace DCL.ECSComponents {
     public const int WeightFieldNumber = 4;
     private float weight_;
     /// <summary>
-    /// default=1.0s
+    /// the "weight" of this animation (see below, default: 1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -355,7 +378,7 @@ namespace DCL.ECSComponents {
     public const int SpeedFieldNumber = 5;
     private float speed_;
     /// <summary>
-    /// default=1.0
+    /// the playback speed (default: 1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -383,7 +406,7 @@ namespace DCL.ECSComponents {
     public const int LoopFieldNumber = 6;
     private bool loop_;
     /// <summary>
-    /// default=true
+    /// whether the animation repeats until stopped (default: true)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -410,6 +433,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "should_reset" field.</summary>
     public const int ShouldResetFieldNumber = 7;
     private bool shouldReset_;
+    /// <summary>
+    /// whether the Entity is restored to its prior state when done
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool ShouldReset {

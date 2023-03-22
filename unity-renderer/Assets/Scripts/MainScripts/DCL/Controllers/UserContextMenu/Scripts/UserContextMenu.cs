@@ -118,7 +118,8 @@ public class UserContextMenu : MonoBehaviour
         if (!Setup(userId, configFlags))
             return;
 
-        if (currentConfirmationDialog == null && confirmationDialog != null) { SetConfirmationDialog(confirmationDialog); }
+        if (currentConfirmationDialog == null && confirmationDialog != null)
+            SetConfirmationDialog(confirmationDialog);
 
         gameObject.SetActive(true);
         OnShowMenu?.Invoke();
@@ -130,9 +131,20 @@ public class UserContextMenu : MonoBehaviour
     /// <param name="userName">User name</param>
     public void ShowByUserName(string userName)
     {
-        var userProfile = UserProfileController.userProfilesCatalog.GetValues().FirstOrDefault(p => p.userName.ToLower() == userName.ToLower());
+        var userProfile = UserProfileController.userProfilesCatalog
+                                               .GetValues()
+                                               .FirstOrDefault(p => p.userName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+
         if (userProfile != null)
-            Show(userProfile.userId);
+        {
+            if (!Setup(userProfile.userId, menuConfigFlags))
+            {
+                ShowUserNotificationError(userName);
+                return;
+            }
+
+            Show(userProfile.userId, currentConfigFlags);
+        }
         else
             ShowUserNotificationError(userName);
     }
@@ -318,12 +330,6 @@ public class UserContextMenu : MonoBehaviour
         Hide();
     }
 
-    private void UpdateBlockButton()
-    {
-        blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
-        messageButton.gameObject.SetActive(!isBlocked && enableSendMessage);
-    }
-
     private void HideIfClickedOutside()
     {
         if (!Input.GetMouseButtonDown(0)) return;
@@ -369,9 +375,8 @@ public class UserContextMenu : MonoBehaviour
             return false;
         }
 
-        bool userHasWallet = profile?.hasConnectedWeb3 ?? false;
-
-        if (!userHasWallet || !UserProfile.GetOwnUserProfile().hasConnectedWeb3) { configFlags &= ~usesFriendsApiFlags; }
+        if (profile.isGuest || !UserProfile.GetOwnUserProfile().hasConnectedWeb3)
+            configFlags &= ~usesFriendsApiFlags;
 
         currentConfigFlags = configFlags;
         ProcessActiveElements(configFlags);
@@ -379,7 +384,7 @@ public class UserContextMenu : MonoBehaviour
         if ((configFlags & MenuConfigFlags.Block) != 0)
         {
             isBlocked = UserProfile.GetOwnUserProfile().blocked.Contains(userId);
-            UpdateBlockButton();
+            blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
         }
 
         if ((configFlags & MenuConfigFlags.Name) != 0)

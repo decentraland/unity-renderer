@@ -1,4 +1,4 @@
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { parcelSize } from 'lib/decentraland/parcels/limits'
 
 export const MORDOR_POSITION_RFC4: rfc4.Position = {

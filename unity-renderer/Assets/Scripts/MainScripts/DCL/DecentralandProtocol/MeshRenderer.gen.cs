@@ -51,6 +51,16 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The MeshRenderer component renders a basic geometric shape for an Entity. It can be a cube, a 
+  /// plane, a sphere or a cylinder.
+  ///
+  /// The cube and plane variants can include a UV texture mapping, so specific areas of a material 
+  /// texture are rendered on different faces of the shape. They are serialized as a sequence of 2D
+  /// `float` coordinates, one for each corner of each side of each face.
+  ///
+  /// More complex shapes require the use of a `GltfContainer` component.
+  /// </summary>
   public sealed partial class PBMeshRenderer : pb::IMessage<PBMeshRenderer>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -445,6 +455,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
+      /// <summary>
+      /// BoxMesh renders a prism shape.
+      /// </summary>
       public sealed partial class BoxMesh : pb::IMessage<BoxMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -494,6 +507,9 @@ namespace DCL.ECSComponents {
         private static readonly pb::FieldCodec<float> _repeated_uvs_codec
             = pb::FieldCodec.ForFloat(10);
         private readonly pbc::RepeatedField<float> uvs_ = new pbc::RepeatedField<float>();
+        /// <summary>
+        /// 96-value texture map (2D * 6 faces * 2 sides * 4 vertices)
+        /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public pbc::RepeatedField<float> Uvs {
@@ -625,6 +641,9 @@ namespace DCL.ECSComponents {
 
       }
 
+      /// <summary>
+      /// CylinderMesh renders a truncated cone shape.
+      /// </summary>
       public sealed partial class CylinderMesh : pb::IMessage<CylinderMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -676,7 +695,7 @@ namespace DCL.ECSComponents {
         public const int RadiusTopFieldNumber = 1;
         private float radiusTop_;
         /// <summary>
-        /// default=1.0
+        /// (default 1.0)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -704,7 +723,7 @@ namespace DCL.ECSComponents {
         public const int RadiusBottomFieldNumber = 2;
         private float radiusBottom_;
         /// <summary>
-        /// default=1.0
+        /// (default 1.0)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -885,6 +904,9 @@ namespace DCL.ECSComponents {
 
       }
 
+      /// <summary>
+      /// PlaneMesh renders a 2D rectangular shape.
+      /// </summary>
       public sealed partial class PlaneMesh : pb::IMessage<PlaneMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -934,6 +956,9 @@ namespace DCL.ECSComponents {
         private static readonly pb::FieldCodec<float> _repeated_uvs_codec
             = pb::FieldCodec.ForFloat(10);
         private readonly pbc::RepeatedField<float> uvs_ = new pbc::RepeatedField<float>();
+        /// <summary>
+        /// 16-value texture map (2D * 1 face * 2 sides * 4 vertices)
+        /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public pbc::RepeatedField<float> Uvs {
@@ -1065,6 +1090,9 @@ namespace DCL.ECSComponents {
 
       }
 
+      /// <summary>
+      /// SphereMesh renders a spherical shape.
+      /// </summary>
       public sealed partial class SphereMesh : pb::IMessage<SphereMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage

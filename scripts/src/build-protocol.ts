@@ -7,6 +7,7 @@ import {
   isWin,
   nodeModulesPath,
   normalizePath,
+  protocolOutputPath,
   protocolPath,
   protocPath,
   workingDirectory,
@@ -20,17 +21,25 @@ const protocolInputPath = normalizePath(
   path.resolve(__dirname, '../temp/'),
 )
 
-const protocolOutputPath = path.resolve(
-  __dirname,
-  '../../unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/',
+const rendererProtocolRawInputPath = normalizePath(
+  path.resolve(__dirname, '../../renderer-protocol/proto/'),
+)
+
+const rendererProtocolInputPath = normalizePath(
+  path.resolve(__dirname, '../temp/'),
 )
 
 async function main() {
   if (fs.existsSync(protocolInputPath)) {
     fs.rmSync(protocolInputPath, { recursive: true })
   }
+
   fse.copySync(protocolRawInputPath, protocolInputPath, {
     overwrite: true,
+  })
+
+  fse.copySync(rendererProtocolRawInputPath, rendererProtocolInputPath, {
+    overwrite: false,
   })
 
   await execute(`${protocPath} --version`, workingDirectory)
