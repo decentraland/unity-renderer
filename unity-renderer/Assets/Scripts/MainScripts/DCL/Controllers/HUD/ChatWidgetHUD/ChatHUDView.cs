@@ -114,7 +114,7 @@ namespace DCL.Social.Chat
 
         public int EntryCount => entries.Count;
         public IChatEntryFactory ChatEntryFactory { get; set; }
-        public Comparison<ChatEntryModel> SortingStrategy { get; set; }
+        public Comparison<ChatEntryModel> SortingStrategy { get; set; } = (a, b) => a.timestamp.CompareTo(b.timestamp);
 
         public static ChatHUDView Create()
         {
