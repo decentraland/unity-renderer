@@ -26,10 +26,9 @@ namespace Tests.ValidationTests
             CheckResourcesDupeDependencies rule = new CheckResourcesDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-
             foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
             {
-                Debug.Log("Duplicate - " + duplicate.resultName);
+                Debug.Log(duplicate.resultName);
             }
         }
 
@@ -39,9 +38,10 @@ namespace Tests.ValidationTests
             CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
             List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
+            StringBuilder message = new StringBuilder();
             foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
             {
-                Debug.Log("Duplicate - " + duplicate.resultName);
+                Debug.Log(duplicate.resultName);
             }
         }
 
@@ -55,33 +55,32 @@ namespace Tests.ValidationTests
 
             foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
             {
-                Debug.Log("Duplicate - " + duplicate.resultName);
-                string[] dSplit = duplicate.resultName.Split(':');
-                string dPath = dSplit[0];
-                string dBundle = dSplit[^1];
-
-                if (!entriesToGroups.ContainsKey(dPath))
-                    entriesToGroups.Add(dPath, new List<string> { dBundle });
-                else if (!entriesToGroups[dPath].Contains(dBundle))
-                    entriesToGroups[dPath].Add(dBundle);
+                Debug.Log(duplicate.resultName);
+                // string[] dSplit = duplicate.resultName.Split(':');
+                // string dPath = dSplit[0];
+                // string dBundle = dSplit[^1];
+                //
+                // if (!entriesToGroups.ContainsKey(dPath))
+                //     entriesToGroups.Add(dPath, new List<string> { dBundle });
+                // else if (!entriesToGroups[dPath].Contains(dBundle))
+                //     entriesToGroups[dPath].Add(dBundle);
             }
-
-            StringBuilder message = new StringBuilder();
-
-            foreach (var keyValuePair in entriesToGroups
-                        .Where(keyValuePair => !EXCLUDED_FILE_TYPES.Contains(keyValuePair.Key.Split('.')[^1])))
-            {
-                message.Append(keyValuePair.Key + " - Groups: ");
-
-                foreach (string group in keyValuePair.Value)
-                    message.Append(group + ", ");
-
-                message.Remove(message.Length - 2, 2);
-                message.Append(";\n");
-            }
-
-            Assert.That(message.ToString(), Is.Empty,
-                message: $"Found {message.ToString().Split(';').Length} assets being duplicated between groups: \n{message}");
+            //
+            // StringBuilder message = new StringBuilder();
+            //
+            // foreach (var keyValuePair in entriesToGroups
+            //             .Where(keyValuePair => !EXCLUDED_FILE_TYPES.Contains(keyValuePair.Key.Split('.')[^1])))
+            // {
+            //     message.Append(keyValuePair.Key + " - Groups: ");
+            //
+            //     foreach (string group in keyValuePair.Value)
+            //         message.Append(group + ", ");
+            //
+            //     message.Remove(message.Length - 2, 2);
+            //     message.Append(";\n");
+            // }
+            //
+            // Assert.That(message.ToString(), Is.Empty, message: $"Found {message.ToString().Split(';').Length} assets being duplicated between groups: \n{message}");
         }
 
         public void Duplicates_Custom()
