@@ -114,6 +114,7 @@ namespace DCL.Social.Chat
 
         public int EntryCount => entries.Count;
         public IChatEntryFactory ChatEntryFactory { get; set; }
+        public Comparison<ChatEntryModel> SortingStrategy { get; set; }
 
         public static ChatHUDView Create()
         {
@@ -452,7 +453,8 @@ namespace DCL.Social.Chat
         {
             if (this.entries.Count <= 0) return;
 
-            var entries = this.entries.Values.OrderBy(x => x.Model.timestamp).ToList();
+            var entries = this.entries.Values.ToList();
+            entries.Sort((a, b) => SortingStrategy.Invoke(a.Model, b.Model));
 
             for (var i = 0; i < entries.Count; i++)
             {

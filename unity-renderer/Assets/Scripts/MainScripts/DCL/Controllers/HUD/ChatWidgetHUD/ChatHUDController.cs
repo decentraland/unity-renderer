@@ -24,10 +24,6 @@ public class ChatHUDController : IHUD
 
     public delegate UniTask<List<UserProfile>> GetSuggestedUserProfiles(string name, int maxCount, CancellationToken cancellationToken);
 
-    public event Action OnInputFieldSelected;
-    public event Action<ChatMessage> OnSendMessage;
-    public event Action<ChatMessage> OnMessageSentBlockedBySpam;
-
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly bool detectWhisper;
@@ -46,8 +42,26 @@ public class ChatHUDController : IHUD
     private int mentionLength;
     private int mentionFromIndex;
     private Dictionary<string, UserProfile> mentionSuggestedProfiles;
+    private Comparison<ChatEntryModel> sortingStrategy;
 
     private bool isMentionsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("chat_mentions_enabled");
+
+    public Comparison<ChatEntryModel> SortingStrategy
+    {
+        get => sortingStrategy;
+
+        set
+        {
+            sortingStrategy = value;
+
+            if (view != null)
+                view.SortingStrategy = value;
+        }
+    }
+
+    public event Action OnInputFieldSelected;
+    public event Action<ChatMessage> OnSendMessage;
+    public event Action<ChatMessage> OnMessageSentBlockedBySpam;
 
     public ChatHUDController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
@@ -62,6 +76,7 @@ public class ChatHUDController : IHUD
         this.getSuggestedUserProfiles = getSuggestedUserProfiles;
         this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
+        SortingStrategy = (a, b) => a.timestamp.CompareTo(b.timestamp);
     }
 
     public void Initialize(IChatHUDComponentView view)
@@ -85,6 +100,7 @@ public class ChatHUDController : IHUD
         this.view.OnMentionSuggestionSelected += HandleMentionSuggestionSelected;
         this.view.OnOpenedContextMenu -= OpenedContextMenu;
         this.view.OnOpenedContextMenu += OpenedContextMenu;
+        this.view.SortingStrategy = SortingStrategy;
     }
 
     private void OpenedContextMenu()

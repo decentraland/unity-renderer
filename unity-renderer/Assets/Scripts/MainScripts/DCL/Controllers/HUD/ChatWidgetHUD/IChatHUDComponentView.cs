@@ -16,6 +16,7 @@ public interface IChatHUDComponentView
     event Action<string> OnMentionSuggestionSelected;
 
     int EntryCount { get; }
+    Comparison<ChatEntryModel> SortingStrategy { get; set; }
 
     void OnMessageCancelHover();
     void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);

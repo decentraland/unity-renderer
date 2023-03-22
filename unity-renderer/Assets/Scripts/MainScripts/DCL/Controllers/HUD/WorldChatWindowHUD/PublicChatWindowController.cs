@@ -66,7 +66,9 @@ namespace DCL.Chat.HUD
                 (name, count, ct) => chatMentionSuggestionProvider.GetNearbyProfilesStartingWith(name, count, ct),
                 socialAnalytics,
                 profanityFilter);
-
+            // Keep messages sequentally, without any sorting
+            // Comms cannot calculate a server timestamp for each message, so we assume that the arrival time is the correct order
+            chatHudController.SortingStrategy = (a, b) => 0;
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += SendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
