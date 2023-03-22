@@ -37,7 +37,7 @@ export function* initialRemoteProfileLoad() {
   const net: ETHEREUM_NETWORK = yield select(getCurrentNetwork)
   const names: string[] = yield call(fetchOwnedENS, ethereumConfigurations[net].names, userId)
 
-  // Check for consildating strategies if the user has claimed name or owned names are available for the address
+  // Check for consolidating strategies if the user has claimed name or owned names are available for the address
   if (profile.hasClaimedName || names.length) {
     if (names.includes(profile.name)) {
       if (!profile.hasClaimedName) {
@@ -64,6 +64,7 @@ export function* initialRemoteProfileLoad() {
           tutorialStep: 0xfff
         }
       } else {
+        // User has no available names, set the hasClaimedName to false
         profile = { ...profile, hasClaimedName: false, tutorialStep: 0x0 }
       }
       profileDirty = true
