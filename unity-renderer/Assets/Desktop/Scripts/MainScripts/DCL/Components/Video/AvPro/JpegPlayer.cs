@@ -28,8 +28,17 @@ public class JpegPlayer : IVideoPlayer, IDisposable
             }
             else
             {
-                image = DownloadHandlerTexture.GetContent(request);
-                currentState = VideoState.READY;
+                image = new Texture2D(1, 1);
+                try
+                {
+                    image.LoadImage(request.downloadHandler.data);
+                    currentState = VideoState.READY;
+                }
+                catch (Exception e)
+                {
+                    lastError = "Error downloading image " + url;
+                    currentState = VideoState.ERROR;
+                }
             }
         }
     }
