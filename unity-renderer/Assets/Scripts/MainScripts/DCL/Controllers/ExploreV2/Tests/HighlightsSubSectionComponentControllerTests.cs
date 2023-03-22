@@ -94,7 +94,7 @@ public class HighlightsSubSectionComponentControllerTests
         // Assert
         highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
         highlightsSubSectionComponentView.Received().SetAllAsLoading();
-        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
         Assert.IsFalse(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -105,7 +105,7 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
     }
 
     [Test]
