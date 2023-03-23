@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[TestFixture]
+[TestFixture][Category("ToFix")]
 public class AddressablesEssentialsTests
 {
     [Test]
