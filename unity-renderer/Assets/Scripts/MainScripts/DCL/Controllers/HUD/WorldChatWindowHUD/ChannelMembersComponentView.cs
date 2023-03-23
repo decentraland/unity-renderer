@@ -41,12 +41,7 @@ namespace DCL.Chat.HUD
 
             searchBar.OnSearchText += s =>
             {
-                if (emptyStateForCommon != null)
-                    emptyStateForCommon.SetActive(string.IsNullOrEmpty(s));
-
-                if (emptyStateForSearch != null)
-                    emptyStateForSearch.SetActive(!string.IsNullOrEmpty(s));
-
+                SetSearchModeActive(!string.IsNullOrEmpty(s));
                 OnSearchUpdated?.Invoke(s);
             };
             memberList.SortingMethod = (a, b) => a.Model.userName.CompareTo(b.Model.userName);
@@ -105,7 +100,11 @@ namespace DCL.Chat.HUD
 
         public override void Hide(bool instant = false) => gameObject.SetActive(false);
 
-        public void ClearSearchInput(bool notify = true) => searchBar.ClearSearch(notify);
+        public void ClearSearchInput(bool notify = true)
+        {
+            searchBar.ClearSearch(notify);
+            SetSearchModeActive(false);
+        }
 
         public void HideLoading()
         {
@@ -173,6 +172,15 @@ namespace DCL.Chat.HUD
             UpdateLayout();
             Sort();
             UpdateHeaders();
+        }
+
+        private void SetSearchModeActive(bool isActive)
+        {
+            if (emptyStateForCommon != null)
+                emptyStateForCommon.SetActive(!isActive);
+
+            if (emptyStateForSearch != null)
+                emptyStateForSearch.SetActive(isActive);
         }
 
         public static ChannelMembersComponentView Create()

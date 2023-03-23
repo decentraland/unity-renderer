@@ -38,6 +38,9 @@ namespace DCL.Chat.HUD
                 view.Hide();
         }
 
+        public void ClearSearch() =>
+            view.ClearSearchInput();
+
         public void Dispose()
         {
             playerDataStore.otherPlayers.OnAdded -= OnNearbyPlayersAdded;

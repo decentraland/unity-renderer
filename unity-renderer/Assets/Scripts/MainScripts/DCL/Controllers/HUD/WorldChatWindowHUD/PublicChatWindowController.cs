@@ -150,6 +150,8 @@ namespace DCL.Chat.HUD
 
                 if (focusInputField)
                     chatHudController.FocusInputField();
+
+                nearbyMembersHUDController.ClearSearch();
             }
             else
             {
