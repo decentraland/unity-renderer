@@ -72,7 +72,7 @@ build-unity-local:
 	cp node_modules/\@dcl/explorer/unity* static/
 	cp -r node_modules/\@dcl/explorer/StreamingAssets static/
 watch: touch-local build ## Watch the files required for hacking the explorer
-	@NODE_ENV=development ./build.js -watch
+	@NODE_ENV=development node ./build.js -watch
 
 # Makefile
 

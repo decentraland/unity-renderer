@@ -54,6 +54,10 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void OnSceneAdded(IParcelScene scene)
         {
+            // global scenes do not have boundaries to check
+            if (scene.isPersistent)
+                return;
+
             IReadOnlyList<Vector2Int> parcels = scene.sceneData.parcels;
             var sceneNumber = scene.sceneData.sceneNumber;
 

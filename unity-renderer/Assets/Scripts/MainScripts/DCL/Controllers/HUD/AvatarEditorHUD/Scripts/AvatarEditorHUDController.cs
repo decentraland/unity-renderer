@@ -232,7 +232,7 @@ public class AvatarEditorHUDController : IHUD
                     destroyOnFinish = true
                 });
 
-                Debug.LogError(e.Message);
+                Debug.LogException(e);
             }
             finally
             {
