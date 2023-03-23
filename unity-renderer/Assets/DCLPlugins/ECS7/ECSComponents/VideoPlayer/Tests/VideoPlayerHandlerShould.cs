@@ -162,7 +162,7 @@ namespace Tests
 
             scene.sceneData.allowedMediaHostnames = new[] { "fake" };
 
-            LogAssert.Expect(LogType.Error, "Media playback aborted: 'allowedMediaHostnames' missing in scene.json file.");
+            LogAssert.Expect(LogType.Error, "External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
 
             string outputUrl = model.GetVideoUrl(scene.contentProvider,
                 scene.sceneData.requiredPermissions,
@@ -202,7 +202,7 @@ namespace Tests
             scene.sceneData.allowedMediaHostnames = new[] { "fakes" };
             scene.sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
 
-            LogAssert.Expect(LogType.Error, $"Media playback aborted: '{model.Src}' host name is not in 'allowedMediaHostnames' in scene.json file.");
+            LogAssert.Expect(LogType.Error, $"External media asset url error: '{model.Src}' host name is not in 'allowedMediaHostnames' in scene.json file.");
 
             string outputUrl = model.GetVideoUrl(scene.contentProvider,
                 scene.sceneData.requiredPermissions,
