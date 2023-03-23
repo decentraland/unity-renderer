@@ -15,7 +15,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -testPlatform EditMode \
   -testResults "$PROJECT_PATH/editmode-results.xml" \
   -testCategory "!ToFix;!Legacy;!Explicit;!Performance;!VisualTest" \
-  -testFilter "ABConverterTests.dll;AddressablesTests.dll;AssetBundleProvidersTests.dll;AvatarModifierAreaFeedbackTests.dll;AvatarReporterControllerTests.dll;!ValidateResourcesToAddressableDuplicateDependencies;!ValidateScenesToAddressableDuplicateDependencies"
+  -testFilter "ABConverterTests.dll;AssetBundleProvidersTests.dll;AvatarModifierAreaFeedbackTests.dll;AvatarReporterControllerTests.dll;!ValidateResourcesToAddressableDuplicateDependencies;!ValidateScenesToAddressableDuplicateDependencies"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
