@@ -40,7 +40,7 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
             Assert.AreEqual(typeof(ECSComponent<PBUiBackground>), componentBuilder().GetType());
         }
 
-        [Test][Category("ToFix")]
+        [Test]
         public void AddResultDeserializer()
         {
             Assert.IsTrue(factory.componentBuilders.TryGetValue(RESULT_COMPONENT_ID, out var componentBuilder));
