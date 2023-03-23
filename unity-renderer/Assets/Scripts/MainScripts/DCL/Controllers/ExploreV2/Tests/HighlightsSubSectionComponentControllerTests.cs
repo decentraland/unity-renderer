@@ -173,7 +173,7 @@ public class HighlightsSubSectionComponentControllerTests
     {
         // Arrange
         PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel();
-        testPlaceCardModel.hotSceneInfo = new HotSceneInfo();
+        testPlaceCardModel.placeInfo = new PlaceInfo();
 
         // Act
         highlightsSubSectionComponentController.ShowPlaceDetailedInfo(testPlaceCardModel);
