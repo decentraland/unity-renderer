@@ -7,7 +7,6 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -39,14 +38,14 @@ namespace DCL.ECSComponents
             isRendererActive = CommonScriptableObjects.rendererState.Get();
             isInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
 
-            // Browsers don't allow streaming if the user didn't interact first, ending up in a fake 'playing' state.
+            // We need to check if the user interacted with the application before playing the video,
+            // otherwise browsers won't play the video, ending up in a fake 'playing' state.
             hadUserInteraction = Helpers.Utils.IsCursorLocked;
+
             if (!hadUserInteraction)
                 Helpers.Utils.OnCursorLockChanged += OnCursorLockChanged;
-
             if (!scene.isPersistent)
                 CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
-
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
         }
 
@@ -70,8 +69,12 @@ namespace DCL.ECSComponents
                 var id = entity.entityId.ToString();
                 bool isStream = !NO_STREAM_EXTENSIONS.Any(x => model.Src.EndsWith(x));
                 string videoUrl = model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames);
+
+                isValidUrl = !string.IsNullOrEmpty(videoUrl);
+                if (!isValidUrl)
+                    return;
+
                 videoPlayer = new WebVideoPlayer(id, videoUrl, isStream, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
-                isValidUrl = !string.IsNullOrEmpty(videoPlayer.url);
                 videoPlayerInternalComponent.PutFor(scene, entity, new InternalVideoPlayer()
                 {
                     videoPlayer = videoPlayer,
@@ -94,6 +97,8 @@ namespace DCL.ECSComponents
 
         private void ConditionsToPlayVideoChanged()
         {
+            if (lastModel == null) return;
+
             bool shouldBePlaying = lastModel.IsPlaying() && canVideoBePlayed;
             if (shouldBePlaying != videoPlayer.playing)
             {
@@ -119,9 +124,9 @@ namespace DCL.ECSComponents
             ConditionsToPlayVideoChanged();
         }
 
-        private void OnRendererStateChanged(bool isEnable, bool prevState)
+        private void OnRendererStateChanged(bool isEnabled, bool prevState)
         {
-            isRendererActive = isEnable;
+            isRendererActive = isEnabled;
             ConditionsToPlayVideoChanged();
         }
     }

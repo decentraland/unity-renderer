@@ -38,8 +38,8 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
-
             videoPlayerHandler = new VideoPlayerHandler(internalVideoPlayerComponent);
+
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
@@ -49,6 +49,9 @@ namespace Tests
             scene.contentProvider.BakeHashes();
 
             Environment.Setup(ServiceLocatorFactory.CreateDefault());
+
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
+            CommonScriptableObjects.rendererState.Set(true);
         }
 
         [TearDown]
@@ -64,17 +67,20 @@ namespace Tests
         [UnityTest]
         public IEnumerator TryToStartVideo()
         {
+            videoPlayerHandler.isInsideScene = true;
+            videoPlayerHandler.isRendererActive = true;
+            videoPlayerHandler.hadUserInteraction = true;
             PBVideoPlayer model = new PBVideoPlayer()
             {
                 Src = "video.mp4",
-                Playing = true,
+                Playing = true
             };
 
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
             yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
             videoPlayerHandler.videoPlayer.Update();
 
-            Assert.AreEqual(videoPlayerHandler.videoPlayer.playing, true);
+            Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
         }
 
         [UnityTest]
@@ -96,6 +102,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator VideoUpdateOnRuntime()
         {
+            videoPlayerHandler.isInsideScene = true;
+            videoPlayerHandler.isRendererActive = true;
+            videoPlayerHandler.hadUserInteraction = true;
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
                 Src = "video.mp4"
@@ -123,6 +132,26 @@ namespace Tests
         }
 
         [Test]
+        public void CreateInternalComponentCorrectly()
+        {
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = true;
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
+            {
+                Src = "other-video.mp4",
+                Playing = true,
+                Volume = 0.5f,
+            });
+
+            Assert.NotNull(internalVideoPlayerComponent.GetFor(scene, entity));
+
+            // remove component, internal component should be removed too
+            videoPlayerHandler.OnComponentRemoved(scene, entity);
+
+            Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
+        }
+
+        [Test]
         public void NotAllowExternalVideoWithoutPermissionsSet()
         {
             PBVideoPlayer model = new PBVideoPlayer()
@@ -133,7 +162,7 @@ namespace Tests
 
             scene.sceneData.allowedMediaHostnames = new[] { "fake" };
 
-            LogAssert.Expect(LogType.Error, "Video playback aborted: 'allowedMediaHostnames' missing in scene.json file.");
+            LogAssert.Expect(LogType.Error, "Media playback aborted: 'allowedMediaHostnames' missing in scene.json file.");
 
             string outputUrl = model.GetVideoUrl(scene.contentProvider,
                 scene.sceneData.requiredPermissions,
@@ -173,7 +202,7 @@ namespace Tests
             scene.sceneData.allowedMediaHostnames = new[] { "fakes" };
             scene.sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
 
-            LogAssert.Expect(LogType.Error, $"Video playback aborted: '{model.Src}' host name is not in 'allowedMediaHostnames' in scene.json file.");
+            LogAssert.Expect(LogType.Error, $"Media playback aborted: '{model.Src}' host name is not in 'allowedMediaHostnames' in scene.json file.");
 
             string outputUrl = model.GetVideoUrl(scene.contentProvider,
                 scene.sceneData.requiredPermissions,
@@ -182,24 +211,76 @@ namespace Tests
             Assert.AreEqual(string.Empty, outputUrl);
         }
 
-        [Test]
-        public void CreateInternalComponentCorrectly()
+        [UnityTest]
+        public IEnumerator StopVideoIfItsOutsideCurrentScene()
         {
             videoPlayerHandler.OnComponentCreated(scene, entity);
-
-            videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
+            videoPlayerHandler.hadUserInteraction = true;
+            PBVideoPlayer model = new PBVideoPlayer()
             {
-                Src = "other-video.mp4",
-                Playing = true,
-                Volume = 0.5f,
-            });
+                Src = "video.mp4",
+                Playing = true
+            };
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
 
-            Assert.NotNull(internalVideoPlayerComponent.GetFor(scene, entity));
+            Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
 
-            // remove component, internal component should be removed too
+            // change current scene number
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber+1);
+
+            Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
+
             videoPlayerHandler.OnComponentRemoved(scene, entity);
+        }
 
-            Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
+        [UnityTest]
+        public IEnumerator StopVideoIfRenderingIsDisabled()
+        {
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = true;
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "video.mp4",
+                Playing = true
+            };
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
+
+            Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
+
+            // change rendering bool
+            CommonScriptableObjects.rendererState.Set(false);
+
+            Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
+
+            videoPlayerHandler.OnComponentRemoved(scene, entity);
+        }
+
+        [UnityTest]
+        public IEnumerator StartVideoAfterUserInteraction()
+        {
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = false;
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "video.mp4",
+                Playing = true
+            };
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
+
+            Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
+
+            // change user interaction bool
+            DCL.Helpers.Utils.LockCursor();
+
+            Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
+
+            videoPlayerHandler.OnComponentRemoved(scene, entity);
         }
     }
 }
