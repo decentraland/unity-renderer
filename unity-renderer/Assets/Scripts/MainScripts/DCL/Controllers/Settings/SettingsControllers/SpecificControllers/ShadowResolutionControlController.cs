@@ -24,7 +24,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             lwrpaShadowResolutionField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowmapResolution", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        public override object GetStoredValue() { return (int)Mathf.Log((int)currentQualitySetting.shadowResolution, 2) - 8; }
+        public override object GetStoredValue() =>
+            (int)Mathf.Log((int)currentQualitySetting.shadowResolution, 2) - 8;
 
         public override void UpdateSetting(object newValue)
         {
