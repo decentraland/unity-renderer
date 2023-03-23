@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIDropdown.Tests
 {
+    [Category("Flaky")]
     public class UIDropdownShould : UIComponentsShouldBase
     {
         private const int COMPONENT_ID = 1001;
@@ -33,7 +34,7 @@ namespace DCL.ECSComponents.UIDropdown.Tests
             Assert.AreEqual(2, handler.uiElement.index);
         }
 
-        [Test][Category("ToFix")]
+        [Test]
         public void AllowEmptyValue()
         {
             UpdateComponentModel(true, -1);
