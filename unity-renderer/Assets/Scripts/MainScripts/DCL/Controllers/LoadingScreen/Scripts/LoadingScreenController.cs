@@ -148,24 +148,6 @@ namespace DCL.LoadingScreen
         private bool IsNewScene(Vector2Int currentDestinationCandidate) =>
              worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
 
-        private void CheckSceneTimeout(Vector2Int currentDestinationCandidate)
-        {
-            //If we are settling on the destination position, but loading is not complete, this means that kernel is calling for a timeout.
-            //For now, we hide the loading screen and add a notification
-            if (currentDestinationCandidate.Equals(currentDestination) &&
-                worldState.GetScene(worldState.GetSceneNumberByCoords(currentDestination))?.loadingProgress < 100)
-            {
-                notificationsController.ShowNotification(new Model
-                {
-                    message = "Loading scene timeout",
-                    type = Type.GENERIC,
-                    timer = 10f,
-                    destroyOnFinish = true
-                });
-                FadeOutView();
-            }
-        }
-
         private void FadeOutView()
         {
             view.FadeOut();
@@ -184,7 +166,16 @@ namespace DCL.LoadingScreen
             {
                 // Wait for 120 seconds
                 await UniTask.Delay(120000, cancellationToken: token);
-                CheckSceneTimeout(currentDestination);
+
+                // Show timeout
+                notificationsController.ShowNotification(new Model
+                {
+                    message = "Loading scene timeout",
+                    type = Type.GENERIC,
+                    timer = 10f,
+                    destroyOnFinish = true
+                });
+                FadeOutView();
             }
             catch (OperationCanceledException)
             {
