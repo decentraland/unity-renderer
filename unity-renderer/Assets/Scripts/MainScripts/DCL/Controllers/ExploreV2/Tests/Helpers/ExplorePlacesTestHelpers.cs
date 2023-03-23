@@ -19,7 +19,6 @@ public static class ExplorePlacesTestHelpers
         return new PlaceCardComponentModel
         {
             coords = new Vector2Int(10, 10),
-            hotSceneInfo = new HotScenesController.HotSceneInfo(),
             placeInfo = new PlaceInfo()
             {
                 base_position = "10,10",

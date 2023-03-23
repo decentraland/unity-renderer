@@ -97,7 +97,6 @@ public class ExplorePlacesCommonTests
         Assert.AreEqual(testPlaceFromAPI.usersTotalCount, placeCardModel.numberOfUsers);
         Assert.AreEqual(testPlaceFromAPI.parcels, placeCardModel.parcels);
         Assert.AreEqual(testPlaceFromAPI.baseCoords, placeCardModel.coords);
-        Assert.AreEqual(testPlaceFromAPI, placeCardModel.hotSceneInfo);
     }
 
     private PlaceCardComponentModel CreateTestPlace(string name)
@@ -105,7 +104,6 @@ public class ExplorePlacesCommonTests
         return new PlaceCardComponentModel
         {
             coords = new Vector2Int(10, 10),
-            hotSceneInfo = new HotScenesController.HotSceneInfo(),
             placeInfo = new HotScenesController.PlaceInfo()
             {
                 base_position = "10,10",

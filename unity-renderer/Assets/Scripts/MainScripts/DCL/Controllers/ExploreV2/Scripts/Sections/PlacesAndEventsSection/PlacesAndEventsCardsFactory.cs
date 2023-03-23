@@ -98,14 +98,6 @@ public static class PlacesAndEventsCardsFactory
     }
 
     /// <summary>
-    /// Returns a place card model from the given API data.
-    /// </summary>
-    /// <param name="filteredPlaces">Data received from the API.</param>
-    /// <returns>A place card model.</returns>
-    public static List<PlaceCardComponentModel> CreatePlacesCards(List<HotSceneInfo> filteredPlaces) =>
-        CreateModelsListFromAPI<PlaceCardComponentModel, HotSceneInfo>(filteredPlaces, PlacesCardsConfigurator.ConfigureFromAPIData);
-
-    /// <summary>
     /// Returns a event card model from the given API data.
     /// </summary>
     /// <param name="filteredEvents">Data received from the API.</param>

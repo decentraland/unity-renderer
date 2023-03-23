@@ -40,7 +40,6 @@ public class PlaceCardComponentViewTests
         PlaceCardComponentModel testModel = new PlaceCardComponentModel
         {
             coords = new Vector2Int(10, 10),
-            hotSceneInfo = new HotScenesController.HotSceneInfo(),
             placeInfo = new HotScenesController.PlaceInfo()
             {
                 base_position = "10,10"

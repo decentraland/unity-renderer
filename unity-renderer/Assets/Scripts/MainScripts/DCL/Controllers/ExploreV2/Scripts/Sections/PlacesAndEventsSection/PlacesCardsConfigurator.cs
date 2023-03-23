@@ -40,7 +40,6 @@ public static class PlacesCardsConfigurator
         cardModel.numberOfUsers = placeFromAPI.usersTotalCount;
         cardModel.parcels = placeFromAPI.parcels;
         cardModel.coords = placeFromAPI.baseCoords;
-        cardModel.hotSceneInfo = placeFromAPI;
 
         return cardModel;
     }

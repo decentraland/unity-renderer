@@ -132,7 +132,6 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel
             {
-                hotSceneInfo = new HotSceneInfo(),
                 placeInfo = new PlaceInfo()
                 {
                     base_position = "10,10",

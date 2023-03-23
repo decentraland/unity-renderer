@@ -16,7 +16,5 @@ public class PlaceCardComponentModel : BaseComponentModel
     public bool isFavorite;
 
     [HideInInspector]
-    public HotScenesController.HotSceneInfo hotSceneInfo;
-    [HideInInspector]
     public HotScenesController.PlaceInfo placeInfo;
 }
