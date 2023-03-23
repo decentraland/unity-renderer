@@ -39,11 +39,6 @@ namespace DCL.SettingsCommon
 
             var settings = WhenGetSettings(repository);
 
-            Debug.Log(defaultSettings.vSync + " - " + settings.vSync);
-            Debug.Log(defaultSettings.windowMode + " - " + settings.windowMode);
-            Debug.Log(defaultSettings.fpsCapIndex + " - " + settings.fpsCapIndex);
-            Debug.Log(defaultSettings.resolutionSizeIndex + " - " + settings.resolutionSizeIndex);
-
             Assert.AreEqual(defaultSettings, settings);
         }
 
