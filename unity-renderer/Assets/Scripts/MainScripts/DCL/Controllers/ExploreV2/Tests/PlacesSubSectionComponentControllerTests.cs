@@ -97,7 +97,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
     }
 
     [Test]
@@ -122,17 +122,23 @@ public class PlacesSubSectionComponentControllerTests
     {
         // Act
         placesSubSectionComponentController.ShowMorePlaces();
-
         // Assert
-        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(Arg.Any<bool>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
     }
 
     [Test]
     public void ShowPlaceDetailedInfoCorrectly()
     {
         // Arrange
-        PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel();
-        testPlaceCardModel.hotSceneInfo = new HotSceneInfo();
+        PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel
+            {
+                hotSceneInfo = new HotSceneInfo(),
+                placeInfo = new PlaceInfo()
+                {
+                    base_position = "10,10",
+                    title = "Test place"
+                },
+            };
 
         // Act
         placesSubSectionComponentController.ShowPlaceDetailedInfo(testPlaceCardModel);
