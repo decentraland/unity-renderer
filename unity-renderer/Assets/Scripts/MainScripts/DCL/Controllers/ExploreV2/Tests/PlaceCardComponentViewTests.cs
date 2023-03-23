@@ -41,6 +41,10 @@ public class PlaceCardComponentViewTests
         {
             coords = new Vector2Int(10, 10),
             hotSceneInfo = new HotScenesController.HotSceneInfo(),
+            placeInfo = new HotScenesController.PlaceInfo()
+            {
+                base_position = "10,10"
+            },
             numberOfUsers = 10,
             parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
             placeAuthor = "Test Author",
