@@ -13,6 +13,7 @@ namespace DCLPlugins.SentryPlugin
         private static string prefix = "explorer.";
         private Vector3 currentTeleportPosition, previousTeleportPosition;
 
+
         public SentryController(DataStore_Player playerStore, DataStore_Realm realmStore, IHub sentryHub)
         {
             this.playerStore = playerStore;
