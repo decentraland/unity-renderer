@@ -114,7 +114,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     {
         hasTarget = target != null;
         if (!hasTarget)
-            Debug.LogError(message: $"Target is not assigned. {nameof(UpdateInterface)} will work incorrectly.", this);
+            Debug.LogError(message: $"Target is not assigned. {nameof(UpdateInterface)} will not work correctly.", this);
     }
 
     public void Start() { OnPoolGet(); }
