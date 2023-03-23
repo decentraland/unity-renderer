@@ -12,7 +12,7 @@ namespace DCL
         /// <summary>
         /// Event that will be invoked when the request has been completed.
         /// </summary>
-        public event Action<WebRequestAsyncOperation> completed;
+        public event Action<IWebRequestAsyncOperation> completed;
 
         /// <summary>
         /// WebRequest that is being managed.
