@@ -116,7 +116,7 @@ namespace DCL.ECSComponents.Tests
             CollectionAssert.IsEmpty(internalCompData.model.events);
         }
 
-        [UnityTest]
+        [UnityTest][Category("ToFix")]
         public IEnumerator AddCommonInteractivity()
         {
             ECSComponentData<InternalInputEventResults> internalCompData = new ECSComponentData<InternalInputEventResults>

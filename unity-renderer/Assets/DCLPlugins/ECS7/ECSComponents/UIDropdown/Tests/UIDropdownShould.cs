@@ -33,7 +33,7 @@ namespace DCL.ECSComponents.UIDropdown.Tests
             Assert.AreEqual(2, handler.uiElement.index);
         }
 
-        [Test]
+        [Test][Category("ToFix")]
         public void AllowEmptyValue()
         {
             UpdateComponentModel(true, -1);

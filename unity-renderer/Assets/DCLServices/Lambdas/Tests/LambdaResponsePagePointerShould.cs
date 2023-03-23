@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DCLServices.Lambdas.Tests
 {
-    [TestFixture][Category("Legacy")]
+    [TestFixture]
     public class LambdaResponsePagePointerShould
     {
         [Serializable]

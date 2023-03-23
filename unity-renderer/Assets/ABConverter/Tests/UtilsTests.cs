@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace DCL.ABConverter
 {
-    [Category("Legacy")]
     public class UtilsTests
     {
         [Test]
