@@ -403,7 +403,7 @@ function* handleCommsReconnectionInterval() {
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
       USER_AUTHENTICATED: take(USER_AUTHENTICATED),
-      timeout: delay(1000)
+      timeout: delay(50)
     })
     // TODO: Why are we not doing `if (reason === undefined) continue`?
     // The timeout makes no sense, except to avoid a logical error
