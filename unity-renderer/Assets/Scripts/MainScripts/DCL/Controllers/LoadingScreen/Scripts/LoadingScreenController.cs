@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using System;
 using UnityEngine;
 using DCL.NotificationModel;
+using System.Threading;
 using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
@@ -27,6 +29,8 @@ namespace DCL.LoadingScreen
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
         private bool onSignUpFlow;
+
+        private CancellationTokenSource timeoutCTS;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -115,16 +119,12 @@ namespace DCL.LoadingScreen
                 percentageController.StartLoading(currentDestination);
 
                 view.FadeIn(false, true);
-            }
-            else
-            {
-                //We are going to check if the scene has timeout using the POSITION_SETTLED event.
-                CheckSceneTimeout(currentDestinationCandidate);
+
+                timeoutCTS = new CancellationTokenSource();
+                StartTimeoutCounter(timeoutCTS.Token);
             }
         }
 
-        //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,
-        //we wont see the loading screen. Same happens when leaving a world. Thats why we need to keep track of the latest realmName as well as if it is a world.
         private bool IsNewRealm()
         {
             //Realm has not been set yet, so we are not in a new realm
@@ -170,6 +170,27 @@ namespace DCL.LoadingScreen
         {
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+
+            if (timeoutCTS != null)
+            {
+                timeoutCTS.Cancel();
+                timeoutCTS.Dispose();
+            }
+        }
+
+        public async UniTask StartTimeoutCounter(CancellationToken token)
+        {
+            try
+            {
+                // Wait for 120 seconds
+                await UniTask.Delay(120000, cancellationToken: token);
+                CheckSceneTimeout(currentDestination);
+            }
+            catch (OperationCanceledException)
+            {
+                // Handle cancellation
+                Debug.Log("Timeout was aborted");
+            }
         }
     }
 }
