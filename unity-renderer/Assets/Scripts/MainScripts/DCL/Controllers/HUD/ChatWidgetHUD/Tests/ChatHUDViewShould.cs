@@ -1,22 +1,29 @@
 using DCL.Chat.HUD;
+using DCL.Interface;
+using NSubstitute;
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
+using Tests;
+using UnityEngine.TestTools;
 
 namespace DCL.Social.Chat
 {
-    public class ChatHUDViewShould
+    public class ChatHUDViewShould : IntegrationTestSuite
     {
         private ChatHUDView view;
 
-        [SetUp]
-        public void SetUp()
+        protected override IEnumerator SetUp()
         {
+            yield return base.SetUp();
             view = ChatHUDView.Create();
+            IWebRequestAsyncOperation webRequestAsyncOperation = Substitute.For<IWebRequestAsyncOperation>();
+            Environment.i.platform.webRequest.GetTexture(default).ReturnsForAnyArgs(webRequestAsyncOperation);
         }
 
-        [TearDown]
-        public void TearDown()
+        protected override IEnumerator TearDown()
         {
+            yield return base.TearDown();
             view.Dispose();
         }
 
@@ -98,6 +105,106 @@ namespace DCL.Social.Chat
             entries[0].selectButton.onClick.Invoke();
 
             Assert.AreEqual("u1", suggestionSelected);
+        }
+
+        [UnityTest]
+        public IEnumerator SortEntriesByTimestamp()
+        {
+            view.SortingStrategy = new ChatEntrySortingByTimestamp();
+
+            var newMsg = new ChatEntryModel
+            {
+                timestamp = 200,
+                bodyText = "new",
+                isChannelMessage = false,
+                messageId = "msg1",
+                messageType = ChatMessage.Type.PRIVATE,
+                recipientName = "recipient",
+                senderName = "sender",
+                senderId = "senderId",
+                subType = ChatEntryModel.SubType.SENT,
+            };
+
+            var oldMsg = new ChatEntryModel
+            {
+                timestamp = 100,
+                bodyText = "old",
+                isChannelMessage = false,
+                messageId = "msg2",
+                messageType = ChatMessage.Type.PRIVATE,
+                recipientName = "recipient",
+                senderName = "sender",
+                senderId = "senderId",
+                subType = ChatEntryModel.SubType.RECEIVED,
+            };
+
+            view.AddEntry(newMsg);
+            view.AddEntry(oldMsg);
+
+            yield return null;
+
+            ChatEntry chatEntry = view.chatEntriesContainer.GetChild(0).GetComponent<ChatEntry>();
+            Assert.AreEqual(oldMsg, chatEntry.Model);
+
+            chatEntry = view.chatEntriesContainer.GetChild(1).GetComponent<ChatEntry>();
+            Assert.AreEqual(newMsg, chatEntry.Model);
+        }
+
+        [UnityTest]
+        public IEnumerator DontSortEntries()
+        {
+            view.SortingStrategy = new ChatEntrySortingSequentially();
+
+            var msg1 = new ChatEntryModel
+            {
+                timestamp = 100,
+                bodyText = "msg1",
+                isChannelMessage = false,
+                messageId = "msg1",
+                messageType = ChatMessage.Type.PUBLIC,
+                senderName = "sender",
+                senderId = "senderId",
+                subType = ChatEntryModel.SubType.SENT,
+            };
+
+            var msg2 = new ChatEntryModel
+            {
+                timestamp = 200,
+                bodyText = "msg2",
+                isChannelMessage = false,
+                messageId = "msg2",
+                messageType = ChatMessage.Type.PUBLIC,
+                senderName = "sender",
+                senderId = "senderId",
+                subType = ChatEntryModel.SubType.RECEIVED,
+            };
+
+            var msg3 = new ChatEntryModel
+            {
+                timestamp = 300,
+                bodyText = "msg3",
+                isChannelMessage = false,
+                messageId = "msg3",
+                messageType = ChatMessage.Type.PUBLIC,
+                senderName = "sender",
+                senderId = "senderId",
+                subType = ChatEntryModel.SubType.SENT,
+            };
+
+            view.AddEntry(msg1);
+            view.AddEntry(msg2);
+            view.AddEntry(msg3);
+
+            yield return null;
+
+            ChatEntry chatEntry = view.chatEntriesContainer.GetChild(0).GetComponent<ChatEntry>();
+            Assert.AreEqual(msg1, chatEntry.Model);
+
+            chatEntry = view.chatEntriesContainer.GetChild(1).GetComponent<ChatEntry>();
+            Assert.AreEqual(msg2, chatEntry.Model);
+
+            chatEntry = view.chatEntriesContainer.GetChild(2).GetComponent<ChatEntry>();
+            Assert.AreEqual(msg3, chatEntry.Model);
         }
     }
 }
