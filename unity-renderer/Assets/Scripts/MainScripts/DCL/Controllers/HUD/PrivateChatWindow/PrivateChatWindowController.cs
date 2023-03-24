@@ -84,8 +84,9 @@ public class PrivateChatWindowController : IHUD
                 }, ct);
             },
           socialAnalytics);
-        chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
+
         chatHudController.Initialize(view.ChatHUD);
+        chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
         chatHudController.OnSendMessage += HandleSendChatMessage;
         chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;

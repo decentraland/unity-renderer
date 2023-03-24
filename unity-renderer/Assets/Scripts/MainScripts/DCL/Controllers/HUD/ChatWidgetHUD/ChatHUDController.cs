@@ -4,7 +4,6 @@ using DCL.Chat;
 using DCL.Chat.HUD;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
@@ -44,6 +43,7 @@ public class ChatHUDController : IHUD
     private int mentionFromIndex;
     private Dictionary<string, UserProfile> mentionSuggestedProfiles;
 
+    private bool useLegacySorting => dataStore.featureFlags.flags.Get().IsFeatureEnabled("legacy_chat_sorting_enabled");
     private bool isMentionsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("chat_mentions_enabled");
 
     public IComparer<ChatEntryModel> SortingStrategy
@@ -95,6 +95,7 @@ public class ChatHUDController : IHUD
         this.view.OnMentionSuggestionSelected += HandleMentionSuggestionSelected;
         this.view.OnOpenedContextMenu -= OpenedContextMenu;
         this.view.OnOpenedContextMenu += OpenedContextMenu;
+        this.view.UseLegacySorting = useLegacySorting;
     }
 
     private void OpenedContextMenu()

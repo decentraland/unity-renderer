@@ -79,8 +79,8 @@ namespace DCL.Chat.HUD
                (name, count, ct) => chatMentionSuggestionProvider.GetProfilesFromChatChannelsStartingWith(name, channelId, count, ct),
                 socialAnalytics, profanityFilter);
 
-            chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
             chatHudController.Initialize(view.ChatHUD);
+            chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
             chatHudController.OnSendMessage += HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
             chatController.OnAddMessage += HandleMessageReceived;
