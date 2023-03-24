@@ -11,12 +11,13 @@ namespace DCL.ECSComponents
         private readonly int componentId;
 
         public PointerEventsRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponent<InternalPointerEvents> internalPointerEvents,
             IInternalECSComponent<InternalUiContainer> internalUiContainer,
             IInternalECSComponent<InternalInputEventResults> internalInputEventResults)
         {
             factory.AddOrReplaceComponent(componentId,
                 ProtoSerialization.Deserialize<PBPointerEvents>,
-                () => new UIPointerEventsHandler(internalInputEventResults, internalUiContainer, componentId));
+                () => new UIPointerEventsHandler(internalPointerEvents, internalInputEventResults, internalUiContainer, componentId));
 
             componentWriter.AddOrReplaceComponentSerializer<PBPointerEvents>(componentId, ProtoSerialization.Serialize);
 

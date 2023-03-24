@@ -14,13 +14,16 @@ namespace DCL.ECSComponents
         private UIEventsSubscriptions eventsSubscriptions;
 
         private readonly IInternalECSComponent<InternalInputEventResults> internalInputResults;
+        private readonly IInternalECSComponent<InternalPointerEvents> internalPointerEvents;
 
         public UIPointerEventsHandler(
+            IInternalECSComponent<InternalPointerEvents> internalPointerEvents,
             IInternalECSComponent<InternalInputEventResults> internalInputResults,
             IInternalECSComponent<InternalUiContainer> internalUiContainer,
             int componentId) : base(internalUiContainer, componentId)
         {
             this.internalInputResults = internalInputResults;
+            this.internalPointerEvents = internalPointerEvents;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -30,10 +33,30 @@ namespace DCL.ECSComponents
             RemoveComponentFromEntity(scene, entity);
             eventsSubscriptions?.Dispose();
             eventsSubscriptions = null;
+            internalPointerEvents.RemoveFor(scene, entity);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBPointerEvents model)
         {
+            InternalPointerEvents internalPointerEventsModel = new InternalPointerEvents();
+
+            for (int i = 0; i < model.PointerEvents.Count; i++)
+            {
+                var pointerEvent = model.PointerEvents[i];
+
+                InternalPointerEvents.Info info = new InternalPointerEvents.Info(
+                    pointerEvent.EventInfo.GetButton(),
+                    pointerEvent.EventInfo.GetHoverText(),
+                    pointerEvent.EventInfo.GetMaxDistance(),
+                    pointerEvent.EventInfo.GetShowFeedback());
+
+                InternalPointerEvents.Entry entry = new InternalPointerEvents.Entry(pointerEvent.EventType, info);
+                internalPointerEventsModel.PointerEvents.Add(entry);
+            }
+
+            internalPointerEvents.PutFor(scene, entity, internalPointerEventsModel);
+
+
             // PBPointerEvents is used for both 3D objects and UI
             // but for the former the handler is not needed.
             // TODO: how to avoid allocation of this class?

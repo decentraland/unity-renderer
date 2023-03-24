@@ -67,7 +67,7 @@ namespace DCL.ECSComponents
 
             // Multi-purposed components
             pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter,
-                internalComponents.uiContainerComponent, internalComponents.inputEventResultsComponent);
+                internalComponents.PointerEventsComponent, internalComponents.uiContainerComponent, internalComponents.inputEventResultsComponent);
 
             // UI components
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);

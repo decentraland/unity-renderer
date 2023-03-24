@@ -120,4 +120,37 @@ namespace DCL.ECS7.InternalComponents
             rootElement.name += $"(Id: {entityId})";
         }
     }
+
+    public class InternalPointerEvents : InternalComponent
+    {
+        public readonly struct Entry
+        {
+            public readonly PointerEventType EventType;
+            public readonly Info EventInfo;
+
+            public Entry(PointerEventType eventType, Info eventInfo)
+            {
+                EventType = eventType;
+                EventInfo = eventInfo;
+            }
+        }
+
+        public readonly struct Info
+        {
+            public readonly InputAction Button;
+            public readonly string HoverText;
+            public readonly float MaxDistance;
+            public readonly bool ShowFeedback;
+
+            public Info(InputAction button, string hoverText, float maxDistance, bool showFeedback)
+            {
+                Button = button;
+                HoverText = hoverText;
+                MaxDistance = maxDistance;
+                ShowFeedback = showFeedback;
+            }
+        }
+
+        public readonly List<Entry> PointerEvents = new List<Entry>();
+    }
 }
