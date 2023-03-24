@@ -1,3 +1,4 @@
+using System;
 using UnityEngine.Networking;
 
 namespace DCL
@@ -27,7 +28,7 @@ namespace DCL
                    request.result == UnityWebRequest.Result.ConnectionError &&
                    request.result == UnityWebRequest.Result.ProtocolError &&
                    !string.IsNullOrEmpty(request.error) &&
-                   request.error.ToLower().Contains("aborted");
+                   request.error.Contains("aborted", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
