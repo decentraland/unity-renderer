@@ -63,7 +63,7 @@ namespace DCL
             }
             catch (Exception e) when (!(e is OperationCanceledException))
             {
-                Debug.LogException(e);
+                // Debug.LogException(e);
                 fail(e);
             }
         }
@@ -95,7 +95,7 @@ namespace DCL
 
                 token.ThrowIfCancellationRequested();
 
-                await TaskUtils.RunThrottledCoroutine(ProcessGifData(images, gifStream.Header.width, gifStream.Header.height), fail, throttlingCounter.EvaluateTimeBudget)
+                await TaskUtils.RunThrottledCoroutine(ProcessGifData(images, gifStream.Header.Width, gifStream.Header.Height), fail, throttlingCounter.EvaluateTimeBudget)
                                .AttachExternalCancellation(token);
 
                 loadSuccsess(gifFrameData);
