@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -77,6 +78,8 @@ namespace DCL.Chat.HUD
             chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
                (name, count, ct) => chatMentionSuggestionProvider.GetProfilesFromChatChannelsStartingWith(name, channelId, count, ct),
                 socialAnalytics, profanityFilter);
+
+            chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;

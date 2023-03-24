@@ -43,18 +43,13 @@ public class ChatHUDController : IHUD
     private int mentionLength;
     private int mentionFromIndex;
     private Dictionary<string, UserProfile> mentionSuggestedProfiles;
-    private IComparer<ChatEntryModel> sortingStrategy;
 
     private bool isMentionsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("chat_mentions_enabled");
 
     public IComparer<ChatEntryModel> SortingStrategy
     {
-        get => sortingStrategy;
-
         set
         {
-            sortingStrategy = value;
-
             if (view != null)
                 view.SortingStrategy = value;
         }
@@ -77,7 +72,6 @@ public class ChatHUDController : IHUD
         this.getSuggestedUserProfiles = getSuggestedUserProfiles;
         this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
-        SortingStrategy = new ChatEntrySortingByTimestamp();
     }
 
     public void Initialize(IChatHUDComponentView view)
@@ -101,7 +95,6 @@ public class ChatHUDController : IHUD
         this.view.OnMentionSuggestionSelected += HandleMentionSuggestionSelected;
         this.view.OnOpenedContextMenu -= OpenedContextMenu;
         this.view.OnOpenedContextMenu += OpenedContextMenu;
-        this.view.SortingStrategy = SortingStrategy;
     }
 
     private void OpenedContextMenu()
