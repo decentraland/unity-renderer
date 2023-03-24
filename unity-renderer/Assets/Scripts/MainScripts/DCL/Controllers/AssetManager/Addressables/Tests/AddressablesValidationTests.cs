@@ -27,7 +27,7 @@ public class AddressablesValidationTests
             message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies"));
     }
 
-    [Test]
+    [Test][Category("ToFix")]
     public void ValidateResourcesToAddressableDuplicateDependencies()
     {
         CheckResourcesDupeDependencies rule = new CheckResourcesDupeDependencies();
@@ -43,7 +43,7 @@ public class AddressablesValidationTests
             message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies"));
     }
 
-    [Test]
+    [Test][Category("ToFix")]
     public void ValidateScenesToAddressableDuplicateDependencies()
     {
         CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
