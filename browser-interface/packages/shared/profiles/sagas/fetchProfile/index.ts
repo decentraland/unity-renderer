@@ -85,7 +85,7 @@ function* fetchWithBestStrategy(
   }
 
   // If any of the fetching options is available, race against them and return the one that retrieves the profile quicker and with the correct content
-  if (fetches.length) {
+  if (Object.values(fetches).length) {
     const { comms, catalyst } = yield race(fetches)
     if (comms) {
       return comms
