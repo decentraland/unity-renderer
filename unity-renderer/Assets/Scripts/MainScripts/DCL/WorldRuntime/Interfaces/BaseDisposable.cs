@@ -1,9 +1,12 @@
+using Cysharp.Threading.Tasks;
 using DCL.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
+using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace DCL.Components
 {
@@ -19,6 +22,7 @@ namespace DCL.Components
 
         public virtual void Initialize(IParcelScene scene, string id)
         {
+            Debug.Log("SOY UN BASE DISPOSABLE");
             this.scene = scene;
             this.id = id;
         }
@@ -35,9 +39,48 @@ namespace DCL.Components
 
         protected BaseModel model;
 
+        private bool calculateSize;
         public HashSet<IDCLEntity> GetAttachedEntities() { return attachedEntities; }
 
-        public virtual void UpdateFromJSON(string json) { UpdateFromModel(model.GetDataFromJSON(json)); }
+        public virtual void UpdateFromJSON(string json)
+        {
+            string srcAttribute = ExtractSrcAttribute(json);
+            if (!string.IsNullOrEmpty(srcAttribute) && !calculateSize)
+            {
+                calculateSize = true;
+                GetSize(srcAttribute);
+            }
+            UpdateFromModel(model.GetDataFromJSON(json));
+        }
+
+        public string ExtractSrcAttribute(string json)
+        {
+            string pattern = "\"src\":\\s*\"(.*?)\"";
+            Match match = Regex.Match(json, pattern);
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            return "";
+        }
+
+        async UniTaskVoid GetSize(string url)
+        {
+            UnityWebRequest request = UnityWebRequest.Head(url);
+            UniTask<UnityWebRequest> requestTask = request.SendWebRequest().ToUniTask();
+
+            await requestTask;
+
+            if (!request.isNetworkError && !request.isHttpError)
+            {
+                long sizeInBytes = long.Parse(request.GetResponseHeader("Content-Length"));
+                Debug.Log($"Size for {url} is {sizeInBytes}");
+            }
+            else
+            {
+                Debug.LogError($"Failed to get the size");
+            }
+        }
 
         public virtual void UpdateFromModel(BaseModel newModel)
         {
