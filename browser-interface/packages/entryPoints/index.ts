@@ -24,6 +24,8 @@ import 'unity-interface/trace'
 import Hls from './hlsLoader'
 import { loadWebsiteSystems } from './loadWebsiteSystems'
 import { isWebGLCompatible } from './validations'
+import * as Sentry from "@sentry/browser";
+import { BrowserTracing } from "@sentry/tracing";
 
 /**
  * `DecentralandKernel` needs to be global, it's how `exporer-website` calls the initialization
@@ -31,6 +33,8 @@ import { isWebGLCompatible } from './validations'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
+    initSentry()
+
     ensureWebGLCapability()
 
     ensureHLSCapability()
@@ -67,6 +71,18 @@ globalThis.DecentralandKernel = {
       hasStoredSession
     }
   }
+}
+
+function initSentry() {
+  Sentry.init({
+    dsn: 'https://e32771e19b294c268aa24df99e30fbd9@o4504361728212992.ingest.sentry.io/4504891409432576',
+    integrations: [new BrowserTracing()],
+
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0
+  })
 }
 
 function ensureHLSCapability() {
