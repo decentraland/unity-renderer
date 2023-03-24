@@ -18,7 +18,7 @@ namespace DCL.SettingsCommon
             mouseSensitivity = 0.6f,
             invertYAxis = false,
 
-            scenesLoadRadius = 4,
+            scenesLoadRadius = 2,
             avatarsLODDistance = 16,
             maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
             voiceChatVolume = 1,

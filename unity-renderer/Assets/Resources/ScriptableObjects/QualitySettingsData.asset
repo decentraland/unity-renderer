@@ -34,7 +34,7 @@ MonoBehaviour:
   - displayName: Medium
     baseResolution: 0
     antiAliasing: 1
-    renderScale: 1
+    renderScale: 0.801
     shadows: 1
     softShadows: 1
     shadowResolution: 1024
@@ -51,7 +51,7 @@ MonoBehaviour:
   - displayName: High
     baseResolution: 1
     antiAliasing: 2
-    renderScale: 0.75
+    renderScale: 0.901
     shadows: 1
     softShadows: 1
     shadowResolution: 2048
@@ -68,7 +68,7 @@ MonoBehaviour:
   - displayName: Ultra
     baseResolution: 1
     antiAliasing: 8
-    renderScale: 0.86
+    renderScale: 1
     shadows: 1
     softShadows: 1
     shadowResolution: 4096
