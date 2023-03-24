@@ -10,6 +10,8 @@ namespace DCL.Chat.HUD
         private bool isVisible;
         private string currentSearchText;
 
+        public IChannelMembersComponentView View => view;
+
         public NearbyMembersHUDController(
             IChannelMembersComponentView view,
             DataStore_Player playerDataStore,
