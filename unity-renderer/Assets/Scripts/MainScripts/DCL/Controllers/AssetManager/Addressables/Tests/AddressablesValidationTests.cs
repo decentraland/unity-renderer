@@ -11,7 +11,7 @@ public class AddressablesValidationTests
     private static readonly string[] EXCLUDED_FILE_TYPES = { }; // "shader", "png", "jpg"
     private const string NO_ISSUES_FOUND = "No issues found";
 
-    [Test]
+    [Test][Category("EditModeCI")]
     public void ValidateDuplicateBundleDependencies()
     {
         CheckBundleDupeDependencies rule = new CheckBundleDupeDependencies();
