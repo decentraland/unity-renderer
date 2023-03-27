@@ -29,7 +29,7 @@ namespace DCL.Chat.HUD
         private NearbyMembersHUDController nearbyMembersHUDController;
 
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
-        private int nearbyPlayersCount => dataStore.player.otherPlayers.Count();
+        private BaseDictionary<string, Player> nearbyPlayers => dataStore.player.otherPlayers;
 
         private bool isVisible;
 
@@ -81,8 +81,8 @@ namespace DCL.Chat.HUD
             chatController.OnChannelUpdated += HandleChannelUpdated;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
-            dataStore.player.otherPlayers.OnAdded += UpdateMembersCount;
-            dataStore.player.otherPlayers.OnRemoved += UpdateMembersCount;
+            nearbyPlayers.OnAdded += UpdateMembersCount;
+            nearbyPlayers.OnRemoved += UpdateMembersCount;
 
             view.OnShowMembersList += ShowMembersList;
             view.OnHideMembersList += HideMembersList;
@@ -124,8 +124,8 @@ namespace DCL.Chat.HUD
                 mouseCatcher.OnMouseLock -= Hide;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
-            dataStore.player.otherPlayers.OnAdded -= UpdateMembersCount;
-            dataStore.player.otherPlayers.OnRemoved -= UpdateMembersCount;
+            nearbyPlayers.OnAdded -= UpdateMembersCount;
+            nearbyPlayers.OnRemoved -= UpdateMembersCount;
 
             View?.Dispose();
             nearbyMembersHUDController.Dispose();
@@ -278,7 +278,7 @@ namespace DCL.Chat.HUD
                 channel.Name,
                 channel.Description,
                 channel.Joined,
-                nearbyPlayersCount,
+                nearbyPlayers.Count(),
                 channel.Muted,
                 showOnlyOnlineMembersOnPublicChannels);
 
@@ -306,6 +306,6 @@ namespace DCL.Chat.HUD
             Environment.i.world.teleportController.GoToCrowd();
 
         private void UpdateMembersCount(string userId, Player player) =>
-            View.UpdateMembersCount(nearbyPlayersCount);
+            View.UpdateMembersCount(nearbyPlayers.Count());
     }
 }
