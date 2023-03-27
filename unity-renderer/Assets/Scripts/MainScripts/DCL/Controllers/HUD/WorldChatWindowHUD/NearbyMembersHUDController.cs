@@ -58,7 +58,7 @@ namespace DCL.Chat.HUD
             foreach (var player in playerDataStore.otherPlayers.Get())
             {
                 if (!string.IsNullOrEmpty(textFilter) &&
-                    !player.Value.name.ToLower().Contains(textFilter.ToLower()))
+                    !player.Value.name.Contains(textFilter, StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 OnNearbyPlayersAdded(player.Key, player.Value);
@@ -71,7 +71,7 @@ namespace DCL.Chat.HUD
                 return;
 
             if (!string.IsNullOrEmpty(currentSearchText) &&
-                !player.name.ToLower().Contains(currentSearchText.ToLower()))
+                !player.name.Contains(currentSearchText, StringComparison.OrdinalIgnoreCase))
                 return;
 
             var otherProfile = userProfileBridge.Get(userId);
