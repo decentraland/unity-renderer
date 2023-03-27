@@ -292,6 +292,7 @@ namespace DCL.ABConverter
                     if (asset is Material material)
                     {
                         material.shader = Shader.Find("DCL/Universal Render Pipeline/Lit");
+                        SRPBatchingHelper.OptimizeMaterial(material);
                     }
 
                     if (asset is GameObject assetAsGameObject)

@@ -507,11 +507,8 @@ namespace DCL.ABConverter
 
                     ReduceTextureSizeIfNeeded(assetPath.hash + "/" + assetPath.hash + Path.GetExtension(assetPath.file), MAX_TEXTURE_SIZE);
                 }
-                else
-                {
-                    env.assetDatabase.ImportAsset(assetPath.finalPath, ImportAssetOptions.ForceUpdate);
-                    env.assetDatabase.SaveAssets();
-                }
+                env.assetDatabase.ImportAsset(assetPath.finalPath, ImportAssetOptions.ForceUpdate);
+                env.assetDatabase.SaveAssets();
 
                 SetDeterministicAssetDatabaseGuid(assetPath);
 
@@ -538,7 +535,7 @@ namespace DCL.ABConverter
 
             float maxTextureSize = maxSize;
 
-            if (width < maxTextureSize && height < maxTextureSize)
+            if (width <= maxTextureSize && height <= maxTextureSize)
                 return;
 
             if (width >= height)
@@ -555,9 +552,6 @@ namespace DCL.ABConverter
             UnityEngine.Object.DestroyImmediate(tmpTex);
 
             File.WriteAllBytes(finalTexturePath, endTex);
-
-            AssetDatabase.ImportAsset(finalDownloadedAssetDbPath + texturePath, ImportAssetOptions.ForceUpdate);
-            AssetDatabase.SaveAssets();
         }
 
         /// <summary>
