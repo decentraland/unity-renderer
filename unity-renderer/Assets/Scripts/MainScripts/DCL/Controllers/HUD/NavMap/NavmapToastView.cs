@@ -20,6 +20,10 @@ namespace DCL
 
         [SerializeField] internal Button goToButton;
 
+        [field: SerializeField]
+        [Tooltip("Distance in units")]
+        internal float distanceToCloseView { get; private set; } = 500;
+
         Vector2Int location;
         RectTransform rectTransform;
         MinimapMetadata minimapMetadata;
@@ -27,16 +31,16 @@ namespace DCL
         AssetPromise_Texture texturePromise;
         string currentImageUrl;
 
-        private void Open(int cursorTileX, int cursorTileY)
+        public void Open(Vector2Int parcel, Vector2 worldPosition)
         {
             if (gameObject.activeInHierarchy)
                 Close();
-            
-            var sceneInfo = minimapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
-            if (sceneInfo == null)
-                WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 15);
 
-            Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
+            var sceneInfo = minimapMetadata.GetSceneInfo(parcel.x, parcel.y);
+            if (sceneInfo == null)
+                WebInterface.RequestScenesInfoAroundParcel(parcel, 15);
+
+            Populate(parcel, worldPosition, sceneInfo);
         }
 
         private void Awake()
@@ -48,20 +52,11 @@ namespace DCL
         private void Start()
         {
             gameObject.SetActive(false);
-            
             goToButton.onClick.AddListener(OnGotoClick);
-            
-            minimapMetadata.OnSceneInfoUpdated += OnMapMetadataInfoUpdated;
-            MapRenderer.OnParcelClicked += Open;
-            MapRenderer.OnCursorFarFromParcel += Close;
         }
 
         private void OnDestroy()
         {
-            minimapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
-            MapRenderer.OnParcelClicked -= Open;
-            MapRenderer.OnCursorFarFromParcel -= Close;
-
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
@@ -69,7 +64,7 @@ namespace DCL
             }
         }
 
-        public void Populate(Vector2Int coordinates, MinimapMetadata.MinimapSceneInfo sceneInfo)
+        public void Populate(Vector2Int coordinates, Vector2 worldPosition, MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
             if (!gameObject.activeSelf)
                 AudioScriptableObjects.dialogOpen.Play(true);
@@ -80,7 +75,7 @@ namespace DCL
             scenePreviewImage.gameObject.SetActive(false);
             location = coordinates;
 
-            PositionToast(coordinates);
+            PositionToast(worldPosition);
 
             sceneLocationText.text = $"{coordinates.x}, {coordinates.y}";
 
@@ -88,7 +83,7 @@ namespace DCL
             sceneTitleText.text = "Untitled Scene";
 
             bool useDefaultThumbnail =
-                !sceneInfoExists || (sceneInfoExists && string.IsNullOrEmpty(sceneInfo.previewImageUrl));
+                !sceneInfoExists || string.IsNullOrEmpty(sceneInfo.previewImageUrl);
 
             if (useDefaultThumbnail)
             {
@@ -126,32 +121,12 @@ namespace DCL
             }
         }
 
-        public void OnMapMetadataInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
-        {
-            if (!gameObject.activeInHierarchy)
-                return;
-
-            bool updatedCurrentLocationInfo = false;
-            foreach (Vector2Int parcel in sceneInfo.parcels)
-            {
-                if (parcel == location)
-                {
-                    updatedCurrentLocationInfo = true;
-                    break;
-                }
-            }
-
-            if (updatedCurrentLocationInfo)
-                Populate(location, sceneInfo);
-        }
-
-        void PositionToast(Vector2Int coordinates)
+        private void PositionToast(Vector2 worldPosition)
         {
             if (toastContainer == null || rectTransform == null)
                 return;
-
-            // position the toast over the parcel parcelHighlightImage so that we can easily check with LOCAL pos info where it is on the screen
-            toastContainer.position = MapRenderer.i.GetParcelHighlightTransform();
+            
+            toastContainer.position = worldPosition;
 
             bool useBottom = toastContainer.localPosition.y > 0;
 
@@ -163,7 +138,7 @@ namespace DCL
 
             // By setting the pivot accordingly BEFORE we position the toast, we can have it always visible in an easier way
             toastContainer.pivot = new Vector2(shouldOffsetHorizontally ? (useLeft ? 1 : 0) : 0.5f, useBottom ? 1 : 0);
-            toastContainer.position = MapRenderer.i.GetParcelHighlightTransform();
+            toastContainer.position = worldPosition;
 
         }
 
@@ -182,7 +157,7 @@ namespace DCL
 
             Close();
         }
-        
+
         private void DisplayThumbnail(Texture2D texture)
         {
             scenePreviewImage.texture = texture;

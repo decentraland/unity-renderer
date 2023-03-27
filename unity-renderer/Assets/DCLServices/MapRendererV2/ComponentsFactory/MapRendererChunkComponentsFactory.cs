@@ -47,7 +47,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         async UniTask<MapRendererComponents> IMapRendererComponentsFactory.Create(CancellationToken cancellationToken)
         {
-            var configuration = Object.Instantiate(await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken));
+            var configuration = Object.Instantiate(await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken), new Vector3(10000, 10000, 0), Quaternion.identity);
             var coordsUtils = new ChunkCoordsUtils(parcelSize);
 
             // TODO implement Culling Controller

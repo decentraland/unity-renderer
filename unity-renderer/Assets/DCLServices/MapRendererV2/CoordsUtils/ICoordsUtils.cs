@@ -7,6 +7,8 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector2Int WorldMinCoords { get; }
         public Vector2Int WorldMaxCoords { get; }
 
+        Rect WorldBounds { get; }
+
         public int ParcelSize { get; }
 
         public Vector2Int PositionToCoords(Vector3 pos);

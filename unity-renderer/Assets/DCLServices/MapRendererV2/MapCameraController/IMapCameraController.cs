@@ -9,7 +9,11 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         RenderTexture GetRenderTexture();
 
+        void ResizeTexture(Vector2Int textureResolution);
+
         IMapInteractivityController GetInteractivityController();
+
+        float GetVerticalSizeInLocalUnits();
 
         float Zoom { get; }
 
@@ -27,7 +31,24 @@ namespace DCLServices.MapRendererV2.MapCameraController
         /// <param name="coordinates">Parcel-based unclamped coordinates</param>
         void SetPosition(Vector2 coordinates);
 
-        void SetZoomAndPosition(Vector2 coordinates, float value);
+        /// <summary>
+        /// Set Camera Position in local coordinates
+        /// </summary>
+        /// <param name="localCameraPosition"></param>
+        void SetLocalPosition(Vector2 localCameraPosition);
+
+        void SetPositionAndZoom(Vector2 coordinates, float value);
+
+        /// <summary>
+        /// Pauses rendering without releasing
+        /// (all logic under the hood keeps executing)
+        /// </summary>
+        void SuspendRendering();
+
+        /// <summary>
+        /// Resumes rendering
+        /// </summary>
+        void ResumeRendering();
 
         void Release();
     }

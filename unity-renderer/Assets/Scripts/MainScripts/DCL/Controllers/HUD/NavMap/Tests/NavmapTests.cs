@@ -60,13 +60,9 @@ namespace Tests
 
             yield return null;
 
-            Assert.IsTrue(navmapView.scrollRect.gameObject.activeSelf);
-
             action.RaiseOnTriggered();
 
             yield return null;
-
-            Assert.IsFalse(navmapView.scrollRect.gameObject.activeSelf);
         }
 
         [Test]

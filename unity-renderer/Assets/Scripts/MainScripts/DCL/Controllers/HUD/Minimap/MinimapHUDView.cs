@@ -1,5 +1,6 @@
 using System;
 using DCL;
+using DCLServices.MapRendererV2.ConsumerUtils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,7 +34,7 @@ public class MinimapHUDView : MonoBehaviour
     internal RawImage mapRendererTargetImage { get; private set; }
 
     [field: SerializeField]
-    internal int mapRendererTextureResolution { get; private set; }
+    internal PixelPerfectMapRendererTextureProvider pixelPerfectMapRendererTextureProvider { get; private set; }
 
     [field: SerializeField]
     internal int mapRendererVisibleParcels { get; private set; }

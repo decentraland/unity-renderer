@@ -78,7 +78,9 @@ namespace DCLServices.MapRendererV2.TestScene
             name.AddToClassList(MapRendererTestSceneStyles.GROUP_TITLE);
             controls.Add(name);
 
-            var texPreview = new Image { image = cameraController.GetRenderTexture() };
+            var renderTexture = cameraController.GetRenderTexture();
+
+            var texPreview = new Image { image = renderTexture };
             texPreview.AddToClassList(MapRendererTestSceneStyles.TEXTURE_PREVIEW);
             controls.Add(texPreview);
 
@@ -90,14 +92,22 @@ namespace DCLServices.MapRendererV2.TestScene
             position.RegisterValueChangedCallback(evt => cameraController.SetPosition(evt.newValue));
             controls.Add(position);
 
+            var newRes = new Vector2IntField("New Texture Resolution") { value = new Vector2Int(renderTexture.width, renderTexture.height) };
+            newRes.RegisterValueChangedCallback(evt =>
+            {
+                cameraController.ResizeTexture(evt.newValue);
+                texPreview.MarkDirtyRepaint();
+            });
+            controls.Add(newRes);
+
+            controls.Add(GetInteractivityControls(cameraController));
+
             controls.Add(new Button(() =>
             {
                 cameraController.Release();
                 rents.Remove(controls);
                 mapCameraControllers.Remove(cameraController);
             }) { text = "Release" });
-
-            controls.Add(GetInteractivityControls(cameraController));
 
             rents.Add(controls);
         }
@@ -112,7 +122,7 @@ namespace DCLServices.MapRendererV2.TestScene
             highlightEnabled.binding = new GetterBinding<bool>(highlightEnabled, () => interactivityController.HighlightEnabled);
             elements.Add(highlightEnabled);
 
-            var highlightCoordinates = new Vector2Field("Highlight normalized coords");
+            var highlightCoordinates = new Vector2IntField("Highlight parcel");
 
             var highlightButton = new Button(() => interactivityController.HighlightParcel(highlightCoordinates.value))
             {

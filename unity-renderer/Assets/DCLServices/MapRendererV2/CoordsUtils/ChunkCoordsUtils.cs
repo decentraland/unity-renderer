@@ -12,14 +12,14 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector2Int WorldMaxCoords => WORLD_MAX_COORDS;
 
         public int ParcelSize { get; }
-        
-        private Rect worldBounds;
+
+        public Rect WorldBounds { get; }
 
         public ChunkCoordsUtils(int parcelSize)
         {
             ParcelSize = parcelSize;
             var worldSize = ((Vector2)WorldMaxCoords - WorldMinCoords) * parcelSize;
-            worldBounds = new Rect(0, 0, worldSize.x, worldSize.y);
+            WorldBounds = new Rect(0, 0, worldSize.x, worldSize.y);
         }
 
         public Vector2Int PositionToCoords(Vector3 pos) =>
@@ -27,7 +27,7 @@ namespace DCLServices.MapRendererV2.CoordsUtils
 
         public Vector2Int? PositionToCoordsInWorld(Vector3 pos)
         {
-            if (!worldBounds.Contains(pos))
+            if (!WorldBounds.Contains(pos))
                 return null;
 
             return PositionToCoords(pos);
@@ -39,6 +39,7 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector3 CoordsToPositionUnclamped(Vector2 coords) => coords * ParcelSize;
 
         public Vector3 CoordsToPosition(Vector2Int coords) => (Vector2) (coords * ParcelSize);
+
         public Vector3 CoordsToPositionWithOffset(Vector2 coords) =>
             (coords * ParcelSize) - new Vector2(ParcelSize / 2f, ParcelSize / 2f);
 

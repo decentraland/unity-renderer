@@ -9,7 +9,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         /// <summary>
         /// Highlights the (hovered) parcel
         /// </summary>
-        void HighlightParcel(Vector2 normalizedCoordinates);
+        void HighlightParcel(Vector2Int parcel);
 
         void RemoveHighlight();
 
@@ -17,5 +17,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         /// Returns Parcel corresponding to the given (cursor) position within UI `RawImage`
         /// </summary>
         Vector2Int GetParcel(Vector2 normalizedCoordinates);
+
+        Vector2 GetNormalizedPosition(Vector2Int parcel);
     }
 }

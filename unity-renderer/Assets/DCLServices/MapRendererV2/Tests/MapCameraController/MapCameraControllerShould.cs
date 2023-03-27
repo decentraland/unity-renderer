@@ -23,6 +23,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             mapCameraObject = go.AddComponent<MapCameraObject>();
             mapCameraObject.mapCamera = go.AddComponent<Camera>();
             coordsUtils = Substitute.For<ICoordsUtils>();
+            coordsUtils.ParcelSize.Returns(10);
             culling = Substitute.For<IMapCullingController>();
 
             mapCamera = new MapRendererV2.MapCameraController.MapCameraController(
@@ -46,8 +47,8 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             Assert.NotNull(mapCamera.RenderTexture);
             Assert.AreEqual(30, mapCamera.RenderTexture.width);
             Assert.AreEqual(30, mapCamera.RenderTexture.height);
-            Assert.AreEqual(mapCamera.EnabledLayers, MapLayer.Atlas);
-            Assert.AreEqual(mapCamera.ZoomValues, new Vector2Int(10, 20));
+            Assert.AreEqual(MapLayer.Atlas, mapCamera.EnabledLayers);
+            Assert.AreEqual(new Vector2Int(100, 200), mapCamera.ZoomValues);
         }
 
         [Test]
@@ -66,20 +67,20 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             Assert.AreEqual(mapCamera.RenderTexture, renderTexture);
         }
 
-        [TestCase(-5, 100, 200, 100)]
-        [TestCase(0, 100, 200, 100)]
-        [TestCase(0.25f, 100, 200, 125)]
+        [TestCase(-5, 100, 200, 200)]
+        [TestCase(0, 100, 200, 200)]
+        [TestCase(0.75f, 100, 200, 125)]
         [TestCase(0.5f, 100, 200, 150)]
-        [TestCase(0.75f, 100, 200, 175)]
-        [TestCase(1f, 100, 200, 200)]
-        [TestCase(2f, 100, 200, 200)]
+        [TestCase(0.25f, 100, 200, 175)]
+        [TestCase(1f, 100, 200, 100)]
+        [TestCase(2f, 100, 200, 100)]
         public void SetZoom(float zoom, int minZoom, int maxZoom, float expected)
         {
             ((IMapCameraControllerInternal)mapCamera).Initialize(new Vector2Int(20, 20), new Vector2Int(100, 200), MapLayer.Atlas);
 
             mapCamera.SetZoom(zoom);
 
-            Assert.AreEqual(expected, mapCameraObject.mapCamera.orthographicSize);
+            Assert.AreEqual(expected, mapCameraObject.mapCamera.orthographicSize / coordsUtils.ParcelSize);
             culling.Received().SetCameraDirty(mapCamera);
         }
 
@@ -90,8 +91,19 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
 
             mapCamera.SetPosition(Vector2.one);
 
-            Assert.AreEqual(new Vector3(10, mapCamera.CAMERA_HEIGHT_EXPOSED, 10), mapCameraObject.transform.localPosition);
+            Assert.AreEqual(new Vector3(10, 10, mapCamera.CAMERA_HEIGHT_EXPOSED), mapCameraObject.transform.localPosition);
             culling.Received().SetCameraDirty(mapCamera);
+        }
+
+        [Test]
+        public void SetLocalPosition()
+        {
+            coordsUtils.WorldMinCoords.Returns(new Vector2Int(-10, -10));
+            coordsUtils.WorldMaxCoords.Returns(new Vector2Int(10, 10));
+
+            mapCamera.SetLocalPosition(new Vector2(0.5f, 0.5f));
+            Assert.AreEqual(new Vector3(0.5f, 0.5f, mapCamera.CAMERA_HEIGHT_EXPOSED), mapCameraObject.transform.localPosition);
+            culling.Received(1).SetCameraDirty(mapCamera);
         }
 
         [TestCase(true)]
