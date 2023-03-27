@@ -38,9 +38,10 @@ namespace Tests
             yield return null;
 
             Assert.IsTrue(controller.view.content.activeSelf, "teleport dialog should be visible");
+            Assert.IsTrue(controller.view.imageGotoMagic.gameObject.activeSelf, "magic should be visible");
 
-            yield return null;
-            Assert.IsFalse(controller.view.content.activeSelf, "teleport dialog should not be visible");
+            controller.view.Reset();
+            Assert.IsFalse(controller.view.imageGotoMagic.gameObject.activeSelf, "magic should be visible");
         }
     }
 }

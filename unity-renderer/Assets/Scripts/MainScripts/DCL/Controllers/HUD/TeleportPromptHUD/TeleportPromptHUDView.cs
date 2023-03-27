@@ -15,7 +15,8 @@ public class TeleportPromptHUDView : MonoBehaviour
     [SerializeField] private RawImage imageSceneThumbnail;
 
     [SerializeField] private Image imageGotoCrowd;
-    [SerializeField] private Image imageGotoMagic;
+    [SerializeField] internal Image imageGotoMagic;
+    [SerializeField] private Texture2D nullImage;
 
     [Header("Containers")]
     [SerializeField] private GameObject containerCoords;
@@ -110,8 +111,7 @@ public class TeleportPromptHUDView : MonoBehaviour
         textCoords.text = coords;
         textSceneName.text = sceneName;
         textSceneOwner.text = sceneCreator;
-
-        FetchScenePreviewImage(previewImageUrl);
+        SetParcelImage(previewImageUrl);
     }
 
     public void SetEventInfo(string eventName, string eventStatus, int attendeesCount)
@@ -119,48 +119,27 @@ public class TeleportPromptHUDView : MonoBehaviour
         containerEvent.SetActive(true);
         textEventInfo.text = eventStatus;
         textEventName.text = eventName;
-        textEventAttendees.text = string.Format("+{0}", attendeesCount);
-    }
-
-    private void Hide()
-    {
-        content.SetActive(false);
-
-        if (fetchParcelImageOp != null)
-            fetchParcelImageOp.Dispose();
-
-        if (downloadedBanner != null)
-        {
-            UnityEngine.Object.Destroy(downloadedBanner);
-            downloadedBanner = null;
-        }
-    }
-
-    private void FetchScenePreviewImage(string previewImageUrl)
-    {
-        if (string.IsNullOrEmpty(previewImageUrl))
-            return;
-
-        fetchParcelImageOp = Utils.FetchTexture(previewImageUrl, false, (texture) =>
-        {
-            downloadedBanner = texture;
-            imageSceneThumbnail.texture = texture;
-
-            imageSceneThumbnail.gameObject.SetActive(true);
-        });
+        textEventAttendees.text = $"+{attendeesCount}";
     }
 
     private AssetPromise_Texture texturePromise;
     public void SetParcelImage(string imageUrl)
     {
         containerMagic.SetActive(false);
-        if (string.IsNullOrEmpty(imageUrl)) return;
+        imageSceneThumbnail.gameObject.SetActive(true);
+
+        if (string.IsNullOrEmpty(imageUrl))
+        {
+            DisplayThumbnail(nullImage);
+            return;
+        }
 
         if (texturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(texturePromise);
 
         texturePromise = new AssetPromise_Texture(imageUrl, storeTexAsNonReadable: false);
         texturePromise.OnSuccessEvent += (textureAsset) => { DisplayThumbnail(textureAsset.texture); };
+        texturePromise.OnFailEvent += (x, e) => DisplayThumbnail(nullImage);
         AssetPromiseKeeper_Texture.i.Keep(texturePromise);
     }
 

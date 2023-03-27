@@ -109,7 +109,6 @@ public class TeleportPromptHUDController : IHUD
         teleportData = Utils.SafeFromJson<TeleportData>(teleportDataJson);
 
         dataStore.HUDs.gotoPanelVisible.Set(true, true);
-        dataStore.HUDs.gotoPanelCoordinates.Set(CoordinateUtils.ParseCoordinatesString(teleportData.destination));
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_MAGIC:
@@ -119,6 +118,7 @@ public class TeleportPromptHUDController : IHUD
                 view.ShowTeleportToCrowd();
                 break;
             default:
+                dataStore.HUDs.gotoPanelCoordinates.Set(CoordinateUtils.ParseCoordinatesString(teleportData.destination));
                 view.ShowTeleportToCoords(teleportData.destination,
                     teleportData.sceneData.name,
                     teleportData.sceneData.owner,

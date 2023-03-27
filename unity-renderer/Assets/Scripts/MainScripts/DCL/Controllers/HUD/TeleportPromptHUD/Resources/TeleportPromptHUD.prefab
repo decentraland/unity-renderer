@@ -3254,6 +3254,7 @@ MonoBehaviour:
   imageSceneThumbnail: {fileID: 3048943601260034934}
   imageGotoCrowd: {fileID: 9198878065920170117}
   imageGotoMagic: {fileID: 1356922945786626537}
+  nullImage: {fileID: 2800000, guid: 34d10cf7460a5b744ace5bdfde2f0a61, type: 3}
   containerCoords: {fileID: 7314736999172836456}
   containerMagic: {fileID: 5679412090479882597}
   containerCrowd: {fileID: 4246928146142105433}
