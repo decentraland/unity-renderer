@@ -4,6 +4,7 @@ using DCL.Chat;
 using DCL.Chat.HUD;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using NSubstitute;
 using NUnit.Framework;
