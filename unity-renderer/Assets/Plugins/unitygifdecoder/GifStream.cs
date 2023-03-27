@@ -27,12 +27,12 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
     ///                 var image = gifStream.ReadImage();
     ///                 // do something with image
     ///                 break;
-    ///
+    ///                     
     ///             case GifStream.Token.Comment:
     ///                 var comment = gifStream.ReadComment();
     ///                 // log this comment
     ///                 break;
-    ///
+    /// 
     ///             default:
     ///                 gifStream.SkipToken();
     ///                 // this token has no use for you, skip it
@@ -60,7 +60,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         /// <p>False by default, since web browsers skip text rendering completely</p>
         /// </summary>
         public bool DrawPlainTextBackground { get; set; }
-
+        
         /// <summary>
         /// Last encountered header data from stream
         /// </summary>
@@ -73,13 +73,13 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         /// <p>Essentially it equals to CurrentToken != EndOfFile</p>
         /// </summary>
         public bool HasMoreData => CurrentToken != Token.EndOfFile;
-
+        
         /// <summary>
         /// <p>Current stream token</p>
         /// <p>You should call matching read method or skip it</p>
         /// </summary>
         public Token CurrentToken { get; private set; }
-
+        
         /// <summary>
         /// Underlying stream which is used for gif data loading
         /// </summary>
@@ -88,7 +88,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             get => currentStream;
             set => SetStream(value);
         }
-
+        
         private Stream currentStream;
         private long headerStartPosition;
         private long firstFrameStartPosition;
@@ -116,10 +116,10 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             lzwDictionary = new GifLzwDictionary();
             canvas = new GifCanvas();
             blockReader = new GifBitBlockReader();
-
-            globalColorTable = new Color32[256];
-            localColorTable = new Color32[256];
-            headerBuffer = new byte[6];
+            
+            globalColorTable = new Color32[256]; 
+            localColorTable = new Color32[256]; 
+            headerBuffer = new byte[6]; 
             extensionApplicationBuffer = new byte[11];
             colorTableBuffer = new byte[768];
         }
@@ -167,7 +167,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             header = new GifHeader();
             imageDescriptor = new GifImageDescriptor();
             graphicControl = new GifGraphicControl();
-
+            
             currentStream = stream;
             CurrentToken = Token.Header;
             blockReader.SetStream(stream);
@@ -205,7 +205,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
                 default: throw new InvalidOperationException($"Cannot skip token {CurrentToken}");
             }
         }
-
+        
         /// <summary>
         /// Resets gif stream state, so you can read it from beginning again<br/>
         /// This is useful when you need to playback gif from memory
@@ -215,7 +215,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             var targetPosition = skipHeader && firstFrameStartPosition != -1
                 ? firstFrameStartPosition
                 : headerStartPosition;
-
+            
             if (currentStream.Position != targetPosition)
                 currentStream.Position = targetPosition;
 
@@ -239,7 +239,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             firstFrameStartPosition = -1;
             currentStream.Read(headerBuffer, 0, headerBuffer.Length);
 
-            if(BitUtils.CheckString(headerBuffer, "GIF87a"))
+            if(BitUtils.CheckString(headerBuffer, "GIF87a")) 
                 header.version = GifVersion.Gif87a;
             else if (BitUtils.CheckString(headerBuffer, "GIF89a"))
                 header.version = GifVersion.Gif89a;
@@ -247,19 +247,19 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
                 throw new ArgumentException("Invalid or corrupted Gif file");
 
             // Screen descriptor
-            header.Width = currentStream.ReadInt16LittleEndian();
-            header.Height = currentStream.ReadInt16LittleEndian();
+            header.width = currentStream.ReadInt16LittleEndian();
+            header.height = currentStream.ReadInt16LittleEndian();
 
             var flags = currentStream.ReadByte8();
             header.globalColorTableSize = BitUtils.GetColorTableSize(flags.GetBitsFromByte(0, 3));
             header.sortColors = flags.GetBitFromByte(3);
             header.colorResolution = flags.GetBitsFromByte(4, 3);
             header.hasGlobalColorTable = flags.GetBitFromByte(7);
-
+            
             header.transparentColorIndex = currentStream.ReadByte8();
             header.pixelAspectRatio = currentStream.ReadByte8();
 
-            canvas.SetSize(header.Width, header.Height);
+            canvas.SetSize(header.width, header.height);
 
             if (header.hasGlobalColorTable)
             {
@@ -314,7 +314,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         public GifGraphicControl ReadGraphicsControl()
         {
             AssertToken(Token.GraphicsControl);
-
+            
             currentStream.AssertByte(0x04);
             var graphicsFlags = currentStream.ReadByte8();
             var disposalMethodValue = graphicsFlags.GetBitsFromByte(2, 3);
@@ -348,9 +348,9 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             AssertToken(Token.ImageDescriptor);
             imageDescriptor.left = currentStream.ReadInt16LittleEndian();
             imageDescriptor.top = currentStream.ReadInt16LittleEndian();
-            imageDescriptor.Width = currentStream.ReadInt16LittleEndian();
-            imageDescriptor.Height = currentStream.ReadInt16LittleEndian();
-
+            imageDescriptor.width = currentStream.ReadInt16LittleEndian();
+            imageDescriptor.height = currentStream.ReadInt16LittleEndian();
+            
             var flags = currentStream.ReadByte8();
 
             imageDescriptor.localColorTableSize = BitUtils.GetColorTableSize(flags.GetBitsFromByte(0, 3));
@@ -377,23 +377,23 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         public GifImage ReadImage()
         {
             AssertToken(Token.Image);
-
+            
             var usedColorTable = imageDescriptor.hasLocalColorTable
                 ? localColorTable
                 : globalColorTable;
 
             var lzwMinCodeSize = currentStream.ReadByte8();
-
+            
             if(lzwMinCodeSize == 0 || lzwMinCodeSize > 8)
                 throw new ArgumentException("Invalid lzw min code size");
 
-            DecodeLzwImageToCanvas(lzwMinCodeSize,
-                imageDescriptor.left, imageDescriptor.top,
-                imageDescriptor.Width, imageDescriptor.Height, usedColorTable,
-                graphicControl.transparentColorIndex,
+            DecodeLzwImageToCanvas(lzwMinCodeSize, 
+                imageDescriptor.left, imageDescriptor.top, 
+                imageDescriptor.width, imageDescriptor.height, usedColorTable,
+                graphicControl.transparentColorIndex, 
                 imageDescriptor.isInterlaced, graphicControl.disposalMethod);
             DetermineNextToken();
-
+            
             return new GifImage
             {
                 colors = canvas.Colors,
@@ -416,12 +416,12 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         {
             AssertToken(Token.PlainText);
             currentStream.AssertByte(0x0c);
-
+            
             var result = new GifPlainText();
             result.left = currentStream.ReadInt16LittleEndian();
             result.top = currentStream.ReadInt16LittleEndian();
-            result.Width = currentStream.ReadInt16LittleEndian();
-            result.Height = currentStream.ReadInt16LittleEndian();
+            result.width = currentStream.ReadInt16LittleEndian();
+            result.height = currentStream.ReadInt16LittleEndian();
             result.charWidth = currentStream.ReadByte8();
             result.charHeight = currentStream.ReadByte8();
             result.foregroundColor = globalColorTable[currentStream.ReadByte8()];
@@ -469,12 +469,12 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
                         hasLoopCount = true;
                         loopCount = currentStream.ReadInt16LittleEndian();
                         break;
-
+                    
                     case 0x02:
                         hasBufferSize = true;
                         bufferSize = currentStream.ReadInt32LittleEndian();
                         break;
-
+                    
                     default:
                         currentStream.Seek(blockSize - 1, SeekOrigin.Current);
                         break;
@@ -482,7 +482,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             }
 
             DetermineNextToken();
-
+            
             return new GifNetscapeExtension
             {
                 hasLoopCount = hasLoopCount,
@@ -491,13 +491,13 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
                 bufferSize = bufferSize
             };
         }
-
+        
         public void SkipNetscapeExtension() => SkipBlock(Token.NetscapeExtension);
-
+        
         public GifApplicationExtension ReadApplicationExtension()
         {
             AssertToken(Token.ApplicationExtension);
-
+            
             var blocks = new List<byte[]>();
             var appName = Encoding.ASCII.GetString(extensionApplicationBuffer, 0, 8);
             var appCode = Encoding.ASCII.GetString(extensionApplicationBuffer, 8, 3);
@@ -508,14 +508,14 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
 
                 if (blockSize == 0)
                     break;
-
+                
                 var array = new byte[blockSize];
                 currentStream.Read(array, 0, blockSize);
                 blocks.Add(array);
             }
-
+            
             DetermineNextToken();
-
+            
             return new GifApplicationExtension
             {
                 applicationIdentifier = appName,
@@ -525,22 +525,22 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         }
 
         public void SkipApplicationExtension() => SkipBlock(Token.ApplicationExtension);
-
+        
         private void DecodeLzwImageToCanvas(int lzwMinCodeSize, int x, int y, int width, int height,
             Color32[] colorTable, int transparentColorIndex, bool isInterlaced, GifDisposalMethod disposalMethod)
         {
             if (header.hasGlobalColorTable)
                 canvas.BackgroundColor = globalColorTable[header.transparentColorIndex];
-
+            
             canvas.BeginNewFrame(x, y, width, height, colorTable, transparentColorIndex, isInterlaced, disposalMethod);
-
+            
             lzwDictionary.InitWithWordSize(lzwMinCodeSize);
             blockReader.StartNewReading();
-
+            
             lzwDictionary.DecodeStream(blockReader, canvas);
             blockReader.FinishReading();
         }
-
+        
         private Token DetermineNextToken()
         {
             while (true)
@@ -563,10 +563,10 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
                                 var token = BitUtils.CheckString(extensionApplicationBuffer, "NETSCAPE2.0")
                                     ? Token.NetscapeExtension
                                     : Token.ApplicationExtension;
-
+                                
                                 return SetCurrentToken(token);
                             }
-
+                                
                             default: BitUtils.SkipGifBlocks(currentStream); break;
                         }
 
@@ -587,13 +587,13 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
 
         private void FillPlainTextBackground(GifPlainText text)
         {
-            canvas.BeginNewFrame(text.left, text.top, text.Width, text.Height, globalColorTable,
+            canvas.BeginNewFrame(text.left, text.top, text.width, text.height, globalColorTable,
                 graphicControl.transparentColorIndex, imageDescriptor.isInterlaced, graphicControl.disposalMethod);
-
-            canvas.FillWithColor(text.left, text.top,
-                text.Width, text.Height, text.backgroundColor);
+            
+            canvas.FillWithColor(text.left, text.top, 
+                text.width, text.height, text.backgroundColor);
         }
-
+        
         private void AssertToken(Token token)
         {
             if (CurrentToken != token)
@@ -601,7 +601,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
                     $"Cannot invoke this method while current token is \"{CurrentToken}\", " +
                     $"method should be called when token is {token}");
         }
-
+        
         private void SkipBlock(Token token)
         {
             AssertToken(token);
