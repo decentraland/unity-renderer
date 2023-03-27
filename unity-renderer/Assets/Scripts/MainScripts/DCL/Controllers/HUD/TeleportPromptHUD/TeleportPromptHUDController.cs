@@ -52,7 +52,7 @@ public class TeleportPromptHUDController : IHUD
 
                 MinimapMetadata.MinimapSceneInfo sceneInfo = scenes.First(info => info.parcels.Exists(i => i.x == coordinates.x && i.y == coordinates.y));
                 view.ShowTeleportToCoords(coordinates.ToString(), sceneInfo.name, sceneInfo.owner, sceneInfo.previewImageUrl);
-                //view.SetParcelImage(sceneInfo.previewImageUrl);
+
                 teleportData = new TeleportData()
                 {
                     destination = coordinates.ToString(),
@@ -91,8 +91,9 @@ public class TeleportPromptHUDController : IHUD
         }
         else
         {
-            dataStore.HUDs.gotoPanelVisible.Set(false);
+            dataStore.HUDs.gotoPanelVisible.Set(false, false);
             view.SetOutAnimation();
+            view.Reset();
         }
     }
 
@@ -105,10 +106,10 @@ public class TeleportPromptHUDController : IHUD
         Utils.UnlockCursor();
 
         view.Reset();
-        SetVisibility(true);
-
         teleportData = Utils.SafeFromJson<TeleportData>(teleportDataJson);
 
+        dataStore.HUDs.gotoPanelVisible.Set(true, true);
+        dataStore.HUDs.gotoPanelCoordinates.Set(CoordinateUtils.ParseCoordinatesString(teleportData.destination));
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_MAGIC:
@@ -164,6 +165,7 @@ public class TeleportPromptHUDController : IHUD
 
     private void OnTeleportPressed()
     {
+        ChangeVisibility(false, false);
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_CROWD:

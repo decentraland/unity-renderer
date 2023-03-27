@@ -138,6 +138,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: bdbc7733c51e44718b2794d9b74dd50c, type: 3}
   - {fileID: 21300000, guid: 379157433051e4d4283a64dae91d86f2, type: 3}
   - {fileID: 21300000, guid: 446caa43f3cad4f7d8abc800a474534b, type: 3}
+  - {fileID: 21300000, guid: 9033ce43858a34293b6140b0e6b601f6, type: 3}
   - {fileID: 21300000, guid: 94352b53817657c429ced2d35262394c, type: 3}
   - {fileID: 21300000, guid: db1616631e9344b4aa7ce7fdb5218656, type: 3}
   - {fileID: 21300000, guid: 09d7c763693b246d7bdb6df137a6f0cc, type: 3}
@@ -280,6 +281,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0b63c85aaf7c44493a7613587a1a8a4f, type: 3}
   - {fileID: 21300000, guid: df21406aac3b94b18b9edcf3e6ae36c4, type: 3}
   - {fileID: 21300000, guid: 2656696aa53c7404f8c5fb49468ee219, type: 3}
+  - {fileID: 21300000, guid: b4596e7a9ada2624ab35886b5116684a, type: 3}
   - {fileID: 21300000, guid: cda51e8a359aa4105bbb5f2b2e27dd10, type: 3}
   - {fileID: 21300000, guid: 8db90f8afd6a349dea8d959b88ddae43, type: 3}
   - {fileID: 21300000, guid: ad45379ab95744ed290d6c7808b89084, type: 3}
@@ -480,6 +482,7 @@ SpriteAtlas:
   - RoundedLine
   - RectangleLoadingBar02
   - Pin
+  - BookIcon
   - Frame24
   - AcceptButton
   - CopyIconOutline
@@ -622,6 +625,7 @@ SpriteAtlas:
   - ContainerRadius16
   - CardCollectiblesIcon
   - PinOutline
+  - SupportIcon
   - RectRadius16
   - ContainerRectLeft14
   - CardPassportIcon

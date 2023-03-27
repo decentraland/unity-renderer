@@ -111,7 +111,6 @@ public class TeleportPromptHUDView : MonoBehaviour
         textSceneName.text = sceneName;
         textSceneOwner.text = sceneCreator;
 
-        Debug.Log($"prev {previewImageUrl}");
         FetchScenePreviewImage(previewImageUrl);
     }
 
@@ -147,10 +146,6 @@ public class TeleportPromptHUDView : MonoBehaviour
             downloadedBanner = texture;
             imageSceneThumbnail.texture = texture;
 
-            RectTransform rt = (RectTransform)imageSceneThumbnail.transform.parent;
-            float h = rt.rect.height;
-            float w = h * (texture.width / (float)texture.height);
-            imageSceneThumbnail.rectTransform.sizeDelta = new Vector2(w, h);
             imageSceneThumbnail.gameObject.SetActive(true);
         });
     }
