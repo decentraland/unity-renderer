@@ -67,6 +67,9 @@ export function* fetchInitialPortableExperiences() {
   if (Array.isArray(globalPortableExperiences)) {
     for (const id of globalPortableExperiences) {
       try {
+        // TODO: this is a horrible hack to give enough time to set the correct order between the px and
+        // the global avatar scene
+        yield delay(500)
         const px: LoadableScene = yield call(getPortableExperienceFromUrn, id)
         yield put(addKernelPortableExperience(px))
       } catch (err: any) {
