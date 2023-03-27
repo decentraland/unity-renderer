@@ -1,6 +1,7 @@
 import { RpcClient, RpcClientPort } from '@dcl/rpc'
 
 export const RENDERER_INITIALIZED_CORRECTLY = '[RENDERER] Renderer initialized correctly'
+export const AVATAR_SCENE_INITIALIZED = '[RENDERER] Avatar initialized correctly'
 export const PARCEL_LOADING_STARTED = '[RENDERER] Parcel loading started'
 export const RENDERER_INITIALIZE = '[RENDERER] Initializing'
 import * as codegen from '@dcl/rpc/dist/codegen'
@@ -13,6 +14,7 @@ export type RendererState = {
   clientPort: RpcClientPort | undefined
   rpcClient: RpcClient | undefined
   modules: RendererModules | undefined
+  avatarSceneInitialized: boolean
 }
 
 export type RendererModules = {
