@@ -9,18 +9,16 @@ namespace DCLServices.MapRendererV2.CoordsUtils
 
         Rect WorldBounds { get; }
 
-        public int ParcelSize { get; }
+        int ParcelSize { get; }
 
-        public Vector2Int PositionToCoords(Vector3 pos);
+        Vector2Int PositionToCoords(Vector3 pos);
 
-        public Vector2Int? PositionToCoordsInWorld(Vector3 pos);
+        Vector2 PositionToCoordsUnclamped(Vector3 pos);
 
-        public bool IsInsideWorldCoords(Vector2Int coords);
+        Vector3 CoordsToPositionUnclamped(Vector2 coords);
 
-        public Vector3 CoordsToPositionUnclamped(Vector2 coords);
+        Vector3 CoordsToPosition(Vector2Int coords);
 
-        public Vector3 CoordsToPosition(Vector2Int coords);
-
-        public Vector3 CoordsToPositionWithOffset(Vector2 coords);
+        Vector3 CoordsToPositionWithOffset(Vector2 coords);
     }
 }

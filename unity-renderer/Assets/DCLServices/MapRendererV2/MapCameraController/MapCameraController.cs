@@ -21,7 +21,9 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public float Zoom => Mathf.InverseLerp(zoomValues.y, zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
 
-        public Vector2 Position => mapCameraObject.mapCamera.transform.localPosition;
+        public Vector2 LocalPosition => mapCameraObject.mapCamera.transform.localPosition;
+
+        public Vector2 CoordsPosition => coordsUtils.PositionToCoordsUnclamped(LocalPosition);
 
         private readonly IMapInteractivityControllerInternal interactivityBehavior;
         private readonly ICoordsUtils coordsUtils;
@@ -32,6 +34,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         // Zoom Thresholds in Parcels
         private Vector2Int zoomValues;
+
+        private Rect cameraPositionBounds;
 
         public MapCameraController(
             IMapInteractivityControllerInternal interactivityBehavior,
@@ -59,6 +63,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             renderTexture.useMipMap = false;
 
             this.zoomValues = zoomValues * coordsUtils.ParcelSize;
+
             EnabledLayers = layers;
 
             mapCameraObject.mapCamera.targetTexture = renderTexture;
@@ -81,6 +86,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
             renderTexture.Create();
 
             Camera.ResetAspect();
+
+            SetLocalPosition(mapCameraObject.transform.localPosition);
         }
 
         private Vector2Int ClampTextureResolution(Vector2Int desiredRes)
@@ -105,37 +112,56 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void SetZoom(float value)
         {
-            value = Mathf.Clamp01(value);
-            mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.y, zoomValues.x, value);
+            SetCameraSize(value);
             cullingController.SetCameraDirty(this);
         }
 
         public void SetPosition(Vector2 coordinates)
         {
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.localPosition = new Vector3(position.x, position.y, CAMERA_HEIGHT);
+            mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             cullingController.SetCameraDirty(this);
         }
 
         public void SetLocalPosition(Vector2 localCameraPosition)
         {
-            var worldBounds = coordsUtils.WorldBounds;
-
-            var cameraPos = new Vector3(Mathf.Clamp(localCameraPosition.x, worldBounds.xMin, worldBounds.xMax),
-                Mathf.Clamp(localCameraPosition.y, worldBounds.yMin, worldBounds.yMax), CAMERA_HEIGHT);
-
-            mapCameraObject.transform.localPosition = cameraPos;
+            mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
             cullingController.SetCameraDirty(this);
         }
 
         public void SetPositionAndZoom(Vector2 coordinates, float value)
         {
-            value = Mathf.Clamp01(value);
-            mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.y, zoomValues.x, value);
+            SetCameraSize(value);
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.localPosition = new Vector3(position.x, position.y, CAMERA_HEIGHT);
+            mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             cullingController.SetCameraDirty(this);
+        }
+
+        private void SetCameraSize(float zoom)
+        {
+            zoom = Mathf.Clamp01(zoom);
+            mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.y, zoomValues.x, zoom);
+
+            CalculateCameraPositionBounds();
+        }
+
+        private Vector3 ClampLocalPosition(Vector3 localPos)
+        {
+            localPos.x = Mathf.Clamp(localPos.x, cameraPositionBounds.xMin, cameraPositionBounds.xMax);
+            localPos.y = Mathf.Clamp(localPos.y, cameraPositionBounds.yMin, cameraPositionBounds.yMax);
+            return localPos;
+        }
+
+        private void CalculateCameraPositionBounds()
+        {
+            var worldBounds = coordsUtils.WorldBounds;
+
+            var cameraYSize = mapCameraObject.mapCamera.orthographicSize;
+            var cameraXSize = cameraYSize * mapCameraObject.mapCamera.aspect;
+
+            cameraPositionBounds = Rect.MinMaxRect(worldBounds.xMin + cameraXSize, worldBounds.yMin + cameraYSize,
+                worldBounds.xMax - cameraXSize, worldBounds.yMax - cameraYSize);
         }
 
         public void SuspendRendering()

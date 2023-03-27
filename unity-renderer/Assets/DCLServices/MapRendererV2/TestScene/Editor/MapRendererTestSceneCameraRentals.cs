@@ -69,8 +69,6 @@ namespace DCLServices.MapRendererV2.TestScene
 
         private void AddMapCameraControllerControls(IMapCameraController cameraController, int index)
         {
-            // TODO add more controls
-
             var controls = new VisualElement();
             controls.AddToClassList(MapRendererTestSceneStyles.FUNCTION_GROUP);
 
@@ -88,9 +86,13 @@ namespace DCLServices.MapRendererV2.TestScene
             zoom.RegisterValueChangedCallback(eve => cameraController.SetZoom(eve.newValue));
             controls.Add(zoom);
 
-            var position = new Vector2Field("Position") { value = cameraController.Position };
-            position.RegisterValueChangedCallback(evt => cameraController.SetPosition(evt.newValue));
+            var position = new Vector2Field("Local Position") { value = cameraController.LocalPosition };
+            position.RegisterValueChangedCallback(evt => cameraController.SetLocalPosition(evt.newValue));
             controls.Add(position);
+
+            var coordinates = new Vector2Field("Coords Position") { value = cameraController.CoordsPosition };
+            coordinates.binding = new GetterBinding<Vector2>(coordinates, () => cameraController.CoordsPosition);
+            coordinates.RegisterValueChangedCallback(evt => cameraController.SetPosition(evt.newValue));
 
             var newRes = new Vector2IntField("New Texture Resolution") { value = new Vector2Int(renderTexture.width, renderTexture.height) };
             newRes.RegisterValueChangedCallback(evt =>

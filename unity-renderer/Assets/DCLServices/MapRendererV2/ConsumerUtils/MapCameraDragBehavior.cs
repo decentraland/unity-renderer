@@ -64,7 +64,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
             screenSpaceToLocalCameraPositionRatio = mapCameraController.GetVerticalSizeInLocalUnits() / (topRight - bottomLeft).y;
 
             pointerPositionOnDragBegin = eventData.position;
-            cameraPositionOnDragBegin = mapCameraController.Position;
+            cameraPositionOnDragBegin = mapCameraController.LocalPosition;
 
             dragging = true;
 
@@ -106,7 +106,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
         private async UniTaskVoid InertiaLoop(CancellationToken ct)
         {
-            var prevPosition = mapCameraController.Position;
+            var prevPosition = mapCameraController.LocalPosition;
             var inertialVelocity = Vector2.zero;
 
             while (true)
@@ -114,7 +114,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
                 await UniTask.NextFrame(PlayerLoopTiming.PostLateUpdate);
                 if (ct.IsCancellationRequested) break;
                 float unscaledDeltaTime = Time.unscaledDeltaTime;
-                var cameraLocalPos = mapCameraController.Position;
+                var cameraLocalPos = mapCameraController.LocalPosition;
 
                 if (dragging)
                 {

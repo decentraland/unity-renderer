@@ -17,7 +17,15 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         float Zoom { get; }
 
-        Vector2 Position { get; }
+        /// <summary>
+        /// Position in local coordinates
+        /// </summary>
+        Vector2 LocalPosition { get; }
+
+        /// <summary>
+        /// Position in parcels
+        /// </summary>
+        Vector2 CoordsPosition { get; }
 
         /// <summary>
         /// Zoom level normalized between 0 and 1

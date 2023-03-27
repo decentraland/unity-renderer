@@ -12,26 +12,22 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector2Int WorldMaxCoords => WORLD_MAX_COORDS;
 
         public int ParcelSize { get; }
-
         public Rect WorldBounds { get; }
 
         public ChunkCoordsUtils(int parcelSize)
         {
             ParcelSize = parcelSize;
-            var worldSize = ((Vector2)WorldMaxCoords - WorldMinCoords) * parcelSize;
-            WorldBounds = new Rect(0, 0, worldSize.x, worldSize.y);
+            //var worldSize = ((Vector2)WorldMaxCoords - WorldMinCoords) * parcelSize;
+            var min = WORLD_MIN_COORDS * parcelSize;
+            var max = WORLD_MAX_COORDS * parcelSize;
+            WorldBounds = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
         }
 
         public Vector2Int PositionToCoords(Vector3 pos) =>
             new (Mathf.CeilToInt(pos.x / ParcelSize), Mathf.CeilToInt(pos.y / ParcelSize));
 
-        public Vector2Int? PositionToCoordsInWorld(Vector3 pos)
-        {
-            if (!WorldBounds.Contains(pos))
-                return null;
-
-            return PositionToCoords(pos);
-        }
+        public Vector2 PositionToCoordsUnclamped(Vector3 pos) =>
+            pos / ParcelSize;
 
         public bool IsInsideWorldCoords(Vector2Int coords) =>
             coords.x >= WORLD_MIN_COORDS.x && coords.x >= WORLD_MAX_COORDS.x && coords.y >= WORLD_MIN_COORDS.y && coords.y >= WORLD_MAX_COORDS.y;
