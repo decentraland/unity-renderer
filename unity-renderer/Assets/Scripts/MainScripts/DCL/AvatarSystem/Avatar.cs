@@ -82,7 +82,6 @@ namespace AvatarSystem
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
-                Debug.Log($"Avatar {gpuSkinning.renderer.name} - LOAD {gpuSkinning} {gpuSkinning.renderer.name}", gpuSkinning.renderer.gameObject);
 
                 if (!gpuSkinningIsRegistered)
                 {
