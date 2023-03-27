@@ -46,14 +46,14 @@ namespace AvatarSystem
             {
                 //Old flow contains emotes among the wearablesIds
                 (List<WearableItem> wearableItems, List<WearableItem> emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
-                
+
                 HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
 
                 //New emotes flow use the emotes catalog
                 if (emoteIds != null)
                 {
                     DateTime startLoadTime = DateTime.Now;
-                    
+
                     var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
 
                     var loadTimeDelta = DateTime.Now - startLoadTime;
@@ -62,19 +62,19 @@ namespace AvatarSystem
                         //This error is good to have to detect too long load times early
                         Debug.LogError("Curate: emotes load time is too high: " + (DateTime.Now - startLoadTime));
                     }
-                    
+
                     if (moreEmotes != null)
                     {
                         //this filter is needed to make sure there will be no duplicates coming from two sources of emotes
                         var loadedEmotesFilter = new HashSet<string>();
                         emotes.ForEach(e => loadedEmotesFilter.Add(e.id));
-                        
+
                         foreach(var otherEmote in moreEmotes)
                             if (otherEmote != null)
                             {
                                 if (loadedEmotesFilter.Contains(otherEmote.id))
                                     continue;
-                                
+
                                 emotes.Add(otherEmote);
                             }
                     }
@@ -144,7 +144,6 @@ namespace AvatarSystem
             catch (Exception e)
             {
                 Debug.Log("Failed curating avatar wearables");
-                ExceptionDispatchInfo.Capture(e).Throw();
                 throw;
             }
         }
