@@ -25,7 +25,8 @@ public class ECSSystemsController : IDisposable
     private readonly IList<ECS7System> lateUpdateSystems;
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
-    private readonly ECS7System internalComponentWriteSystem;
+    private readonly ECS7System internalComponentMarkDirtySystem;
+    private readonly ECS7System internalComponentRemoveDirtySystem;
     private readonly ECSScenesUiSystem uiSystem;
     private readonly ECSBillboardSystem billboardSystem;
     private readonly ECSCameraEntitySystem cameraEntitySystem;
@@ -41,7 +42,8 @@ public class ECSSystemsController : IDisposable
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
-        this.internalComponentWriteSystem = context.internalEcsComponents.WriteSystemUpdate;
+        this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
+        this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
 
         var canvas = Resources.Load<GameObject>("ECSInteractionHoverCanvas");
         hoverCanvas = Object.Instantiate(canvas);
@@ -128,13 +130,28 @@ public class ECSSystemsController : IDisposable
 
     private void Update()
     {
-        componentWriteSystem.Invoke();
+        try
+        {
+            componentWriteSystem.Invoke();
+            internalComponentMarkDirtySystem.Invoke();
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
 
         int count = updateSystems.Count;
 
         for (int i = 0; i < count; i++)
         {
-            updateSystems[i].Invoke();
+            try
+            {
+                updateSystems[i].Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
     }
 
@@ -144,9 +161,23 @@ public class ECSSystemsController : IDisposable
 
         for (int i = 0; i < count; i++)
         {
-            lateUpdateSystems[i].Invoke();
+            try
+            {
+                lateUpdateSystems[i].Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
-        internalComponentWriteSystem.Invoke();
+        try
+        {
+            internalComponentRemoveDirtySystem.Invoke();
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
     }
 }

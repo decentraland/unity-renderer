@@ -4,8 +4,8 @@ import {
   EAType,
   EngineApiServiceDefinition,
   queryTypeToJSON
-} from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
-import type { EventData, ManyEntityAction, Payload } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
+} from 'shared/protocol/decentraland/kernel/apis/engine_api.gen'
+import type { EventData, ManyEntityAction, Payload } from 'shared/protocol/decentraland/kernel/apis/engine_api.gen'
 
 import type { PortContext } from './context'
 import type { EntityAction, EntityActionType } from 'shared/types'

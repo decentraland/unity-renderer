@@ -35,6 +35,8 @@ public class UserProfileController : MonoBehaviour
 
     [NonSerialized] public UserProfile ownUserProfile;
 
+    public UserProfileDictionary AllProfiles => userProfilesCatalog;
+
     public void Awake()
     {
         i = this;

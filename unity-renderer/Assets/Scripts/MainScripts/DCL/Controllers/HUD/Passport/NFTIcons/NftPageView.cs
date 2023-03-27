@@ -47,15 +47,15 @@ public class NftPageView : BaseComponentView
     {
         nftElement.onMarketplaceButtonClick.RemoveAllListeners();
         nftElement.onDetailInfoButtonClick.RemoveAllListeners();
-        nftElement.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(nftElement.model.nftId));
+        nftElement.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(nftElement.model.nftInfo));
         nftElement.onDetailInfoButtonClick.AddListener(() => ClickOnDetailInfo(idIndex, showInLeftSide: idIndex == 3));
         nftElement.onFocused -= FocusNftItem;
         nftElement.onFocused += FocusNftItem;
     }
 
-    private void ClickOnBuyWearable((string, string) ids)
+    private void ClickOnBuyWearable(NftInfo idsAndCategory)
     {
-        OnClickBuyNft?.Invoke(ids.Item1, ids.Item2);
+        OnClickBuyNft?.Invoke(idsAndCategory.Id, idsAndCategory.Category);
     }
 
     private void ClickOnDetailInfo(int index, bool showInLeftSide)

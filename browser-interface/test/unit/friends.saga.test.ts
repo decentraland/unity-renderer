@@ -1,16 +1,16 @@
 import {
   FriendRequestInfo,
   FriendshipErrorCode
-} from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
+} from 'shared/protocol/decentraland/renderer/common/friend_request_common.gen'
 import {
   FriendshipStatus,
   GetFriendshipStatusRequest
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+} from 'shared/protocol/decentraland/renderer/kernel_services/friends_kernel.gen'
 import {
   CancelFriendRequestPayload,
   GetFriendRequestsReplyOk,
   SendFriendRequestPayload
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+} from 'shared/protocol/decentraland/renderer/kernel_services/friend_request_kernel.gen'
 import {
   Conversation,
   ConversationType,
@@ -48,7 +48,7 @@ import {
 } from 'shared/types'
 import sinon, { assert } from 'sinon'
 import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
-import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
+import { GetMutualFriendsRequest } from 'shared/protocol/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 function getMockedAvatar(userId: string, name: string): ProfileUserInfo {
   return {
@@ -601,7 +601,7 @@ describe('Friends sagas', () => {
           ]
         ])
         .dispatch(setMatrixClient(stubClient))
-        .silentRun() // due to initializeStatusUpdateInterval saga is a while(true) gen
+        .silentRun(0) // due to initializeStatusUpdateInterval saga is a while(true) gen
       unityMock.verify()
     })
 
@@ -645,7 +645,7 @@ describe('Friends sagas', () => {
           ]
         ])
         .dispatch(setMatrixClient(client))
-        .silentRun()
+        .silentRun(0)
       unityMock.verify()
     })
 
@@ -668,7 +668,7 @@ describe('Friends sagas', () => {
           ]
         ])
         .dispatch(setMatrixClient(stubClient))
-        .silentRun()
+        .silentRun(0)
       unityMock.verify()
     })
   })

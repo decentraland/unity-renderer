@@ -6,7 +6,7 @@ import { getRealmAdapter } from 'shared/realm/selectors'
 import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import type { RpcServerPort } from '@dcl/rpc/dist/types'
-import { EnvironmentApiServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/environment_api.gen'
+import { EnvironmentApiServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/environment_api.gen'
 import type {
   AreUnsafeRequestAllowedResponse,
   BootstrapDataResponse,
@@ -15,7 +15,7 @@ import type {
   GetExplorerConfigurationResponse,
   GetPlatformResponse,
   PreviewModeResponse
-} from '@dcl/protocol/out-ts/decentraland/kernel/apis/environment_api.gen'
+} from 'shared/protocol/decentraland/kernel/apis/environment_api.gen'
 import type { EnvironmentRealm } from '../IEnvironmentAPI'
 import { Platform } from '../IEnvironmentAPI'
 import type { PortContextService } from './context'

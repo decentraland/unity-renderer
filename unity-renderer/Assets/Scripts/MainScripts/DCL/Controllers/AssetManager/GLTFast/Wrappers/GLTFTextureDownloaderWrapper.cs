@@ -27,11 +27,23 @@ namespace DCL.GLTFast.Wrappers
         {
             get
             {
-                Texture2D texture2D;
-
-                if (asyncOp.webRequest.downloadHandler is DownloadHandlerTexture downloadHandlerTexture) { texture2D = downloadHandlerTexture.texture; }
-                else { return null; }
-
+                Texture2D texture2D = new Texture2D(1, 1);
+                if (asyncOp.webRequest.downloadHandler.data != null)
+                {
+                    try
+                    {
+                        texture2D.LoadImage(asyncOp.webRequest.downloadHandler.data);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"Texture promise failed: {e}");
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
 #if UNITY_WEBGL
                 texture2D.Compress(false);
 #endif

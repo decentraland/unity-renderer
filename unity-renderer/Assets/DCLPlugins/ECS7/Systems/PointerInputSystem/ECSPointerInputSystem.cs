@@ -74,8 +74,6 @@ namespace ECSSystems.PointerInputSystem
             bool hasAnyButtonChangedItsState = false;
             bool hasHoverEventEmitted = false;
 
-            var inputActionEnum = (WebInterface.ACTION_BUTTON[]) Enum.GetValues(typeof(WebInterface.ACTION_BUTTON));
-
             // Emit command for button states
             var curState = state.dataStoreEcs7.inputActionState;
             var prevState = state.inputActionState;
@@ -86,7 +84,7 @@ namespace ECSSystems.PointerInputSystem
                 if (curState[i] != prevState[i])
                 {
                     PointerEventType pointerEventType = curState[i] ? PointerEventType.PetDown : PointerEventType.PetUp;
-                    InputAction inputAction = (InputAction)inputActionEnum[i];
+                    InputAction inputAction = (InputAction)i;
 
                     if (colliderData != null)
                     {
@@ -237,7 +235,7 @@ namespace ECSSystems.PointerInputSystem
             IReadOnlyList<IParcelScene> loadedScenes = state.dataStoreEcs7.scenes;
             for (int i = 0; i < loadedScenes.Count; i++)
             {
-                if (loadedScenes[i] != skipScene && loadedScenes[i].crdtExecutor != null)
+                if (loadedScenes[i] != skipScene)
                 {
                     AddInputResultEvent(state, buttonId, loadedScenes[i], entityId, ray, raycastHit, pointerEventType);
                 }

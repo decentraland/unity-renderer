@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace DCL
 {
     public class DataStore_Channels
@@ -11,5 +13,19 @@ namespace DCL
         public readonly BaseVariable<string> leaveChannelError = new BaseVariable<string>();
         public readonly BaseVariable<string> channelToBeOpened = new BaseVariable<string>();
         public readonly BaseVariable<bool> isPromoteToastVisible = new BaseVariable<bool>();
+        public readonly BaseDictionary<string, HashSet<string>> availableMembersByChannel = new ();
+
+        public void SetAvailableMemberInChannel(string userId, string channelId)
+        {
+            if (string.IsNullOrEmpty(userId)) return;
+
+            if (!availableMembersByChannel.ContainsKey(channelId))
+                availableMembersByChannel.Add(channelId, new HashSet<string>());
+
+            HashSet<string> availableMembers = availableMembersByChannel[channelId];
+
+            if (!availableMembers.Contains(userId))
+                availableMembers.Add(userId);
+        }
     }
 }

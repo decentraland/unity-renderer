@@ -1,4 +1,4 @@
-import type { UnityGame } from '@dcl/unity-renderer/src/index'
+import type { UnityGame } from 'unity-interface/loader'
 import { CommonRendererOptions } from './loader'
 import { webSocketTransportAdapter } from 'renderer-protocol/transports/webSocketTransportAdapter'
 import { Transport } from '@dcl/rpc'

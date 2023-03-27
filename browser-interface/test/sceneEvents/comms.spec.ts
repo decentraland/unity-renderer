@@ -1,24 +1,24 @@
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { expect } from 'chai'
 import mitt from 'mitt'
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
 import { toEnvironmentRealmType } from 'shared/apis/host/EnvironmentAPI'
+import { setCommsIsland, setRoomConnection } from 'shared/comms/actions'
 import { bindHandlersToCommsContext } from 'shared/comms/handlers'
 import { RoomConnection } from 'shared/comms/interface'
 import { disconnectRoom, handleNewCommsContext } from 'shared/comms/sagas'
 import { commsEstablished } from 'shared/loading/types'
+import { saveProfileDelta } from 'shared/profiles/actions'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { setRealmAdapter } from 'shared/realm/actions'
+import { localCommsService } from 'shared/realm/local-services/comms'
 import { legacyServices } from 'shared/realm/local-services/legacy'
 import { realmToConnectionString } from 'shared/realm/resolver'
 import { IRealmAdapter } from 'shared/realm/types'
+import { getRealmAdapterAndIsland, sceneEventsSaga, updateLocation } from 'shared/sceneEvents/sagas'
 import { reducers } from 'shared/store/rootReducer'
-import { setCommsIsland, setRoomConnection } from '../../packages/shared/comms/actions'
-import { saveProfileDelta } from '../../packages/shared/profiles/actions'
-import { localCommsService } from '../../packages/shared/realm/local-services/comms'
-import { getRealmAdapterAndIsland, sceneEventsSaga, updateLocation } from '../../packages/shared/sceneEvents/sagas'
-import { allScenesEvent } from '../../packages/shared/world/parcelSceneManager'
+import { allScenesEvent } from 'shared/world/parcelSceneManager'
 
 const about: AboutResponse = {
   comms: { healthy: false, protocol: 'v2' },
@@ -71,7 +71,7 @@ describe('when the realm change: SET_WORLD_CONTEXT', () => {
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'onRealmChanged', payload: toEnvironmentRealmType(realmAdapter, island) })
       .call(updateLocation, realmToConnectionString(realmAdapter), island)
-      .run()
+      .silentRun(0)
   })
 
   it('should call allScene events with null island', () => {
@@ -82,7 +82,7 @@ describe('when the realm change: SET_WORLD_CONTEXT', () => {
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'onRealmChanged', payload: toEnvironmentRealmType(realmAdapter, island) })
       .call(updateLocation, realmToConnectionString(realmAdapter), island)
-      .run()
+      .silentRun(0)
   })
 
   it('should call allScene events fn with the specified realm & island', () => {
@@ -94,7 +94,7 @@ describe('when the realm change: SET_WORLD_CONTEXT', () => {
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'onRealmChanged', payload: toEnvironmentRealmType(realmAdapter, island) })
       .call(updateLocation, realmToConnectionString(realmAdapter), island)
-      .run()
+      .silentRun(0)
   })
 })
 
@@ -108,7 +108,7 @@ describe('Comms adapter', () => {
       .dispatch(action)
       .call(bindHandlersToCommsContext, action.payload)
       .put(commsEstablished())
-      .run()
+      .silentRun(0)
   })
 
   it('setting new adapter disconnects old adapter', async () => {
@@ -127,7 +127,7 @@ describe('Comms adapter', () => {
       .call(bindHandlersToCommsContext, action.payload)
       .put(commsEstablished())
       .call(disconnectRoom, oldAdapter)
-      .run()
+      .silentRun(0)
   })
 })
 
@@ -141,7 +141,7 @@ describe('when the island changes: SET_COMMS_ISLAND', () => {
       .dispatch(action)
       .not.call.fn(allScenesEvent)
       .call(updateLocation, undefined, island)
-      .run()
+      .silentRun(0)
   })
 
   it('should call allScene events fn with the specified realm & island', () => {
@@ -154,7 +154,7 @@ describe('when the island changes: SET_COMMS_ISLAND', () => {
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'onRealmChanged', payload: toEnvironmentRealmType(realmAdapter, island) })
       .call(updateLocation, realmToConnectionString(realmAdapter), island)
-      .run()
+      .silentRun(0)
   })
 })
 
@@ -170,6 +170,6 @@ describe('when the profile updates successfully: SAVE_PROFILE_SUCCESS', () => {
       .provide([[select(getCurrentUserProfile), payload]])
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'profileChanged', payload })
-      .run()
+      .silentRun(0)
   })
 })

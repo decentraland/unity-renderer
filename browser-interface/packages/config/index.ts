@@ -51,6 +51,8 @@ export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LO
 export const DEBUG_KERNEL_LOG = !PREVIEW || location.search.includes('DEBUG_KERNEL_LOG')
 export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
 
+export const PIPE_SCENE_CONSOLE = location.search.includes('PIPE_SCENE_CONSOLE')
+
 export const RESET_TUTORIAL = location.search.includes('RESET_TUTORIAL')
 
 export const CATALYSTS_FROM_DAO_CONTRACT = location.search.includes('CATALYSTS_FROM_DAO_CONTRACT')
@@ -204,7 +206,14 @@ export namespace ethereumConfigurations {
   }
 }
 
-export const isRunningTest: boolean = (globalThis as any)['isRunningTests'] === true
+const testConfig = {
+  isRunningTest: false
+}
+export const setRunningTest = (test: boolean) => {
+  testConfig.isRunningTest = test
+}
+export const isRunningTest = () => testConfig.isRunningTest
+export const PORTABLE_EXPERIENCES_DEBOUNCE_DELAY = () => (isRunningTest() ? 1 : 100)
 
 function addHttpsIfNoProtocolIsSet(domain: string): string
 function addHttpsIfNoProtocolIsSet(domain: undefined): undefined

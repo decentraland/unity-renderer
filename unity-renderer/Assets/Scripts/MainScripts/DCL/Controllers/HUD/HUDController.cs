@@ -18,6 +18,7 @@ using UnityEngine;
 public class HUDController : IHUDController
 {
     private const string TOGGLE_UI_VISIBILITY_ASSET_NAME = "ToggleUIVisibility";
+    private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     static bool VERBOSE = false;
     public static HUDController i { get; private set; }
@@ -26,7 +27,7 @@ public class HUDController : IHUDController
 
     private readonly IWearablesCatalogService wearablesCatalogService;
     private InputAction_Trigger toggleUIVisibilityTrigger;
-    private DataStore_FeatureFlag featureFlags;
+    private DataStore dataStore;
 
     private readonly DCL.NotificationModel.Model hiddenUINotification = new DCL.NotificationModel.Model()
     {
@@ -35,11 +36,11 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public HUDController(IWearablesCatalogService wearablesCatalogService, DataStore_FeatureFlag featureFlags, IHUDFactory hudFactory = null)
+    public HUDController(IWearablesCatalogService wearablesCatalogService, DataStore dataStore, IHUDFactory hudFactory = null)
     {
         this.wearablesCatalogService = wearablesCatalogService;
         this.hudFactory = hudFactory;
-        this.featureFlags = featureFlags;
+        this.dataStore = dataStore;
     }
 
     public void Initialize()
@@ -144,7 +145,7 @@ public class HUDController : IHUDController
         bool anyInputFieldIsSelected = InputProcessor.FocusIsInInputField();
 
         if (anyInputFieldIsSelected ||
-            DataStore.i.exploreV2.isOpen.Get() ||
+            dataStore.exploreV2.isOpen.Get() ||
             CommonScriptableObjects.tutorialActive)
             return;
 
@@ -184,7 +185,7 @@ public class HUDController : IHUDController
             case HUDElementID.NOTIFICATION:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (NotificationsController.i != null)
-                    NotificationsController.i.Initialize(notificationHud, DataStore.i.notifications);
+                    NotificationsController.i.Initialize(notificationHud, dataStore.notifications);
                 break;
             case HUDElementID.AVATAR_EDITOR:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
@@ -468,7 +469,7 @@ public class HUDController : IHUDController
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"Failed to load HUD element resource {hudElements[id].GetType().Name}. Exception message: {e.Message}");
+                Debug.LogWarning($"Failed to load HUD element resource {id}. Exception message: {e.Message}");
             }
         }
     }
@@ -555,7 +556,7 @@ public class HUDController : IHUDController
             "dcl://halloween_2019/bride_of_frankie_upper_body",
             "dcl://halloween_2019/creepy_nurse_upper_body",
         });
-        Resources.Load<StringVariable>("CurrentPlayerInfoCardId").Set(newModel.userId);
+        dataStore.HUDs.currentPlayerId.Set((newModel.userId, OPEN_PASSPORT_SOURCE));
     }
 #endif
     public void Dispose()

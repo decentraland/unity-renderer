@@ -1,14 +1,16 @@
-using System;
-using System.Collections.Generic;
 using DCL;
+using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Interface;
 using DCL.Models;
 using ECSSystems.PointerInputSystem;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
@@ -43,7 +45,8 @@ namespace Tests
 
             var componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             var componentsComposer = new ECS7ComponentsComposer(componentsFactory,
                 Substitute.For<IECSComponentWriter>(), internalComponents);
@@ -63,7 +66,14 @@ namespace Tests
                 worldState,
                 dataStoreEcs7);
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            // systemUpdate = () =>
+            // {
+            //     internalComponents.MarkDirtyComponentsUpdate();
+            //     inputSystemUpdate();
+            //     internalComponents.ResetDirtyComponentsUpdate();
+            // };
+
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             inputEventResultsComponent = internalComponents.inputEventResultsComponent;
 
             scene = testUtils.CreateScene(666);
@@ -195,6 +205,7 @@ namespace Tests
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
             Assert.AreEqual(result.model.events.Count, 3);
+
             // up, hover and leave
 
             var result2 = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -202,7 +213,6 @@ namespace Tests
 
             Assert.AreEqual(enqueuedEvent.type, PointerEventType.PetUp);
             Assert.IsFalse(enqueuedEvent.hit.HasEntityId);
-
         }
 
         [Test]
@@ -443,7 +453,7 @@ namespace Tests
 
             systemUpdate();
 
-            interactionHoverCanvas.Received( MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
+            interactionHoverCanvas.Received(MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
             interactionHoverCanvas.DidNotReceive().SetTooltipText(Arg.Any<int>(), Arg.Any<string>());
             interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<InputAction>());
             interactionHoverCanvas.DidNotReceive().Show();
@@ -551,24 +561,25 @@ namespace Tests
         }
 
         [Test]
-        [TestCase(0,0)]
-        [TestCase(66,66)]
+        [TestCase(0, 0)]
+        [TestCase(66, 66)]
         public void ReturnResultHitPositionInSceneSpace(int sceneBaseCoordX, int sceneBaseCoordY)
         {
             // 1. Set scene, entity and its collider
             Vector2Int sceneBaseCoords = new Vector2Int(sceneBaseCoordX, sceneBaseCoordY);
-            var newTestScene = testUtils.CreateScene(2222, sceneBaseCoords, new List<Vector2Int>(){sceneBaseCoords});
+            var newTestScene = testUtils.CreateScene(2222, sceneBaseCoords, new List<Vector2Int>() { sceneBaseCoords });
             var testEntity = newTestScene.CreateEntity(12345);
             Collider testEntityCollider = new GameObject("testEntityCollider").AddComponent<BoxCollider>();
+
             internalComponents.onPointerColliderComponent.PutFor(newTestScene, testEntity,
                 new InternalColliders() { colliders = new List<Collider>() { testEntityCollider } });
 
             // 2. position collider entity inside scene space
             ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
-                Substitute.For<BaseVariable<UnityEngine.Vector3>>(),
+                Substitute.For<BaseVariable<Vector3>>(),
                 Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
 
-            var entityLocalPosition = new UnityEngine.Vector3(8, 1, 8);
+            var entityLocalPosition = new Vector3(8, 1, 8);
             var transformModel = new ECSTransform() { position = entityLocalPosition };
             transformHandler.OnComponentModelUpdated(newTestScene, testEntity, transformModel);
 
@@ -581,7 +592,7 @@ namespace Tests
             // 3. update pointer ray hit values with object unity position
             var entityGlobalPosition = WorldStateUtils.ConvertSceneToUnityPosition(entityLocalPosition, newTestScene);
             dataStoreEcs7.lastPointerRayHit.hit.point = entityGlobalPosition;
-            dataStoreEcs7.lastPointerRayHit.ray.origin = entityGlobalPosition + UnityEngine.Vector3.back * 3;
+            dataStoreEcs7.lastPointerRayHit.ray.origin = entityGlobalPosition + Vector3.back * 3;
 
             // 4. Update to enqueue new events
             systemUpdate();
@@ -599,6 +610,7 @@ namespace Tests
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z
             }, enqueuedEvent.hit.Position);
+
             Assert.AreEqual(new Decentraland.Common.Vector3()
             {
                 X = entityLocalPosition.x,
@@ -609,7 +621,6 @@ namespace Tests
             // 6. Clean up
             Object.DestroyImmediate(testEntityCollider.gameObject);
         }
-
 
         [Test]
         public void DetectTwoInputDown()
@@ -636,8 +647,6 @@ namespace Tests
             Assert.IsTrue(enqueuedEvent2.type == PointerEventType.PetDown);
         }
 
-
-
         [Test]
         public void DetectGlobalInputDown()
         {
@@ -656,5 +665,17 @@ namespace Tests
             Assert.IsTrue(enqueuedEvent1.type == PointerEventType.PetDown);
         }
 
+
+        [Test]
+        public void EnsureWebInterfaceAndProtobufInputEnumsMatch()
+        {
+            var inputActionsWebInterface = Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)) as int[];
+            var inputActionsProto = Enum.GetValues(typeof(InputAction)) as int[];
+            Assert.AreEqual(inputActionsProto!.Length, inputActionsWebInterface!.Length);
+            for (var i = 0; i < inputActionsWebInterface.Length; i++)
+            {
+                Assert.AreEqual(inputActionsWebInterface[i], inputActionsProto[i]);
+            }
+        }
     }
 }

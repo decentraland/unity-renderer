@@ -670,11 +670,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         }
     }
 
-    public void CleanInstantiatedItems()
-    {
-        instantiatedItems = new List<BaseComponentView>();
-    }
-
     public void ResetManualCarousel()
     {
         isInTransition = false;

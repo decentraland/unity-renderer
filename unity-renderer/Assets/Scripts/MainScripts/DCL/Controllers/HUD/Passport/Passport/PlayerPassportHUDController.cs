@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
-using DCL.Interface;
 using SocialFeaturesAnalytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,10 +15,12 @@ namespace DCL.Social.Passports
         private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org?utm_source=dcl_explorer";
         private const string NAME_TYPE = "name";
-        private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, "parcel", "estate" };
+        private const string PARCEL_TYPE = "parcel";
+        private const string ESTATE_TYPE = "estate";
+        private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, PARCEL_TYPE, ESTATE_TYPE };
 
         private readonly IPlayerPassportHUDView view;
-        private readonly StringVariable currentPlayerId;
+        private readonly BaseVariable<(string playerId, string source)> currentPlayerId;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IPassportApiBridge passportApiBridge;
         private readonly ISocialAnalytics socialAnalytics;
@@ -42,7 +44,6 @@ namespace DCL.Social.Passports
             PassportPlayerInfoComponentController playerInfoController,
             PassportPlayerPreviewComponentController playerPreviewController,
             PassportNavigationComponentController passportNavigationController,
-            StringVariable currentPlayerId,
             IUserProfileBridge userProfileBridge,
             IPassportApiBridge passportApiBridge,
             ISocialAnalytics socialAnalytics,
@@ -54,12 +55,12 @@ namespace DCL.Social.Passports
             this.playerInfoController = playerInfoController;
             this.playerPreviewController = playerPreviewController;
             this.passportNavigationController = passportNavigationController;
-            this.currentPlayerId = currentPlayerId;
             this.userProfileBridge = userProfileBridge;
             this.passportApiBridge = passportApiBridge;
             this.socialAnalytics = socialAnalytics;
             this.dataStore = dataStore;
             this.playerInfoCardVisibleState = playerInfoCardVisibleState;
+            this.currentPlayerId = dataStore.HUDs.currentPlayerId;
 
             view.Initialize(mouseCatcher);
             view.OnClose += ClosePassport;
@@ -73,20 +74,10 @@ namespace DCL.Social.Passports
             passportNavigationController.OnClickCollectibles += ClickedCollectibles;
 
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
-            OnCurrentPlayerIdChanged(currentPlayerId, null);
+            OnCurrentPlayerIdChanged(currentPlayerId.Get(), currentPlayerId.Get());
 
             playerInfoController.OnClosePassport += ClosePassport;
-            dataStore.HUDs.closedWalletModal.OnChange += ClosedGuestWalletPanel;
             dataStore.HUDs.currentPassportSortingOrder.Set(view.PassportCurrentSortingOrder);
-        }
-
-        private void ClosedGuestWalletPanel(bool current, bool previous)
-        {
-            if (current)
-            {
-                ClosePassport();
-                dataStore.HUDs.closedWalletModal.Set(false, false);
-            }
         }
 
         private void ClosePassport()
@@ -100,9 +91,9 @@ namespace DCL.Social.Passports
                 dataStore.HUDs.connectWalletModalVisible.Set(false);
 
             passportNavigationController.CloseAllNFTItemInfos();
-            passportNavigationController.SetViewInitialPage();
+            passportNavigationController.ResetNavigationTab();
             playerInfoController.ClosePassport();
-            currentPlayerId.Set(null);
+            currentPlayerId.Set((null, null));
         }
 
         /// <summary>
@@ -128,7 +119,6 @@ namespace DCL.Social.Passports
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
             playerInfoController.OnClosePassport -= ClosePassport;
-            dataStore.HUDs.closedWalletModal.OnChange -= ClosedGuestWalletPanel;
 
             playerInfoController.Dispose();
             playerPreviewController.Dispose();
@@ -137,16 +127,16 @@ namespace DCL.Social.Passports
             view?.Dispose();
         }
 
-        private void OnCurrentPlayerIdChanged(string current, string previous)
+        private void OnCurrentPlayerIdChanged((string playerId, string source) current, (string playerId, string source) previous)
         {
             if (currentUserProfile != null)
                 currentUserProfile.OnUpdate -= UpdateUserProfile;
 
             ownedNftCollectionsL1 = new List<Nft>();
             ownedNftCollectionsL2 = new List<Nft>();
-            currentUserProfile = string.IsNullOrEmpty(current)
+            currentUserProfile = string.IsNullOrEmpty(current.playerId)
                 ? null
-                : userProfileBridge.Get(current);
+                : userProfileBridge.Get(current.playerId);
 
             if (currentUserProfile == null)
             {
@@ -157,7 +147,8 @@ namespace DCL.Social.Passports
             {
                 SetPassportPanelVisibility(true);
                 passportOpenStartTime = Time.realtimeSinceStartup;
-                socialAnalytics.SendPassportOpen();
+                Enum.TryParse(current.source, out AvatarOpenSource source);
+                socialAnalytics.SendPassportOpen(source: source);
                 QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
@@ -169,10 +160,6 @@ namespace DCL.Social.Passports
         {
             isOpen = visible;
 
-            if (visible && userProfileBridge.GetOwn().isGuest)
-            {
-                dataStore.HUDs.connectWalletModalVisible.Set(true);
-            }
             playerInfoCardVisibleState.Set(visible);
             view.SetPassportPanelVisibility(visible);
             playerPreviewController.SetPassportPanelVisibility(visible);

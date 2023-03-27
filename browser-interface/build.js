@@ -5,6 +5,9 @@ const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
 const { mkdir } = require('fs/promises')
+const { exec } = require('node:child_process');
+const fse = require('fs-extra');
+
 
 const builtIns = {
   crypto: require.resolve('crypto-browserify'),
@@ -21,6 +24,7 @@ process.env.BUILD_PATH = path.resolve(
 const DIST_PATH = path.resolve(__dirname, './static')
 
 async function main() {
+  await buildRendererProtocol()
   await copyBuiltFiles()
   await createPackageJson()
   await compileJs()
@@ -38,6 +42,8 @@ async function copyBuiltFiles() {
 
   const streamingPath = path.resolve(process.env.BUILD_PATH, 'StreamingAssets')
   const streamingDistPath = path.resolve(DIST_PATH, 'StreamingAssets')
+
+  await mkdir(streamingDistPath, { recursive: true })
 
   for (const file of glob.sync('**/*', { cwd: streamingPath, absolute: true })) {
     copyFile(file, path.resolve(streamingDistPath, file.replace(streamingPath + '/', './')))
@@ -73,6 +79,70 @@ function copyFile(from, to) {
 
   if (!fs.existsSync(to)) {
     throw new Error(`${to} does not exist`)
+  }
+}
+
+async function execute(
+  command,
+  workingDirectory,
+) {
+  return new Promise((onSuccess, onError) => {
+    exec(command, { cwd: workingDirectory }, (error, stdout, stderr) => {
+      stdout.trim().length &&
+        console.log('stdout:\n' + stdout.replace(/\n/g, '\n  '))
+      stderr.trim().length &&
+        console.error('stderr:\n' + stderr.replace(/\n/g, '\n  '))
+
+      if (error) {
+        onError(stderr)
+      } else {
+        onSuccess(stdout)
+      }
+    })
+  })
+}
+
+function getProtofiles(pattern, cwd)
+{
+  return glob
+    .sync(
+      pattern, { cwd, absolute: true }
+    )
+}
+
+async function buildRendererProtocol() {
+  console.log('> Building renderer protocol')
+  try {
+    fse.removeSync('packages/shared/protocol/')
+    fse.mkdirSync('packages/shared/protocol/')
+
+    // Merge renderer-protocol to @dcl/protocol into a single folder
+    fse.copySync('./node_modules/@dcl/protocol', './protocol-temp/', { overwrite: false })
+    fse.copySync('../renderer-protocol/', './protocol-temp/', { overwrite: false })
+
+    // Generate the protocol files
+    const protocolPathPublic = path.resolve(__dirname, './protocol-temp/public')
+    const protocolPathProto = path.resolve(__dirname, './protocol-temp/proto')
+
+    // Get all files to generate
+    const files = glob.sync('**/*.proto', { cwd: protocolPathPublic, absolute: true }).join(' ')
+
+    // Prepare the command
+    const command = `
+    node_modules/.bin/protoc \
+    --plugin=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_opt=esModuleInterop=true,returnObservable=false,outputServices=generic-definitions,fileSuffix=.gen,oneof=unions \
+    --ts_proto_out="packages/shared/protocol/" \
+    --proto_path=${protocolPathPublic} \
+    --proto_path=${protocolPathProto} \
+    ${files};
+    `
+    console.log(`> Building renderer protocol - ${command}`)
+
+    await execute(command, __dirname)
+  } finally {
+    if (fse.existsSync('protocol-temp/'))
+      fse.removeSync('protocol-temp/')
   }
 }
 

@@ -14,6 +14,7 @@ namespace DCL.Chat.HUD
         private const int MINUTES_FOR_AUTOMATIC_RELOADING = 1;
         private readonly IChatController chatController;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly DataStore_Channels dataStoreChannels;
         private IChannelMembersComponentView view;
         internal DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
@@ -30,11 +31,13 @@ namespace DCL.Chat.HUD
         public bool IsVisible => isVisible;
 
         public ChannelMembersHUDController(IChannelMembersComponentView view, IChatController chatController,
-            IUserProfileBridge userProfileBridge)
+            IUserProfileBridge userProfileBridge,
+            DataStore_Channels dataStoreChannels)
         {
             this.view = view;
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
+            this.dataStoreChannels = dataStoreChannels;
         }
 
         public void SetChannelId(string channelId)
@@ -159,6 +162,10 @@ namespace DCL.Chat.HUD
                         };
 
                         view.Set(fallbackMemberEntry);
+                    }
+                    finally
+                    {
+                        dataStoreChannels.SetAvailableMemberInChannel(member.userId, currentChannelId);
                     }
 
                     ChannelMemberEntryModel userToAdd = new ChannelMemberEntryModel

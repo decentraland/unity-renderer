@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package decentraland.renderer.renderer_services;
+
+message Payload {
+  bytes payload = 1;
+}
+
+// This service is used to create a transport in the RPC
+// which can be used to create an Inverse RPC
+service TransportService {
+  // Bidirectional stream to exchange payloads
+  rpc OpenTransportStream(stream Payload) returns (stream Payload) {}
+}
