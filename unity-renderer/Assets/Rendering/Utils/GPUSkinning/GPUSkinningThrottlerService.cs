@@ -21,7 +21,7 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
         if (!gpuSkinnings.ContainsKey(gpuSkinning))
             gpuSkinnings.Add(gpuSkinning, framesBetweenUpdates);
         else
-            Debug.LogWarning("GPUSkinningThrottlerService: Register called twice for the same IGPUSkinning");
+            Debug.LogWarning($"GPUSkinningThrottlerService: Register called twice for the same IGPUSkinning {gpuSkinning}", gpuSkinning.renderer.gameObject);
     }
 
     public void Unregister(IGPUSkinning gpuSkinning)

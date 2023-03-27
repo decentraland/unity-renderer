@@ -22,6 +22,7 @@ namespace AvatarSystem
         private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
+        private bool gpuSkinningIsRegistered;
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
@@ -81,7 +82,13 @@ namespace AvatarSystem
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
-                gpuSkinningThrottlerService.Register(gpuSkinning);
+                Debug.Log($"Avatar {gpuSkinning.renderer.name} - LOAD {gpuSkinning} {gpuSkinning.renderer.name}", gpuSkinning.renderer.gameObject);
+
+                if (!gpuSkinningIsRegistered)
+                {
+                    gpuSkinningThrottlerService.Register(gpuSkinning);
+                    gpuSkinningIsRegistered = true;
+                }
 
                 status = IAvatar.Status.Loaded;
 
