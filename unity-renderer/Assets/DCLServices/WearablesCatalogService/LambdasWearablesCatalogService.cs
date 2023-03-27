@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Tasks;
 using DCLServices.Lambdas;
 using MainScripts.DCL.Helpers.Utils;
@@ -129,6 +130,13 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
+
+#if UNITY_EDITOR
+            DebugConfig debugConfig = DataStore.i.debugConfig;
+            if (!string.IsNullOrEmpty(debugConfig.overrideUserID))
+                userId = debugConfig.overrideUserID;
+#endif
+
             var createNewPointer = false;
             if (!ownerWearablesPagePointers.TryGetValue((userId, pageSize), out var pagePointer))
             {
