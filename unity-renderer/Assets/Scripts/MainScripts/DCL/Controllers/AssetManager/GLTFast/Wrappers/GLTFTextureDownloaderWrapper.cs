@@ -25,7 +25,7 @@ namespace DCL.GLTFast.Wrappers
 
         public Texture2D GetTexture(bool linear)
         {
-            Texture2D texture2D = new Texture2D(1, 1);
+            Texture2D texture2D = new Texture2D(1, 1, TextureFormat.RGBA32, 0, linear);
 
             if (asyncOp.webRequest.downloadHandler.data != null)
             {
