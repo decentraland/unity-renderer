@@ -353,37 +353,20 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
     }
 
-    private static bool ExpressionGroundTransitionCondition(AnimationState animationState,
-        BlackBoard bb,
-        DCLCharacterController dclCharacterController,
-        bool ownPlayer)
+    private void State_Expression(BlackBoard bb)
     {
-        float timeTillEnd = animationState.length - animationState.time;
-        bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME && !bb.shouldLoop;
-        bool isMoving = ownPlayer ? dclCharacterController.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
-        return isAnimationOver || isMoving;
-    }
-
-    private static bool ExpressionAirTransitionCondition(BlackBoard bb)
-    {
-        return !bb.isGrounded;
-    }
-
-    internal void State_Expression(BlackBoard bb)
-    {
-        var animationState = animation[bb.expressionTriggerId];
-
         var prevAnimation = latestAnimation;
         CrossFadeTo(AvatarAnimation.EMOTE, bb.expressionTriggerId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
 
-        bool exitTransitionStarted = false;
-        if (ExpressionAirTransitionCondition(bb))
+        var exitTransitionStarted = false;
+
+        if (!bb.isGrounded)
         {
             currentState = State_Air;
             exitTransitionStarted = true;
         }
 
-        if (ExpressionGroundTransitionCondition(animationState, bb, DCLCharacterController.i, isOwnPlayer))
+        if (ExpressionGroundTransitionCondition(animationState: animation[bb.expressionTriggerId]))
         {
             currentState = State_Ground;
             exitTransitionStarted = true;
@@ -397,14 +380,21 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             bb.shouldLoop = false;
             OnUpdateWithDeltaTime(bb.deltaTime);
         }
-        else
+        else if (prevAnimation != AvatarAnimation.EMOTE) // this condition makes Blend be called only in first frame of the state
         {
-            //this condition makes Blend be called only in first frame of the state
-            if (prevAnimation != AvatarAnimation.EMOTE)
-            {
-                animation.wrapMode = bb.shouldLoop ? WrapMode.Loop : WrapMode.Once;
-                animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
-            }
+            animation.wrapMode = bb.shouldLoop ? WrapMode.Loop : WrapMode.Once;
+            animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
+        }
+
+        return;
+
+        bool ExpressionGroundTransitionCondition(AnimationState animationState)
+        {
+            float timeTillEnd = animationState == null ? 0 : animationState.length - animationState.time;
+            bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME && !bb.shouldLoop;
+            bool isMoving = isOwnPlayer ? DCLCharacterController.i.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
+
+            return isAnimationOver || isMoving;
         }
     }
 
