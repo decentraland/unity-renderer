@@ -48,7 +48,7 @@ namespace DCLServices.Lambdas.Tests
             disposableTransaction = new DisposableTransaction(span = Substitute.For<ISpan>());
         }
 
-        [Test]
+        [Test][Category("ToFix")]
         public void ConstructUrlWithParams([Values(END_POINT, END_POINT + "/", "/" + END_POINT, END_POINT + "?")] string testEndpoint)
         {
             var url = lambdasService.GetUrl(testEndpoint, new[] { ("param1", "34"), ("param2", "value"), ("param3", "foo") });

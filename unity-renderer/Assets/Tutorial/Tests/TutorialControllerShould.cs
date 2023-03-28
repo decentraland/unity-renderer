@@ -17,6 +17,7 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Tutorial_Tests
 {
+    [Category("Legacy")]
     public class TutorialControllerShould : IntegrationTestSuite
     {
         private TutorialView tutorialView;

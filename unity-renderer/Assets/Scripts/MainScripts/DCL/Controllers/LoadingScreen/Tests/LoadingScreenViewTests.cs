@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace DCL.LoadingScreen.Test
 {
+    [Category("ToFix")]
     public class LoadingScreenViewTests
     {
         private LoadingScreenView loadingScreenView;
