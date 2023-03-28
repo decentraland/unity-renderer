@@ -1,4 +1,4 @@
-name: Auto-sync main to dev
+name: Create PR for syncing main to dev
 
 on:
   push:
@@ -10,29 +10,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Merge main -> develop
-        uses: everlytic/branch-merge@1.1.2
-        with:
-          github_token: ${{ github.token }}
-          source_ref: ${{ github.ref }}
-          target_branch: 'dev'
-          commit_message_template: 'Merge main into {target_branch}'
       - name: Create or update branch
-        if: failure()
         run: |
           git checkout -B chore/sync
           git push --force --set-upstream origin chore/sync
       - name: pull-request
-        if: failure()
         uses: repo-sync/pull-request@v2
         with:
           source_branch: "chore/sync"                          # If blank, default: triggered branch
           destination_branch: "dev"                            # If blank, default: master
-          pr_title: "Merge main -> develop (resolve conflict)" # Title of pull request
+          pr_title: "chore: sync main to dev" # Title of pull request
           pr_body: |                                           # Full markdown support, requires pr_title to be set
             :crown: *An automated PR*
-
-            Resolve the conflict and then merge
           pr_label: "auto-pr"                                  # Comma-separated list (no spaces)
           pr_draft: false                                      # Creates pull request as draft
           pr_allow_empty: false                                # Creates pull request even if there are no changes
