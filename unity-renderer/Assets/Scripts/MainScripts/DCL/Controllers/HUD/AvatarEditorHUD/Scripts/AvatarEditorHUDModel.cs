@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AvatarEditorHUDModel
 {
-    public WearableItem bodyShape;
+    public WearableItem bodyShape = new WearableItem { id = "NOT_LOADED" };
     public List<WearableItem> wearables = new List<WearableItem>();
     public Color hairColor;
     public Color skinColor;
