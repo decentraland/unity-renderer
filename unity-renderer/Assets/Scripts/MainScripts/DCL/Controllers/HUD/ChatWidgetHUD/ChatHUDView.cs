@@ -429,7 +429,7 @@ namespace DCL.Social.Chat
             if (contextMenu == null || contextMenu.isVisible)
                 return;
 
-            messageHoverText.text = chatEntry.DateString;
+            messageHoverText.text = chatEntry.HoverString;
             chatEntry.DockHoverPanel((RectTransform)messageHoverPanel.transform);
             messageHoverPanel.SetActive(true);
         }

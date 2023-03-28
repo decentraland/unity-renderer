@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Interface;
+using UnityEngine.Serialization;
 
 [Serializable]
 public struct ChatEntryModel
@@ -16,6 +17,7 @@ public struct ChatEntryModel
     public string bodyText;
     public string senderId;
     public string senderName;
+    [FormerlySerializedAs("isSenderNameLoading")] public bool isLoadingNames;
     public string recipientName;
     public ulong timestamp;
     public SubType subType;
