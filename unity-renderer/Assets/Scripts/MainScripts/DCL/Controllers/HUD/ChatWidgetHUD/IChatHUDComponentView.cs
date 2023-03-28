@@ -1,6 +1,6 @@
-﻿using System;
-using DCL.Chat.HUD;
+﻿using DCL.Chat.HUD;
 using DCL.Interface;
+using System;
 using System.Collections.Generic;
 
 public interface IChatHUDComponentView
@@ -16,6 +16,8 @@ public interface IChatHUDComponentView
     event Action<string> OnMentionSuggestionSelected;
 
     int EntryCount { get; }
+    IComparer<ChatEntryModel> SortingStrategy { set; }
+    bool UseLegacySorting { set; }
 
     void OnMessageCancelHover();
     void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);

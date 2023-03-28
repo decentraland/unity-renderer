@@ -3,7 +3,7 @@ import { call, debounce, delay, fork, put, select, takeEvery } from 'redux-saga/
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { getFeatureFlagVariantValue } from 'shared/meta/selectors'
-import { waitForRendererRpcConnection } from 'shared/renderer/sagas-helper'
+import { waitForAvatarSceneInitialized, waitForRendererRpcConnection } from 'shared/renderer/sagas-helper'
 import { LoadableScene } from 'shared/types'
 import {
   ADD_DESIRED_PORTABLE_EXPERIENCE,
@@ -57,6 +57,8 @@ export function* portableExperienceSaga(): any {
 
 export function* fetchInitialPortableExperiences() {
   yield waitForMetaConfigurationInitialization()
+
+  yield waitForAvatarSceneInitialized()
 
   const qs = new URLSearchParams(globalThis.location.search)
 

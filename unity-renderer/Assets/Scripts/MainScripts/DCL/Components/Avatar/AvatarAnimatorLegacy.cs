@@ -224,7 +224,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     void UpdateInterface()
     {
-        if (!hasTarget) return;
+        if (!target) return;
 
         Vector3 velocityTargetPosition = target.position;
         Vector3 flattenedVelocity = velocityTargetPosition - lastPosition;
