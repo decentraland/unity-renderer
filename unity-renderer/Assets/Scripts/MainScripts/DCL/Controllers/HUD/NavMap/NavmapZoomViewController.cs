@@ -54,6 +54,14 @@ namespace DCL
 
         public void Activate(IMapCameraController mapCameraController)
         {
+            if (active)
+            {
+                if (cameraController == mapCameraController)
+                    return;
+
+                Deactivate();
+            }
+
             cts = new CancellationTokenSource();
 
             cameraController = mapCameraController;
@@ -69,6 +77,8 @@ namespace DCL
 
         public void Deactivate()
         {
+            if (!active) return;
+
             cts.Cancel();
             cts.Dispose();
             cts = null;

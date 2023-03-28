@@ -157,5 +157,12 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
             ProcessHover(eventData);
         }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            dragBehavior?.Dispose();
+        }
     }
 }

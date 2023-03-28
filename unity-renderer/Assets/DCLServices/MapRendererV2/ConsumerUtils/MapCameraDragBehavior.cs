@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace DCLServices.MapRendererV2.ConsumerUtils
 {
-    public class MapCameraDragBehavior
+    public class MapCameraDragBehavior : IDisposable
     {
         [Serializable]
         public class MapCameraDragBehaviorData
@@ -139,6 +139,11 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
                 prevPosition = cameraLocalPos;
             }
+        }
+
+        public void Dispose()
+        {
+            StopInertia();
         }
     }
 }
