@@ -26,11 +26,8 @@ namespace DCL.GLTFast.Wrappers
         public Texture2D GetTexture(bool linear)
         {
             Texture2D texture2D = new Texture2D(1, 1, TextureFormat.RGBA32, 0, linear);
-            Debug.Log($"DEBUG NULL 1: {asyncOp == null}");
-            Debug.Log($"DEBUG NULL 2: {asyncOp.webRequest == null}");
-            Debug.Log($"DEBUG NULL 3: {asyncOp.webRequest.downloadHandler == null}");
 
-            if (asyncOp.webRequest.downloadHandler.data != null)
+            if (asyncOp.webRequest != null && asyncOp.webRequest.downloadHandler.data != null)
             {
                 try { texture2D.LoadImage(asyncOp.webRequest.downloadHandler.data); }
                 catch (Exception e)
