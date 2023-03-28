@@ -1,21 +1,28 @@
 using Cysharp.Threading.Tasks;
 using DCL.Chat.HUD;
 using DCL.Interface;
+using NSubstitute;
 using NUnit.Framework;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 public class DefaultChatEntryShould
 {
     private DefaultChatEntry entry;
     private Canvas canvas;
+    private DefaultChatEntry.ILocalTimeConverterStrategy localTimeConverter;
 
     [SetUp]
     public void SetUp()
     {
         var canvasgo = new GameObject("canvas");
         canvas = canvasgo.AddComponent<Canvas>();
+        localTimeConverter = Substitute.For<DefaultChatEntry.ILocalTimeConverterStrategy>();
+        localTimeConverter.GetLocalTime(Arg.Any<ulong>())
+                          .Returns(info => DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(info[0].ToString())).DateTime);
         ((RectTransform)canvas.transform).sizeDelta = new Vector2(500, 500);
     }
 
@@ -272,9 +279,9 @@ public class DefaultChatEntryShould
             Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
         });
 
-    [TestCase((ulong)1680013416292, "Loading name - 03/28/23 11:23:36 AM")]
-    [TestCase((ulong)1230011812000, "Loading name - 12/23/08 3:56:52 AM")]
-    [TestCase((ulong)1430092000000, "Loading name - 04/26/15 8:46:40 PM")]
+    [TestCase((ulong)1680013416292, "Loading name - 03/28/23 2:23:36 PM")]
+    [TestCase((ulong)1230011812000, "Loading name - 12/23/08 5:56:52 AM")]
+    [TestCase((ulong)1430092000000, "Loading name - 04/26/15 11:46:40 PM")]
     public void GetHoverTextWhenLoadingNames(ulong timestamp, string expectedHoverText)
     {
         GivenEntryChat("PrivateChatEntryReceived");
@@ -295,9 +302,9 @@ public class DefaultChatEntryShould
         Assert.AreEqual(expectedHoverText, entry.HoverString);
     }
 
-    [TestCase((ulong)1480072398390, "11/25/16 8:13:18 AM")]
-    [TestCase((ulong)1920396820000, "11/08/30 4:33:40 PM")]
-    [TestCase((ulong)1693000390000, "08/25/23 6:53:10 PM")]
+    [TestCase((ulong)1480072398390, "11/25/16 11:13:18 AM")]
+    [TestCase((ulong)1920396820000, "11/08/30 7:33:40 PM")]
+    [TestCase((ulong)1693000390000, "08/25/23 9:53:10 PM")]
     public void GetHoverText(ulong timestamp, string expectedHoverText)
     {
         GivenEntryChat("PrivateChatEntryReceived");
@@ -321,5 +328,6 @@ public class DefaultChatEntryShould
     {
         entry = Object.Instantiate(Resources.Load<DefaultChatEntry>($"SocialBarV1/{prefabName}"),
             canvas.transform, false);
+        entry.LocalTimeConverterStrategy = localTimeConverter;
     }
 }
