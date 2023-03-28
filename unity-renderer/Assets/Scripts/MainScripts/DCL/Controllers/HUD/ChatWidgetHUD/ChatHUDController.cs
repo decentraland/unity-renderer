@@ -144,6 +144,9 @@ public class ChatHUDController : IHUD
             catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
         }
 
+        string GetEllipsisFormat(string address) =>
+            address.Length <= 8 ? address : $"{address[..4]}...{address[^4..]}";
+
         var model = new ChatEntryModel();
         var ownProfile = userProfileBridge.GetOwn();
 
@@ -155,13 +158,13 @@ public class ChatHUDController : IHUD
 
         if (message.recipient != null)
         {
-            var recipientProfile = userProfileBridge.Get(message.recipient);
+            UserProfile recipientProfile = userProfileBridge.Get(message.recipient);
 
             if (recipientProfile != null)
                 model.recipientName = recipientProfile.userName;
             else
             {
-                model.recipientName = message.recipient;
+                model.recipientName = GetEllipsisFormat(message.recipient);
 
                 // sometimes there is no cached profile, so we request it
                 // dont block the operation of showing the message immediately
@@ -176,13 +179,13 @@ public class ChatHUDController : IHUD
         if (message.sender != null)
         {
             model.senderId = message.sender;
-            var senderProfile = userProfileBridge.Get(message.sender);
+            UserProfile senderProfile = userProfileBridge.Get(message.sender);
 
             if (senderProfile != null)
                 model.senderName = senderProfile.userName;
             else
             {
-                model.senderName = message.sender;
+                model.senderName = GetEllipsisFormat(message.sender);
 
                 // sometimes there is no cached profile, so we request it
                 // dont block the operation of showing the message immediately

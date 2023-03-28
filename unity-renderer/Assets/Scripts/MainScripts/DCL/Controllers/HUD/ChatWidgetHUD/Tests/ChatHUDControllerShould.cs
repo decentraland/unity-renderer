@@ -489,6 +489,34 @@ public class ChatHUDControllerShould
             });
         });
 
+    [UnityTest]
+    public IEnumerator ApplyEllipsisFormatWhenProfileIsMissing() =>
+        UniTask.ToCoroutine(async () =>
+        {
+            const string SENDER_ID = "0xfa58d678567fa5678587fd4";
+            const string RECIPIENT_ID = "0xfa2d32345f2a5f352af3df";
+
+            userProfileBridge.RequestFullUserProfileAsync(SENDER_ID, Arg.Any<CancellationToken>())
+                             .Returns(UniTask.FromResult((UserProfile)null));
+            userProfileBridge.Get(SENDER_ID).Returns((UserProfile)null);
+
+            userProfileBridge.RequestFullUserProfileAsync(RECIPIENT_ID, Arg.Any<CancellationToken>())
+                             .Returns(UniTask.FromResult((UserProfile)null));
+            userProfileBridge.Get(RECIPIENT_ID).Returns((UserProfile)null);
+
+            controller.AddChatMessage(new ChatMessage("msg1", ChatMessage.Type.PRIVATE, SENDER_ID, "hey", 100)
+            {
+                isChannelMessage = false,
+                recipient = RECIPIENT_ID,
+            });
+
+            await UniTask.NextFrame();
+
+            userProfileBridge.Received(1).RequestFullUserProfileAsync(SENDER_ID, Arg.Any<CancellationToken>());
+
+            view.AddEntry(Arg.Is<ChatEntryModel>(c => c.senderName == "0xfa...7fd4" && c.recipientName == "0xfa...f3df"));
+        });
+
     private UserProfile GivenProfile(string userId, string username, string face256)
     {
         UserProfile user1 = ScriptableObject.CreateInstance<UserProfile>();
