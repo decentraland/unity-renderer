@@ -17,7 +17,7 @@ public struct ChatEntryModel
     public string bodyText;
     public string senderId;
     public string senderName;
-    [FormerlySerializedAs("isSenderNameLoading")] public bool isLoadingNames;
+    public bool isLoadingNames;
     public string recipientName;
     public ulong timestamp;
     public SubType subType;
