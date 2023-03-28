@@ -34,7 +34,7 @@ MonoBehaviour:
   - displayName: Medium
     baseResolution: 0
     antiAliasing: 1
-    renderScale: 1
+    renderScale: 0.9
     shadows: 1
     softShadows: 1
     shadowResolution: 1024

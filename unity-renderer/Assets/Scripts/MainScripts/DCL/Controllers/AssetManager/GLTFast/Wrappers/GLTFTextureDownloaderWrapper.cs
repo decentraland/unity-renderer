@@ -23,34 +23,26 @@ namespace DCL.GLTFast.Wrappers
         public bool MoveNext() =>
             asyncOp.MoveNext();
 
-        public Texture2D Texture
+        public Texture2D GetTexture(bool linear)
         {
-            get
+            Texture2D texture2D = new Texture2D(1, 1, TextureFormat.RGBA32, 0, linear);
+
+            if (asyncOp.webRequest.downloadHandler.data != null)
             {
-                Texture2D texture2D = new Texture2D(1, 1);
-                if (asyncOp.webRequest.downloadHandler.data != null)
+                try { texture2D.LoadImage(asyncOp.webRequest.downloadHandler.data); }
+                catch (Exception e)
                 {
-                    try
-                    {
-                        texture2D.LoadImage(asyncOp.webRequest.downloadHandler.data);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"Texture promise failed: {e}");
-                        return null;
-                    }
-                }
-                else
-                {
+                    Debug.LogError($"Texture promise failed: {e}");
                     return null;
                 }
+            }
+            else { return null; }
 #if UNITY_WEBGL
                 texture2D.Compress(false);
 #endif
-                texture2D = TextureHelpers.ClampSize(texture2D, DataStore.i.textureConfig.gltfMaxSize.Get(), true);
+            texture2D = TextureHelpers.ClampSize(texture2D, DataStore.i.textureConfig.gltfMaxSize.Get(), linear);
 
-                return texture2D;
-            }
+            return texture2D;
         }
 
         public void Dispose()
