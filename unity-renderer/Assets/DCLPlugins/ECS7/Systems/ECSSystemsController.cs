@@ -112,6 +112,7 @@ public class ECSSystemsController : IDisposable
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
+            // TODO: raycastSystem // should always be after player/entity transformations update
             sceneBoundsCheckerSystem.Update // Should always be the last system
         };
     }
