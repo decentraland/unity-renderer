@@ -44,13 +44,12 @@ namespace ECSSystems.ECSRaycastSystem
                 IDCLEntity entity = raycasts[i].value.entity;
                 IParcelScene scene = raycasts[i].value.scene;
 
-                // TODO: Only shoot ray if it was the first component attachment OR if it has continuous == true
-                // can be achieved checking if a raycastresult exists for the entity and if it has the same timestamp
-
+                // If the entity has a raycastResult, the first ray was already cast
                 if (raycastResultComponent.HasComponent(scene, entity))
                 {
-                    if ((!model.HasContinuous || !model.Continuous)
-                        || raycastResultComponent.Get(scene, entity).model.Timestamp == model.Timestamp)
+                    bool isContinuous = model.HasContinuous && model.Continuous;
+                    uint resultTimestamp = raycastResultComponent.Get(scene, entity).model.Timestamp;
+                    if (!isContinuous && resultTimestamp == model.Timestamp)
                         continue;
                 }
 
@@ -73,8 +72,6 @@ namespace ECSSystems.ECSRaycastSystem
                 // {
                 //     raycastLayerMaskTarget = raycastLayerMaskTarget.value | model.CollisionMask;
                 // }
-
-                // TODO: deal with model.Continuous in lateUpdate()...
 
                 RaycastHit[] hits = null;
                 if (model.QueryType == RaycastQueryType.RqtHitFirst)
@@ -138,8 +135,7 @@ namespace ECSSystems.ECSRaycastSystem
                 componentWriter.PutComponent(
                     scene.sceneData.sceneNumber, entity.entityId,
                     ComponentID.RAYCAST_RESULT,
-                    result,
-                    ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
+                    result
                 );
 
             }
