@@ -1,7 +1,7 @@
 ﻿using System;
 using GLTFast.Loading;
 using UnityEngine;
-using UnityEngine.Networking;
+using Object = UnityEngine.Object;
 
 namespace DCL.GLTFast.Wrappers
 {
@@ -23,27 +23,52 @@ namespace DCL.GLTFast.Wrappers
         public bool MoveNext() =>
             asyncOp.MoveNext();
 
-        public Texture2D GetTexture(bool linear)
+        public Texture2D GetTexture(bool forceSampleLinear)
         {
-            Texture2D texture2D = new Texture2D(1, 1, TextureFormat.RGBA32, 0, linear);
+            Texture2D texture2D = new Texture2D(1, 1, TextureFormat.RGBA32, 0, forceSampleLinear);
 
-            if (asyncOp.webRequest != null && asyncOp.webRequest.downloadHandler != null
-                                           && asyncOp.webRequest.downloadHandler.data != null)
+            if (LoadTexture(texture2D))
+            {
+                Debug.Log("Failed to load texture with downloaded data");
+                DisposeTexture(texture2D);
+                return null;
+            }
+            texture2D = OptimizeTexture(forceSampleLinear, texture2D);
+
+            return texture2D;
+        }
+
+        private static void DisposeTexture(Texture2D texture2D)
+        {
+            if (Application.isPlaying)
+                Object.Destroy(texture2D);
+            else
+                Object.DestroyImmediate(texture2D);
+        }
+
+        private static Texture2D OptimizeTexture(bool linear, Texture2D texture2D)
+        {
+#if UNITY_WEBGL
+            texture2D.Compress(false);
+#endif
+            texture2D = TextureHelpers.ClampSize(texture2D, DataStore.i.textureConfig.gltfMaxSize.Get(), linear);
+            return texture2D;
+        }
+
+        private bool LoadTexture(Texture2D texture2D)
+        {
+            if (asyncOp?.webRequest?.downloadHandler?.data != null)
             {
                 try { texture2D.LoadImage(asyncOp.webRequest.downloadHandler.data); }
                 catch (Exception e)
                 {
                     Debug.LogError($"Texture promise failed: {e}");
-                    return null;
+                    return true;
                 }
             }
-            else { return null; }
-#if UNITY_WEBGL
-                texture2D.Compress(false);
-#endif
-            texture2D = TextureHelpers.ClampSize(texture2D, DataStore.i.textureConfig.gltfMaxSize.Get(), linear);
+            else { return true; }
 
-            return texture2D;
+            return false;
         }
 
         public void Dispose()
