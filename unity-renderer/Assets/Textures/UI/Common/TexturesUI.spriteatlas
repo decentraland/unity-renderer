@@ -139,7 +139,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: db1616631e9344b4aa7ce7fdb5218656, type: 3}
   - {fileID: 21300000, guid: 09d7c763693b246d7bdb6df137a6f0cc, type: 3}
   - {fileID: 21300000, guid: 257bf8731440e4fa392f389916143102, type: 3}
-  - {fileID: 21300000, guid: 1aac5e83391d74318b6be345b5ca43aa, type: 3}
   - {fileID: 21300000, guid: c553839314f3e4d218eed6729f828916, type: 3}
   - {fileID: 21300000, guid: 3f0f9693166cb48a9b43e5e4bbd00332, type: 3}
   - {fileID: 21300000, guid: d254a3a3b9d5642e1ad6432c441d7f43, type: 3}
@@ -220,7 +219,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 058e0097872914023991446b014562ef, type: 3}
   - {fileID: 21300000, guid: b2755fa77563aad42bfdaa03c0e54746, type: 3}
   - {fileID: 21300000, guid: 451b9fa7c6c084bb2967830f3d587b3a, type: 3}
-  - {fileID: 21300000, guid: 6002f0b7deb60405bb7fa168d2a8ce06, type: 3}
   - {fileID: 21300000, guid: 7404b1b7d6b0f40929ae536f5b39be50, type: 3}
   - {fileID: 21300000, guid: 9af081c7b27544b809eda744a31a2889, type: 3}
   - {fileID: 21300000, guid: 8505c1c76f9ee7d468915e55ec484086, type: 3}
@@ -265,7 +263,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 604176a988cdc416ca612d5e95156254, type: 3}
   - {fileID: 21300000, guid: 3beb4cb91f8cace439eb66e3a487008c, type: 3}
   - {fileID: 21300000, guid: 35746db90808fac4aa31ef672b070378, type: 3}
-  - {fileID: 21300000, guid: dfa96dc92a2fe43f0a599dc990c5b013, type: 3}
   - {fileID: 21300000, guid: cb309bd943c8e4c98bde37e97061b6aa, type: 3}
   - {fileID: 21300000, guid: 30d1d8e90eaef49418c0797533d97acf, type: 3}
   - {fileID: 21300000, guid: 24c3c5f961cc64b788832e6bcb64ff7a, type: 3}
@@ -311,7 +308,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0b8e37abbf8094c8ca57608874b1a905, type: 3}
   - {fileID: 21300000, guid: b23d5fabe4435364292b363710d399aa, type: 3}
   - {fileID: 21300000, guid: 7bfca4cb270a343c682028817c0d5bf4, type: 3}
-  - {fileID: 21300000, guid: fe4a00db663ed4d3abe06167ea5b3317, type: 3}
   - {fileID: 21300000, guid: c7f8f6db5623d8f4c935edeff9912df8, type: 3}
   - {fileID: 21300000, guid: c7140bdb251224b66aba206fd5ff73ee, type: 3}
   - {fileID: 21300000, guid: 07a400eb205264a4f9e2aad5d599b4a3, type: 3}
@@ -475,7 +471,6 @@ SpriteAtlas:
   - AcceptButton
   - CopyIconOutline
   - QuestOn
-  - SelectedParcel
   - IconBellActive
   - OkIcon
   - ContainerRadius20
@@ -556,7 +551,6 @@ SpriteAtlas:
   - VoiceChatDisable
   - RoundedContainer23
   - FriendsIconHD
-  - HomePin
   - MouseLocked
   - FriendsListImage
   - Tooltip
@@ -601,7 +595,6 @@ SpriteAtlas:
   - FriendsIcon
   - PromoteChannelsToastContainer
   - ContainerRadius100
-  - Star
   - ExploreOn
   - ContainerCornerRaidus12@2x
   - TaskbarCheckmark
@@ -647,7 +640,6 @@ SpriteAtlas:
   - MapOn
   - SoundIcon
   - SettingsVolumetricIcon
-  - Compass
   - rectangle_gray_corner_radius_8
   - EmotesOn
   - BackpackIconNew

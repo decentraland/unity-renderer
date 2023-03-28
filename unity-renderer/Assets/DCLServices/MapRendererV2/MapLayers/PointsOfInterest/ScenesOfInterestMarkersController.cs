@@ -43,6 +43,9 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         public UniTask Initialize(CancellationToken cancellationToken)
         {
             // non-blocking retrieval of scenes of interest happens independently on the minimap rendering
+            foreach (MinimapMetadata.MinimapSceneInfo sceneInfo in minimapMetadata.SceneInfos)
+                OnMinimapSceneInfoUpdated(sceneInfo);
+
             minimapMetadata.OnSceneInfoUpdated += OnMinimapSceneInfoUpdated;
             return objectsPool.PrewarmAsync(prewarmCount, PREWARM_PER_FRAME, LinkWithDisposeToken(cancellationToken).Token);
         }
