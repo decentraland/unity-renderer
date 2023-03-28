@@ -8,17 +8,23 @@ public readonly struct SystemsContext
     public readonly IComponentGroups componentGroups;
     public readonly ECSComponent<PBPointerEvents> pointerEvents;
     public readonly ECSComponent<PBBillboard> billboards;
+    public readonly ECSComponent<PBRaycast> raycasts;
+    public readonly ECSComponent<PBRaycastResult> raycastResults;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IInternalECSComponents internalEcsComponents,
         IComponentGroups componentGroups,
         ECSComponent<PBPointerEvents> pointerEvents,
-        ECSComponent<PBBillboard> billboards)
+        ECSComponent<PBBillboard> billboards,
+        ECSComponent<PBRaycast> raycasts,
+        ECSComponent<PBRaycastResult> raycastResults)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
         this.componentGroups = componentGroups;
         this.pointerEvents = pointerEvents;
         this.billboards = billboards;
+        this.raycasts = raycasts;
+        this.raycastResults = raycastResults;
     }
 }

@@ -44,7 +44,9 @@ namespace DCL.ECS7
                 internalEcsComponents,
                 new ComponentGroups(componentsManager),
                 (ECSComponent<PBPointerEvents>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_EVENTS),
-                (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD));
+                (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD),
+                (ECSComponent<PBRaycast>)componentsManager.GetOrCreateComponent(ComponentID.RAYCAST),
+                (ECSComponent<PBRaycastResult>)componentsManager.GetOrCreateComponent(ComponentID.RAYCAST_RESULT));
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
 

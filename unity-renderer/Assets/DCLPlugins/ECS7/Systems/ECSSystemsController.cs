@@ -2,6 +2,7 @@ using DCL;
 using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
+using ECSSystems.ECSRaycastSystem;
 using ECSSystems.ECSSceneBoundsCheckerSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
@@ -33,6 +34,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSPlayerTransformSystem playerTransformSystem;
     private readonly ECSVideoPlayerSystem videoPlayerSystem;
     private readonly ECSUIInputSenderSystem uiInputSenderSystem;
+    private readonly ECSRaycastSystem raycastSystem;
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
@@ -74,6 +76,8 @@ public class ECSSystemsController : IDisposable
 
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
 
+        raycastSystem = new ECSRaycastSystem(context.raycasts, context.raycastResults, context.componentWriter, context.internalEcsComponents.physicColliderComponent);
+
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             DataStore.i.ecs7.scenes,
             context.internalEcsComponents.sceneBoundsCheckComponent,
@@ -112,7 +116,7 @@ public class ECSSystemsController : IDisposable
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
-            // TODO: raycastSystem // should always be after player/entity transformations update
+            raycastSystem.Update, // should always be after player/entity transformations update
             sceneBoundsCheckerSystem.Update // Should always be the last system
         };
     }
