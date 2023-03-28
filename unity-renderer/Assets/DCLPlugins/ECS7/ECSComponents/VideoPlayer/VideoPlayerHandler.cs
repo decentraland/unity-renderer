@@ -14,7 +14,8 @@ namespace DCL.ECSComponents
     {
         private static readonly string[] NO_STREAM_EXTENSIONS = new[] { ".mp4", ".ogg", ".mov", ".webm" };
 
-        private PBVideoPlayer lastModel = null;
+        internal DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen;
+        internal PBVideoPlayer lastModel = null;
         internal WebVideoPlayer videoPlayer;
 
         // Flags to check if we can activate the video
@@ -25,14 +26,15 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
         private bool canVideoBePlayed => isRendererActive && hadUserInteraction && isValidUrl;
 
-        public VideoPlayerHandler(IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent)
+        public VideoPlayerHandler(IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent, DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
+            this.loadingScreen = loadingScreen;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            isRendererActive = !CommonScriptableObjects.isLoadingHUDOpen.Get();
+            isRendererActive = !loadingScreen.visible.Get();
 
             // We need to check if the user interacted with the application before playing the video,
             // otherwise browsers won't play the video, ending up in a fake 'playing' state.
@@ -40,13 +42,13 @@ namespace DCL.ECSComponents
 
             if (!hadUserInteraction)
                 Helpers.Utils.OnCursorLockChanged += OnCursorLockChanged;
-            CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnLoadingHUDStateChanged;
+            loadingScreen.visible.OnChange += OnLoadingScreenStateChanged;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
-            CommonScriptableObjects.isLoadingHUDOpen.OnChange -= OnLoadingHUDStateChanged;
+            loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
 
             videoPlayerInternalComponent.RemoveFor(scene, entity);
             videoPlayer?.Dispose();
@@ -111,9 +113,9 @@ namespace DCL.ECSComponents
             ConditionsToPlayVideoChanged();
         }
 
-        private void OnLoadingHUDStateChanged(bool isHUDOpen, bool prevState)
+        private void OnLoadingScreenStateChanged(bool isScreenEnabled, bool prevState)
         {
-            isRendererActive = !isHUDOpen;
+            isRendererActive = !isScreenEnabled;
             ConditionsToPlayVideoChanged();
         }
     }

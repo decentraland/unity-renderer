@@ -25,10 +25,12 @@ namespace Tests
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
         private ECS7TestEntity entity;
+        private DataStore_LoadingScreen loadingScreenDataStore;
 
         [SetUp]
         public void SetUp()
         {
+            loadingScreenDataStore = new DataStore_LoadingScreen();
             IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
             DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;
@@ -38,7 +40,7 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
-            videoPlayerHandler = new VideoPlayerHandler(internalVideoPlayerComponent);
+            videoPlayerHandler = new VideoPlayerHandler(internalVideoPlayerComponent, loadingScreenDataStore.decoupledLoadingHUD);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
@@ -50,7 +52,7 @@ namespace Tests
 
             Environment.Setup(ServiceLocatorFactory.CreateDefault());
 
-            CommonScriptableObjects.isLoadingHUDOpen.Set(false);
+            loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
         }
 
         [TearDown]
@@ -225,7 +227,7 @@ namespace Tests
             Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
 
             // change rendering bool
-            CommonScriptableObjects.isLoadingHUDOpen.Set(true);
+            loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
 
             Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
 
