@@ -95,7 +95,7 @@ namespace DCL
 
                 token.ThrowIfCancellationRequested();
 
-                await TaskUtils.RunThrottledCoroutine(ProcessGifData(images, gifStream.Header.width, gifStream.Header.height), fail, throttlingCounter.EvaluateTimeBudget)
+                await TaskUtils.RunThrottledCoroutine(ProcessGifData(images, gifStream.Header.adjustedWidth, gifStream.Header.adjustedHeight), fail, throttlingCounter.EvaluateTimeBudget)
                                .AttachExternalCancellation(token);
 
                 loadSuccsess(gifFrameData);

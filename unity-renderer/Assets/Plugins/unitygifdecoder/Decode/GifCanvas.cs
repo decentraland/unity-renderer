@@ -11,10 +11,10 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
     {
         /// <summary>
         /// Get color array from this Canvas
-        /// For performance reasons, actual canvas array is returned, so 
+        /// For performance reasons, actual canvas array is returned, so
         /// </summary>
         public Color32[] Colors => canvasColors;
-        
+
         /// <summary>
         /// <p>Since pixel rows for Texture2D start from bottom, original gif image will look upside down<br/></p>
         /// <br/>
@@ -56,7 +56,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         {
             canvasIsEmpty = true;
         }
-        
+
         public GifCanvas(int width, int height) : this()
         {
             SetSize(width, height);
@@ -69,20 +69,39 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         /// <param name="height">New canvas height</param>
         public void SetSize(int width, int height)
         {
-            if (width != canvasWidth || height != canvasHeight)
+            int adjustedWidth = width + (4 - (width % 4)) % 4;
+            int adjustedHeight = height + (4 - (height % 4)) % 4;
+
+            if (adjustedWidth != canvasWidth || adjustedHeight != canvasHeight)
             {
-                var size = width * height;
+                var size = adjustedWidth * adjustedHeight;
                 canvasColors = new Color32[size];
-                frameRowStart = new int[height];
-                frameRowEnd = new int[height];
+                frameRowStart = new int[adjustedHeight];
+                frameRowEnd = new int[adjustedHeight];
                 revertDisposalBuffer = null;
 
-                canvasWidth = width;
-                canvasHeight = height;
+                canvasWidth = adjustedWidth;
+                canvasHeight = adjustedHeight;
             }
 
             Reset();
         }
+        // public void SetSize(int width, int height)
+        // {
+        //     if (width != canvasWidth || height != canvasHeight)
+        //     {
+        //         var size = width * height;
+        //         canvasColors = new Color32[size];
+        //         frameRowStart = new int[height];
+        //         frameRowEnd = new int[height];
+        //         revertDisposalBuffer = null;
+        //
+        //         canvasWidth = width;
+        //         canvasHeight = height;
+        //     }
+        //
+        //     Reset();
+        // }
 
         /// <summary>
         /// Clears canvas colors and resets it to initial state
@@ -113,13 +132,13 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
         /// <param name="transparentColorIndex">Index of transparent color, color from this index will be treated as transparent</param>
         /// <param name="isInterlaced">Apply deinterlacing during drawing</param>
         /// <param name="disposalMethod">Specifies, how to handle this frame when next frame is drawn</param>
-        public void BeginNewFrame(int x, int y, int width, int height, Color32[] palette, 
+        public void BeginNewFrame(int x, int y, int width, int height, Color32[] palette,
             int transparentColorIndex, bool isInterlaced, GifDisposalMethod disposalMethod)
         {
             switch (frameDisposalMethod)
             {
                 case GifDisposalMethod.ClearToBackgroundColor:
-                    FillWithColor(frameX, frameY, frameWidth, frameHeight, 
+                    FillWithColor(frameX, frameY, frameWidth, frameHeight,
                         new Color32(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, 0));
 
                     break;
@@ -154,7 +173,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             frameRowCurrent = -1;
             frameCanvasRowEndPosition = -1;
             frameTransparentColorIndex = transparentColorIndex;
-            
+
             RouteFrameDrawing(x, y, width, height, isInterlaced);
         }
 
@@ -173,13 +192,37 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
                 frameCanvasPosition = frameRowStart[frameRowCurrent];
                 frameCanvasRowEndPosition = frameRowEnd[frameRowCurrent];
             }
-            
-            if (color != frameTransparentColorIndex)
-                canvasColors[frameCanvasPosition] = framePalette[color];
+
+            if (frameCanvasPosition < canvasColors.Length &&
+                (frameCanvasPosition - frameRowStart[frameRowCurrent]) < frameWidth &&
+                (canvasColors.Length - frameCanvasPosition) >= (canvasWidth - frameWidth))
+            {
+                if (color != frameTransparentColorIndex)
+                    canvasColors[frameCanvasPosition] = framePalette[color];
+            }
+            else
+            {
+                // Fill with white color
+                canvasColors[frameCanvasPosition] = new Color32(255, 255, 255, 255);
+            }
 
             frameCanvasPosition++;
         }
-        
+        // public void OutputPixel(int color)
+        // {
+        //     if (frameCanvasPosition >= frameCanvasRowEndPosition)
+        //     {
+        //         frameRowCurrent++;
+        //         frameCanvasPosition = frameRowStart[frameRowCurrent];
+        //         frameCanvasRowEndPosition = frameRowEnd[frameRowCurrent];
+        //     }
+        //
+        //     if (color != frameTransparentColorIndex)
+        //         canvasColors[frameCanvasPosition] = framePalette[color];
+        //
+        //     frameCanvasPosition++;
+        // }
+
         /// <summary>
         /// Fill specified region with single color
         /// </summary>
@@ -194,7 +237,7 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             {
                 int yStart;
                 int yEnd;
-                    
+
                 if (FlipVertically)
                 {
                     yEnd = (canvasHeight - y) * canvasWidth + x;
@@ -226,10 +269,10 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
 
             void ScheduleRowIndex(int row)
             {
-                var startPosition = FlipVertically 
+                var startPosition = FlipVertically
                     ? (canvasHeight - 1 - (y + row)) * canvasWidth + x
                     : (y + row) * canvasWidth + x;
-                
+
                 frameRowStart[currentRow] = startPosition;
                 frameRowEnd[currentRow] = startPosition + width;
                 currentRow++;
