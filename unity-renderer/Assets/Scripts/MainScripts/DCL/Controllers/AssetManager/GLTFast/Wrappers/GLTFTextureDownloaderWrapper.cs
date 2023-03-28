@@ -27,15 +27,17 @@ namespace DCL.GLTFast.Wrappers
         {
             Texture2D texture2D = new Texture2D(1, 1, TextureFormat.RGBA32, 0, forceSampleLinear);
 
-            if (!LoadTexture(texture2D))
+            if (LoadTexture(texture2D))
+            {
+                texture2D = OptimizeTexture(forceSampleLinear, texture2D);
+                return texture2D;
+            }
+            else
             {
                 Debug.Log("Failed to load texture with downloaded data");
                 DisposeTexture(texture2D);
                 return null;
             }
-            texture2D = OptimizeTexture(forceSampleLinear, texture2D);
-
-            return texture2D;
         }
 
         private static void DisposeTexture(Texture2D texture2D)
