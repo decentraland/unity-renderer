@@ -25,6 +25,7 @@ namespace DCL
 
         public bool forceNewInstance;
         public bool forceGPUOnlyMesh = false;
+        public bool smrUpdateWhenOffScreen = true;
 
         public void ApplyBeforeLoad(Transform t)
         {
@@ -63,6 +64,9 @@ namespace DCL
             {
                 Renderer renderer = renderers[i];
                 renderer.enabled = visibleFlags != VisibleFlags.INVISIBLE;
+
+                if (renderer is SkinnedMeshRenderer smr)
+                    smr.updateWhenOffscreen = smrUpdateWhenOffScreen;
             }
         }
     }

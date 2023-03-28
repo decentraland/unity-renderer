@@ -110,6 +110,8 @@ namespace DCL.Social.Chat
         [UnityTest]
         public IEnumerator SortEntriesByTimestamp()
         {
+            view.SortingStrategy = new ChatEntrySortingByTimestamp();
+
             var newMsg = new ChatEntryModel
             {
                 timestamp = 200,

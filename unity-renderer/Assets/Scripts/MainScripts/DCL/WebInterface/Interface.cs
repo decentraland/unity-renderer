@@ -1396,8 +1396,6 @@ namespace DCL.Interface
 
         public static void SendRequestUserProfile(string userId) { SendMessage("RequestUserProfile", new SendRequestUserProfilePayload() { value = userId }); }
 
-        public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
-
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 
         public static void SendPerformanceReport(string performanceReportPayload) { SendJson("PerformanceReport", performanceReportPayload); }

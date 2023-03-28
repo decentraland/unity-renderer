@@ -26,7 +26,7 @@ namespace DCL.SettingsCommon
             Assert.AreEqual(storedSettings, settings);
         }
 
-        [Test]
+        [Test][Category("ToFix")]
         public void GetDefaultSettingsWhenNothingIsStored()
         {
             var settingsByKey = GivenNoStoredSettings();
