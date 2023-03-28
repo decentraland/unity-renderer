@@ -165,6 +165,7 @@ public class ChatHUDController : IHUD
             else
             {
                 model.recipientName = GetEllipsisFormat(message.recipient);
+                model.isLoadingNames = true;
 
                 // sometimes there is no cached profile, so we request it
                 // dont block the operation of showing the message immediately
@@ -186,6 +187,7 @@ public class ChatHUDController : IHUD
             else
             {
                 model.senderName = GetEllipsisFormat(message.sender);
+                model.isLoadingNames = true;
 
                 // sometimes there is no cached profile, so we request it
                 // dont block the operation of showing the message immediately

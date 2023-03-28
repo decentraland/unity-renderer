@@ -4,6 +4,7 @@ using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.Social.Chat.Mentions;
 using System;
+using System.Globalization;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -36,10 +37,19 @@ namespace DCL.Chat.HUD
 
         public override ChatEntryModel Model => model;
 
-        public override string DateString =>
-            DateTimeOffset.FromUnixTimeMilliseconds((long) Model.timestamp)
-                .ToLocalTime()
-                .ToString("MM/dd/yyyy h:mm:ss tt");
+        public override string HoverString
+        {
+            get
+            {
+                var date = DateTimeOffset.FromUnixTimeMilliseconds((long)Model.timestamp)
+                                         .ToLocalTime()
+                                         .ToString("MM/dd/yy h:mm:ss tt", CultureInfo.InvariantCulture);
+
+                return Model.isLoadingNames ? $"Loading name - {date}" : date;
+            }
+        }
+
+
         public override event Action<ChatEntry> OnUserNameClicked;
         public override event Action<ChatEntry> OnTriggerHover;
         public override event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
