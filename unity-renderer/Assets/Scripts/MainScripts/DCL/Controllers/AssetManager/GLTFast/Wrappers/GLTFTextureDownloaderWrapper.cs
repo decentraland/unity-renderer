@@ -15,9 +15,9 @@ namespace DCL.GLTFast.Wrappers
         }
 
         public bool Success => asyncOp.isSucceeded;
-        public string Error => asyncOp.webRequest.error;
-        public byte[] Data => asyncOp.webRequest.downloadHandler.data;
-        public string Text => asyncOp.webRequest.downloadHandler.text;
+        public string Error => asyncOp.webRequest?.error;
+        public byte[] Data => asyncOp.webRequest?.downloadHandler?.data;
+        public string Text => asyncOp.webRequest?.downloadHandler?.text;
         public bool? IsBinary => true;
 
         public bool MoveNext() =>
