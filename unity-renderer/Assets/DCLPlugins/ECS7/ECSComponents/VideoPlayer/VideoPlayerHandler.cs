@@ -14,18 +14,16 @@ namespace DCL.ECSComponents
     {
         private static readonly string[] NO_STREAM_EXTENSIONS = new[] { ".mp4", ".ogg", ".mov", ".webm" };
 
-        private IParcelScene scene;
         private PBVideoPlayer lastModel = null;
         internal WebVideoPlayer videoPlayer;
 
         // Flags to check if we can activate the video
-        internal bool isInsideScene = false;
         internal bool isRendererActive = false;
         internal bool hadUserInteraction = false;
         internal bool isValidUrl = false;
 
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
-        private bool canVideoBePlayed => isInsideScene && isRendererActive && hadUserInteraction && isValidUrl;
+        private bool canVideoBePlayed => isRendererActive && hadUserInteraction && isValidUrl;
 
         public VideoPlayerHandler(IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent)
         {
@@ -34,9 +32,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            this.scene = scene;
-            isRendererActive = CommonScriptableObjects.rendererState.Get();
-            isInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
+            isRendererActive = !CommonScriptableObjects.isLoadingHUDOpen.Get();
 
             // We need to check if the user interacted with the application before playing the video,
             // otherwise browsers won't play the video, ending up in a fake 'playing' state.
@@ -44,16 +40,13 @@ namespace DCL.ECSComponents
 
             if (!hadUserInteraction)
                 Helpers.Utils.OnCursorLockChanged += OnCursorLockChanged;
-            if (!scene.isPersistent)
-                CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
-            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
+            CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnLoadingHUDStateChanged;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
-            CommonScriptableObjects.sceneNumber.OnChange -= OnSceneChanged;
-            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
+            CommonScriptableObjects.isLoadingHUDOpen.OnChange -= OnLoadingHUDStateChanged;
 
             videoPlayerInternalComponent.RemoveFor(scene, entity);
             videoPlayer?.Dispose();
@@ -118,15 +111,9 @@ namespace DCL.ECSComponents
             ConditionsToPlayVideoChanged();
         }
 
-        private void OnSceneChanged(int sceneNumber, int prevSceneNumber)
+        private void OnLoadingHUDStateChanged(bool isHUDOpen, bool prevState)
         {
-            isInsideScene = sceneNumber == scene.sceneData.sceneNumber;
-            ConditionsToPlayVideoChanged();
-        }
-
-        private void OnRendererStateChanged(bool isEnabled, bool prevState)
-        {
-            isRendererActive = isEnabled;
+            isRendererActive = !isHUDOpen;
             ConditionsToPlayVideoChanged();
         }
     }

@@ -50,8 +50,7 @@ namespace Tests
 
             Environment.Setup(ServiceLocatorFactory.CreateDefault());
 
-            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
-            CommonScriptableObjects.rendererState.Set(true);
+            CommonScriptableObjects.isLoadingHUDOpen.Set(false);
         }
 
         [TearDown]
@@ -67,7 +66,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TryToStartVideo()
         {
-            videoPlayerHandler.isInsideScene = true;
             videoPlayerHandler.isRendererActive = true;
             videoPlayerHandler.hadUserInteraction = true;
             PBVideoPlayer model = new PBVideoPlayer()
@@ -102,7 +100,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator VideoUpdateOnRuntime()
         {
-            videoPlayerHandler.isInsideScene = true;
             videoPlayerHandler.isRendererActive = true;
             videoPlayerHandler.hadUserInteraction = true;
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
@@ -212,30 +209,6 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator StopVideoIfItsOutsideCurrentScene()
-        {
-            videoPlayerHandler.OnComponentCreated(scene, entity);
-            videoPlayerHandler.hadUserInteraction = true;
-            PBVideoPlayer model = new PBVideoPlayer()
-            {
-                Src = "video.mp4",
-                Playing = true
-            };
-            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
-            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
-            videoPlayerHandler.videoPlayer.Update();
-
-            Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
-
-            // change current scene number
-            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber+1);
-
-            Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
-
-            videoPlayerHandler.OnComponentRemoved(scene, entity);
-        }
-
-        [UnityTest]
         public IEnumerator StopVideoIfRenderingIsDisabled()
         {
             videoPlayerHandler.OnComponentCreated(scene, entity);
@@ -252,7 +225,7 @@ namespace Tests
             Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
 
             // change rendering bool
-            CommonScriptableObjects.rendererState.Set(false);
+            CommonScriptableObjects.isLoadingHUDOpen.Set(true);
 
             Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
 
