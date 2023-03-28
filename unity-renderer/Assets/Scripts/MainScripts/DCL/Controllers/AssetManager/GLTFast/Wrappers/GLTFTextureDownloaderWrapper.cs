@@ -27,7 +27,7 @@ namespace DCL.GLTFast.Wrappers
         {
             Texture2D texture2D = new Texture2D(1, 1, TextureFormat.RGBA32, 0, forceSampleLinear);
 
-            if (LoadTexture(texture2D))
+            if (!LoadTexture(texture2D))
             {
                 Debug.Log("Failed to load texture with downloaded data");
                 DisposeTexture(texture2D);
@@ -63,12 +63,12 @@ namespace DCL.GLTFast.Wrappers
                 catch (Exception e)
                 {
                     Debug.LogError($"Texture promise failed: {e}");
-                    return true;
+                    return false;
                 }
             }
-            else { return true; }
+            else { return false; }
 
-            return false;
+            return true;
         }
 
         public void Dispose()
