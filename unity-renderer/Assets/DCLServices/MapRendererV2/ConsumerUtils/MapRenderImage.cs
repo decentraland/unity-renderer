@@ -25,6 +25,8 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
         /// </summary>
         public event Action<Vector2> Hovered;
 
+        public event Action DragStarted;
+
         private MapCameraDragBehavior dragBehavior;
 
         private bool highlightEnabled;
@@ -113,6 +115,8 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
                 Hovered?.Invoke(worldPosition);
             }
+            else if (highlightEnabled)
+                interactivityController.RemoveHighlight();
         }
 
         private bool TryGetParcelUnderPointer(PointerEventData eventData, out Vector2Int parcel, out Vector2 localPosition, out Vector3 worldPosition)
@@ -123,8 +127,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
                 var rectSize = rectTransform.rect.size;
                 localPosition = (Vector2) rectTransform.InverseTransformPoint(worldPosition);
                 var leftCornerRelativeLocalPosition = localPosition + (rectTransform.pivot * rectSize);
-                parcel = interactivityController.GetParcel(leftCornerRelativeLocalPosition / rectSize);
-                return true;
+                return interactivityController.TryGetParcel(leftCornerRelativeLocalPosition / rectSize, out parcel);
             }
             parcel = Vector2Int.zero;
             localPosition = Vector2.zero;
@@ -142,6 +145,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
         {
             if (!isActive) return;
 
+            DragStarted?.Invoke();
             dragBehavior?.OnBeginDrag(eventData);
         }
 

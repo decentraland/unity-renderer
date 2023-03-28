@@ -28,6 +28,7 @@ namespace DCL
 
             mapRenderImage.ParcelClicked += OnParcelClicked;
             mapRenderImage.Hovered += OnHovered;
+            mapRenderImage.DragStarted += OnDragStarted;
             minimapMetadata.OnSceneInfoUpdated += OnMapMetadataInfoUpdated;
         }
 
@@ -41,6 +42,7 @@ namespace DCL
         {
             mapRenderImage.ParcelClicked -= OnParcelClicked;
             mapRenderImage.Hovered -= OnHovered;
+            mapRenderImage.DragStarted -= OnDragStarted;
             minimapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
         }
 
@@ -53,6 +55,14 @@ namespace DCL
                 view.Close();
         }
 
+        private void OnDragStarted()
+        {
+            if (!view.gameObject.activeSelf)
+                return;
+
+            view.Close();
+        }
+
         private void OnParcelClicked(MapRenderImage.ParcelClickData parcelClickData)
         {
             lastClickPosition = parcelClickData.WorldPosition;
@@ -62,10 +72,6 @@ namespace DCL
             //currentPosition = GetViewLocalPosition(lastClickPosition);
             view.Open(currentParcel, lastClickPosition);
         }
-
-        private Vector2 GetViewLocalPosition(Vector2 mapRenderImageLocalPosition) =>
-            view.transform.parent.InverseTransformPoint(mapRenderImage.transform.TransformPoint(mapRenderImageLocalPosition));
-
 
         private void OnMapMetadataInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
         {

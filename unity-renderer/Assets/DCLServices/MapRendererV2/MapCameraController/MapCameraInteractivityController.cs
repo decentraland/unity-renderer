@@ -58,8 +58,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
             marker.Deactivate();
         }
 
-        public Vector2Int GetParcel(Vector2 normalizedCoordinates) =>
-            coordsUtils.PositionToCoords(GetLocalPosition(normalizedCoordinates));
+        public bool TryGetParcel(Vector2 normalizedCoordinates, out Vector2Int parcel) =>
+            coordsUtils.TryGetCoordsWithinInteractableBounds(GetLocalPosition(normalizedCoordinates), out parcel);
 
         public Vector2 GetNormalizedPosition(Vector2Int parcel)
         {

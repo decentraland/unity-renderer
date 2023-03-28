@@ -7,9 +7,17 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector2Int WorldMinCoords { get; }
         public Vector2Int WorldMaxCoords { get; }
 
-        Rect WorldBounds { get; }
+        /// <summary>
+        /// World bounds visible on the map
+        /// </summary>
+        Rect VisibleWorldBounds { get; }
 
         int ParcelSize { get; }
+
+        /// <summary>
+        /// Clamps position within interactable bounds
+        /// </summary>
+        bool TryGetCoordsWithinInteractableBounds(Vector3 pos, out Vector2Int coords);
 
         Vector2Int PositionToCoords(Vector3 pos);
 

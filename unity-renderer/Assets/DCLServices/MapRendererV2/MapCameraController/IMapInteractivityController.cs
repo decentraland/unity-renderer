@@ -16,7 +16,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         /// <summary>
         /// Returns Parcel corresponding to the given (cursor) position within UI `RawImage`
         /// </summary>
-        Vector2Int GetParcel(Vector2 normalizedCoordinates);
+        bool TryGetParcel(Vector2 normalizedCoordinates, out Vector2Int parcel);
 
         Vector2 GetNormalizedPosition(Vector2Int parcel);
     }

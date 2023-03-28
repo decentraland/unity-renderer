@@ -113,6 +113,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
         public void SetZoom(float value)
         {
             SetCameraSize(value);
+            // Clamp local position as boundaries are dependent on zoom
+            SetLocalPositionClamped(mapCameraObject.transform.localPosition);
             cullingController.SetCameraDirty(this);
         }
 
@@ -125,8 +127,13 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void SetLocalPosition(Vector2 localCameraPosition)
         {
-            mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
+            SetLocalPositionClamped(localCameraPosition);
             cullingController.SetCameraDirty(this);
+        }
+
+        private void SetLocalPositionClamped(Vector2 localCameraPosition)
+        {
+            mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
         }
 
         public void SetPositionAndZoom(Vector2 coordinates, float value)
@@ -155,7 +162,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         private void CalculateCameraPositionBounds()
         {
-            var worldBounds = coordsUtils.WorldBounds;
+            var worldBounds = coordsUtils.VisibleWorldBounds;
 
             var cameraYSize = mapCameraObject.mapCamera.orthographicSize;
             var cameraXSize = cameraYSize * mapCameraObject.mapCamera.aspect;

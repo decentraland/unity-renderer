@@ -25,7 +25,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
 
             coordsUtils = Substitute.For<ICoordsUtils>();
             coordsUtils.ParcelSize.Returns(10);
-            coordsUtils.WorldBounds.Returns(Rect.MinMaxRect(-1000, -1000, 1000, 1000));
+            coordsUtils.VisibleWorldBounds.Returns(Rect.MinMaxRect(-1000, -1000, 1000, 1000));
 
             culling = Substitute.For<IMapCullingController>();
 
@@ -90,7 +90,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
         [Test]
         public void SetPosition()
         {
-            coordsUtils.WorldBounds.Returns(Rect.MinMaxRect(-1000, -1000, 1000, 1000));
+            coordsUtils.VisibleWorldBounds.Returns(Rect.MinMaxRect(-1000, -1000, 1000, 1000));
             ((IMapCameraControllerInternal)mapCamera).Initialize(new Vector2Int(20, 20), new Vector2Int(10, 20), MapLayer.Atlas);
             mapCamera.SetZoom(0);
 
