@@ -1,10 +1,15 @@
 ﻿using DCLServices.MapRendererV2.MapCameraController;
 using System;
+using System.Collections.Generic;
 
 namespace DCLServices.MapRendererV2.Culling
 {
     internal interface IMapCullingController : IDisposable
     {
+        IReadOnlyDictionary<IMapPositionProvider, MapCullingController.TrackedState> TrackedObjects { get; }
+
+        IReadOnlyList<CameraState> CameraStates { get; }
+
         /// <summary>
         /// Adds a camera to the controller
         /// </summary>

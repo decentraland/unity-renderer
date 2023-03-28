@@ -6,7 +6,6 @@ using DCLServices.MapRendererV2.MapLayers;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -35,8 +34,9 @@ namespace DCLServices.MapRendererV2
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
 
-        private IMapCullingController cullingController;
         private IObjectPool<IMapCameraControllerInternal> mapCameraPool;
+
+        internal IMapCullingController cullingController { get; private set; }
 
         public MapRenderer(IMapRendererComponentsFactory componentsFactory)
         {

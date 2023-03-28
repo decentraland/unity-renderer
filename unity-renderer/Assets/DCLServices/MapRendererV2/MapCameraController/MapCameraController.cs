@@ -186,9 +186,14 @@ namespace DCLServices.MapRendererV2.MapCameraController
             mapCameraObject.gameObject.SetActive(active);
         }
 
-        public void GetFrustumPlanes(Plane[] planes)
+        public Rect GetCameraRect()
         {
-            GeometryUtility.CalculateFrustumPlanes(Camera, planes);
+            var cameraYSize = mapCameraObject.mapCamera.orthographicSize;
+            var cameraXSize = cameraYSize * mapCameraObject.mapCamera.aspect;
+
+            var size = new Vector2(cameraXSize * 2f, cameraYSize * 2f);
+
+            return new Rect((Vector2) mapCameraObject.transform.localPosition - new Vector2(cameraXSize, cameraYSize), size);
         }
 
         public void Release()

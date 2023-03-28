@@ -11,15 +11,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
 {
     public class CullingControllerShould
     {
-        private Plane[] frustumPlanes = new Plane[6]
-        {
-            new Plane(Vector3.one, 1),
-            new Plane(Vector3.one, 1),
-            new Plane(Vector3.one, 1),
-            new Plane(Vector3.one, 1),
-            new Plane(Vector3.one, 1),
-            new Plane(Vector3.one, 1),
-        };
+        private static Rect cameraRect = new Rect(-50, -50, 100, 100);
 
         private MapCullingController culling;
         private IMapCullingVisibilityChecker visibilityChecker;
@@ -62,10 +54,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
         {
             int size = System.Runtime.InteropServices.Marshal.SizeOf(culling.DirtyCamerasFlag);
 
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < size * 8; i++)
                 culling.OnCameraAdded_Test(Substitute.For<IMapCameraControllerInternal>());
 
-            Assert.Throws<Exception>(() => culling.OnCameraAdded_Test(Substitute.For<IMapCameraControllerInternal>()));
+            Assert.Throws<ArgumentOutOfRangeException>(() => culling.OnCameraAdded_Test(Substitute.For<IMapCameraControllerInternal>()));
         }
 
         [TestCase(0)]
@@ -78,7 +70,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = Substitute.For<IMapCameraControllerInternal>(),
-                        FrustumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        Rect = cameraRect
                     }
                 );
 
@@ -102,7 +94,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = Substitute.For<IMapCameraControllerInternal>(),
-                        FrustumPlanes = new[] { new Plane(Vector3.one, 1), new Plane(Vector3.one, 1) }
+                        Rect = cameraRect
                     }
                 );
             }
@@ -130,14 +122,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
 
-                mapCameraControllerInternal.Configure()
-                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
-                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
-
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustumPlanes = new Plane[6],
+                        Rect = cameraRect
                     }
                 );
             }
@@ -242,14 +230,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
 
-                mapCameraControllerInternal.Configure()
-                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
-                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
-
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustumPlanes = new Plane[6],
+                        Rect = cameraRect
                     }
                 );
             }
@@ -275,14 +259,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
 
-                mapCameraControllerInternal.Configure()
-                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
-                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
-
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustumPlanes = new Plane[6],
+                        Rect = cameraRect,
                     }
                 );
             }
@@ -312,14 +292,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
 
-                mapCameraControllerInternal.Configure()
-                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
-                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
-
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustumPlanes = new Plane[6],
+                        Rect = cameraRect,
                     }
                 );
             }
@@ -349,14 +325,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
 
-                mapCameraControllerInternal.Configure()
-                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
-                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
-
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustumPlanes = new Plane[6],
+                        Rect = cameraRect,
                     }
                 );
             }
@@ -382,14 +354,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             {
                 IMapCameraControllerInternal mapCameraControllerInternal = Substitute.For<IMapCameraControllerInternal>();
 
-                mapCameraControllerInternal.Configure()
-                                           .When((x) => x.GetFrustumPlanes(Arg.Any<Plane[]>()))
-                                           .Do(x => Array.Copy(frustumPlanes, x.ArgAt<Plane[]>(0), frustumPlanes.Length));
-
                 culling.CameraStates.Add(new CameraState
                     {
                         CameraController = mapCameraControllerInternal,
-                        FrustumPlanes = new Plane[6],
+                        Rect = cameraRect
                     }
                 );
             }

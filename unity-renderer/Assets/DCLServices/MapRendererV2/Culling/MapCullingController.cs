@@ -3,7 +3,7 @@ using DCLServices.MapRendererV2.MapCameraController;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace DCLServices.MapRendererV2.Culling
 {
@@ -38,17 +38,16 @@ namespace DCLServices.MapRendererV2.Culling
         void IMapCullingController.OnCameraAdded(IMapCameraControllerInternal cameraController)
         {
             if (cameraStates.Count == MAX_CAMERAS_COUNT)
-                throw new Exception("Camera out of range");
+                throw new ArgumentOutOfRangeException(nameof(cameraController), "Camera out of range");
 
             SetCameraDirtyInternal(cameraStates.Count);
 
             var cameraState = new CameraState
             {
                 CameraController = cameraController,
-                FrustumPlanes = new Plane[6],
+                Rect = cameraController.GetCameraRect(),
             };
 
-            cameraController.GetFrustumPlanes(cameraState.FrustumPlanes);
             cameraStates.Add(cameraState);
         }
 
@@ -75,7 +74,7 @@ namespace DCLServices.MapRendererV2.Culling
                 throw new Exception($"Tried to set not tracked camera dirty");
 
             SetCameraDirtyInternal(index);
-            cameraController.GetFrustumPlanes(cameraStates[index].FrustumPlanes);
+            cameraStates[index].Rect = cameraController.GetCameraRect();
         }
 
         public void SetTrackedObjectPositionDirty<T>(T obj) where T: IMapPositionProvider
@@ -131,7 +130,9 @@ namespace DCLServices.MapRendererV2.Culling
 
         private void ResolveDirtyCameras()
         {
-            for (var i = 0; i < sizeof(int); i++)
+            Profiler.BeginSample(nameof(ResolveDirtyCameras));
+
+            for (var i = 0; i < MAX_CAMERAS_COUNT; i++)
             {
                 if (!IsCameraDirty(i))
                     continue;
@@ -147,6 +148,8 @@ namespace DCLServices.MapRendererV2.Culling
             }
 
             dirtyCamerasFlag = 0;
+
+            Profiler.EndSample();
         }
 
         private async UniTaskVoid ResolveDirtyObjectsRoutineAsync(CancellationToken ct)
@@ -164,6 +167,8 @@ namespace DCLServices.MapRendererV2.Culling
 
         private void ResolveDirtyObjects(int count)
         {
+            Profiler.BeginSample(nameof(ResolveDirtyObjects));
+
             var stateNode = dirtyObjects.First;
 
             while (count > 0 && stateNode != null)
@@ -179,11 +184,13 @@ namespace DCLServices.MapRendererV2.Culling
 
                 count--;
             }
+
+            Profiler.EndSample();
         }
 
         private void ResolveDirtyObject(TrackedState state)
         {
-            for (int i = 0; i < sizeof(int); i++)
+            for (int i = 0; i < MAX_CAMERAS_COUNT; i++)
             {
                 if (!state.IsCameraDirty(i))
                     continue;
@@ -216,5 +223,7 @@ namespace DCLServices.MapRendererV2.Culling
             disposingCts?.Dispose();
             disposingCts = null;
         }
+
+        IReadOnlyList<CameraState> IMapCullingController.CameraStates => cameraStates;
     }
 }

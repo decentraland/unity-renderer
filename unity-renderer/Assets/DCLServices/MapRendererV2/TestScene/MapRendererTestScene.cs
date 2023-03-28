@@ -8,6 +8,7 @@ namespace DCLServices.MapRendererV2.TestScene
         [SerializeField] internal MapRendererTestSceneContainer container;
         [SerializeField] internal int parcelSize = 20;
         [SerializeField] internal int atlasChunkSize = 1020;
+        [SerializeField] internal float cullingBoundsInParcels = 5;
 
         internal bool initialized { get; set; }
 
