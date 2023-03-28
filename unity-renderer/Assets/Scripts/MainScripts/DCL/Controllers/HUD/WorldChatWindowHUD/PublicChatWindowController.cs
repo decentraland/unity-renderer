@@ -70,6 +70,7 @@ namespace DCL.Chat.HUD
                 true,
                 (name, count, ct) => chatMentionSuggestionProvider.GetNearbyProfilesStartingWith(name, count, ct),
                 socialAnalytics,
+                chatController,
                 profanityFilter);
             // dont set any message's sorting strategy, just add them sequentally
             // comms cannot calculate a server timestamp for each message

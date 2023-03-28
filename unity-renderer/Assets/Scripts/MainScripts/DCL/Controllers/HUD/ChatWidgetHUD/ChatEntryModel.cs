@@ -17,9 +17,9 @@ public struct ChatEntryModel
     public string bodyText;
     public string senderId;
     public string senderName;
-    public bool isLoadingNames;
     public string recipientName;
     public ulong timestamp;
     public SubType subType;
     public bool isChannelMessage;
+    public bool isLoadingNames;
 }

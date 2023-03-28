@@ -77,7 +77,7 @@ namespace DCL.Chat.HUD
 
             chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
                (name, count, ct) => chatMentionSuggestionProvider.GetProfilesFromChatChannelsStartingWith(name, channelId, count, ct),
-                socialAnalytics, profanityFilter);
+                socialAnalytics, chatController, profanityFilter);
 
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
@@ -232,8 +232,6 @@ namespace DCL.Chat.HUD
                 if (!IsMessageFomCurrentChannel(message)) continue;
 
                 UpdateOldestMessage(message);
-
-                message.isChannelMessage = true;
 
                 // TODO: right now the channel history is disabled, but we must find a workaround to support history + max message limit allocation for performance reasons
                 // one approach could be to increment the max amount of messages depending on how many pages you loaded from the history

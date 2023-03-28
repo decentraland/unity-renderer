@@ -34,6 +34,7 @@ public class ChatHUDController : IHUD
     private readonly InputAction_Trigger closeMentionSuggestionsTrigger;
     private readonly IProfanityFilter profanityFilter;
     private readonly ISocialAnalytics socialAnalytics;
+    private readonly IChatController chatController;
     private readonly Regex mentionRegex = new (@"(\B@\w+)|(\B@+)");
     private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
@@ -70,6 +71,7 @@ public class ChatHUDController : IHUD
         bool detectWhisper,
         GetSuggestedUserProfiles getSuggestedUserProfiles,
         ISocialAnalytics socialAnalytics,
+        IChatController chatController,
         IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
@@ -77,6 +79,7 @@ public class ChatHUDController : IHUD
         this.detectWhisper = detectWhisper;
         this.getSuggestedUserProfiles = getSuggestedUserProfiles;
         this.socialAnalytics = socialAnalytics;
+        this.chatController = chatController;
         this.profanityFilter = profanityFilter;
     }
 
@@ -154,30 +157,34 @@ public class ChatHUDController : IHUD
         model.messageType = message.messageType;
         model.bodyText = message.body;
         model.timestamp = message.timestamp;
-        model.isChannelMessage = message.isChannelMessage;
 
-        if (message.recipient != null)
+        if (!string.IsNullOrEmpty(message.recipient))
         {
-            UserProfile recipientProfile = userProfileBridge.Get(message.recipient);
+            model.isChannelMessage = chatController.GetAllocatedChannel(message.recipient) != null;
 
-            if (recipientProfile != null)
-                model.recipientName = recipientProfile.userName;
-            else
+            if (!model.isChannelMessage)
             {
-                model.recipientName = GetEllipsisFormat(message.recipient);
-                model.isLoadingNames = true;
+                UserProfile recipientProfile = userProfileBridge.Get(message.recipient);
 
-                // sometimes there is no cached profile, so we request it
-                // dont block the operation of showing the message immediately
-                // just update the message information after we get the profile
-                EnsureProfileThenUpdateMessage(message.recipient, message, setScrollPositionToBottom, spamFiltering,
-                        limitMaxEntries, fetchProfileTries,
-                        profileFetchingCancellationToken.Token)
-                   .Forget();
+                if (recipientProfile != null)
+                    model.recipientName = recipientProfile.userName;
+                else
+                {
+                    model.recipientName = GetEllipsisFormat(message.recipient);
+                    model.isLoadingNames = true;
+
+                    // sometimes there is no cached profile, so we request it
+                    // dont block the operation of showing the message immediately
+                    // just update the message information after we get the profile
+                    EnsureProfileThenUpdateMessage(message.recipient, message, setScrollPositionToBottom, spamFiltering,
+                            limitMaxEntries, fetchProfileTries,
+                            profileFetchingCancellationToken.Token)
+                       .Forget();
+                }
             }
         }
 
-        if (message.sender != null)
+        if (!string.IsNullOrEmpty(message.sender))
         {
             model.senderId = message.sender;
             UserProfile senderProfile = userProfileBridge.Get(message.sender);

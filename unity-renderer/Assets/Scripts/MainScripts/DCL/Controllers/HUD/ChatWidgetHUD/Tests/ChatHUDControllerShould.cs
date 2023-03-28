@@ -46,6 +46,7 @@ public class ChatHUDControllerShould
         controller = new ChatHUDController(dataStore, userProfileBridge, true,
             (name, count, token) => UniTask.FromResult(suggestedProfilesAction.Invoke()),
             Substitute.For<ISocialAnalytics>(),
+            Substitute.For<IChatController>(),
             profanityFilter);
 
         controller.Initialize(view);
@@ -438,7 +439,6 @@ public class ChatHUDControllerShould
             controller.AddChatMessage(new ChatMessage("msg1", ChatMessage.Type.PRIVATE, SENDER_ID, "hey", 100)
             {
                 recipient = RECIPIENT_ID,
-                isChannelMessage = false,
             });
 
             await UniTask.NextFrame();
@@ -473,10 +473,7 @@ public class ChatHUDControllerShould
 
             userProfileBridge.Get(SENDER_ID).Returns(null, senderProfile);
 
-            controller.AddChatMessage(new ChatMessage("msg1", ChatMessage.Type.PUBLIC, SENDER_ID, "hey", 100)
-            {
-                isChannelMessage = false,
-            });
+            controller.AddChatMessage(new ChatMessage("msg1", ChatMessage.Type.PUBLIC, SENDER_ID, "hey", 100));
 
             await UniTask.NextFrame();
 
@@ -506,7 +503,6 @@ public class ChatHUDControllerShould
 
             controller.AddChatMessage(new ChatMessage("msg1", ChatMessage.Type.PRIVATE, SENDER_ID, "hey", 100)
             {
-                isChannelMessage = false,
                 recipient = RECIPIENT_ID,
             });
 
