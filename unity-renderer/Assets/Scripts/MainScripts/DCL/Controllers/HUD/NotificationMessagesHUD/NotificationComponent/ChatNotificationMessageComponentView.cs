@@ -4,6 +4,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace DCL.Chat.Notifications
 {
@@ -25,11 +26,11 @@ namespace DCL.Chat.Notifications
         [SerializeField] internal GameObject imageContainer;
         [SerializeField] internal GameObject imageBackground;
         [SerializeField] internal GameObject multiNotificationBackground;
+        [SerializeField] internal GameObject mentionMark;
         [SerializeField] internal bool isPrivate;
         [SerializeField] internal RectTransform backgroundTransform;
         [SerializeField] internal RectTransform messageContainerTransform;
-        [SerializeField] internal RectTransform header;
-        [SerializeField] internal RectTransform content;
+        [SerializeField] internal bool isTopNorification;
 
         [Header("Configuration")]
         [SerializeField] internal ChatNotificationMessageComponentModel model;
@@ -41,7 +42,7 @@ namespace DCL.Chat.Notifications
         public event Action<string> OnClickedNotification;
         public bool shouldAnimateFocus = true;
         public string notificationTargetId;
-        private int maxContentCharacters, maxHeaderCharacters, maxSenderCharacters;
+        private int maxHeaderCharacters, maxSenderCharacters;
         private float startingXPosition;
 
         public void Configure(ChatNotificationMessageComponentModel newModel)
@@ -81,7 +82,7 @@ namespace DCL.Chat.Notifications
 
         public override void Hide(bool instant = false)
         {
-            showHideAnimator.animSpeedFactor = 0.05f;
+            showHideAnimator.animSpeedFactor = 15f;
             base.Hide(instant);
         }
 
@@ -100,6 +101,9 @@ namespace DCL.Chat.Notifications
             SetNotificationHeader(model.messageHeader);
             SetImage(model.imageUri);
             SetImageVisibility(model.isImageVisible);
+            SetOwnPlayerMention(model.isOwnPlayerMentioned);
+
+            if (isTopNorification) return;
 
             if (model.isDockedLeft)
                 DockLeft();
@@ -110,10 +114,7 @@ namespace DCL.Chat.Notifications
         public void SetMessage(string message)
         {
             model.message = notificationMessage.ReplaceUnsupportedCharacters(message, '?');
-            if (message.Length <= maxContentCharacters)
-                notificationMessage.text = message;
-            else
-                notificationMessage.text = $"{message.Substring(0, maxContentCharacters)}...";
+            notificationMessage.text = message;
 
             ForceUIRefresh();
         }
@@ -154,7 +155,7 @@ namespace DCL.Chat.Notifications
             {
                 seed += (int)value;
             }
-            System.Random rand1 = new System.Random(seed);
+            Random rand1 = new Random(seed);
             notificationHeader.color = channelColors[rand1.Next(0, channelColors.Length)];
         }
 
@@ -209,21 +210,10 @@ namespace DCL.Chat.Notifications
             imageContainer.SetActive(visible);
         }
 
-        public void SetPositionOffset(float xPosHeader, float xPosContent)
-        {
-            if (header != null)
-                header.anchoredPosition = new Vector2(xPosHeader, header.anchoredPosition.y);
-            if (content != null)
-                content.anchoredPosition = new Vector2(xPosContent, content.anchoredPosition.y);
-
-            ForceUIRefresh();
-        }
-
         public void SetMaxContentCharacters(int maxContentCharacters)
         {
             maxContentCharacters = Mathf.Max(0, maxContentCharacters);
             model.maxContentCharacters = maxContentCharacters;
-            this.maxContentCharacters = maxContentCharacters;
         }
 
         public void SetMaxHeaderCharacters(int maxHeaderCharacters)
@@ -242,6 +232,14 @@ namespace DCL.Chat.Notifications
         {
             model.notificationTargetId = notificationTargetId;
             this.notificationTargetId = notificationTargetId;
+        }
+
+        public void SetOwnPlayerMention(bool isMentioned)
+        {
+            model.isOwnPlayerMentioned = isMentioned;
+
+            if (mentionMark != null)
+                mentionMark.SetActive(isMentioned);
         }
 
         public void DockRight()
@@ -265,6 +263,6 @@ namespace DCL.Chat.Notifications
         }
 
         private void ForceUIRefresh() =>
-            Utils.ForceRebuildLayoutImmediate(backgroundTransform);
+            backgroundTransform.ForceUpdateLayout();
     }
 }

@@ -3,32 +3,10 @@ import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
 
-export const NETWORK_HZ = 10
-
-export namespace interactionLimits {
-  /**
-   * click distance, this is the length of the ray/lens
-   */
-  export const clickDistance = 10
-}
-
 /**
- * Time between consecutive updates to the loading screen, in millis
+ * Estimated avatar height
  */
-export const timeBetweenLoadingUpdatesInMillis = 100
-
-export namespace playerConfigurations {
-  export const gravity = -0.2
-  export const height = 1.6
-  export const handFromBodyDistance = 0.5
-  // The player speed
-  export const speed = 2
-  export const runningSpeed = 8
-  // The player inertia
-  export const inertia = 0.01
-  // The mouse sensibility (lower is most sensible)
-  export const angularSensibility = 500
-}
+export const playerHeight = 1.6
 
 // Entry points
 export const PREVIEW: boolean = !!(globalThis as any).preview
@@ -36,10 +14,8 @@ export const WORLD_EXPLORER = !PREVIEW
 
 export const RENDERER_WS = location.search.includes('ws')
 
-export const OPEN_AVATAR_EDITOR = location.search.includes('OPEN_AVATAR_EDITOR') && WORLD_EXPLORER
-
 // Development
-export const ENV_OVERRIDE = location.search.includes('ENV')
+const ENV_OVERRIDE = location.search.includes('ENV')
 export const GIF_WORKERS = location.search.includes('GIF_WORKERS')
 
 const qs = new URLSearchParams(location.search)
@@ -60,10 +36,6 @@ export const COMMS_PROFILE_TIMEOUT = 1500
 export const FETCH_REMOTE_PROFILE_RETRIES = 3
 export const MAXIMUM_NETWORK_MSG_LENGTH = 65000
 
-export const DECENTRALAND_SPACE = qs.get('SPACE')
-
-export const PARCEL_LOADING_ENABLED = !DECENTRALAND_SPACE || qs.has('DISABLE_PARCEL_LOADING')
-
 export const UPDATE_CONTENT_SERVICE = ensureQueryStringUrl(qs.get('UPDATE_CONTENT_SERVICE'))
 export const FETCH_CONTENT_SERVICE = ensureQueryStringUrl(qs.get('FETCH_CONTENT_SERVICE'))
 export const HOTSCENES_SERVICE = ensureSingleString(qs.get('HOTSCENES_SERVICE'))
@@ -71,21 +43,15 @@ export const POI_SERVICE = ensureSingleString(qs.get('POI_SERVICE'))
 
 export const TRACE_RENDERER = ensureSingleString(qs.get('TRACE_RENDERER'))
 
-export const LOS = ensureSingleString(qs.get('LOS'))
-
 export const DEBUG = location.search.includes('DEBUG_MODE') || !!(globalThis as any).mocha || PREVIEW
-export const COMMS_GRAPH = qs.has('COMMS_GRAPH')
 export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')
-export const DEBUG_MOBILE = location.search.includes('DEBUG_MOBILE')
-export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
 export const DEBUG_REDUX = location.search.includes('DEBUG_REDUX')
 export const DEBUG_REDUX_SAGAS = location.search.includes('DEBUG_REDUX_SAGAS')
-export const DEBUG_LOGIN = location.search.includes('DEBUG_LOGIN')
 export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LOG')
 export const DEBUG_KERNEL_LOG = !PREVIEW || location.search.includes('DEBUG_KERNEL_LOG')
-export const DEBUG_PREFIX = ensureSingleString(qs.get('DEBUG_PREFIX'))
-export const DEBUG_DISABLE_LOADING = qs.has('DEBUG_DISABLE_LOADING')
-export const ALLOW_SWIFT_SHADER = qs.has('ALLOW_SWIFT_SHADER')
+export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
+
+export const PIPE_SCENE_CONSOLE = location.search.includes('PIPE_SCENE_CONSOLE')
 
 export const RESET_TUTORIAL = location.search.includes('RESET_TUTORIAL')
 
@@ -96,8 +62,9 @@ export const SHOW_FPS_COUNTER = location.search.includes('SHOW_FPS_COUNTER') || 
 export const HAS_INITIAL_POSITION_MARK = location.search.includes('position')
 export const WSS_ENABLED = !!ensureSingleString(qs.get('ws'))
 export const FORCE_SEND_MESSAGE = location.search.includes('FORCE_SEND_MESSAGE')
+export const ALLOW_SWIFT_SHADER = location.search.includes('ALLOW_SWIFT_SHADER')
 
-export const ASSET_BUNDLES_DOMAIN = ensureSingleString(qs.get('ASSET_BUNDLES_DOMAIN'))
+const ASSET_BUNDLES_DOMAIN = ensureSingleString(qs.get('ASSET_BUNDLES_DOMAIN'))
 export const SOCIAL_SERVER_URL = ensureSingleString(qs.get('SOCIAL_SERVER_URL'))
 
 export const QS_MAX_VISIBLE_PEERS =
@@ -127,30 +94,14 @@ export const BYPASS_CONTENT_ALLOWLIST = qs.has('BYPASS_CONTENT_ALLOWLIST')
   ? qs.get('BYPASS_CONTENT_ALLOWLIST') === 'true'
   : PIN_CATALYST || globalThis.location.hostname !== 'play.decentraland.org'
 
-export const FORCE_RENDERING_STYLE = ensureSingleString(qs.get('FORCE_RENDERING_STYLE')) as any
-
 const META_CONFIG_URL = ensureSingleString(qs.get('META_CONFIG_URL'))
 
 export const CHANNEL_TO_JOIN_CONFIG_URL = ensureSingleString(qs.get('CHANNEL'))
 
-export namespace commConfigurations {
-  export const debug = true
-  export const commRadius = 4
-
-  export const sendAnalytics = true
-
-  export const peerTtlMs = 60000
-
-  export const defaultIceServers = [
-    { urls: 'stun:stun.l.google.com:19302' },
-    {
-      urls: 'turn:coturn-raw.decentraland.services:3478',
-      credential: 'passworddcl',
-      username: 'usernamedcl'
-    }
-  ]
-
-  export const voiceChatUseHRTF = location.search.includes('VOICE_CHAT_USE_HRTF')
+export const commConfigurations = {
+  commRadius: 4,
+  peerTtlMs: 60000,
+  voiceChatUseHRTF: location.search.includes('VOICE_CHAT_USE_HRTF')
 }
 
 // take address from http://contracts.decentraland.org/addresses.json
@@ -160,7 +111,7 @@ export enum ETHEREUM_NETWORK {
   GOERLI = 'goerli'
 }
 
-export const knownTLDs = ['zone', 'org', 'today']
+const knownTLDs = ['zone', 'org', 'today']
 
 // return one of org zone today
 export function getTLD() {
@@ -255,7 +206,14 @@ export namespace ethereumConfigurations {
   }
 }
 
-export const isRunningTest: boolean = (globalThis as any)['isRunningTests'] === true
+const testConfig = {
+  isRunningTest: false
+}
+export const setRunningTest = (test: boolean) => {
+  testConfig.isRunningTest = test
+}
+export const isRunningTest = () => testConfig.isRunningTest
+export const PORTABLE_EXPERIENCES_DEBOUNCE_DELAY = () => (isRunningTest() ? 1 : 100)
 
 function addHttpsIfNoProtocolIsSet(domain: string): string
 function addHttpsIfNoProtocolIsSet(domain: undefined): undefined

@@ -16,6 +16,7 @@ namespace DCL.ECSComponents
     {
         private const string POINTER_COLLIDER_NAME = "OnPointerEventCollider";
         private const string FEATURE_GLTFAST = "gltfast";
+        private const string SMR_UPDATE_OFFSCREEN_FEATURE_FLAG = "smr_update_offscreen";
         private const StringComparison IGNORE_CASE = StringComparison.CurrentCultureIgnoreCase;
 
         internal RendereableAssetLoadHelper gltfLoader;
@@ -55,6 +56,7 @@ namespace DCL.ECSComponents
             gltfLoader.settings.forceGPUOnlyMesh = true;
             gltfLoader.settings.parent = transform;
             gltfLoader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
+            gltfLoader.settings.smrUpdateWhenOffScreen = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(SMR_UPDATE_OFFSCREEN_FEATURE_FLAG);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -89,11 +91,9 @@ namespace DCL.ECSComponents
             (pointerColliders, renderers) = SetUpPointerCollidersAndRenderers(rendereable.renderers);
 
             // set colliders and renderers
-            for (int i = 0; i < pointerColliders.Count; i++) { pointerColliderComponent.AddCollider(scene, entity, pointerColliders[i]); }
-
-            for (int i = 0; i < physicColliders.Count; i++) { physicColliderComponent.AddCollider(scene, entity, physicColliders[i]); }
-
-            for (int i = 0; i < renderers.Count; i++) { renderersComponent.AddRenderer(scene, entity, renderers[i]); }
+            pointerColliderComponent.AddColliders(scene, entity, pointerColliders);
+            physicColliderComponent.AddColliders(scene, entity, physicColliders);
+            renderersComponent.AddRenderers(scene, entity, renderers);
 
             // TODO: modify Animator component to remove `AddShapeReady` usage
             dataStoreEcs7.AddShapeReady(entity.entityId, gameObject);

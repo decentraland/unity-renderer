@@ -1,5 +1,5 @@
 import { select, takeEvery } from 'redux-saga/effects'
-import { trackEvent } from '../analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import {
   NETWORK_MISMATCH,
   COMMS_ESTABLISHED,

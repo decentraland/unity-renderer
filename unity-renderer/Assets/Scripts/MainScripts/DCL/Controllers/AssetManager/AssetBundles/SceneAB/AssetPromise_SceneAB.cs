@@ -18,14 +18,28 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 
     public class AssetPromise_SceneAB : AssetPromise_WithUrl<Asset_SceneAB>
     {
+        private const string URN_PREFIX = "urn:decentraland:entity:";
         private readonly CancellationTokenSource cancellationTokenSource;
         private Service<IWebRequestController> webRequestController;
 
         private Action onSuccess;
 
-        public AssetPromise_SceneAB(string contentUrl, string hash) : base(contentUrl, hash)
+        public AssetPromise_SceneAB(string contentUrl, string sceneId) : base(contentUrl, sceneId)
         {
             cancellationTokenSource = new CancellationTokenSource();
+            this.hash = GetEntityIdFromSceneId(sceneId);
+        }
+
+        private string GetEntityIdFromSceneId(string sceneId)
+        {
+            // This case happens when loading worlds
+            if (sceneId.StartsWith(URN_PREFIX))
+            {
+                int prefixLength = URN_PREFIX.Length;
+                return sceneId.Substring(prefixLength, sceneId.IndexOf("?", StringComparison.Ordinal) - prefixLength);
+            }
+
+            return sceneId;
         }
 
         protected override void OnCancelLoading()
@@ -64,8 +78,15 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
                 asset.Setup(sceneAb, contentUrl);
             }
             catch (OperationCanceledException) { }
+            catch (UnityWebRequestException)
+            {
+                if (!IsEmptyScene())
+                    Debug.LogError("No Asset Bundles for scene " + finalUrl);
+            }
             finally { onSuccess(); }
         }
+
+        private bool IsEmptyScene() => hash.Contains(",");
 
         protected override void OnBeforeLoadOrReuse() { }
 

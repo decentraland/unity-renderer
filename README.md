@@ -19,6 +19,8 @@ This repository contains the reference implementation of the [decentraland explo
 
 ### Steps
 
+Check: [Multiplatform in Editor](docs/multiplatform-in-editor.md)
+
 1. Download and install Unity 2021.3.14f1
 2. Open the scene named `InitialScene`
 3. Within the scene, select the `DebugConfig` GameObject.
@@ -57,6 +59,24 @@ To test against a build made on this repository, you can use a link with this fo
 
 # Advanced debugging scenarios
 
+## Running the browser-interface
+
+In order to run browser interface in any platform follow the next instructions
+
+### How to run `make watch`
+
+1. Open browser-interface with `Visual Studio Code`
+2. Make sure you have the `devcontainers` extension installed
+3. Make sure [Docker Desktop](https://www.docker.com/) is running
+4. `At Visual Studio Code` press `F1` execute `Reopen in Container` and wait for it to finish.
+5. Go to `Terminal > New Terminal` menu and run `make watch` command. 
+
+## How to run browser-interface unit tests
+
+1. Follow the previous process to run `make watch` 
+2. Open `localhost:8080/test` in your browser
+3. Watch the results
+
 ## Debug with Unity Editor + local Browser Interface
 
 Use this approach when working on any features that need both Browser Interface and Unity modifications, and you need to watch Unity code changes fast without the need of injecting a wasm targeted build in the browser.
@@ -82,11 +102,10 @@ When the steps are followed, you will be able to run the local Unity build by go
 ### Steps
 
 1. Make sure you have the proper Unity version up and running
-2. Make sure you have [Kernel repository](https://github.com/decentraland/kernel) cloned.
-3. Make sure you are running kernel through `make watch` command in the cloned repo directory (`npm i` first just in case).
+3. Make sure you are running browser-interface through `make watch` command.
 4. Produce a Unity wasm targeted build using the Build menu.
-5. When the build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `kernel/node_modules/@dcl/unity-renderer`.
-6. Run the browser explorer through `localhost:8080&ENABLE_WEB3`. Now, it should use your local Unity build. Don't mind the white screen at the beginning, that's because the website repo is not being used and it's only loading Kernel with the build.
+5. When the build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `browser-interface/node_modules/@dcl/unity-renderer`.
+6. Run the browser explorer through `localhost:8080&ENABLE_WEB3`. Now, it should use your local Unity build. Don't mind the white screen at the beginning, that's because the website repo is not being used and it's only loading Browser Interface with the build.
 7. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process.
 
 Alternatively you can go through these 2 steps after step 3 and load the build locally using `localhost:3000` 

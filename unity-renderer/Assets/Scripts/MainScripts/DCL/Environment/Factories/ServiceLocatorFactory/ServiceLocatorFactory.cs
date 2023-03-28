@@ -29,6 +29,7 @@ namespace DCL
         public static ServiceLocator CreateDefault()
         {
             var result = new ServiceLocator();
+            IRPC irpc = new RPC();
 
             //Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
@@ -40,13 +41,20 @@ namespace DCL
             result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
-            result.Register<IWebRequestController>(WebRequestController.Create);
+            result.Register<IRPC>(() => irpc);
+            result.Register<IWebRequestController>(() => new WebRequestController(
+                new GetWebRequestFactory(),
+                new WebRequestAssetBundleFactory(),
+                new WebRequestTextureFactory(),
+                new WebRequestAudioFactory(),
+                new PostWebRequestFactory(),
+                new RPCSignRequest(irpc)
+            ));
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
             result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
-            result.Register<IRPC>(() => new RPC());
             result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
 
             // World runtime
@@ -107,7 +115,7 @@ namespace DCL
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));
-            result.Register<IHUDController>(() => new HUDController(result.Get<IWearablesCatalogService>(), DataStore.i.featureFlags));
+            result.Register<IHUDController>(() => new HUDController(result.Get<IWearablesCatalogService>(), DataStore.i));
 
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));

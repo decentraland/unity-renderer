@@ -2,11 +2,13 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using DCL.Social.Chat.Mentions;
 using System;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
@@ -18,6 +20,10 @@ namespace DCL.Chat.HUD
         [SerializeField] internal bool showUserName = true;
         [SerializeField] private RectTransform hoverPanelPositionReference;
         [SerializeField] private RectTransform contextMenuPositionReference;
+        [SerializeField] private MentionLinkDetector mentionLinkDetector;
+        [SerializeField] private Color autoMentionBackgroundColor;
+        [SerializeField] private Image backgroundImage;
+        [SerializeField] internal UserProfile ownUserProfile;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -53,7 +59,7 @@ namespace DCL.Chat.HUD
 
             // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
             // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
-            // TODO: Remove hack in a newer Unity/TMPro version 
+            // TODO: Remove hack in a newer Unity/TMPro version
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
@@ -111,20 +117,8 @@ namespace DCL.Chat.HUD
 
         private string GetCoordinatesLink(string body)
         {
-            if (!CoordinateUtils.HasValidTextCoordinates(body))
-                return body;
-            var textCoordinates = CoordinateUtils.GetTextCoordinates(body);
-
-            for (var i = 0; i < textCoordinates.Count; i++)
-            {
-                // TODO: the preload should not be here
-                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
-
-                body = body.Replace(textCoordinates[i],
-                    $"</noparse><link={textCoordinates[i]}><color=#4886E3><u>{textCoordinates[i]}</u></color></link><noparse>");
-            }
-
-            return body;
+            return CoordinateUtils.ReplaceTextCoordinates(body, (text, coordinates) =>
+                $"</noparse><link={text}><color=#4886E3><u>{text}</u></color></link><noparse>");
         }
 
         private void PlaySfx(ChatEntryModel chatEntryModel)
@@ -171,31 +165,24 @@ namespace DCL.Chat.HUD
                    .TotalSeconds < 30;
         }
 
-        private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
-        {
-            if (MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y) == null)
-                WebInterface.RequestScenesInfoAroundParcel(new Vector2(parcelCoordinates.x, parcelCoordinates.y), 2);
-        }
-
         public void OnPointerClick(PointerEventData pointerEventData)
         {
-            if (pointerEventData.button == PointerEventData.InputButton.Left)
+            if (pointerEventData.button != PointerEventData.InputButton.Left) return;
+
+            int linkIndex =
+                TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
+            if (linkIndex == -1) return;
+
+            string link = body.textInfo.linkInfo[linkIndex].GetLinkID();
+
+            if (CoordinateUtils.HasValidTextCoordinates(link))
             {
-                var linkIndex =
-                    TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
-                if (linkIndex == -1) return;
-
-                var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
-
-                if (CoordinateUtils.HasValidTextCoordinates(link))
-                {
-                    DataStore.i.HUDs.gotoPanelVisible.Set(true);
-                    var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
-                    DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
-                }
-                else if (link.StartsWith("username://"))
-                    OnUserNameClicked?.Invoke(this);
+                DataStore.i.HUDs.gotoPanelVisible.Set(true);
+                var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
+                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }
+            else if (link.StartsWith("username://"))
+                OnUserNameClicked?.Invoke(this);
         }
 
         public void OnPointerEnter(PointerEventData pointerEventData)
@@ -233,6 +220,9 @@ namespace DCL.Chat.HUD
         private void OnDestroy()
         {
             populationTaskCancellationTokenSource.Cancel();
+
+            if (mentionLinkDetector != null)
+                mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
         }
 
         public override void SetFadeout(bool enabled)
@@ -251,6 +241,16 @@ namespace DCL.Chat.HUD
         {
             panel.pivot = hoverPanelPositionReference.pivot;
             panel.position = hoverPanelPositionReference.position;
+        }
+
+        public override void ConfigureMentionLinkDetector(UserContextMenu userContextMenu)
+        {
+            if (mentionLinkDetector == null)
+                return;
+
+            mentionLinkDetector.SetContextMenu(userContextMenu);
+            mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
+            mentionLinkDetector.OnOwnPlayerMentioned += OnOwnPlayerMentioned;
         }
 
         private void Update()
@@ -274,7 +274,7 @@ namespace DCL.Chat.HUD
 
             var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
             if (!CoordinateUtils.HasValidTextCoordinates(link)) return;
-        
+
             isOverCoordinates = true;
             currentCoordinates = CoordinateUtils.ParseCoordinatesString(link);
             hoverGotoPanelTimer = timeToHoverGotoPanel;
@@ -315,6 +315,14 @@ namespace DCL.Chat.HUD
             //NOTE(Brian): ContentSizeFitter doesn't fare well with tabs, so i'm replacing these
             //             with spaces.
             return text.Replace("\t", "    ");
+        }
+
+        private void OnOwnPlayerMentioned()
+        {
+            if (model.senderId == ownUserProfile.userId)
+                return;
+
+            backgroundImage.color = autoMentionBackgroundColor;
         }
     }
 }

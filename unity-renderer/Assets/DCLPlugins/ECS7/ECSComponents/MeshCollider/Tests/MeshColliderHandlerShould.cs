@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -24,16 +25,19 @@ namespace Tests
         {
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var executors = new Dictionary<int, ICRDTExecutor>();
 
             var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, componentsManager, componentsFactory, null, new List<InternalComponentWriteData>());
+                0, componentsManager, componentsFactory, null,
+                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
+                executors);
 
-            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             handler = new MeshColliderHandler(internalComponents.onPointerColliderComponent,
                 internalComponents.physicColliderComponent);
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1101);
 

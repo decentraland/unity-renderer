@@ -19,7 +19,6 @@ namespace DCL.Social.Passports
         private PassportPlayerInfoComponentController playerInfoController;
         private PassportPlayerPreviewComponentController playerPreviewController;
         private PassportNavigationComponentController passportNavigationController;
-        private StringVariable currentPlayerInfoCardId;
         private IUserProfileBridge userProfileBridge;
         private ISocialAnalytics socialAnalytics;
         private IWearableItemResolver wearableItemResolver;
@@ -35,7 +34,6 @@ namespace DCL.Social.Passports
 
             view = Substitute.For<IPlayerPassportHUDView>();
 
-            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
             wearableItemResolver = Substitute.For<IWearableItemResolver>();
@@ -44,7 +42,6 @@ namespace DCL.Social.Passports
             passportApiBridge = Substitute.For<IPassportApiBridge>();
             friendsController = Substitute.For<IFriendsController>();
             playerInfoController = new PassportPlayerInfoComponentController(
-                                currentPlayerInfoCardId,
                                 Substitute.For<IPassportPlayerInfoComponentView>(),
                                 dataStore,
                                 profanityFilter,
@@ -69,14 +66,20 @@ namespace DCL.Social.Passports
                                 Substitute.For<INamesService>(),
                                 Substitute.For<ILandsService>(),
                                 Substitute.For<IUserProfileBridge>(),
-                                dataStore);
+                                dataStore,
+                                new ViewAllComponentController(
+                                    Substitute.For<IViewAllComponentView>(),
+                                    Substitute.For<DataStore_HUDs>(),
+                                    Substitute.For<IWearablesCatalogService>(),
+                                    Substitute.For<ILandsService>(),
+                                    Substitute.For<INamesService>(),
+                                    NotificationsController.i));
 
             controller = new PlayerPassportHUDController(
                 view,
                 playerInfoController,
                 playerPreviewController,
                 passportNavigationController,
-                currentPlayerInfoCardId,
                 userProfileBridge,
                 passportApiBridge,
                 socialAnalytics,

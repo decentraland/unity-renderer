@@ -7,6 +7,11 @@
 
 set -u # no unbound variables
 
+if [[ "$CIRCLE_BRANCH" = gh-readonly-queue/* ]]; then
+  echo "Skipping preview publish for branch ${CIRCLE_BRANCH}"
+  exit 0
+fi
+
 # Get version
 PACKAGE_PATH=/tmp/workspace/unity-renderer/browser-interface/static/package.json
 VERSION=$(cat ${PACKAGE_PATH} | jq -r .version)

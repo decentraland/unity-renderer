@@ -95,14 +95,6 @@ export class TeleportController {
       await changeToMostPopulatedRealm()
 
       store.dispatch(trackTeleportTriggered(tpMessage))
-      /// This doesn't work when the logic of activate/deactivate rendering is so tightly coupled with the loading
-      /// screen. The code needs rework
-      // const data = {
-      //   xCoord: x,
-      //   yCoord: y,
-      //   message: teleportMessage
-      // }
-      // getUnityInstance().FadeInLoadingHUD(data)
       store.dispatch(teleportToAction({ position: gridToWorld(x, y) }))
 
       return { message: tpMessage, success: true }
@@ -110,12 +102,6 @@ export class TeleportController {
       const errorMessage = `Coordinates are outside of the boundaries. Valid ranges are: ${descriptiveValidWorldRanges}.`
       return { message: errorMessage, success: false }
     }
-  }
-
-  public static LoadingHUDReadyForTeleport(_data: { x: number; y: number }) {
-    /// This doesn't work when the logic of activate/deactivate rendering is so tightly coupled with the loading
-    /// screen. The code needs rework
-    // store.dispatch(teleportToAction({ position: gridToWorld(data.x, data.y) }))
   }
 }
 

@@ -1,25 +1,25 @@
-import defaultLogger from 'lib/logger'
-import { ServerConnectionStatus, Candidate, Parcel } from './types'
-import { getAllCatalystCandidates } from './selectors'
-import { fetchCatalystNodesFromDAO } from 'shared/web3'
-import { CatalystNode } from '../types'
+import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { PIN_CATALYST } from 'config'
-import { store } from 'shared/store/isolatedStore'
-import { ask } from './utils/ping'
-import { getRealmAdapter } from 'shared/realm/selectors'
+import defaultLogger from 'lib/logger'
+import { storeCondition } from 'lib/redux'
+import { fetchCatalystNodesFromContract } from 'lib/web3/fetchCatalystNodesFromContract'
+import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
+import { commsLogger } from 'shared/comms/logger'
+import { getDisabledCatalystConfig } from 'shared/meta/selectors'
 import { setRealmAdapter } from 'shared/realm/actions'
-import { checkValidRealm } from './sagas'
-import { getCurrentIdentity } from 'shared/session/selectors'
 import {
   adapterForRealmConfig,
   resolveRealmBaseUrlFromRealmQueryParameter,
   urlWithProtocol
 } from 'shared/realm/resolver'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { getRealmAdapter } from 'shared/realm/selectors'
 import { OFFLINE_REALM } from 'shared/realm/types'
-import { getDisabledCatalystConfig } from 'shared/meta/selectors'
-import { storeCondition } from 'lib/redux'
-import { commsLogger } from 'shared/comms/logger'
+import { getCurrentIdentity } from 'shared/session/selectors'
+import { store } from 'shared/store/isolatedStore'
+import { checkValidRealm } from './sagas'
+import { getAllCatalystCandidates } from './selectors'
+import { Candidate, Parcel, ServerConnectionStatus } from './types'
+import { ask } from './utils/ping'
 
 async function fetchCatalystNodes(endpoint: string | undefined): Promise<CatalystNode[]> {
   if (endpoint) {
@@ -38,7 +38,7 @@ async function fetchCatalystNodes(endpoint: string | undefined): Promise<Catalys
     }
   }
 
-  return fetchCatalystNodesFromDAO()
+  return fetchCatalystNodesFromContract()
 }
 
 export async function fetchCatalystRealms(nodesEndpoint: string | undefined): Promise<CatalystNode[]> {

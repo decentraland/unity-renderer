@@ -52,6 +52,9 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
+  /// <summary>
+  /// NftFrameType is a predefined framing style for the image.
+  /// </summary>
   public enum NftFrameType {
     [pbr::OriginalName("NFT_CLASSIC")] NftClassic = 0,
     [pbr::OriginalName("NFT_BAROQUE_ORNAMENT")] NftBaroqueOrnament = 1,
@@ -81,6 +84,15 @@ namespace DCL.ECSComponents {
   #endregion
 
   #region Messages
+  /// <summary>
+  /// The NftShape component renders a framed picture from an NFT. It supports PNG, JPEG and GIF files.
+  ///
+  /// The `src` field is the URI of the NFT, which includes its parent contract and index, using
+  /// the `https:` or `ethereum:` schemes.
+  ///
+  /// The picture frame can have several different styles, plus a background color for images that have
+  /// transparent pixels.
+  /// </summary>
   public sealed partial class PBNftShape : pb::IMessage<PBNftShape>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -132,6 +144,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "src" field.</summary>
     public const int SrcFieldNumber = 1;
     private string src_ = "";
+    /// <summary>
+    /// the URI of the NFT
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Src {
@@ -145,7 +160,7 @@ namespace DCL.ECSComponents {
     public const int StyleFieldNumber = 2;
     private global::DCL.ECSComponents.NftFrameType style_;
     /// <summary>
-    /// default = PictureFrameStyle.Classic
+    /// the frame style (default NFT_CLASSIC)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -173,7 +188,7 @@ namespace DCL.ECSComponents {
     public const int ColorFieldNumber = 3;
     private global::Decentraland.Common.Color3 color_;
     /// <summary>
-    /// default = decentraland.common.Color3(0.6404918, 0.611472, 0.8584906)
+    /// RGB background (default [0.6404918, 0.611472, 0.8584906])
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

@@ -9,7 +9,7 @@ import { browserInterface } from 'unity-interface/BrowserInterface'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import type { PortContext } from './context'
 
-import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
+import { PermissionItem } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
 import type {
   ChangeRealmRequest,
   CommsAdapterRequest,
@@ -20,8 +20,8 @@ import type {
   TeleportToRequest,
   TriggerEmoteRequest,
   TriggerEmoteResponse
-} from '@dcl/protocol/out-ts/decentraland/kernel/apis/restricted_actions.gen'
-import { RestrictedActionsServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/restricted_actions.gen'
+} from 'shared/protocol/decentraland/kernel/apis/restricted_actions.gen'
+import { RestrictedActionsServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/restricted_actions.gen'
 import { changeRealm } from 'shared/dao'
 import defaultLogger from 'lib/logger'
 import { getRendererModules } from 'shared/renderer/selectors'

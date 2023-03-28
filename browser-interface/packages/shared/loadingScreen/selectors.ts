@@ -1,44 +1,6 @@
 ﻿import { RootState } from '../store/rootTypes'
 import { LoginState } from 'kernel-web-interface'
 import { isSignupInProgress } from '../session/selectors'
-import { RootRendererState } from '../renderer/types'
-
-/** @deprecated #3642 */
-export function isLoadingScreenVisible(state: RootState) {
-  const { session, renderer, sceneLoader } = state
-
-  if (state.loading.renderingWasActivated) {
-    // hack, remove in RFC-1
-    return false
-  }
-
-  // in the case of signup, we show the avatars editor instead of the loading screen
-  // that is so, to enable the user to customize the avatar while loading the world
-  if (session.isSignUp && session.loginState === LoginState.WAITING_PROFILE) {
-    return false
-  }
-
-  // loading while we don't have a BFF
-  if (!state.realm.realmAdapter) {
-    return true
-  }
-
-  // if parcel loading is not yet started, the loading screen should be visible
-  if (!renderer.parcelLoadingStarted) {
-    return true
-  }
-
-  // if parcel loading is not yet started, the loading screen should be visible
-  if (!sceneLoader.positionSettled) {
-    return true
-  }
-
-  // if the camera is offline, it definitely means we are loading.
-  // This logic should be handled by Unity
-  // Teleporting is also handled by this function. Since rendering is
-  // deactivated on Position.unsettled events
-  return !state.loading.renderingWasActivated
-}
 
 /**
  * @returns true if the renderer is currently visible
@@ -69,9 +31,4 @@ export function isRendererVisible(state: RootState) {
   }
 
   return true
-}
-
-/** @deprecated #3642 It looks like it serves Loading Screen visibility only, and thus should be removed */
-export function getParcelLoadingStarted(state: RootRendererState) {
-  return state && state.renderer && state.renderer.parcelLoadingStarted
 }

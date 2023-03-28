@@ -28,6 +28,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6123622130895115053}
   m_Father: {fileID: 5823365023605641957}
@@ -89,6 +90,7 @@ GameObject:
   - component: {fileID: 5823365023605641957}
   - component: {fileID: -808164953336239873}
   - component: {fileID: 1514739545556520801}
+  - component: {fileID: 9011161838670949205}
   - component: {fileID: 8041991267711887529}
   - component: {fileID: 7336000302445337154}
   - component: {fileID: -2281352007695473291}
@@ -109,6 +111,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1110658662034786025}
   - {fileID: 650554326901945825}
@@ -140,9 +143,10 @@ MonoBehaviour:
   showUserName: 1
   hoverPanelPositionReference: {fileID: 1110658662034786025}
   contextMenuPositionReference: {fileID: 650554326901945825}
-  previewBackgroundImage: {fileID: 7437960684281325092}
-  previewBackgroundColor: {r: 0, g: 0, b: 0, a: 0.7058824}
-  previewFontColor: {r: 1, g: 1, b: 1, a: 1}
+  mentionLinkDetector: {fileID: 9011161838670949205}
+  autoMentionBackgroundColor: {r: 1, g: 0.9921569, b: 0.85098046, a: 1}
+  backgroundImage: {fileID: 7437960684281325092}
+  ownUserProfile: {fileID: 11400000, guid: 25aec1357b37f3146b4dc1588cd4d1ca, type: 2}
 --- !u!114 &1514739545556520801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +160,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textComponent: {fileID: 8068759164719752186}
+--- !u!114 &9011161838670949205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387707094095225561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ead87a46a5a1493aa39befc81bf7e6d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textComponent: {fileID: 8068759164719752186}
+  ownUserProfile: {fileID: 11400000, guid: 25aec1357b37f3146b4dc1588cd4d1ca, type: 2}
 --- !u!114 &8041991267711887529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,6 +247,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5823365023605641957}
   m_RootOrder: 0
@@ -286,6 +305,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6123622130895115053}
   m_RootOrder: 0
@@ -420,6 +440,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5823365023605641957}
   m_RootOrder: 1
@@ -478,6 +499,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4315294092968244398}
   m_Father: {fileID: 4919932192753732469}

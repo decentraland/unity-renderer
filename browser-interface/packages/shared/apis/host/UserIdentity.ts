@@ -4,7 +4,7 @@ import { sceneRuntimeCompatibleAvatar } from 'lib/decentraland/profiles/sceneRun
 import { retrieveProfile } from 'shared/profiles/retrieveProfile'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 
-import { UserIdentityServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/user_identity.gen'
+import { UserIdentityServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/user_identity.gen'
 import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import type { PortContext } from './context'

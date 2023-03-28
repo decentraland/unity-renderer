@@ -19,6 +19,7 @@ using Environment = DCL.Environment;
 public class HUDController : IHUDController
 {
     private const string TOGGLE_UI_VISIBILITY_ASSET_NAME = "ToggleUIVisibility";
+    private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     static bool VERBOSE = false;
     public static HUDController i { get; private set; }
@@ -27,7 +28,7 @@ public class HUDController : IHUDController
 
     private readonly IWearablesCatalogService wearablesCatalogService;
     private InputAction_Trigger toggleUIVisibilityTrigger;
-    private DataStore_FeatureFlag featureFlags;
+    private DataStore dataStore;
 
     private readonly DCL.NotificationModel.Model hiddenUINotification = new DCL.NotificationModel.Model()
     {
@@ -36,11 +37,11 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public HUDController(IWearablesCatalogService wearablesCatalogService, DataStore_FeatureFlag featureFlags, IHUDFactory hudFactory = null)
+    public HUDController(IWearablesCatalogService wearablesCatalogService, DataStore dataStore, IHUDFactory hudFactory = null)
     {
         this.wearablesCatalogService = wearablesCatalogService;
         this.hudFactory = hudFactory;
-        this.featureFlags = featureFlags;
+        this.dataStore = dataStore;
     }
 
     public void Initialize()
@@ -80,8 +81,6 @@ public class HUDController : IHUDController
         GetHUDElement(HUDElementID.TERMS_OF_SERVICE) as TermsOfServiceHUDController;
 
     public TaskbarHUDController taskbarHud => GetHUDElement(HUDElementID.TASKBAR) as TaskbarHUDController;
-
-    public LoadingHUDController loadingHud => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
     public WorldChatWindowController worldChatWindowHud =>
         GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowController;
@@ -126,7 +125,6 @@ public class HUDController : IHUDController
         GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
 
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
-    public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
@@ -148,7 +146,7 @@ public class HUDController : IHUDController
         bool anyInputFieldIsSelected = InputProcessor.FocusIsInInputField();
 
         if (anyInputFieldIsSelected ||
-            DataStore.i.exploreV2.isOpen.Get() ||
+            dataStore.exploreV2.isOpen.Get() ||
             CommonScriptableObjects.tutorialActive)
             return;
 
@@ -190,7 +188,7 @@ public class HUDController : IHUDController
             case HUDElementID.NOTIFICATION:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (NotificationsController.i != null)
-                    NotificationsController.i.Initialize(notificationHud, DataStore.i.notifications);
+                    NotificationsController.i.Initialize(notificationHud, dataStore.notifications);
                 break;
             case HUDElementID.AVATAR_EDITOR:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
@@ -324,7 +322,7 @@ public class HUDController : IHUDController
 
                     if (friendsHud != null)
                     {
-                        friendsHud.Initialize();
+                        friendsHud.Initialize(FriendsHUDComponentView.Create());
                         friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
                         friendsHud.OnPressWhisper += OpenPrivateChatWindow;
 
@@ -407,14 +405,6 @@ public class HUDController : IHUDController
                 }
 
                 break;
-            case HUDElementID.LOADING:
-                if (loadingHud == null && !featureFlags.flags.Get().IsFeatureEnabled(featureFlags.DECOUPLED_LOADING_SCREEN_FF))
-                {
-                    await CreateHudElement(configuration, hudElementId, cancellationToken);
-                    if (loadingHud != null && configuration.active)
-                        loadingController.Initialize();
-                }
-                break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
                 break;
@@ -482,7 +472,7 @@ public class HUDController : IHUDController
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"Failed to load HUD element resource {hudElements[id].GetType().Name}. Exception message: {e.Message}");
+                Debug.LogWarning($"Failed to load HUD element resource {id}. Exception message: {e.Message}");
             }
         }
     }
@@ -569,7 +559,7 @@ public class HUDController : IHUDController
             "dcl://halloween_2019/bride_of_frankie_upper_body",
             "dcl://halloween_2019/creepy_nurse_upper_body",
         });
-        Resources.Load<StringVariable>("CurrentPlayerInfoCardId").Set(newModel.userId);
+        dataStore.HUDs.currentPlayerId.Set((newModel.userId, OPEN_PASSPORT_SOURCE));
     }
 #endif
     public void Dispose()

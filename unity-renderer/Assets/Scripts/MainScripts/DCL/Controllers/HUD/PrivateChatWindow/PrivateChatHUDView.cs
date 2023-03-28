@@ -1,14 +1,15 @@
+using DCL.Chat.HUD;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class PrivateChatHUDView : ChatHUDView
     {
         [SerializeField] private PoolPrivateChatEntryFactory chatEntryFactory;
-    
-        private readonly Dictionary<string, DateSeparatorEntry> dateSeparators = new Dictionary<string, DateSeparatorEntry>();
+
+        private readonly Dictionary<string, DateSeparatorEntry> dateSeparators = new ();
 
         public override void Awake()
         {
@@ -34,9 +35,8 @@ namespace DCL.Chat.HUD
             var separatorId = entryDateTime.Ticks.ToString();
             if (dateSeparators.ContainsKey(separatorId)) return;
             var dateSeparatorEntry = chatEntryFactory.CreateDateSeparator();
-            dateSeparatorEntry.transform.SetParent(chatEntriesContainer, false);
-            dateSeparatorEntry.Populate(chatEntryModel);
-            dateSeparatorEntry.SetFadeout(IsFadeoutModeEnabled);
+            Dock(dateSeparatorEntry);
+            Populate(dateSeparatorEntry, chatEntryModel);
             dateSeparators[separatorId] = dateSeparatorEntry;
             SetEntry(separatorId, dateSeparatorEntry);
         }

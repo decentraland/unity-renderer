@@ -5,7 +5,7 @@ import { ChatMessage, FriendshipAction } from 'shared/types'
 import { FriendsState } from './types'
 import { SocialAPI, SocialId } from 'dcl-social-client'
 import { IFuture } from 'fp-future'
-import { FriendshipErrorCode } from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
+import { FriendshipErrorCode } from 'shared/protocol/decentraland/renderer/common/friend_request_common.gen'
 
 export const UPDATE_FRIENDSHIP = 'Update friendship'
 export const updateFriendship = (

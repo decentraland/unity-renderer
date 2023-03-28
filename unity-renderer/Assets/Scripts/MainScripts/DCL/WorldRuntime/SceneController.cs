@@ -11,7 +11,6 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
-using DCL.CRDT;
 using System.Threading.Tasks;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -27,7 +26,6 @@ namespace DCL
         internal BaseVariable<Transform> isPexViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
 
         //TODO(Brian): Move to WorldRuntimePlugin later
-        private LoadingFeedbackController loadingFeedbackController;
         private Coroutine deferredDecodingCoroutine;
 
         private CancellationTokenSource tokenSource;
@@ -42,8 +40,6 @@ namespace DCL
             positionDirty = true;
             lastSortFrame = 0;
             enabled = true;
-
-            loadingFeedbackController = new LoadingFeedbackController();
 
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
@@ -106,7 +102,6 @@ namespace DCL
         {
             tokenSource.Cancel();
             tokenSource.Dispose();
-            loadingFeedbackController.Dispose();
 
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);

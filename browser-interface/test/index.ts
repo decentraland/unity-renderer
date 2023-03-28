@@ -1,4 +1,5 @@
-globalThis['isRunningTests'] = true
+import { setRunningTest } from 'config'
+setRunningTest(true)
 
 /**
  * Hello, this file is the tests entry point.
@@ -21,8 +22,7 @@ import './unit/profiles.saga.test'
 import './unit/getPerformanceInfo.test'
 import './unit/positionThings.test'
 import './unit/RestrictedActions.test'
-import './unit/catalog.saga.test'
-import './unit/portable-experiences.test'
+import './unit/portableExperiences.test'
 import './unit/logger.spec'
 import './unit/comms-resolver.test'
 import './unit/friends.saga.test'
@@ -37,6 +37,5 @@ import './sceneEvents/comms.spec'
 import './dao'
 
 declare let mocha: Mocha
-declare let globalThis: any
 
 mocha.run()

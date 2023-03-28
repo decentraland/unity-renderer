@@ -29,7 +29,7 @@ namespace DCLServices.Lambdas
             var postDataJson = JsonUtility.ToJson(postData);
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
-            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
 
             return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
         }
@@ -44,7 +44,7 @@ namespace DCLServices.Lambdas
         {
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
-            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate, finishTransactionOnWebRequestFinish: false);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
             return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
         }
@@ -74,6 +74,8 @@ namespace DCLServices.Lambdas
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
             urlBuilder.Append(GetLambdasUrl());
+            if (!urlBuilder.ToString().EndsWith('/'))
+                urlBuilder.Append('/');
 
             var endPointSpan = endPoint.AsSpan();
 
@@ -124,7 +126,7 @@ namespace DCLServices.Lambdas
         }
 
         internal string GetLambdasUrl() =>
-            "https://peer.decentraland.org/lambdas/";
+            catalyst.lambdasUrl;
 
         private static void PrintError<TResponse>(string endPoint, string message)
         {

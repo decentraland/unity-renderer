@@ -1,11 +1,14 @@
-using System;
-using DCL.Interface;
-using NUnit.Framework;
-using System.Collections;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Chat.HUD;
+using DCL.Interface;
 using DCL.ProfanityFiltering;
 using NSubstitute;
+using NUnit.Framework;
+using SocialFeaturesAnalytics;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -17,6 +20,7 @@ public class ChatHUDControllerShould
     private IChatHUDComponentView view;
     private DataStore dataStore;
     private IProfanityFilter profanityFilter;
+    private Func<List<UserProfile>> suggestedProfilesAction;
 
     [SetUp]
     public void SetUp()
@@ -25,12 +29,18 @@ public class ChatHUDControllerShould
         profanityFilter.Filter(Arg.Any<string>()).Returns(info => UniTask.FromResult(info[0].ToString()));
         dataStore = new DataStore();
         dataStore.settings.profanityChatFilteringEnabled.Set(true);
+        dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["chat_mentions_enabled"] = true } });
         view = Substitute.For<IChatHUDComponentView>();
         var userProfileBridge = Substitute.For<IUserProfileBridge>();
         var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownUserProfile);
-        controller = new ChatHUDController(dataStore, userProfileBridge, true, profanityFilter);
+        suggestedProfilesAction = () => new List<UserProfile>();
+
+        controller = new ChatHUDController(dataStore, userProfileBridge, true,
+            (name, count, token) => UniTask.FromResult(suggestedProfilesAction.Invoke()),
+            Substitute.For<ISocialAnalytics>(),
+            profanityFilter);
         controller.Initialize(view);
     }
 
@@ -173,7 +183,7 @@ public class ChatHUDControllerShould
                 bodyText = "test"
             };
 
-            controller.AddChatMessage(msg);
+            await controller.AddChatMessage(msg);
 
             view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.senderName.Equals(filteredName)));
         });
@@ -324,5 +334,78 @@ public class ChatHUDControllerShould
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "/join my-channel"));
 
         Assert.AreEqual(ChannelJoinedSource.Command, dataStore.channels.channelJoinedSource.Get());
+    }
+
+    [TestCase("@", 1)]
+    [TestCase("@u", 2)]
+    [TestCase("hey @", 5)]
+    public void ShowMentionSuggestions(string text, int cursorPosition)
+    {
+        UserProfile user1 = GivenProfile("u1", "userName1", "faceU1");
+        UserProfile user2 = GivenProfile("u2", "userName2", "faceU2");
+
+        suggestedProfilesAction = () => new List<UserProfile>
+        {
+            user1,
+            user2,
+        };
+
+        view.OnMessageUpdated += Raise.Event<Action<string, int>>(text, cursorPosition);
+
+        view.Received(1).ShowMentionSuggestions();
+
+        view.Received(1)
+            .SetMentionSuggestions(Arg.Is<List<ChatMentionSuggestionModel>>(l =>
+                 l[0].userId == "u1" && l[0].userName == "userName1" && l[0].imageUrl == "faceU1"
+                 && l[1].userId == "u2" && l[1].userName == "userName2" && l[1].imageUrl == "faceU2"));
+    }
+
+    [TestCase("h", 1)]
+    [TestCase("how are you?", 4)]
+    [TestCase("my email is something@domain.com", 0)]
+    [TestCase("i just wrote an @ ", 18)]
+    public void DoNotShowMentionSuggestionsWhenNoPatternIsMatched(string text, int cursorPosition)
+    {
+        UserProfile user1 = GivenProfile("u1", "userName1", "faceU1");
+        UserProfile user2 = GivenProfile("u2", "userName2", "faceU2");
+
+        suggestedProfilesAction = () => new List<UserProfile>
+        {
+            user1,
+            user2,
+        };
+
+        view.OnMessageUpdated += Raise.Event<Action<string, int>>(text, cursorPosition);
+
+        view.Received(0).ShowMentionSuggestions();
+        view.Received(0).SetMentionSuggestions(Arg.Any<List<ChatMentionSuggestionModel>>());
+    }
+
+    [Test]
+    public void HideSuggestionsWhenExceptionOccurs()
+    {
+        view.ClearReceivedCalls();
+        suggestedProfilesAction = () => throw new Exception("Intended exception");
+
+        view.OnMessageUpdated += Raise.Event<Action<string, int>>("@", 1);
+
+        view.Received(1).HideMentionSuggestions();
+        view.Received(0).ShowMentionSuggestions();
+        view.Received(0).SetMentionSuggestions(Arg.Any<List<ChatMentionSuggestionModel>>());
+    }
+
+    private UserProfile GivenProfile(string userId, string username, string face256)
+    {
+        UserProfile user1 = ScriptableObject.CreateInstance<UserProfile>();
+        user1.UpdateData(new UserProfileModel
+        {
+            userId = userId,
+            name = username,
+            snapshots = new UserProfileModel.Snapshots
+            {
+                face256 = face256,
+            },
+        });
+        return user1;
     }
 }

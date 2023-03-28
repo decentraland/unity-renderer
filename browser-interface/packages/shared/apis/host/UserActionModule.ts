@@ -1,16 +1,14 @@
-import {
-  getOwnerNameFromJsonData,
-  getSceneNameFromJsonData,
-  getThumbnailUrlFromJsonDataAndContent
-} from 'shared/selectors'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { UserActionModuleServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/user_action_module.gen'
-import type { PortContext } from './context'
+import { UserActionModuleServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/user_action_module.gen'
 import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import type { Scene } from '@dcl/schemas'
+import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
+import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
+import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
 import { postProcessSceneName } from 'shared/atlas/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import type { PortContext } from './context'
 
 export function registerUserActionModuleServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, UserActionModuleServiceDefinition, async () => ({
