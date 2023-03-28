@@ -419,9 +419,9 @@ public class ChatHUDControllerShould
     public IEnumerator FetchRecipientProfileWhenMissing() =>
         UniTask.ToCoroutine(async () =>
         {
-            const string SENDER_ID = "senderId";
+            const string SENDER_ID = "senId";
             const string SENDER_NAME = "senderName";
-            const string RECIPIENT_ID = "recipientId";
+            const string RECIPIENT_ID = "recId";
             const string RECIPIENT_NAME = "recipientName";
 
             var senderProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -456,9 +456,9 @@ public class ChatHUDControllerShould
     public IEnumerator FetchSenderProfileWhenMissing() =>
         UniTask.ToCoroutine(async () =>
         {
-            const string RECIPIENT_ID = "recipientId";
+            const string RECIPIENT_ID = "recId";
             const string RECIPIENT_NAME = "recipientName";
-            const string SENDER_ID = "senderId";
+            const string SENDER_ID = "senId";
             const string SENDER_NAME = "senderName";
 
             var recipientProfile = ScriptableObject.CreateInstance<UserProfile>();
