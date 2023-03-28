@@ -21,6 +21,7 @@ namespace ECSSystems.ScenesUiSystem
         private int lastSceneNumber;
         private bool isPendingSceneUI;
         private IParcelScene currentScene;
+        private HashSet<IParcelScene> scenesUiToSort = new HashSet<IParcelScene>();
 
         public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
@@ -56,7 +57,7 @@ namespace ECSSystems.ScenesUiSystem
             bool sceneChanged = lastSceneNumber != currentSceneNumber;
             lastSceneNumber = currentSceneNumber;
 
-            HashSet<IParcelScene> scenesUiToSort = ApplyParenting(uiDocument, internalUiContainerComponent, currentSceneNumber);
+            ApplyParenting(ref scenesUiToSort, uiDocument, internalUiContainerComponent, currentSceneNumber);
 
             // If parenting detects that the order for ui elements has changed, it should sort the ui tree
             if (scenesUiToSort.Count > 0)
@@ -106,10 +107,11 @@ namespace ECSSystems.ScenesUiSystem
             SetDocumentActive(uiDocument, !current);
         }
 
-        internal static HashSet<IParcelScene> ApplyParenting(UIDocument uiDocument,
+        internal static void ApplyParenting(ref HashSet<IParcelScene> scenesToSort, UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent, int currentSceneNumber)
         {
-            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
+            // Clear previous call so we do not accumulate
+            scenesToSort.Clear();
 
             // check for orphan ui containers
             var allContainers = internalUiContainerComponent.GetForAll();
@@ -161,8 +163,6 @@ namespace ECSSystems.ScenesUiSystem
                     internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, currentContainerModel);
                 }
             }
-
-            return scenesToSort;
         }
 
         internal static void ClearCurrentSceneUI(UIDocument uiDocument, IParcelScene currentScene,

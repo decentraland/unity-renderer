@@ -1,7 +1,7 @@
 import { Quaternion, Vector3 } from '@dcl/ecs-math'
-import { EventDataType } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
-import { PermissionItem, permissionItemFromJSON } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
-import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
+import { EventDataType } from 'shared/protocol/decentraland/kernel/apis/engine_api.gen'
+import { PermissionItem, permissionItemFromJSON } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
+import { RpcSceneControllerServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/scene_controller.gen'
 import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { WebWorkerTransport } from '@dcl/rpc/dist/transports/WebWorker'
@@ -329,7 +329,7 @@ export class SceneWorker {
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
 
-    const WORKER_TIMEOUT = 90_000 // ninety seconds to mars
+    const WORKER_TIMEOUT = 120_000
     setTimeout(() => this.onLoadTimeout(), WORKER_TIMEOUT)
   }
 

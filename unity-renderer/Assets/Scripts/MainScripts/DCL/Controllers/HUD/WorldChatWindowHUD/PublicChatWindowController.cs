@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
+using DCL.Social.Chat.Mentions;
+using SocialFeaturesAnalytics;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
@@ -19,7 +22,8 @@ namespace DCL.Chat.HUD
         private readonly DataStore dataStore;
         private readonly IProfanityFilter profanityFilter;
         private readonly IMouseCatcher mouseCatcher;
-        private readonly InputAction_Trigger toggleChatTrigger;
+        private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
+        private readonly ISocialAnalytics socialAnalytics;
         private ChatHUDController chatHudController;
         private string channelId;
         private bool skipChatInputTrigger;
@@ -34,14 +38,16 @@ namespace DCL.Chat.HUD
             DataStore dataStore,
             IProfanityFilter profanityFilter,
             IMouseCatcher mouseCatcher,
-            InputAction_Trigger toggleChatTrigger)
+            IChatMentionSuggestionProvider chatMentionSuggestionProvider,
+            ISocialAnalytics socialAnalytics)
         {
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
             this.profanityFilter = profanityFilter;
             this.mouseCatcher = mouseCatcher;
-            this.toggleChatTrigger = toggleChatTrigger;
+            this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
+            this.socialAnalytics = socialAnalytics;
         }
 
         public void Initialize(IPublicChatWindowView view = null, bool isVisible = true)
@@ -58,7 +64,11 @@ namespace DCL.Chat.HUD
             chatHudController = new ChatHUDController(dataStore,
                 userProfileBridge,
                 true,
+                (name, count, ct) => chatMentionSuggestionProvider.GetNearbyProfilesStartingWith(name, count, ct),
+                socialAnalytics,
                 profanityFilter);
+            // dont set any message's sorting strategy, just add them sequentally
+            // comms cannot calculate a server timestamp for each message
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += SendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
@@ -68,7 +78,7 @@ namespace DCL.Chat.HUD
             chatController.OnChannelUpdated -= HandleChannelUpdated;
             chatController.OnChannelUpdated += HandleChannelUpdated;
 
-            toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
+            dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
 
             SetVisibility(isVisible);
             this.isVisible = isVisible;
@@ -99,28 +109,30 @@ namespace DCL.Chat.HUD
 
             chatHudController.OnSendMessage -= SendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
+            chatHudController.Dispose();
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= Hide;
 
-            toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
+            dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
 
-            if (View != null)
-            {
-                View.Dispose();
-            }
+            View?.Dispose();
         }
 
         public void SetVisibility(bool visible, bool focusInputField)
         {
-            if(isVisible == visible)
+            if (isVisible == visible)
                 return;
 
             isVisible = visible;
 
             SetVisiblePanelList(visible);
+            chatHudController.SetVisibility(visible);
+            dataStore.HUDs.chatInputVisible.Set(visible);
+
             if (visible)
             {
+                View.ChatHUD.ResetInputField();
                 View.Show();
                 MarkChannelMessagesAsRead();
 
@@ -134,10 +146,13 @@ namespace DCL.Chat.HUD
             }
         }
 
+        public void SetVisibility(bool visible) =>
+            SetVisibility(visible, false);
+
         private void SendChatMessage(ChatMessage message)
         {
-            var isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
-            var isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
+            bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
+            bool isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
 
             if (isValidMessage)
             {
@@ -157,11 +172,10 @@ namespace DCL.Chat.HUD
             chatController.Send(message);
         }
 
-        public void SetVisibility(bool visible) => SetVisibility(visible, false);
-
         private void SetVisiblePanelList(bool visible)
         {
             HashSet<string> newSet = visibleTaskbarPanels.Get();
+
             if (visible)
                 newSet.Add("PublicChatChannel");
             else
@@ -170,7 +184,8 @@ namespace DCL.Chat.HUD
             visibleTaskbarPanels.Set(newSet, true);
         }
 
-        private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
+        private void MarkChannelMessagesAsRead() =>
+            chatController.MarkChannelMessagesAsSeen(channelId);
 
         private void HandleViewClosed()
         {
@@ -186,10 +201,16 @@ namespace DCL.Chat.HUD
         {
             var messageLogUpdated = false;
 
+            var ownPlayerAlreadyMentioned = false;
+
             foreach (var message in messages)
             {
+                if (!ownPlayerAlreadyMentioned)
+                    ownPlayerAlreadyMentioned = CheckOwnPlayerMentionInNearBy(message);
+
                 if (message.messageType != ChatMessage.Type.PUBLIC
                     && message.messageType != ChatMessage.Type.SYSTEM) continue;
+
                 if (!string.IsNullOrEmpty(message.recipient)) continue;
 
                 chatHudController.AddChatMessage(message, View.IsActive);
@@ -200,19 +221,29 @@ namespace DCL.Chat.HUD
                 MarkChannelMessagesAsRead();
         }
 
-        private void Hide() => SetVisibility(false);
-
-        private void HandleChatInputTriggered(DCLAction_Trigger action)
+        private bool CheckOwnPlayerMentionInNearBy(ChatMessage message)
         {
-            if (!View.IsActive) return;
-            chatHudController.FocusInputField();
+            var ownUserProfile = userProfileBridge.GetOwn();
+
+            if (message.sender == ownUserProfile.userId ||
+                message.messageType != ChatMessage.Type.PUBLIC ||
+                !string.IsNullOrEmpty(message.recipient) ||
+                View.IsActive ||
+                !MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, message.body))
+                return false;
+
+            dataStore.mentions.ownPlayerMentionedInChannel.Set(ChatUtils.NEARBY_CHANNEL_ID, true);
+            return true;
         }
+
+        private void Hide() =>
+            SetVisibility(false);
 
         private void HandleMessageBlockedBySpam(ChatMessage message)
         {
             chatHudController.AddChatMessage(new ChatEntryModel
             {
-                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
                 messageId = Guid.NewGuid().ToString(),
                 messageType = ChatMessage.Type.SYSTEM,
@@ -243,6 +274,14 @@ namespace DCL.Chat.HUD
         {
             if (updatedChannel.ChannelId != channelId) return;
             View.Configure(ToPublicChatModel(updatedChannel));
+        }
+
+        private void SomeoneMentionedFromContextMenu(string mention, string _)
+        {
+            if (!View.IsActive)
+                return;
+
+            View.ChatHUD.AddTextIntoInputField(mention);
         }
     }
 }

@@ -4,7 +4,7 @@ import defaultLogger from 'lib/logger'
 import { VOICE_CHAT_SAMPLE_RATE, OPUS_FRAME_SIZE_MS } from 'voice-chat-codec/constants'
 import { parse, write } from 'sdp-transform'
 import { InputWorkletRequestTopic, OutputWorkletRequestTopic } from 'voice-chat-codec/types'
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const workletWorkerRaw = require('../../../static/voice-chat-codec/audioWorkletProcessors.js.txt')

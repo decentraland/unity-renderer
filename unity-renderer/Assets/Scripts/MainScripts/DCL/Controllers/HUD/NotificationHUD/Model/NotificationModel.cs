@@ -7,6 +7,7 @@ namespace DCL.NotificationModel
         GENERIC,
         SCRIPTING_ERROR,
         COMMS_ERROR,
+        [Obsolete("Deprecated behaviour")]
         AIRDROPPING,
         GENERIC_WITHOUT_BUTTON,
         CUSTOM,

@@ -12,7 +12,7 @@ import {
   PBOpenExternalUrl,
   PBOpenNFTDialog,
   PBSendSceneMessage
-} from '@dcl/protocol/out-ts/decentraland/renderer/engine_interface.gen'
+} from 'shared/protocol/decentraland/renderer/engine_interface.gen'
 import {
   CreateEntityPayload,
   RemoveEntityPayload,

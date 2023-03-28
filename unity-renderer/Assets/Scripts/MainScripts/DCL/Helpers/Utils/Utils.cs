@@ -330,7 +330,23 @@ namespace DCL.Helpers
         public static IWebRequestAsyncOperation FetchTexture(string textureURL, bool isReadable, Action<Texture2D> OnSuccess, Action<IWebRequestAsyncOperation> OnFail = null)
         {
             //NOTE(Brian): This closure is called when the download is a success.
-            void SuccessInternal(IWebRequestAsyncOperation request) { OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest)); }
+            void SuccessInternal(IWebRequestAsyncOperation request)
+            { OnSuccess?.Invoke(CreateTexture(request.webRequest.downloadHandler.data)); }
+
+            Texture2D CreateTexture(byte[] data)
+            {
+                Texture2D texture2D = new Texture2D(1, 1);
+                try
+                {
+                    texture2D.LoadImage(data);
+                    return texture2D;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Texture promise failed: {e}");
+                    return null;
+                }
+            }
 
             var asyncOp = Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,

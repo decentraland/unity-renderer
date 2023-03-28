@@ -1,3 +1,4 @@
+using DCL.Social.Chat;
 using System;
 using System.Collections;
 using TMPro;
@@ -86,8 +87,14 @@ namespace DCL.Chat.HUD
 
         public void Hide() => gameObject.SetActive(false);
 
-        public void Show() => gameObject.SetActive(true);
-        
+        public void Show()
+        {
+            gameObject.SetActive(true);
+
+            if (!isMembersSectionOpen)
+                ToggleMembersSection();
+        }
+
         public void Setup(PublicChatModel model)
         {
             this.model = model;
@@ -131,9 +138,9 @@ namespace DCL.Chat.HUD
             collapseMembersListButton.gameObject.SetActive(isMembersSectionOpen);
 
             contextualMenu.gameObject.transform.SetParent(collapsableArea);
-            
+
             collapsableArea.sizeDelta = new Vector2(
-                isMembersSectionOpen ? 
+                isMembersSectionOpen ?
                     collapsableAreaOriginalWidth + MEMBERS_SECTION_WIDTH :
                     collapsableAreaOriginalWidth,
                 collapsableArea.sizeDelta.y);

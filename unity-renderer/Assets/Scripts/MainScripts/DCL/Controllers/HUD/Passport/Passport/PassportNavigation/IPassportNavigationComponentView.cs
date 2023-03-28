@@ -8,6 +8,7 @@ namespace DCL.Social.Passports
     {
         event Action<string, string> OnClickBuyNft;
         event Action OnClickCollectibles;
+        event Action<PassportSection> OnClickedViewAll;
         event Action<ParcelCoordinates> OnClickDescriptionCoordinates;
         void InitializeView();
         void SetGuestUser(bool isGuest);
@@ -25,6 +26,9 @@ namespace DCL.Social.Passports
         void SetCollectibleLandsLoadingActive(bool isActive);
         void SetHasBlockedOwnUser(bool isBlocked);
         void CloseAllNFTItemInfos();
+        void CloseAllSections();
+        void OpenCollectiblesTab();
         void SetInitialPage();
+        void SetViewAllButtonActive(PassportSection section, bool isActive);
     }
 }

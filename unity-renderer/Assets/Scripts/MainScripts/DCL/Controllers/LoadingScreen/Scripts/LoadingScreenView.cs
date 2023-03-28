@@ -56,6 +56,7 @@ namespace DCL.LoadingScreen
         public void FadeOut()
         {
             if (!isVisible) return;
+            rawImage.gameObject.SetActive(false);
 
             Hide();
         }

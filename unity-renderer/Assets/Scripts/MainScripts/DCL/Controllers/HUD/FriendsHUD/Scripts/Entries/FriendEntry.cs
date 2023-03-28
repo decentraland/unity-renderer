@@ -40,7 +40,7 @@ public class FriendEntry : FriendEntryBase
     {
         base.Populate(model);
 
-        unreadNotificationBadge?.Initialize(chatController, model.userId);
+        unreadNotificationBadge?.Initialize(chatController, model.userId, null);
         jumpInButton.Initialize(friendsController, model.userId, socialAnalytics);
     }
 }

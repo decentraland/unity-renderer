@@ -44,7 +44,7 @@ import type {
   NewProfileForRenderer
 } from 'lib/decentraland/profiles/transformations/types'
 import type { Emote } from 'shared/catalogs/types'
-import type { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import type { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 
 export type RealmInfo = {
   serverName: string

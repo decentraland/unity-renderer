@@ -3,7 +3,7 @@ import { call, debounce, delay, fork, put, select, takeEvery } from 'redux-saga/
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { getFeatureFlagVariantValue } from 'shared/meta/selectors'
-import { waitForRendererRpcConnection } from 'shared/renderer/sagas-helper'
+import { waitForAvatarSceneInitialized, waitForRendererRpcConnection } from 'shared/renderer/sagas-helper'
 import { LoadableScene } from 'shared/types'
 import {
   ADD_DESIRED_PORTABLE_EXPERIENCE,
@@ -30,9 +30,6 @@ import {
 import { getDesiredPortableExperiences } from './selectors'
 
 export function* portableExperienceSaga(): any {
-  // Ensure we have a connection to the renderer
-  yield call(waitForRendererRpcConnection)
-
   // List the actions that might trigger a portable experience change
   yield takeEvery(
     [
@@ -60,6 +57,8 @@ export function* portableExperienceSaga(): any {
 
 export function* fetchInitialPortableExperiences() {
   yield waitForMetaConfigurationInitialization()
+
+  yield waitForAvatarSceneInitialized()
 
   const qs = new URLSearchParams(globalThis.location.search)
 
@@ -98,15 +97,22 @@ function* reloadPortableExperienceChanges(action: ReloadScenePortableExperienceA
     ($) => $.id !== action.payload.data.id
   )
 
+  // Ensure we have a connection to the renderer
+  yield call(waitForRendererRpcConnection)
+
   // unload the filtered PX
   yield call(declareWantedPortableExperiences, filteredDesiredPortableExperiences)
   // TODO: this is a horrible hack to give enough time to the renderer to kill all the PX
+  // because scene unitialization is not an atomic operation to prevent dropped frames
   yield delay(250)
   // reload all PX
   yield call(declareWantedPortableExperiences, allDesiredPortableExperiences)
 }
 
-// tell the controller which PXs we do want running
+// tell the controller which PXs we do want running, this operation can be safely debounced
 function* handlePortableExperienceChangesEffect(action: UpdateEnginePortableExperiencesAction) {
+  // Ensure we have a connection to the renderer
+  yield call(waitForRendererRpcConnection)
+
   yield call(declareWantedPortableExperiences, action.payload.desiredPortableExperiences)
 }

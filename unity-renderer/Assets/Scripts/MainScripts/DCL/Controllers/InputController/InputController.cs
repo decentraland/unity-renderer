@@ -1,8 +1,7 @@
 using DCL;
+using DCL.Configuration;
 using System;
 using UnityEngine;
-using DCL.Configuration;
-using System.Collections.Generic;
 
 /// <summary>
 /// Mapping for Trigger actions
@@ -48,6 +47,8 @@ public enum DCLAction_Trigger
     ToggleEmoteShortcut9 = 151,
     ChatPreviousInHistory = 152,
     ChatNextInHistory = 153,
+    ChatMentionNextEntry = 154,
+    ChatMentionPreviousEntry = 155,
 
     Expression_Wave = 201,
     Expression_FistPump = 202,
@@ -237,6 +238,12 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ChatPreviousInHistory:
                     InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
+                    break;
+                case DCLAction_Trigger.ChatMentionNextEntry:
+                    InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
+                    break;
+                case DCLAction_Trigger.ChatMentionPreviousEntry:
+                    InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
                     InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);

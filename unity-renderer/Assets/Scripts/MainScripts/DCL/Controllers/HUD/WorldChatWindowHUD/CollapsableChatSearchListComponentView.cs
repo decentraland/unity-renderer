@@ -21,10 +21,12 @@ namespace DCL.Chat.HUD
             remove => publicChannelList.OnOpenChat -= value;
         }
 
-        public void Initialize(IChatController chatController)
+        public void Initialize(
+            IChatController chatController,
+            DataStore_Mentions mentionDataStore)
         {
-            directChatList.Initialize(chatController);
-            publicChannelList.Initialize(chatController);
+            directChatList.Initialize(chatController, mentionDataStore);
+            publicChannelList.Initialize(chatController, mentionDataStore);
         }
 
         public override void Filter(Func<BaseComponentView, bool> comparision)

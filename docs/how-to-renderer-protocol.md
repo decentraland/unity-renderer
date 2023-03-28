@@ -2,25 +2,25 @@
 
 ## What?
 
-The Renderer Protocol consists of messages that are sent between the [Kernel](http://github.com/decentraland/kernel) and the [Renderer](http://github.com/decentraland/unity-renderer). These messages are defined in the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) using the proto3 format.
+The Renderer Protocol consists of messages that are sent between the [Browser Interface](http://github.com/decentraland/unity-renderer/tree/dev/browser-interface) and the [Renderer](http://github.com/decentraland/unity-renderer/tree/dev/unity-renderer). These messages are defined in the [Renderer Protocol] folder (http://github.com/decentraland/unity-renderer/tree/dev/renderer-protocol) using the proto3 format.
 
 ## Types of messages
 
-The message exchange is defined by RPC calls, which are bi-directional Services. For example, the `Renderer` can call the `Kernel` using a `KernelService`, or the `Kernel` can call the `Renderer` using a `RendererService`.
+The message exchange is defined by RPC calls, which are bi-directional Services. For example, the `Renderer` can call the `Browser Interface` using a `KernelService`, or the `Browser Interface` can call the `Renderer` using a `RendererService`.
 
 ## How to add a message
 
-To add a message to the Renderer Protocol, you must first modify the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) and then update the `protocol-gen` package in the [unity-renderer repository]((https://github.com/decentraland/unity-renderer/tree/dev/protocol-gen)).
+To add a message to the Renderer Protocol, you must first add it to the [protocol definition](https://github.com/decentraland/unity-renderer/tree/dev/renderer-protocol)
 
 [Example](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/renderer_services/emotes_renderer.proto) of `RendererService`.
 
 [Example](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/kernel_services/analytics.proto) of `KernelService`.
 
-After adding a `KernelService` or `RendererService`, you must install the package in `protocol-gen` by running `npm run build`. This will regenerate the Renderer Protocol.
+After adding a `KernelService` or `RendererService`, you must run `npm run build` to regenerate the Renderer Protocol.
 
 ## RPC
 
-The Renderer acts as an `RPC Server`, while the Kernel is the `RPC Client`. The Renderer implements a service called TransportService which allows it to create an RPC Transport that functions as an InverseRPC. This allows the Kernel to act as an`RPC Server` and the Renderer to act as an `RPC Client`. As a result, services can be implemented in either direction. There are both Kernel services and Renderer services for the Renderer protocol.
+The Renderer acts as an `RPC Server`, while the Browser Interface is the `RPC Client`. The Renderer implements a service called TransportService which allows it to create an RPC Transport that functions as an InverseRPC. This allows the Browser Interface to act as an`RPC Server` and the Renderer to act as an `RPC Client`. As a result, services can be implemented in either direction. There are both Browser Interface services and Renderer services for the Renderer protocol.
 
 > **_NOTE:_**  You can read the following articles to understand RPC [article 1](https://www.techtarget.com/searchapparchitecture/definition/Remote-Procedure-Call-RPC); [article 2](https://grpc.io/docs/what-is-grpc/introduction/)
 
@@ -29,7 +29,7 @@ The Renderer acts as an `RPC Server`, while the Kernel is the `RPC Client`. The 
 
 In the next example, we will implement the service described in the protobuf below:
 ```protobuf
-// Service implemented in Renderer and used in Kernel
+// Service implemented in Renderer and used in Browser Interface
 service EmotesRendererService {
   // Triggers an expression in our own avatar (use example: SDK triggers a expression)
   rpc TriggerSelfUserExpression(TriggerSelfUserExpressionRequest) returns (EmotesResponse) {}
@@ -72,13 +72,13 @@ namespace RPC.Services
 }
 ```
 
-### **Kernel Side:**
-To run this code in the Kernel, we need first create the file `packages/renderer-protocol/services/emotesRendererService.ts` and then paste this code:
+### **Browser Interface Side:**
+To run this code in the Browser Interface, we need first create the file `packages/renderer-protocol/services/emotesRendererService.ts` and then paste this code:
 
 ```ts
 import { RpcClientPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { EmotesRendererServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/emotes_renderer.gen'
+import { EmotesRendererServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/emotes_renderer.gen'
 import defaultLogger from 'shared/logger'
 
 export function registerEmotesService<Context>(
@@ -124,7 +124,7 @@ getRendererModules(store.getState())
 - protocol: https://github.com/decentraland/protocol/pull/81
 - unity-renderer: https://github.com/decentraland/unity-renderer/pull/3605
 
-### **Kernel Side:**
+### **Browser Interface Side:**
 #### Step by step
 Create the service:
 
@@ -133,7 +133,7 @@ In: `packages/renderer-protocol/inverseRpc/services/emotesService.ts`
 import { RpcServerPort } from '@dcl/rpc'
 import { RendererProtocolContext } from '../context'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { EmotesKernelServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/emotes_kernel.gen'
+import { EmotesKernelServiceDefinition } from 'shared/protocol/decentraland/renderer/kernel_services/emotes_kernel.gen'
 import { allScenesEvent } from '../../../shared/world/parcelSceneManager'
 import { sendPublicChatMessage } from '../../../shared/comms'
 
