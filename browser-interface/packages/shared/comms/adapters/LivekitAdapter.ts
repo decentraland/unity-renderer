@@ -48,7 +48,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
             message: `Got RoomEvent.Disconnected. Reason: ${reason}`,
           })
         }
-        const kicked = _reason === DisconnectReason.DUPLICATE_IDENTITY
+        const kicked = reason === DisconnectReason.DUPLICATE_IDENTITY
         this.do_disconnect(kicked).catch((err) => {
           this.config.logger.error(`error during disconnection ${err.toString()}`)
         })
