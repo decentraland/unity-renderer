@@ -1,7 +1,7 @@
 import { Vector2 } from '@dcl/ecs-math'
 import { PositionReport } from 'shared/world/positionThings'
 import { parcelSize, maxParcelX, maxParcelZ } from 'lib/decentraland/parcels/limits'
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 
 export type ParcelArray = [number, number]
 

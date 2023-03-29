@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package decentraland.renderer.kernel_services;
+
+message GetMutualFriendsResponse {
+  repeated string friends = 1; // The addresses of the friends shared between the authenticated user and the specified user in the request
+}
+
+message GetMutualFriendsRequest {
+    string user_id = 1;
+}
+
+service MutualFriendsKernelService {
+    rpc GetMutualFriends(GetMutualFriendsRequest) returns (GetMutualFriendsResponse) {}
+}

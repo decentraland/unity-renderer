@@ -1,4 +1,4 @@
-import * as proto from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import type { Avatar } from '@dcl/schemas'
 import { uuid } from 'lib/javascript/uuid'
 import { Observable } from 'mz-observable'

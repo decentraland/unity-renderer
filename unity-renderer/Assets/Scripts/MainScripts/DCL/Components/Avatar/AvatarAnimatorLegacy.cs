@@ -95,8 +95,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private float lastOnAirTime = 0;
 
-    private Dictionary<string, EmoteClipData> emoteClipDataMap =
-        new Dictionary<string, EmoteClipData>();
+    private Dictionary<string, EmoteClipData> emoteClipDataMap = new ();
 
     private string runAnimationName;
     private string walkAnimationName;
@@ -109,6 +108,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private bool isUpdateRegistered = false;
 
     private Ray rayCache;
+    private bool hasTarget;
+
+    private void Awake()
+    {
+        hasTarget = target != null;
+        if (!hasTarget)
+            Debug.LogError(message: $"Target is not assigned. {nameof(UpdateInterface)} will not work correctly.", this);
+    }
 
     public void Start() { OnPoolGet(); }
 

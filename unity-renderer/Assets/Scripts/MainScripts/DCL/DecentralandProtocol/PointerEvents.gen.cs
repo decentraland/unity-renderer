@@ -51,6 +51,9 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
+  /// <summary>
+  /// PointerEventType is a kind of interaction that can be detected.
+  /// </summary>
   public enum PointerEventType {
     [pbr::OriginalName("PET_UP")] PetUp = 0,
     [pbr::OriginalName("PET_DOWN")] PetDown = 1,
@@ -61,6 +64,21 @@ namespace DCL.ECSComponents {
   #endregion
 
   #region Messages
+  /// <summary>
+  /// PointerEvents adds configurable pointer-based interactions to the attached Entity.
+  ///
+  /// Events that match the criteria defined in the PointerEvents structure are reported back to the 
+  /// Entity via the PointerEventsResult component.
+  ///
+  /// Some examples of events that can be detected:
+  /// - Pointer hovering over the Entity.
+  /// - Held mouse button released over the Entity.
+  /// - Controller button pressed while targeting the Entity.
+  /// - Key pressed while targeting the Entity, but only in close range.
+  ///
+  /// It also supports simple visual feedback when interactions occur, by showing floating text.
+  /// More sophisticated feedback requires the use of other components.
+  /// </summary>
   public sealed partial class PBPointerEvents : pb::IMessage<PBPointerEvents>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -110,6 +128,9 @@ namespace DCL.ECSComponents {
     private static readonly pb::FieldCodec<global::DCL.ECSComponents.PBPointerEvents.Types.Entry> _repeated_pointerEvents_codec
         = pb::FieldCodec.ForMessage(10, global::DCL.ECSComponents.PBPointerEvents.Types.Entry.Parser);
     private readonly pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEvents.Types.Entry> pointerEvents_ = new pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEvents.Types.Entry>();
+    /// <summary>
+    /// the list of relevant events to detect
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEvents.Types.Entry> PointerEvents {
@@ -295,7 +316,7 @@ namespace DCL.ECSComponents {
         public const int ButtonFieldNumber = 1;
         private global::DCL.ECSComponents.InputAction button_;
         /// <summary>
-        /// default=InputAction.ANY
+        /// key/button in use (default IA_ANY)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -323,7 +344,7 @@ namespace DCL.ECSComponents {
         public const int HoverTextFieldNumber = 2;
         private string hoverText_;
         /// <summary>
-        /// default='Interact'
+        /// feedback on hover (default 'Interact')
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -350,7 +371,7 @@ namespace DCL.ECSComponents {
         public const int MaxDistanceFieldNumber = 3;
         private float maxDistance_;
         /// <summary>
-        /// default=10
+        /// range of interaction (default 10)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -378,7 +399,7 @@ namespace DCL.ECSComponents {
         public const int ShowFeedbackFieldNumber = 4;
         private bool showFeedback_;
         /// <summary>
-        /// default=true
+        /// enable or disable hover text (default true)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -655,6 +676,9 @@ namespace DCL.ECSComponents {
         /// <summary>Field number for the "event_type" field.</summary>
         public const int EventTypeFieldNumber = 1;
         private global::DCL.ECSComponents.PointerEventType eventType_ = global::DCL.ECSComponents.PointerEventType.PetUp;
+        /// <summary>
+        /// the kind of interaction to detect
+        /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public global::DCL.ECSComponents.PointerEventType EventType {
@@ -667,6 +691,9 @@ namespace DCL.ECSComponents {
         /// <summary>Field number for the "event_info" field.</summary>
         public const int EventInfoFieldNumber = 2;
         private global::DCL.ECSComponents.PBPointerEvents.Types.Info eventInfo_;
+        /// <summary>
+        /// additional configuration for this detection
+        /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public global::DCL.ECSComponents.PBPointerEvents.Types.Info EventInfo {

@@ -42,6 +42,19 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The CameraModeArea component can be attached to an Entity to define a region of space where 
+  /// the player's camera mode (1st-person or 3rd-person) is overridden.
+  ///
+  /// The Entity's Transform position determines the center-point of the region, while its size is 
+  /// given as a vector in the `area` property below. The Transform rotation is applied, but the scale 
+  /// is ignored.
+  ///
+  /// When players leave the region, their previous setting is restored.
+  ///
+  /// Note that, while commonly used to delineate a 2D area in a scene (hence the name), the region
+  /// is actually a 3D volume.
+  /// </summary>
   public sealed partial class PBCameraModeArea : pb::IMessage<PBCameraModeArea>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -90,6 +103,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "area" field.</summary>
     public const int AreaFieldNumber = 1;
     private global::Decentraland.Common.Vector3 area_;
+    /// <summary>
+    /// the 3D size of the region
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Area {
@@ -102,6 +118,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "mode" field.</summary>
     public const int ModeFieldNumber = 2;
     private global::DCL.ECSComponents.CameraType mode_ = global::DCL.ECSComponents.CameraType.CtFirstPerson;
+    /// <summary>
+    /// the camera mode to enforce
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.CameraType Mode {

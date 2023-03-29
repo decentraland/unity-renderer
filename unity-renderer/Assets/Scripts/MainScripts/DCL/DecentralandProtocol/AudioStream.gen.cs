@@ -39,6 +39,11 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The AudioStream component can play external audio clips given a URL, streaming it in real-time.
+  ///
+  /// Despite being attached to a particular entity, the sound is not affected by its position.
+  /// </summary>
   public sealed partial class PBAudioStream : pb::IMessage<PBAudioStream>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -90,6 +95,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "playing" field.</summary>
     public const int PlayingFieldNumber = 1;
     private bool playing_;
+    /// <summary>
+    /// whether the clip is currently playing
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Playing {
@@ -116,7 +124,7 @@ namespace DCL.ECSComponents {
     public const int VolumeFieldNumber = 2;
     private float volume_;
     /// <summary>
-    /// default=1.0f
+    /// the audio volume (default: 1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -143,6 +151,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "url" field.</summary>
     public const int UrlFieldNumber = 3;
     private string url_ = "";
+    /// <summary>
+    /// the audio stream HTTP URL
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Url {
