@@ -90,7 +90,7 @@ public class ChatHUDControllerShould
                 bodyText = "test"
             };
 
-            await controller.AddChatMessage(msg);
+            await controller.SetChatMessage(msg);
 
             view.Received(1).RemoveOldestEntry();
         });
@@ -106,10 +106,10 @@ public class ChatHUDControllerShould
                 bodyText = "test"
             };
 
-            await controller.AddChatMessage(msg);
+            await controller.SetChatMessage(msg);
 
             view.Received(1)
-                .AddEntry(Arg.Is<ChatEntryModel>(
+                .SetEntry(Arg.Is<ChatEntryModel>(
                      model => model.messageType == msg.messageType && model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
         });
 
@@ -157,10 +157,10 @@ public class ChatHUDControllerShould
                     bodyText = body
                 };
 
-                await controller.AddChatMessage(msg);
+                await controller.SetChatMessage(msg);
 
                 view.Received(1)
-                    .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
+                    .SetEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
             });
 
     [UnityTest]
@@ -179,10 +179,10 @@ public class ChatHUDControllerShould
                     bodyText = body
                 };
 
-                await controller.AddChatMessage(msg);
+                await controller.SetChatMessage(msg);
 
                 view.Received(1)
-                    .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
+                    .SetEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
             });
 
     [UnityTest]
@@ -201,9 +201,9 @@ public class ChatHUDControllerShould
                     bodyText = "test"
                 };
 
-                await controller.AddChatMessage(msg);
+                await controller.SetChatMessage(msg);
 
-                view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.senderName.Equals(filteredName)));
+                view.Received(1).SetEntry(Arg.Is<ChatEntryModel>(model => model.senderName.Equals(filteredName)));
             });
 
     [UnityTest]
@@ -223,9 +223,9 @@ public class ChatHUDControllerShould
                     bodyText = "test"
                 };
 
-                await controller.AddChatMessage(msg);
+                await controller.SetChatMessage(msg);
 
-                view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.recipientName.Equals(filteredName)));
+                view.Received(1).SetEntry(Arg.Is<ChatEntryModel>(model => model.recipientName.Equals(filteredName)));
             });
 
     [UnityTest]
@@ -241,10 +241,10 @@ public class ChatHUDControllerShould
                 bodyText = "shit"
             };
 
-            await controller.AddChatMessage(msg);
+            await controller.SetChatMessage(msg);
 
             view.Received(1)
-                .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
+                .SetEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
         });
 
     [UnityTest]
@@ -258,10 +258,10 @@ public class ChatHUDControllerShould
                 bodyText = "shit"
             };
 
-            await controller.AddChatMessage(msg);
+            await controller.SetChatMessage(msg);
 
             view.Received(1)
-                .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
+                .SetEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
         });
 
     [Test]
@@ -424,19 +424,17 @@ public class ChatHUDControllerShould
             const string RECIPIENT_ID = "recId";
             const string RECIPIENT_NAME = "recipientName";
 
-            var senderProfile = ScriptableObject.CreateInstance<UserProfile>();
-            senderProfile.UpdateData(new UserProfileModel { userId = SENDER_ID, name = SENDER_NAME });
+            var senderProfile = GivenProfile(SENDER_ID, SENDER_NAME, "");
             userProfileBridge.Get(SENDER_ID).Returns(senderProfile);
 
-            var recipientProfile = ScriptableObject.CreateInstance<UserProfile>();
-            recipientProfile.UpdateData(new UserProfileModel { userId = RECIPIENT_ID, name = RECIPIENT_NAME });
+            var recipientProfile = GivenProfile(RECIPIENT_ID, RECIPIENT_NAME, "");
 
             userProfileBridge.RequestFullUserProfileAsync(RECIPIENT_ID, Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(recipientProfile));
 
             userProfileBridge.Get(RECIPIENT_ID).Returns(null, recipientProfile);
 
-            controller.AddChatMessage(new ChatMessage("msg1", ChatMessage.Type.PRIVATE, SENDER_ID, "hey", 100)
+            controller.SetChatMessage(new ChatMessage("msg1", ChatMessage.Type.PRIVATE, SENDER_ID, "hey", 100)
             {
                 recipient = RECIPIENT_ID,
             });
@@ -447,8 +445,8 @@ public class ChatHUDControllerShould
 
             Received.InOrder(() =>
             {
-                view.AddEntry(Arg.Is<ChatEntryModel>(c => c.recipientName == RECIPIENT_ID));
-                view.AddEntry(Arg.Is<ChatEntryModel>(c => c.recipientName == RECIPIENT_NAME));
+                view.SetEntry(Arg.Is<ChatEntryModel>(c => c.recipientName == RECIPIENT_ID));
+                view.SetEntry(Arg.Is<ChatEntryModel>(c => c.recipientName == RECIPIENT_NAME));
             });
         });
 
@@ -473,7 +471,7 @@ public class ChatHUDControllerShould
 
             userProfileBridge.Get(SENDER_ID).Returns(null, senderProfile);
 
-            controller.AddChatMessage(new ChatMessage("msg1", ChatMessage.Type.PUBLIC, SENDER_ID, "hey", 100));
+            controller.SetChatMessage(new ChatMessage("msg1", ChatMessage.Type.PUBLIC, SENDER_ID, "hey", 100));
 
             await UniTask.NextFrame();
 
@@ -481,8 +479,8 @@ public class ChatHUDControllerShould
 
             Received.InOrder(() =>
             {
-                view.AddEntry(Arg.Is<ChatEntryModel>(c => c.senderName == SENDER_ID));
-                view.AddEntry(Arg.Is<ChatEntryModel>(c => c.senderName == SENDER_NAME));
+                view.SetEntry(Arg.Is<ChatEntryModel>(c => c.senderName == SENDER_ID));
+                view.SetEntry(Arg.Is<ChatEntryModel>(c => c.senderName == SENDER_NAME));
             });
         });
 
@@ -494,14 +492,16 @@ public class ChatHUDControllerShould
             const string RECIPIENT_ID = "0xfa2d32345f2a5f352af3df";
 
             userProfileBridge.RequestFullUserProfileAsync(SENDER_ID, Arg.Any<CancellationToken>())
-                             .Returns(UniTask.FromResult((UserProfile)null));
+                             .Returns(UniTask.FromResult(GivenProfile(SENDER_ID, "senderName", "")));
+
             userProfileBridge.Get(SENDER_ID).Returns((UserProfile)null);
 
             userProfileBridge.RequestFullUserProfileAsync(RECIPIENT_ID, Arg.Any<CancellationToken>())
-                             .Returns(UniTask.FromResult((UserProfile)null));
+                             .Returns(UniTask.FromResult(GivenProfile(RECIPIENT_ID, "recipientName", "")));
+
             userProfileBridge.Get(RECIPIENT_ID).Returns((UserProfile)null);
 
-            controller.AddChatMessage(new ChatMessage("msg1", ChatMessage.Type.PRIVATE, SENDER_ID, "hey", 100)
+            controller.SetChatMessage(new ChatMessage("msg1", ChatMessage.Type.PRIVATE, SENDER_ID, "hey", 100)
             {
                 recipient = RECIPIENT_ID,
             });
@@ -510,7 +510,7 @@ public class ChatHUDControllerShould
 
             userProfileBridge.Received(1).RequestFullUserProfileAsync(SENDER_ID, Arg.Any<CancellationToken>());
 
-            view.AddEntry(Arg.Is<ChatEntryModel>(c => c.senderName == "0xfa...7fd4" && c.recipientName == "0xfa...f3df"));
+            view.SetEntry(Arg.Is<ChatEntryModel>(c => c.senderName == "0xfa...7fd4" && c.recipientName == "0xfa...f3df"));
         });
 
     private UserProfile GivenProfile(string userId, string username, string face256)

@@ -236,7 +236,7 @@ namespace DCL.Chat.HUD
                 // TODO: right now the channel history is disabled, but we must find a workaround to support history + max message limit allocation for performance reasons
                 // one approach could be to increment the max amount of messages depending on how many pages you loaded from the history
                 // for example: 1 page = 30 messages, 2 pages = 60 messages, and so on..
-                chatHudController.AddChatMessage(message, limitMaxEntries: true);
+                chatHudController.SetChatMessage(message, limitMaxEntries: true);
 
                 dataStore.channels.SetAvailableMemberInChannel(message.sender, channelId);
 
@@ -409,7 +409,7 @@ namespace DCL.Chat.HUD
 
         private void HandleMessageBlockedBySpam(ChatMessage message)
         {
-            chatHudController.AddChatMessage(new ChatEntryModel
+            chatHudController.SetChatMessage(new ChatEntryModel
             {
                 timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",

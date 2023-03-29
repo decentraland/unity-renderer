@@ -230,7 +230,7 @@ namespace DCL.Chat.HUD
 
                 if (!string.IsNullOrEmpty(message.recipient)) continue;
 
-                chatHudController.AddChatMessage(message, View.IsActive);
+                chatHudController.SetChatMessage(message, View.IsActive);
                 messageLogUpdated = true;
             }
 
@@ -258,7 +258,7 @@ namespace DCL.Chat.HUD
 
         private void HandleMessageBlockedBySpam(ChatMessage message)
         {
-            chatHudController.AddChatMessage(new ChatEntryModel
+            chatHudController.SetChatMessage(new ChatEntryModel
             {
                 timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",

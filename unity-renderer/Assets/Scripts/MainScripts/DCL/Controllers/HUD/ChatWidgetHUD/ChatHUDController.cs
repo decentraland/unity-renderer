@@ -23,7 +23,6 @@ public class ChatHUDController : IHUD
     private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
     private const int MAX_HISTORY_ITERATION = 10;
     private const int MAX_MENTION_SUGGESTIONS = 5;
-    private const int MAX_FETCH_PROFILE_TRIES = 3;
 
     public delegate UniTask<List<UserProfile>> GetSuggestedUserProfiles(string name, int maxCount, CancellationToken cancellationToken);
 
@@ -118,31 +117,24 @@ public class ChatHUDController : IHUD
             HideMentionSuggestions();
     }
 
-    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false,
-        bool spamFiltering = true, bool limitMaxEntries = true, int fetchProfileTries = 0)
+    public void SetChatMessage(ChatMessage message, bool setScrollPositionToBottom = false,
+        bool spamFiltering = true, bool limitMaxEntries = true)
     {
-        async UniTaskVoid EnsureProfileThenUpdateMessage(string profileId, ChatMessage message,
+        async UniTaskVoid EnsureProfileThenUpdateMessage(string profileId, ChatEntryModel model,
+            Func<ChatEntryModel, UserProfile, ChatEntryModel> modificationCallback,
             bool setScrollPositionToBottom, bool spamFiltering, bool limitMaxEntries,
-            int fetchProfileTries,
             CancellationToken cancellationToken)
         {
-            if (fetchProfileTries >= MAX_FETCH_PROFILE_TRIES)
-            {
-                Debug.LogWarning($"Profile fetching max retries limit reached for {profileId}");
-                return;
-            }
-
             try
             {
                 UserProfile requestedProfile = await userProfileBridge.RequestFullUserProfileAsync(profileId, cancellationToken);
 
-                if (requestedProfile != null)
-                {
-                    // avoid any possible race condition with the current AddChatMessage operation
-                    await UniTask.NextFrame(cancellationToken: cancellationToken);
+                model = modificationCallback.Invoke(model, requestedProfile);
 
-                    AddChatMessage(message, setScrollPositionToBottom, spamFiltering, limitMaxEntries, fetchProfileTries + 1);
-                }
+                // avoid any possible race condition with the current AddChatMessage operation
+                await UniTask.NextFrame(cancellationToken: cancellationToken);
+
+                await SetChatMessage(model, setScrollPositionToBottom, spamFiltering, limitMaxEntries, cancellationToken);
             }
             catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
         }
@@ -176,8 +168,14 @@ public class ChatHUDController : IHUD
                     // sometimes there is no cached profile, so we request it
                     // dont block the operation of showing the message immediately
                     // just update the message information after we get the profile
-                    EnsureProfileThenUpdateMessage(message.recipient, message, setScrollPositionToBottom, spamFiltering,
-                            limitMaxEntries, fetchProfileTries,
+                    EnsureProfileThenUpdateMessage(message.recipient, model,
+                            (m, p) =>
+                            {
+                                m.recipientName = p.userName;
+                                return m;
+                            },
+                            setScrollPositionToBottom, spamFiltering,
+                            limitMaxEntries,
                             profileFetchingCancellationToken.Token)
                        .Forget();
                 }
@@ -199,8 +197,14 @@ public class ChatHUDController : IHUD
                 // sometimes there is no cached profile, so we request it
                 // dont block the operation of showing the message immediately
                 // just update the message information after we get the profile
-                EnsureProfileThenUpdateMessage(message.sender, message, setScrollPositionToBottom, spamFiltering,
-                        limitMaxEntries, fetchProfileTries,
+                EnsureProfileThenUpdateMessage(message.sender, model,
+                        (m, p) =>
+                        {
+                            m.senderName = p.userName;
+                            return m;
+                        },
+                        setScrollPositionToBottom, spamFiltering,
+                        limitMaxEntries,
                         profileFetchingCancellationToken.Token)
                    .Forget();
             }
@@ -219,12 +223,12 @@ public class ChatHUDController : IHUD
                 : ChatEntryModel.SubType.RECEIVED;
         }
 
-        AddChatMessage(model, setScrollPositionToBottom, spamFiltering, limitMaxEntries,
+        SetChatMessage(model, setScrollPositionToBottom, spamFiltering, limitMaxEntries,
                 addMessagesCancellationToken.Token)
            .Forget();
     }
 
-    public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true,
+    public async UniTask SetChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true,
         CancellationToken cancellationToken = default)
     {
         if (IsSpamming(chatEntryModel.senderName) && spamFiltering) return;
@@ -244,7 +248,7 @@ public class ChatHUDController : IHUD
 
         await UniTask.SwitchToMainThread(cancellationToken: cancellationToken);
 
-        view.AddEntry(chatEntryModel, setScrollPositionToBottom);
+        view.SetEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (limitMaxEntries && view.EntryCount > MAX_CHAT_ENTRIES)
             view.RemoveOldestEntry();

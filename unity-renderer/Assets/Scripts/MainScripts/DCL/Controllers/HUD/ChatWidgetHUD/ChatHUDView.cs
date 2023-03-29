@@ -217,7 +217,7 @@ namespace DCL.Social.Chat
             ClearAllEntries();
 
             foreach (var entry in model.entries)
-                AddEntry(entry);
+                SetEntry(entry);
         }
 
         public void FocusInputField()
@@ -271,7 +271,7 @@ namespace DCL.Social.Chat
             FocusInputField();
         }
 
-        public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
+        public virtual void SetEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
         {
             if (entries.ContainsKey(model.messageId))
             {

@@ -230,7 +230,7 @@ public class PrivateChatWindowController : IHUD
 
             if (!IsMessageFomCurrentConversation(message)) continue;
 
-            chatHudController.AddChatMessage(message, limitMaxEntries: false);
+            chatHudController.SetChatMessage(message, limitMaxEntries: false);
 
             if (message.timestamp < oldestTimestamp)
             {
@@ -364,7 +364,7 @@ public class PrivateChatWindowController : IHUD
 
     private void HandleMessageBlockedBySpam(ChatMessage message)
     {
-        chatHudController.AddChatMessage(new ChatEntryModel
+        chatHudController.SetChatMessage(new ChatEntryModel
                           {
                               timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                               bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",

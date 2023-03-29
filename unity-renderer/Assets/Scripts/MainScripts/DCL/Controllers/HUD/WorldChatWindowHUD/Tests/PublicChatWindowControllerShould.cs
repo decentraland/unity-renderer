@@ -78,7 +78,7 @@ public class PublicChatWindowControllerShould
 
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
 
-        internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
+        internalChatView.Received(1).SetEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == msg.messageType
             && model.bodyText == $"<noparse>{msg.body}</noparse>"
             && model.senderId == msg.sender));
@@ -97,7 +97,7 @@ public class PublicChatWindowControllerShould
 
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
 
-        internalChatView.DidNotReceiveWithAnyArgs().AddEntry(default);
+        internalChatView.DidNotReceiveWithAnyArgs().SetEntry(default);
     }
 
     [Test]

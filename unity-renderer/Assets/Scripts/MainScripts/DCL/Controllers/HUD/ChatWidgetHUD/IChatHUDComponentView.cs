@@ -22,7 +22,7 @@ namespace DCL.Social.Chat
     bool UseLegacySorting { set; }
 
         void OnMessageCancelHover();
-        void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);
+        void SetEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);
         void Dispose();
         void RemoveOldestEntry();
         void ClearAllEntries();
