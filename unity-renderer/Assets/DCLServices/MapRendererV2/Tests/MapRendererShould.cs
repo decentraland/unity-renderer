@@ -45,6 +45,8 @@ namespace DCLServices.MapRendererV2.Tests
 
             mapRenderer = new MapRenderer(componentsFactory);
             await mapRenderer.InitializeAsync(CancellationToken.None);
+
+            layers = mapRenderer.layersDictionary_Test;
         }
 
         [Test]

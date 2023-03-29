@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 namespace DCLServices.MapRendererV2.ConsumerUtils
@@ -17,6 +18,10 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
             public Vector2Int Parcel;
             public Vector2 WorldPosition;
         }
+
+        private static readonly string DRAG_SAMPLE_NAME = $"{nameof(MapRenderImage)}.{nameof(OnDrag)}";
+        private static readonly string POINTER_MOVE_SAMPLE_NAME = $"{nameof(MapRenderImage)}.{nameof(OnPointerMove)}";
+        private static readonly string POINTER_CLICK_SAMPLE_NAME = $"{nameof(MapRenderImage)}.{nameof(OnPointerClick)}";
 
         public event Action<ParcelClickData> ParcelClicked;
 
@@ -72,7 +77,11 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
             if (dragging)
                 return;
 
+            Profiler.BeginSample(POINTER_MOVE_SAMPLE_NAME);
+
             ProcessHover(eventData);
+
+            Profiler.EndSample();
         }
 
         public void OnPointerExit(PointerEventData eventData)
@@ -88,6 +97,8 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            Profiler.BeginSample(POINTER_CLICK_SAMPLE_NAME);
+
             if (isActive && !dragging && TryGetParcelUnderPointer(eventData, out var parcel, out _, out _))
             {
                 ParcelClicked?.Invoke(new ParcelClickData
@@ -96,6 +107,8 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
                     WorldPosition = GetParcelWorldPosition(parcel),
                 });
             }
+
+            Profiler.EndSample();
         }
 
         private bool dragging => dragBehavior is { dragging: true };
@@ -138,7 +151,11 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
         {
             if (!isActive) return;
 
+            Profiler.BeginSample(DRAG_SAMPLE_NAME);
+
             dragBehavior?.OnDrag(eventData);
+
+            Profiler.EndSample();
         }
 
         public void OnBeginDrag(PointerEventData eventData)

@@ -13,6 +13,7 @@ using UnityEngine;
 namespace DCLServices.MapRendererV2.Tests.PointsOfInterest
 {
     [TestFixture]
+    [Category("EditModeCI")]
     public class ScenesOfInterestMarkersControllerShould
     {
         private const int PREWARM_COUNT = 100;

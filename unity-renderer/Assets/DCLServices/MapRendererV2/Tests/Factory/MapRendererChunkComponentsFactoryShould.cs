@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Providers;
 using DCLServices.MapRendererV2.ComponentsFactory;
+using MainScripts.DCL.Controllers.AssetManager.Addressables.Editor;
 using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using UnityEngine;
 namespace DCLServices.MapRendererV2.Tests.Factory
 {
     [TestFixture]
+    [Category("EditModeCI")]
     public class MapRendererChunkComponentsFactoryShould
     {
         private MapRendererChunkComponentsFactory factory;
@@ -17,7 +19,7 @@ namespace DCLServices.MapRendererV2.Tests.Factory
         public void Setup()
         {
             var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
-            serviceLocator.Register<IAddressableResourceProvider>(() => new AddressableResourceProvider());
+            serviceLocator.Register<IAddressableResourceProvider>(() => new EditorAddressableResourceProvider());
             Environment.Setup(serviceLocator);
 
             factory = new MapRendererChunkComponentsFactory(20, 1000, 5);

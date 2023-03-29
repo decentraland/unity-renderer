@@ -10,6 +10,7 @@ using UnityEngine;
 namespace DCLServices.MapRendererV2.Tests.HomePoint
 {
     [TestFixture]
+    [Category("EditModeCI")]
     public class HomePointMarkerControllerShould
     {
         private HomePointMarkerController controller;

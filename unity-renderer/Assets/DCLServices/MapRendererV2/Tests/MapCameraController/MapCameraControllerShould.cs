@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.Tests.MapCameraController
 {
+    [Category("EditModeCI")]
     public class MapCameraControllerShould
     {
         private MapRendererV2.MapCameraController.MapCameraController mapCamera;

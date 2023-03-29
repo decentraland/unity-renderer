@@ -11,6 +11,7 @@ using UnityEngine;
 namespace DCLServices.MapRendererV2.Tests.PlayerMarker
 {
     [TestFixture]
+    [Category("EditModeCI")]
     public class PlayerMarkerControllerShould
     {
         private PlayerMarkerController controller;

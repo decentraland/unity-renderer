@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.Tests.Culling
 {
+    [Category("EditModeCI")]
     public class CullingControllerShould
     {
         private static Rect cameraRect = new Rect(-50, -50, 100, 100);

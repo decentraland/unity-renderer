@@ -9,6 +9,7 @@ using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.Tests.MapCameraController
 {
+    [Category("EditModeCI")]
     [TestFixture]
     public class MapCameraInteractivityControllerShould
     {
@@ -16,6 +17,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
         private Camera camera;
         private IObjectPool<IParcelHighlightMarker> pool;
         private IParcelHighlightMarker marker;
+        private ICoordsUtils coordUtils;
 
         [SetUp]
         public void Setup()
@@ -29,8 +31,17 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             pool = Substitute.For<IObjectPool<IParcelHighlightMarker>>();
             pool.Get().Returns(marker = Substitute.For<IParcelHighlightMarker>());
 
-            var coordUtils = Substitute.For<ICoordsUtils>();
+            coordUtils = Substitute.For<ICoordsUtils>();
             coordUtils.PositionToCoords(Arg.Any<Vector3>()).Returns(call => new Vector2Int((int)call.Arg<Vector3>().x, (int)call.Arg<Vector3>().y));
+            coordUtils.CoordsToPosition(Arg.Any<Vector2Int>()).Returns(call => (Vector3) (Vector2) call.Arg<Vector2Int>());
+
+            coordUtils.TryGetCoordsWithinInteractableBounds(Arg.Any<Vector3>(), out Arg.Any<Vector2Int>())
+                      .Returns(call =>
+                       {
+                           var coords = call.ArgAt<Vector3>(0);
+                           call[1] = new Vector2Int((int)coords.x, (int)coords.y);
+                           return true;
+                       });
 
             controller = new MapCameraInteractivityController(null, camera, pool, coordUtils);
         }
@@ -75,11 +86,12 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             controller.Initialize(MapLayer.ParcelHoverHighlight);
 
             Assert.IsTrue(controller.TryGetParcel(norm, out var parcel));
+            Assert.AreEqual(expected, new Vector3(parcel.x, parcel.y, 0));
+
             controller.HighlightParcel(parcel);
 
             marker.Received(1).SetCoordinates(Arg.Any<Vector2Int>(), expected);
         }
-
 
         public static object[] SetPositionOnHighlightTestCases =
         {

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace DCLServices.MapRendererV2.Tests.Culling
 {
+    [Category("EditModeCI")]
     public class TrackedStateShould
     {
         private MapCullingController.TrackedState<IMapPositionProvider> state;

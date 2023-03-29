@@ -13,6 +13,7 @@ using UnityEngine;
 namespace DCLServices.MapRendererV2.Tests
 {
     [TestFixture]
+    [Category("EditModeCI")]
     public class ChunkAtlasControllerShould
     {
         private const int PARCEL_SIZE = 20;
@@ -33,7 +34,7 @@ namespace DCLServices.MapRendererV2.Tests
 
             builder = Substitute.For<ChunkAtlasController.ChunkBuilder>();
 
-            atlasController = new ChunkAtlasController(null, null, 1, coordUtils, Substitute.For<IMapCullingController>(), builder);
+            atlasController = new ChunkAtlasController(null, null, CHUNK_SIZE, coordUtils, Substitute.For<IMapCullingController>(), builder);
 
             var parcelsInsideChunk = CHUNK_SIZE / PARCEL_SIZE;
 

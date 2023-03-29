@@ -18,6 +18,7 @@ using Environment = DCL.Environment;
 
 namespace DCLServices.MapRendererV2.Tests.UsersMarkers.ColdArea
 {
+    [Category("EditModeCI")]
     [TestFixture]
     public class UsersMarkersColdAreaControllerShould
     {

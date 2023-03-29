@@ -14,6 +14,8 @@ namespace DCLServices.MapRendererV2
         // for testing purpose only
         internal IReadOnlyList<IMapLayerController> layers_Test => layers.Select(l => l.Value.MapLayerController).ToList();
 
+        internal Dictionary<MapLayer, IMapLayerController> layersDictionary_Test => layers.ToDictionary(l => l.Key, l => l.Value.MapLayerController);
+
         internal void EnableLayers_Test(MapLayer mask) =>
             EnableLayers(mask);
 

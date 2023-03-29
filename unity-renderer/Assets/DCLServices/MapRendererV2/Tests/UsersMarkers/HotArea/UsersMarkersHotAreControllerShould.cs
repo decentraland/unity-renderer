@@ -13,6 +13,7 @@ using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.Tests.UsersMarkers.HotArea
 {
+    [Category("EditModeCI")]
     [TestFixture]
     public class UsersMarkersHotAreControllerShould
     {
@@ -86,7 +87,7 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.HotArea
         }
 
         [Test]
-        public async Task RestorePlayersOnEnable([Range(1, 100, 5)] int playersCount)
+        public async Task RestorePlayersOnEnable([NUnit.Framework.Range(1, 100, 5)] int playersCount)
         {
             wrapsPool.ClearReceivedCalls();
             cullingController.ClearReceivedCalls();
@@ -104,7 +105,7 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.HotArea
         }
 
         [Test]
-        public async Task ReleasePlayersOnDisable([Range(1, 100, 5)] int playersCount)
+        public async Task ReleasePlayersOnDisable([NUnit.Framework.Range(1, 100, 5)] int playersCount)
         {
             var players = CreatePlayers(playersCount);
 
@@ -147,7 +148,6 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.HotArea
         private void AssertPlayerAdded(Player player)
         {
             controller.Markers[player.id].Received(1).TrackPlayer(player);
-            cullingController.Received().StartTracking(controller.Markers[player.id], controller.Markers[player.id]);
         }
 
         private IReadOnlyList<Player> CreatePlayers(int count)

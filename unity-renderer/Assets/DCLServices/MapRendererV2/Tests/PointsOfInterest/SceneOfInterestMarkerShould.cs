@@ -12,6 +12,7 @@ using UnityEngine.Pool;
 namespace DCLServices.MapRendererV2.Tests.PointsOfInterest
 {
     [TestFixture]
+    [Category("EditModeCI")]
     public class SceneOfInterestMarkerShould
     {
         private SceneOfInterestMarker marker;

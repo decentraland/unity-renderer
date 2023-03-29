@@ -35,7 +35,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             var worldSize = ((Vector2)coordsUtils.WorldMaxCoords - coordsUtils.WorldMinCoords) * parcelSize;
             var chunkAmounts = new Vector2Int(Mathf.CeilToInt(worldSize.x / this.chunkSize), Mathf.CeilToInt(worldSize.y / this.chunkSize));
             chunks = new List<IChunkController>(chunkAmounts.x * chunkAmounts.y);
-            parcelsInsideChunk = chunkSize / parcelSize;
+            parcelsInsideChunk = Mathf.Max(1, chunkSize / parcelSize);
         }
 
         public async UniTask Initialize(CancellationToken ct)

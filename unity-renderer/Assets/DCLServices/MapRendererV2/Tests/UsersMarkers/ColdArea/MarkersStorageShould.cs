@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.Tests.UsersMarkers.ColdArea
 {
+    [Category("EditModeCI")]
     [TestFixture]
     public class MarkersStorageShould
     {
