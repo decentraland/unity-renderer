@@ -8,12 +8,15 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 {
     internal readonly struct MapRendererComponents
     {
+        public readonly MapRendererConfiguration configurationInstance;
         public readonly IReadOnlyDictionary<MapLayer, IMapLayerController> Layers;
         public readonly IMapCullingController CullingController;
         public readonly IObjectPool<IMapCameraControllerInternal> MapCameraControllers;
 
-        public MapRendererComponents(IReadOnlyDictionary<MapLayer, IMapLayerController> layers, IMapCullingController cullingController, IObjectPool<IMapCameraControllerInternal> mapCameraControllers)
+        public MapRendererComponents(MapRendererConfiguration configurationInstance, IReadOnlyDictionary<MapLayer, IMapLayerController> layers,
+            IMapCullingController cullingController, IObjectPool<IMapCameraControllerInternal> mapCameraControllers)
         {
+            this.configurationInstance = configurationInstance;
             Layers = layers;
             CullingController = cullingController;
             MapCameraControllers = mapCameraControllers;

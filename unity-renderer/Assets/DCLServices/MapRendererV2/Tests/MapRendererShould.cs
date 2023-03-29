@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.Tests
@@ -39,6 +40,7 @@ namespace DCLServices.MapRendererV2.Tests
                              .Returns(
                                   new UniTask<MapRendererComponents>(
                                       new MapRendererComponents(
+                                          new GameObject("map_configuration_test").AddComponent<MapRendererConfiguration>(),
                                           EnumUtils.Values<MapLayer>().Where(l => l != MapLayer.None).ToDictionary(x => x, x => Substitute.For<IMapLayerController>()),
                                           Substitute.For<IMapCullingController>(),
                                           Substitute.For<IObjectPool<IMapCameraControllerInternal>>())));

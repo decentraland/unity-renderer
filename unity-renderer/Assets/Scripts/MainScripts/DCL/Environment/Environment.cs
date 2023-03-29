@@ -41,8 +41,14 @@ namespace DCL
         public static void Dispose()
         {
             i?.Dispose();
-            cancellationTokenSource?.Cancel();
-            cancellationTokenSource?.Dispose();
+
+            if (cancellationTokenSource != null)
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                cancellationTokenSource = null;
+            }
+
             initialized = false;
         }
 

@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
@@ -33,6 +34,7 @@ namespace DCLServices.MapRendererV2
         private readonly IMapRendererComponentsFactory componentsFactory;
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
+        private MapRendererConfiguration configurationInstance;
 
         private IObjectPool<IMapCameraControllerInternal> mapCameraPool;
 
@@ -55,6 +57,7 @@ namespace DCLServices.MapRendererV2
                 var components = await componentsFactory.Create(cancellationToken);
                 cullingController = components.CullingController;
                 mapCameraPool = components.MapCameraControllers;
+                configurationInstance = components.configurationInstance;
 
                 foreach (var pair in components.Layers)
                     layers[pair.Key] = new MapLayerStatus(pair.Value);
@@ -157,6 +160,9 @@ namespace DCLServices.MapRendererV2
             }
 
             cullingController?.Dispose();
+
+            if (configurationInstance)
+                Utils.SafeDestroy(configurationInstance.gameObject);
         }
     }
 }

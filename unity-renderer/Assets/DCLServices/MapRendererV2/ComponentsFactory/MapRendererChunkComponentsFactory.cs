@@ -131,7 +131,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken)
                 /* List of other creators that can be executed in parallel */);
 
-            return new MapRendererComponents(layers, cullingController, cameraControllersPool);
+            return new MapRendererComponents(configuration, layers, cullingController, cameraControllersPool);
         }
 
         internal async Task<SpriteRenderer> GetAtlasChunkPrefab(CancellationToken cancellationToken) =>
