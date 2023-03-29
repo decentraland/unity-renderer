@@ -150,24 +150,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    public static void SubscribeToEvent(string eventId)
-    {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
-
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    true,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
-    }
+    public void SubscribeToEvent(string eventId) =>
+        eventsAPIApiController.RegisterParticipation(eventId);
 
     public static void UnsubscribeToEvent(string eventId)
     {

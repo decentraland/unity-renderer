@@ -179,7 +179,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     public void Configure(EventCardComponentModel newModel)
     {
         model = newModel;
-        Debug.Log($"want to {newModel.eventFromAPIInfo.attending}");
         RefreshControl();
     }
 

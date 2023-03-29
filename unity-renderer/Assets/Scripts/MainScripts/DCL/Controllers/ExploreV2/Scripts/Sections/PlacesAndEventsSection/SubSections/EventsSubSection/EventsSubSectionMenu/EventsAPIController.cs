@@ -26,7 +26,7 @@ public interface IEventsAPIController
 public class EventsAPIController : IEventsAPIController
 {
     internal const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";
-    private const string URL_PARTICIPATE_EVENT = "https://events.decenraland.org/api/events/{event_id}/attendees";
+    private const string URL_PARTICIPATE_EVENT = "https://events.decentraland.org/api/events/{event_id}/attendees";
 
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
 
@@ -39,7 +39,7 @@ public class EventsAPIController : IEventsAPIController
 
     public async UniTask RegisterParticipation(string eventId)
     {
-        await DCL.Environment.i.platform.webRequest.PostAsync(URL_PARTICIPATE_EVENT, "{}", isSigned: true);
+        await DCL.Environment.i.platform.webRequest.PostAsync(URL_PARTICIPATE_EVENT.Replace("{event_id}", eventId), "", isSigned: true);
     }
 
     public async UniTask RemoveParticipation(string eventId)
