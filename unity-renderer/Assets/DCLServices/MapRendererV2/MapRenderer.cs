@@ -156,7 +156,7 @@ namespace DCLServices.MapRendererV2
                 status.MapLayerController.Dispose();
             }
 
-            cullingController.Dispose();
+            cullingController?.Dispose();
         }
     }
 }
