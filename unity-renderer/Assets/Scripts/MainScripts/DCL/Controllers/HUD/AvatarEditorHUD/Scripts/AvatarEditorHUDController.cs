@@ -368,7 +368,7 @@ public class AvatarEditorHUDController : IHUD
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
     }
 
-    public void LoadUserProfile(UserProfile userProfile, bool forceLoading)
+    private void LoadUserProfile(UserProfile userProfile, bool forceLoading)
     {
         bool avatarEditorNotVisible = renderingEnabled && !view.isOpen;
         bool isPlaying = !Application.isBatchMode;
@@ -732,6 +732,7 @@ public class AvatarEditorHUDController : IHUD
                 if (supportedWearables.Length == 0)
                 {
                     Debug.LogError($"Couldn't get any wearable for category {category} and bodyshape {model.bodyShape.id}");
+                    continue;
                 }
 
                 var wearable = supportedWearables[Random.Range(0, supportedWearables.Length - 1)];

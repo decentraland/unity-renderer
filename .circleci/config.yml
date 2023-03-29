@@ -287,7 +287,7 @@ jobs:
             - unity-playmode-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
-          name: Prepare image
+          name: Prepare test image
           command: |
             apt-get update
             apt-get install -y zip jq gpg
@@ -329,6 +329,54 @@ jobs:
       - store_artifacts: &STORE_VISUAL_TESTS
           name: Store visual tests result as artifacts
           path: ./unity-renderer/TestResources/VisualTests
+  test-unity-editmode:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_windows_image
+    steps:
+      - <<: *attach_root
+      - run: *HASH_UNITY_FILES
+      - run: *STORE_TARGET
+      - restore_cache:
+          name: Restore hashed files if they exist
+          keys:
+            - unity-editmode-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_LIBRARY_CACHE
+      - run:
+          name: Prepare image
+          command: |
+            apt-get update
+            apt-get install -y zip jq gpg
+      - run:
+          name: Run editmode tests
+          command: |
+            if [[ -e ./unity-renderer/editmode-logs.txt ]]; then
+                echo "Skipping editmode tests"
+                exit 0
+            else
+                bash ci-editmode-test.sh
+                exit $?
+            fi;
+          no_output_timeout: 30m
+      - run:
+          name: nunit-to-junit
+          when: always
+          command: |
+            apt-get update
+            apt-get install -y xsltproc
+            xsltproc --output unity-renderer/test-results/editmode-results-junit.xml nunit-to-junit.xsl unity-renderer/editmode-results.xml
+      - store_test_results:
+          path: ./unity-renderer/test-results
+      - store_artifacts:
+          name: Store logs
+          path: ./unity-renderer/editmode-logs.txt
+      - store_artifacts:
+          name: Store test results
+          path: ./unity-renderer/editmode-results.xml
+      - save_cache:
+          name: Store test cache
+          key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
+          paths: *CACHED_PATHS
   publish-desktop-artifacts:
     <<: *working_directory_root
     docker:
@@ -436,6 +484,11 @@ workflows:
           requires:
             - checkout
 
+      - test-unity-editmode:
+          <<: *all_branches
+          requires:
+            - checkout
+
       - publish-desktop-artifacts-release:
           <<: *only_dev_and_main
           requires:
@@ -446,6 +499,7 @@ workflows:
             - test-browser-interface
             - test-browser-file-size
             - test-unity-playmode
+            - test-unity-editmode
 
       - publish-desktop-artifacts:
           <<: *except_dev_and_main
@@ -479,6 +533,7 @@ workflows:
             - test-browser-interface
             - test-browser-file-size
             - test-unity-playmode
+            - test-unity-editmode
 
       - test-browser-file-size:
           <<: *only_dev_and_main
