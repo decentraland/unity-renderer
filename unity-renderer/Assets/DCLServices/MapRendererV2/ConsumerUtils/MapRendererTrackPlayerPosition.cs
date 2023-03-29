@@ -33,8 +33,20 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
             if (Vector3.SqrMagnitude(newPos - lastPlayerPosition) < SQR_DISTANCE_TOLERANCE)
                 return;
 
-            var newCoords = DCL.Helpers.Utils.WorldToGridPositionUnclamped(newPos);
-            cameraController.SetPosition(newCoords);
+            lastPlayerPosition = newPos;
+            cameraController.SetPosition(GetPlayerCentricCoords(newPos));
+        }
+
+        public static Vector2 GetPlayerCentricCoords(Vector3 playerPosition)
+        {
+            var newCoords = DCL.Helpers.Utils.WorldToGridPositionUnclamped(playerPosition);
+            return GetPlayerCentricCoords(newCoords);
+        }
+
+        public static Vector2 GetPlayerCentricCoords(Vector2 playerCoords)
+        {
+            // quick hack to align with `CoordsToPositionWithOffset` and the pivot
+            return playerCoords - Vector2.one;
         }
 
         public void Dispose()
