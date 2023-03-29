@@ -4,7 +4,6 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GPUSkinning;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -86,7 +85,7 @@ namespace AvatarSystem
             }
         }
 
-        protected virtual async Task LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
+        protected virtual async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
             List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, linkedCt: linkedCt);
             Prepare(settings, emotes, loader.bodyshapeContainer);
@@ -94,7 +93,7 @@ namespace AvatarSystem
             Inform(loader.combinedRenderer);
         }
 
-        protected async Task<List<WearableItem>> LoadWearables(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, SkinnedMeshRenderer bonesRenderers = null, CancellationToken linkedCt = default)
+        protected async UniTask<List<WearableItem>> LoadWearables(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, SkinnedMeshRenderer bonesRenderers = null, CancellationToken linkedCt = default)
         {
             WearableItem bodyshape;
             WearableItem eyes;

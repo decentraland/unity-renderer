@@ -1,7 +1,7 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 using GPUSkinning;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -18,7 +18,7 @@ namespace AvatarSystem
             this.baseAvatar = baseAvatar;
         }
 
-        protected override async Task LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
+        protected override async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
             baseAvatar.Initialize();
 
