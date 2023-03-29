@@ -43,12 +43,6 @@ public class HUDBridge : MonoBehaviour
 
     public void TriggerSelfUserExpression(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id, UserProfile.EmoteSource.Command); }
 
-    public void AirdroppingRequest(string payload)
-    {
-        var model = JsonUtility.FromJson<AirdroppingHUDController.Model>(payload);
-        HUDController.i.airdroppingHud.AirdroppingRequested(model);
-    }
-
     public void ShowTermsOfServices(string payload)
     {
         var model = JsonUtility.FromJson<TermsOfServiceHUDController.Model>(payload);

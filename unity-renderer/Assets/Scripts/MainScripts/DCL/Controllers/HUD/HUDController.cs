@@ -74,8 +74,6 @@ public class HUDController : IHUDController
     public SettingsPanelHUDController settingsPanelHud =>
         GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
-    public AirdroppingHUDController airdroppingHud =>
-        GetHUDElement(HUDElementID.AIRDROPPING) as AirdroppingHUDController;
 
     public TermsOfServiceHUDController termsOfServiceHud =>
         GetHUDElement(HUDElementID.TERMS_OF_SERVICE) as TermsOfServiceHUDController;
@@ -197,9 +195,6 @@ public class HUDController : IHUDController
             case HUDElementID.SETTINGS_PANEL:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 settingsPanelHud?.Initialize();
-                break;
-            case HUDElementID.AIRDROPPING:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.TERMS_OF_SERVICE:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
