@@ -48,7 +48,8 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
             message: `Got RoomEvent.Disconnected. Reason: ${reason}`,
           })
         }
-        this.disconnect().catch((err) => {
+        const kicked = reason === DisconnectReason.DUPLICATE_IDENTITY
+        this.do_disconnect(kicked).catch((err) => {
           this.config.logger.error(`error during disconnection ${err.toString()}`)
         })
       })
@@ -101,6 +102,10 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   }
 
   async disconnect() {
+    return this.do_disconnect(false)
+  }
+
+  async do_disconnect(kicked: boolean) {
     if (this.disconnected) {
       return
     }
@@ -109,7 +114,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
     this.disconnected = true
     this.room.disconnect().catch(commsLogger.error)
-    this.events.emit('DISCONNECTION', { kicked: false })
+    this.events.emit('DISCONNECTION', { kicked })
   }
 
   handleMessage(address: string, data: Uint8Array) {
