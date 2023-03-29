@@ -380,7 +380,7 @@ namespace DCL.Chat.Notifications
 
             entryPool = PoolManager.i.AddPool(
                 NOTIFICATION_POOL_NAME_PREFIX + name + GetInstanceID(),
-                Instantiate(chatNotification).gameObject,
+                chatNotification,
                 maxPrewarmCount: MAX_NOTIFICATION_ENTRIES,
                 isPersistent: true);
             entryPool.ForcePrewarm();
