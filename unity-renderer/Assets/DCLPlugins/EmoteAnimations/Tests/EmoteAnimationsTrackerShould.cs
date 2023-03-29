@@ -108,6 +108,7 @@ namespace DCL.Emotes
         public IEnumerator HandleMultipleLoadEmoteCallsGracefully() =>
             UniTask.ToCoroutine(async () =>
             {
+                // Arrange
                 EmoteItem emote = new EmoteItem() { id = "emote0", data = new WearableItem.Data() };
 
                 async UniTask<WearableItem> GetDelayedEmoteItem()
@@ -122,11 +123,12 @@ namespace DCL.Emotes
                 loader.loadedAnimationClip.Returns(animClip);
                 loaderFactory.Configure().Get().Returns(loader);
 
+                // Act
                 dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
                 dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
-
                 await UniTask.DelayFrame(2); // Give time for GetDelayedEmoteItem to be performed.
 
+                // Assert
                 loaderFactory.Received(1).Get();
                 emoteCatalog.Received(1).RequestEmoteAsync("emote0", Arg.Any<CancellationToken>());
                 loader.Received(1).LoadEmote(tracker.animationsModelsContainer, emote, WearableLiterals.BodyShapes.FEMALE, Arg.Any<CancellationToken>());
