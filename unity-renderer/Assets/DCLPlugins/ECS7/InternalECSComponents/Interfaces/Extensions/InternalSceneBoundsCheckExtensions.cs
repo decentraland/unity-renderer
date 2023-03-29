@@ -7,12 +7,11 @@ namespace DCL.ECS7.InternalComponents
 {
     public static class InternalSceneBoundsCheckExtensions
     {
-        private static InternalSceneBoundsCheck model;
-
         public static void SetPosition(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, Vector3 newEntityPosition, bool createComponentIfMissing = true)
         {
-            model = sbcInternalComponent.GetFor(scene, entity)?.model;
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model;
+
             if (model == null)
             {
                 if (!createComponentIfMissing)
@@ -39,7 +38,7 @@ namespace DCL.ECS7.InternalComponents
         public static void OnTransformScaleRotationChanged(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity)
         {
-            model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
 
             // Mesh bounds need to be recalculated
             model.meshesDirty = true;
@@ -60,7 +59,7 @@ namespace DCL.ECS7.InternalComponents
         public static void SetRenderers(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, IList<Renderer> newRenderersCollection)
         {
-            model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.renderers = newRenderersCollection;
             model.meshesDirty = true;
 
@@ -70,7 +69,7 @@ namespace DCL.ECS7.InternalComponents
         public static void SetPhysicsColliders(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, IList<Collider> newCollidersCollection)
         {
-            model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.physicsColliders = newCollidersCollection;
             model.meshesDirty = true;
 
@@ -80,7 +79,7 @@ namespace DCL.ECS7.InternalComponents
         public static void SetPointerColliders(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, IList<Collider> newCollidersCollection)
         {
-            model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.pointerColliders = newCollidersCollection;
             model.meshesDirty = true;
 
@@ -90,7 +89,7 @@ namespace DCL.ECS7.InternalComponents
         public static void SetAudioSource(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, AudioSource audioSource)
         {
-            model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.audioSource = audioSource;
 
             sbcInternalComponent.PutFor(scene, entity, model);
@@ -99,7 +98,8 @@ namespace DCL.ECS7.InternalComponents
         public static bool IsFullyDefaulted(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity)
         {
-            model = sbcInternalComponent.GetFor(scene, entity)?.model;
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model;
+
             return model == null || (model.entityPosition == Vector3.zero
                                      && model.entityLocalMeshBounds.size == Vector3.zero
                                      && model.audioSource == null);
