@@ -41,11 +41,16 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         this.config.logger.log('remote participant left', _.identity)
       })
       .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
-        this.config.logger.log('disconnected from room', reason)
+        this.config.logger.log('disconnected from room', reason, {
+          liveKitParticipantSid: this.room.localParticipant.sid,
+          liveKitRoomSid: this.room.sid
+        })
         if (!this.disconnected) {
           trackEvent('disconnection_cause', {
             context: 'livekit-adapter',
             message: `Got RoomEvent.Disconnected. Reason: ${reason}`,
+            liveKitParticipantSid: this.room.localParticipant.sid,
+            liveKitRoomSid: this.room.sid
           })
         }
         const kicked = reason === DisconnectReason.DUPLICATE_IDENTITY
@@ -94,7 +99,8 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       trackEvent('error', {
         context: 'livekit-adapter',
         message: `Error trying to send data. Reason: ${err.message}`,
-        stack: err.stack
+        stack: err.stack,
+        saga_stack: `room session id: ${this.room.sid}, participant id: ${this.room.localParticipant.sid}`
       })
       // this fails in some cases, catch is needed
       this.config.logger.error(err)
