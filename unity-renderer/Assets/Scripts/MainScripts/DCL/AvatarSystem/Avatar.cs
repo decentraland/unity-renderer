@@ -15,17 +15,16 @@ namespace AvatarSystem
         private const float RESCALING_BOUNDS_FACTOR = 100f;
         internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
 
-        private readonly IAvatarCurator avatarCurator;
         protected readonly ILoader loader;
-        private readonly IAnimator animator;
         protected readonly IVisibility visibility;
+        private readonly IAvatarCurator avatarCurator;
+        private readonly IAnimator animator;
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
 
         private CancellationTokenSource disposeCts = new ();
-        private bool gpuSkinningIsRegistered;
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
@@ -122,12 +121,7 @@ namespace AvatarSystem
             animator.Prepare(settings.bodyshapeId, loaderBodyshapeContainer);
             emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
             gpuSkinning.Prepare(loader.combinedRenderer);
-
-            if (!gpuSkinningIsRegistered)
-            {
-                gpuSkinningThrottlerService.Register(gpuSkinning);
-                gpuSkinningIsRegistered = true;
-            }
+            gpuSkinningThrottlerService.Register(gpuSkinning);
         }
 
         protected void Bind()
