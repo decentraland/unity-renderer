@@ -179,6 +179,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     public void Configure(EventCardComponentModel newModel)
     {
         model = newModel;
+        Debug.Log($"want to {newModel.eventFromAPIInfo.attending}");
         RefreshControl();
     }
 
@@ -324,10 +325,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             jumpinButtonForNotLive.gameObject.SetActive(!isEventCardModal && !isLive);
 
         if (subscribeEventButton != null)
-            subscribeEventButton.gameObject.SetActive(!isLive && !model.isSubscribed);
+            subscribeEventButton.gameObject.SetActive(!isLive && !model.eventFromAPIInfo.attending);
 
         if (unsubscribeEventButton != null)
-            unsubscribeEventButton.gameObject.SetActive(!isLive && model.isSubscribed);
+            unsubscribeEventButton.gameObject.SetActive(!isLive && model.eventFromAPIInfo.attending);
 
         if (eventStartedInTitleForLive)
             eventStartedInTitleForLive.gameObject.SetActive(isLive);
