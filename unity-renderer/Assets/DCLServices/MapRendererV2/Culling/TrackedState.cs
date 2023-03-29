@@ -79,5 +79,7 @@ namespace DCLServices.MapRendererV2.Culling
                     visibleFlag &= ~(1 << index);
             }
         }
+
+        IReadOnlyDictionary<IMapPositionProvider, TrackedState> IMapCullingController.TrackedObjects => trackedObjs;
     }
 }
