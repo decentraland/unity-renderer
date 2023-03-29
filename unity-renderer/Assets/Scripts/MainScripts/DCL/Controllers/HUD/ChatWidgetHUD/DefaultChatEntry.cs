@@ -53,6 +53,9 @@ namespace DCL.Chat.HUD
         {
             model = chatEntryModel;
 
+            if(chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED && chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
+                backgroundImage.color = Color.white;
+
             chatEntryModel.bodyText = body.ReplaceUnsupportedCharacters(chatEntryModel.bodyText, '?');
             chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
             var userString = GetUserString(chatEntryModel);
