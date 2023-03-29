@@ -87,8 +87,6 @@ export function BringDownClientAndReportFatalError(
 ) {
   let sagaStack: string | undefined = payload['sagaStack']
 
-  debugger
-
   if (sagaStack) {
     // first stringify
     sagaStack = '' + sagaStack
@@ -105,6 +103,8 @@ export function BringDownClientAndReportFatalError(
     stack: getStack(error).slice(0, 10000),
     saga_stack: sagaStack
   })
+
+  store.dispatch(fatalError(error.message || 'fatal error'))
 
   globalObservable.emit('error', {
     error,
