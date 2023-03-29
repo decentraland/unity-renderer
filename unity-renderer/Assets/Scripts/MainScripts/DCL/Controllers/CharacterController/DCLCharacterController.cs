@@ -3,6 +3,8 @@ using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
 using Cinemachine;
+using System;
+using Environment = DCL.Environment;
 
 public class DCLCharacterController : MonoBehaviour
 {
@@ -15,9 +17,9 @@ public class DCLCharacterController : MonoBehaviour
 
     public float groundCheckExtraDistance = 0.1f;
     public float gravity = -55f;
-    public float jumpForce = 12f;
-    public float movementSpeed = 8f;
-    public float runningSpeedMultiplier = 2f;
+    public float jumpForce = 8f;
+    public float movementSpeed = 10f;
+    public float runningSpeedMultiplier = 1.4f;
 
     public DCLCharacterPosition characterPosition;
 
@@ -51,7 +53,7 @@ public class DCLCharacterController : MonoBehaviour
 
     Vector3 velocity = Vector3.zero;
 
-    public bool isWalking { get; private set; } = false;
+    public bool isRunning { get; private set; } = false;
     public bool isMovingByUserInput { get; private set; } = false;
     public bool isJumping { get; private set; } = false;
     public bool isGrounded { get; private set; }
@@ -73,8 +75,8 @@ public class DCLCharacterController : MonoBehaviour
 
     private InputAction_Hold.Started jumpStartedDelegate;
     private InputAction_Hold.Finished jumpFinishedDelegate;
-    private InputAction_Hold.Started walkStartedDelegate;
-    private InputAction_Hold.Finished walkFinishedDelegate;
+    private InputAction_Hold.Started sprintStartedDelegate;
+    private InputAction_Hold.Finished sprintFinishedDelegate;
 
     private Vector3NullableVariable characterForward => CommonScriptableObjects.characterForward;
 
@@ -147,21 +149,32 @@ public class DCLCharacterController : MonoBehaviour
         dataStorePlayer.lastTeleportPosition.OnChange += Teleport;
     }
 
+    private float jumpHold;
+
+    private void Update()
+    {
+    }
+
     private void SubscribeToInput()
     {
         jumpStartedDelegate = (action) =>
         {
+            jumpHold = 0;
             lastJumpButtonPressedTime = Time.time;
             jumpButtonPressed = true;
         };
-        jumpFinishedDelegate = (action) => jumpButtonPressed = false;
+        jumpFinishedDelegate = (action) =>
+        {
+            jumpHold = Time.time - lastJumpButtonPressedTime;
+            jumpButtonPressed = false;
+        };
         jumpAction.OnStarted += jumpStartedDelegate;
         jumpAction.OnFinished += jumpFinishedDelegate;
 
-        walkStartedDelegate = (action) => isWalking = true;
-        walkFinishedDelegate = (action) => isWalking = false;
-        sprintAction.OnStarted += walkStartedDelegate;
-        sprintAction.OnFinished += walkFinishedDelegate;
+        sprintStartedDelegate = (action) => isRunning = true;
+        sprintFinishedDelegate = (action) => isRunning = false;
+        sprintAction.OnStarted += sprintStartedDelegate;
+        sprintAction.OnFinished += sprintFinishedDelegate;
     }
 
     void OnDestroy()
@@ -169,8 +182,8 @@ public class DCLCharacterController : MonoBehaviour
         CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
         jumpAction.OnStarted -= jumpStartedDelegate;
         jumpAction.OnFinished -= jumpFinishedDelegate;
-        sprintAction.OnStarted -= walkStartedDelegate;
-        sprintAction.OnFinished -= walkFinishedDelegate;
+        sprintAction.OnStarted -= sprintStartedDelegate;
+        sprintAction.OnFinished -= sprintFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
         dataStorePlayer.lastTeleportPosition.OnChange -= Teleport;
         i = null;
@@ -298,7 +311,7 @@ public class DCLCharacterController : MonoBehaviour
             if (characterForward.HasValue())
             {
                 // Horizontal movement
-                var speed = movementSpeed * (isWalking ? runningSpeedMultiplier : 1f);
+                var speed = movementSpeed * (isRunning ? 1f : runningSpeedMultiplier);
 
                 transform.forward = characterForward.Get().Value;
 
@@ -340,6 +353,12 @@ public class DCLCharacterController : MonoBehaviour
                 }
             }
 
+            if (isJumping && jumpButtonPressed)
+            {
+                velocity.y += 0.2f;
+            }
+
+
             //NOTE(Mordi): Detecting when the character hits the ground (for landing-SFX)
             if (isGrounded && !previouslyGrounded && (Time.time - lastUngroundedTime) > 0.4f)
             {
@@ -366,6 +385,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             SaveLateUpdateGroundTransforms();
         }
+
         OnUpdateFinish?.Invoke(Time.deltaTime);
     }
 

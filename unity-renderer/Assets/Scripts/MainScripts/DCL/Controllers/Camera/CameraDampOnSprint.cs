@@ -43,7 +43,7 @@ namespace DCL.Camera
                 return;
 
             var orbit = sourceFreeLook.m_Orbits[1];
-            if (characterYAxis.GetValue() > 0 && !DCLCharacterController.i.isWalking)
+            if (characterYAxis.GetValue() > 0 && !DCLCharacterController.i.isRunning)
             {
                 currentDampingDelay += Time.deltaTime;
 
