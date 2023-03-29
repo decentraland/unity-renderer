@@ -10,11 +10,12 @@ using System.Threading;
 
 public class TeleportPromptHUDController : IHUD
 {
-    const string TELEPORT_COMMAND_MAGIC = "magic";
-    const string TELEPORT_COMMAND_CROWD = "crowd";
+    private const string TELEPORT_COMMAND_MAGIC = "magic";
+    private const string TELEPORT_COMMAND_CROWD = "crowd";
 
-    const string EVENT_STRING_LIVE = "Current event";
-    const string EVENT_STRING_TODAY = "Today @ {0:HH:mm}";
+    private const string EVENT_STRING_LIVE = "Current event";
+    private const string EVENT_STRING_TODAY = "Today @ {0:HH:mm}";
+    private const int INITIAL_ANIMATION_DELAY = 500;
 
     internal TeleportPromptHUDView view { get; private set; }
 
@@ -59,7 +60,7 @@ public class TeleportPromptHUDController : IHUD
                     sceneData = sceneInfo,
                     sceneEvent = null
                 };
-                UniTask.Delay(500, cancellationToken: cancellationToken);
+                UniTask.Delay(INITIAL_ANIMATION_DELAY, cancellationToken: cancellationToken);
                 view.SetLoadingCompleted();
             }
             catch (OperationCanceledException)
@@ -81,10 +82,12 @@ public class TeleportPromptHUDController : IHUD
         SetCoordinatesAsync(current, cancellationToken.Token).Forget();
     }
 
-    private void ChangeVisibility(bool current, bool previous)
-    {
+    private void ChangeVisibility(bool current, bool previous) =>
         SetVisibility(current);
-        if (current)
+
+    public void SetVisibility(bool visible)
+    {
+        if (visible)
         {
             view.SetInAnimation();
             AudioScriptableObjects.fadeIn.Play(true);
@@ -95,10 +98,6 @@ public class TeleportPromptHUDController : IHUD
             view.SetOutAnimation();
             view.Reset();
         }
-    }
-
-    public void SetVisibility(bool visible)
-    {
     }
 
     public void RequestTeleport(string teleportDataJson)
@@ -175,9 +174,8 @@ public class TeleportPromptHUDController : IHUD
                 DCL.Environment.i.world.teleportController.GoToMagic();
                 break;
             default:
-                int x, y;
                 string[] coordSplit = teleportData.destination.Split(',');
-                if (coordSplit.Length == 2 && int.TryParse(coordSplit[0], out x) && int.TryParse(coordSplit[1], out y))
+                if (coordSplit.Length == 2 && int.TryParse(coordSplit[0], out int x) && int.TryParse(coordSplit[1], out int y))
                 {
                     DCL.Environment.i.world.teleportController.Teleport(x, y);
                 }
