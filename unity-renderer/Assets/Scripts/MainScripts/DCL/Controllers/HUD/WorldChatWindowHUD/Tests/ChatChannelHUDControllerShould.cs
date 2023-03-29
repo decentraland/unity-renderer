@@ -131,6 +131,15 @@ namespace DCL.Chat.HUD
         [Test]
         public void MarkMessagesAsSeenOnlyOnceWhenReceivedManyMessages()
         {
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "user",
+                name = "userName",
+            });
+
+            userProfileBridge.Get("user").Returns(senderUserProfile);
+
             controller.SetVisibility(true);
             view.IsActive.Returns(true);
             chatController.ClearReceivedCalls();
