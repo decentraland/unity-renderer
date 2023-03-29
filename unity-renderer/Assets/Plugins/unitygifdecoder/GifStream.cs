@@ -239,12 +239,17 @@ namespace ThreeDISevenZeroR.UnityGifDecoder
             firstFrameStartPosition = -1;
             currentStream.Read(headerBuffer, 0, headerBuffer.Length);
 
-            if(BitUtils.CheckString(headerBuffer, "GIF87a")) 
+            if(BitUtils.CheckString(headerBuffer, "GIF87a"))
                 header.version = GifVersion.Gif87a;
             else if (BitUtils.CheckString(headerBuffer, "GIF89a"))
                 header.version = GifVersion.Gif89a;
+            else if (BitUtils.CheckString(headerBuffer, "RIFF"))
+                header.version = GifVersion.RIFF;
             else
+            {
                 throw new ArgumentException("Invalid or corrupted Gif file");
+            }
+
 
             // Screen descriptor
             header.width = currentStream.ReadInt16LittleEndian();

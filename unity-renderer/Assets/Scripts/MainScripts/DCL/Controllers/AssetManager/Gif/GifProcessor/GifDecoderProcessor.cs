@@ -63,7 +63,6 @@ namespace DCL
             }
             catch (Exception e) when (!(e is OperationCanceledException))
             {
-                Debug.LogException(e);
                 fail(e);
             }
         }

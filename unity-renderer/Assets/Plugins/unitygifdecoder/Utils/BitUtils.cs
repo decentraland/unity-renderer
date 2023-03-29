@@ -8,9 +8,10 @@ namespace ThreeDISevenZeroR.UnityGifDecoder.Utils
     {
         public static bool CheckString(byte[] array, string s)
         {
+            var stringLength = s.Length;
             for (var i = 0; i < array.Length; i++)
             {
-                if (array[i] != s[i])
+                if (stringLength > i && array[i] != s[i])
                     return false;
             }
 
