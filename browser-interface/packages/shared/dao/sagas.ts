@@ -172,7 +172,9 @@ function* selectRealm() {
     // cached in local storage
     (yield call(getRealmFromLocalStorage, network))
 
-  if (!realm) debugger
+  if (!realm) {
+    BringDownClientAndReportFatalError(new Error('No valid realm found'), 'comms#init')
+  }
 
   console.log(`Trying to connect to realm `, realm)
 
