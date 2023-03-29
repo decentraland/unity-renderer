@@ -20,6 +20,7 @@ import { getSpatialParamsFor } from 'shared/voiceChat/utils'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import Html from './Html'
 import { startLoopback } from './loopback'
+import { DEBUG_VOICE_CHAT } from 'config'
 
 type ParticipantInfo = {
   participant: RemoteParticipant
@@ -79,7 +80,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
         }
       })
 
-      logger.info('Adding participant', participant.identity)
+      if (DEBUG_VOICE_CHAT) logger.info('Adding participant', participant.identity)
     }
 
     return $
@@ -115,7 +116,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
   }
 
   function setupAudioTrackForRemoteTrack(track: RemoteAudioTrack): ParticipantTrack {
-    logger.info('Adding media track', track.sid)
+    if (DEBUG_VOICE_CHAT) logger.info('Adding media track', track.sid)
     const streamNode = audioContext.createMediaStreamSource(track.mediaStream!)
     const panNode = audioContext.createPanner()
 
@@ -139,7 +140,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
   }
 
   function disconnectParticipantTrack(participantTrack: ParticipantTrack) {
-    logger.info('Disconnecting media track', participantTrack.track.sid)
+    if (DEBUG_VOICE_CHAT) logger.info('Disconnecting media track', participantTrack.track.sid)
     participantTrack.panNode.disconnect()
     participantTrack.streamNode.disconnect()
     participantTrack.track.stop()
@@ -164,7 +165,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
   }
 
   async function handleDisconnect() {
-    logger.log('HANDLER DISCONNECTED')
+    if (DEBUG_VOICE_CHAT) logger.log('Handler Disconnect')
 
     room
       .off(RoomEvent.Disconnected, handleDisconnect)
@@ -199,7 +200,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     // remove tracks from all attached elements
     const participantInfo = participantsInfo.get(userId)
     if (participantInfo) {
-      logger.info('Removing participant', userId)
+      if (DEBUG_VOICE_CHAT) logger.info('Removing participant', userId)
       for (const [trackId, participantTrack] of participantInfo.tracks) {
         try {
           disconnectParticipantTrack(participantTrack)
@@ -249,17 +250,8 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     .on(RoomEvent.MediaDevicesError, handleMediaDevicesError)
     .on(RoomEvent.ParticipantConnected, addParticipant)
     .on(RoomEvent.ParticipantDisconnected, removeParticipant)
-    .on(RoomEvent.RoomMetadataChanged, function (...args) {
-      logger.log('RoomMetadataChanged', args)
-    })
     .on(RoomEvent.Reconnected, function (..._args) {
       reconnectAllParticipants()
-    })
-    .on(RoomEvent.MediaDevicesChanged, function (...args) {
-      logger.log('MediaDevicesChanged', args)
-    })
-    .on(RoomEvent.ParticipantMetadataChanged, function (...args) {
-      logger.log('ParticipantMetadataChanged', args)
     })
 
   if (audioContext.state !== 'running') await audioContext.resume()
