@@ -87,6 +87,8 @@ export function BringDownClientAndReportFatalError(
 ) {
   let sagaStack: string | undefined = payload['sagaStack']
 
+  debugger
+
   if (sagaStack) {
     // first stringify
     sagaStack = '' + sagaStack
