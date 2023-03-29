@@ -4,7 +4,7 @@ import mitt from 'mitt'
 import {
   Payload,
   TransportServiceDefinition
-} from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/transport.gen'
+} from 'shared/protocol/decentraland/renderer/renderer_services/transport.gen'
 import { createRendererProtocolInverseRpcServer } from '../inverseRpc/rpcServer'
 import { AsyncQueue } from '@well-known-components/pushable-channel'
 import defaultLogger from 'lib/logger'

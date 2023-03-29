@@ -7,6 +7,7 @@ namespace DCL.Social.Friends
         public FriendRequestErrorCodes ErrorCode { get; }
 
         public FriendshipException(FriendRequestErrorCodes errorCode)
+            : base($"Error code: {errorCode}")
         {
             ErrorCode = errorCode;
         }

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package decentraland.renderer.renderer_services;
+
+message CRDTManyMessages {
+  option deprecated = true;
+  string scene_id = 1;
+  bytes	payload = 2;
+  int32 scene_number = 3;
+}
+
+message CRDTResponse {
+  option deprecated = true;
+}
+
+message PullCRDTRequest {
+  option deprecated = true;
+  string scene_id = 1;
+  int32  scene_number = 3;
+}
+
+service CRDTService {
+  rpc SendCrdt(CRDTManyMessages) returns (CRDTResponse){
+    option deprecated = true;
+  };
+  rpc PullCrdt(PullCRDTRequest) returns (CRDTManyMessages){
+    option deprecated = true;
+  };
+}

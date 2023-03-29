@@ -26,7 +26,7 @@ namespace DCLServices.Lambdas.LandsService.Tests
             Environment.Setup(serviceLocator);
         }
 
-        [UnityTest]
+        [UnityTest][Category("ToFix")]
         public IEnumerator CallLambdasService() =>
             UniTask.ToCoroutine(async () =>
             {

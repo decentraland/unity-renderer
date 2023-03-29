@@ -40,6 +40,10 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The CameraMode component can be used to determine whether the player is using a first-person o 
+  /// third-person view.
+  /// </summary>
   public sealed partial class PBCameraMode : pb::IMessage<PBCameraMode>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -87,6 +91,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "mode" field.</summary>
     public const int ModeFieldNumber = 1;
     private global::DCL.ECSComponents.CameraType mode_ = global::DCL.ECSComponents.CameraType.CtFirstPerson;
+    /// <summary>
+    /// the camera type (1st-person or 3rd-person)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.CameraType Mode {

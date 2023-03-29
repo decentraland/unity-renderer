@@ -9,9 +9,9 @@ import type {
   SendAsyncResponse,
   SignMessageRequest,
   SignMessageResponse
-} from '@dcl/protocol/out-ts/decentraland/kernel/apis/ethereum_controller.gen'
-import { EthereumControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/ethereum_controller.gen'
-import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
+} from 'shared/protocol/decentraland/kernel/apis/ethereum_controller.gen'
+import { EthereumControllerServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/ethereum_controller.gen'
+import { PermissionItem } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import type { RpcServerPort } from '@dcl/rpc/dist/types'
 import * as EthService from 'lib/web3/EthereumService'
