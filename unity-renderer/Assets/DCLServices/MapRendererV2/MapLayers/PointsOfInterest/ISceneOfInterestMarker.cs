@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 {
-    internal interface ISceneOfInterestMarker : IMapPositionProvider, IDisposable
+    internal interface ISceneOfInterestMarker : IMapRendererMarker, IMapPositionProvider, IDisposable
     {
         bool IsVisible { get; }
 

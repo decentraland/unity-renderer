@@ -33,12 +33,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
             if (Vector3.SqrMagnitude(newPos - lastPlayerPosition) < SQR_DISTANCE_TOLERANCE)
                 return;
 
-            UpdateCameraPosition(cameraController, newPos);
-        }
-
-        public static void UpdateCameraPosition(IMapCameraController cameraController, Vector3 playerPos)
-        {
-            var newCoords = DCL.Helpers.Utils.WorldToGridPositionUnclamped(playerPos);
+            var newCoords = DCL.Helpers.Utils.WorldToGridPositionUnclamped(newPos);
             cameraController.SetPosition(newCoords);
         }
 

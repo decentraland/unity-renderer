@@ -1,9 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Environment = DCL.Environment;
 
 namespace DCLServices.MapRendererV2.TestScene
 {
@@ -13,8 +14,11 @@ namespace DCLServices.MapRendererV2.TestScene
         private MapRendererTestScene testScene;
 
         private static IReadOnlyList<IMapRendererTestSceneElementProvider> elementProviders;
+        private static IReadOnlyList<IMapRendererTestSceneGUIProvider> sceneGUIProviders;
 
         private VisualElement root;
+
+        private bool environmentSetupCompleted;
 
         private void OnEnable()
         {
@@ -26,15 +30,15 @@ namespace DCLServices.MapRendererV2.TestScene
             if (testScene.initialized)
                 return;
 
-            var (serviceLocator, elementsProviders) =
-                MapRendererTestSceneServiceLocatorFactory.Create(testScene.container, testScene.parcelSize, testScene.atlasChunkSize);
+            var (serviceLocator, elementsProviders, sceneGUIProviders) =
+                MapRendererTestSceneServiceLocatorFactory.Create(testScene.container, testScene.parcelSize, testScene.atlasChunkSize, testScene.cullingBoundsInParcels);
 
             elementProviders = elementsProviders;
-
-            testScene.initialized = true;
+            MapRendererTestSceneInspector.sceneGUIProviders = sceneGUIProviders;
 
             await Environment.SetupAsync(serviceLocator);
 
+            testScene.initialized = true;
             DrawControls();
         }
 
@@ -57,6 +61,16 @@ namespace DCLServices.MapRendererV2.TestScene
                 group.Add(elementProvider.GetElement());
                 root.Add(group);
             }
+        }
+
+        private void OnSceneGUI()
+        {
+            if (!Application.isPlaying) return;
+            if (!testScene.initialized) return;
+            if (sceneGUIProviders == null) return;
+
+            foreach (IMapRendererTestSceneGUIProvider guiProvider in sceneGUIProviders)
+                guiProvider.OnSceneGUI();
         }
 
         public override VisualElement CreateInspectorGUI()

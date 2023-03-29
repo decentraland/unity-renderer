@@ -1,5 +1,6 @@
 ﻿using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.Culling;
+using MainScripts.DCL.Helpers.Utils;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -13,13 +14,15 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 
         public bool IsVisible => poolableBehavior.isVisible;
 
+        public Vector2 Pivot => poolableBehavior.objectsPool.Prefab.pivot;
+
         internal string title { get; private set; }
 
         private MapMarkerPoolableBehavior<SceneOfInterestMarkerObject> poolableBehavior;
 
         private readonly IMapCullingController cullingController;
 
-        public SceneOfInterestMarker(IObjectPool<SceneOfInterestMarkerObject> objectsPool, IMapCullingController cullingController)
+        public SceneOfInterestMarker(IUnityObjectPool<SceneOfInterestMarkerObject> objectsPool, IMapCullingController cullingController)
         {
             poolableBehavior = new MapMarkerPoolableBehavior<SceneOfInterestMarkerObject>(objectsPool);
             this.cullingController = cullingController;

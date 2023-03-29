@@ -23,6 +23,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
     {
         private readonly int parcelSize;
         private readonly int atlasChunkSize;
+        private readonly float cullingBounds;
+
         private const string ATLAS_CHUNK_ADDRESS = "AtlasChunk";
         private const string MAP_CONFIGURATION_ADDRESS = "MapRendererConfiguration";
         private const string MAP_CAMERA_OBJECT_ADDRESS = "MapCameraObject";
@@ -31,10 +33,11 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private Service<IAddressableResourceProvider> addressablesProvider;
         private Service<IHotScenesFetcher> hotScenesFetcher;
 
-        public MapRendererChunkComponentsFactory(int parcelSize, int atlasChunkSize)
+        public MapRendererChunkComponentsFactory(int parcelSize, int atlasChunkSize, float cullingBounds)
         {
             this.parcelSize = parcelSize;
             this.atlasChunkSize = atlasChunkSize;
+            this.cullingBounds = cullingBounds;
         }
 
         internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; }
@@ -47,11 +50,10 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         async UniTask<MapRendererComponents> IMapRendererComponentsFactory.Create(CancellationToken cancellationToken)
         {
-            var configuration = Object.Instantiate(await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken));
+            var configuration = Object.Instantiate(await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken), new Vector3(10000, 10000, 0), Quaternion.identity);
             var coordsUtils = new ChunkCoordsUtils(parcelSize);
 
-            // TODO implement Culling Controller
-            IMapCullingController cullingController = new MapCullingController(new DummyMapCullingControllerVisibilityChecker());
+            IMapCullingController cullingController = new MapCullingController(new MapCullingRectVisibilityChecker(cullingBounds * parcelSize));
 
             var highlightMarkerPrefab = await GetParcelHighlightMarkerPrefab(cancellationToken);
 

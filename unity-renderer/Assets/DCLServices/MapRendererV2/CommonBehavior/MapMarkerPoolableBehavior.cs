@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MainScripts.DCL.Helpers.Utils;
+using UnityEngine;
 using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.CommonBehavior
@@ -8,7 +9,7 @@ namespace DCLServices.MapRendererV2.CommonBehavior
     /// </summary>
     internal struct MapMarkerPoolableBehavior<T> where T : MonoBehaviour
     {
-        private readonly IObjectPool<T> objectsPool;
+        internal readonly IUnityObjectPool<T> objectsPool;
 
         internal T instance { get; private set; }
 
@@ -16,7 +17,7 @@ namespace DCLServices.MapRendererV2.CommonBehavior
 
         internal Vector3 currentPosition { get; private set; }
 
-        internal MapMarkerPoolableBehavior(IObjectPool<T> objectsPool) : this()
+        internal MapMarkerPoolableBehavior(IUnityObjectPool<T> objectsPool) : this()
         {
             this.objectsPool = objectsPool;
         }

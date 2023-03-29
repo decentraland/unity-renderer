@@ -30,19 +30,16 @@ namespace DCLServices.MapRendererV2.MapCameraController
             this.camera = camera;
         }
 
-        public void HighlightParcel(Vector2 normalizedCoordinates)
+        public void HighlightParcel(Vector2Int parcel)
         {
             if (marker == null)
                 return;
 
-            var localPosition = GetLocalPosition(normalizedCoordinates);
-            var mapCoords = coordsUtils.PositionToCoords(localPosition);
-
             // make position discrete
-            localPosition = coordsUtils.CoordsToPosition(mapCoords, marker);
+            var localPosition = coordsUtils.CoordsToPosition(parcel, marker);
 
             marker.Activate();
-            marker.SetCoordinates(mapCoords, localPosition);
+            marker.SetCoordinates(parcel, localPosition);
         }
 
         public void Initialize(MapLayer layers)
@@ -61,8 +58,19 @@ namespace DCLServices.MapRendererV2.MapCameraController
             marker.Deactivate();
         }
 
-        public Vector2Int GetParcel(Vector2 normalizedCoordinates) =>
-            coordsUtils.PositionToCoords(GetLocalPosition(normalizedCoordinates));
+        public bool TryGetParcel(Vector2 normalizedCoordinates, out Vector2Int parcel) =>
+            coordsUtils.TryGetCoordsWithinInteractableBounds(GetLocalPosition(normalizedCoordinates), out parcel);
+
+        public Vector2 GetNormalizedPosition(Vector2Int parcel)
+        {
+            var discreteLocalPosition = coordsUtils.CoordsToPosition(parcel);
+
+            // Convert local Position to viewPort
+            var worldPosition = cameraParent ? cameraParent.TransformPoint(discreteLocalPosition) : discreteLocalPosition;
+            var viewPortPosition = camera.WorldToViewportPoint(worldPosition);
+
+            return viewPortPosition;
+        }
 
         private Vector3 GetLocalPosition(Vector2 normalizedCoordinates)
         {
@@ -76,7 +84,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void Dispose()
         {
-            Release();
+
         }
 
         public void Release()

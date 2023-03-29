@@ -61,7 +61,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
         public void ActivateOnHighlight()
         {
             controller.Initialize(MapLayer.ParcelHoverHighlight);
-            controller.HighlightParcel(new Vector2(0.5f, 0.5f));
+            controller.HighlightParcel(new Vector2Int(0, 0));
 
             marker.Received(1).Activate();
         }
@@ -73,7 +73,9 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             camera.transform.localPosition = cameraPos;
 
             controller.Initialize(MapLayer.ParcelHoverHighlight);
-            controller.HighlightParcel(norm);
+
+            Assert.IsTrue(controller.TryGetParcel(norm, out var parcel));
+            controller.HighlightParcel(parcel);
 
             marker.Received(1).SetCoordinates(Arg.Any<Vector2Int>(), expected);
         }

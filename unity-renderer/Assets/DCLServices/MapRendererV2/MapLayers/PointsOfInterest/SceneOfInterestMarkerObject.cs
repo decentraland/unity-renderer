@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 {
-    internal class SceneOfInterestMarkerObject : MonoBehaviour
+    internal class SceneOfInterestMarkerObject : MapRendererMarkerBase
     {
         [field: SerializeField]
         internal TextMeshPro title { get; set; }

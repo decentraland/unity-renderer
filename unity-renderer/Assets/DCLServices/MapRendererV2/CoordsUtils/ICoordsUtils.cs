@@ -7,18 +7,26 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector2Int WorldMinCoords { get; }
         public Vector2Int WorldMaxCoords { get; }
 
-        public int ParcelSize { get; }
+        /// <summary>
+        /// World bounds visible on the map
+        /// </summary>
+        Rect VisibleWorldBounds { get; }
 
-        public Vector2Int PositionToCoords(Vector3 pos);
+        int ParcelSize { get; }
 
-        public Vector2Int? PositionToCoordsInWorld(Vector3 pos);
+        /// <summary>
+        /// Clamps position within interactable bounds
+        /// </summary>
+        bool TryGetCoordsWithinInteractableBounds(Vector3 pos, out Vector2Int coords);
 
-        public bool IsInsideWorldCoords(Vector2Int coords);
+        Vector2Int PositionToCoords(Vector3 pos);
 
-        public Vector3 CoordsToPositionUnclamped(Vector2 coords);
+        Vector2 PositionToCoordsUnclamped(Vector3 pos);
 
-        public Vector3 CoordsToPosition(Vector2Int coords);
+        Vector3 CoordsToPositionUnclamped(Vector2 coords);
 
-        public Vector3 CoordsToPositionWithOffset(Vector2 coords);
+        Vector3 CoordsToPosition(Vector2Int coords);
+
+        Vector3 CoordsToPositionWithOffset(Vector2 coords);
     }
 }

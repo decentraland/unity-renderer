@@ -16,7 +16,6 @@
 .renderTexturePreview {
     margin-top: 5px;
     margin-bottom: 5px;
-    max-width: 256px;
-    max-height: 256px;
+    max-height: 378px;
     align-self: center;
 }

@@ -1,5 +1,6 @@
 ﻿using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers.PointsOfInterest;
+using MainScripts.DCL.Helpers.Utils;
 using NSubstitute;
 using NUnit.Framework;
 using System.IO;
@@ -14,13 +15,13 @@ namespace DCLServices.MapRendererV2.Tests.PointsOfInterest
     public class SceneOfInterestMarkerShould
     {
         private SceneOfInterestMarker marker;
-        private IObjectPool<SceneOfInterestMarkerObject> objectPool;
+        private IUnityObjectPool<SceneOfInterestMarkerObject> objectPool;
         private IMapCullingController mapCullingController;
 
         [SetUp]
         public void Setup()
         {
-            objectPool = Substitute.For<IObjectPool<SceneOfInterestMarkerObject>>();
+            objectPool = Substitute.For<IUnityObjectPool<SceneOfInterestMarkerObject>>();
 
             var obj = new GameObject("TEST");
             var c = obj.AddComponent<SceneOfInterestMarkerObject>();

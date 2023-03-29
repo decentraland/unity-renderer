@@ -15,7 +15,7 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         private const string EMPTY_PARCEL_NAME = "Empty parcel";
 
         internal delegate ISceneOfInterestMarker SceneOfInterestMarkerBuilder(
-            IObjectPool<SceneOfInterestMarkerObject> objectsPool,
+            IUnityObjectPool<SceneOfInterestMarkerObject> objectsPool,
             IMapCullingController cullingController);
 
         private readonly MinimapMetadata minimapMetadata;
@@ -43,6 +43,9 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         public UniTask Initialize(CancellationToken cancellationToken)
         {
             // non-blocking retrieval of scenes of interest happens independently on the minimap rendering
+            foreach (MinimapMetadata.MinimapSceneInfo sceneInfo in minimapMetadata.SceneInfos)
+                OnMinimapSceneInfoUpdated(sceneInfo);
+
             minimapMetadata.OnSceneInfoUpdated += OnMinimapSceneInfoUpdated;
             return objectsPool.PrewarmAsync(prewarmCount, PREWARM_PER_FRAME, LinkWithDisposeToken(cancellationToken).Token);
         }
@@ -84,11 +87,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
             if (IsEmptyParcel(sceneInfo))
                 return;
 
-            var centerParcel = GetParcelsCenter(sceneInfo);
-
-            var position = coordsUtils.CoordsToPosition(centerParcel);
-
             var marker = builder(objectsPool, mapCullingController);
+
+            var centerParcel = GetParcelsCenter(sceneInfo);
+            var position = coordsUtils.CoordsToPosition(centerParcel, marker);
+
             marker.SetData(sceneInfo.name, position);
 
             markers.Add(sceneInfo, marker);

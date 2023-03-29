@@ -6,6 +6,6 @@ namespace DCLServices.MapRendererV2.Culling
     internal class CameraState
     {
         public IMapCameraControllerInternal CameraController;
-        public Plane[] FrustumPlanes;
+        public Rect Rect;
     }
 }

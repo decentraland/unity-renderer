@@ -18,6 +18,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         void SetActive(bool active);
 
-        void GetFrustumPlanes(Plane[] planes);
+        Rect GetCameraRect();
     }
 }
