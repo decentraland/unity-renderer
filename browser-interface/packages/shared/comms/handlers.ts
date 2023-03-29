@@ -31,6 +31,7 @@ import {
 } from './peers'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
+import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
 
 type PingRequest = {
   alias: number
@@ -92,12 +93,13 @@ export async function requestProfileFromPeers(
 
 function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConnection) {
   store.dispatch(handleRoomDisconnection(room))
+
   // when we are kicked, the explorer should re-load, or maybe go to offline~offline realm
   if (data.kicked) {
-    const url = new URL(document.location.toString())
-    url.search = ''
-    url.searchParams.set('disconnection-reason', 'logged-in-somewhere-else')
-    document.location = url.toString()
+    const error = new Error(
+      'Disconnected from realm as the user id is already taken. Please make sure you are not logged into the world through another tab'
+    )
+    BringDownClientAndReportFatalError(error, ErrorContext.COMMS_INIT)
   }
 }
 
