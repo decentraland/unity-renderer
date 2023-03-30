@@ -22,8 +22,6 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            // Debug.Log("FD:: asset.processor is null? " + asset.processor == null );
-
             tokenSource = new CancellationTokenSource();
             IGifProcessor processor;
 
