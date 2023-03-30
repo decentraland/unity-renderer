@@ -9,8 +9,6 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
     [RequireComponent(typeof(RectTransform))]
     public class PixelPerfectMapRendererTextureProvider : MonoBehaviour
     {
-        [SerializeField] private int maxHeight = 1440;
-
         [NonSerialized]
         private RectTransform cachedRectTransform;
         private RectTransform rectTransform => cachedRectTransform ??= (RectTransform)transform;
@@ -52,8 +50,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
             Vector2 topRight = RectTransformUtility.WorldToScreenPoint(hudCamera, worldCorners[2]);
 
             var screenSize = topRight - bottomLeft;
-            var textureHeight = (int) Mathf.Min(screenSize.y, maxHeight);
-            return new Vector2Int((int) (textureHeight * ratio), textureHeight);
+            return new Vector2Int((int) screenSize.x, (int) screenSize.y);
         }
 
         private void OnRectTransformDimensionsChange()

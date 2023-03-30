@@ -8,7 +8,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 {
     internal readonly struct MapRendererComponents
     {
-        public readonly MapRendererConfiguration configurationInstance;
+        public readonly MapRendererConfiguration ConfigurationInstance;
         public readonly IReadOnlyDictionary<MapLayer, IMapLayerController> Layers;
         public readonly IMapCullingController CullingController;
         public readonly IObjectPool<IMapCameraControllerInternal> MapCameraControllers;
@@ -16,7 +16,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         public MapRendererComponents(MapRendererConfiguration configurationInstance, IReadOnlyDictionary<MapLayer, IMapLayerController> layers,
             IMapCullingController cullingController, IObjectPool<IMapCameraControllerInternal> mapCameraControllers)
         {
-            this.configurationInstance = configurationInstance;
+            ConfigurationInstance = configurationInstance;
             Layers = layers;
             CullingController = cullingController;
             MapCameraControllers = mapCameraControllers;

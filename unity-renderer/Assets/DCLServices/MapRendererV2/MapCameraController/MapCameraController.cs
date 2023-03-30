@@ -11,7 +11,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
     {
         private const float CAMERA_HEIGHT = 0;
 
-        private const int MAX_TEXTURE_SIZE = 2048;
+        private const int MAX_TEXTURE_SIZE = 4096;
 
         public event Action<IMapCameraControllerInternal> OnReleasing;
 

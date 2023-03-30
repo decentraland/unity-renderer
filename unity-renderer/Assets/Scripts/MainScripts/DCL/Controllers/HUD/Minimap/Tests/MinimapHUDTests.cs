@@ -1,3 +1,5 @@
+using DCL;
+using DCLServices.MapRendererV2;
 using NUnit.Framework;
 using System.Collections;
 using TMPro;
@@ -17,6 +19,16 @@ namespace Tests
             yield return base.SetUp();
             controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i);
             controller.Initialize();
+        }
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            var result = base.InitializeServiceLocator();
+
+            var mapRenderer = Substitute.For<IMapRenderer>();
+            result.Register<IMapRenderer>(() => mapRenderer);
+
+            return result;
         }
 
         protected override IEnumerator TearDown()
@@ -58,13 +70,13 @@ namespace Tests
             var view = controller.view;
             Assert.AreEqual(sceneName, Reflection_GetField<TextMeshProUGUI>(view, "sceneNameText").text);
         }
-        
+
         [Test]
         public void MinimapHUD_ReportScene()
         {
             controller.ToggleOptions();
             controller.view.reportSceneButton.onClick.Invoke();
-            
+
             Assert.IsFalse(controller.view.sceneOptionsPanel.activeSelf);
         }
 

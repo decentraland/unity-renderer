@@ -57,7 +57,7 @@ namespace DCLServices.MapRendererV2
                 var components = await componentsFactory.Create(cancellationToken);
                 cullingController = components.CullingController;
                 mapCameraPool = components.MapCameraControllers;
-                configurationInstance = components.configurationInstance;
+                configurationInstance = components.ConfigurationInstance;
 
                 foreach (var pair in components.Layers)
                     layers[pair.Key] = new MapLayerStatus(pair.Value);

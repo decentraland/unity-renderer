@@ -4,6 +4,7 @@ using DCL;
 using DCL.Providers;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.MapRendererV2;
 using DCLServices.WearablesCatalogService;
 using NUnit.Framework;
 using NSubstitute;
@@ -36,6 +37,7 @@ namespace Tests
         {
             var serviceLocator = base.InitializeServiceLocator();
             serviceLocator.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            serviceLocator.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
             return serviceLocator;
         }
 
