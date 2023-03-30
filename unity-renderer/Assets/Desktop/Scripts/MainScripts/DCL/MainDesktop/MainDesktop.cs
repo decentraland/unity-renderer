@@ -92,6 +92,8 @@ namespace DCL
 
         protected override void Dispose()
         {
+            SettingsDesktop.i.displaySettings.Save();
+
             try
             {
                 DataStore.i.wsCommunication.communicationEstablished.OnChange -= OnCommunicationEstablished;
