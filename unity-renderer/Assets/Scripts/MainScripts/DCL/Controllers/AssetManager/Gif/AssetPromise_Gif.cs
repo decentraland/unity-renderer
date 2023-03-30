@@ -23,9 +23,19 @@ namespace DCL
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             tokenSource = new CancellationTokenSource();
-            IGifProcessor processor = GetGifProcessor();
+            IGifProcessor processor;
+
+            if (asset.processor == null)
+            {
+                processor = GetGifProcessor();
+                asset.processor = processor;
+            }
+            else
+            {
+                processor = asset.processor;
+            }
             onSuccsess = OnSuccess;
-            asset.processor = processor;
+
             CancellationToken token = tokenSource.Token;
 
             processor.Load(OnLoadSuccsess, OnFail, token)
