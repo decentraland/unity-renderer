@@ -1,4 +1,5 @@
 using DCL.CameraTool;
+using DCL.Configuration;
 using DCL.Helpers;
 using DCL.UIElements.Structures;
 using Google.Protobuf.Collections;
@@ -168,5 +169,43 @@ namespace DCL.ECSComponents
                        _ => DCLImageScaleMode.STRETCH
                    };
         }
+
+        public static int SDKCollisionMaskToUnityLayerMask(uint sdkLayerMask)
+        {
+            bool hasPhysicsLayer = false;
+            bool hasPointerLayer = false;
+            int unityLayerMask = new LayerMask();
+
+            if (IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClPointer))
+            {
+                unityLayerMask |= (1 << PhysicsLayers.onPointerEventLayer);
+                hasPointerLayer = true;
+            }
+
+            if (IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClPhysics))
+            {
+                unityLayerMask |= (1 << PhysicsLayers.characterOnlyLayer);
+                hasPhysicsLayer = true;
+            }
+
+            if(hasPointerLayer && hasPhysicsLayer)
+                unityLayerMask |= (1 << PhysicsLayers.defaultLayer);
+
+            if (IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom1)
+                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom2)
+                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom3)
+                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom4)
+                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom5)
+                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom6)
+                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom7)
+                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom8))
+            {
+                unityLayerMask |= (1 << PhysicsLayers.sdkCustomLayer);
+            }
+
+            return unityLayerMask;
+        }
+
+        private static bool IsInLayerMask(uint layerMask, int layer) => (layer & layerMask) != 0;
     }
 }

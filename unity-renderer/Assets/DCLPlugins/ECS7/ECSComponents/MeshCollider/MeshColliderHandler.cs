@@ -105,6 +105,7 @@ namespace DCL.ECSComponents
                 colliderGameObject.SetActive(true);
             }
 
+            const int noLayer = (int)ColliderLayer.ClNone;
             const int physicsLayer = (int)ColliderLayer.ClPhysics;
             const int pointerLayer = (int)ColliderLayer.ClPointer;
             const int pointerAndPhysicsMask = physicsLayer | pointerLayer;
@@ -123,9 +124,13 @@ namespace DCL.ECSComponents
             {
                 colliderGameObject.layer = PhysicsLayers.onPointerEventLayer;
             }
-            else if (collider != null)
+            else if ((colliderLayer & noLayer) == noLayer && collider != null)
             {
                 colliderGameObject.SetActive(false);
+            }
+            else
+            {
+                colliderGameObject.layer = PhysicsLayers.sdkCustomLayer;
             }
         }
 

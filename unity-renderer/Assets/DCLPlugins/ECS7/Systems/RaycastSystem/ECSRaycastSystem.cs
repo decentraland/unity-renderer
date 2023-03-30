@@ -15,8 +15,6 @@ namespace ECSSystems.ECSRaycastSystem
 {
     public class ECSRaycastSystem
     {
-        private readonly LayerMask raycastLayerMaskTarget = ~(1 << PhysicsLayers.onPointerEventLayer);
-
         private readonly ECSComponent<PBRaycast> raycastComponent;
         private readonly ECSComponent<PBRaycastResult> raycastResultComponent;
         private readonly IECSComponentWriter componentWriter;
@@ -67,11 +65,12 @@ namespace ECSSystems.ECSRaycastSystem
                     Timestamp = model.Timestamp
                 };
 
-                // TODO: deal with model.CollisionMask
-                // if (model.HasCollisionMask)
-                // {
-                //     raycastLayerMaskTarget = raycastLayerMaskTarget.value | model.CollisionMask;
-                // }
+                // Hit everything by default
+                int raycastLayerMaskTarget = PhysicsLayers.onPointerEventLayer | PhysicsLayers.characterOnlyLayer | PhysicsLayers.sdkCustomLayer;
+                if (model.HasCollisionMask)
+                    raycastLayerMaskTarget = ProtoConvertUtils.SDKCollisionMaskToUnityLayerMask(model.CollisionMask);
+
+                // TODO: Deal with possibly more than one object in line, with custom collider layer, using always RaycastAll...
 
                 RaycastHit[] hits = null;
                 if (model.QueryType == RaycastQueryType.RqtHitFirst)
