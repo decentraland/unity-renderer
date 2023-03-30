@@ -14,15 +14,6 @@ public class MapTexturePlugin : IPlugin
 
     private CancellationTokenSource cts;
 
-    private static readonly TextureFormat?[] PRIORITIZED_FORMATS =
-    {
-        // available for iOS/Android WebGL player
-        TextureFormat.ETC2_RGBA8,
-        TextureFormat.BC7,
-        TextureFormat.DXT5,
-        TextureFormat.RGBA32
-    };
-
     public MapTexturePlugin()
     {
         cts = new CancellationTokenSource();
