@@ -196,7 +196,8 @@ namespace DCL.Components
                 loadableShape.initialVisibility = initialVisibility;
 
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
-                RequestSizeInMB(loadableShape.GetDestinationURL());
+                if(!string.IsNullOrEmpty(loadableShape.GetDestinationURL()))
+                    RequestSizeInMB(loadableShape.GetDestinationURL());
             }
             else
             {

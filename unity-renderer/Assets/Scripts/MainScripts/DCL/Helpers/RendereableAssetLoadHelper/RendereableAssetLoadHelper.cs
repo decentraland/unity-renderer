@@ -257,7 +257,8 @@ namespace DCL.Components
                 return;
             }
 
-            currentDestinationURL = contentProvider + targetUrl;
+            //ToDO: Check for GLTFs
+            //currentDestinationURL = contentProvider + targetUrl;
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
             gltfPromise.settings = settings;
 
