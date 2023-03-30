@@ -106,6 +106,8 @@ export function BringDownClientAndReportFatalError(
     saga_stack: sagaStack
   })
 
+  store.dispatch(fatalError(error.message || 'fatal error'))
+
   globalObservable.emit('error', {
     error,
     level: 'fatal',
