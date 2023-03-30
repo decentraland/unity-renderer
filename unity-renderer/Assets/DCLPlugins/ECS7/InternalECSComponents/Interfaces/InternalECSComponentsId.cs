@@ -15,4 +15,5 @@ public enum InternalECSComponentsId
     SCENE_BOUNDS_CHECK = 13,
     AUDIO_SOURCE = 14,
     POINTER_EVENTS = 15,
+    REGISTERED_UI_POINTER_EVENTS = 16
 }

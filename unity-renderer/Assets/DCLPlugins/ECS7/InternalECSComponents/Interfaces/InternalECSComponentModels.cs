@@ -153,4 +153,12 @@ namespace DCL.ECS7.InternalComponents
 
         public readonly List<Entry> PointerEvents = new List<Entry>();
     }
+
+    public class InternalRegisteredUiPointerEvents : InternalComponent
+    {
+        public EventCallback<PointerDownEvent> OnPointerDownCallback;
+        public EventCallback<PointerUpEvent> OnPointerUpCallback;
+        public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
+        public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
+    }
 }

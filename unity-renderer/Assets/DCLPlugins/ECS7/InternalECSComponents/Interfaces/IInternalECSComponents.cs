@@ -20,4 +20,5 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
     IInternalECSComponent<InternalAudioSource> audioSourceComponent { get; }
     IInternalECSComponent<InternalPointerEvents> PointerEventsComponent { get; }
+    IInternalECSComponent<InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsComponent { get; }
 }
