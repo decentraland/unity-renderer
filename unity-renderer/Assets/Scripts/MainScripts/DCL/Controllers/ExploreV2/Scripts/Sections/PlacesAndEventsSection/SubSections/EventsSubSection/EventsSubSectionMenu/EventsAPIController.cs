@@ -17,6 +17,8 @@ public interface IEventsAPIController
     /// <returns></returns>
     UniTask GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail);
 
+    UniTask GetDetailedEvent(Action<EventFromAPIModel> OnSuccess, string eventId);
+
     UniTask RegisterParticipation(string eventId);
 
     UniTask RemoveParticipation(string eventId);
@@ -26,6 +28,7 @@ public interface IEventsAPIController
 public class EventsAPIController : IEventsAPIController
 {
     internal const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";
+    private const string URL_GET_DETAILED_EVENT = "https://events.decentraland.org/api/events/{event_id}";
     private const string URL_PARTICIPATE_EVENT = "https://events.decentraland.org/api/events/{event_id}/attendees";
 
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -37,6 +40,13 @@ public class EventsAPIController : IEventsAPIController
         OnSuccess?.Invoke(eventListFromAPIModel.data);
     }
 
+    public async UniTask GetDetailedEvent(Action<EventFromAPIModel> OnSuccess, string eventId)
+    {
+        UnityWebRequest result = await DCL.Environment.i.platform.webRequest.GetAsync(URL_GET_DETAILED_EVENT);
+        EventFromAPIModel eventFromAPIModel = Utils.SafeFromJson<EventFromAPIModel>(result.downloadHandler.text);
+        OnSuccess?.Invoke(eventFromAPIModel);
+    }
+
     public async UniTask RegisterParticipation(string eventId)
     {
         await DCL.Environment.i.platform.webRequest.PostAsync(URL_PARTICIPATE_EVENT.Replace("{event_id}", eventId), "", isSigned: true);
@@ -44,6 +54,6 @@ public class EventsAPIController : IEventsAPIController
 
     public async UniTask RemoveParticipation(string eventId)
     {
-        //await DCL.Environment.i.platform.webRequest.DeleteAsync(URL_PARTICIPATE_EVENT, "{}", isSigned: true);
+        await DCL.Environment.i.platform.webRequest.DeleteAsync(URL_PARTICIPATE_EVENT.Replace("{event_id}", eventId), isSigned: true);
     }
 }

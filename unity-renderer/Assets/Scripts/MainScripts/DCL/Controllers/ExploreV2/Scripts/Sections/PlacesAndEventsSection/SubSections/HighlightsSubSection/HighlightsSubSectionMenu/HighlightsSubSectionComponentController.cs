@@ -206,8 +206,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     private void SubscribeToEvent(string eventId) =>
         eventsAPIApiController.RegisterParticipation(eventId);
 
-    private static void UnsubscribeToEvent(string eventId) =>
-        EventsSubSectionComponentController.UnsubscribeToEvent(eventId);
+    private void UnsubscribeToEvent(string eventId) =>
+        eventsAPIApiController.RemoveParticipation(eventId);
 
     internal void GoToEventsSubSection() =>
         OnGoToEventsSubSection?.Invoke();
