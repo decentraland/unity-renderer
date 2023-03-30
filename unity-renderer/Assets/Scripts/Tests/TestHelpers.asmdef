@@ -18,11 +18,9 @@
         "GUID:1dd0780aa6be12b428c8005d0bee46b8",
         "GUID:a881b57670b1d2747a6d7f9e32b63230",
         "GUID:8e14059e964ca49aeb55d0e7b2b14c3c",
-        "GUID:3f13bd1a926f03a4cab988f06a80c1fd",
         "GUID:b97702e026e0dbd4397dc4013ef9fcb3",
         "GUID:6dacc6cde5056a34c9488c309ca0a18a",
         "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
-        "GUID:86e5747efa9128344bd8e4754db51d3b",
         "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
         "GUID:b308ae946900fa04080222d7daf47d9a",
         "GUID:97d8897529779cb49bebd400c7f402a6",
@@ -45,7 +43,6 @@
         "GUID:5289a39f46259954ca74010d7c9ded16",
         "GUID:ee6523961ef177343ad763fcd55c7c46",
         "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-        "GUID:a1e1473c53889c2489c0822a9dd5fa33",
         "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
         "GUID:301149363e31a4bdaa1943465a825c8e",
         "GUID:0ba1943dc1f942a498c75a357c7c42cf",
@@ -77,7 +74,8 @@
         "GUID:555c1f3c6d18648df910b7a1de75b424",
         "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
         "GUID:c8ea72e806cd2ab47b539b37895b86b7",
-        "GUID:bb3eef89092f71f44aa2449a9cf7879c"
+        "GUID:bb3eef89092f71f44aa2449a9cf7879c",
+        "GUID:d0d87470ef1844e08586dabeb6d672bd"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -87,8 +85,7 @@
         "nunit.framework.dll",
         "Newtonsoft.Json.dll",
         "Google.Protobuf.dll",
-        "NSubstitute.dll",
-        "System.Threading.Tasks.Extensions.dll"
+        "NSubstitute.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

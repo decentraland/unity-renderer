@@ -37,7 +37,6 @@ namespace Tests
         {
             var serviceLocator = base.InitializeServiceLocator();
             serviceLocator.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
-            serviceLocator.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
             return serviceLocator;
         }
 

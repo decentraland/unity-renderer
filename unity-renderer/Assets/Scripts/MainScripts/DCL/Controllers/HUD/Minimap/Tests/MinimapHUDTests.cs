@@ -21,16 +21,6 @@ namespace Tests
             controller.Initialize();
         }
 
-        protected override ServiceLocator InitializeServiceLocator()
-        {
-            var result = base.InitializeServiceLocator();
-
-            var mapRenderer = Substitute.For<IMapRenderer>();
-            result.Register<IMapRenderer>(() => mapRenderer);
-
-            return result;
-        }
-
         protected override IEnumerator TearDown()
         {
             controller.Dispose();
