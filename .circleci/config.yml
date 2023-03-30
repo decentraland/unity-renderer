@@ -69,6 +69,7 @@ references:
     - ./unity-renderer/build-logs.txt
     - ./unity-renderer/ab-logs.txt
     - ./unity-renderer/playmode-results.xml
+    - ./unity-renderer/editmode-results.xml
     - ./unity-renderer/CodeCoverage
     - ./unity-renderer/TestResources/VisualTests
     - ./Builds/
@@ -340,7 +341,7 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-editmode-{{ checksum "../.unitysources-checksum" }}
+            - unity-editmode-v2-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare image
@@ -375,7 +376,7 @@ jobs:
           path: ./unity-renderer/editmode-results.xml
       - save_cache:
           name: Store test cache
-          key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
+          key: unity-editmode-v2-{{ checksum "../.unitysources-checksum" }}
           paths: *CACHED_PATHS
   publish-desktop-artifacts:
     <<: *working_directory_root
