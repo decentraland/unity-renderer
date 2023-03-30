@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace AvatarSystem
 {
     public class Visibility : IVisibility
     {
+        private ProfilerMarker globalConstraintsMarker = new ProfilerMarker("GlobalConstraints");
+
         internal readonly HashSet<string> globalConstrains = new HashSet<string>();
         internal readonly HashSet<string> combinedRendererConstrains = new HashSet<string>();
         internal readonly HashSet<string> facialFeaturesConstrains = new HashSet<string>();
@@ -27,16 +30,22 @@ namespace AvatarSystem
 
         public void AddGlobalConstrain(string key)
         {
+            globalConstraintsMarker.Begin();
             globalConstrains.Add(key);
             UpdateCombinedRendererVisibility();
             UpdateFacialFeatureVisibility();
+            globalConstraintsMarker.End();
         }
 
         public void RemoveGlobalConstrain(string key)
         {
+            globalConstraintsMarker.Begin();
+
             globalConstrains.Remove(key);
             UpdateCombinedRendererVisibility();
             UpdateFacialFeatureVisibility();
+
+            globalConstraintsMarker.End();
         }
 
         public void AddCombinedRendererConstrain(string key)
@@ -62,17 +71,17 @@ namespace AvatarSystem
             facialFeaturesConstrains.Remove(key);
             UpdateFacialFeatureVisibility();
         }
-        
+
         public bool IsGloballyVisible()
         {
             return AreFacialFeaturesVisible() && IsMainRenderVisible();
         }
-        
+
         public bool AreFacialFeaturesVisible()
         {
             return globalConstrains.Count == 0 && facialFeaturesConstrains.Count == 0;
         }
-        
+
         public bool IsMainRenderVisible()
         {
             return globalConstrains.Count == 0 && combinedRendererConstrains.Count == 0;
@@ -89,9 +98,13 @@ namespace AvatarSystem
         internal void UpdateFacialFeatureVisibility()
         {
             if (facialFeatures == null)
+            {
                 return;
+            }
 
             bool facialFeaturesVisibility = globalConstrains.Count == 0 && facialFeaturesConstrains.Count == 0;
+
+            Debug.Log($"Update face -  {facialFeaturesVisibility}, globalC = {globalConstrains.Count}, facialC = {facialFeaturesConstrains.Count}", combinedRenderer.gameObject);
             for (int i = 0; i < facialFeatures.Count; i++)
             {
                 facialFeatures[i].enabled = facialFeaturesVisibility;

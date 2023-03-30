@@ -103,10 +103,15 @@ namespace DCL
                     lodController.SetAnimationThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
 
                     if (distance < simpleAvatarDistance)
+                    {
+                        Debug.Log($"LOD 0 for {lodController.player.collider.gameObject.name}, distance = {distance}", lodController.player.collider.gameObject);
                         lodController.SetLOD0();
+                    }
                     else
+                    {
+                        Debug.Log($"LOD 1 for {lodController.player.collider.gameObject.name}, distance = {distance}", lodController.player.collider.gameObject);
                         lodController.SetLOD1();
-
+                    }
                     avatarsCount++;
 
                     lodController.SetNameVisible(mainCamera == null || overlappingTracker.RegisterPosition(lodController.player.playerName.ScreenSpacePos(mainCamera)));
