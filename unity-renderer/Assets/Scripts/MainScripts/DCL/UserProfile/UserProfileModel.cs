@@ -93,7 +93,9 @@ public class UserProfileModel
 
         if (model.blocked != null && blocked != null)
         {
-            if (!model.blocked.All(blocked.Contains) || model.blocked.Count != blocked.Count)
+            if (model.blocked.Count != blocked.Count ||
+                model.blocked.Except(blocked).Any() ||
+                blocked.Except(model.blocked).Any())
                 return false;
         }
         else if (model.blocked != null || blocked != null)
@@ -101,7 +103,9 @@ public class UserProfileModel
 
         if (model.muted != null && muted != null)
         {
-            if (!model.muted.All(muted.Contains) || model.muted.Count != muted.Count)
+            if (model.muted.Count != muted.Count ||
+                model.muted.Except(muted).Any() ||
+                muted.Except(model.muted).Any())
                 return false;
         }
         else if (model.muted != null || muted != null)
