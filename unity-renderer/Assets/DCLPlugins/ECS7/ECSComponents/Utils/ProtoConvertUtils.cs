@@ -191,14 +191,7 @@ namespace DCL.ECSComponents
             if(hasPointerLayer && hasPhysicsLayer)
                 unityLayerMask |= (1 << PhysicsLayers.defaultLayer);
 
-            if (IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom1)
-                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom2)
-                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom3)
-                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom4)
-                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom5)
-                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom6)
-                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom7)
-                || IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClCustom8))
+            if (LayerMaskHasAnySDKCustomLayer(sdkLayerMask))
             {
                 unityLayerMask |= (1 << PhysicsLayers.sdkCustomLayer);
             }
@@ -206,6 +199,19 @@ namespace DCL.ECSComponents
             return unityLayerMask;
         }
 
-        private static bool IsInLayerMask(uint layerMask, int layer) => (layer & layerMask) != 0;
+        // TODO: Mode to Utils.cs ???
+        public static bool IsInLayerMask(uint layerMask, int layer) => (layer & layerMask) != 0;
+
+        public static bool LayerMaskHasAnySDKCustomLayer(uint layerMask)
+        {
+            return IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom1)
+                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom2)
+                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom3)
+                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom4)
+                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom5)
+                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom6)
+                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom7)
+                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom8);
+        }
     }
 }

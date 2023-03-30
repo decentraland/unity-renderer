@@ -17,26 +17,29 @@ namespace ECSSystems.ECSRaycastSystem
     {
         private readonly ECSComponent<PBRaycast> raycastComponent;
         private readonly ECSComponent<PBRaycastResult> raycastResultComponent;
-        private readonly IECSComponentWriter componentWriter;
+        private readonly ECSComponent<PBMeshCollider> meshCollider;
         private readonly IInternalECSComponent<InternalColliders> physicsColliderComponent;
+        private readonly IECSComponentWriter componentWriter;
 
         public ECSRaycastSystem(
             ECSComponent<PBRaycast> raycastComponent,
             ECSComponent<PBRaycastResult> raycastResultComponent,
-            IECSComponentWriter componentWriter,
-            IInternalECSComponent<InternalColliders> physicsColliderComponent)
+            ECSComponent<PBMeshCollider> meshCollider,
+            IInternalECSComponent<InternalColliders> physicsColliderComponent,
+            IECSComponentWriter componentWriter)
         {
             this.raycastComponent = raycastComponent;
-            this.componentWriter = componentWriter;
-            this.physicsColliderComponent = physicsColliderComponent;
             this.raycastResultComponent = raycastResultComponent;
+            this.meshCollider = meshCollider;
+            this.physicsColliderComponent = physicsColliderComponent;
+            this.componentWriter = componentWriter;
         }
 
         public void Update()
         {
             var raycasts = raycastComponent.Get();
-            int count = raycasts.Count;
-            for (int i = 0; i < count; i++)
+            int raycastsCount = raycasts.Count;
+            for (int i = 0; i < raycastsCount; i++)
             {
                 PBRaycast model = raycasts[i].value.model;
                 IDCLEntity entity = raycasts[i].value.entity;
@@ -66,66 +69,89 @@ namespace ECSSystems.ECSRaycastSystem
                 };
 
                 // Hit everything by default
-                int raycastLayerMaskTarget = PhysicsLayers.onPointerEventLayer | PhysicsLayers.characterOnlyLayer | PhysicsLayers.sdkCustomLayer;
+                bool layerMaskHasSDKCustomLayer = false;
+                int raycastLayerMask = PhysicsLayers.onPointerEventLayer
+                                             | PhysicsLayers.characterOnlyLayer
+                                             | PhysicsLayers.sdkCustomLayer
+                                             | PhysicsLayers.defaultLayer;
+
                 if (model.HasCollisionMask)
-                    raycastLayerMaskTarget = ProtoConvertUtils.SDKCollisionMaskToUnityLayerMask(model.CollisionMask);
+                {
+                    raycastLayerMask = ProtoConvertUtils.SDKCollisionMaskToUnityLayerMask(model.CollisionMask);
+                    layerMaskHasSDKCustomLayer = ProtoConvertUtils.LayerMaskHasAnySDKCustomLayer(model.CollisionMask);
+                }
 
                 // TODO: Deal with possibly more than one object in line, with custom collider layer, using always RaycastAll...
 
                 RaycastHit[] hits = null;
                 if (model.QueryType == RaycastQueryType.RqtHitFirst)
                 {
-                    bool hasHit = Physics.Raycast(ray, out RaycastHit hit, model.MaxDistance, raycastLayerMaskTarget);
-                    if (hasHit)
+                    if (layerMaskHasSDKCustomLayer)
                     {
-                        hits = new RaycastHit[1];
-                        hits[0] = hit;
+                        hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMask);
+                    }
+                    else
+                    {
+                        bool hasHit = Physics.Raycast(ray, out RaycastHit hit, model.MaxDistance, raycastLayerMask);
+                        if (hasHit)
+                        {
+                            hits = new RaycastHit[1];
+                            hits[0] = hit;
+                        }
                     }
                 }
                 else if (model.QueryType == RaycastQueryType.RqtQueryAll)
                 {
-                    hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMaskTarget);
+                    hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMask);
                 }
 
                 if (hits != null)
                 {
                     for (int j = 0; j < hits.Length; j++)
                     {
+                        RaycastHit currentHit = hits[j];
                         IDCLEntity collisionEntity = null;
-
-                        foreach (var currentEntity in scene.entities.Values)
+                        var componentGroup = physicsColliderComponent.GetForAll();
+                        int componentsCount = componentGroup.Count;
+                        for (int k = 0; k < componentsCount; k++)
                         {
-                            var collider = physicsColliderComponent.GetFor(scene, currentEntity);
-                            if (collider == null)
-                                continue;
-
-                            if (collider.model.colliders.Contains(hits[j].collider))
+                            if (componentGroup[k].value.model.colliders.Contains(currentHit.collider))
                             {
-                                collisionEntity = currentEntity;
+                                collisionEntity = componentGroup[k].value.entity;
                                 break;
                             }
                         }
 
+
                         DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
-                        hit.MeshName = hits[j].collider.name;
-                        hit.Length = hits[j].distance;
+                        if (collisionEntity != null)
+                        {
+                            if (layerMaskHasSDKCustomLayer
+                                && collisionEntity.gameObject.layer == PhysicsLayers.sdkCustomLayer
+                                && meshCollider.HasComponent(scene, collisionEntity))
+                            {
+                                int entityCollisionMask = meshCollider.Get(scene, collisionEntity).model.CollisionMask;
+                                if ((model.CollisionMask & entityCollisionMask) == 0)
+                                    continue;
+                            }
+
+                            hit.EntityId = (uint)collisionEntity.entityId;
+                        }
+                        hit.MeshName = currentHit.collider.name;
+                        hit.Length = currentHit.distance;
                         hit.GlobalOrigin = result.GlobalOrigin;
 
-                        var worldPosition = DCL.WorldStateUtils.ConvertUnityToScenePosition(hits[j].point, scene);
+                        var worldPosition = DCL.WorldStateUtils.ConvertUnityToScenePosition(currentHit.point, scene);
                         hit.Position = new Vector3();
                         hit.Position.X = worldPosition.x;
                         hit.Position.Y = worldPosition.y;
                         hit.Position.Z = worldPosition.z;
 
                         hit.NormalHit = new Vector3();
-                        hit.NormalHit.X = hits[j].normal.x;
-                        hit.NormalHit.Y = hits[j].normal.y;
-                        hit.NormalHit.Z = hits[j].normal.z;
+                        hit.NormalHit.X = currentHit.normal.x;
+                        hit.NormalHit.Y = currentHit.normal.y;
+                        hit.NormalHit.Z = currentHit.normal.z;
 
-                        if (collisionEntity != null)
-                        {
-                            hit.EntityId = (uint)collisionEntity.entityId;
-                        }
 
                         result.Hits.Add(hit);
                     }

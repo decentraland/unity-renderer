@@ -46,7 +46,8 @@ namespace DCL.ECS7
                 (ECSComponent<PBPointerEvents>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_EVENTS),
                 (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD),
                 (ECSComponent<PBRaycast>)componentsManager.GetOrCreateComponent(ComponentID.RAYCAST),
-                (ECSComponent<PBRaycastResult>)componentsManager.GetOrCreateComponent(ComponentID.RAYCAST_RESULT));
+                (ECSComponent<PBRaycastResult>)componentsManager.GetOrCreateComponent(ComponentID.RAYCAST_RESULT),
+                (ECSComponent<PBMeshCollider>)componentsManager.GetOrCreateComponent(ComponentID.MESH_COLLIDER));
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
 

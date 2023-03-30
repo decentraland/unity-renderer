@@ -10,6 +10,7 @@ public readonly struct SystemsContext
     public readonly ECSComponent<PBBillboard> billboards;
     public readonly ECSComponent<PBRaycast> raycasts;
     public readonly ECSComponent<PBRaycastResult> raycastResults;
+    public readonly ECSComponent<PBMeshCollider> meshCollider;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IInternalECSComponents internalEcsComponents,
@@ -17,7 +18,8 @@ public readonly struct SystemsContext
         ECSComponent<PBPointerEvents> pointerEvents,
         ECSComponent<PBBillboard> billboards,
         ECSComponent<PBRaycast> raycasts,
-        ECSComponent<PBRaycastResult> raycastResults)
+        ECSComponent<PBRaycastResult> raycastResults,
+        ECSComponent<PBMeshCollider> meshCollider)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
@@ -26,5 +28,6 @@ public readonly struct SystemsContext
         this.billboards = billboards;
         this.raycasts = raycasts;
         this.raycastResults = raycastResults;
+        this.meshCollider = meshCollider;
     }
 }
