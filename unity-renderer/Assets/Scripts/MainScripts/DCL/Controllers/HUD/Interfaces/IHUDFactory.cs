@@ -25,6 +25,7 @@ namespace DCL
         OPEN_EXTERNAL_URL_PROMPT = 14,
         PRIVATE_CHAT_WINDOW = 15,
         NFT_INFO_DIALOG = 16,
+        [Obsolete("Deprecated behavior")]
         TELEPORT_DIALOG = 17,
         CONTROLS_HUD = 18,
 

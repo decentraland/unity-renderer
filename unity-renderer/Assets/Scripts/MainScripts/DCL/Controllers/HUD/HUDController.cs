@@ -104,9 +104,6 @@ public class HUDController : IHUDController
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
-    public TeleportPromptHUDController teleportHud =>
-        GetHUDElement(HUDElementID.TELEPORT_DIALOG) as TeleportPromptHUDController;
-
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
     public HelpAndSupportHUDController helpAndSupportHud =>
@@ -359,9 +356,6 @@ public class HUDController : IHUDController
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.NFT_INFO_DIALOG:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                break;
-            case HUDElementID.TELEPORT_DIALOG:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.CONTROLS_HUD:
