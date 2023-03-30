@@ -3,10 +3,15 @@ using DCL.Map;
 
 public class TeleportHUDPlugin : IPlugin
 {
+    private readonly TeleportPromptHUDController teleportPromptHUDController;
+
     public TeleportHUDPlugin()
     {
-        new TeleportPromptHUDController(DataStore.i, WebInterfaceMinimapApiBridge.i); 
+        teleportPromptHUDController = new TeleportPromptHUDController(DataStore.i, WebInterfaceMinimapApiBridge.i);
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+        teleportPromptHUDController.Dispose();
+    }
 }
