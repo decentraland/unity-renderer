@@ -10,7 +10,8 @@ using UnityEngine;
 namespace DCLServices.MapRendererV2.Tests.Factory
 {
     [TestFixture]
-    [Category("EditModeCI")]
+    //[Category("EditModeCI")]
+    // It is required to build bundles to load them, to prevent an additional overhead I excluded the test from CI
     public class MapRendererChunkComponentsFactoryShould
     {
         private MapRendererChunkComponentsFactory factory;
