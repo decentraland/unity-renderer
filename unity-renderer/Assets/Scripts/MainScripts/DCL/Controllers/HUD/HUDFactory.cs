@@ -151,8 +151,6 @@ public class HUDFactory : IHUDFactory
                 return new ExternalUrlPromptHUDController();
             case HUDElementID.NFT_INFO_DIALOG:
                 return new NFTPromptHUDController();
-            case HUDElementID.TELEPORT_DIALOG:
-                return new TeleportPromptHUDController(DataStore.i, WebInterfaceMinimapApiBridge.i);
             case HUDElementID.CONTROLS_HUD:
                 return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:

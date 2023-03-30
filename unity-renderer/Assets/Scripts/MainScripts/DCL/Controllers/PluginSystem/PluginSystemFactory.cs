@@ -38,6 +38,7 @@ namespace DCL
             pluginSystem.Register<SkyboxController>(() => new SkyboxController());
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
+            pluginSystem.Register<TeleportHUDPlugin>(() => new TeleportHUDPlugin());
             pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());
             pluginSystem.Register<EmotesWheelUIPlugin>(() => new EmotesWheelUIPlugin());
             pluginSystem.Register<NFTShapePlugin>(() => new NFTShapePlugin());
