@@ -16,6 +16,9 @@ namespace DCL.Components
             entity.Cleanup();
         }
 
+        public override string GetDestinationURL() =>
+            throw new NotImplementedException();
+
         public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper, Exception> OnFail)
         {
             if (string.IsNullOrEmpty(src))

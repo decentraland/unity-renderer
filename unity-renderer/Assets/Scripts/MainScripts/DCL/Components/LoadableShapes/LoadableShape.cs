@@ -1,8 +1,10 @@
+using Cysharp.Threading.Tasks;
 using System;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
 namespace DCL.Components
@@ -194,6 +196,7 @@ namespace DCL.Components
                 loadableShape.initialVisibility = initialVisibility;
 
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
+                RequestSizeInMB(loadableShape.GetDestinationURL());
             }
             else
             {
@@ -213,6 +216,8 @@ namespace DCL.Components
                 failed = true;
             }
         }
+
+
 
         void ConfigureVisibility(IDCLEntity entity)
         {

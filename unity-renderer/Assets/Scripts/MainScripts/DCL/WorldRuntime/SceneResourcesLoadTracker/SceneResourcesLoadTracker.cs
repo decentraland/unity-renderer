@@ -6,8 +6,12 @@ namespace DCL.WorldRuntime
 {
     public class SceneResourcesLoadTracker : IDisposable
     {
+        public int totalResourcesCount => tracker.totalResourcesCount;
         public int pendingResourcesCount => tracker.pendingResourcesCount;
         public float loadingProgress => tracker.loadingProgress;
+        public float sizeDownloadedInMB => tracker.sizeDownloadedInMB;
+        public float totalSizeInMB => tracker.totalSizeInMB;
+
 
         public event Action OnResourcesLoaded;
         public event Action OnResourcesStatusUpdate;
@@ -23,7 +27,7 @@ namespace DCL.WorldRuntime
             tracker.OnResourcesLoaded += TrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }
-        
+
         public void Track(IECSComponentsManagerLegacy componentsManagerLegacy, IWorldState worldState)
         {
             if (tracker is ResourcesLoadTrackerLegacyECS)

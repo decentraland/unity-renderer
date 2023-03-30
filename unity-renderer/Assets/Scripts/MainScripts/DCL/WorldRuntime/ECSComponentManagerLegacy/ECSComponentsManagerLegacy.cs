@@ -13,6 +13,8 @@ namespace DCL
     public class ECSComponentsManagerLegacy : IECSComponentsManagerLegacy
     {
         private readonly Dictionary<string, ISharedComponent> disposableComponents = new Dictionary<string, ISharedComponent>();
+        private readonly Dictionary<string, ISharedComponent> forSizeReference = new Dictionary<string, ISharedComponent>();
+
 
         private readonly Dictionary<long, Dictionary<Type, ISharedComponent>> entitiesSharedComponents =
             new Dictionary<long, Dictionary<Type, ISharedComponent>>();
@@ -58,6 +60,7 @@ namespace DCL
             isSBCNerfEnabled = featureFlags.IsFeatureEnabled("NERF_SBC");
         }
 
+        private float sizeDownloaded;
         public void AddSharedComponent(IDCLEntity entity, Type componentType, ISharedComponent component)
         {
             if (component == null)
@@ -338,14 +341,37 @@ namespace DCL
             return disposableComponents.Count;
         }
 
+        public float GetTotalSizeInMB()
+        {
+            float totalSize = 0;
+            foreach (var keyValuePair in forSizeReference)
+            {
+                totalSize += keyValuePair.Value.GetSizeInMB();
+            }
+            return totalSize;
+        }
+
+        public float GetDownloadedSizeInMB()
+        {
+            return GetTotalSizeInMB() - sizeDownloaded;
+            /*float downloadedSizeInMB = 0;
+            foreach (var keyValuePair in disposableComponents)
+            {
+                downloadedSizeInMB += keyValuePair.Value.GetSizeInMB();
+            }
+            return downloadedSizeInMB;*/
+        }
+
         public void AddSceneSharedComponent(string component, ISharedComponent sharedComponent)
         {
             disposableComponents.Add(component, sharedComponent);
+            forSizeReference.Add(component, sharedComponent);
             OnAddSharedComponent?.Invoke(component, sharedComponent);
         }
 
         public bool RemoveSceneSharedComponent(string component)
         {
+            sizeDownloaded += disposableComponents[component].GetSizeInMB();
             return disposableComponents.Remove(component);
         }
 
@@ -477,6 +503,7 @@ namespace DCL
         {
             if (disposableComponents.TryGetValue(id, out ISharedComponent sharedComponent))
             {
+                sizeDownloaded += disposableComponents[id].GetSizeInMB();
                 sharedComponent?.Dispose();
                 disposableComponents.Remove(id);
             }

@@ -28,11 +28,14 @@ namespace DCL.Components
 
             if(entity.meshRootGameObject != null)
                 Utils.SafeDestroy(entity.meshRootGameObject);
-            
+
             entity.meshesInfo.CleanReferences();
 
             DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.sceneNumber, rendereable);
         }
+
+        public override string GetDestinationURL() =>
+            throw new NotImplementedException();
 
         public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper, Exception> OnFail)
         {

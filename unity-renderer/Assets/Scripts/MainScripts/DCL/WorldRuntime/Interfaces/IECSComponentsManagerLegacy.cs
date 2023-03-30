@@ -43,5 +43,9 @@ namespace DCL
         ISharedComponent SceneSharedComponentUpdate(string id, string json);
         void EntityComponentRemove(long entityId, string name);
         void DisposeAllSceneComponents();
+
+        float GetTotalSizeInMB();
+
+        float GetDownloadedSizeInMB();
     }
 }

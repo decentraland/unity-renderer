@@ -29,7 +29,7 @@ namespace DCL.Controllers
         public event System.Action<IDCLEntity> OnEntityAdded;
         public event System.Action<IDCLEntity> OnEntityRemoved;
         public event System.Action<LoadParcelScenesMessage.UnityParcelScene> OnSetData;
-        public event System.Action<float> OnLoadingStateUpdated;
+        public event System.Action<float, int, int, float, float> OnLoadingStateUpdated;
 
         public ContentProvider contentProvider { get; set; }
 
@@ -682,9 +682,13 @@ namespace DCL.Controllers
             loadingProgress = 0f;
 
             if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS ||
-                sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY) { loadingProgress = sceneLifecycleHandler.loadingProgress; }
+                sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY)
+            {
+                loadingProgress = sceneLifecycleHandler.loadingProgress;
+            }
 
-            OnLoadingStateUpdated?.Invoke(loadingProgress);
+            OnLoadingStateUpdated?.Invoke(loadingProgress, sceneLifecycleHandler.pendingResourcesCount, sceneLifecycleHandler.totalResourcesCount,
+                sceneLifecycleHandler.sizeDownloadedInMB, sceneLifecycleHandler.totalSizeInMB);
         }
 
         public bool IsInitMessageDone()

@@ -9,6 +9,11 @@ namespace DCL.WorldRuntime
     internal class ResourcesLoadTrackerLegacyECS : IResourcesLoadTracker
     {
         public int pendingResourcesCount => disposableNotReady?.Count ?? 0;
+        public int totalResourcesCount => componentsManager?.GetSceneSharedComponentsCount() ?? 0;
+        public float totalSizeInMB => componentsManager?.GetTotalSizeInMB() ?? 0;
+        public float sizeDownloadedInMB => componentsManager?.GetDownloadedSizeInMB() ?? 0;
+
+
         public float loadingProgress
         {
             get
@@ -17,6 +22,7 @@ namespace DCL.WorldRuntime
                 return sharedComponentsCount > 0 ? (sharedComponentsCount - pendingResourcesCount) * 100f / sharedComponentsCount : 100f;
             }
         }
+
 
         public event Action OnResourcesLoaded;
         public event Action OnStatusUpdate;

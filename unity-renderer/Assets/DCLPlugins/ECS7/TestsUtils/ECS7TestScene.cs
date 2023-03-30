@@ -31,7 +31,7 @@ public class ECS7TestScene : IParcelScene
     internal ECS7TestScene() { }
 
 // FOLLOWING NOT SUPPORTED
-    event Action<float> IParcelScene.OnLoadingStateUpdated { add => throw new NotImplementedException(); remove => throw new NotImplementedException(); }
+    event Action<float, int, int, float, float> IParcelScene.OnLoadingStateUpdated { add => throw new NotImplementedException(); remove => throw new NotImplementedException(); }
     event Action<IDCLEntity> IParcelScene.OnEntityAdded { add => throw new NotImplementedException(); remove => throw new NotImplementedException(); }
     event Action<IDCLEntity> IParcelScene.OnEntityRemoved { add => throw new NotImplementedException(); remove => throw new NotImplementedException(); }
     IDCLEntity IParcelScene.GetEntityById(long entityId)

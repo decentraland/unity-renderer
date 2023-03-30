@@ -12,5 +12,6 @@ namespace DCL
 
         public abstract void Load(string url, Action<LoadWrapper> OnSuccess, Action<LoadWrapper, Exception> OnFail);
         public abstract void Unload();
+        public abstract string GetDestinationURL();
     }
 }

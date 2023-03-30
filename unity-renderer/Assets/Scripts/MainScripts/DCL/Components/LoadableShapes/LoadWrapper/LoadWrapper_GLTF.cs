@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Networking;
 
 namespace DCL.Components
 {
@@ -56,6 +58,8 @@ namespace DCL.Components
 
             loadHelper.OnSuccessEvent += successWrapperEvent;
             loadHelper.OnFailEvent += failWrapperEvent;
+
+
             loadHelper.Load(targetUrl);
         }
 
@@ -96,6 +100,11 @@ namespace DCL.Components
             loadHelper.OnSuccessEvent -= successWrapperEvent;
             loadHelper.OnFailEvent -= failWrapperEvent;
             alreadyLoaded = false;
+        }
+
+        public override string GetDestinationURL()
+        {
+            return loadHelper.currentDestinationURL;
         }
 
         public override string ToString() { return $"LoadWrapper ... {loadHelper.ToString()}"; }

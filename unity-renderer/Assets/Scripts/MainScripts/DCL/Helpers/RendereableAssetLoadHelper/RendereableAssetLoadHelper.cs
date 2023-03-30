@@ -47,6 +47,8 @@ namespace DCL.Components
         private string currentLoadingSystem;
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
+        public string currentDestinationURL;
+
         public bool isFinished
         {
             get
@@ -203,6 +205,7 @@ namespace DCL.Components
             }
 
 
+            currentDestinationURL = bundlesBaseUrl + hash;
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
 
@@ -254,6 +257,7 @@ namespace DCL.Components
                 return;
             }
 
+            currentDestinationURL = contentProvider + targetUrl;
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
             gltfPromise.settings = settings;
 
@@ -305,6 +309,7 @@ namespace DCL.Components
                 return;
             }
 
+            currentDestinationURL = targetUrl + hash;
             gltfastPromise = new AssetPromise_GLTFast_Instance(targetUrl, hash,
                 Environment.i.platform.webRequest, contentProvider, settings);
 

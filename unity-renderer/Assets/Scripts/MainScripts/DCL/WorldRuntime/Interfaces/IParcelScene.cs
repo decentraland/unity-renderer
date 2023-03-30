@@ -7,7 +7,7 @@ namespace DCL.Controllers
 {
     public interface IParcelScene
     {
-        event Action<float> OnLoadingStateUpdated;
+        event Action<float, int, int, float, float> OnLoadingStateUpdated;
         event Action<IDCLEntity> OnEntityAdded;
         event Action<IDCLEntity> OnEntityRemoved;
 

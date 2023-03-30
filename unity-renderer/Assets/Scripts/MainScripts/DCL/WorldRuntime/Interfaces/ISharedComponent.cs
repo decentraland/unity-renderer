@@ -16,5 +16,6 @@ namespace DCL.Components
         void Initialize(IParcelScene scene, string id);
         HashSet<IDCLEntity> GetAttachedEntities();
         void CallWhenReady(Action<ISharedComponent> callback);
+        float GetSizeInMB();
     }
 }

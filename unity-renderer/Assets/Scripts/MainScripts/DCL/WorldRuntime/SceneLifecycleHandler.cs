@@ -22,8 +22,12 @@ namespace DCL.Controllers
             READY,
         }
 
+        public int totalResourcesCount => sceneResourcesLoadTracker.totalResourcesCount;
         public int pendingResourcesCount => sceneResourcesLoadTracker.pendingResourcesCount;
         public float loadingProgress => sceneResourcesLoadTracker.loadingProgress;
+        public float sizeDownloadedInMB => sceneResourcesLoadTracker.sizeDownloadedInMB;
+        public float totalSizeInMB => sceneResourcesLoadTracker.totalSizeInMB;
+
         public bool isReady => state == State.READY;
 
         State stateValue = State.NOT_READY;
@@ -54,10 +58,10 @@ namespace DCL.Controllers
             sceneResourcesLoadTracker = new SceneResourcesLoadTracker();
             sceneResourcesLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
             sceneResourcesLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
-   
-            // This is done while the two ECS are living together, if we detect that a component from the new ECS has incremented a 
+
+            // This is done while the two ECS are living together, if we detect that a component from the new ECS has incremented a
             // resource for the scene, we changed the track since that means that this scene is from the new ECS.
-            // This should disappear when the old ecs is removed from the project. This should be the default track 
+            // This should disappear when the old ecs is removed from the project. This should be the default track
             DataStore.i.ecs7.scenes.OnAdded += ChangeTrackingSystem;
         }
 
@@ -65,7 +69,7 @@ namespace DCL.Controllers
         {
             if (scene.sceneData.sceneNumber != owner.sceneData.sceneNumber)
                 return;
-            
+
             DataStore.i.ecs7.scenes.OnAdded -= ChangeTrackingSystem;
 
             sceneResourcesLoadTracker.Dispose();

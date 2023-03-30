@@ -7,6 +7,9 @@ using UnityEngine;
 public class ResourcesLoadTrackerECS : IResourcesLoadTracker
 {
     public int pendingResourcesCount => resourcesNotReady.Count;
+    public int totalResourcesCount => resourcesReady;
+    public float totalSizeInMB { get; }
+    public float sizeDownloadedInMB { get; }
 
     public float loadingProgress
     {

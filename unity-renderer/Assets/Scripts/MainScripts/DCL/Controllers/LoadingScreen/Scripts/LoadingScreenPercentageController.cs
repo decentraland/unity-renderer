@@ -23,17 +23,14 @@ namespace DCL.LoadingScreen
             this.sceneController = sceneController;
             this.commonDataStore = commonDataStore;
 
-            loadingScreenPercentageView.SetSceneLoadingMessage();
-            loadingScreenPercentageView.SetLoadingPercentage(0);
+            loadingScreenPercentageView.InitLoading();
 
             sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
-            commonDataStore.isSignUpFlow.OnChange += StartedSignUpFlow;
         }
 
         public void Dispose()
         {
             sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
-            commonDataStore.isSignUpFlow.OnChange -= StartedSignUpFlow;
 
             if (currentSceneBeingLoaded != null)
                 currentSceneBeingLoaded.OnLoadingStateUpdated -= StatusUpdate;
@@ -50,18 +47,13 @@ namespace DCL.LoadingScreen
             }
         }
 
-        private void StartedSignUpFlow(bool current, bool previous)
+        private void StatusUpdate(float percentage,  int currentLoadedObjects, int totalObjects, float sizeDownloadedInMB, float totalSizeInMB)
         {
-            if (current)
-                StatusUpdate(100);
-            else
-                StatusUpdate(0);
-        }
+            Debug.Log("AAAA " + sizeDownloadedInMB);
+            Debug.Log("BBBB " + totalSizeInMB);
 
-        private void StatusUpdate(float percentage)
-        {
-            loadingScreenPercentageView.SetLoadingPercentage((int)percentage);
-
+            loadingScreenPercentageView.SetSceneLoadingMessage();
+            loadingScreenPercentageView.SetLoadingPercentage((int)percentage, currentLoadedObjects, totalObjects, sizeDownloadedInMB, totalSizeInMB);
             if (currentSceneBeingLoaded != null && percentage >= 100)
             {
                 currentSceneBeingLoaded.OnLoadingStateUpdated -= StatusUpdate;
@@ -73,8 +65,7 @@ namespace DCL.LoadingScreen
         {
             loadingScreenPercentageView.gameObject.SetActive(true);
             currentDestination = newDestination;
-            loadingScreenPercentageView.SetSceneLoadingMessage();
-            loadingScreenPercentageView.SetLoadingPercentage(0);
+            loadingScreenPercentageView.InitLoading();
         }
 
         public void SetAvatarLoadingMessage() =>
