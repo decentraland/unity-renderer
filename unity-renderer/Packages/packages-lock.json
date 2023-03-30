@@ -336,11 +336,11 @@
       "hash": "cdd11bb74398afae73e71b6fe01114f597a6ce08"
     },
     "ru.threedisevenzeror.unitygifdecoder": {
-      "version": "https://github.com/decentraland/Unity-GifDecoder.git#fix/fallback-for-non-power-of-2",
+      "version": "https://github.com/decentraland/Unity-GifDecoder.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "002e88db18a8175a76b0b620a0429d9aec72b96e"
+      "hash": "10864e9fd9b15f6342e9d5326d417b98e0e13e9e"
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",
