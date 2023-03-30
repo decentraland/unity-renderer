@@ -70,6 +70,23 @@ namespace DCL.Controllers
             SetupWorldBlockers(sceneHandler.GetAllLoadedScenesCoords());
         }
 
+
+        public void SetupWorldBlockers(IParcelScene newScene)
+        {
+            //if (newScene.sceneData.parcels.Length > 4)
+            //    return;
+            foreach (Vector2Int sceneDataParcel in newScene.sceneData.parcels)
+            {
+                PoolableObject blockerPoolable = PoolManager.i.Get("ParcelBlocker");
+                blockerPoolable.gameObject.GetComponent<Blocker>().ResetBlocker(newScene, sceneDataParcel, blockersParent);
+            }
+        }
+
+        public void RemoveWorldBlockers(IParcelScene newScene)
+        {
+
+        }
+
         public void SetEnabled(bool targetValue)
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
@@ -222,7 +239,7 @@ namespace DCL.Controllers
 
         private bool IsSceneKnown(Vector2Int parcel)
         {
-            // Note: This returns false when the set of coordinates is about a parcel 
+            // Note: This returns false when the set of coordinates is about a parcel
             // where the kernel didn't provide yet any information to the renderer
             return sceneHandler.GetScene(parcel) != null;
         }

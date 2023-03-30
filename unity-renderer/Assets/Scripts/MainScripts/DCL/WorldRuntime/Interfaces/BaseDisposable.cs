@@ -61,12 +61,12 @@ namespace DCL.Components
             {
                 if (request.GetResponseHeaders().ContainsKey("Content-Length"))
                 {
-                    Debug.Log("SUCCESS FOR TYPE " + GetType());
+                    //Debug.Log("SUCCESS FOR TYPE " + GetType());
                     sizeInMB = long.Parse(request.GetResponseHeader("Content-Length")) / (1024f * 1024f);
                 }
                 else
                 {
-                    Debug.Log("FAILED FOR TYPE " + GetType());
+                    //Debug.Log("FAILED FOR TYPE " + GetType());
                 }
             }
         }

@@ -514,8 +514,6 @@ namespace DCL
             WebInterface.ReportControlEvent(new WebInterface.SceneReady(sceneNumber));
             WebInterface.ReportCameraChanged(CommonScriptableObjects.cameraMode.Get(), sceneNumber);
 
-            Environment.i.world.blockersController.SetupWorldBlockers();
-
             OnReadyScene?.Invoke(sceneNumber);
         }
 
@@ -625,6 +623,8 @@ namespace DCL
 
                 OnNewSceneAdded?.Invoke(newScene);
 
+                Environment.i.world.blockersController.SetupWorldBlockers(newScene);
+
                 messagingControllersManager.AddControllerIfNotExists(this, newScene.sceneData.sceneNumber);
 
                 if (VERBOSE)
@@ -705,8 +705,6 @@ namespace DCL
             {
                 Debug.Log($"{Time.frameCount} : Destroying scene {scene.sceneData.basePosition}");
             }
-
-            Environment.i.world.blockersController.SetupWorldBlockers();
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
             OnSceneRemoved?.Invoke(scene);

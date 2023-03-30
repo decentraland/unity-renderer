@@ -49,9 +49,6 @@ namespace DCL.LoadingScreen
 
         private void StatusUpdate(float percentage,  int currentLoadedObjects, int totalObjects, float sizeDownloadedInMB, float totalSizeInMB)
         {
-            Debug.Log("AAAA " + sizeDownloadedInMB);
-            Debug.Log("BBBB " + totalSizeInMB);
-
             loadingScreenPercentageView.SetSceneLoadingMessage();
             loadingScreenPercentageView.SetLoadingPercentage((int)percentage, currentLoadedObjects, totalObjects, sizeDownloadedInMB, totalSizeInMB);
             if (currentSceneBeingLoaded != null && percentage >= 100)

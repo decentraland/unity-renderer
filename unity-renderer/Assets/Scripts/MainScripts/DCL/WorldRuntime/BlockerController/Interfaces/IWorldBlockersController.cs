@@ -5,7 +5,9 @@ namespace DCL.Controllers
 {
     public interface IWorldBlockersController : IService
     {
-        void SetupWorldBlockers();
+        void SetupWorldBlockers(IParcelScene newScene);
+        void RemoveWorldBlockers(IParcelScene newScene);
+
         void SetEnabled(bool targetValue);
     }
 }
