@@ -37,6 +37,15 @@ public class TeleportPromptHUDController : IHUD
 
         dataStore.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
         dataStore.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
+        dataStore.world.requestTeleportData.OnChange += ReceivedRequestTeleportData;
+    }
+
+    private void ReceivedRequestTeleportData(string current, string previous)
+    {
+        if (string.IsNullOrEmpty(current))
+            return;
+
+        RequestTeleport(current);
     }
 
     private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous)
