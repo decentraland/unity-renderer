@@ -19,7 +19,7 @@
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.6.6"
       },
-      "hash": "fdbba5350fda2da9708aafbcb9336c59cb2b6a32"
+      "hash": "cd8485999522daafc7cb5b990fce8f6fdf3f74ab"
     },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",
@@ -336,11 +336,11 @@
       "hash": "cdd11bb74398afae73e71b6fe01114f597a6ce08"
     },
     "ru.threedisevenzeror.unitygifdecoder": {
-      "version": "https://github.com/3DI70R/Unity-GifDecoder.git",
+      "version": "https://github.com/decentraland/Unity-GifDecoder.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "90ffa399087521817ab03ce9213ec33b38e4492f"
+      "hash": "10864e9fd9b15f6342e9d5326d417b98e0e13e9e"
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",

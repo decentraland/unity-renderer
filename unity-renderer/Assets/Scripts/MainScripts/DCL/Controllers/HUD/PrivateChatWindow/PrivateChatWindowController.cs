@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
@@ -83,7 +84,9 @@ public class PrivateChatWindowController : IHUD
                 }, ct);
             },
           socialAnalytics);
+
         chatHudController.Initialize(view.ChatHUD);
+        chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
         chatHudController.OnSendMessage += HandleSendChatMessage;
         chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;

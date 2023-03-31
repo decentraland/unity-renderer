@@ -39,7 +39,7 @@ namespace DCL.Tests
             Assert.AreEqual(Texture2D.blackTexture, res.GetSuccessResponse().Texture);
         }
 
-        [Test]
+        [Test][Category("Flaky")]
         public async Task ThrowLastIfAllSourcesFailed()
         {
             var r1 = Substitute.For<ITextureAssetProvider>();

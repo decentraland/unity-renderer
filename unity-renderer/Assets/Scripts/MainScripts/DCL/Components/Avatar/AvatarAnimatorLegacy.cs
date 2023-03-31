@@ -95,8 +95,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private float lastOnAirTime = 0;
 
-    private Dictionary<string, EmoteClipData> emoteClipDataMap = 
-        new Dictionary<string, EmoteClipData>();
+    private Dictionary<string, EmoteClipData> emoteClipDataMap = new ();
 
     private string runAnimationName;
     private string walkAnimationName;
@@ -109,6 +108,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private bool isUpdateRegistered = false;
 
     private Ray rayCache;
+    private bool hasTarget;
+
+    private void Awake()
+    {
+        hasTarget = target != null;
+        if (!hasTarget)
+            Debug.LogError(message: $"Target is not assigned. {nameof(UpdateInterface)} will not work correctly.", this);
+    }
 
     public void Start() { OnPoolGet(); }
 
@@ -166,7 +173,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         EquipBaseClip(currentLocomotions.run);
         EquipBaseClip(currentLocomotions.jump);
         EquipBaseClip(currentLocomotions.fall);
-        
+
         idleAnimationName = currentLocomotions.idle.name;
         walkAnimationName = currentLocomotions.walk.name;
         runAnimationName = currentLocomotions.run.name;
@@ -217,6 +224,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     void UpdateInterface()
     {
+        if (!target) return;
+
         Vector3 velocityTargetPosition = target.position;
         Vector3 flattenedVelocity = velocityTargetPosition - lastPosition;
 
@@ -287,13 +296,13 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         runAnimationState.normalizedSpeed = movementSpeed * bb.runSpeedFactor;
         walkAnimationState.normalizedSpeed = movementSpeed * bb.walkSpeedFactor;
-        
+
         if (movementSpeed >= WALK_MAX_SPEED)
         {
             CrossFadeTo(AvatarAnimation.RUN, runAnimationName, RUN_TRANSITION_TIME);
         }
-        else if (movementSpeed >= RUN_MIN_SPEED && movementSpeed < WALK_MAX_SPEED) 
-        { 
+        else if (movementSpeed >= RUN_MIN_SPEED && movementSpeed < WALK_MAX_SPEED)
+        {
             // Keep current animation, leave empty
         }
         else if (movementSpeed > WALK_MIN_SPEED)
@@ -313,12 +322,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
     }
 
-    private void CrossFadeTo(AvatarAnimation avatarAnimation, string animationName, 
+    private void CrossFadeTo(AvatarAnimation avatarAnimation, string animationName,
         float runTransitionTime, PlayMode playMode = PlayMode.StopSameLayer)
     {
         if (latestAnimation == avatarAnimation)
             return;
-        
+
         animation.wrapMode = avatarAnimation.ShouldLoop() ? WrapMode.Loop : WrapMode.Once;
         animation.CrossFade(animationName, runTransitionTime, playMode);
         latestAnimation = avatarAnimation;
@@ -344,37 +353,20 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
     }
 
-    private static bool ExpressionGroundTransitionCondition(AnimationState animationState, 
-        BlackBoard bb, 
-        DCLCharacterController dclCharacterController,
-        bool ownPlayer)
+    private void State_Expression(BlackBoard bb)
     {
-        float timeTillEnd = animationState.length - animationState.time;
-        bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME && !bb.shouldLoop;
-        bool isMoving = ownPlayer ? dclCharacterController.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
-        return isAnimationOver || isMoving;
-    }
-
-    private static bool ExpressionAirTransitionCondition(BlackBoard bb)
-    {
-        return !bb.isGrounded;
-    }
-
-    internal void State_Expression(BlackBoard bb)
-    {
-        var animationState = animation[bb.expressionTriggerId];
-
         var prevAnimation = latestAnimation;
         CrossFadeTo(AvatarAnimation.EMOTE, bb.expressionTriggerId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
 
-        bool exitTransitionStarted = false;
-        if (ExpressionAirTransitionCondition(bb))
+        var exitTransitionStarted = false;
+
+        if (!bb.isGrounded)
         {
             currentState = State_Air;
             exitTransitionStarted = true;
         }
 
-        if (ExpressionGroundTransitionCondition(animationState, bb, DCLCharacterController.i, isOwnPlayer))
+        if (ExpressionGroundTransitionCondition(animationState: animation[bb.expressionTriggerId]))
         {
             currentState = State_Ground;
             exitTransitionStarted = true;
@@ -383,19 +375,26 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (exitTransitionStarted)
         {
             animation.Blend(bb.expressionTriggerId, 0, EXPRESSION_EXIT_TRANSITION_TIME);
-            
+
             bb.expressionTriggerId = null;
             bb.shouldLoop = false;
             OnUpdateWithDeltaTime(bb.deltaTime);
         }
-        else
+        else if (prevAnimation != AvatarAnimation.EMOTE) // this condition makes Blend be called only in first frame of the state
         {
-            //this condition makes Blend be called only in first frame of the state
-            if (prevAnimation != AvatarAnimation.EMOTE)
-            {
-                animation.wrapMode = bb.shouldLoop ? WrapMode.Loop : WrapMode.Once;
-                animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
-            }
+            animation.wrapMode = bb.shouldLoop ? WrapMode.Loop : WrapMode.Once;
+            animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
+        }
+
+        return;
+
+        bool ExpressionGroundTransitionCondition(AnimationState animationState)
+        {
+            float timeTillEnd = animationState == null ? 0 : animationState.length - animationState.time;
+            bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME && !bb.shouldLoop;
+            bool isMoving = isOwnPlayer ? DCLCharacterController.i.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
+
+            return isAnimationOver || isMoving;
         }
     }
 
@@ -410,7 +409,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation.GetClip(expressionTriggerId) == null)
             return;
 
-        var mustTriggerAnimation = !string.IsNullOrEmpty(expressionTriggerId) 
+        var mustTriggerAnimation = !string.IsNullOrEmpty(expressionTriggerId)
                                    && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
         blackboard.expressionTriggerId = expressionTriggerId;
         blackboard.expressionTriggerTimestamp = expressionTriggerTimestamp;
@@ -422,10 +421,10 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
                 animation.Stop(expressionTriggerId);
                 latestAnimation = AvatarAnimation.IDLE;
             }
-            
-            blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData) 
+
+            blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData)
                                     && clipData.loop;
-                                    
+
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
         }
