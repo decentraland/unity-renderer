@@ -104,7 +104,8 @@ namespace AvatarSystem
 
             bool facialFeaturesVisibility = globalConstrains.Count == 0 && facialFeaturesConstrains.Count == 0;
 
-            Debug.Log($"Update face -  {facialFeaturesVisibility}, globalC = {globalConstrains.Count}, facialC = {facialFeaturesConstrains.Count}", combinedRenderer.gameObject);
+            // if(combinedRenderer.gameObject.GetComponentInParent<DCLCharacterController>() == null)
+                // Debug.Log($"Update face -  {facialFeaturesVisibility}, globalC = {globalConstrains.Count}, facialC = {facialFeaturesConstrains.Count}", combinedRenderer.gameObject);
             for (int i = 0; i < facialFeatures.Count; i++)
             {
                 facialFeatures[i].enabled = facialFeaturesVisibility;

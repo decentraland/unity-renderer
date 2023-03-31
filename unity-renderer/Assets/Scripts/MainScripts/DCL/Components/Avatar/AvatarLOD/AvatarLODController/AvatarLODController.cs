@@ -29,20 +29,20 @@ namespace DCL
         }
 
         public void SetLOD0() =>
-            SetLODLevel(0, setColliderEnabled: true);
+            SetLODLevel(0, setPointerColliderEnabled: true);
 
         public void SetLOD1() =>
-            SetLODLevel(1, setColliderEnabled: true);
+            SetLODLevel(1, setPointerColliderEnabled: true);
 
         public void SetLOD2() =>
-            SetLODLevel(2, setColliderEnabled: false);
+            SetLODLevel(2, setPointerColliderEnabled: false);
 
-        private void SetLODLevel(int level, bool setColliderEnabled)
+        private void SetLODLevel(int level, bool setPointerColliderEnabled)
         {
             if (player?.avatar == null)
                 return;
 
-            player.onPointerDownCollider.SetColliderEnabled(setColliderEnabled);
+            player.onPointerDownCollider.SetColliderEnabled(setPointerColliderEnabled);
             player.avatar.SetLODLevel(level);
             player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
         }

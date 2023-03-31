@@ -47,6 +47,8 @@ namespace DCL
 
         public void RegisterAvatar(string id, Player player)
         {
+            Debug.Log($"Registering {player.name}", player.collider.gameObject);
+
             if (lodControllers.ContainsKey(id))
                 return;
 
@@ -58,6 +60,7 @@ namespace DCL
 
         public void UnregisterAvatar(string id, Player player)
         {
+            Debug.Log($"Unregistering {player.name}", player.collider.gameObject);
             if (!lodControllers.ContainsKey(id))
                 return;
 
@@ -91,6 +94,9 @@ namespace DCL
             {
                 (IAvatarLODController lodController, float distance) = controllerDistancePair;
 
+                Debug.Log($"lodController {lodController.player.name} - distance = {distance}, playerPos = {ownPlayerPosition}, lodPos1 = {lodController.player.worldPosition}, lodPos1 = {lodController.player.collider.transform.position}"
+                  , lodController.player.collider.gameObject);
+
                 if (IsInInvisibleDistance(distance))
                 {
                     lodController.SetNameVisible(false);
@@ -104,12 +110,12 @@ namespace DCL
 
                     if (distance < simpleAvatarDistance)
                     {
-                        Debug.Log($"LOD 0 for {lodController.player.collider.gameObject.name}, distance = {distance}", lodController.player.collider.gameObject);
+                        // Debug.Log($"LOD 0 for {lodController.player.name}", lodController.player.collider.gameObject);
                         lodController.SetLOD0();
                     }
                     else
                     {
-                        Debug.Log($"LOD 1 for {lodController.player.collider.gameObject.name}, distance = {distance}", lodController.player.collider.gameObject);
+                        // Debug.Log($"LOD 1 for {lodController.player.name}", lodController.player.collider.gameObject);
                         lodController.SetLOD1();
                     }
                     avatarsCount++;
@@ -133,7 +139,7 @@ namespace DCL
             }
         }
 
-        private bool IsInInvisibleDistance(float distance)
+        private static bool IsInInvisibleDistance(float distance)
         {
             bool firstPersonCamera = CommonScriptableObjects.cameraMode.Get() == CameraMode.ModeId.FirstPerson;
 
@@ -145,7 +151,9 @@ namespace DCL
             lodControllersWithDistance.Clear();
 
             foreach (IAvatarLODController x in lodControllers)
+            {
                 lodControllersWithDistance.Add((x, DistanceToOwnPlayer(x.player, ownPlayerPosition)));
+            }
 
             lodControllersWithDistance.Sort(CompareByDistance());
 
