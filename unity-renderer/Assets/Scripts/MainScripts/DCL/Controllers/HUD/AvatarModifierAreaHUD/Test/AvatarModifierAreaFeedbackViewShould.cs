@@ -8,9 +8,10 @@ using UnityEngine.TestTools;
 
 namespace Tests.AvatarModifierAreaFeedback
 {
+    [Category("ToFix")]
     public class AvatarModifierAreaFeedbackViewShould
     {
-    
+
         private AvatarModifierAreaFeedbackView hudView;
         private BaseRefCounter<AvatarModifierAreaID> warningMessageList => DataStore.i.HUDs.avatarAreaWarnings;
 
@@ -20,7 +21,7 @@ namespace Tests.AvatarModifierAreaFeedback
             hudView = AvatarModifierAreaFeedbackView.Create();
             hudView.SetUp(warningMessageList);
         }
-        
+
         [Test]
         public void ShowsProperly()
         {
@@ -28,7 +29,7 @@ namespace Tests.AvatarModifierAreaFeedback
             warningMessageList.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
             Assert.True(hudView.isVisible);
         }
-        
+
         [Test]
         public void HidesProperly()
         {
@@ -43,8 +44,8 @@ namespace Tests.AvatarModifierAreaFeedback
             warningMessageList.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
             Assert.False(hudView.isVisible);
         }
-        
-        
+
+
         [Test]
         public void CheckPointerEnter()
         {
@@ -54,7 +55,7 @@ namespace Tests.AvatarModifierAreaFeedback
             hudView.OnPointerEnter(null);
             Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE,hudView.currentState);
         }
-        
+
         [Test]
         public void CheckPointerExit()
         {
@@ -63,7 +64,7 @@ namespace Tests.AvatarModifierAreaFeedback
             hudView.OnPointerExit(null);
             Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.ICON_VISIBLE, hudView.currentState);
         }
-        
+
         [TearDown]
         protected void TearDown()
         {

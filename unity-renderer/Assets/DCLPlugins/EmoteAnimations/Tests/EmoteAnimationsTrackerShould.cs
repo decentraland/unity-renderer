@@ -3,8 +3,10 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCLServices.WearablesCatalogService;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -15,10 +17,8 @@ namespace DCL.Emotes
         private EmoteAnimationsTracker tracker;
         private DataStore_Emotes dataStore;
         private EmoteAnimationLoaderFactory loaderFactory;
-        private IWearableItemResolver resolver;
         private IEmotesCatalogService emoteCatalog;
         private IWearablesCatalogService wearablesCatalogService;
-
 
         [SetUp]
         public void SetUp()
@@ -27,7 +27,6 @@ namespace DCL.Emotes
             dataStore = new DataStore_Emotes();
             loaderFactory = Substitute.ForPartsOf<EmoteAnimationLoaderFactory>();
             loaderFactory.Get().Returns(Substitute.For<IEmoteAnimationLoader>());
-            resolver = Substitute.For<IWearableItemResolver>();
 
             emoteCatalog = Substitute.For<IEmotesCatalogService>();
             emoteCatalog.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
@@ -38,10 +37,9 @@ namespace DCL.Emotes
         private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
         {
             EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-            embeddedEmotes.emotes = new EmbeddedEmote [] { };
+            embeddedEmotes.emotes = new EmbeddedEmote[] { };
             return embeddedEmotes;
         }
-
 
         [UnityTest]
         public IEnumerator InitializeEmbeddedEmotesOnConstructor()
@@ -49,38 +47,34 @@ namespace DCL.Emotes
             UniTask<EmbeddedEmotesSO>.Awaiter embeddedEmotesTask = GetEmbeddedEmotesSO().GetAwaiter();
             yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
             EmbeddedEmotesSO embeddedEmotesSo = embeddedEmotesTask.GetResult();
+
             foreach (EmbeddedEmote emote in embeddedEmotesSo.emotes)
             {
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)]?.clip, emote.femaleAnimation);
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.MALE, emote.id)]?.clip, emote.maleAnimation);
                 Assert.IsTrue(tracker.loaders.ContainsKey((WearableLiterals.BodyShapes.MALE, emote.id)));
             }
+
             wearablesCatalogService.Received(1).EmbedWearables(Arg.Any<WearableItem[]>());
         }
 
-
         [Test]
-        [Category("Explicit")]
-        [Explicit]
         public void ReactToEquipEmotesIncreasingReference()
         {
-            string bodyShapeId = WearableLiterals.BodyShapes.FEMALE;
-
-            AnimationClip tikAnim = Resources.Load<AnimationClip>("tik");
-            WearableItem emote = new WearableItem { id = "emote0" };
-            resolver.Resolve("emote0", Arg.Any<CancellationToken>()).Returns(new UniTask<WearableItem>(emote));
+            AnimationClip animClip = new AnimationClip();
+            EmoteItem emote = new EmoteItem() { id = "emote0", data = new WearableItem.Data() };
+            emoteCatalog.RequestEmoteAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new UniTask<WearableItem>(emote));
             IEmoteAnimationLoader loader = Substitute.For<IEmoteAnimationLoader>();
-            loader.loadedAnimationClip.Returns(tikAnim);
+            loader.loadedAnimationClip.Returns(animClip);
             loaderFactory.Get().Returns(loader);
 
-            dataStore.emotesOnUse.IncreaseRefCount((bodyShapeId, "emote0"));
+            dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
 
-            loaderFactory.Received().Get();
-            resolver.Received().Resolve("emote0", Arg.Any<CancellationToken>());
-            loader.Received().LoadEmote(tracker.animationsModelsContainer, emote, bodyShapeId, Arg.Any<CancellationToken>());
-            var animKey = (bodyShapeId, "emote0");
-            var animClip = dataStore.animations[animKey]?.clip;
-            Assert.AreEqual(tikAnim, animClip);
+            loaderFactory.Received(1).Get();
+            emoteCatalog.Received(1).RequestEmoteAsync("emote0", Arg.Any<CancellationToken>());
+            loader.Received(1).LoadEmote(tracker.animationsModelsContainer, emote, WearableLiterals.BodyShapes.FEMALE, Arg.Any<CancellationToken>());
+            var animKey = (WearableLiterals.BodyShapes.FEMALE, "emote0");
+            Assert.AreEqual(animClip, dataStore.animations[animKey]?.clip);
         }
 
         [Test]
@@ -91,7 +85,6 @@ namespace DCL.Emotes
 
             dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
 
-            resolver.DidNotReceive().Resolve("emote0", Arg.Any<CancellationToken>());
             loaderFactory.DidNotReceive().Get();
         }
 
@@ -110,5 +103,37 @@ namespace DCL.Emotes
             loader.Received().Dispose();
             Assert.IsFalse(dataStore.animations.ContainsKey((bodyshapeId, "emote0")));
         }
+
+        [UnityTest]
+        public IEnumerator HandleMultipleLoadEmoteCallsGracefully() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                // Arrange
+                EmoteItem emote = new EmoteItem() { id = "emote0", data = new WearableItem.Data() };
+
+                async UniTask<WearableItem> GetDelayedEmoteItem()
+                {
+                    await UniTask.DelayFrame(1);
+                    return emote;
+                }
+
+                AnimationClip animClip = new AnimationClip();
+                emoteCatalog.RequestEmoteAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((x) => GetDelayedEmoteItem());
+                IEmoteAnimationLoader loader = Substitute.For<IEmoteAnimationLoader>();
+                loader.loadedAnimationClip.Returns(animClip);
+                loaderFactory.Configure().Get().Returns(loader);
+
+                // Act
+                dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
+                dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
+                await UniTask.DelayFrame(2); // Give time for GetDelayedEmoteItem to be performed.
+
+                // Assert
+                loaderFactory.Received(1).Get();
+                emoteCatalog.Received(1).RequestEmoteAsync("emote0", Arg.Any<CancellationToken>());
+                loader.Received(1).LoadEmote(tracker.animationsModelsContainer, emote, WearableLiterals.BodyShapes.FEMALE, Arg.Any<CancellationToken>());
+                var animKey = (WearableLiterals.BodyShapes.FEMALE, "emote0");
+                Assert.AreEqual(animClip, dataStore.animations[animKey]?.clip);
+            });
     }
 }

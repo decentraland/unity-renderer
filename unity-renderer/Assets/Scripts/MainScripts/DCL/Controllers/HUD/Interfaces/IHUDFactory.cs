@@ -13,6 +13,7 @@ namespace DCL
         AVATAR_EDITOR = 4,
         SETTINGS_PANEL = 5,
 
+        [Obsolete("Deprecated behavior")]
         AIRDROPPING = 8,
         TERMS_OF_SERVICE = 9,
         WORLD_CHAT_WINDOW = 10,

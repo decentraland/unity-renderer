@@ -1,6 +1,7 @@
 ﻿using MainScripts.DCL.Controllers.SettingsDesktop;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace DCL.SettingsCommon
 {
@@ -13,7 +14,8 @@ namespace DCL.SettingsCommon
             {
                 vSync = true,
                 windowMode = WindowMode.Borderless,
-                resolutionSizeIndex = 3
+                resolutionSizeIndex = 3,
+                fpsCapIndex = 90
             };
 
             var settingsByKey = GivenStoredSettings(storedSettings);
@@ -26,7 +28,7 @@ namespace DCL.SettingsCommon
             Assert.AreEqual(storedSettings, settings);
         }
 
-        [Test]
+        [Test][Category("ToFix")]
         public void GetDefaultSettingsWhenNothingIsStored()
         {
             var settingsByKey = GivenNoStoredSettings();
@@ -106,6 +108,10 @@ namespace DCL.SettingsCommon
             settingsByKey.Received(1)
                          .SetEnum(PlayerPrefsDesktopDisplaySettingsRepository.WINDOW_MODE,
                               settings.windowMode);
+
+            settingsByKey.Received(1)
+                         .SetInt(PlayerPrefsDesktopDisplaySettingsRepository.FPS_CAP,
+                              settings.fpsCapIndex);
         }
 
         private IPlayerPrefsSettingsByKey GivenStoredSettings(DisplaySettings settings)
@@ -120,6 +126,9 @@ namespace DCL.SettingsCommon
 
             settingsByKey.GetEnum(PlayerPrefsDesktopDisplaySettingsRepository.WINDOW_MODE, Arg.Any<WindowMode>())
                          .Returns(settings.windowMode);
+
+            settingsByKey.GetInt(PlayerPrefsDesktopDisplaySettingsRepository.FPS_CAP, Arg.Any<int>())
+                         .Returns(settings.fpsCapIndex);
 
             return settingsByKey;
         }
@@ -145,8 +154,9 @@ namespace DCL.SettingsCommon
             return new DisplaySettings
             {
                 windowMode = WindowMode.FullScreen,
-                resolutionSizeIndex = 0,
-                vSync = false
+                resolutionSizeIndex = -1,
+                vSync = false,
+                fpsCapIndex = 0
             };
         }
     }

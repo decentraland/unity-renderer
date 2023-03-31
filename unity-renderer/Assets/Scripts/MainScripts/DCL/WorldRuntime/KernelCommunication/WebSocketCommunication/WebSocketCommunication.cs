@@ -213,7 +213,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["SetPlayerTalking"] = "HUDController";
         messageTypeToBridgeName["SetVoiceChatEnabledByScene"] = "HUDController";
         messageTypeToBridgeName["TriggerSelfUserExpression"] = "HUDController";
-        messageTypeToBridgeName["AirdroppingRequest"] = "HUDController";
 
         messageTypeToBridgeName["GetMousePosition"] = "BuilderController";
         messageTypeToBridgeName["SelectGizmo"] = "BuilderController";
