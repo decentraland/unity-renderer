@@ -31,6 +31,7 @@ namespace DCL.Chat.HUD
         private bool isShowingPreview;
         private ParcelCoordinates currentCoordinates;
         private ChatEntryModel model;
+        private Color initialEntryColor;
 
         private readonly CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
 
@@ -46,6 +47,11 @@ namespace DCL.Chat.HUD
         public override event Action OnCancelHover;
         public override event Action OnCancelGotoHover;
 
+        public void Awake()
+        {
+            initialEntryColor = backgroundImage.color;
+        }
+
         public override void Populate(ChatEntryModel chatEntryModel) =>
             PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
 
@@ -54,7 +60,7 @@ namespace DCL.Chat.HUD
             model = chatEntryModel;
 
             if(chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED && chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
-                backgroundImage.color = Color.white;
+                backgroundImage.color = initialEntryColor;
 
             chatEntryModel.bodyText = body.ReplaceUnsupportedCharacters(chatEntryModel.bodyText, '?');
             chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
