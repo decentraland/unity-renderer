@@ -67,7 +67,7 @@ public class HUDBridge : MonoBehaviour
         HUDController.i.voiceChatHud?.SetUsersMuted(model.usersId, model.muted);
     }
 
-    public void RequestTeleport(string teleportDataJson) { HUDController.i.teleportHud?.RequestTeleport(teleportDataJson); }
+    public void RequestTeleport(string teleportDataJson) { DataStore.i.world.requestTeleportData.Set(teleportDataJson); }
 
     public void UpdateBalanceOfMANA(string balance) { HUDController.i.profileHud?.SetManaBalance(balance); }
 
