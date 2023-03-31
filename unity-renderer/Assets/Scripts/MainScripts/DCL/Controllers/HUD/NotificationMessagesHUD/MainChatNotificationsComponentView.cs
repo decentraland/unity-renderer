@@ -3,7 +3,6 @@ using DCL.Helpers;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -187,7 +186,7 @@ namespace DCL.Chat.Notifications
                 AnimateNewEntry(entry.gameObject.transform, animationCancellationToken.Token).Forget();
             }
 
-            if (model.IsOwnPlayerMentioned)
+            if (model.ShouldPlayMentionSfx)
                 AudioScriptableObjects.ChatReceiveMentionEvent.Play(true);
 
             OnResetFade?.Invoke(!isOverMessage && !isOverPanel);

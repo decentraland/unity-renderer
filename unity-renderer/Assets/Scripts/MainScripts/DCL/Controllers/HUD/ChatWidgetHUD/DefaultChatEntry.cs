@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.Chat.HUD
 {
@@ -126,7 +127,9 @@ namespace DCL.Chat.HUD
             if (HUDAudioHandler.i == null)
                 return;
 
-            if (IsRecentMessage(chatEntryModel) && Settings.i.audioSettings.Data.chatSFXEnabled)
+            bool areSoundsEnabled = Settings.i.audioSettings.Data.chatNotificationType == AudioSettings.ChatNotificationType.All;
+
+            if (IsRecentMessage(chatEntryModel) && areSoundsEnabled)
             {
                 switch (chatEntryModel.messageType)
                 {
