@@ -15,7 +15,7 @@ namespace DCL.Components
     public class DCLVideoTexture : DCLTexture
     {
         public static bool VERBOSE = false;
-        public static Logger logger = new Logger("DCLVideoTexture") {verboseEnabled = VERBOSE};
+        public static Logger logger = new Logger("DCLVideoTexture") { verboseEnabled = VERBOSE };
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
@@ -34,7 +34,10 @@ namespace DCL.Components
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         internal WebVideoPlayer texturePlayer;
@@ -66,12 +69,9 @@ namespace DCL.Components
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
-            if (isDisposed)
-            {
-                yield break;
-            }
+            if (isDisposed) { yield break; }
 
-            var model = (Model) newModel;
+            var model = (Model)newModel;
 
             unitySamplingMode = model.samplingMode;
 
@@ -105,15 +105,14 @@ namespace DCL.Components
 
             if (texture == null)
             {
-                yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError));
+                yield return new WaitUntil(() => texturePlayer == null || (texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError);
 
-                if (texturePlayer.isError)
+                if (texturePlayer == null || texturePlayer.isError)
                 {
-                    if (texturePlayerUpdateRoutine != null)
-                    {
-                        CoroutineStarter.Stop(texturePlayerUpdateRoutine);
-                        texturePlayerUpdateRoutine = null;
-                    }
+                    if (texturePlayerUpdateRoutine == null) yield break;
+
+                    CoroutineStarter.Stop(texturePlayerUpdateRoutine);
+                    texturePlayerUpdateRoutine = null;
 
                     yield break;
                 }
@@ -133,14 +132,8 @@ namespace DCL.Components
                     yield return null;
                 }
 
-                if (model.playing)
-                {
-                    texturePlayer.Play();
-                }
-                else
-                {
-                    texturePlayer.Pause();
-                }
+                if (model.playing) { texturePlayer.Play(); }
+                else { texturePlayer.Pause(); }
 
                 ReportVideoProgress();
 
@@ -172,8 +165,11 @@ namespace DCL.Components
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), -1);
         }
 
-        public float GetVolume() { return ((Model) model).volume; }
-        
+        public float GetVolume()
+        {
+            return ((Model)model).volume;
+        }
+
         private IEnumerator OnUpdate()
         {
             while (true)
@@ -196,10 +192,7 @@ namespace DCL.Components
 
         private void UpdateVideoTexture()
         {
-            if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
-            {
-                currUpdateIntervalTime += Time.unscaledDeltaTime;
-            }
+            if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS) { currUpdateIntervalTime += Time.unscaledDeltaTime; }
             else if (texturePlayer != null)
             {
                 currUpdateIntervalTime = 0;
@@ -212,12 +205,9 @@ namespace DCL.Components
         {
             var currentState = texturePlayer.GetState();
 
-            if ( currentState == VideoState.PLAYING
-                 && IsTimeToReportVideoProgress()
-                 || previousVideoState != currentState)
-            {
-                ReportVideoProgress();
-            }
+            if (currentState == VideoState.PLAYING
+                && IsTimeToReportVideoProgress()
+                || previousVideoState != currentState) { ReportVideoProgress(); }
         }
 
         private void ReportVideoProgress()
@@ -228,7 +218,7 @@ namespace DCL.Components
             var videoStatus = (int)videoState;
             var currentOffset = texturePlayer.GetTime();
             var length = texturePlayer.GetDuration();
-            WebInterface.ReportVideoProgressEvent(id, scene.sceneData.sceneNumber, lastVideoClipID, videoStatus, currentOffset, length );
+            WebInterface.ReportVideoProgressEvent(id, scene.sceneData.sceneNumber, lastVideoClipID, videoStatus, currentOffset, length);
         }
 
         private bool IsTimeToReportVideoProgress()
@@ -257,10 +247,10 @@ namespace DCL.Components
 
                             var entityDist = DCLVideoTextureUtils.GetClosestDistanceSqr(materialInfo.Value,
                                 CommonScriptableObjects.playerUnityPosition);
-                            
+
                             if (entityDist < minDistance)
                                 minDistance = entityDist;
-                            
+
                             // NOTE: if current minDistance is enough for full volume then there is no need to keep iterating to check distances
                             if (minDistance <= DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE)
                                 break;
@@ -276,15 +266,15 @@ namespace DCL.Components
                 distanceVolumeModifier = 1 - Mathf.Clamp01(Mathf.FloorToInt(minDistance / sqrParcelDistance) / maxDistanceBlockForSound);
             }
 
-            if (texturePlayer != null)
-            {
-                texturePlayer.visible = isVisible;
-            }
+            if (texturePlayer != null) { texturePlayer.visible = isVisible; }
 
             UpdateVolume();
         }
 
-        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) { UpdateVolume(); }
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue)
+        {
+            UpdateVolume();
+        }
 
         private void UpdateVolume()
         {
@@ -309,15 +299,18 @@ namespace DCL.Components
         {
             if (scene == null)
                 return false;
+
             if (currentSceneNumber <= 0)
                 return false;
 
             return (scene.sceneData.sceneNumber == currentSceneNumber) || (scene.isPersistent);
         }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) => SetPlayStateDirty();
+        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) =>
+            SetPlayStateDirty();
 
-        private void OnSceneNumberChanged(int current, int previous) => isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+        private void OnSceneNumberChanged(int current, int previous) =>
+            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
 
         public override void AttachTo(ISharedComponent component)
         {
@@ -356,9 +349,11 @@ namespace DCL.Components
             SetPlayStateDirty();
         }
 
-        private void SetPlayStateDirty(IDCLEntity entity = null) => isPlayStateDirty = true;
+        private void SetPlayStateDirty(IDCLEntity entity = null) =>
+            isPlayStateDirty = true;
 
-        private void OnAudioSettingsChanged(AudioSettings settings) => UpdateVolume();
+        private void OnAudioSettingsChanged(AudioSettings settings) =>
+            UpdateVolume();
 
         public override void Dispose()
         {

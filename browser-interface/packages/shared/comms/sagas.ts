@@ -205,6 +205,12 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     yield apply(adapter, adapter.connect, [])
     yield put(setRoomConnection(adapter))
   } catch (error: any) {
+    commsLogger.error(error)
+    trackEvent('error', {
+      context: 'handleConnectToComms',
+      message: error.message,
+      stack: error.stack
+    })
     notifyStatusThroughChat('Error connecting to comms. Will try another realm')
 
     const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
