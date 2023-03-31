@@ -6,6 +6,7 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
+using System.Collections.Generic;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
 using RaycastHit = UnityEngine.RaycastHit;
@@ -19,6 +20,8 @@ namespace ECSSystems.ECSRaycastSystem
         private readonly ECSComponent<PBRaycastResult> raycastResultComponent;
         private readonly ECSComponent<PBMeshCollider> meshCollider;
         private readonly IInternalECSComponent<InternalColliders> physicsColliderComponent;
+        private readonly IInternalECSComponent<InternalColliders> onPointerColliderComponent;
+        private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
         private readonly IECSComponentWriter componentWriter;
 
         public ECSRaycastSystem(
@@ -26,12 +29,16 @@ namespace ECSSystems.ECSRaycastSystem
             ECSComponent<PBRaycastResult> raycastResultComponent,
             ECSComponent<PBMeshCollider> meshCollider,
             IInternalECSComponent<InternalColliders> physicsColliderComponent,
+            IInternalECSComponent<InternalColliders> onPointerColliderComponent,
+            IInternalECSComponent<InternalColliders> customLayerColliderComponent,
             IECSComponentWriter componentWriter)
         {
             this.raycastComponent = raycastComponent;
             this.raycastResultComponent = raycastResultComponent;
             this.meshCollider = meshCollider;
             this.physicsColliderComponent = physicsColliderComponent;
+            this.onPointerColliderComponent = onPointerColliderComponent;
+            this.customLayerColliderComponent = customLayerColliderComponent;
             this.componentWriter = componentWriter;
         }
 
@@ -49,8 +56,7 @@ namespace ECSSystems.ECSRaycastSystem
                 if (raycastResultComponent.HasComponent(scene, entity))
                 {
                     bool isContinuous = model.HasContinuous && model.Continuous;
-                    uint resultTimestamp = raycastResultComponent.Get(scene, entity).model.Timestamp;
-                    if (!isContinuous && resultTimestamp == model.Timestamp)
+                    if (!isContinuous && raycastResultComponent.Get(scene, entity).model.Timestamp == model.Timestamp)
                         continue;
                 }
 
@@ -70,10 +76,11 @@ namespace ECSSystems.ECSRaycastSystem
 
                 // Hit everything by default
                 bool layerMaskHasSDKCustomLayer = false;
-                int raycastLayerMask = PhysicsLayers.onPointerEventLayer
-                                             | PhysicsLayers.characterOnlyLayer
-                                             | PhysicsLayers.sdkCustomLayer
-                                             | PhysicsLayers.defaultLayer;
+                LayerMask raycastLayerMask = new LayerMask()
+                                             | (1 << PhysicsLayers.onPointerEventLayer)
+                                             | (1 << PhysicsLayers.characterOnlyLayer)
+                                             | (1 << PhysicsLayers.defaultLayer)
+                                             | (1 << PhysicsLayers.sdkCustomLayer);
 
                 if (model.HasCollisionMask)
                 {
@@ -110,27 +117,21 @@ namespace ECSSystems.ECSRaycastSystem
                     for (int j = 0; j < hits.Length; j++)
                     {
                         RaycastHit currentHit = hits[j];
-                        IDCLEntity collisionEntity = null;
-                        var componentGroup = physicsColliderComponent.GetForAll();
-                        int componentsCount = componentGroup.Count;
-                        for (int k = 0; k < componentsCount; k++)
-                        {
-                            if (componentGroup[k].value.model.colliders.Contains(currentHit.collider))
-                            {
-                                collisionEntity = componentGroup[k].value.entity;
-                                break;
-                            }
-                        }
 
+                        IDCLEntity collisionEntity = FindMatchingColliderEntity(physicsColliderComponent.GetForAll(), currentHit.collider)
+                                                     ?? FindMatchingColliderEntity(onPointerColliderComponent.GetForAll(), currentHit.collider)
+                                                     ?? FindMatchingColliderEntity(customLayerColliderComponent.GetForAll(), currentHit.collider);
 
                         DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
                         if (collisionEntity != null)
                         {
                             if (layerMaskHasSDKCustomLayer
-                                && collisionEntity.gameObject.layer == PhysicsLayers.sdkCustomLayer
+                                && currentHit.transform.gameObject.layer == PhysicsLayers.sdkCustomLayer
                                 && meshCollider.HasComponent(scene, collisionEntity))
                             {
                                 int entityCollisionMask = meshCollider.Get(scene, collisionEntity).model.CollisionMask;
+
+                                // If the meshCollider collision mask is not in the raycast collision mask, we ignore that entity
                                 if ((model.CollisionMask & entityCollisionMask) == 0)
                                     continue;
                             }
@@ -152,8 +153,11 @@ namespace ECSSystems.ECSRaycastSystem
                         hit.NormalHit.Y = currentHit.normal.y;
                         hit.NormalHit.Z = currentHit.normal.z;
 
-
                         result.Hits.Add(hit);
+
+                        // TODO: Improve this escape??
+                        if (model.QueryType == RaycastQueryType.RqtHitFirst && result.Hits.Count == 1)
+                            break;
                     }
                 }
 
@@ -200,6 +204,20 @@ namespace ECSSystems.ECSRaycastSystem
                 direction = rayDirection.normalized
             };
             return ray;
+        }
+
+        private IDCLEntity FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene,long,ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
+        {
+            int componentsCount = componentGroup.Count;
+            for (int k = 0; k < componentsCount; k++)
+            {
+                if (componentGroup[k].value.model.colliders.Contains(targetCollider))
+                {
+                    return componentGroup[k].value.entity;
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
         {
             factory.AddOrReplaceComponent(componentId,
                 ProtoSerialization.Deserialize<PBMeshCollider>,
-                () => new MeshColliderHandler(internalComponents.onPointerColliderComponent, internalComponents.physicColliderComponent));
+                () => new MeshColliderHandler(internalComponents.onPointerColliderComponent, internalComponents.physicColliderComponent, internalComponents.customLayerColliderComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBMeshCollider>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

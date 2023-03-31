@@ -34,8 +34,10 @@ namespace Tests
 
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
-            handler = new MeshColliderHandler(internalComponents.onPointerColliderComponent,
-                internalComponents.physicColliderComponent);
+            handler = new MeshColliderHandler(
+                internalComponents.onPointerColliderComponent,
+                internalComponents.physicColliderComponent,
+                internalComponents.customLayerColliderComponent);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);

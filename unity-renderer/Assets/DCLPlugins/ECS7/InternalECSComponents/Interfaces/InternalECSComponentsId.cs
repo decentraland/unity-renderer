@@ -13,5 +13,6 @@ public enum InternalECSComponentsId
     VIDEO_PLAYER = 11,
     VIDEO_MATERIAL = 12,
     SCENE_BOUNDS_CHECK = 13,
-    AUDIO_SOURCE = 14
+    AUDIO_SOURCE = 14,
+    COLLIDER_CUSTOM = 15
 }

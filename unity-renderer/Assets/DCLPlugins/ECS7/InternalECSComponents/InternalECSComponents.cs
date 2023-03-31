@@ -20,6 +20,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent { get; }
     public IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     public IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
+    public IInternalECSComponent<InternalColliders> customLayerColliderComponent { get; }
     public IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent { get; }
     public IInternalECSComponent<InternalRenderers> renderersComponent { get; }
     public IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
@@ -65,6 +66,15 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
                 () => physicColliderComponent, model => model.colliders.Count == 0),
+            markAsDirtyComponents,
+            crdtExecutors);
+
+        customLayerColliderComponent = new InternalECSComponent<InternalColliders>(
+            InternalECSComponentsId.COLLIDER_CUSTOM,
+            componentsManager,
+            componentsFactory,
+            () => new RemoveOnConditionHandler<InternalColliders>(
+                () => customLayerColliderComponent, model => model.colliders.Count == 0),
             markAsDirtyComponents,
             crdtExecutors);
 

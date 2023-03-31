@@ -12,6 +12,7 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent { get; }
     IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
+    IInternalECSComponent<InternalColliders> customLayerColliderComponent { get; }
     IInternalECSComponent<InternalRenderers> renderersComponent { get; }
     IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
     IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent { get; }
