@@ -52,6 +52,8 @@ namespace ECSSystems.ECSRaycastSystem
                 IDCLEntity entity = raycasts[i].value.entity;
                 IParcelScene scene = raycasts[i].value.scene;
 
+                if (model.QueryType == RaycastQueryType.RqtNone) continue;
+
                 // If the entity has a raycastResult, the first ray was already cast
                 if (raycastResultComponent.HasComponent(scene, entity))
                 {
@@ -88,28 +90,19 @@ namespace ECSSystems.ECSRaycastSystem
                     layerMaskHasSDKCustomLayer = ProtoConvertUtils.LayerMaskHasAnySDKCustomLayer(model.CollisionMask);
                 }
 
-                // TODO: Deal with possibly more than one object in line, with custom collider layer, using always RaycastAll...
-
                 RaycastHit[] hits = null;
-                if (model.QueryType == RaycastQueryType.RqtHitFirst)
+
+                // If the raycast layerMask has SDKCustomLayer we have to use RaycastAll
+                // because that  layer represents 8 different SDK layers: ClCustom1~8
+                if (layerMaskHasSDKCustomLayer || model.QueryType == RaycastQueryType.RqtQueryAll)
                 {
-                    if (layerMaskHasSDKCustomLayer)
-                    {
-                        hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMask);
-                    }
-                    else
-                    {
-                        bool hasHit = Physics.Raycast(ray, out RaycastHit hit, model.MaxDistance, raycastLayerMask);
-                        if (hasHit)
-                        {
-                            hits = new RaycastHit[1];
-                            hits[0] = hit;
-                        }
-                    }
-                }
-                else if (model.QueryType == RaycastQueryType.RqtQueryAll)
-                {
+                    // TODO: Use nonAlloc
                     hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMask);
+                }
+                else if (Physics.Raycast(ray, out RaycastHit hit, model.MaxDistance, raycastLayerMask))
+                {
+                    // TODO: Use nonAlloc
+                    hits = new RaycastHit[] { hit };
                 }
 
                 if (hits != null)
@@ -118,25 +111,25 @@ namespace ECSSystems.ECSRaycastSystem
                     {
                         RaycastHit currentHit = hits[j];
 
-                        IDCLEntity collisionEntity = FindMatchingColliderEntity(physicsColliderComponent.GetForAll(), currentHit.collider)
+                        IDCLEntity hitColliderEntity = FindMatchingColliderEntity(physicsColliderComponent.GetForAll(), currentHit.collider)
                                                      ?? FindMatchingColliderEntity(onPointerColliderComponent.GetForAll(), currentHit.collider)
                                                      ?? FindMatchingColliderEntity(customLayerColliderComponent.GetForAll(), currentHit.collider);
 
                         DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
-                        if (collisionEntity != null)
+                        if (hitColliderEntity != null)
                         {
-                            if (layerMaskHasSDKCustomLayer
-                                && currentHit.transform.gameObject.layer == PhysicsLayers.sdkCustomLayer
-                                && meshCollider.HasComponent(scene, collisionEntity))
+                            // If a collider with sdkCustomLayer is hit, the layerMask has an SDK Custom Layer
+                            if (currentHit.transform.gameObject.layer == PhysicsLayers.sdkCustomLayer
+                                && meshCollider.HasComponent(scene, hitColliderEntity))
                             {
-                                int entityCollisionMask = meshCollider.Get(scene, collisionEntity).model.CollisionMask;
+                                int hitColliderRealCollisionMask = meshCollider.Get(scene, hitColliderEntity).model.CollisionMask;
 
                                 // If the meshCollider collision mask is not in the raycast collision mask, we ignore that entity
-                                if ((model.CollisionMask & entityCollisionMask) == 0)
+                                if ((model.CollisionMask & hitColliderRealCollisionMask) == 0)
                                     continue;
                             }
 
-                            hit.EntityId = (uint)collisionEntity.entityId;
+                            hit.EntityId = (uint)hitColliderEntity.entityId;
                         }
                         hit.MeshName = currentHit.collider.name;
                         hit.Length = currentHit.distance;
