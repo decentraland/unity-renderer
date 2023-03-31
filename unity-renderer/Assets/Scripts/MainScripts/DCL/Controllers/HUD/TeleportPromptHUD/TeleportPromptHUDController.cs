@@ -56,16 +56,13 @@ public class TeleportPromptHUDController : IHUD
         {
             try
             {
-                MinimapMetadata.MinimapSceneInfo[] scenes = await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y),
-                    2,
-                    cancellationToken);
-
-                MinimapMetadata.MinimapSceneInfo sceneInfo = scenes.First(info => info.parcels.Exists(i => i.x == coordinates.x && i.y == coordinates.y));
+                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y), 2, cancellationToken);
+                MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(coordinates.x, coordinates.y);
                 view.ShowTeleportToCoords(coordinates.ToString(), sceneInfo.name, sceneInfo.owner, sceneInfo.previewImageUrl);
 
                 teleportData = new TeleportData()
                 {
-                    destination = coordinates.ToString(),
+                    coordinates = coordinates,
                     sceneData = sceneInfo,
                     sceneEvent = null
                 };
@@ -183,12 +180,7 @@ public class TeleportPromptHUDController : IHUD
                 DCL.Environment.i.world.teleportController.GoToMagic();
                 break;
             default:
-                string[] coordSplit = teleportData.destination.Split(',');
-                if (coordSplit.Length == 2 && int.TryParse(coordSplit[0], out int x) && int.TryParse(coordSplit[1], out int y))
-                {
-                    DCL.Environment.i.world.teleportController.Teleport(x, y);
-                }
-
+                DCL.Environment.i.world.teleportController.Teleport(teleportData.GetCoordinates().x, teleportData.GetCoordinates().y);
                 break;
         }
     }
@@ -196,6 +188,12 @@ public class TeleportPromptHUDController : IHUD
     [Serializable]
     internal class TeleportData
     {
+        public Vector2Int? coordinates;
+
+        public Vector2Int GetCoordinates() =>
+            (coordinates ??= new Vector2Int(int.TryParse(destination.Split(',')[0], out int x) ? x : 0,
+                int.TryParse(destination.Split(',')[1], out int y) ? y : 0));
+
         public string destination = "";
         public MinimapMetadata.MinimapSceneInfo sceneData = null;
         public EventData sceneEvent = null;
