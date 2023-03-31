@@ -21,14 +21,13 @@ namespace AvatarSystem
         protected override async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
             baseAvatar.Initialize();
-
+            animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
             List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, baseAvatar.GetMainRenderer(), linkedCt: linkedCt);
             Prepare(settings, emotes, baseAvatar.GetArmatureContainer());
             Bind();
 
             MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
             Inform(newCombinedRenderer);
-
             await baseAvatar.FadeOut(newCombinedRenderer, visibility.IsMainRenderVisible(), linkedCt);
         }
 

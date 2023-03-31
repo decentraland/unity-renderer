@@ -16,8 +16,8 @@ namespace AvatarSystem
 
         protected readonly ILoader loader;
         protected readonly IVisibility visibility;
+        protected readonly IAnimator animator;
         private readonly IAvatarCurator avatarCurator;
-        private readonly IAnimator animator;
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
@@ -88,6 +88,7 @@ namespace AvatarSystem
         protected virtual async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
             List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, linkedCt: linkedCt);
+            animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
             Prepare(settings, emotes, loader.bodyshapeContainer);
             Bind();
             Inform(loader.combinedRenderer);
@@ -117,7 +118,6 @@ namespace AvatarSystem
             //Scale the bounds due to the giant avatar not being skinned yet
             extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
 
-            animator.Prepare(settings.bodyshapeId, loaderBodyshapeContainer);
             emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
             gpuSkinning.Prepare(loader.combinedRenderer);
             gpuSkinningThrottlerService.Register(gpuSkinning);
