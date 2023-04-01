@@ -66,6 +66,16 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
+        public static void SetCustomLayerColliders(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, IList<Collider> newCollidersCollection)
+        {
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            model.customLayerColliders = newCollidersCollection;
+            model.meshesDirty = true;
+
+            sbcInternalComponent.PutFor(scene, entity, model);
+        }
+
         public static void SetAudioSource(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, AudioSource audioSource)
         {

@@ -85,7 +85,7 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.renderersComponent,
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.physicColliderComponent,
-            // context.internalEcsComponents.customLayerColliderComponent,
+            context.internalEcsComponents.customLayerColliderComponent,
             context.internalEcsComponents.audioSourceComponent,
             DataStore.i.debugConfig.isDebugMode.Get());
 

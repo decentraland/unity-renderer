@@ -148,7 +148,6 @@ namespace ECSSystems.ECSRaycastSystem
 
                         result.Hits.Add(hit);
 
-                        // TODO: Improve this escape??
                         if (model.QueryType == RaycastQueryType.RqtHitFirst && result.Hits.Count == 1)
                             break;
                     }

@@ -15,6 +15,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
         private readonly IInternalECSComponent<InternalColliders> pointerCollidersComponent;
         private readonly IInternalECSComponent<InternalColliders> physicsCollidersComponent;
+        private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
         private readonly IInternalECSComponent<InternalAudioSource> audioSourceComponent;
         private readonly IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback;
         private readonly Dictionary<int, Tuple<Bounds, Vector3>> scenesOuterBounds = new Dictionary<int, Tuple<Bounds, Vector3>>();
@@ -29,6 +30,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             IInternalECSComponent<InternalRenderers> renderersComponent,
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicsColliderComponent,
+            IInternalECSComponent<InternalColliders> customLayerColliderComponent,
             IInternalECSComponent<InternalAudioSource> audioSourceComponent,
             bool previewMode = false)
         {
@@ -38,6 +40,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             this.renderersComponent = renderersComponent;
             this.pointerCollidersComponent = pointerColliderComponent;
             this.physicsCollidersComponent = physicsColliderComponent;
+            this.customLayerColliderComponent = customLayerColliderComponent;
             this.audioSourceComponent = audioSourceComponent;
 
             loadedScenes.OnAdded += OnSceneAdded;
@@ -80,6 +83,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             ProcessRendererComponentChanges(sceneBoundsCheckComponent, renderersComponent.GetForAll());
             ProcessPhysicColliderComponentChanges(sceneBoundsCheckComponent, physicsCollidersComponent.GetForAll());
             ProcessPointerColliderComponentChanges(sceneBoundsCheckComponent, pointerCollidersComponent.GetForAll());
+            ProcessPointerColliderComponentChanges(sceneBoundsCheckComponent, customLayerColliderComponent.GetForAll());
             ProcessAudioSourceComponentChanges(sceneBoundsCheckComponent, audioSourceComponent.GetForAll());
 
             // Note: the components are traversed backwards as we may free the 'fully defaulted' entities from the component
@@ -100,6 +104,9 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 bool pointerColliderRemoved = WereColliderComponentRemoved(scene, entity,
                     model.pointerColliders, pointerCollidersComponent);
 
+                bool customLayerColliderRemoved = WereColliderComponentRemoved(scene, entity,
+                    model.customLayerColliders, customLayerColliderComponent);
+
                 bool renderersRemoved = WereRendererComponentRemoved(scene, entity,
                     model.renderers, renderersComponent);
 
@@ -112,6 +119,9 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
                     if (pointerColliderRemoved)
                         model.pointerColliders = null;
+
+                    if (customLayerColliderRemoved)
+                        model.customLayerColliders = null;
 
                     if (renderersRemoved)
                         model.renderers = null;
@@ -224,6 +234,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             var renderers = sbcComponentModel.renderers;
             var physicsColliders = sbcComponentModel.physicsColliders;
             var pointerColliders = sbcComponentModel.pointerColliders;
+            var customLayerColliders = sbcComponentModel.customLayerColliders;
             int renderersCount = renderers?.Count ?? 0;
             int collidersCount = physicsColliders?.Count ?? 0 + pointerColliders?.Count ?? 0;
 
@@ -243,7 +254,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             if (physicsColliders != null)
             {
                 int physicsCollidersCount = physicsColliders.Count;
-
                 for (int i = 0; i < physicsCollidersCount; i++)
                 {
                     if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, physicsColliders[i].bounds))
@@ -254,10 +264,19 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             if (pointerColliders != null)
             {
                 int pointerCollidersCount = pointerColliders.Count;
-
                 for (int i = 0; i < pointerCollidersCount; i++)
                 {
                     if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, pointerColliders[i].bounds))
+                        return false;
+                }
+            }
+
+            if (customLayerColliders != null)
+            {
+                int customLayerCollidersCount = customLayerColliders.Count;
+                for (int i = 0; i < customLayerCollidersCount; i++)
+                {
+                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, customLayerColliders[i].bounds))
                         return false;
                 }
             }
@@ -337,6 +356,22 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             }
         }
 
+        private static void ProcessCustomLayerColliderComponentChanges(IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent,
+            IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalColliders>>> colliderComponents)
+        {
+            for (int i = 0; i < colliderComponents.Count; i++)
+            {
+                var componentData = colliderComponents[i].value;
+                IParcelScene scene = componentData.scene;
+                IDCLEntity entity = componentData.entity;
+                InternalColliders model = componentData.model;
+
+                if (!model.dirty || scene.isPersistent) continue;
+
+                sceneBoundsCheckComponent.SetCustomLayerColliders(scene, entity, model.colliders);
+            }
+        }
+
         private static void ProcessAudioSourceComponentChanges(IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent,
             IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalAudioSource>>> audioSourceComponents)
         {
@@ -388,6 +423,14 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 for (var i = 0; i < sbcInternalComponentModel.pointerColliders.Count; i++)
                 {
                     sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(sbcInternalComponentModel.pointerColliders[i]));
+                }
+            }
+
+            if (sbcInternalComponentModel.customLayerColliders != null)
+            {
+                for (var i = 0; i < sbcInternalComponentModel.customLayerColliders.Count; i++)
+                {
+                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(sbcInternalComponentModel.customLayerColliders[i]));
                 }
             }
 
