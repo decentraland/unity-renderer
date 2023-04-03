@@ -141,9 +141,7 @@ namespace DCL
             lodControllersWithDistance.Clear();
 
             foreach (IAvatarLODController x in lodControllers)
-            {
                 lodControllersWithDistance.Add((x, DistanceToOwnPlayer(x.player, ownPlayerPosition)));
-            }
 
             lodControllersWithDistance.Sort(CompareByDistance());
 
