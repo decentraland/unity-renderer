@@ -79,7 +79,7 @@ namespace DCL.LoadingScreen
             //We have to check that the latest scene loaded is the one from our current destination
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
             {
-                IsPlayerLoaded();
+                HandlePlayerLoading();
             }
         }
 
@@ -119,7 +119,7 @@ namespace DCL.LoadingScreen
                 view.FadeIn(false, true);
                 StartTimeoutCounter(timeoutCTS.Token);
             }else if (IsSceneLoaded(currentDestinationCandidate))
-                IsPlayerLoaded();
+                HandlePlayerLoading();
         }
 
 
@@ -157,7 +157,7 @@ namespace DCL.LoadingScreen
         private bool IsSceneLoaded(Vector2Int candidate) =>
             worldState.GetScene(worldState.GetSceneNumberByCoords(candidate))?.loadingProgress >= 100;
 
-        private void IsPlayerLoaded()
+        private void HandlePlayerLoading()
         {
             //We have to check if the player is loaded
             if (commonDataStore.isPlayerRendererLoaded.Get())
