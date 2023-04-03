@@ -1,7 +1,15 @@
 import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { MAXIMUM_NETWORK_MSG_LENGTH } from 'config'
 import future from 'fp-future'
-import { DataPacket_Kind, DisconnectReason, Participant, RemoteParticipant, Room, RoomEvent } from 'livekit-client'
+import {
+  ConnectionState,
+  DataPacket_Kind,
+  DisconnectReason,
+  Participant,
+  RemoteParticipant,
+  Room,
+  RoomEvent
+} from 'livekit-client'
 import mitt from 'mitt'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import type { ILogger } from 'lib/logger'
@@ -22,7 +30,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   public readonly events = mitt<CommsAdapterEvents>()
 
   private disconnected = false
-  private room: Room
+  private readonly room: Room
   private connectedFuture = future<void>()
 
   private voiceChatHandlerCache?: Promise<VoiceHandler>
@@ -32,27 +40,29 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
     this.room
       .on(RoomEvent.ParticipantConnected, (_: RemoteParticipant) => {
-        this.config.logger.log('remote participant joined', _.identity)
+        this.config.logger.log(this.room.name, 'remote participant joined', _.identity)
       })
       .on(RoomEvent.ParticipantDisconnected, (_: RemoteParticipant) => {
         this.events.emit('PEER_DISCONNECTED', {
           address: _.identity
         })
-        this.config.logger.log('remote participant left', _.identity)
+        this.config.logger.log(this.room.name, 'remote participant left', _.identity)
+      })
+      .on(RoomEvent.ConnectionStateChanged, (state: ConnectionState) => {
+        this.config.logger.log(this.room.name, 'connection state changed', state)
+        this.disconnected = (state !== ConnectionState.Connected)
       })
       .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
-        this.config.logger.log('disconnected from room', reason, {
+        this.config.logger.log(this.room.name, 'disconnected from room', reason, {
           liveKitParticipantSid: this.room.localParticipant.sid,
           liveKitRoomSid: this.room.sid
         })
-        if (!this.disconnected) {
-          trackEvent('disconnection_cause', {
-            context: 'livekit-adapter',
-            message: `Got RoomEvent.Disconnected. Reason: ${reason}`,
-            liveKitParticipantSid: this.room.localParticipant.sid,
-            liveKitRoomSid: this.room.sid
-          })
-        }
+        trackEvent('disconnection_cause', {
+          context: 'livekit-adapter',
+          message: `Got RoomEvent.Disconnected. Reason: ${reason}`,
+          liveKitParticipantSid: this.room.localParticipant.sid,
+          liveKitRoomSid: this.room.sid
+        })
         const kicked = reason === DisconnectReason.DUPLICATE_IDENTITY
         this.do_disconnect(kicked).catch((err) => {
           this.config.logger.error(`error during disconnection ${err.toString()}`)
@@ -75,7 +85,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   async connect(): Promise<void> {
     await this.room.connect(this.config.url, this.config.token, { autoSubscribe: true })
     await this.room.engine.waitForPCConnected()
-    this.config.logger.log(`Connected to livekit room ${this.room.name}`)
+    this.config.logger.log(this.room.name, `Connected to livekit room ${this.room.name}`)
     this.connectedFuture.resolve()
   }
 
@@ -119,7 +129,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     this.connectedFuture.resolve()
 
     this.disconnected = true
-    this.room.disconnect().catch(commsLogger.error)
+    await this.room.disconnect().catch(commsLogger.error)
     this.events.emit('DISCONNECTION', { kicked })
   }
 
