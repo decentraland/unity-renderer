@@ -177,7 +177,7 @@ namespace DCL.Chat.HUD
 
             if (CoordinateUtils.HasValidTextCoordinates(link))
             {
-                DataStore.i.HUDs.gotoPanelVisible.Set(true);
+                DataStore.i.HUDs.gotoPanelVisible.Set(true, true);
                 var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
                 DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }
