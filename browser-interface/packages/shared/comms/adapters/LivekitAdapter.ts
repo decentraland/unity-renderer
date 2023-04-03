@@ -1,6 +1,5 @@
 import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { MAXIMUM_NETWORK_MSG_LENGTH } from 'config'
-import future from 'fp-future'
 import {
   ConnectionState,
   DataPacket_Kind,
@@ -13,7 +12,6 @@ import {
 import mitt from 'mitt'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import type { ILogger } from 'lib/logger'
-import defaultLogger from 'lib/logger'
 import { incrementCommsMessageSent } from 'shared/session/getPerformanceInfo'
 import type { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { commsLogger } from '../logger'
@@ -29,9 +27,8 @@ export type LivekitConfig = {
 export class LivekitAdapter implements MinimumCommunicationsAdapter {
   public readonly events = mitt<CommsAdapterEvents>()
 
-  private disconnected = false
+  private disposed = false
   private readonly room: Room
-  private connectedFuture = future<void>()
 
   private voiceChatHandlerCache?: Promise<VoiceHandler>
 
@@ -50,7 +47,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       })
       .on(RoomEvent.ConnectionStateChanged, (state: ConnectionState) => {
         this.config.logger.log(this.room.name, 'connection state changed', state)
-        this.disconnected = (state !== ConnectionState.Connected)
       })
       .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
         this.config.logger.log(this.room.name, 'disconnected from room', reason, {
@@ -86,34 +82,39 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     await this.room.connect(this.config.url, this.config.token, { autoSubscribe: true })
     await this.room.engine.waitForPCConnected()
     this.config.logger.log(this.room.name, `Connected to livekit room ${this.room.name}`)
-    this.connectedFuture.resolve()
   }
 
   async send(data: Uint8Array, { reliable }: SendHints): Promise<void> {
+    if (this.disposed) {
+      return
+    }
+
     incrementCommsMessageSent(data.length)
+    const state = this.room.state
+
+    if (data.length > MAXIMUM_NETWORK_MSG_LENGTH) {
+      const message = proto.Packet.decode(data)
+      this.config.logger.error('Skipping big message over comms', message)
+      trackEvent('invalid_comms_message_too_big', { message: JSON.stringify(message) })
+      return
+    }
+
+    if (state !== ConnectionState.Connected) {
+      this.config.logger.log(`Skip sending message because connection state is ${state}`)
+      return
+    }
+
     try {
-      await this.connectedFuture
-      if (!this.disconnected) {
-        if (data.length > MAXIMUM_NETWORK_MSG_LENGTH) {
-          const message = proto.Packet.decode(data)
-          defaultLogger.error('Skipping big message over comms', message)
-          trackEvent('invalid_comms_message_too_big', { message: JSON.stringify(message) })
-        } else {
-          await this.room.localParticipant.publishData(
-            data,
-            reliable ? DataPacket_Kind.RELIABLE : DataPacket_Kind.LOSSY
-          )
-        }
-      }
+      await this.room.localParticipant.publishData(data, reliable ? DataPacket_Kind.RELIABLE : DataPacket_Kind.LOSSY)
     } catch (err: any) {
+      // NOTE: for tracking purposes only, this is not a "code" error, this is a failed connection or a problem with the livekit instance
       trackEvent('error', {
         context: 'livekit-adapter',
         message: `Error trying to send data. Reason: ${err.message}`,
         stack: err.stack,
-        saga_stack: `room session id: ${this.room.sid}, participant id: ${this.room.localParticipant.sid}`
+        saga_stack: `room session id: ${this.room.sid}, participant id: ${this.room.localParticipant.sid}, state: ${state}`
       })
-      // this fails in some cases, catch is needed
-      this.config.logger.error(err)
+      await this.disconnect()
     }
   }
 
@@ -122,13 +123,11 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   }
 
   async do_disconnect(kicked: boolean) {
-    if (this.disconnected) {
+    if (this.disposed) {
       return
     }
 
-    this.connectedFuture.resolve()
-
-    this.disconnected = true
+    this.disposed = true
     await this.room.disconnect().catch(commsLogger.error)
     this.events.emit('DISCONNECTION', { kicked })
   }
