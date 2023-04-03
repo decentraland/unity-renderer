@@ -125,7 +125,7 @@ namespace DCL.LoadingScreen
 
         private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
         {
-            await UniTask.Delay(LOAD_SCENE_TIMEOUT, cancellationToken: ct);
+            await UniTask.Delay(TimeSpan.FromMilliseconds(LOAD_SCENE_TIMEOUT), cancellationToken: ct);
             DoTimeout();
         }
 
