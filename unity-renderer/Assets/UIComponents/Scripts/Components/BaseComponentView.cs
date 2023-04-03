@@ -100,8 +100,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void Start() { }
 
-    public virtual void Update() { }
-
     public abstract void RefreshControl();
 
     public virtual void Show(bool instant = false)

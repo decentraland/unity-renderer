@@ -97,7 +97,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         ConfigureCloseButton();
     }
 
-    public override void Update() =>
+    public void Update() =>
         CheckIfProfileCardShouldBeClosed();
 
     public void OnDestroy() =>
