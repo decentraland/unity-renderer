@@ -80,15 +80,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 0
   settings:
+    outlineThickness: 0.5
+    blurSize: 1
+    blurSigma: 5
     outlineColor: {r: 0, g: 1, b: 1, a: 1}
     blurColor: {r: 0, g: 1, b: 1, a: 1}
     innerColor: {r: 0, g: 0.85890675, b: 1, a: 0.050980393}
-    effectFade: 1
-    outlineThickness: {fileID: 11400000, guid: 3b2a0097ac4974c4dbd22fdfcbd5cfeb, type: 2}
-    outlineResolutionScale: {fileID: 11400000, guid: 051dce077ac0fe84ebdd212db125cae5,
-      type: 2}
-    blurSize: {fileID: 11400000, guid: 71984a406e9d00c4eb55991db791d8d2, type: 2}
-    blurSigma: {fileID: 11400000, guid: 15aeca967a14da64882661d82afedba4, type: 2}
+    effectFade: 0
     filterMode: 1
 --- !u!114 &-981180908113067146
 MonoBehaviour:
@@ -168,7 +166,7 @@ MonoBehaviour:
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
   m_RenderingMode: 0
-  m_DepthPrimingMode: 0
+  m_DepthPrimingMode: 1
   m_CopyDepthMode: 0
   m_AccurateGbufferNormals: 0
   m_ClusteredRendering: 0
