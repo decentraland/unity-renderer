@@ -9,8 +9,10 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Shadow Resolution", fileName = "ShadowResolutionControlController")]
     public class ShadowResolutionControlController : SpinBoxSettingsControlController
     {
-        private UniversalRenderPipelineAsset lightweightRenderPipelineAsset = null;
-        private FieldInfo lwrpaShadowResolutionField = null;
+        private const int LOG2_256 = 8; // log2(256), where 256 is the lowest Resolution in Unity (it goes [256, 512, 1024,...])
+
+        private UniversalRenderPipelineAsset lightweightRenderPipelineAsset;
+        private FieldInfo lwrpaShadowResolutionField;
 
         public override void Initialize()
         {
@@ -24,7 +26,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             lwrpaShadowResolutionField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowmapResolution", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        public override object GetStoredValue() { return (int)Mathf.Log((int)currentQualitySetting.shadowResolution, 2) - 8; }
+        public override object GetStoredValue() =>
+            (int)Mathf.Log((int)currentQualitySetting.shadowResolution, 2) - LOG2_256;
 
         public override void UpdateSetting(object newValue)
         {
