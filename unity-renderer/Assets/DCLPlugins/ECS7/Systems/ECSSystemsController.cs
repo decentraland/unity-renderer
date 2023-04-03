@@ -3,7 +3,7 @@ using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.ECSSceneBoundsCheckerSystem;
-using ECSSystems.EcsUiPointerEventsSystem;
+using ECSSystems.ECSUiPointerEventsSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
@@ -85,7 +85,7 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.audioSourceComponent,
             DataStore.i.debugConfig.isDebugMode.Get());
 
-        EcsUiPointerEventsSystem uiPointerEventsSystem = new EcsUiPointerEventsSystem(
+        ECSUiPointerEventsSystem uiPointerEventsSystem = new ECSUiPointerEventsSystem(
             context.internalEcsComponents.RegisteredUiPointerEventsComponent,
             context.internalEcsComponents.inputEventResultsComponent,
             context.componentGroups.UnregisteredUiPointerEvents,

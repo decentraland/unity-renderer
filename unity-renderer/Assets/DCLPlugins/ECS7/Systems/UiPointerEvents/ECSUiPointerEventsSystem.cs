@@ -7,9 +7,9 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
 
-namespace ECSSystems.EcsUiPointerEventsSystem
+namespace ECSSystems.ECSUiPointerEventsSystem
 {
-    public class EcsUiPointerEventsSystem
+    public class ECSUiPointerEventsSystem
     {
         private readonly IECSReadOnlyComponentsGroup<InternalUiContainer, InternalPointerEvents> unregisteredUiPointerEventsGroup;
         private readonly IECSReadOnlyComponentsGroup<InternalUiContainer, InternalPointerEvents, InternalRegisteredUiPointerEvents> registeredUiPointerEventsGroup;
@@ -19,7 +19,7 @@ namespace ECSSystems.EcsUiPointerEventsSystem
         private readonly IInternalECSComponent<InternalRegisteredUiPointerEvents> registeredUiPointerEventsComponent;
         private readonly IInternalECSComponent<InternalInputEventResults> inputResultsComponent;
 
-        public EcsUiPointerEventsSystem(
+        public ECSUiPointerEventsSystem(
             IInternalECSComponent<InternalRegisteredUiPointerEvents> registeredUiPointerEventsComponent,
             IInternalECSComponent<InternalInputEventResults> inputResultsComponent,
             IECSReadOnlyComponentsGroup<InternalUiContainer, InternalPointerEvents> unregisteredUiPointerEventsGroup,
@@ -124,6 +124,7 @@ namespace ECSSystems.EcsUiPointerEventsSystem
                 InternalPointerEvents events = groupElement.componentData2.model;
                 InternalRegisteredUiPointerEvents uiPointerEvents = CreateUiPointerEvents(scene, entity, inputResultsComponent, events);
                 RegisterUiPointerEvents(visualElement, uiPointerEvents);
+                registeredUiPointerEventsComponent.PutFor(scene, entity, uiPointerEvents);
             }
         }
 
