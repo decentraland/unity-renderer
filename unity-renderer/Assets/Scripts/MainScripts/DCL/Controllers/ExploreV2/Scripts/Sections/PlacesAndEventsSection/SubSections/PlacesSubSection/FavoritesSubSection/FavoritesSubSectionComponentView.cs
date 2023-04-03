@@ -55,7 +55,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
         favoritesCanvas = favorites.GetComponent<Canvas>();
     }
 
-    public override void Start()
+    public void Start()
     {
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
 

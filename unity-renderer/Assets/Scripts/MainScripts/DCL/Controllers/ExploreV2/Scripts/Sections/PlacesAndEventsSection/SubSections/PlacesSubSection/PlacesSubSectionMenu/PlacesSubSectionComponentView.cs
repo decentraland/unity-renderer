@@ -55,7 +55,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         placesCanvas = places.GetComponent<Canvas>();
     }
 
-    public override void Start()
+    public void Start()
     {
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
 
