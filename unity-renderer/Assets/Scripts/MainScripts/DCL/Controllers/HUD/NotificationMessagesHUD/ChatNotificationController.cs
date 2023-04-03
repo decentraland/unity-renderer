@@ -159,6 +159,7 @@ namespace DCL.Chat.Notifications
             Debug.Log($"ChatNotificationController.isOwnPlayerMentioned: {isOwnPlayerMentioned}");
             Debug.Log($"ChatNotificationController.body: {body}");
             Debug.Log($"ChatNotificationController.ownUserProfile.userName: {ownUserProfile.userName}");
+            Debug.Log($"ChatNotificationController.message.messageType: {message.messageType}");
 
             if (message.messageType == ChatMessage.Type.PRIVATE)
             {
