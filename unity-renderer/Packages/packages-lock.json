@@ -10,7 +10,7 @@
       "url": "https://package.openupm.com"
     },
     "com.atteneder.gltfast": {
-      "version": "https://github.com/decentraland/glTFast.git",
+      "version": "https://github.com/decentraland/glTFast.git#fix/cache-textures",
       "depth": 0,
       "source": "git",
       "dependencies": {
@@ -19,7 +19,7 @@
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.6.6"
       },
-      "hash": "cd8485999522daafc7cb5b990fce8f6fdf3f74ab"
+      "hash": "16de2c50f33c303ccc6f586b27b65b5240183ce5"
     },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",
