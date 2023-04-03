@@ -30,15 +30,11 @@ public class MinimapHUDController : IHUD
     private IMapCameraController mapCameraController;
     private MapRendererTrackPlayerPosition mapRendererTrackPlayerPosition;
 
-    public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
+    public MinimapHUDModel model { get; private set; } = new ();
 
-    public MinimapHUDController(MinimapMetadataController minimapMetadataController, IHomeLocationController locationController,  DCL.Environment.Model environment) : this(new MinimapHUDModel(), minimapMetadataController, locationController, environment) { }
-
-    public MinimapHUDController(MinimapHUDModel model, MinimapMetadataController minimapMetadataController, IHomeLocationController locationController, DCL.Environment.Model environment)
+    public MinimapHUDController(MinimapMetadataController minimapMetadataController, IHomeLocationController locationController, DCL.Environment.Model environment)
     {
-        CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
         minimapZoom.Set(1f);
-        UpdateData(model);
         metadataController = minimapMetadataController;
         this.locationController = locationController;
         this.environment = environment;
@@ -54,7 +50,11 @@ public class MinimapHUDController : IHUD
     {
         view = CreateView();
         InitializeMapRenderer();
-        UpdateData(model);
+
+        OnPlayerCoordsChange(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
+
+        CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
+        MinimapMetadata.GetMetadata().OnSceneInfoUpdated += OnSceneInfoUpdated;
     }
 
     public void Dispose()
@@ -66,7 +66,7 @@ public class MinimapHUDController : IHUD
         }
 
         CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChange;
-        MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
+        MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnSceneInfoUpdated;
 
         if (metadataController != null)
             metadataController.OnHomeChanged -= SetNewHome;
@@ -116,16 +116,9 @@ public class MinimapHUDController : IHUD
         currentCoords = current;
         UpdatePlayerPosition(currentCoords);
         UpdateSetHomePanel();
-        MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
         MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(currentCoords.x, currentCoords.y);
-        UpdateSceneName(sceneInfo?.name);
 
-        // NOTE: in some cases playerCoords OnChange is triggered before kernel's message with the scene info arrives.
-        // so in that scenario we subscribe to MinimapMetadata event to wait for the scene info.
-        if (sceneInfo == null)
-        {
-            MinimapMetadata.GetMetadata().OnSceneInfoUpdated += OnOnSceneInfoUpdated;
-        }
+        UpdateSceneName(sceneInfo?.name);
     }
 
     private void SetNewHome(Vector2Int newHomeCoordinates)
@@ -134,16 +127,16 @@ public class MinimapHUDController : IHUD
         UpdateSetHomePanel();
     }
 
-    public void UpdateData(MinimapHUDModel model)
+    private void UpdateData(MinimapHUDModel model)
     {
         this.model = model;
-        view?.UpdateData(this.model);
+        view.UpdateData(this.model);
     }
 
     public void UpdateSceneName(string sceneName)
     {
         model.sceneName = sceneName;
-        view?.UpdateData(model);
+        view.UpdateData(model);
     }
 
     public void UpdatePlayerPosition(Vector2 position)
@@ -152,7 +145,7 @@ public class MinimapHUDController : IHUD
         UpdatePlayerPosition(string.Format(format, position.x, position.y));
     }
 
-    public void UpdateSetHomePanel()
+    private void UpdateSetHomePanel()
     {
         view.UpdateSetHomePanel(currentCoords == homeCoords);
     }
@@ -160,7 +153,7 @@ public class MinimapHUDController : IHUD
     public void UpdatePlayerPosition(string position)
     {
         model.playerPosition = position;
-        view?.UpdateData(model);
+        view.UpdateData(model);
     }
 
     public void AddZoomDelta(float delta) { minimapZoom.Set(Mathf.Clamp01(minimapZoom.Get() + delta)); }
@@ -217,13 +210,10 @@ public class MinimapHUDController : IHUD
         KernelConfig.i.EnsureConfigInitialized().Then(kc => controller.ToggleUsersCount(kc.features.enablePeopleCounter));
     }
 
-    private void OnOnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
+    private void OnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
     {
         if (sceneInfo.parcels.Contains(CommonScriptableObjects.playerCoords.Get()))
-        {
-            MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
             UpdateSceneName(sceneInfo.name);
-        }
     }
 
     private void SetVisibility(bool current, bool _) =>

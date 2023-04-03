@@ -45,13 +45,6 @@ namespace Tests
         }
 
         [Test]
-        public void MinimapHUD_DefaultPlayerCoordinates()
-        {
-            var view = controller.view;
-            Assert.IsEmpty(Reflection_GetField<TextMeshProUGUI>(view, "playerPositionText").text);
-        }
-
-        [Test]
         public void MinimapHUD_SetSceneName()
         {
             const string sceneName = "SCENE_NAME";
