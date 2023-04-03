@@ -24,10 +24,6 @@ public class ChatHUDController : IHUD
 
     public delegate UniTask<List<UserProfile>> GetSuggestedUserProfiles(string name, int maxCount, CancellationToken cancellationToken);
 
-    public event Action OnInputFieldSelected;
-    public event Action<ChatMessage> OnSendMessage;
-    public event Action<ChatMessage> OnMessageSentBlockedBySpam;
-
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly bool detectWhisper;
@@ -47,7 +43,21 @@ public class ChatHUDController : IHUD
     private int mentionFromIndex;
     private Dictionary<string, UserProfile> mentionSuggestedProfiles;
 
+    private bool useLegacySorting => dataStore.featureFlags.flags.Get().IsFeatureEnabled("legacy_chat_sorting_enabled");
     private bool isMentionsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("chat_mentions_enabled");
+
+    public IComparer<ChatEntryModel> SortingStrategy
+    {
+        set
+        {
+            if (view != null)
+                view.SortingStrategy = value;
+        }
+    }
+
+    public event Action OnInputFieldSelected;
+    public event Action<ChatMessage> OnSendMessage;
+    public event Action<ChatMessage> OnMessageSentBlockedBySpam;
 
     public ChatHUDController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
@@ -85,6 +95,7 @@ public class ChatHUDController : IHUD
         this.view.OnMentionSuggestionSelected += HandleMentionSuggestionSelected;
         this.view.OnOpenedContextMenu -= OpenedContextMenu;
         this.view.OnOpenedContextMenu += OpenedContextMenu;
+        this.view.UseLegacySorting = useLegacySorting;
     }
 
     private void OpenedContextMenu()

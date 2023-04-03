@@ -17,7 +17,7 @@ namespace DCL.Rendering
     public class CullingController : ICullingController
     {
         private const string ANIMATION_CULLING_STATUS_FEATURE_FLAG = "animation_culling_status";
-        private const string SMR_OFFSCREEN_UPDATE_STATUS_FEATURE_FLAG = "smr_offscreen_update_status";
+        private const string SMR_UPDATE_OFFSCREEN_FEATURE_FLAG = "smr_update_offscreen";
         private const bool DRAW_GIZMOS = false;
         internal List<CullingControllerProfile> profiles = null;
 
@@ -74,7 +74,7 @@ namespace DCL.Rendering
         private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
         {
             SetAnimationCulling(current.IsFeatureEnabled(ANIMATION_CULLING_STATUS_FEATURE_FLAG));
-            offScreenUpdate = current.IsFeatureEnabled(SMR_OFFSCREEN_UPDATE_STATUS_FEATURE_FLAG);
+            offScreenUpdate = current.IsFeatureEnabled(SMR_UPDATE_OFFSCREEN_FEATURE_FLAG);
         }
 
         /// <summary>
@@ -198,8 +198,7 @@ namespace DCL.Rendering
                     if (IsAvatarRenderer(mat))
                         shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
 
-                    if (offScreenUpdate)
-                        skr.updateWhenOffscreen = false;
+                    skr.updateWhenOffscreen = offScreenUpdate;
                 }
 
                 if (OnDataReport != null)
@@ -245,8 +244,8 @@ namespace DCL.Rendering
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
                 bool shouldHaveShadow = TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
-                if (offScreenUpdate && r is SkinnedMeshRenderer skr)
-                    skr.updateWhenOffscreen = false;
+                if (r is SkinnedMeshRenderer skr)
+                    skr.updateWhenOffscreen = offScreenUpdate;
 
                 if (OnDataReport != null)
                 {
@@ -410,13 +409,10 @@ namespace DCL.Rendering
                     renderer.forceRenderingOff = false;
             }
 
-            if (offScreenUpdate)
+            foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
             {
-                foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
-                {
-                    if (skinnedRenderer != null)
-                        skinnedRenderer.updateWhenOffscreen = true;
-                }
+                if (skinnedRenderer != null)
+                    skinnedRenderer.updateWhenOffscreen = offScreenUpdate;
             }
 
             for (int i = 0; i < animations?.Length; i++)

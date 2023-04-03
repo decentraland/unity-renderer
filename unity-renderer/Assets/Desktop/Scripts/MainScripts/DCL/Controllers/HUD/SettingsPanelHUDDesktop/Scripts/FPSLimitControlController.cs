@@ -5,7 +5,7 @@ namespace MainScripts.DCL.Controllers.SettingsDesktop.SettingsControllers
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/FPS Limit", fileName = "FPSLimitControlController")]
     public class FPSLimitControlController : SpinBoxSettingsControlControllerDesktop
     {
-        int[] allFpsValues;
+        private int[] allFpsValues;
 
         public override void Initialize()
         {
@@ -14,31 +14,26 @@ namespace MainScripts.DCL.Controllers.SettingsDesktop.SettingsControllers
             SetupLabels();
         }
 
-        public override object GetStoredValue()
-        {
-            return currentDisplaySettings.fpsCapIndex;
-        }
+        public override object GetStoredValue() =>
+            currentDisplaySettings.fpsCapIndex;
 
         private void SetupLabels()
         {
-            var length = allFpsValues.Length;
+            int length = allFpsValues.Length;
             var fpsLabels = new string[length];
 
-            for (var i = 0; i < length; i++) { fpsLabels[i] = allFpsValues[i] > 0 ? allFpsValues[i].ToString() + " FPS" : "Max"; }
+            for (var i = 0; i < length; i++)
+                fpsLabels[i] = allFpsValues[i] > 0 ? allFpsValues[i] + " FPS" : "Max";
 
             RaiseOnOverrideIndicatorLabel(fpsLabels);
         }
 
         public override void UpdateSetting(object newValue)
         {
-            var fpsValue = (int)allFpsValues[(int)newValue];
             currentDisplaySettings.fpsCapIndex = (int)newValue;
-            ToggleFPSCap(fpsValue);
-        }
+            Application.targetFrameRate = allFpsValues[(int)newValue];
 
-        public static void ToggleFPSCap(int fpsValue)
-        {
-            Application.targetFrameRate = fpsValue;
+            ApplySettings();
         }
     }
 }

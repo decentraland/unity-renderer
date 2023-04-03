@@ -192,7 +192,9 @@ namespace DCL.ECSComponents
                 catch (Exception e)
                 {
                     // If the load of the avatar fails, we do it silently so the scene continue to operate.
-                    // The LoadAvatar function will show the error in console already so in order to avoid noise, we just capture the exception
+                    // The LoadAvatar function will show the wearables but not the error itself, we need extra context
+                    if (e is not OperationCanceledException)
+                        Debug.LogException(e);
                 }
             }
 
@@ -253,10 +255,7 @@ namespace DCL.ECSComponents
             {
                 Cleanup();
                 Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearableItems)}] for bodyshape:{model.BodyShape} and player {model.Name}");
-                if (e.InnerException != null)
-                    ExceptionDispatchInfo.Capture(e.InnerException).Throw();
-                else
-                    throw;
+                throw;
             }
             finally
             {

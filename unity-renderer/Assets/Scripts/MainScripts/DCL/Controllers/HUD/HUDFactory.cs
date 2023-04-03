@@ -6,6 +6,7 @@ using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
+using DCL.Map;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.SettingsCommon;
@@ -150,8 +151,6 @@ public class HUDFactory : IHUDFactory
                 return new ExternalUrlPromptHUDController();
             case HUDElementID.NFT_INFO_DIALOG:
                 return new NFTPromptHUDController();
-            case HUDElementID.TELEPORT_DIALOG:
-                return new TeleportPromptHUDController();
             case HUDElementID.CONTROLS_HUD:
                 return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:
@@ -172,17 +171,12 @@ public class HUDFactory : IHUDFactory
                 return new QuestsPanelHUDController();
             case HUDElementID.QUESTS_TRACKER:
                 return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
-            case HUDElementID.AIRDROPPING:
-                return new AirdroppingHUDController(await CreateAirdroppingHUDView(cancellationToken));
             case HUDElementID.SIGNUP:
                 return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(cancellationToken), dataStoreLoadingScreen.Ref);
         }
 
         return null;
     }
-
-    public async UniTask<AirdroppingHUDView> CreateAirdroppingHUDView(CancellationToken cancellationToken = default) =>
-        await CreateHUDView<AirdroppingHUDView>(AIRDROPPING_HUD, cancellationToken);
 
     public async UniTask<ISignupHUDView> CreateSignupHUDView(CancellationToken cancellationToken = default) =>
         await CreateHUDView<ISignupHUDView>(SIGNUP_HUD, cancellationToken);

@@ -1,13 +1,19 @@
 import { AnyAction } from 'redux'
 import { RegisterRendererModules, RegisterRendererPort, REGISTER_RPC_MODULES, REGISTER_RPC_PORT } from './actions'
-import { PARCEL_LOADING_STARTED, RendererState, RENDERER_INITIALIZED_CORRECTLY } from './types'
+import {
+  PARCEL_LOADING_STARTED,
+  RendererState,
+  RENDERER_INITIALIZED_CORRECTLY,
+  AVATAR_SCENE_INITIALIZED
+} from './types'
 
 const INITIAL_STATE: RendererState = {
   initialized: false,
   parcelLoadingStarted: false,
   clientPort: undefined,
   rpcClient: undefined,
-  modules: undefined
+  modules: undefined,
+  avatarSceneInitialized: false
 }
 
 export function rendererReducer(state?: RendererState, action?: AnyAction): RendererState {
@@ -22,6 +28,11 @@ export function rendererReducer(state?: RendererState, action?: AnyAction): Rend
       return {
         ...state,
         initialized: true
+      }
+    case AVATAR_SCENE_INITIALIZED:
+      return {
+        ...state,
+        avatarSceneInitialized: true
       }
     case REGISTER_RPC_PORT:
       const { payload } = action as RegisterRendererPort
