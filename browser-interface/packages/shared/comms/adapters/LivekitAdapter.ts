@@ -40,14 +40,21 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         })
         this.config.logger.log('remote participant left', _.identity)
       })
-      .on(RoomEvent.Disconnected, (_reason: DisconnectReason | undefined) => {
-        this.config.logger.log('disconnected from room', _reason)
-        trackEvent('error', {
-          context: 'livekit-adapter',
-          message: `Got RoomEvent.Disconnected. Reason: ${_reason}`,
-          stack: ""
+      .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
+        this.config.logger.log('disconnected from room', reason, {
+          liveKitParticipantSid: this.room.localParticipant.sid,
+          liveKitRoomSid: this.room.sid
         })
-        this.disconnect().catch((err) => {
+        if (!this.disconnected) {
+          trackEvent('disconnection_cause', {
+            context: 'livekit-adapter',
+            message: `Got RoomEvent.Disconnected. Reason: ${reason}`,
+            liveKitParticipantSid: this.room.localParticipant.sid,
+            liveKitRoomSid: this.room.sid
+          })
+        }
+        const kicked = reason === DisconnectReason.DUPLICATE_IDENTITY
+        this.do_disconnect(kicked).catch((err) => {
           this.config.logger.error(`error during disconnection ${err.toString()}`)
         })
       })
@@ -92,7 +99,8 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       trackEvent('error', {
         context: 'livekit-adapter',
         message: `Error trying to send data. Reason: ${err.message}`,
-        stack: err.stack
+        stack: err.stack,
+        saga_stack: `room session id: ${this.room.sid}, participant id: ${this.room.localParticipant.sid}`
       })
       // this fails in some cases, catch is needed
       this.config.logger.error(err)
@@ -100,6 +108,10 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   }
 
   async disconnect() {
+    return this.do_disconnect(false)
+  }
+
+  async do_disconnect(kicked: boolean) {
     if (this.disconnected) {
       return
     }
@@ -108,7 +120,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
     this.disconnected = true
     this.room.disconnect().catch(commsLogger.error)
-    this.events.emit('DISCONNECTION', { kicked: false })
+    this.events.emit('DISCONNECTION', { kicked })
   }
 
   handleMessage(address: string, data: Uint8Array) {

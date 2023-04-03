@@ -7,7 +7,7 @@ on: [deployment_status]
 jobs:
   set-rollouts-automatic:
     if: ${{ github.event.deployment.task == 'upload-to-cdn' && github.event.deployment_status.state == 'success' }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: hmarr/debug-action@v2
       - name: set-rollout-zone

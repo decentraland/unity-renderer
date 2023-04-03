@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCLServices.WearablesCatalogService
 {
@@ -304,9 +306,11 @@ namespace DCLServices.WearablesCatalogService
                         throw e;
                     }
 
-                    MapLambdasDataIntoWearableItem(partialResponse.taskResponse.response.wearables);
-                    AddWearablesToCatalog(partialResponse.taskResponse.response.wearables);
-                    result.AddRange(partialResponse.taskResponse.response.wearables);
+                    var wearables = partialResponse.taskResponse.response.wearables;
+
+                    MapLambdasDataIntoWearableItem(wearables);
+                    AddWearablesToCatalog(wearables);
+                    result.AddRange(wearables);
                 }
 
                 sourceToAwait.TrySetResult(result);
@@ -319,25 +323,76 @@ namespace DCLServices.WearablesCatalogService
             return result.FirstOrDefault(x => x.id == newWearableId);
         }
 
-        private static void MapLambdasDataIntoWearableItem(IEnumerable<WearableItem> wearablesFromLambdas)
+        private static void MapLambdasDataIntoWearableItem(List<WearableItem> wearablesFromLambdas)
         {
-            foreach (var wearable in wearablesFromLambdas)
-            {
-                foreach (var representation in wearable.data.representations)
-                {
-                    foreach (var representationContent in representation.contents)
-                        representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
-                }
+            var invalidWearablesIndices = ListPool<int>.Get();
 
-                string thumbnail = wearable.thumbnail ?? "";
-                int index = thumbnail.LastIndexOf('/');
-                string newThumbnail = thumbnail[(index + 1)..];
-                string newBaseUrl = thumbnail[..(index + 1)];
-                wearable.thumbnail = newThumbnail;
-                wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
-                wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
-                wearable.emoteDataV0 = null;
+            for (var i = 0; i < wearablesFromLambdas.Count; i++)
+            {
+                var wearable = wearablesFromLambdas[i];
+
+                if (FilterInvalidWearableItem(wearable, i, invalidWearablesIndices))
+                    continue;
+
+                try
+                {
+                    foreach (var representation in wearable.data.representations)
+                    {
+                        foreach (var representationContent in representation.contents)
+                            representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
+                    }
+
+                    string thumbnail = wearable.thumbnail ?? "";
+                    int index = thumbnail.LastIndexOf('/');
+                    string newThumbnail = thumbnail[(index + 1)..];
+                    string newBaseUrl = thumbnail[..(index + 1)];
+                    wearable.thumbnail = newThumbnail;
+                    wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
+                    wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
+                    wearable.emoteDataV0 = null;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    invalidWearablesIndices.Add(i);
+                }
             }
+
+            for (var i = 0; i < invalidWearablesIndices.Count; i++)
+            {
+                int invalidWearablesIndex = invalidWearablesIndices[i] - i;
+                wearablesFromLambdas.RemoveAt(invalidWearablesIndex);
+            }
+
+            ListPool<int>.Release(invalidWearablesIndices);
+        }
+
+        /// <summary>
+        /// Filters wearables in a managed way
+        /// </summary>
+        private static bool FilterInvalidWearableItem(WearableItem item, int index, List<int> invalidItemsIndices)
+        {
+            if (string.IsNullOrEmpty(item.id))
+            {
+                Debug.LogError("Wearable is invalid: id is null");
+                invalidItemsIndices.Add(index);
+                return true;
+            }
+
+            foreach (var dataRepresentation in item.data.representations)
+            {
+                foreach (var representationContent in dataRepresentation.contents)
+                {
+                    if (string.IsNullOrEmpty(representationContent.url))
+                    {
+                        Debug.LogError("Wearable is invalid: representation content URL is null");
+                        invalidItemsIndices.Add(index);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>

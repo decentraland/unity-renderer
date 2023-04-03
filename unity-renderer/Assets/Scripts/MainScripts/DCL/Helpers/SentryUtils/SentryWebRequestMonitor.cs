@@ -9,7 +9,7 @@ namespace MainScripts.DCL.Helpers.SentryUtils
     {
         private const int DATA_LIMIT = 150;
 
-        public DisposableTransaction TrackWebRequest(UnityWebRequestAsyncOperation webRequestOp, string endPointTemplate, string queryString = null,
+        public DisposableTransaction TrackWebRequest(IWebRequestAsyncOperation webRequestOp, string endPointTemplate, string queryString = null,
             string data = null, bool finishTransactionOnWebRequestFinish = false)
         {
             var webRequest = webRequestOp.webRequest;
@@ -28,11 +28,13 @@ namespace MainScripts.DCL.Helpers.SentryUtils
                 };
             });
 
-            void WebRequestOpCompleted(AsyncOperation asyncOperation)
+            void WebRequestOpCompleted(IWebRequestAsyncOperation webRequestAsyncOperation)
             {
                 // if we don't set the span status manually it will be inferred from the errors happening while the transaction
                 // is active: it's not correct
-                SetSpanStatus(transaction, webRequest);
+
+                // Due to possible repetitions webRequestAsyncOperation.webRequest can represent the web request that was created with the last attempt
+                SetSpanStatus(transaction, webRequestAsyncOperation.webRequest);
                 if (finishTransactionOnWebRequestFinish)
                     transaction.Finish();
             }

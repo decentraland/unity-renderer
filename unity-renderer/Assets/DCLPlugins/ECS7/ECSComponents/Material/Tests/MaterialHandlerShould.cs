@@ -170,6 +170,8 @@ namespace Tests
                 }
             };
 
+            LogAssert.Expect(LogType.Error, "Media asset url error: media URL is empty.");
+
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
 
@@ -241,6 +243,8 @@ namespace Tests
                     }
                 }
             };
+
+            LogAssert.Expect(LogType.Error, "Media asset url error: media URL is empty.");
 
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
@@ -389,11 +393,13 @@ namespace Tests
                 }
             };
 
+            LogAssert.Expect(LogType.Error, "External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
+
             Assert.AreEqual(string.Empty, texture.GetTextureUrl(scene));
         }
 
         [Test]
-        public void DontAllowExternalTextureWithoutPermissionsSet()
+        public void NotAllowExternalTextureWithoutPermissionsSet()
         {
             TextureUnion texture = new TextureUnion()
             {
@@ -404,6 +410,8 @@ namespace Tests
             };
 
             scene.sceneData.allowedMediaHostnames = new[] { "fake" };
+
+            LogAssert.Expect(LogType.Error, "External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
 
             Assert.AreEqual(string.Empty, texture.GetTextureUrl(scene));
         }

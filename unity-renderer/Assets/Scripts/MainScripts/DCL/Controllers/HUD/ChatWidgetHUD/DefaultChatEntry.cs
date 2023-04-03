@@ -31,6 +31,7 @@ namespace DCL.Chat.HUD
         private bool isShowingPreview;
         private ParcelCoordinates currentCoordinates;
         private ChatEntryModel model;
+        private Color initialEntryColor;
 
         private readonly CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
 
@@ -46,12 +47,20 @@ namespace DCL.Chat.HUD
         public override event Action OnCancelHover;
         public override event Action OnCancelGotoHover;
 
+        public void Awake()
+        {
+            initialEntryColor = backgroundImage.color;
+        }
+
         public override void Populate(ChatEntryModel chatEntryModel) =>
             PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
 
         private async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
         {
             model = chatEntryModel;
+
+            if(chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED && chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
+                backgroundImage.color = initialEntryColor;
 
             chatEntryModel.bodyText = body.ReplaceUnsupportedCharacters(chatEntryModel.bodyText, '?');
             chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
@@ -177,7 +186,7 @@ namespace DCL.Chat.HUD
 
             if (CoordinateUtils.HasValidTextCoordinates(link))
             {
-                DataStore.i.HUDs.gotoPanelVisible.Set(true);
+                DataStore.i.HUDs.gotoPanelVisible.Set(true, true);
                 var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
                 DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }

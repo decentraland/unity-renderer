@@ -69,7 +69,7 @@ namespace DCL
 
             async UniTaskVoid LaunchRequest()
             {
-                var result = await textureResolver.Ref.GetTextureAsync(permittedSources, url,
+                MainScripts.DCL.Controllers.AssetManager.Texture.TextureResponse result = await textureResolver.Ref.GetTextureAsync(permittedSources, url,
                     maxTextureSize, cancellationTokenSource.Token);
 
                 if (result.IsSuccess)
