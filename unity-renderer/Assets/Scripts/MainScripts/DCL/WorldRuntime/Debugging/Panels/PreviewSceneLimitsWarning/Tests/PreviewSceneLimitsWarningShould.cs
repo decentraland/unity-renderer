@@ -4,6 +4,7 @@ using DCL.Controllers;
 using NSubstitute;
 using NUnit.Framework;
 
+[Category("Legacy")]
 public class PreviewSceneLimitsWarningShould
 {
     private const int SCENE_NUMBER = 666;
@@ -33,7 +34,7 @@ public class PreviewSceneLimitsWarningShould
         scene.metricsCounter.Returns(sceneMetrics);
         worldState.GetLoadedScenes().Returns(scenes);
         worldState.TryGetScene(SCENE_NUMBER, out Arg.Any<IParcelScene>()).Returns(param => param[1] = scene);
-        
+
         kernelConfigModel.debugConfig.sceneLimitsWarningSceneNumber = SCENE_NUMBER;
     }
 

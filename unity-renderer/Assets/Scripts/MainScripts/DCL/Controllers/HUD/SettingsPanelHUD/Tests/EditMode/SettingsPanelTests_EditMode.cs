@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace SettingsPanelTests
 {
+    [Category("Legacy")]
     public class SettingsPanelShould_EditMode
     {
         private SettingsPanelHUDController panelController;

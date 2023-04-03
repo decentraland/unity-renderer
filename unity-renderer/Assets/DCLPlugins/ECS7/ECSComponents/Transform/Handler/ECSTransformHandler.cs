@@ -82,16 +82,22 @@ namespace DCL.ECSComponents
             }
 
             Transform transform = entity.gameObject.transform;
+            bool positionChange = transform.localPosition != model.position;
+            bool scaleChange = transform.localScale != model.scale;
+            bool rotationChange = transform.localRotation != model.rotation;
+
             transform.localPosition = model.position;
             transform.localRotation = model.rotation;
             transform.localScale = model.scale;
 
             if (entity.parentId != model.parentId)
-            {
                 ProcessNewParent(scene, entity, model.parentId);
-            }
 
-            sbcInternalComponent.SetPosition(scene, entity, transform.position);
+            if(positionChange)
+                sbcInternalComponent.SetPosition(scene, entity, transform.position);
+
+            if(scaleChange || rotationChange)
+                sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)

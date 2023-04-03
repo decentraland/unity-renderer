@@ -15,6 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace Tests
 {
+    [Category("Legacy")]
     public class DebugShapesBoundingBoxDisplayerShould
     {
         private IWorldState worldState;
@@ -330,7 +331,7 @@ namespace Tests
             scene.entities.Returns(entities[sceneNumber]);
 
             sceneController.OnNewSceneAdded += Raise.Event<Action<IParcelScene>>(scene);
-            
+
             worldState.GetLoadedScenes().Returns(loadedScenes);
             worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>()).Returns(param => param[1] = scene);
 
