@@ -27,6 +27,7 @@ type BaseCandidate = {
 
 export type Candidate = {
   usersCount: number
+  acceptingUsers: boolean
   usersParcels?: Parcel[]
   maxUsers?: number
 } & BaseCandidate

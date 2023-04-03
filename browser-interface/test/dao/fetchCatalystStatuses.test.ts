@@ -12,6 +12,7 @@ const EXPECTED: Candidate = {
   maxUsers: 2000,
   status: 0,
   usersCount: 59,
+  acceptingUsers: true,
   usersParcels: [
     [1, 1],
     [1, 1],
@@ -43,7 +44,8 @@ describe('Fetch catalyst server status', () => {
             },
             bff: {
               userCount: EXPECTED.usersCount,
-              version: '1.0.0'
+              version: '1.0.0',
+              acceptingUsers: true
             },
             content: {
               version: '1.0.0'
