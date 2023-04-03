@@ -95,15 +95,9 @@ namespace ECSSystems.ECSRaycastSystem
                 // If the raycast layerMask has SDKCustomLayer we have to use RaycastAll
                 // because that  layer represents 8 different SDK layers: ClCustom1~8
                 if (layerMaskHasSDKCustomLayer || model.QueryType == RaycastQueryType.RqtQueryAll)
-                {
-                    // TODO: Use nonAlloc
                     hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMask);
-                }
                 else if (Physics.Raycast(ray, out RaycastHit hit, model.MaxDistance, raycastLayerMask))
-                {
-                    // TODO: Use nonAlloc
                     hits = new RaycastHit[] { hit };
-                }
 
                 if (hits != null)
                 {
