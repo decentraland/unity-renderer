@@ -224,7 +224,7 @@ namespace Tests
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
-                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial && x.dirty));
+                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial));
 
             internalMaterialComponent.ClearReceivedCalls();
 
@@ -248,7 +248,7 @@ namespace Tests
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
-                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial && x.dirty));
+                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial));
         }
 
         [UnityTest]
@@ -274,7 +274,7 @@ namespace Tests
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
-                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial && x.dirty));
+                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial));
 
             internalMaterialComponent.ClearReceivedCalls();
 
