@@ -28,7 +28,12 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal List<HotSceneInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
 
-    public HighlightsSubSectionComponentController(IHighlightsSubSectionComponentView view, IPlacesAPIController placesAPI, IEventsAPIController eventsAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics,
+    public HighlightsSubSectionComponentController(
+        IHighlightsSubSectionComponentView view,
+        IPlacesAPIController placesAPI,
+        IEventsAPIController eventsAPI,
+        IFriendsController friendsController,
+        IExploreV2Analytics exploreV2Analytics,
         DataStore dataStore)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
@@ -198,11 +203,11 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    private static void SubscribeToEvent(string eventId) =>
-        EventsSubSectionComponentController.SubscribeToEvent(eventId);
+    private void SubscribeToEvent(string eventId) =>
+        eventsAPIApiController.RegisterParticipation(eventId);
 
-    private static void UnsubscribeToEvent(string eventId) =>
-        EventsSubSectionComponentController.UnsubscribeToEvent(eventId);
+    private void UnsubscribeToEvent(string eventId) =>
+        eventsAPIApiController.RemoveParticipation(eventId);
 
     internal void GoToEventsSubSection() =>
         OnGoToEventsSubSection?.Invoke();
