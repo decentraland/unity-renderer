@@ -3,6 +3,7 @@ using DCL.Helpers;
 using System;
 using UnityEngine;
 using DCL.NotificationModel;
+using DCL.Tasks;
 using System.Threading;
 using Type = DCL.NotificationModel.Type;
 
@@ -61,7 +62,7 @@ namespace DCL.LoadingScreen
         {
             view.Dispose();
             percentageController.Dispose();
-            timeoutCTS.Dispose();
+            timeoutCTS.SafeCancelAndDispose();
 
             playerDataStore.lastTeleportPosition.OnChange -= TeleportRequested;
             commonDataStore.isSignUpFlow.OnChange -= OnSignupFlow;
@@ -117,6 +118,7 @@ namespace DCL.LoadingScreen
                 //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
                 view.FadeIn(false, true);
+                timeoutCTS = timeoutCTS.SafeRestart();
                 StartTimeoutCounter(timeoutCTS.Token);
             }else if (IsSceneLoaded(currentDestinationCandidate))
                 HandlePlayerLoading();
@@ -125,7 +127,7 @@ namespace DCL.LoadingScreen
 
         private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
         {
-            await UniTask.Delay(TimeSpan.FromMilliseconds(LOAD_SCENE_TIMEOUT), cancellationToken: ct);
+            if (!await UniTask.Delay(TimeSpan.FromMilliseconds(LOAD_SCENE_TIMEOUT), cancellationToken: ct).SuppressCancellationThrow());
             DoTimeout();
         }
 
@@ -172,7 +174,7 @@ namespace DCL.LoadingScreen
 
         private void FadeOutView()
         {
-            timeoutCTS.Cancel();
+            timeoutCTS.SafeCancelAndDispose();
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
         }
