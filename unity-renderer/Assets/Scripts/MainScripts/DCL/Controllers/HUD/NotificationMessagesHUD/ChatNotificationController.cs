@@ -195,6 +195,8 @@ namespace DCL.Chat.Notifications
                 {
                     AudioSettings.ChatNotificationType chatNotificationSfxType = audioSettings.Data.chatNotificationType;
 
+                    Debug.Log($"ChatNotificationController.chatNotificationSfxType: {chatNotificationSfxType}");
+
                     shouldPlayMentionSfx = chatNotificationSfxType is AudioSettings.ChatNotificationType.All
                         or AudioSettings.ChatNotificationType.MentionsOnly;
                 }
@@ -215,6 +217,8 @@ namespace DCL.Chat.Notifications
                     senderName,
                     isOwnPlayerMentioned,
                     shouldPlayMentionSfx);
+
+                Debug.Log($"ChatNotificationController.shouldPlayMentionSfx: {shouldPlayMentionSfx}");
 
                 mainChatNotificationView.AddNewChatNotification(publicModel);
 
