@@ -139,11 +139,9 @@ namespace DCL.Chat.HUD
 
             contextualMenu.gameObject.transform.SetParent(collapsableArea);
 
-            collapsableArea.sizeDelta = new Vector2(
-                isMembersSectionOpen ?
-                    collapsableAreaOriginalWidth + MEMBERS_SECTION_WIDTH :
-                    collapsableAreaOriginalWidth,
-                collapsableArea.sizeDelta.y);
+            collapsableArea.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Horizontal,
+                isMembersSectionOpen ? collapsableAreaOriginalWidth + MEMBERS_SECTION_WIDTH : collapsableAreaOriginalWidth);
 
             contextualMenu.gameObject.transform.SetParent(this.transform);
 

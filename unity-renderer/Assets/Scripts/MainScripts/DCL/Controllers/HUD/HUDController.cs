@@ -73,8 +73,6 @@ public class HUDController : IHUDController
     public SettingsPanelHUDController settingsPanelHud =>
         GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
-    public AirdroppingHUDController airdroppingHud =>
-        GetHUDElement(HUDElementID.AIRDROPPING) as AirdroppingHUDController;
 
     public TermsOfServiceHUDController termsOfServiceHud =>
         GetHUDElement(HUDElementID.TERMS_OF_SERVICE) as TermsOfServiceHUDController;
@@ -103,9 +101,6 @@ public class HUDController : IHUDController
         GetHUDElement(HUDElementID.CHANNELS_LEAVE_CONFIRMATION) as LeaveChannelConfirmationWindowController;
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
-
-    public TeleportPromptHUDController teleportHud =>
-        GetHUDElement(HUDElementID.TELEPORT_DIALOG) as TeleportPromptHUDController;
 
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
@@ -194,9 +189,6 @@ public class HUDController : IHUDController
             case HUDElementID.SETTINGS_PANEL:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 settingsPanelHud?.Initialize();
-                break;
-            case HUDElementID.AIRDROPPING:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.TERMS_OF_SERVICE:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
@@ -359,9 +351,6 @@ public class HUDController : IHUDController
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.NFT_INFO_DIALOG:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                break;
-            case HUDElementID.TELEPORT_DIALOG:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.CONTROLS_HUD:

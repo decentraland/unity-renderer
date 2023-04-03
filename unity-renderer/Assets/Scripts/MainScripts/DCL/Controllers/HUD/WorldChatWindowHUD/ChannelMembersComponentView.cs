@@ -21,6 +21,8 @@ namespace DCL.Chat.HUD
         [SerializeField] internal SearchBarComponentView searchBar;
         [SerializeField] internal GameObject loadMoreContainer;
         [SerializeField] internal GameObject loadMoreSpinner;
+        [SerializeField] internal GameObject emptyStateForCommon;
+        [SerializeField] internal GameObject emptyStateForSearch;
 
         private readonly Queue<ChannelMemberEntryModel> queuedEntries = new Queue<ChannelMemberEntryModel>();
         private bool isLayoutDirty;
@@ -37,7 +39,11 @@ namespace DCL.Chat.HUD
         {
             base.Awake();
 
-            searchBar.OnSearchText += s => OnSearchUpdated?.Invoke(s);
+            searchBar.OnSearchText += s =>
+            {
+                SetSearchModeActive(!string.IsNullOrEmpty(s));
+                OnSearchUpdated?.Invoke(s);
+            };
             memberList.SortingMethod = (a, b) => a.Model.userName.CompareTo(b.Model.userName);
             scroll.onValueChanged.AddListener(LoadMoreEntries);
         }
@@ -50,7 +56,7 @@ namespace DCL.Chat.HUD
                 ((RectTransform)scroll.transform).ForceUpdateLayout();
 
             isLayoutDirty = false;
-            
+
             SetQueuedEntries();
 
             if (isSortDirty)
@@ -83,11 +89,22 @@ namespace DCL.Chat.HUD
 
         public void Set(ChannelMemberEntryModel user) => queuedEntries.Enqueue(user);
 
+        public void Remove(string userId)
+        {
+            memberList.Remove(userId);
+            UpdateLayout();
+            UpdateHeaders();
+        }
+
         public override void Show(bool instant = false) => gameObject.SetActive(true);
 
         public override void Hide(bool instant = false) => gameObject.SetActive(false);
 
-        public void ClearSearchInput(bool notify = true) => searchBar.ClearSearch(notify);
+        public void ClearSearchInput(bool notify = true)
+        {
+            searchBar.ClearSearch(notify);
+            SetSearchModeActive(false);
+        }
 
         public void HideLoading()
         {
@@ -122,7 +139,7 @@ namespace DCL.Chat.HUD
 
         private void LoadMoreEntries(Vector2 scrollPosition)
         {
-            if (scrollPosition.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && 
+            if (scrollPosition.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD &&
                 lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
             {
                 if (requireMoreEntriesRoutine != null)
@@ -141,11 +158,11 @@ namespace DCL.Chat.HUD
             loadMoreSpinner.SetActive(false);
             OnRequestMoreMembers?.Invoke();
         }
-        
+
         private void SetQueuedEntries()
         {
             if (queuedEntries.Count <= 0) return;
-            
+
             for (var i = 0; i < ENTRIES_THROTTLING && queuedEntries.Count > 0; i++)
             {
                 var user = queuedEntries.Dequeue();
@@ -155,6 +172,15 @@ namespace DCL.Chat.HUD
             UpdateLayout();
             Sort();
             UpdateHeaders();
+        }
+
+        private void SetSearchModeActive(bool isActive)
+        {
+            if (emptyStateForCommon != null)
+                emptyStateForCommon.SetActive(!isActive);
+
+            if (emptyStateForSearch != null)
+                emptyStateForSearch.SetActive(isActive);
         }
 
         public static ChannelMembersComponentView Create()

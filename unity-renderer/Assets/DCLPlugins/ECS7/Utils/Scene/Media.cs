@@ -2,6 +2,7 @@ using DCL;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 /*
 * Scene utils file for media related stuff
@@ -28,7 +29,7 @@ public static partial class UtilsScene
         {
             for (int i = 0; i < allowedDomains.Count; i++)
             {
-                if (allowedDomains[i] == uri.Host)
+                if (String.Equals(allowedDomains[i], uri.Host, StringComparison.CurrentCultureIgnoreCase))
                     return true;
             }
         }
@@ -43,6 +44,7 @@ public static partial class UtilsScene
         if (string.IsNullOrEmpty(inputUrl))
         {
             url = string.Empty;
+            Debug.LogError("Media asset url error: media URL is empty.");
             return false;
         }
 
@@ -54,6 +56,7 @@ public static partial class UtilsScene
         if (sceneRequiredPermissions == null || sceneAllowedMediaHostnames == null)
         {
             url = string.Empty;
+            Debug.LogError("External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
             return false;
         }
 
@@ -63,6 +66,8 @@ public static partial class UtilsScene
             url = inputUrl;
             return true;
         }
+
+        Debug.LogError($"External media asset url error: '{inputUrl}' host name is not in 'allowedMediaHostnames' in scene.json file.");
 
         url = string.Empty;
         return false;
