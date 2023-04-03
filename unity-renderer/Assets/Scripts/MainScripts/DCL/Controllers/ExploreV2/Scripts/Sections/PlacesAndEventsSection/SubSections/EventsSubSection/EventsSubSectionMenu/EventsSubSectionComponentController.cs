@@ -97,9 +97,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventsFromAPI = eventList;
 
         view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
+        view.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterGoingEvents()));
         view.SetTrendingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents()));
         view.SetUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterUpcomingEvents()));
-        view.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterGoingEvents()));
 
         view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
