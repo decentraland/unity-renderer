@@ -10,7 +10,7 @@ namespace DCL.ECS7.InternalComponents
     public class InternalComponent
     {
         public bool dirty => _dirty;
-        internal bool _dirty = true;
+        internal bool _dirty = false;
     }
 
     public class InternalTexturizable : InternalComponent

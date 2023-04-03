@@ -64,7 +64,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
                 registeredUiPointerEventsComponent);
         }
 
-        private static void HandleUiWithoutRegisteredPointerEvents(
+        internal static void HandleUiWithoutRegisteredPointerEvents(
             IECSReadOnlyComponentsGroup<InternalUiContainer, InternalPointerEvents> unregisteredUiPointerEventsGroup,
             IInternalECSComponent<InternalRegisteredUiPointerEvents> registeredUiPointerEventsComponent,
             IInternalECSComponent<InternalInputEventResults> inputResultsComponent)
@@ -96,7 +96,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
             }
         }
 
-        private static void HandlePointerEventComponentUpdate(
+        internal static void HandlePointerEventComponentUpdate(
             IECSReadOnlyComponentsGroup<InternalUiContainer, InternalPointerEvents, InternalRegisteredUiPointerEvents> registeredUiPointerEventsGroup,
             IInternalECSComponent<InternalRegisteredUiPointerEvents> registeredUiPointerEventsComponent,
             IInternalECSComponent<InternalInputEventResults> inputResultsComponent)
@@ -128,7 +128,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
             }
         }
 
-        private static void HandleUiContainerRemoval(
+        internal static void HandleUiContainerRemoval(
             IECSReadOnlyComponentsGroup<InternalRegisteredUiPointerEvents> registeredUiPointerEventsWithUiRemovedGroup,
             IInternalECSComponent<InternalRegisteredUiPointerEvents> registeredUiPointerEventsComponent)
         {
@@ -141,7 +141,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
             }
         }
 
-        private static void HandlePointerEventsRemoval(
+        internal static void HandlePointerEventsRemoval(
             IECSReadOnlyComponentsGroup<InternalUiContainer, InternalRegisteredUiPointerEvents> registeredUiPointerEventsWithPointerEventsRemovedGroup,
             IInternalECSComponent<InternalRegisteredUiPointerEvents> registeredUiPointerEventsComponent)
         {
@@ -154,7 +154,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
             }
         }
 
-        private static InternalRegisteredUiPointerEvents CreateUiPointerEvents(
+        internal static InternalRegisteredUiPointerEvents CreateUiPointerEvents(
             IParcelScene scene,
             IDCLEntity entity,
             IInternalECSComponent<InternalInputEventResults> inputResultsComponent,
@@ -217,7 +217,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
             return model;
         }
 
-        private static void RegisterUiPointerEvents(VisualElement visualElement, InternalRegisteredUiPointerEvents uiEvents)
+        internal static void RegisterUiPointerEvents(VisualElement visualElement, InternalRegisteredUiPointerEvents uiEvents)
         {
             if (uiEvents.OnPointerDownCallback != null)
                 visualElement.RegisterCallback(uiEvents.OnPointerDownCallback);
@@ -232,7 +232,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
                 visualElement.RegisterCallback(uiEvents.OnPointerLeaveCallback);
         }
 
-        private static void UnregisterUiPointerEvents(VisualElement visualElement, InternalRegisteredUiPointerEvents uiEvents)
+        internal static void UnregisterUiPointerEvents(VisualElement visualElement, InternalRegisteredUiPointerEvents uiEvents)
         {
             if (uiEvents.OnPointerDownCallback != null)
                 visualElement.UnregisterCallback(uiEvents.OnPointerDownCallback);
