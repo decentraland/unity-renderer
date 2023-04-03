@@ -125,7 +125,7 @@ namespace DCL.Social.Passports
                     isBlocked = ownUserProfile.IsBlocked(userProfile.userId),
                     hasBlocked = userProfile.IsBlocked(ownUserProfile.userId),
                     friendshipStatus = await friendsController.GetFriendshipStatus(userProfile.userId, cancellationToken),
-                    isFriendshipVisible = isFriendsEnabled,
+                    isFriendshipVisible = isFriendsEnabled && friendsController.IsInitialized,
                 };
             }
 

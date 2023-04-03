@@ -1,19 +1,23 @@
 {
     "name": "TeleportPromptHUDTest",
+    "rootNamespace": "",
     "references": [
         "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
         "GUID:c4447d6e4315b45618cad98697304322",
         "GUID:555c1f3c6d18648df910b7a1de75b424",
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:0acc523941302664db1f4e527237feb3",
-        "GUID:d7f1765642f0c22cda30addd0275b5e1"
+        "GUID:d7f1765642f0c22cda30addd0275b5e1",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:0e967802b778d404eac1ca5ea340e290"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "NSubstitute.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

@@ -50,6 +50,7 @@ export const DEBUG_REDUX_SAGAS = location.search.includes('DEBUG_REDUX_SAGAS')
 export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LOG')
 export const DEBUG_KERNEL_LOG = !PREVIEW || location.search.includes('DEBUG_KERNEL_LOG')
 export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
+export const DEBUG_VOICE_CHAT = location.search.includes('DEBUG_VOICE_CHAT')
 
 export const PIPE_SCENE_CONSOLE = location.search.includes('PIPE_SCENE_CONSOLE')
 

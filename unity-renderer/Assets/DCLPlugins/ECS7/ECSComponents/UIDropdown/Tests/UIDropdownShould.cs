@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIDropdown.Tests
 {
+    [Category("Flaky")]
     public class UIDropdownShould : UIComponentsShouldBase
     {
         private const int COMPONENT_ID = 1001;

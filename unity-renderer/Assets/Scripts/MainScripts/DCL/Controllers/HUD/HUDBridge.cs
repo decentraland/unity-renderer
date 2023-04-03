@@ -41,12 +41,6 @@ public class HUDBridge : MonoBehaviour
 
     public void TriggerSelfUserExpression(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id, UserProfile.EmoteSource.Command); }
 
-    public void AirdroppingRequest(string payload)
-    {
-        var model = JsonUtility.FromJson<AirdroppingHUDController.Model>(payload);
-        HUDController.i.airdroppingHud.AirdroppingRequested(model);
-    }
-
     public void ShowTermsOfServices(string payload)
     {
         var model = JsonUtility.FromJson<TermsOfServiceHUDController.Model>(payload);
@@ -73,7 +67,7 @@ public class HUDBridge : MonoBehaviour
         HUDController.i.voiceChatHud?.SetUsersMuted(model.usersId, model.muted);
     }
 
-    public void RequestTeleport(string teleportDataJson) { HUDController.i.teleportHud?.RequestTeleport(teleportDataJson); }
+    public void RequestTeleport(string teleportDataJson) { DataStore.i.world.requestTeleportData.Set(teleportDataJson); }
 
     public void UpdateBalanceOfMANA(string balance) { HUDController.i.profileHud?.SetManaBalance(balance); }
 

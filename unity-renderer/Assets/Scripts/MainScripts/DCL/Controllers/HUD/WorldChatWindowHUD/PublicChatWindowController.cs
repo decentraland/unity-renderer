@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using SocialFeaturesAnalytics;
 using Channel = DCL.Chat.Channels.Channel;
@@ -26,7 +27,10 @@ namespace DCL.Chat.HUD
         private ChatHUDController chatHudController;
         private string channelId;
         private bool skipChatInputTrigger;
+        private NearbyMembersHUDController nearbyMembersHUDController;
+
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
+        private BaseDictionary<string, Player> nearbyPlayers => dataStore.player.otherPlayers;
 
         private bool isVisible;
 
@@ -56,6 +60,7 @@ namespace DCL.Chat.HUD
             view.OnClose += HandleViewClosed;
             view.OnBack += HandleViewBacked;
             view.OnMuteChanged += MuteChannel;
+            view.OnGoToCrowd += GoToCrowd;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += Hide;
@@ -66,7 +71,8 @@ namespace DCL.Chat.HUD
                 (name, count, ct) => chatMentionSuggestionProvider.GetNearbyProfilesStartingWith(name, count, ct),
                 socialAnalytics,
                 profanityFilter);
-
+            // dont set any message's sorting strategy, just add them sequentally
+            // comms cannot calculate a server timestamp for each message
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += SendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
@@ -77,6 +83,12 @@ namespace DCL.Chat.HUD
             chatController.OnChannelUpdated += HandleChannelUpdated;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
+            nearbyPlayers.OnAdded += UpdateMembersCount;
+            nearbyPlayers.OnRemoved += UpdateMembersCount;
+
+            view.OnShowMembersList += ShowMembersList;
+            view.OnHideMembersList += HideMembersList;
+            nearbyMembersHUDController = new NearbyMembersHUDController(view.ChannelMembersHUD, dataStore.player, userProfileBridge);
 
             SetVisibility(isVisible);
             this.isVisible = isVisible;
@@ -98,6 +110,7 @@ namespace DCL.Chat.HUD
             View.OnClose -= HandleViewClosed;
             View.OnBack -= HandleViewBacked;
             View.OnMuteChanged -= MuteChannel;
+            View.OnGoToCrowd -= GoToCrowd;
 
             if (chatController != null)
             {
@@ -113,8 +126,11 @@ namespace DCL.Chat.HUD
                 mouseCatcher.OnMouseLock -= Hide;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
+            nearbyPlayers.OnAdded -= UpdateMembersCount;
+            nearbyPlayers.OnRemoved -= UpdateMembersCount;
 
             View?.Dispose();
+            nearbyMembersHUDController.Dispose();
         }
 
         public void SetVisibility(bool visible, bool focusInputField)
@@ -136,6 +152,8 @@ namespace DCL.Chat.HUD
 
                 if (focusInputField)
                     chatHudController.FocusInputField();
+
+                nearbyMembersHUDController.ClearSearch();
             }
             else
             {
@@ -257,16 +275,14 @@ namespace DCL.Chat.HUD
                 chatController.UnmuteChannel(channelId);
         }
 
-        private PublicChatModel ToPublicChatModel(Channel channel)
-        {
-            return new PublicChatModel(channel.ChannelId,
+        private PublicChatModel ToPublicChatModel(Channel channel) =>
+            new (channel.ChannelId,
                 channel.Name,
                 channel.Description,
                 channel.Joined,
-                channel.MemberCount,
+                nearbyPlayers.Count(),
                 channel.Muted,
                 showOnlyOnlineMembersOnPublicChannels);
-        }
 
         private void HandleChannelUpdated(Channel updatedChannel)
         {
@@ -281,5 +297,17 @@ namespace DCL.Chat.HUD
 
             View.ChatHUD.AddTextIntoInputField(mention);
         }
+
+        private void ShowMembersList() =>
+            nearbyMembersHUDController.SetVisibility(true);
+
+        private void HideMembersList() =>
+            nearbyMembersHUDController.SetVisibility(false);
+
+        private void GoToCrowd() =>
+            Environment.i.world.teleportController.GoToCrowd();
+
+        private void UpdateMembersCount(string userId, Player player) =>
+            View.UpdateMembersCount(nearbyPlayers.Count());
     }
 }

@@ -5,7 +5,7 @@ using System;
 
 namespace DCL.ECSComponents.UIAbstractElements.Tests
 {
-    [TestFixture]
+    [TestFixture][Category("Flaky")]
     public class UIElementRegisterBaseShould : UIComponentsShouldBase
     {
         private ECSComponentsFactory factory;

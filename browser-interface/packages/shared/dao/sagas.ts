@@ -172,7 +172,9 @@ function* selectRealm() {
     // cached in local storage
     (yield call(getRealmFromLocalStorage, network))
 
-  if (!realm) debugger
+  if (!realm) {
+    BringDownClientAndReportFatalError(new Error('Could not connect to any catalyst servers. Please check your internet connection and try again.'), 'comms#init')
+  }
 
   console.log(`Trying to connect to realm `, realm)
 
