@@ -107,6 +107,8 @@ namespace ECSSystems.ECSRaycastSystem
 
                 if (hits != null)
                 {
+                    DCL.ECSComponents.RaycastHit closestHit = null;
+
                     for (int j = 0; j < hits.Length; j++)
                     {
                         RaycastHit currentHit = hits[j];
@@ -115,42 +117,24 @@ namespace ECSSystems.ECSRaycastSystem
                                                      ?? FindMatchingColliderEntity(onPointerColliderComponent.GetForAll(), currentHit.collider)
                                                      ?? FindMatchingColliderEntity(customLayerColliderComponent.GetForAll(), currentHit.collider);
 
-                        DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
-                        if (hitColliderEntity != null)
+                        var hit = CreateSDKRaycastHit(scene, model, currentHit, hitColliderEntity, result.GlobalOrigin);
+                        if (hit == null) continue;
+
+                        // HitFirst: Since Unity's RaycastAll() resulting collection order is random (not based on hit distance),
+                        // the closest hit has to be identified and populate the final collection with only that one
+                        if (model.QueryType == RaycastQueryType.RqtHitFirst)
                         {
-                            // If a collider with sdkCustomLayer is hit, the layerMask has an SDK Custom Layer
-                            if (currentHit.transform.gameObject.layer == PhysicsLayers.sdkCustomLayer
-                                && meshCollider.HasComponent(scene, hitColliderEntity))
-                            {
-                                int hitColliderRealCollisionMask = meshCollider.Get(scene, hitColliderEntity).model.CollisionMask;
-
-                                // If the meshCollider collision mask is not in the raycast collision mask, we ignore that entity
-                                if ((model.CollisionMask & hitColliderRealCollisionMask) == 0)
-                                    continue;
-                            }
-
-                            hit.EntityId = (uint)hitColliderEntity.entityId;
+                            if (closestHit == null || currentHit.distance < closestHit.Length)
+                                closestHit = hit;
                         }
-                        hit.MeshName = currentHit.collider.name;
-                        hit.Length = currentHit.distance;
-                        hit.GlobalOrigin = result.GlobalOrigin;
-
-                        var worldPosition = DCL.WorldStateUtils.ConvertUnityToScenePosition(currentHit.point, scene);
-                        hit.Position = new Vector3();
-                        hit.Position.X = worldPosition.x;
-                        hit.Position.Y = worldPosition.y;
-                        hit.Position.Z = worldPosition.z;
-
-                        hit.NormalHit = new Vector3();
-                        hit.NormalHit.X = currentHit.normal.x;
-                        hit.NormalHit.Y = currentHit.normal.y;
-                        hit.NormalHit.Z = currentHit.normal.z;
-
-                        result.Hits.Add(hit);
-
-                        if (model.QueryType == RaycastQueryType.RqtHitFirst && result.Hits.Count == 1)
-                            break;
+                        else
+                        {
+                            result.Hits.Add(hit);
+                        }
                     }
+
+                    if (model.QueryType == RaycastQueryType.RqtHitFirst && closestHit != null)
+                        result.Hits.Add(closestHit);
                 }
 
                 componentWriter.PutComponent(
@@ -158,7 +142,6 @@ namespace ECSSystems.ECSRaycastSystem
                     ComponentID.RAYCAST_RESULT,
                     result
                 );
-
             }
         }
 
@@ -196,6 +179,42 @@ namespace ECSSystems.ECSRaycastSystem
                 direction = rayDirection.normalized
             };
             return ray;
+        }
+
+        private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, IDCLEntity hitEntity, Vector3 globalOrigin)
+        {
+            DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
+            if (hitEntity != null)
+            {
+                // If a collider with sdkCustomLayer is hit, the raycast layerMask has an SDK Custom Layer
+                if (unityRaycastHit.transform.gameObject.layer == PhysicsLayers.sdkCustomLayer
+                    && meshCollider.HasComponent(scene, hitEntity))
+                {
+                    int hitColliderRealCollisionMask = meshCollider.Get(scene, hitEntity).model.CollisionMask;
+
+                    // If the meshCollider collision mask is not in the raycast collision mask, we ignore that entity
+                    if ((model.CollisionMask & hitColliderRealCollisionMask) == 0)
+                        return null;
+                }
+
+                hit.EntityId = (uint)hitEntity.entityId;
+            }
+            hit.MeshName = unityRaycastHit.collider.name;
+            hit.Length = unityRaycastHit.distance;
+            hit.GlobalOrigin = globalOrigin;
+
+            var worldPosition = DCL.WorldStateUtils.ConvertUnityToScenePosition(unityRaycastHit.point, scene);
+            hit.Position = new Vector3();
+            hit.Position.X = worldPosition.x;
+            hit.Position.Y = worldPosition.y;
+            hit.Position.Z = worldPosition.z;
+
+            hit.NormalHit = new Vector3();
+            hit.NormalHit.X = unityRaycastHit.normal.x;
+            hit.NormalHit.Y = unityRaycastHit.normal.y;
+            hit.NormalHit.Z = unityRaycastHit.normal.z;
+
+            return hit;
         }
 
         private IDCLEntity FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene,long,ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
