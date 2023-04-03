@@ -69,14 +69,15 @@ namespace AvatarSystem
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
 
-                baseAvatar.Initialize();
-                animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
+                baseAvatar.FadeGhost(linkedCt).Forget(); //Avoid making the ghost fading a blocking part of the avatar
+                animator.Prepare(settings.bodyshapeId, baseAvatar.ArmatureContainer);
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 }
-                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar.GetMainRenderer(), linkedCt);
+
+                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar.SkinnedMeshRenderer, linkedCt);
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
@@ -92,9 +93,13 @@ namespace AvatarSystem
 
                 status = IAvatar.Status.Loaded;
 
-                MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
-                OnCombinedRendererUpdate?.Invoke(newCombinedRenderer);
-                await baseAvatar.FadeOut(newCombinedRenderer, visibility.IsMainRenderVisible(), linkedCt);
+                OnCombinedRendererUpdate?.Invoke(loader.combinedRenderer);
+
+                if (visibility.IsMainRenderVisible())
+                    await baseAvatar.Reveal(gpuSkinning.renderer, extents.y, linkedCt);
+                else
+                    baseAvatar.RevealInstantly(gpuSkinning.renderer, extents.y);
+
             }
             catch (OperationCanceledException)
             {
@@ -120,7 +125,7 @@ namespace AvatarSystem
         public void AddVisibilityConstraint(string key)
         {
             visibility.AddGlobalConstrain(key);
-            baseAvatar.CancelTransition();
+            baseAvatar.RevealInstantly(gpuSkinning.renderer, extents.y);
         }
 
         public void RemoveVisibilityConstrain(string key)

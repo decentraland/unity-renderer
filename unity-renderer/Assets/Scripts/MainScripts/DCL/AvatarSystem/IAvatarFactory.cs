@@ -14,8 +14,7 @@ namespace AvatarSystem
 
         IAvatar CreateAvatarWithHologram(
             GameObject avatarContainer,
-            Transform avatarRevealContainer,
-            GameObject armatureContainer,
+            IBaseAvatar baseAvatar,
             IAnimator animator,
             ILOD lod,
             IVisibility visibility

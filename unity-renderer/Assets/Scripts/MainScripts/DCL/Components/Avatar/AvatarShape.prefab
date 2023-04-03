@@ -85,11 +85,12 @@ MonoBehaviour:
   avatarCollider: {fileID: 7755590202629118220}
   avatarMovementController: {fileID: 122622683908687435}
   stickersControllers: {fileID: 3298290865927950122}
-  avatarRevealContainer: {fileID: 4288110136316019743}
-  armatureContainer: {fileID: 5582000225371496597}
   onPointerDown: {fileID: 3865137627712764486}
   outlineOnHover: {fileID: 1771187575892058067}
   playerNameContainer: {fileID: 7213221244455466960}
+  baseAvatarContainer: {fileID: 4288110136316019743}
+  baseAvatarReferencesPrefab: {fileID: 4766333532709993497, guid: 7bf2abf753051c34c9e0a568a90fc0f0,
+    type: 3}
   everythingIsLoaded: 0
 --- !u!114 &122622683908687435
 MonoBehaviour:
@@ -265,7 +266,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collider: {fileID: 1314168606903342224}
-  hoverCanvas: {fileID: 0}
 --- !u!65 &1314168606903342224
 BoxCollider:
   m_ObjectHideFlags: 0

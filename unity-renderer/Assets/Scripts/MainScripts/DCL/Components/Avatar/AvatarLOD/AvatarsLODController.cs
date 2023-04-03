@@ -61,6 +61,7 @@ namespace DCL
             if (!lodControllers.ContainsKey(id))
                 return;
 
+            lodControllers[id].SetLOD0();
             lodControllers[id].Dispose();
             lodControllers.Remove(id);
         }

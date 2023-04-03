@@ -144,7 +144,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collider: {fileID: 641107785188830172}
-  hoverCanvas: {fileID: 0}
 --- !u!114 &3247126444794282509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,8 +496,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   avatarContainer: {fileID: 8138691981628023791}
-  armatureContainer: {fileID: 3711435650905816617}
-  loadingAvatarContainer: {fileID: 4944901710069794483}
   stickersControllers: {fileID: 2374946182991755626}
   avatarCollider: {fileID: 7115442889188564318}
   loadingParticlesPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
@@ -506,6 +503,9 @@ MonoBehaviour:
   cameraDistanceToDeactivate: 1
   onPointerDown: {fileID: 8531135002084995935}
   outlineOnHover: {fileID: 3247126444794282509}
+  baseAvatarContainer: {fileID: 4944901710069794483}
+  baseAvatarReferencesPrefab: {fileID: 4766333532709993497, guid: 7bf2abf753051c34c9e0a568a90fc0f0,
+    type: 3}
 --- !u!114 &8266689621276731347
 MonoBehaviour:
   m_ObjectHideFlags: 0

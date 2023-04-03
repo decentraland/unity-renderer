@@ -2,14 +2,17 @@
 #define WEB_PLATFORM
 #endif
 
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DCL.Configuration;
+using DG.Tweening;
 using Google.Protobuf.Collections;
 using Newtonsoft.Json;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -27,19 +30,13 @@ namespace DCL.Helpers
 
         public static Material EnsureResourcesMaterial(string path)
         {
-            if (staticMaterials == null)
-            {
-                staticMaterials = new Dictionary<string, Material>();
-            }
+            if (staticMaterials == null) { staticMaterials = new Dictionary<string, Material>(); }
 
             if (!staticMaterials.ContainsKey(path))
             {
                 Material material = Resources.Load(path) as Material;
 
-                if (material != null)
-                {
-                    staticMaterials.Add(path, material);
-                }
+                if (material != null) { staticMaterials.Add(path, material); }
 
                 return material;
             }
@@ -53,23 +50,17 @@ namespace DCL.Helpers
             {
                 foreach (Material m in r.materials)
                 {
-                    if (m != null)
-                    {
-                        Material.Destroy(m);
-                    }
+                    if (m != null) { Material.Destroy(m); }
                 }
             }
         }
 
-        public static ScriptableRendererFeature ToggleRenderFeature<T>(this UniversalRenderPipelineAsset asset, bool enable) where T : ScriptableRendererFeature
+        public static ScriptableRendererFeature ToggleRenderFeature<T>(this UniversalRenderPipelineAsset asset, bool enable) where T: ScriptableRendererFeature
         {
             var type = asset.GetType();
             var propertyInfo = type.GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            if (propertyInfo == null)
-            {
-                return null;
-            }
+            if (propertyInfo == null) { return null; }
 
             var scriptableRenderData = (ScriptableRendererData[])propertyInfo.GetValue(asset);
 
@@ -114,10 +105,7 @@ namespace DCL.Helpers
             Vector2[] uvsResult = new Vector2[uvs.Count / 2];
             int uvsResultIndex = 0;
 
-            for (int i = 0; i < uvs.Count;)
-            {
-                uvsResult[uvsResultIndex++] = new Vector2(uvs[i++],uvs[i++]);
-            }
+            for (int i = 0; i < uvs.Count;) { uvsResult[uvsResultIndex++] = new Vector2(uvs[i++], uvs[i++]); }
 
             return uvsResult;
         }
@@ -125,15 +113,14 @@ namespace DCL.Helpers
         public static Vector2Int StringToVector2Int(string coords)
         {
             string[] coordSplit = coords.Split(',');
-            if (coordSplit.Length == 2 && int.TryParse(coordSplit[0], out int x) && int.TryParse(coordSplit[1], out int y))
-            {
-                return new Vector2Int(x, y);
-            }
+
+            if (coordSplit.Length == 2 && int.TryParse(coordSplit[0], out int x) && int.TryParse(coordSplit[1], out int y)) { return new Vector2Int(x, y); }
 
             return Vector2Int.zero;
         }
 
         private const int MAX_TRANSFORM_VALUE = 10000;
+
         public static void CapGlobalValuesToMax(this Transform transform)
         {
             bool positionOutsideBoundaries = transform.position.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
@@ -142,6 +129,7 @@ namespace DCL.Helpers
             if (positionOutsideBoundaries || scaleOutsideBoundaries)
             {
                 Vector3 newPosition = transform.position;
+
                 if (positionOutsideBoundaries)
                 {
                     if (Mathf.Abs(newPosition.x) > MAX_TRANSFORM_VALUE)
@@ -155,6 +143,7 @@ namespace DCL.Helpers
                 }
 
                 Vector3 newScale = transform.lossyScale;
+
                 if (scaleOutsideBoundaries)
                 {
                     if (Mathf.Abs(newScale.x) > MAX_TRANSFORM_VALUE)
@@ -252,7 +241,8 @@ namespace DCL.Helpers
             // NOTE(Santi): It seems to be very much cheaper to execute the next instructions manually than execute directly the function
             //              'LayoutRebuilder.ForceRebuildLayoutImmediate()', that theorically already contains these instructions.
             var layoutElements = rectTransformRoot.GetComponentsInChildren(typeof(ILayoutElement), true).ToList();
-            layoutElements.RemoveAll(e => (e is Behaviour && !((Behaviour) e).isActiveAndEnabled) || e is TextMeshProUGUI);
+            layoutElements.RemoveAll(e => (e is Behaviour && !((Behaviour)e).isActiveAndEnabled) || e is TextMeshProUGUI);
+
             foreach (var layoutElem in layoutElements)
             {
                 (layoutElem as ILayoutElement).CalculateLayoutInputHorizontal();
@@ -260,7 +250,8 @@ namespace DCL.Helpers
             }
 
             var layoutControllers = rectTransformRoot.GetComponentsInChildren(typeof(ILayoutController), true).ToList();
-            layoutControllers.RemoveAll(e => e is Behaviour && !((Behaviour) e).isActiveAndEnabled);
+            layoutControllers.RemoveAll(e => e is Behaviour && !((Behaviour)e).isActiveAndEnabled);
+
             foreach (var layoutCtrl in layoutControllers)
             {
                 (layoutCtrl as ILayoutController).SetLayoutHorizontal();
@@ -278,26 +269,20 @@ namespace DCL.Helpers
         }
 
         public static void InverseTransformChildTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
-            where TComponent : Component
+            where TComponent: Component
         {
             if (startTransform == null)
                 return;
 
-            foreach (Transform t in startTransform)
-            {
-                InverseTransformChildTraversal(action, t);
-            }
+            foreach (Transform t in startTransform) { InverseTransformChildTraversal(action, t); }
 
             var component = startTransform.GetComponent<TComponent>();
 
-            if (component != null)
-            {
-                action.Invoke(component);
-            }
+            if (component != null) { action.Invoke(component); }
         }
 
         public static void ForwardTransformChildTraversal<TComponent>(Func<TComponent, bool> action, Transform startTransform)
-            where TComponent : Component
+            where TComponent: Component
         {
             Assert.IsTrue(startTransform != null, "startTransform must not be null");
 
@@ -309,20 +294,14 @@ namespace DCL.Helpers
                     return;
             }
 
-            foreach (Transform t in startTransform)
-            {
-                ForwardTransformChildTraversal(action, t);
-            }
+            foreach (Transform t in startTransform) { ForwardTransformChildTraversal(action, t); }
         }
 
-        public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : Component
+        public static T GetOrCreateComponent<T>(this GameObject gameObject) where T: Component
         {
             T component = gameObject.GetComponent<T>();
 
-            if (!component)
-            {
-                return gameObject.AddComponent<T>();
-            }
+            if (!component) { return gameObject.AddComponent<T>(); }
 
             return component;
         }
@@ -331,11 +310,14 @@ namespace DCL.Helpers
         {
             //NOTE(Brian): This closure is called when the download is a success.
             void SuccessInternal(IWebRequestAsyncOperation request)
-            { OnSuccess?.Invoke(CreateTexture(request.webRequest.downloadHandler.data)); }
+            {
+                OnSuccess?.Invoke(CreateTexture(request.webRequest.downloadHandler.data));
+            }
 
             Texture2D CreateTexture(byte[] data)
             {
                 Texture2D texture2D = new Texture2D(1, 1);
+
                 try
                 {
                     texture2D.LoadImage(data);
@@ -359,10 +341,7 @@ namespace DCL.Helpers
 
         public static bool SafeFromJsonOverwrite(string json, object objectToOverwrite)
         {
-            try
-            {
-                JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
-            }
+            try { JsonUtility.FromJsonOverwrite(json, objectToOverwrite); }
             catch (ArgumentException e)
             {
                 Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
@@ -372,7 +351,10 @@ namespace DCL.Helpers
             return true;
         }
 
-        public static T FromJsonWithNulls<T>(string json) { return JsonConvert.DeserializeObject<T>(json); }
+        public static T FromJsonWithNulls<T>(string json)
+        {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
 
         public static T SafeFromJson<T>(string json)
         {
@@ -382,14 +364,8 @@ namespace DCL.Helpers
 
             if (!string.IsNullOrEmpty(json))
             {
-                try
-                {
-                    returningValue = JsonUtility.FromJson<T>(json);
-                }
-                catch (ArgumentException e)
-                {
-                    Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
-                }
+                try { returningValue = JsonUtility.FromJson<T>(json); }
+                catch (ArgumentException e) { Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString()); }
             }
 
             ProfilingEvents.OnMessageDecodeEnds?.Invoke("Misc");
@@ -442,8 +418,8 @@ namespace DCL.Helpers
         public static Vector2Int WorldToGridPosition(Vector3 worldPosition)
         {
             return new Vector2Int(
-                (int) Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
-                (int) Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
+                (int)Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
+                (int)Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
             );
         }
 
@@ -459,18 +435,16 @@ namespace DCL.Helpers
         {
             if (Mathf.Abs(color1.r - color2.r) < tolerance
                 && Mathf.Abs(color1.g - color2.g) < tolerance
-                && Mathf.Abs(color1.b - color2.b) < tolerance)
-            {
-                return true;
-            }
+                && Mathf.Abs(color1.b - color2.b) < tolerance) { return true; }
 
             return false;
         }
 
-        public static T ParseJsonArray<T>(string jsonArray) where T : IEnumerable => DummyJsonUtilityFromArray<T>.GetFromJsonArray(jsonArray);
+        public static T ParseJsonArray<T>(string jsonArray) where T: IEnumerable =>
+            DummyJsonUtilityFromArray<T>.GetFromJsonArray(jsonArray);
 
         [Serializable]
-        private class DummyJsonUtilityFromArray<T> where T : IEnumerable //UnityEngine.JsonUtility is really fast but cannot deserialize json arrays
+        private class DummyJsonUtilityFromArray<T> where T: IEnumerable //UnityEngine.JsonUtility is really fast but cannot deserialize json arrays
         {
             [SerializeField]
             private T value;
@@ -483,13 +457,17 @@ namespace DCL.Helpers
         }
 
         private static int lockedInFrame = -1;
-        public static bool LockedThisFrame() => lockedInFrame == Time.frameCount;
+
+        public static bool LockedThisFrame() =>
+            lockedInFrame == Time.frameCount;
 
         private static bool isCursorLocked;
+
         //NOTE(Brian): Made as an independent flag because the CI doesn't work well with the Cursor.lockState check.
         public static bool IsCursorLocked
         {
             get => isCursorLocked;
+
             private set
             {
                 if (isCursorLocked == value) return;
@@ -535,8 +513,7 @@ namespace DCL.Helpers
             EventSystem.current?.SetSelectedGameObject(null);
         }
 
-        #region BROWSER_ONLY
-
+#region BROWSER_ONLY
         //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
         //             behaviour using strategy pattern instead of this.
         // NOTE: This should come from browser's pointerlockchange callback
@@ -547,15 +524,11 @@ namespace DCL.Helpers
             IsCursorLocked = locked;
             Cursor.visible = !locked;
         }
-
-        #endregion
+#endregion
 
         public static void DestroyAllChild(this Transform transform)
         {
-            foreach (Transform child in transform)
-            {
-                Object.Destroy(child.gameObject);
-            }
+            foreach (Transform child in transform) { Object.Destroy(child.gameObject); }
         }
 
         public static List<Vector2Int> GetBottomLeftZoneArray(Vector2Int bottomLeftAnchor, Vector2Int size)
@@ -564,10 +537,7 @@ namespace DCL.Helpers
 
             for (int x = bottomLeftAnchor.x; x < bottomLeftAnchor.x + size.x; x++)
             {
-                for (int y = bottomLeftAnchor.y; y < bottomLeftAnchor.y + size.y; y++)
-                {
-                    coords.Add(new Vector2Int(x, y));
-                }
+                for (int y = bottomLeftAnchor.y; y < bottomLeftAnchor.y + size.y; y++) { coords.Add(new Vector2Int(x, y)); }
             }
 
             return coords;
@@ -579,10 +549,7 @@ namespace DCL.Helpers
 
             for (int x = center.x - size.x; x < center.x + size.x; x++)
             {
-                for (int y = center.y - size.y; y < center.y + size.y; y++)
-                {
-                    coords.Add(new Vector2Int(x, y));
-                }
+                for (int y = center.y - size.y; y < center.y + size.y; y++) { coords.Add(new Vector2Int(x, y)); }
             }
 
             return coords;
@@ -621,7 +588,10 @@ namespace DCL.Helpers
             return new Vector3(x, y, z);
         }
 
-        public static bool CompareFloats( float a, float b, float precision = 0.1f ) { return Mathf.Abs(a - b) < precision; }
+        public static bool CompareFloats(float a, float b, float precision = 0.1f)
+        {
+            return Mathf.Abs(a - b) < precision;
+        }
 
         public static void Deconstruct<T1, T2>(this KeyValuePair<T1, T2> tuple, out T1 key, out T2 value)
         {
@@ -636,10 +606,8 @@ namespace DCL.Helpers
         public static void SetLayerRecursively(Transform transform, int layer)
         {
             transform.gameObject.layer = layer;
-            foreach (Transform child in transform)
-            {
-                SetLayerRecursively(child, layer);
-            }
+
+            foreach (Transform child in transform) { SetLayerRecursively(child, layer); }
         }
 
         /// <summary>
@@ -647,14 +615,20 @@ namespace DCL.Helpers
         /// </summary>
         /// <param name="volume">Linear volume float</param>
         /// <returns>Exponential volume curve float</returns>
-        public static float ToVolumeCurve(float volume) { return volume * (2f - volume); }
+        public static float ToVolumeCurve(float volume)
+        {
+            return volume * (2f - volume);
+        }
 
         /// <summary>
         /// Takes a linear volume value between 0 and 1, converts to exponential curve and maps to a value fitting for audio mixer group volume.
         /// </summary>
         /// <param name="volume">Linear volume (0 to 1)</param>
         /// <returns>Value for audio mixer group volume</returns>
-        public static float ToAudioMixerGroupVolume(float volume) { return (ToVolumeCurve(volume) * 80f) - 80f; }
+        public static float ToAudioMixerGroupVolume(float volume)
+        {
+            return (ToVolumeCurve(volume) * 80f) - 80f;
+        }
 
         public static IEnumerator Wait(float delay, Action onFinishCallback)
         {
@@ -666,12 +640,14 @@ namespace DCL.Helpers
         {
             if (transform.parent == null)
                 return transform.name;
+
             return $"{transform.parent.GetHierarchyPath()}/{transform.name}";
         }
 
         public static bool TryFindChildRecursively(this Transform transform, string name, out Transform foundChild)
         {
             foundChild = transform.Find(name);
+
             if (foundChild != null)
                 return true;
 
@@ -680,6 +656,7 @@ namespace DCL.Helpers
                 if (TryFindChildRecursively(child, name, out foundChild))
                     return true;
             }
+
             return false;
         }
 
@@ -695,7 +672,10 @@ namespace DCL.Helpers
             return results.Count > 1;
         }
 
-        public static bool IsPointerOverUIElement() { return IsPointerOverUIElement(Input.mousePosition); }
+        public static bool IsPointerOverUIElement()
+        {
+            return IsPointerOverUIElement(Input.mousePosition);
+        }
 
         public static string UnixTimeStampToLocalTime(ulong unixTimeStampMilliseconds)
         {
@@ -709,6 +689,27 @@ namespace DCL.Helpers
             DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
             return dtDateTime;
+        }
+
+        public static Color GetRandomColorInGradient(Color minColor, Color maxColor)
+        {
+            Color.RGBToHSV(minColor, out float startH, out float startS, out float startV);
+            Color.RGBToHSV(maxColor, out float endH, out float _, out float _);
+            return Color.HSVToRGB(UnityEngine.Random.Range(startH, endH), startS, startV);
+        }
+
+        public static UniTask ToUniTaskInstantCancelation(this Tween tween, bool completeWhenCancel = false, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.RegisterWithoutCaptureExecutionContext(() =>
+            {
+                // We cannot use the built in TweenCancelBehavior because we are manually killing the tween
+                if (completeWhenCancel)
+                    tween.Complete(false);
+
+                tween.Kill();
+            });
+
+            return tween.ToUniTask(tweenCancelBehaviour: completeWhenCancel ? TweenCancelBehaviour.Complete : TweenCancelBehaviour.Kill, cancellationToken: cancellationToken);
         }
     }
 }
