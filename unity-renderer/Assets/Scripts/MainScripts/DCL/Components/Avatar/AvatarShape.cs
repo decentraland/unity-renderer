@@ -100,8 +100,7 @@ namespace DCL
             Visibility visibility = new Visibility();
 
             // Due to how we set our pools (and how the objets are cloned in), we might find that the original item already had the baseAvatar when returned to the pool.
-            if (!baseAvatarContainer.TryGetComponent(out IBaseAvatarReferences baseAvatarReferences))
-                baseAvatarReferences = Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+            var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
             return Environment.i.serviceLocator.Get<IAvatarFactory>()
                               .CreateAvatarWithHologram(
@@ -166,7 +165,7 @@ namespace DCL
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
             yield return new UnityEngine.WaitUntil(PositionCorrectlyInitialized);
-            
+
             OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                 entity.gameObject.transform.localRotation, true);
 

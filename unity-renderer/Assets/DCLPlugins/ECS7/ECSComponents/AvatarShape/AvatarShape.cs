@@ -105,8 +105,7 @@ namespace DCL.ECSComponents
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
 
             //Ensure base avatar references
-            if (!baseAvatarContainer.TryGetComponent(out IBaseAvatarReferences baseAvatarReferences))
-                baseAvatarReferences = Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+            var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
             avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), animator, avatarLOD, visibility);
 

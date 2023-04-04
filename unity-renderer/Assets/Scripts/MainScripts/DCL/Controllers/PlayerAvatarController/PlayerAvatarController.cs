@@ -94,8 +94,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private IAvatar GetAvatarWithHologram()
     {
-        if (!baseAvatarContainer.TryGetComponent(out IBaseAvatarReferences baseAvatarReferences))
-            baseAvatarReferences = Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+        var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
         return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatarWithHologram(
             avatarContainer,
