@@ -3,6 +3,7 @@ using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
@@ -76,25 +77,21 @@ namespace ECSSystems.ECSRaycastSystem
                     Timestamp = model.Timestamp
                 };
 
-                // Hit everything by default
-                bool layerMaskHasSDKCustomLayer = false;
+                // Hit everything by default except 'OnPointer' layer
                 LayerMask raycastLayerMask = new LayerMask()
-                                             | (1 << PhysicsLayers.onPointerEventLayer)
-                                             | (1 << PhysicsLayers.characterOnlyLayer)
                                              | (1 << PhysicsLayers.defaultLayer)
+                                             | (1 << PhysicsLayers.characterLayer)
+                                             | (1 << PhysicsLayers.characterOnlyLayer)
                                              | (1 << PhysicsLayers.sdkCustomLayer);
 
                 if (model.HasCollisionMask)
-                {
-                    raycastLayerMask = ProtoConvertUtils.SDKCollisionMaskToUnityLayerMask(model.CollisionMask);
-                    layerMaskHasSDKCustomLayer = ProtoConvertUtils.LayerMaskHasAnySDKCustomLayer(model.CollisionMask);
-                }
+                    raycastLayerMask = CreateRaycastLayerMask(model.CollisionMask);
 
                 RaycastHit[] hits = null;
 
                 // If the raycast layerMask has SDKCustomLayer we have to use RaycastAll
                 // because that  layer represents 8 different SDK layers: ClCustom1~8
-                if (layerMaskHasSDKCustomLayer || model.QueryType == RaycastQueryType.RqtQueryAll)
+                if (model.QueryType == RaycastQueryType.RqtQueryAll || LayerMaskUtils.LayerMaskHasAnySDKCustomLayer(model.CollisionMask))
                     hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMask);
                 else if (Physics.Raycast(ray, out RaycastHit hit, model.MaxDistance, raycastLayerMask))
                     hits = new RaycastHit[] { hit };
@@ -114,10 +111,10 @@ namespace ECSSystems.ECSRaycastSystem
                         var hit = CreateSDKRaycastHit(scene, model, currentHit, hitColliderEntity, result.GlobalOrigin);
                         if (hit == null) continue;
 
-                        // HitFirst: Since Unity's RaycastAll() resulting collection order is random (not based on hit distance),
-                        // the closest hit has to be identified and populate the final collection with only that one
                         if (model.QueryType == RaycastQueryType.RqtHitFirst)
                         {
+                            // Since Unity's RaycastAll() resulting collection order is random (not based on hit distance),
+                            // the closest hit has to be identified and populate the final collection with only that one
                             if (closestHit == null || currentHit.distance < closestHit.Length)
                                 closestHit = hit;
                         }
@@ -137,6 +134,20 @@ namespace ECSSystems.ECSRaycastSystem
                     result
                 );
             }
+        }
+
+        private IDCLEntity FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene,long,ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
+        {
+            int componentsCount = componentGroup.Count;
+            for (int k = 0; k < componentsCount; k++)
+            {
+                if (componentGroup[k].value.model.colliders.Contains(targetCollider))
+                {
+                    return componentGroup[k].value.entity;
+                }
+            }
+
+            return null;
         }
 
         private Ray CreateRay(IParcelScene scene, IDCLEntity entity, PBRaycast model)
@@ -181,7 +192,8 @@ namespace ECSSystems.ECSRaycastSystem
             if (hitEntity != null)
             {
                 // If a collider with sdkCustomLayer is hit, the raycast layerMask has an SDK Custom Layer
-                if (unityRaycastHit.transform.gameObject.layer == PhysicsLayers.sdkCustomLayer
+                if (model.HasCollisionMask
+                    && unityRaycastHit.transform.gameObject.layer == PhysicsLayers.sdkCustomLayer
                     && meshCollider.HasComponent(scene, hitEntity))
                 {
                     int hitColliderRealCollisionMask = meshCollider.Get(scene, hitEntity).model.CollisionMask;
@@ -211,18 +223,33 @@ namespace ECSSystems.ECSRaycastSystem
             return hit;
         }
 
-        private IDCLEntity FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene,long,ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
+        private int CreateRaycastLayerMask(uint sdkLayerMask)
         {
-            int componentsCount = componentGroup.Count;
-            for (int k = 0; k < componentsCount; k++)
+            bool hasPhysicsLayer = false;
+            bool hasPointerLayer = false;
+            int unityLayerMask = new LayerMask();
+
+            if (LayerMaskUtils.IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClPointer))
             {
-                if (componentGroup[k].value.model.colliders.Contains(targetCollider))
-                {
-                    return componentGroup[k].value.entity;
-                }
+                unityLayerMask |= (1 << PhysicsLayers.onPointerEventLayer);
+                hasPointerLayer = true;
             }
 
-            return null;
+            if (LayerMaskUtils.IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClPhysics))
+            {
+                unityLayerMask |= (1 << PhysicsLayers.characterOnlyLayer);
+                hasPhysicsLayer = true;
+            }
+
+            if(hasPointerLayer && hasPhysicsLayer)
+                unityLayerMask |= (1 << PhysicsLayers.defaultLayer);
+
+            if (LayerMaskUtils.LayerMaskHasAnySDKCustomLayer(sdkLayerMask))
+            {
+                unityLayerMask |= (1 << PhysicsLayers.sdkCustomLayer);
+            }
+
+            return unityLayerMask;
         }
     }
 }

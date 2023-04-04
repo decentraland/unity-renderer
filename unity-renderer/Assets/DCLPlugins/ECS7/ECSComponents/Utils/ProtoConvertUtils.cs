@@ -169,49 +169,5 @@ namespace DCL.ECSComponents
                        _ => DCLImageScaleMode.STRETCH
                    };
         }
-
-        public static int SDKCollisionMaskToUnityLayerMask(uint sdkLayerMask)
-        {
-            bool hasPhysicsLayer = false;
-            bool hasPointerLayer = false;
-            int unityLayerMask = new LayerMask();
-
-            if (IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClPointer))
-            {
-                unityLayerMask |= (1 << PhysicsLayers.onPointerEventLayer);
-                hasPointerLayer = true;
-            }
-
-            if (IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClPhysics))
-            {
-                unityLayerMask |= (1 << PhysicsLayers.characterOnlyLayer);
-                hasPhysicsLayer = true;
-            }
-
-            if(hasPointerLayer && hasPhysicsLayer)
-                unityLayerMask |= (1 << PhysicsLayers.defaultLayer);
-
-            if (LayerMaskHasAnySDKCustomLayer(sdkLayerMask))
-            {
-                unityLayerMask |= (1 << PhysicsLayers.sdkCustomLayer);
-            }
-
-            return unityLayerMask;
-        }
-
-        // TODO: Mode to Utils.cs ???
-        public static bool IsInLayerMask(uint layerMask, int layer) => (layer & layerMask) != 0;
-
-        public static bool LayerMaskHasAnySDKCustomLayer(uint layerMask)
-        {
-            return IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom1)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom2)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom3)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom4)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom5)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom6)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom7)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom8);
-        }
     }
 }

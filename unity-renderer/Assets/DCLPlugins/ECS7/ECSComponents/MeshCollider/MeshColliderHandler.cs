@@ -1,6 +1,7 @@
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
@@ -163,7 +164,7 @@ namespace DCL.ECSComponents
             else
                 physicColliderComponent.RemoveCollider(scene, entity, collider);
 
-            if (ProtoConvertUtils.LayerMaskHasAnySDKCustomLayer((uint)colliderLayer))
+            if (LayerMaskUtils.LayerMaskHasAnySDKCustomLayer((uint)colliderLayer))
                 customLayerColliderComponent.AddCollider(scene, entity, collider);
             else
                 customLayerColliderComponent.RemoveCollider(scene, entity, collider);
