@@ -1,15 +1,13 @@
-#if UNITY_WEBGL
 using UnityEditor;
-using UnityEngine;
 
 [InitializeOnLoad]
-class WebGlThreads
+public class PreBuildStep
 {
-    static WebGlThreads()
+    static PreBuildStep()
     {
         PlayerSettings.WebGL.linkerTarget = WebGLLinkerTarget.Wasm;
+        PlayerSettings.WebGL.emscriptenArgs = "-s ALLOW_MEMORY_GROWTH=1";
         PlayerSettings.WebGL.threadsSupport = true;
-        // PlayerSettings.WebGL.memorySize = 2048;
+        PlayerSettings.WebGL.memorySize = 2032;
     }
 }
-#endif
