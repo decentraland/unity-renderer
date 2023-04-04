@@ -52,16 +52,17 @@ export function receivePositionReport(
   cameraRotation?: ReadOnlyVector4,
   playerHeight?: number
 ) {
-  positionEvent.position.set(position.x, position.y, position.z)
+  positionEvent.position.set(position.x, position.y + 0.875, position.z)
 
   if (rotation) positionEvent.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
   positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
-  if (playerHeight) positionEvent.playerHeight = playerHeight
+  positionEvent.playerHeight = 1.675
 
   const cameraQuaternion = cameraRotation ?? rotation
   if (cameraQuaternion)
     positionEvent.cameraQuaternion.set(cameraQuaternion.x, cameraQuaternion.y, cameraQuaternion.z, cameraQuaternion.w)
   positionEvent.cameraEuler.copyFrom(positionEvent.cameraQuaternion.eulerAngles)
+
 
   positionObservable.notifyObservers(positionEvent)
 }
