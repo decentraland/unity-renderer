@@ -2,18 +2,18 @@ namespace DCL.ECSComponents.Utils
 {
     public static class LayerMaskUtils
     {
+        private const int nonCustomLayers = (int)ColliderLayer.ClPhysics
+                                            | (int)ColliderLayer.ClPointer
+                                            | (int)ColliderLayer.ClNone
+                                            // | (int)ColliderLayer.ClReserved1
+                                            | (int)ColliderLayer.ClReserved2
+                                            | (int)ColliderLayer.ClReserved3
+                                            | (int)ColliderLayer.ClReserved4
+                                            | (int)ColliderLayer.ClReserved5
+                                            | (int)ColliderLayer.ClReserved6;
+
         public static bool IsInLayerMask(uint layerMask, int layer) => (layer & layerMask) != 0;
 
-        public static bool LayerMaskHasAnySDKCustomLayer(uint layerMask)
-        {
-            return IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom1)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom2)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom3)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom4)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom5)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom6)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom7)
-                   || IsInLayerMask(layerMask, (int)ColliderLayer.ClCustom8);
-        }
+        public static bool LayerMaskHasAnySDKCustomLayer(uint layerMask) => (layerMask & ~nonCustomLayers) != 0;
     }
 }

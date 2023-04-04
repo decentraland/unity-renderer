@@ -81,8 +81,7 @@ namespace ECSSystems.ECSRaycastSystem
                 LayerMask raycastLayerMask = new LayerMask()
                                              | (1 << PhysicsLayers.defaultLayer)
                                              | (1 << PhysicsLayers.characterLayer)
-                                             | (1 << PhysicsLayers.characterOnlyLayer)
-                                             | (1 << PhysicsLayers.sdkCustomLayer);
+                                             | (1 << PhysicsLayers.characterOnlyLayer);
 
                 if (model.HasCollisionMask)
                     raycastLayerMask = CreateRaycastLayerMask(model.CollisionMask);
