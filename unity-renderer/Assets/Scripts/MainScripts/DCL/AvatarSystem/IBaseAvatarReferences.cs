@@ -7,7 +7,7 @@ namespace AvatarSystem
     {
         SkinnedMeshRenderer SkinnedMeshRenderer { get; }
         Transform ArmatureContainer { get; }
-        public GameObject ParticlesContainer { get; }
+        GameObject ParticlesContainer { get; }
 
         Color GhostMinColor { get; }
         Color GhostMaxColor { get; }
