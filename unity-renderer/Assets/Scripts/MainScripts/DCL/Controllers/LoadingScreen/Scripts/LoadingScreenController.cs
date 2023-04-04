@@ -15,7 +15,7 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
-        private const int LOAD_SCENE_TIMEOUT = 120000;
+        private const int LOAD_SCENE_TIMEOUT = 12000;
 
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
@@ -127,8 +127,8 @@ namespace DCL.LoadingScreen
 
         private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
         {
-            if (!await UniTask.Delay(TimeSpan.FromMilliseconds(LOAD_SCENE_TIMEOUT), cancellationToken: ct).SuppressCancellationThrow());
-            DoTimeout();
+            if (!await UniTask.Delay(TimeSpan.FromMilliseconds(LOAD_SCENE_TIMEOUT), cancellationToken: ct).SuppressCancellationThrow())
+                DoTimeout();
         }
 
         //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,
