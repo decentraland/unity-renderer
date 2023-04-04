@@ -156,10 +156,6 @@ namespace DCL.Chat.Notifications
             string body = message.body;
             string openedChatId = openedChat.Get();
             bool isOwnPlayerMentioned = MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, body);
-            Debug.Log($"ChatNotificationController.isOwnPlayerMentioned: {isOwnPlayerMentioned}");
-            Debug.Log($"ChatNotificationController.body: {body}");
-            Debug.Log($"ChatNotificationController.ownUserProfile.userName: {ownUserProfile.userName}");
-            Debug.Log($"ChatNotificationController.message.messageType: {message.messageType}");
 
             if (message.messageType == ChatMessage.Type.PRIVATE)
             {
@@ -199,8 +195,6 @@ namespace DCL.Chat.Notifications
                 {
                     AudioSettings.ChatNotificationType chatNotificationSfxType = audioSettings.Data.chatNotificationType;
 
-                    Debug.Log($"ChatNotificationController.chatNotificationSfxType: {chatNotificationSfxType}");
-
                     shouldPlayMentionSfx = chatNotificationSfxType is AudioSettings.ChatNotificationType.All
                         or AudioSettings.ChatNotificationType.MentionsOnly;
                 }
@@ -221,8 +215,6 @@ namespace DCL.Chat.Notifications
                     senderName,
                     isOwnPlayerMentioned,
                     shouldPlayMentionSfx);
-
-                Debug.Log($"ChatNotificationController.shouldPlayMentionSfx: {shouldPlayMentionSfx}");
 
                 mainChatNotificationView.AddNewChatNotification(publicModel);
 
