@@ -560,7 +560,7 @@ public class DCLCharacterController : MonoBehaviour
         //             The race conditions that can arise from not having this flag can result in:
         //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
         //                  - Random teleports to 0,0 or other positions that shouldn't happen.
-        if (initialPositionAlreadySet && CommonScriptableObjects.rendererState.Get())
+        if (initialPositionAlreadySet)
             DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight, cameraRotation);
 
         lastMovementReportTime = DCLTime.realtimeSinceStartup;
