@@ -47,6 +47,15 @@ namespace DCL.LoadingScreen
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
+
+            CommonScriptableObjects.rendererState.AddLock(this);
+            CommonScriptableObjects.rendererState.OnChange += RenderingStateChange;
+        }
+
+        private void RenderingStateChange(bool current, bool previous)
+        {
+            if(current)
+                FadeOutView();
         }
 
         public void Dispose()
@@ -70,32 +79,21 @@ namespace DCL.LoadingScreen
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
             {
                 //We have to check if the player is loaded
-                if(commonDataStore.isPlayerRendererLoaded.Get())
-                    FadeOutView();
-                else
-                {
+                if(!commonDataStore.isPlayerRendererLoaded.Get())
                     percentageController.SetAvatarLoadingMessage();
-                    commonDataStore.isPlayerRendererLoaded.OnChange += PlayerLoaded;
-                }
+
+                CommonScriptableObjects.rendererState.RemoveLock(this);
             }
-        }
-
-        //We have to add one more check not to show the loadingScreen unless the player is loaded
-        private void PlayerLoaded(bool loaded, bool _)
-        {
-            if(loaded)
-                FadeOutView();
-
-            commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
         }
 
         private void OnSignupFlow(bool current, bool previous)
         {
             onSignUpFlow = current;
             if (current)
+                //We gotta force it, since the SceneController does not release its lock on AvatarCreationScreen
                 FadeOutView();
             else
-                view.FadeIn(false, false);
+                FadeInView(false, false);
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
@@ -114,7 +112,7 @@ namespace DCL.LoadingScreen
                 //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
 
-                view.FadeIn(false, true);
+                FadeInView(false, true);
             }
             else
             {
@@ -162,7 +160,7 @@ namespace DCL.LoadingScreen
                     timer = 10f,
                     destroyOnFinish = true
                 });
-                FadeOutView();
+                CommonScriptableObjects.rendererState.RemoveLock(this);
             }
         }
 
@@ -170,6 +168,12 @@ namespace DCL.LoadingScreen
         {
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+        }
+
+        private void FadeInView(bool instant, bool blitTexture)
+        {
+            view.FadeIn(instant, blitTexture);
+            CommonScriptableObjects.rendererState.AddLock(this);
         }
     }
 }
