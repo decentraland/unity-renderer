@@ -42,6 +42,9 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
+  /// <summary>
+  /// AvatarAnchorPointType determines the part of the avatar's body that anchors the Entity.
+  /// </summary>
   public enum AvatarAnchorPointType {
     [pbr::OriginalName("AAPT_POSITION")] AaptPosition = 0,
     [pbr::OriginalName("AAPT_NAME_TAG")] AaptNameTag = 1,
@@ -52,6 +55,16 @@ namespace DCL.ECSComponents {
   #endregion
 
   #region Messages
+  /// <summary>
+  /// The AvatarAttach component automatically repositions an Entity to maintain the same position and 
+  /// rotation relative to some part of an avatar, called the "anchor point". The Entity 
+  /// will follow this anchor as it moves.
+  ///
+  /// The Entity's own Transform is overridden by this component. To offset position and adjust scale, 
+  /// add a child to the anchored Entity and set a Transform on it instead.
+  ///
+  /// AvatarAnchorPointType indicates which part of the avatar the Entity must follow.
+  /// </summary>
   public sealed partial class PBAvatarAttach : pb::IMessage<PBAvatarAttach>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -101,7 +114,7 @@ namespace DCL.ECSComponents {
     public const int AvatarIdFieldNumber = 1;
     private string avatarId_;
     /// <summary>
-    /// default's to current player avatar id if not provided
+    /// the user ID of the avatar (default: local user)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -127,6 +140,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "anchor_point_id" field.</summary>
     public const int AnchorPointIdFieldNumber = 2;
     private global::DCL.ECSComponents.AvatarAnchorPointType anchorPointId_ = global::DCL.ECSComponents.AvatarAnchorPointType.AaptPosition;
+    /// <summary>
+    /// the anchor point.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.AvatarAnchorPointType AnchorPointId {

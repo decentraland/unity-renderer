@@ -83,6 +83,18 @@ public class ChannelMembersComponentViewShould
         Assert.AreEqual($"Results ({1})", experienceRowComponent.resultsHeaderLabel.text);
     }
 
+    [UnityTest]
+    public IEnumerator RemoveCorrectly()
+    {
+        // Act
+        yield return SetCorrectly();
+        experienceRowComponent.Remove("testId");
+
+        // Assert
+        Assert.IsFalse(experienceRowComponent.memberList.Contains("testId"));
+        Assert.AreEqual($"Results ({0})", experienceRowComponent.resultsHeaderLabel.text);
+    }
+
     [Test]
     public void ShowCorrectly()
     {

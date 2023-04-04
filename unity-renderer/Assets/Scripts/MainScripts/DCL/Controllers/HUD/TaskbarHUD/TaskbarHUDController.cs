@@ -393,6 +393,9 @@ public class TaskbarHUDController : IHUD
             ? ChatUtils.NEARBY_CHANNEL_ID
             : lastOpenedChat;
 
+        if (newChat == ChatUtils.CONVERSATION_LIST_ID)
+            newChat = ChatUtils.NEARBY_CHANNEL_ID;
+
         openChat.Set(newChat, true);
     }
 

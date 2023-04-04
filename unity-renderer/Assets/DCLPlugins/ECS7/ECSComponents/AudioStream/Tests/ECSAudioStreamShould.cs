@@ -6,6 +6,8 @@ using DCL.SettingsCommon;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -62,7 +64,7 @@ namespace Tests
             // We prepare the componentHandler
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.wasCursorLocked = true;
+            audioSourceComponentHandler.hadUserInteraction = true;
 
             // We prepare the models
             PBAudioStream model = CreateAudioStreamModel();
@@ -101,9 +103,12 @@ namespace Tests
         public void UpdateUrlModelComponentCorrectly()
         {
             // Arrange
-            string expectedUrl = "NewUrl";
+            string expectedUrl = "http://fake/audio.mp4";
             PBAudioStream model = CreateAudioStreamModel();
-            model.Url = "OldUrl";
+            model.Url = "http://fake2/audio.mp4";
+            sceneData.allowedMediaHostnames = new[] { "fake", "fake2" };
+            sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
+
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             PBAudioStream model2 = CreateAudioStreamModel();
@@ -124,7 +129,7 @@ namespace Tests
             model.Playing = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.wasCursorLocked = true;
+            audioSourceComponentHandler.hadUserInteraction = true;
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -166,7 +171,7 @@ namespace Tests
         }
 
         [Test]
-        public void DontAllowExternalAudioStreamWithoutPermissionsSet()
+        public void NotAllowExternalAudioStreamWithoutPermissionsSet()
         {
             PBAudioStream model = new PBAudioStream()
             {
@@ -174,6 +179,8 @@ namespace Tests
             };
 
             sceneData.allowedMediaHostnames = new[] { "fake" };
+
+            LogAssert.Expect(LogType.Error, "External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
@@ -193,11 +200,30 @@ namespace Tests
 
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.wasCursorLocked = true;
+            audioSourceComponentHandler.hadUserInteraction = true;
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             Assert.AreEqual(model.Url, audioSourceComponentHandler.url);
+        }
+
+        [Test]
+        public void NotAllowExternalAudioStreamWithWrongHostName()
+        {
+            PBAudioStream model = new PBAudioStream()
+            {
+                Url = "http://fake/audio.mp4",
+                Playing = true
+            };
+
+            scene.sceneData.allowedMediaHostnames = new[] { "fakes" };
+            scene.sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
+
+            LogAssert.Expect(LogType.Error, $"External media asset url error: '{model.Url}' host name is not in 'allowedMediaHostnames' in scene.json file.");
+
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            Assert.IsNull(audioSourceComponentHandler.url);
         }
 
         private PBAudioStream CreateAudioStreamModel()

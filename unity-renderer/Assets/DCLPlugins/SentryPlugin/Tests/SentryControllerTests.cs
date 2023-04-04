@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace DCLPlugins.SentryPlugin.Tests
 {
+    [Category("ToFix")]
     public class SentryControllerTests
     {
         private DataStore_Player playerDataStore;

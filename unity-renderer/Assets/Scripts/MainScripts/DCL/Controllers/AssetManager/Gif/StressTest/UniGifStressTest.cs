@@ -74,7 +74,7 @@ public class UniGifStressTest : MonoBehaviour
     {
         sprites = obj.Select(f => Sprite.Create(f.texture, new Rect(0, 0, f.texture.width, f.texture.height), Vector2.zero)).ToArray();
         delays = obj.Select(f => f.delay).ToArray();
-        
+
         image.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,  sprites[0].texture.width);
         image.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, sprites[0].texture.height);
     }

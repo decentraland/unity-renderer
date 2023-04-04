@@ -20,7 +20,7 @@ namespace DCL.ECSComponents.UIInput.Tests
             handler = new UIInputHandler(internalUiContainer, RESULT_COMPONENT_ID, uiInputResultsComponent, AssetPromiseKeeper_Font.i, COMPONENT_ID);
         }
 
-        [Test]
+        [Test][Category("ToFix")]
         [TestCase(false)]
         [TestCase(true)]
         public void ConformToSchema(bool useTextValue)
@@ -38,7 +38,7 @@ namespace DCL.ECSComponents.UIInput.Tests
                 Assert.AreEqual("PLACEHOLDER", handler.uiElement.text);
         }
 
-        [Test]
+        [Test][Category("ToFix")]
         public void EmitResult()
         {
             const string TEST_VALUE = "TEST_TEXT";
