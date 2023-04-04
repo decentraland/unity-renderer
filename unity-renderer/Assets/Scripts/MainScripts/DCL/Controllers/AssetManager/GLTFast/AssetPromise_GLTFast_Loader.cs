@@ -42,7 +42,7 @@ namespace DCL
             }
 
             string baseUrl = contentProvider is null ? string.Empty : contentProvider.baseUrl;
-            gltFastDownloadProvider = new GltFastDownloadProvider(baseUrl, requestController, FileToUrl);
+            gltFastDownloadProvider = new GltFastDownloadProvider(baseUrl, requestController, FileToUrl, AssetPromiseKeeper_Texture.i);
             cancellationSource = new CancellationTokenSource();
             gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
             consoleLogger = new ConsoleLogger();
