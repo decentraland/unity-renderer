@@ -55,9 +55,8 @@ message PBAudioSource {
 
 Download the following repo: https://github.com/decentraland/js-sdk-toolchain
 
-Inside it, navigate to `packages/dcl/ecs` (`https://github.com/decentraland/js-sdk-toolchain/tree/main/packages/%40dcl/ecs`)
+Run the following command at the root of the `js-sdk-toolchain` project:
 
-And there, you can execute
 ```
 npm install @dcl/protocol@next
 ````
