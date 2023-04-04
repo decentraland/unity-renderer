@@ -19,6 +19,9 @@ namespace DCL
         private readonly FilterMode filterMode;
         private readonly bool storeDefaultTextureInAdvance = false;
         private readonly bool storeTexAsNonReadable = false;
+        private readonly bool? overrideCompression;
+        private readonly bool linear;
+        private readonly bool useGPUCopy;
         private readonly int maxTextureSize;
         private readonly AssetSource permittedSources;
 
@@ -28,14 +31,19 @@ namespace DCL
 
         public string url { get; }
 
-        public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true,
-            int? overrideMaxTextureSize = null, AssetSource permittedSources = AssetSource.WEB)
+        public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE,
+            bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true,
+            int? overrideMaxTextureSize = null, AssetSource permittedSources = AssetSource.WEB,
+            bool? overrideCompression = null, bool linear = false, bool useGPUCopy = false)
         {
             url = textureUrl;
             wrapMode = textureWrapMode;
             filterMode = textureFilterMode;
             this.storeDefaultTextureInAdvance = storeDefaultTextureInAdvance;
             this.storeTexAsNonReadable = storeTexAsNonReadable;
+            this.overrideCompression = overrideCompression;
+            this.linear = linear;
+            this.useGPUCopy = useGPUCopy;
             maxTextureSize = overrideMaxTextureSize ?? DataStore.i.textureConfig.generalMaxSize.Get();
             idWithDefaultTexSettings = ConstructId(url, DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, maxTextureSize);
             idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(url, wrapMode, filterMode, maxTextureSize);
@@ -70,7 +78,7 @@ namespace DCL
             async UniTaskVoid LaunchRequest()
             {
                 MainScripts.DCL.Controllers.AssetManager.Texture.TextureResponse result = await textureResolver.Ref.GetTextureAsync(permittedSources, url,
-                    maxTextureSize, cancellationTokenSource.Token);
+                    maxTextureSize, linear, useGPUCopy, cancellationTokenSource.Token);
 
                 if (result.IsSuccess)
                 {
@@ -96,7 +104,7 @@ namespace DCL
                 {
                     // Save default texture asset
                     asset.id = idWithDefaultTexSettings;
-                    asset.ConfigureTexture(DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, false);
+                    asset.ConfigureTexture(DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, overrideCompression, false);
 
                     if (!library.Add(asset))
                     {
@@ -114,7 +122,7 @@ namespace DCL
             }
 
             asset.id = idWithTexSettings;
-            asset.ConfigureTexture(wrapMode, filterMode, storeTexAsNonReadable);
+            asset.ConfigureTexture(wrapMode, filterMode, overrideCompression, storeTexAsNonReadable);
 
             if (!library.Add(asset))
             {
