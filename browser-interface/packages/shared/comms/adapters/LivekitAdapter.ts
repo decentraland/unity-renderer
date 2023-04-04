@@ -25,8 +25,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   private room: Room
   private connectedFuture = future<void>()
 
-  private voiceChatHandlerCache?: Promise<VoiceHandler>
-
   constructor(private config: LivekitConfig) {
     this.room = new Room()
 
@@ -65,11 +63,8 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       })
   }
 
-  async getVoiceHandler(): Promise<VoiceHandler> {
-    if (this.voiceChatHandlerCache) {
-      await (await this.voiceChatHandlerCache).destroy()
-    }
-    return (this.voiceChatHandlerCache = createLiveKitVoiceHandler(this.room))
+  async createVoiceHandler(): Promise<VoiceHandler> {
+    return createLiveKitVoiceHandler(this.room)
   }
 
   async connect(): Promise<void> {
