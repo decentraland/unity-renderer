@@ -11,13 +11,13 @@ namespace AvatarSystem
 {
     public class BaseAvatar : IBaseAvatar
     {
-        private static readonly int REVEAL_POSITION_ID = Shader.PropertyToID("_RevealPosition");
-        private static readonly int REVEAL_NORMAL_ID = Shader.PropertyToID("_RevealNormal");
-        private static readonly int COLOR_ID = Shader.PropertyToID("_Color");
+        internal static readonly int REVEAL_POSITION_ID = Shader.PropertyToID("_RevealPosition");
+        internal static readonly int REVEAL_NORMAL_ID = Shader.PropertyToID("_RevealNormal");
+        internal static readonly int COLOR_ID = Shader.PropertyToID("_Color");
 
-        private readonly IBaseAvatarReferences baseAvatarReferences;
-        private readonly List<Material> cachedMaterials = new ();
-        private readonly Material ghostMaterial;
+        internal readonly IBaseAvatarReferences baseAvatarReferences;
+        internal readonly List<Material> cachedMaterials = new ();
+        internal readonly Material ghostMaterial;
 
         public SkinnedMeshRenderer SkinnedMeshRenderer => baseAvatarReferences.SkinnedMeshRenderer;
         public GameObject ArmatureContainer => baseAvatarReferences.ArmatureContainer.gameObject;
@@ -107,7 +107,7 @@ namespace AvatarSystem
             }
         }
 
-        private static void SetRevealPosition(Material material, float height)
+        internal static void SetRevealPosition(Material material, float height)
         {
             material.SetVector(REVEAL_POSITION_ID, Vector3.up * height);
         }
