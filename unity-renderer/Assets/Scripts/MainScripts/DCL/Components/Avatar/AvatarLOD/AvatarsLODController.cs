@@ -129,7 +129,7 @@ namespace DCL
             }
         }
 
-        private bool IsInInvisibleDistance(float distance)
+        private static bool IsInInvisibleDistance(float distance)
         {
             bool firstPersonCamera = CommonScriptableObjects.cameraMode.Get() == CameraMode.ModeId.FirstPerson;
 
