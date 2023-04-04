@@ -18,7 +18,7 @@ namespace DCL.Interface
             this.sender = sender;
             this.body = body;
         }
-                
+
         public ChatMessage(Type messageType, string sender, string body, ulong timestamp)
         {
             this.messageType = messageType;
@@ -44,7 +44,5 @@ namespace DCL.Interface
         public string recipient;
         public ulong timestamp;
         public string body;
-        public bool isChannelMessage;
-
     }
 }
