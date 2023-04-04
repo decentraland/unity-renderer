@@ -83,7 +83,8 @@ public class PrivateChatWindowController : IHUD
                     userProfileBridge.Get(conversationUserId)
                 }, ct);
             },
-          socialAnalytics);
+            socialAnalytics,
+            chatController);
 
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
@@ -125,6 +126,7 @@ public class PrivateChatWindowController : IHUD
             if (conversationProfile != null)
             {
                 var userStatus = friendsController.GetUserStatus(conversationUserId);
+
                 View.Setup(conversationProfile,
                     userStatus.presence == PresenceStatus.ONLINE,
                     userProfileBridge.GetOwn().IsBlocked(conversationUserId));
@@ -132,6 +134,7 @@ public class PrivateChatWindowController : IHUD
                 if (shouldRequestMessages)
                 {
                     ResetPagination();
+
                     RequestPrivateMessages(
                         conversationUserId,
                         USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD,
@@ -211,13 +214,15 @@ public class PrivateChatWindowController : IHUD
         chatController.Send(message);
     }
 
-    private void MinimizeView() => SetVisibility(false);
+    private void MinimizeView() =>
+        SetVisibility(false);
 
     private void HandleMessageReceived(ChatMessage[] messages)
     {
         var messageLogUpdated = false;
 
         var ownPlayerAlreadyMentioned = false;
+
         foreach (var message in messages)
         {
             if (!ownPlayerAlreadyMentioned)
@@ -225,7 +230,7 @@ public class PrivateChatWindowController : IHUD
 
             if (!IsMessageFomCurrentConversation(message)) continue;
 
-            chatHudController.AddChatMessage(message, limitMaxEntries: false);
+            chatHudController.SetChatMessage(message, limitMaxEntries: false);
 
             if (message.timestamp < oldestTimestamp)
             {
@@ -271,7 +276,8 @@ public class PrivateChatWindowController : IHUD
         SetVisibility(true);
     }
 
-    private void HandlePressBack() => OnBack?.Invoke();
+    private void HandlePressBack() =>
+        OnBack?.Invoke();
 
     private void Unfriend(string friendId)
     {
@@ -296,6 +302,7 @@ public class PrivateChatWindowController : IHUD
     private void HandleInputFieldSelected()
     {
         Show();
+
         // The messages from 'conversationUserId' are marked as read if the player clicks on the input field of the private chat
         //MarkUserChatMessagesAsRead();
     }
@@ -312,6 +319,7 @@ public class PrivateChatWindowController : IHUD
     private void SetVisiblePanelList(bool visible)
     {
         HashSet<string> newSet = visibleTaskbarPanels.Get();
+
         if (visible)
             newSet.Add("PrivateChatChannel");
         else
@@ -356,14 +364,15 @@ public class PrivateChatWindowController : IHUD
 
     private void HandleMessageBlockedBySpam(ChatMessage message)
     {
-        chatHudController.AddChatMessage(new ChatEntryModel
-        {
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
-            messageId = Guid.NewGuid().ToString(),
-            messageType = ChatMessage.Type.SYSTEM,
-            subType = ChatEntryModel.SubType.RECEIVED
-        }).Forget();
+        chatHudController.SetChatMessage(new ChatEntryModel
+                          {
+                              timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                              bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
+                              messageId = Guid.NewGuid().ToString(),
+                              messageType = ChatMessage.Type.SYSTEM,
+                              subType = ChatEntryModel.SubType.RECEIVED
+                          })
+                         .Forget();
     }
 
     private void ResetPagination()

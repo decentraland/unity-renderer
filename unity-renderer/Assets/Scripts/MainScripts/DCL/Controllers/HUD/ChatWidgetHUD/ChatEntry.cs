@@ -7,7 +7,7 @@ namespace DCL.Chat.HUD
     {
         [SerializeField] internal CanvasGroup group;
 
-        public abstract string DateString { get; }
+        public abstract string HoverString { get; }
 
         public abstract event Action<ChatEntry> OnUserNameClicked;
         public abstract event Action<ChatEntry> OnTriggerHover;

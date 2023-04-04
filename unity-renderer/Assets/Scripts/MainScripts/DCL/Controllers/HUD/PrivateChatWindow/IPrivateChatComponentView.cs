@@ -1,3 +1,4 @@
+using DCL.Social.Chat;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using System;
