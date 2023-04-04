@@ -7,7 +7,8 @@ Shader "NoiseTest/HLSL/NoiseTest"
 
     CGINCLUDE
 
-    #pragma multi_compile CNOISE PNOISE SNOISE SNOISE_AGRAD SNOISE_NGRAD
+    // #pragma multi_compile CNOISE PNOISE SNOISE SNOISE_AGRAD SNOISE_NGRAD
+    #pragma multi_compile CNOISE SNOISE SNOISE_AGRAD SNOISE_NGRAD
     #pragma multi_compile _ THREED
     #pragma multi_compile _ FRACTAL
 
