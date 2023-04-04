@@ -38,6 +38,10 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// PointerLock indicates whether the mouse pointer is automatically following the camera’s point of
+  /// focus (locked), or can move freely on the screen (unlocked).
+  /// </summary>
   public sealed partial class PBPointerLock : pb::IMessage<PBPointerLock>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -85,6 +89,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "is_pointer_locked" field.</summary>
     public const int IsPointerLockedFieldNumber = 1;
     private bool isPointerLocked_;
+    /// <summary>
+    /// whether the pointer is locked
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool IsPointerLocked {

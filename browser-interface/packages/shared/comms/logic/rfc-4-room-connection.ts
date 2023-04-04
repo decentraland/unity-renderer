@@ -1,4 +1,4 @@
-import * as proto from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { CommsEvents, RoomConnection } from '../interface'
 import mitt from 'mitt'
 import { AdapterMessageEvent, MinimumCommunicationsAdapter } from '../adapters/types'
@@ -43,13 +43,13 @@ export class Rfc4RoomConnection implements RoomConnection {
     return this.sendMessage(false, { message: { $case: 'scene', scene } })
   }
   sendProfileMessage(profileVersion: proto.AnnounceProfileVersion): Promise<void> {
-    return this.sendMessage(true, { message: { $case: 'profileVersion', profileVersion } })
+    return this.sendMessage(false, { message: { $case: 'profileVersion', profileVersion } })
   }
   sendProfileRequest(profileRequest: proto.ProfileRequest): Promise<void> {
-    return this.sendMessage(true, { message: { $case: 'profileRequest', profileRequest } })
+    return this.sendMessage(false, { message: { $case: 'profileRequest', profileRequest } })
   }
   sendProfileResponse(profileResponse: proto.ProfileResponse): Promise<void> {
-    return this.sendMessage(true, { message: { $case: 'profileResponse', profileResponse } })
+    return this.sendMessage(false, { message: { $case: 'profileResponse', profileResponse } })
   }
   sendChatMessage(chat: proto.Chat): Promise<void> {
     return this.sendMessage(true, { message: { $case: 'chat', chat } })

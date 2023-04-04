@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -29,18 +30,17 @@ namespace DCL.Chat.Notifications
         public event Action<bool> OnResetFade;
         public event Action<bool> OnPanelFocus;
 
-        internal readonly Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
+        internal readonly Queue<PoolableObject> poolableQueue = new ();
+        internal readonly Queue<BaseComponentView> notificationQueue = new ();
 
-        internal readonly Queue<BaseComponentView> notificationQueue = new Queue<BaseComponentView>();
-
-        private readonly Vector2 notificationOffset = new Vector2(0, -56);
+        private readonly Vector2 notificationOffset = new (0, -56);
 
         private Pool entryPool;
         private bool isOverMessage;
         private bool isOverPanel;
         private int notificationCount = 1;
         private TMP_Text notificationMessage;
-        private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource animationCancellationToken = new ();
 
         public static MainChatNotificationsComponentView Create()
         {
@@ -98,17 +98,17 @@ namespace DCL.Chat.Notifications
         public void ShowNotifications()
         {
             foreach (BaseComponentView notification in notificationQueue)
-            {
-                notification.Show();
-            }
+                // For an unknown reason, sometimes we get an invalid notification
+                if (notification)
+                    notification.Show();
         }
 
         public void HideNotifications()
         {
             foreach (BaseComponentView notification in notificationQueue)
-            {
-                notification.Hide();
-            }
+                // For an unknown reason, sometimes we get an invalid notification
+                if (notification)
+                    notification.Hide();
         }
 
         public void AddNewChatNotification(PrivateChatMessageNotificationModel model)
@@ -363,12 +363,14 @@ namespace DCL.Chat.Notifications
 
         private void CheckNotificationCountAndRelease()
         {
-            if (poolableQueue.Count >= MAX_NOTIFICATION_ENTRIES)
-            {
-                BaseComponentView notificationToDequeue = notificationQueue.Dequeue();
+            if (poolableQueue.Count < MAX_NOTIFICATION_ENTRIES) return;
+
+            BaseComponentView notificationToDequeue = notificationQueue.Dequeue();
+
+            if (notificationToDequeue)
                 notificationToDequeue.onFocused -= FocusedOnNotification;
-                entryPool.Release(poolableQueue.Dequeue());
-            }
+
+            entryPool.Release(poolableQueue.Dequeue());
         }
 
         private Pool GetNotificationEntryPool()

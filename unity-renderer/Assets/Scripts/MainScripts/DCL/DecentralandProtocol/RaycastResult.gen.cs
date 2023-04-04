@@ -50,6 +50,11 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The RaycastResult component is added to an Entity when the results of a previously attached
+  /// Raycast component are available. It contains information about the ray and any objects it 
+  /// collided with.
+  /// </summary>
   public sealed partial class PBRaycastResult : pb::IMessage<PBRaycastResult>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -100,6 +105,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "timestamp" field.</summary>
     public const int TimestampFieldNumber = 1;
     private int timestamp_;
+    /// <summary>
+    /// the timestamp of the Raycast component addition
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Timestamp {
@@ -112,6 +120,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "origin" field.</summary>
     public const int OriginFieldNumber = 2;
     private global::Decentraland.Common.Vector3 origin_;
+    /// <summary>
+    /// the starting point of the ray
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Origin {
@@ -124,6 +135,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "direction" field.</summary>
     public const int DirectionFieldNumber = 3;
     private global::Decentraland.Common.Vector3 direction_;
+    /// <summary>
+    /// the direction vector of the ray
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Direction {
@@ -138,6 +152,9 @@ namespace DCL.ECSComponents {
     private static readonly pb::FieldCodec<global::DCL.ECSComponents.RaycastHit> _repeated_hits_codec
         = pb::FieldCodec.ForMessage(34, global::DCL.ECSComponents.RaycastHit.Parser);
     private readonly pbc::RepeatedField<global::DCL.ECSComponents.RaycastHit> hits_ = new pbc::RepeatedField<global::DCL.ECSComponents.RaycastHit>();
+    /// <summary>
+    /// zero or more hits
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::DCL.ECSComponents.RaycastHit> Hits {
@@ -358,7 +375,7 @@ namespace DCL.ECSComponents {
   }
 
   /// <summary>
-  /// Position will be relative to the scene  
+  /// RaycastHit contains information about the intersection of a ray with a mesh.
   /// </summary>
   public sealed partial class RaycastHit : pb::IMessage<RaycastHit>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -415,6 +432,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "position" field.</summary>
     public const int PositionFieldNumber = 1;
     private global::Decentraland.Common.Vector3 position_;
+    /// <summary>
+    /// Position will be relative to the scene  
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Position {
@@ -427,6 +447,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "origin" field.</summary>
     public const int OriginFieldNumber = 2;
     private global::Decentraland.Common.Vector3 origin_;
+    /// <summary>
+    /// the starting point of the ray
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Origin {
@@ -439,6 +462,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "direction" field.</summary>
     public const int DirectionFieldNumber = 3;
     private global::Decentraland.Common.Vector3 direction_;
+    /// <summary>
+    /// the direction vector of the ray
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Direction {
@@ -451,6 +477,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "normal_hit" field.</summary>
     public const int NormalHitFieldNumber = 4;
     private global::Decentraland.Common.Vector3 normalHit_;
+    /// <summary>
+    /// the entry vector of the ray into the collision mesh
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 NormalHit {
@@ -463,6 +492,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "length" field.</summary>
     public const int LengthFieldNumber = 5;
     private float length_;
+    /// <summary>
+    /// the distance between the ray origin and the hit position
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Length {
@@ -475,6 +507,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "mesh_name" field.</summary>
     public const int MeshNameFieldNumber = 6;
     private string meshName_;
+    /// <summary>
+    /// (unused) mesh ID if collision happened inside a GltfContainer
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string MeshName {
@@ -499,6 +534,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "entity_id" field.</summary>
     public const int EntityIdFieldNumber = 7;
     private long entityId_;
+    /// <summary>
+    /// the ID of the Entity that has the impacted mesh attached
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long EntityId {

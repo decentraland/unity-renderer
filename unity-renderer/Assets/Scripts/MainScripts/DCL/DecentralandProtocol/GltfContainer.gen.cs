@@ -38,6 +38,12 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// GltfContainer loads a GLTF file (and any additional files packaged inside) attached to an Entity.
+  ///
+  /// This allows the use of custom models, materials, collision boundaries and shapes that can't be 
+  /// achieved using MeshRenderer, MeshCollider and other standard components.
+  /// </summary>
   public sealed partial class PBGltfContainer : pb::IMessage<PBGltfContainer>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -86,7 +92,7 @@ namespace DCL.ECSComponents {
     public const int SrcFieldNumber = 1;
     private string src_ = "";
     /// <summary>
-    /// which file to load
+    /// the GLTF file path as listed in the scene's manifest.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

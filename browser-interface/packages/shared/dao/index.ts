@@ -1,4 +1,4 @@
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { PIN_CATALYST } from 'config'
 import defaultLogger from 'lib/logger'
 import { storeCondition } from 'lib/redux'
