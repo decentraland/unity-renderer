@@ -1,55 +1,119 @@
+using Cysharp.Threading.Tasks;
+using DCL;
 using UnityEngine;
 using System;
 using DCL.Helpers;
-using DCL.Interface;
+using DCL.Map;
+using DCL.Tasks;
+using System.Linq;
+using System.Threading;
 
 public class TeleportPromptHUDController : IHUD
 {
-    const string TELEPORT_COMMAND_MAGIC = "magic";
-    const string TELEPORT_COMMAND_CROWD = "crowd";
+    private const string TELEPORT_COMMAND_MAGIC = "magic";
+    private const string TELEPORT_COMMAND_CROWD = "crowd";
 
-    const string EVENT_STRING_LIVE = "Current event";
-    const string EVENT_STRING_TODAY = "Today @ {0:HH:mm}";
+    private const string EVENT_STRING_LIVE = "Current event";
+    private const string EVENT_STRING_TODAY = "Today @ {0:HH:mm}";
+    private const int INITIAL_ANIMATION_DELAY = 500;
 
     internal TeleportPromptHUDView view { get; private set; }
 
-    TeleportData teleportData;
+    private readonly DataStore dataStore;
+    private readonly IMinimapApiBridge minimapApiBridge;
 
-    public TeleportPromptHUDController()
+    TeleportData teleportData;
+    private CancellationTokenSource cancellationToken = new ();
+
+    public TeleportPromptHUDController(DataStore dataStore, IMinimapApiBridge minimapApiBridge)
     {
+        this.dataStore = dataStore;
+        this.minimapApiBridge = minimapApiBridge;
+
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("TeleportPromptHUD")).GetComponent<TeleportPromptHUDView>();
         view.name = "_TeleportPromptHUD";
-        view.content.SetActive(false);
+        view.OnCloseEvent += view.SetOutAnimation;
         view.OnTeleportEvent += OnTeleportPressed;
+
+        dataStore.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
+        dataStore.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
+        dataStore.world.requestTeleportData.OnChange += ReceivedRequestTeleportData;
     }
+
+    private void ReceivedRequestTeleportData(string current, string previous)
+    {
+        if (string.IsNullOrEmpty(current))
+            return;
+
+        RequestTeleport(current);
+    }
+
+    private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous)
+    {
+        if (current == previous) return;
+
+        async UniTaskVoid SetCoordinatesAsync(ParcelCoordinates coordinates, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y), 2, cancellationToken);
+                MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(coordinates.x, coordinates.y);
+                view.ShowTeleportToCoords(coordinates.ToString(), sceneInfo.name, sceneInfo.owner, sceneInfo.previewImageUrl);
+
+                teleportData = new TeleportData()
+                {
+                    coordinates = coordinates,
+                    sceneData = sceneInfo,
+                    sceneEvent = null
+                };
+                UniTask.Delay(INITIAL_ANIMATION_DELAY, cancellationToken: cancellationToken);
+                view.SetLoadingCompleted();
+            }
+            catch (OperationCanceledException)
+            {
+                teleportData = new TeleportData()
+                {
+                    destination = coordinates.ToString(),
+                    sceneData = null,
+                    sceneEvent = null
+                };
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        cancellationToken = cancellationToken.SafeRestart();
+        SetCoordinatesAsync(current, cancellationToken.Token).Forget();
+    }
+
+    private void ChangeVisibility(bool current, bool previous) =>
+        SetVisibility(current);
 
     public void SetVisibility(bool visible)
     {
-        if (view.contentAnimator.isVisible && !visible)
+        if (visible)
         {
-            view.contentAnimator.Hide();
-        }
-        else if (!view.contentAnimator.isVisible && visible)
-        {
-            view.content.SetActive(true);
-            view.contentAnimator.Show();
-
+            view.SetInAnimation();
             AudioScriptableObjects.fadeIn.Play(true);
+        }
+        else
+        {
+            dataStore.HUDs.gotoPanelVisible.Set(false, false);
+            view.SetOutAnimation();
+            view.Reset();
         }
     }
 
     public void RequestTeleport(string teleportDataJson)
     {
-        if (view.contentAnimator.isVisible)
-            return;
-
         Utils.UnlockCursor();
 
         view.Reset();
-        SetVisibility(true);
-
         teleportData = Utils.SafeFromJson<TeleportData>(teleportDataJson);
 
+        dataStore.HUDs.gotoPanelVisible.Set(true, true);
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_MAGIC:
@@ -59,6 +123,7 @@ public class TeleportPromptHUDController : IHUD
                 view.ShowTeleportToCrowd();
                 break;
             default:
+                dataStore.HUDs.gotoPanelCoordinates.Set(CoordinateUtils.ParseCoordinatesString(teleportData.destination));
                 view.ShowTeleportToCoords(teleportData.destination,
                     teleportData.sceneData.name,
                     teleportData.sceneData.owner,
@@ -74,6 +139,8 @@ public class TeleportPromptHUDController : IHUD
         {
             UnityEngine.Object.Destroy(view.gameObject);
         }
+        dataStore.HUDs.gotoPanelVisible.OnChange -= ChangeVisibility;
+        dataStore.HUDs.gotoPanelCoordinates.OnChange -= SetCoordinates;
     }
 
     private void SetSceneEvent()
@@ -103,6 +170,7 @@ public class TeleportPromptHUDController : IHUD
 
     private void OnTeleportPressed()
     {
+        ChangeVisibility(false, false);
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_CROWD:
@@ -112,13 +180,7 @@ public class TeleportPromptHUDController : IHUD
                 DCL.Environment.i.world.teleportController.GoToMagic();
                 break;
             default:
-                int x, y;
-                string[] coordSplit = teleportData.destination.Split(',');
-                if (coordSplit.Length == 2 && int.TryParse(coordSplit[0], out x) && int.TryParse(coordSplit[1], out y))
-                {
-                    DCL.Environment.i.world.teleportController.Teleport(x, y);
-                }
-
+                DCL.Environment.i.world.teleportController.Teleport(teleportData.GetCoordinates().x, teleportData.GetCoordinates().y);
                 break;
         }
     }
@@ -126,6 +188,12 @@ public class TeleportPromptHUDController : IHUD
     [Serializable]
     internal class TeleportData
     {
+        public Vector2Int? coordinates;
+
+        public Vector2Int GetCoordinates() =>
+            (coordinates ??= new Vector2Int(int.TryParse(destination.Split(',')[0], out int x) ? x : 0,
+                int.TryParse(destination.Split(',')[1], out int y) ? y : 0));
+
         public string destination = "";
         public MinimapMetadata.MinimapSceneInfo sceneData = null;
         public EventData sceneEvent = null;
