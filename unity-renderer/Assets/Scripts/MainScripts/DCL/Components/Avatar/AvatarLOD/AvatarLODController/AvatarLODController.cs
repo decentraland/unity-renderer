@@ -25,9 +25,7 @@ namespace DCL
         public AvatarLODController(Player player)
         {
             this.player = player;
-            if (player?.avatar == null)
-                return;
-            player.avatar.SetLODLevel(0);
+            player?.avatar?.SetLODLevel(0);
         }
 
         public void SetLOD0()
@@ -69,13 +67,8 @@ namespace DCL
             player.onPointerDownCollider.SetColliderEnabled(false);
         }
 
-        public void SetAnimationThrottling(int framesBetweenUpdates)
-        {
-            if (player?.avatar == null)
-                return;
-            
-            player.avatar.SetAnimationThrottling(framesBetweenUpdates);
-        }
+        public void SetAnimationThrottling(int framesBetweenUpdates) =>
+            player?.avatar?.SetAnimationThrottling(framesBetweenUpdates);
 
         public void SetNameVisible(bool visible)
         {
@@ -84,13 +77,8 @@ namespace DCL
             else
                 player?.playerName.Hide();
         }
-        public void UpdateImpostorTint(float distanceToMainPlayer)
-        {
-            if (player?.avatar == null)
-                return;
-            
-            player.avatar.SetImpostorTint(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer));
-        }
+        public void UpdateImpostorTint(float distanceToMainPlayer) =>
+            player?.avatar?.SetImpostorTint(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer));
 
         public void Dispose() { }
     }

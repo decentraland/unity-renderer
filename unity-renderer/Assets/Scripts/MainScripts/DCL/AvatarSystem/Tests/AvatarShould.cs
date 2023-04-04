@@ -110,7 +110,7 @@ namespace Test.AvatarSystem
             await TestUtils.ThrowsAsync<Exception>(avatar.Load(new List<string>(), new List<string>(), settings));
 
             loader.Received()
-                .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, Arg.Any<CancellationToken>());
+                .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, cancellationToken:Arg.Any<CancellationToken>());
         });
 
         [UnityTest]

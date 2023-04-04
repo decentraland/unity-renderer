@@ -769,6 +769,8 @@ MonoBehaviour:
   searchBar: {fileID: 8498673460815628759}
   loadMoreContainer: {fileID: 8953413587729228697}
   loadMoreSpinner: {fileID: 5050351621148873383}
+  emptyStateForCommon: {fileID: 0}
+  emptyStateForSearch: {fileID: 0}
 --- !u!114 &7297809386921154479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -880,7 +882,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 10
   m_Viewport: {fileID: 2828657937425296497}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 2911345154281567359}
