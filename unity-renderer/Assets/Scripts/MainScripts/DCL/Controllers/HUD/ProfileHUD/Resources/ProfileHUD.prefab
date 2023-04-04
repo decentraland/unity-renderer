@@ -5289,7 +5289,6 @@ MonoBehaviour:
   expandedObject: {fileID: 3073583394034477279}
   profilePicObject: {fileID: 2495736092994947693}
   closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
-  mainCanvas: {fileID: 7148020178624039399}
   hideOnNameClaimed:
   - {fileID: 7575626182848155686}
   - {fileID: 1229710911140771352}
@@ -5339,7 +5338,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 5
   m_TargetDisplay: 0
 --- !u!114 &8540544952857596789
 MonoBehaviour:

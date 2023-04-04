@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       packageVersion:
-        description: 'NPM Version of the release (@dcl/unity-renderer)'
+        description: 'NPM Version of the release (@dcl/explorer)'
         required: true
         default: ''
       percentage:
@@ -18,7 +18,7 @@ on:
 
 jobs:
   set-manual-rollout:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: hmarr/debug-action@v2
       - name: set-rollout
@@ -31,10 +31,10 @@ jobs:
           sha: ${{ github.sha }}
 
           # CDN information
-          packageName: "@dcl/unity-renderer"
+          packageName: "@dcl/explorer"
           packageVersion: ${{ github.event.inputs.packageVersion }}
 
           # Rollout information
           deploymentDomain: ${{ github.event.inputs.deploymentDomain }}
-          deploymentName: "@dcl/unity-renderer"
+          deploymentName: "@dcl/explorer"
           percentage: ${{ github.event.inputs.percentage }}

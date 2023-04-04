@@ -1,4 +1,3 @@
-using System.Linq;
 using DCL.Controllers;
 using DCL.Interface;
 using UnityEngine;
@@ -10,35 +9,36 @@ using Ray = UnityEngine.Ray;
 namespace DCL.Components
 {
     public class AvatarOnPointerDown : MonoBehaviour, IAvatarOnPointerDown, IPoolLifecycleHandler,
-        IAvatarOnPointerDownCollider
+        IAvatarOnPointerDownCollider, IUnlockedCursorInputEvent
     {
-        public new Collider collider;
         private OnPointerEvent.Model model;
         private OnPointerEventHandler eventHandler;
-
-        public InteractionHoverCanvasController hoverCanvas;
-        public IDCLEntity entity { get; private set; }
-        public event System.Action OnPointerDownReport;
-        public event System.Action OnPointerEnterReport;
-        public event System.Action OnPointerExitReport;
-        private bool isHovering = false;
-
+        private bool isHovering;
         private bool passportEnabled = true;
         private bool onClickReportEnabled = true;
         private Player avatarPlayer;
 
-        public WebInterface.ACTION_BUTTON GetActionButton()
-        {
-            return model.GetActionButton();
-        }
+        public IDCLEntity entity { get; private set; }
+        public event System.Action OnPointerDownReport;
+        public event System.Action OnPointerEnterReport;
+        public event System.Action OnPointerExitReport;
+
+        public bool ShouldBeInteractableWhenMouseIsLocked { get; set; } = true;
+        public new Collider collider;
+
+        public WebInterface.ACTION_BUTTON GetActionButton() =>
+            model.GetActionButton();
 
         public void SetHoverState(bool state)
         {
+            if (!enabled) return;
             bool isHoveringDirty = state != isHovering;
             isHovering = state;
             eventHandler?.SetFeedbackState(model.showFeedback, state && passportEnabled, model.button, model.hoverText);
+
             if (!isHoveringDirty)
                 return;
+
             if (isHovering)
                 OnPointerEnterReport?.Invoke();
             else
@@ -49,20 +49,23 @@ namespace DCL.Components
         {
             if (!isHovering)
                 return;
+
             isHovering = false;
             OnPointerExitReport?.Invoke();
         }
 
-        void Awake()
+        private void Awake()
         {
             CommonScriptableObjects.playerInfoCardVisibleState.OnChange += ReEnableOnInfoCardClosed;
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             CommonScriptableObjects.playerInfoCardVisibleState.OnChange -= ReEnableOnInfoCardClosed;
             eventHandler?.Dispose();
-            CollidersManager.i.RemoveEntityCollider(entity, collider);
+
+            if (entity != null)
+                CollidersManager.i.RemoveEntityCollider(entity, collider);
         }
 
         public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, Player player)
@@ -74,28 +77,30 @@ namespace DCL.Components
             if (eventHandler == null)
                 eventHandler = new OnPointerEventHandler();
 
-            eventHandler?.SetColliders(entity);
-            CollidersManager.i.AddOrUpdateEntityCollider(entity, collider);
+            if (entity != null)
+            {
+                eventHandler?.SetColliders(entity);
+                CollidersManager.i.AddOrUpdateEntityCollider(entity, collider);
+            }
         }
 
-        public bool IsAtHoverDistance(float distance) =>
+        public bool IsAtHoverDistance(float distance)
+        {
+            bool isCursorLocked = Utils.IsCursorLocked;
+            if (!ShouldBeInteractableWhenMouseIsLocked && isCursorLocked) return false;
+            return !isCursorLocked || distance <= model.distance;
+        }
+
+        public bool IsVisible() =>
             true;
 
-        public bool IsVisible()
-        {
-            return true;
-        }
-
-        public bool ShouldReportPassportInputEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
-        {
-            return IsAtHoverDistance(hit.distance) &&
-                   (model.button == "ANY" || buttonId.ToString() == model.button);
-        }
+        private bool ShouldReportPassportInputEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit) =>
+            isHovering && (model.button == "ANY" || buttonId.ToString() == model.button);
 
         public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
-            if (!enabled)
-                return;
+            if (!enabled) return;
+            if (!ShouldBeInteractableWhenMouseIsLocked && !isHovering) return;
 
             if (passportEnabled && ShouldReportPassportInputEvent(buttonId, hit))
             {
@@ -108,6 +113,7 @@ namespace DCL.Components
             if (onClickReportEnabled && ShouldReportOnClickEvent(buttonId, out IParcelScene playerScene))
             {
                 AudioScriptableObjects.buttonClick.Play(true);
+
                 WebInterface.ReportAvatarClick(
                     playerScene.sceneData.sceneNumber,
                     avatarPlayer.id,
@@ -117,10 +123,8 @@ namespace DCL.Components
             }
         }
 
-        public PointerInputEventType GetEventType()
-        {
-            return PointerInputEventType.DOWN;
-        }
+        public PointerInputEventType GetEventType() =>
+            PointerInputEventType.DOWN;
 
         void ReEnableOnInfoCardClosed(bool newState, bool prevState)
         {
@@ -146,10 +150,8 @@ namespace DCL.Components
             onClickReportEnabled = newEnabledState;
         }
 
-        public Transform GetTransform()
-        {
-            return transform;
-        }
+        public Transform GetTransform() =>
+            transform;
 
         public void OnPoolRelease()
         {
@@ -157,38 +159,27 @@ namespace DCL.Components
             avatarPlayer = null;
         }
 
-        public void OnPoolGet()
-        {
-        }
+        public void OnPoolGet() { }
 
         private bool ShouldReportOnClickEvent(WebInterface.ACTION_BUTTON buttonId, out IParcelScene playerScene)
         {
             playerScene = null;
 
-            if (buttonId != WebInterface.ACTION_BUTTON.POINTER)
-            {
-                return false;
-            }
+            if (buttonId != WebInterface.ACTION_BUTTON.POINTER) { return false; }
 
-            if (avatarPlayer == null)
-            {
-                return false;
-            }
+            if (avatarPlayer == null) { return false; }
 
             int playerSceneNumber = CommonScriptableObjects.sceneNumber.Get();
-            if (playerSceneNumber <= 0)
-            {
-                return false;
-            }
+
+            if (playerSceneNumber <= 0) { return false; }
 
             playerScene = WorldStateUtils.GetCurrentScene();
+
             return playerScene?.IsInsideSceneBoundaries(
                 PositionUtils.UnityToWorldPosition(avatarPlayer.worldPosition)) ?? false;
         }
 
-        public bool ShouldShowHoverFeedback()
-        {
-            return enabled && model.showFeedback;
-        }
+        public bool ShouldShowHoverFeedback() =>
+            enabled && model.showFeedback;
     }
 }

@@ -6,10 +6,11 @@ using UnityEngine.EventSystems;
 
 namespace UIComponents.Scripts.Components
 {
-    public abstract class BaseComponentView<TModel> : BaseComponentView, IBaseComponentView<TModel> where TModel : IEquatable<TModel>
+    public abstract class BaseComponentView<TModel> : BaseComponentView, IBaseComponentView<TModel>
+        where TModel : IEquatable<TModel>, new()
     {
         [field: SerializeField]
-        protected TModel model { get; private set; }
+        protected TModel model { get; private set; } = new ();
 
         public void SetModel(TModel newModel)
         {
@@ -139,7 +140,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     {
         DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
 
-        if (!isDestroyed)
+        if (!isDestroyed && gameObject)
             Destroy(gameObject);
     }
 

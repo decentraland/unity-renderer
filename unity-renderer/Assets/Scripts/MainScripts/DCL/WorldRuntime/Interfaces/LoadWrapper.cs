@@ -5,7 +5,6 @@ namespace DCL
 {
     public abstract class LoadWrapper
     {
-        public bool useVisualFeedback = true;
         public bool initialVisibility = true;
         public bool alreadyLoaded = false;
 

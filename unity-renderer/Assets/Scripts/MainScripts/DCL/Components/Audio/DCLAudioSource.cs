@@ -184,6 +184,9 @@ namespace DCL.Components
             
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+
+            lastDCLAudioClip = null;
+            audioSource = null;
         }
 
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)

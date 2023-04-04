@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
-using DCL.CRDT;
+using System.Threading.Tasks;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -26,7 +26,6 @@ namespace DCL
         internal BaseVariable<Transform> isPexViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
 
         //TODO(Brian): Move to WorldRuntimePlugin later
-        private LoadingFeedbackController loadingFeedbackController;
         private Coroutine deferredDecodingCoroutine;
 
         private CancellationTokenSource tokenSource;
@@ -41,8 +40,6 @@ namespace DCL
             positionDirty = true;
             lastSortFrame = 0;
             enabled = true;
-
-            loadingFeedbackController = new LoadingFeedbackController();
 
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
@@ -105,7 +102,6 @@ namespace DCL
         {
             tokenSource.Cancel();
             tokenSource.Dispose();
-            loadingFeedbackController.Dispose();
 
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -464,6 +460,7 @@ namespace DCL
                 await UniTask.Yield();
             }
         }
+
         private void ThreadedDecodeAndEnqueue(CancellationToken cancellationToken)
         {
             while (chunksToDecode.TryDequeue(out string chunk))
@@ -585,10 +582,10 @@ namespace DCL
             sceneToLoad = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(scenePayload);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
 
-            LoadUnityParcelScene(sceneToLoad);
+            LoadUnityParcelScene(sceneToLoad).Forget();
         }
 
-        public void LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad)
+        public async UniTaskVoid LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad)
         {
             if (sceneToLoad == null || sceneToLoad.sceneNumber <= 0)
                 return;
@@ -615,7 +612,7 @@ namespace DCL
                 var newGameObject = new GameObject("New Scene");
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
-                newScene.SetData(sceneToLoad);
+                await newScene.SetData(sceneToLoad);
 
                 if (debugConfig.isDebugMode.Get())
                 {
@@ -623,8 +620,6 @@ namespace DCL
                 }
 
                 worldState.AddScene(newScene);
-                if(newScene.sceneData.sdk7)
-                    DataStore.i.ecs7.scenes.Add(newScene);
 
                 sceneSortDirty = true;
 
@@ -698,8 +693,6 @@ namespace DCL
                 return;
 
             worldState.RemoveScene(sceneNumber);
-            if (scene.sceneData.sdk7)
-                DataStore.i.ecs7.scenes.Remove(scene);
 
             DataStore.i.world.portableExperienceIds.Remove(scene.sceneData.id);
 
@@ -809,7 +802,10 @@ namespace DCL
                 sceneNumber = newGlobalSceneNumber,
                 basePosition = new Vector2Int(0, 0),
                 baseUrl = globalScene.baseUrl,
-                contents = globalScene.contents
+                contents = globalScene.contents,
+                sdk7 = globalScene.sdk7,
+                requiredPermissions = globalScene.requiredPermissions,
+                allowedMediaHostnames = globalScene.allowedMediaHostnames
             };
 
             newScene.SetData(sceneData);
@@ -820,8 +816,6 @@ namespace DCL
             }
 
             worldState.AddScene(newScene);
-            if(newScene.sceneData.sdk7)
-                DataStore.i.ecs7.scenes.Add(newScene);
 
             OnNewSceneAdded?.Invoke(newScene);
 

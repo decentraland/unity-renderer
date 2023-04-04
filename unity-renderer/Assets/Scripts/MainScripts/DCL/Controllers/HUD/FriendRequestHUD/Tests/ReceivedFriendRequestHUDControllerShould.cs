@@ -1,9 +1,11 @@
 using Cysharp.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -19,8 +21,8 @@ namespace DCL.Social.Friends
         private IReceivedFriendRequestHUDView view;
         private IFriendsController friendsController;
         private IUserProfileBridge userProfileBridge;
-        private StringVariable openPassportVariable;
         private DataStore dataStore;
+        private IFriendRequestHUDView friendRequestHUDView;
 
         [SetUp]
         public void SetUp()
@@ -59,14 +61,16 @@ namespace DCL.Social.Friends
 
             userProfileBridge.GetOwn().Returns(ownProfile);
             userProfileBridge.Get(SENDER_ID).Returns(recipientProfile);
-            openPassportVariable = ScriptableObject.CreateInstance<StringVariable>();
             dataStore = new DataStore();
+
+            friendRequestHUDView = Substitute.For<IFriendRequestHUDView>();
 
             controller = new ReceivedFriendRequestHUDController(dataStore,
                 view,
+                new FriendRequestHUDController(friendRequestHUDView),
                 friendsController,
                 userProfileBridge,
-                openPassportVariable);
+                Substitute.For<ISocialAnalytics>());
 
             view.ClearReceivedCalls();
         }
@@ -86,7 +90,7 @@ namespace DCL.Social.Friends
             view.Received(1).SetTimestamp(Arg.Is<DateTime>(d => d.Ticks == 621355968001000000));
             view.Received(1).SetSenderName("senderName");
             view.Received(1).SetSenderProfilePicture("senderFaceUrl");
-            view.Received(1).SetOwnProfilePicture("ownFaceUrl");
+            view.Received(1).SetRecipientProfilePicture("ownFaceUrl");
             view.Received(1).Show();
         }
 
@@ -96,7 +100,7 @@ namespace DCL.Social.Friends
             WhenShow();
             dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
 
         [Test]
@@ -106,7 +110,7 @@ namespace DCL.Social.Friends
 
             view.OnClose += Raise.Event<Action>();
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
 
         [Test]
@@ -116,13 +120,14 @@ namespace DCL.Social.Friends
 
             view.OnOpenProfile += Raise.Event<Action>();
 
-            Assert.AreEqual(SENDER_ID, openPassportVariable.Get());
+            Assert.AreEqual(SENDER_ID, dataStore.HUDs.currentPlayerId.Get().playerId);
         }
 
         [UnityTest]
         public IEnumerator RejectFriendRequest()
         {
-            friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID)
+            WhenShow();
+            friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
 
@@ -134,7 +139,7 @@ namespace DCL.Social.Friends
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
-                view.Close();
+                friendRequestHUDView.Close();
             });
         }
 
@@ -143,7 +148,7 @@ namespace DCL.Social.Friends
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
 
-            friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID)
+            friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromException<FriendRequest>(new TimeoutException()));
 
@@ -155,14 +160,14 @@ namespace DCL.Social.Friends
             Received.InOrder(() =>
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
             });
         }
 
         [UnityTest]
         public IEnumerator ConfirmFriendship()
         {
-            friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID)
+            friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
             WhenShow();
@@ -176,7 +181,7 @@ namespace DCL.Social.Friends
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
-                view.Close();
+                friendRequestHUDView.Close();
             });
         }
 
@@ -185,7 +190,7 @@ namespace DCL.Social.Friends
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
 
-            friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID)
+            friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromException<FriendRequest>(new TimeoutException()));
 
@@ -197,7 +202,7 @@ namespace DCL.Social.Friends
             Received.InOrder(() =>
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
             });
         }
 

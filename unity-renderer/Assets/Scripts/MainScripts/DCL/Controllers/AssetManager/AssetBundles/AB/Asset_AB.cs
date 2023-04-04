@@ -71,12 +71,12 @@ namespace DCL
 
                 return;
             }
-            
+
             if (!assetsByExtension.ContainsKey(ext))
             {
                 assetsByExtension.Add(ext, new List<Object>());
             }
-            
+
             assetsByExtension[ext].Add(loadedAsset);
         }
         public void SetAssetBundle(AssetBundle ab)
@@ -93,11 +93,16 @@ namespace DCL
 
         public TextAsset GetMetadata()
         {
-            return assetBundle.LoadAsset<TextAsset>(METADATA_FILENAME);
+            return GetMetadata(assetBundle);
         }
         public AssetBundleRequest LoadAllAssetsAsync()
         {
             return assetBundle.LoadAllAssetsAsync();
+        }
+
+        public static TextAsset GetMetadata(AssetBundle assetBundle)
+        {
+            return assetBundle.LoadAsset<TextAsset>(METADATA_FILENAME);
         }
     }
 }

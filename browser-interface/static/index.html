@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Decentraland Kernel Debugger</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        touch-action: none;
+      }
+
+      #gameContainer {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        color: #fff;
+        font-family: 'open sans', roboto, 'helvetica neue', sans-serif;
+        font-size: 0.8em;
+      }
+
+      canvas {
+        position: absolute;
+        z-index: 1000;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      /* Preview only style */
+
+      .error-overlay-bar {
+        display: none;
+
+        width: 100%;
+        padding: 5px 0;
+
+        position: absolute;
+        top: 0%;
+        z-index: 1001;
+
+        background-color: #de3959;
+      }
+
+      .error-overlay-title {
+        text-align: center;
+
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+
+      .error-overlay-description {
+        text-align: center;
+
+        font-size: 0.85rem;
+      }
+
+      .error-overlay-button {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+
+        transform: translate(-50%, -50%);
+
+        color: white;
+
+        font-size: 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+
+        border: 0;
+        background-color: transparent;
+      }
+
+      .error-overlay-button:active,
+      .error-overlay-button:focus,
+      .error-overlay-button:focus:active {
+        background-image: none;
+        outline: 0;
+        box-shadow: none;
+      }
+    </style>
+  </head>
+
+  <body class="dcl-loading">
+    <div id="overlay"></div>
+    <div id="gameContainer"></div>
+    <audio autoplay id="voice-chat-audio"></audio>
+
+    <div id="error-overlay" class="error-overlay-bar">
+      <div class="error-overlay-title"></div>
+      <div class="error-overlay-description"></div>
+      <button class="error-overlay-button" onclick="document.getElementById('error-overlay').style.display = 'none';">
+        ⨯
+      </button>
+    </div>
+
+    <script src="index.js"></script>
+
+    <script>
+      function handleError(title, message) {
+        const titleElement = document.getElementsByClassName('error-overlay-title')[0]
+        const descElement = document.getElementsByClassName('error-overlay-description')[0]
+        const containerElement = document.getElementById('error-overlay')
+
+        titleElement.textContent = '' + title || 'Error'
+
+        const item = document.createElement('li')
+        item.textContent = ' - ' + message || ''
+        descElement.appendChild(item)
+
+        containerElement.style.display = 'block'
+      }
+
+      async function initKernel() {
+        const container = document.getElementById('gameContainer')
+
+        const DecentralandKernel = globalThis.DecentralandKernel
+
+        if (!DecentralandKernel) throw new Error('DecentralandKernel could not be loaded')
+
+        const explorerBaseUrl = new URL('./', location.toString()).toString()
+        let baseUrl = explorerBaseUrl
+
+        const qs = new URLSearchParams(document.location.search)
+        if (qs.has('explorer-branch')) {
+          baseUrl = `https://renderer-artifacts.decentraland.org/branch/${qs.get('explorer-branch')}`
+        } else if (qs.has('explorer-version')) {
+          baseUrl = `https://cdn.decentraland.org/@dcl/explorer/${qs.get('explorer-version')}`
+        }
+
+        const kernel = await DecentralandKernel.initKernel({
+          kernelOptions: {
+            baseUrl: explorerBaseUrl
+          },
+          rendererOptions: {
+            container,
+            baseUrl
+          }
+        })
+
+        kernel.on('trackingEvent', ({ eventName, eventData }) => {
+          console.log(`> event`, eventName, eventData)
+        })
+
+        kernel.on('openUrl', ({ url }) => {
+          const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+          if (newWindow != null) newWindow.opener = null
+        })
+
+        kernel.on('accountState', (account) => {
+          console.log('> account state', account)
+        })
+
+        kernel.on('signUp', ({ email }) => {
+          console.log(`> sign up ${email}`)
+        })
+
+        kernel.on('logout', (data) => {
+          console.log(`> logout ${data}`)
+        })
+
+        kernel.on('error', (error) => {
+          try {
+            handleError('Critical error', '' + (error.error.message || error.error))
+          } catch {
+            handleError('Critical error', '' + error.error)
+          }
+        })
+
+        kernel.on('rendererVisible', (event) => {
+          document.getElementById('overlay').style.display = event.visible ? 'none' : 'block'
+        })
+
+        return kernel
+      }
+
+      async function initExplorer(kernel) {
+        const url = new URLSearchParams(location.search)
+
+        if (url.has('ENABLE_WEB3')) {
+          if (!globalThis.ethereum) {
+            handleError('Ethereum provider missing', 'There is no Ethereum provider to use')
+          } else {
+            if ('request' in globalThis.ethereum) {
+              await ethereum.request({ method: 'eth_requestAccounts' })
+            }
+
+            kernel.authenticate(globalThis.ethereum, false)
+          }
+        } else {
+          kernel.authenticate('wss://rpc.decentraland.org/mainnet?project=kernel-local', true)
+        }
+      }
+
+      initKernel()
+        .then(initExplorer)
+        .catch((err) => {
+          handleError('Error loading kernel', '' + err)
+        })
+    </script>
+  </body>
+</html>

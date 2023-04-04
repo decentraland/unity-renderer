@@ -11,7 +11,25 @@ namespace SocialFeaturesAnalytics
         Passport,
         ProfileContextMenu,
         FriendsHUD,
-        Conversation
+        Conversation,
+        ProfileEditHUD
+    }
+
+    public enum AvatarOpenSource
+    {
+        FriendsHUD,
+        Mention,
+        World,
+        FriendRequest,
+        ProfileHUD
+    }
+
+    public enum ItemType
+    {
+        Wearable,
+        Emote,
+        Land,
+        Name
     }
 
     public enum PlayerReportIssueType
@@ -23,5 +41,11 @@ namespace SocialFeaturesAnalytics
     {
         Shortcut,
         Button
+    }
+
+    public enum MentionCreationSource
+    {
+        SuggestionList,
+        ProfileContextMenu,
     }
 }

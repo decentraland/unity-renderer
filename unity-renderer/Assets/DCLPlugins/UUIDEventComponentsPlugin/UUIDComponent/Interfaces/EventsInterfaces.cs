@@ -30,4 +30,6 @@ namespace DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces
     }
 
     public interface IAvatarOnPointerDown : IPointerInputEvent { }
+
+    public interface IUnlockedCursorInputEvent : IPointerEvent { }
 }

@@ -1,0 +1,4 @@
+﻿{
+  "name": "SentryUtils",
+  "references":[ "GUID:3b80b0b562b1cbc489513f09fc1b8f69", "GUID:e9cee4050cfa5534d9b26e2782df20be", "GUID:ee6523961ef177343ad763fcd55c7c46" ]
+}

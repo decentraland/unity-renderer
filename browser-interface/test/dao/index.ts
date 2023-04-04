@@ -1,0 +1,6 @@
+import './fetchCatalystStatuses.test'
+import './pick-realm-algorithm/allPeers.test'
+import './pick-realm-algorithm/largeLatency.test'
+import './pick-realm-algorithm/closePeers.test'
+import './pick-realm-algorithm/loadBalancing.test'
+import './pick-realm-algorithm/index.test'

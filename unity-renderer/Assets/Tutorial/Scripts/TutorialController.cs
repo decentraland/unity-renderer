@@ -139,7 +139,7 @@ namespace DCL.Tutorial
             TutorialInitializationMessage msg = JsonUtility.FromJson<TutorialInitializationMessage>(json);
 
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactor the tutorial system in order to make it compatible with incremental features.
-            if (PlayerPrefsUtils.GetInt(PLAYER_PREFS_START_MENU_SHOWED) == 1)
+            if (PlayerPrefsBridge.GetInt(PLAYER_PREFS_START_MENU_SHOWED) == 1)
                 return;
 
             SetupTutorial(false.ToString(), msg.enableNewTutorialCamera, true);

@@ -4,7 +4,7 @@ using static DCL.Social.Friends.ReceivedFriendRequestHUDModel;
 
 namespace DCL.Social.Friends
 {
-    public interface IReceivedFriendRequestHUDView : IBaseComponentView<ReceivedFriendRequestHUDModel>
+    public interface IReceivedFriendRequestHUDView : IBaseComponentView<ReceivedFriendRequestHUDModel>, ISortingOrderUpdatable, IDisposable
     {
         event Action OnClose;
         event Action OnOpenProfile;
@@ -15,9 +15,8 @@ namespace DCL.Social.Friends
         void SetTimestamp(DateTime timestamp);
         void SetSenderName(string userName);
         void SetSenderProfilePicture(string uri);
-        void SetOwnProfilePicture(string uri);
+        void SetRecipientProfilePicture(string uri);
         void SetState(LayoutState state);
-        void Show();
         void Close();
     }
 }

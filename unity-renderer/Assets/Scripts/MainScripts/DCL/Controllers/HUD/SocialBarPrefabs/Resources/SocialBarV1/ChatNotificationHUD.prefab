@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 10
   m_Viewport: {fileID: 6414706687824241970}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 4726067683070074439}
@@ -193,7 +193,6 @@ GameObject:
   - component: {fileID: 2671059572199818111}
   - component: {fileID: 4726067683070074439}
   - component: {fileID: 3013135254997361945}
-  - component: {fileID: 7258387816903423085}
   - component: {fileID: 6978855927224979334}
   m_Layer: 0
   m_Name: ScrollbarVertical
@@ -322,26 +321,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!95 &7258387816903423085
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 492256692246249359}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &6978855927224979334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -747,7 +726,7 @@ GameObject:
   - component: {fileID: 8953925092199699313}
   - component: {fileID: 6589976223910691540}
   - component: {fileID: 2677027707097503066}
-  - component: {fileID: 1558828151979768161}
+  - component: {fileID: 7570362899069056541}
   m_Layer: 5
   m_Name: Message Container
   m_TagString: Untagged
@@ -809,7 +788,7 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &1558828151979768161
+--- !u!114 &7570362899069056541
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -818,21 +797,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 3615743626657898493}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 0
-    m_Right: 0
-    m_Top: 20
-    m_Bottom: -14
+    m_Right: 25
+    m_Top: 0
+    m_Bottom: 7
   m_ChildAlignment: 0
-  m_StartCorner: 0
-  m_StartAxis: 0
-  m_CellSize: {x: 420, y: 56}
-  m_Spacing: {x: 0, y: 0}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_Spacing: 3
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &3917948253638067103
 GameObject:
   m_ObjectHideFlags: 0
@@ -1035,7 +1016,6 @@ GameObject:
   - component: {fileID: 3174200461982980646}
   - component: {fileID: 7370921367835713746}
   - component: {fileID: 2437032274265889927}
-  - component: {fileID: 9097748793596304878}
   - component: {fileID: 1549506075622473605}
   - component: {fileID: 3773835223892283563}
   m_Layer: 5
@@ -1104,26 +1084,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2.2
---- !u!95 &9097748793596304878
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7936971904929845226}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &1549506075622473605
 MonoBehaviour:
   m_ObjectHideFlags: 0

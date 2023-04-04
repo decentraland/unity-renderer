@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Models;
@@ -31,6 +31,7 @@ namespace DCL
         // This can be safely removed once we get rid of the old importer
         public bool isGLTFast = false;
 
+
         public bool Equals(Rendereable other)
         {
             return container == other.container;
@@ -38,7 +39,7 @@ namespace DCL
 
         public object Clone()
         {
-            var result = (Rendereable) this.MemberwiseClone();
+            var result = (Rendereable)MemberwiseClone();
             result.meshToTriangleCount = new Dictionary<Mesh, int>(meshToTriangleCount);
             result.renderers = new HashSet<Renderer>(renderers);
             result.materials = new HashSet<Material>(materials);
@@ -64,8 +65,8 @@ namespace DCL
 
         public override string ToString()
         {
-            return
-                $"Rendereable - owner: {ownerId} ... textures: {textures.Count} ... triangles: {totalTriangleCount} ... materials: {materials.Count} ... meshes: {meshes.Count} ... renderers: {renderers.Count}";
+            return $"Rendereable - owner: {ownerId} ... textures: {textures.Count} ... triangles: {totalTriangleCount} " +
+                $"... materials: {materials.Count} ... meshes: {meshes.Count} ... renderers: {renderers.Count}";
         }
     }
 }

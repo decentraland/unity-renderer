@@ -1,5 +1,9 @@
 using AvatarSystem;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCLServices.Lambdas.LandsService;
+using DCLServices.Lambdas.NamesService;
+using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
@@ -15,7 +19,6 @@ namespace DCL.Social.Passports
         private PassportPlayerInfoComponentController playerInfoController;
         private PassportPlayerPreviewComponentController playerPreviewController;
         private PassportNavigationComponentController passportNavigationController;
-        private StringVariable currentPlayerInfoCardId;
         private IUserProfileBridge userProfileBridge;
         private ISocialAnalytics socialAnalytics;
         private IWearableItemResolver wearableItemResolver;
@@ -31,7 +34,6 @@ namespace DCL.Social.Passports
 
             view = Substitute.For<IPlayerPassportHUDView>();
 
-            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
             wearableItemResolver = Substitute.For<IWearableItemResolver>();
@@ -40,35 +42,50 @@ namespace DCL.Social.Passports
             passportApiBridge = Substitute.For<IPassportApiBridge>();
             friendsController = Substitute.For<IFriendsController>();
             playerInfoController = new PassportPlayerInfoComponentController(
-                                currentPlayerInfoCardId,
                                 Substitute.For<IPassportPlayerInfoComponentView>(),
                                 dataStore,
                                 profanityFilter,
                                 friendsController,
                                 userProfileBridge,
-                                socialAnalytics);
+                                socialAnalytics,
+                                Substitute.For<IClipboard>(),
+                                passportApiBridge);
 
             var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
             playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());
 
-            playerPreviewController = new PassportPlayerPreviewComponentController(playerPreviewView);
+            playerPreviewController = new PassportPlayerPreviewComponentController(
+                playerPreviewView,
+                socialAnalytics);
             passportNavigationController = new PassportNavigationComponentController(
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,
                                 wearableItemResolver,
-                                Substitute.For<IWearableCatalogBridge>(),
+                                Substitute.For<IWearablesCatalogService>(),
                                 Substitute.For<IEmotesCatalogService>(),
-                                dataStore);
+                                Substitute.For<INamesService>(),
+                                Substitute.For<ILandsService>(),
+                                Substitute.For<IUserProfileBridge>(),
+                                dataStore,
+                                new ViewAllComponentController(
+                                    Substitute.For<IViewAllComponentView>(),
+                                    Substitute.For<DataStore_HUDs>(),
+                                    Substitute.For<IWearablesCatalogService>(),
+                                    Substitute.For<ILandsService>(),
+                                    Substitute.For<INamesService>(),
+                                    NotificationsController.i));
 
             controller = new PlayerPassportHUDController(
                 view,
                 playerInfoController,
                 playerPreviewController,
                 passportNavigationController,
-                currentPlayerInfoCardId,
                 userProfileBridge,
                 passportApiBridge,
-                socialAnalytics
+                socialAnalytics,
+                dataStore,
+                Substitute.For<MouseCatcher>(),
+                Substitute.For<BooleanVariable>()
             );
         }
 
@@ -94,4 +111,4 @@ namespace DCL.Social.Passports
             view.Received(1).SetVisibility(false);
         }
     }
-    }
+}

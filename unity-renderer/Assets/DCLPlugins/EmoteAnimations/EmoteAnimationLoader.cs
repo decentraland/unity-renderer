@@ -11,7 +11,10 @@ namespace DCL.Emotes
         private readonly IWearableRetriever retriever;
         public AnimationClip loadedAnimationClip { get; internal set; }
 
-        public EmoteAnimationLoader(IWearableRetriever retriever) { this.retriever = retriever; }
+        public EmoteAnimationLoader(IWearableRetriever retriever)
+        {
+            this.retriever = retriever;
+        }
 
         public async UniTask LoadEmote(GameObject container, WearableItem emote, string bodyShapeId, CancellationToken ct = default)
         {
@@ -27,22 +30,23 @@ namespace DCL.Emotes
             ct.ThrowIfCancellationRequested();
 
             WearableItem.Representation representation = emote.GetRepresentation(bodyShapeId);
-            if (representation == null)
-            {
-                throw new Exception($"No representation for {bodyShapeId} of emote: {emote.id}");
-            }
+
+            if (representation == null) { throw new Exception($"No representation for {bodyShapeId} of emote: {emote.id}"); }
 
             Rendereable rendereable = await retriever.Retrieve(container, emote.GetContentProvider(bodyShapeId), emote.baseUrlBundles, representation.mainFile, ct);
 
             var animation = rendereable.container.GetComponentInChildren<Animation>();
-            if (animation == null)            
+
+            if (animation == null)
             {
                 Debug.LogError("Animation component not found in the container for emote " + emote.id);
                 return;
             }
-             
+
+            animation.enabled = false;
             var animationClip = animation.clip;
-            if(animationClip == null)
+
+            if (animationClip == null)
             {
                 Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
                 return;
@@ -53,6 +57,9 @@ namespace DCL.Emotes
             animationClip.name = emote.id;
         }
 
-        public void Dispose() { retriever?.Dispose(); }
+        public void Dispose()
+        {
+            retriever?.Dispose();
+        }
     }
 }

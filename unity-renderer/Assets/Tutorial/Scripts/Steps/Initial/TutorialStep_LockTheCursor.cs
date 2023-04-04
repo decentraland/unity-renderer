@@ -42,6 +42,6 @@ namespace DCL.Tutorial
             OnShowAnimationFinished -= SetupAlicePosition;
         }
 
-        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mouseCatcher == null || mouseCatcher.isLocked); }
+        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mouseCatcher == null || mouseCatcher.IsLocked); }
     }
 }

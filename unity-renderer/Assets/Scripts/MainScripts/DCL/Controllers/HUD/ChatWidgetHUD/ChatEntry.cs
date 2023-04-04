@@ -6,8 +6,8 @@ namespace DCL.Chat.HUD
     public abstract class ChatEntry : MonoBehaviour
     {
         [SerializeField] internal CanvasGroup group;
-        
-        public abstract string DateString { get; }
+
+        public abstract string HoverString { get; }
 
         public abstract event Action<ChatEntry> OnUserNameClicked;
         public abstract event Action<ChatEntry> OnTriggerHover;
@@ -20,5 +20,6 @@ namespace DCL.Chat.HUD
         public abstract void SetFadeout(bool enabled);
         public abstract void DockContextMenu(RectTransform panel);
         public abstract void DockHoverPanel(RectTransform panel);
+        public abstract void ConfigureMentionLinkDetector(UserContextMenu userContextMenu);
     }
 }

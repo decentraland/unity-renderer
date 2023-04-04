@@ -13,6 +13,7 @@ namespace DCL
 
             audioClip.UnloadAudioData();
             Object.Destroy(audioClip);
+            audioClip = null;
         }
 
         public void Dispose()

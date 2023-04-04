@@ -44,13 +44,15 @@ namespace Tests
         public void TearDown()
         {
             DataStore.Clear();
+            CommonScriptableObjects.UnloadAll();
             Object.Destroy(avatarTransform.gameObject);
         }
 
         [Test]
         public void NotSendTransformIfNoChange()
         {
-            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter);
+            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, DataStore.i.ecs7.scenes,
+                DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
             system.Update();
 
@@ -60,7 +62,7 @@ namespace Tests
                                  SpecialEntityId.PLAYER_ENTITY,
                                  ComponentID.TRANSFORM,
                                  Arg.Any<ECSTransform>(),
-                                 Arg.Any<long>(),
+                                 Arg.Any<int>(),
                                  Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
 
             componentsWriter.Received(1)
@@ -88,7 +90,8 @@ namespace Tests
         [Test]
         public void SendTransformIfChanged()
         {
-            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter);
+            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, DataStore.i.ecs7.scenes,
+                DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
             system.Update();
 
@@ -98,7 +101,7 @@ namespace Tests
                                  SpecialEntityId.PLAYER_ENTITY,
                                  ComponentID.TRANSFORM,
                                  Arg.Is<ECSTransform>(x => x.position == Vector3.zero),
-                                 Arg.Any<long>(),
+                                 Arg.Any<int>(),
                                  Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
 
             componentsWriter.Received(1)
@@ -122,7 +125,7 @@ namespace Tests
                                  ComponentID.TRANSFORM,
                                  Arg.Is<ECSTransform>(x =>
                                      x.position == new Vector3(-ParcelSettings.PARCEL_SIZE, 0, 0)),
-                                 Arg.Any<long>(),
+                                 Arg.Any<int>(),
                                  Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
 
             componentsWriter.Received(1)

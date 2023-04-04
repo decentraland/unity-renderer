@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEngine.UI;
 
 public interface INFTIconComponentView
@@ -7,6 +6,11 @@ public interface INFTIconComponentView
     /// Event that will be triggered when the marketplace button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onMarketplaceButtonClick { get; }
+
+    /// <summary>
+    /// Event that will be triggered when the detail info button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onDetailInfoButtonClick { get; }
 
     /// <summary>
     /// Set the NFT marketplace uri.
@@ -37,4 +41,19 @@ public interface INFTIconComponentView
     /// </summary>
     /// <param name="rarity">rarity of the NFT.</param>
     void SetRarity(string rarity);
+
+    /// <summary>
+    /// Configure the NFT Item Info prompt for wearables.
+    /// </summary>
+    /// <param name="nftItemInfoModal"></param>
+    /// <param name="wearable"></param>
+    /// <param name="showCategoryInfo"></param>
+    void ConfigureNFTItemInfo(NFTItemInfo nftItemInfoModal, WearableItem wearable, bool showCategoryInfo);
+
+    /// <summary>
+    /// Shows/Hides the NFT Item Info prompt.
+    /// </summary>
+    /// <param name="isActive"></param>
+    /// <param name="showInLeftSide"></param>
+    void SetNFTItemInfoActive(bool isActive, bool showInLeftSide = false);
 }

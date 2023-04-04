@@ -42,7 +42,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
         {
-            var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
+            var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer(entity.entityId);
 
             containerModel.components.Add(componentId);
 

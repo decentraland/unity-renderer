@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build.Reporting;
 
 static class BuildCommand
@@ -139,6 +141,11 @@ static class BuildCommand
 
     static void PerformBuild()
     {
+        Console.WriteLine(":: Building addressables");
+
+        AddressableAssetSettings.CleanPlayerContent(
+            AddressableAssetSettingsDefaultObject.Settings.ActivePlayerDataBuilder);
+        AddressableAssetSettings.BuildPlayerContent();
         Console.WriteLine(":: Performing build");
 
         var buildTarget = GetBuildTarget();
@@ -159,4 +166,5 @@ static class BuildCommand
             throw new Exception("The build was not successful");
         }
     }
+
 }

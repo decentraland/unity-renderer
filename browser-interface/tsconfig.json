@@ -2,32 +2,42 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "es2020",
-    "noEmit": true,
-    "diagnostics": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
+    "diagnostics": false,
     "inlineSourceMap": false,
     "inlineSources": false,
     "sourceMap": true,
-    "declarationDir": "./dist",
-    "declaration": true,
-    "declarationMap": true,
     "moduleResolution": "node",
     "stripInternal": true,
     "strict": true,
+    "strictNullChecks": true,
     "pretty": true,
     "forceConsistentCasingInFileNames": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "resolveJsonModule": true,
-    "types": [],
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "src",
-    "allowJs": true
+    "experimentalDecorators": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "noImplicitAny": false,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true,
+    "jsx": "react",
+    "jsxFactory": "createElement",
+    "baseUrl": "./packages",
+    "lib": [
+      "es2020",
+      "dom",
+      "esnext.asynciterable"
+    ],
+    "types": ["@dcl/posix"],
+    "typeRoots": ["./node_modules"],
+    "esModuleInterop": true
   },
-  "include": [
-    "src"
+  "exclude": [
+    "node_modules",
+    "static",
+    "public"
   ],
-  "exclude": ["scripts"]
+  "include": [
+    "packages/**/*",
+    "test/**/*"
+  ]
 }

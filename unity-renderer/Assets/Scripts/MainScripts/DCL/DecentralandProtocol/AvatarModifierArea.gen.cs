@@ -43,14 +43,37 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
+  /// <summary>
+  /// AvatarModifierType is an effect that should be applied to avatars inside the region.
+  /// </summary>
   public enum AvatarModifierType {
+    /// <summary>
+    /// avatars are invisible
+    /// </summary>
     [pbr::OriginalName("AMT_HIDE_AVATARS")] AmtHideAvatars = 0,
+    /// <summary>
+    /// selecting (e.g. clicking) an avatar will not bring up their profile.
+    /// </summary>
     [pbr::OriginalName("AMT_DISABLE_PASSPORTS")] AmtDisablePassports = 1,
   }
 
   #endregion
 
   #region Messages
+  /// <summary>
+  /// The AvatarModifierArea component can be attached to an Entity to define a region of space where 
+  /// avatar behavior changes.
+  ///
+  /// The Entity's Transform position determines the center-point of the region, while its size is 
+  /// given as a vector in the `area` property below. The Transform rotation is applied, but the scale 
+  /// is ignored.
+  ///
+  /// The modifier effect is only applied to avatars inside the region. It does not affect how players 
+  /// standing inside it see avatars on the other side of the boundary.
+  ///
+  /// Note that, while commonly used to delineate a 2D area in a scene (hence the name), the region
+  /// is actually a 3D volume.
+  /// </summary>
   public sealed partial class PBAvatarModifierArea : pb::IMessage<PBAvatarModifierArea>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -100,6 +123,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "area" field.</summary>
     public const int AreaFieldNumber = 1;
     private global::Decentraland.Common.Vector3 area_;
+    /// <summary>
+    /// the 3D size of the region
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Common.Vector3 Area {
@@ -114,6 +140,9 @@ namespace DCL.ECSComponents {
     private static readonly pb::FieldCodec<string> _repeated_excludeIds_codec
         = pb::FieldCodec.ForString(18);
     private readonly pbc::RepeatedField<string> excludeIds_ = new pbc::RepeatedField<string>();
+    /// <summary>
+    /// user IDs that can enter and remain unaffected
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<string> ExcludeIds {
@@ -125,6 +154,9 @@ namespace DCL.ECSComponents {
     private static readonly pb::FieldCodec<global::DCL.ECSComponents.AvatarModifierType> _repeated_modifiers_codec
         = pb::FieldCodec.ForEnum(26, x => (int) x, x => (global::DCL.ECSComponents.AvatarModifierType) x);
     private readonly pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifierType> modifiers_ = new pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifierType>();
+    /// <summary>
+    /// list of modifiers to apply
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifierType> Modifiers {

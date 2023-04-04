@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
+using DCL.Social.Chat.Mentions;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
@@ -22,18 +25,19 @@ namespace DCL.Chat.HUD
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
-        private readonly InputAction_Trigger toggleChatTrigger;
         private readonly ISocialAnalytics socialAnalytics;
         private readonly IProfanityFilter profanityFilter;
+        private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
         private ChatHUDController chatHudController;
         private ChannelMembersHUDController channelMembersHUDController;
-        private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
-        private bool skipChatInputTrigger;
+        private CancellationTokenSource hideLoadingCancellationToken = new ();
         private float lastRequestTime;
         private string channelId;
         private Channel channel;
         private ChatMessage oldestMessage;
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
+
+        private bool isVisible;
 
         public event Action OnPressBack;
         public event Action OnClosed;
@@ -43,20 +47,20 @@ namespace DCL.Chat.HUD
             IUserProfileBridge userProfileBridge,
             IChatController chatController,
             IMouseCatcher mouseCatcher,
-            InputAction_Trigger toggleChatTrigger,
             ISocialAnalytics socialAnalytics,
-            IProfanityFilter profanityFilter)
+            IProfanityFilter profanityFilter,
+            IChatMentionSuggestionProvider chatMentionSuggestionProvider)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
-            this.toggleChatTrigger = toggleChatTrigger;
             this.socialAnalytics = socialAnalytics;
             this.profanityFilter = profanityFilter;
+            this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
         }
 
-        public void Initialize(IChatChannelWindowView view = null)
+        public void Initialize(IChatChannelWindowView view = null, bool isVisible = true)
         {
             view ??= ChatChannelComponentView.Create();
             View = view;
@@ -69,18 +73,25 @@ namespace DCL.Chat.HUD
             view.OnShowMembersList += ShowMembersList;
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
+            dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
 
-            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, profanityFilter);
+            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
+               (name, count, ct) => chatMentionSuggestionProvider.GetProfilesFromChatChannelsStartingWith(name, channelId, count, ct),
+                socialAnalytics, chatController, profanityFilter);
+
             chatHudController.Initialize(view.ChatHUD);
+            chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
             chatHudController.OnSendMessage += HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
+            chatController.OnAddMessage += HandleMessageReceived;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += Hide;
 
-            toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
+            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge, dataStore.channels);
 
-            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge);
+            SetVisibility(isVisible);
+            this.isVisible = isVisible;
         }
 
         public void Setup(string channelId)
@@ -98,16 +109,22 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
+            if (isVisible == visible)
+                return;
+
+            isVisible = visible;
+
             SetVisiblePanelList(visible);
-            
+            chatHudController.SetVisibility(visible);
+            dataStore.HUDs.chatInputVisible.Set(visible);
+
             if (visible)
             {
                 ClearChatControllerListeners();
-                
-                chatController.OnAddMessage += HandleMessageReceived;
+
                 chatController.OnChannelLeft += HandleChannelLeft;
                 chatController.OnChannelUpdated += HandleChannelUpdated;
-                
+
                 if (channelMembersHUDController.IsVisible)
                     channelMembersHUDController.SetAutomaticReloadingActive(true);
 
@@ -124,7 +141,8 @@ namespace DCL.Chat.HUD
                         INITIAL_PAGE_SIZE);
                 }
 
-                View.Show();
+                View?.ChatHUD.ResetInputField();
+                View?.Show();
                 Focus();
             }
             else
@@ -147,10 +165,9 @@ namespace DCL.Chat.HUD
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= Hide;
 
-            toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
-            
             chatHudController.OnSendMessage -= HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
+            chatHudController.Dispose();
 
             if (View != null)
             {
@@ -161,9 +178,13 @@ namespace DCL.Chat.HUD
                 View.OnMuteChanged -= MuteChannel;
                 View.Dispose();
             }
+            dataStore.mentions.someoneMentionedFromContextMenu.OnChange -= SomeoneMentionedFromContextMenu;
 
             hideLoadingCancellationToken.Dispose();
             channelMembersHUDController.Dispose();
+
+            if (chatController != null)
+                chatController.OnAddMessage -= HandleMessageReceived;
         }
 
         private void HandleSendChatMessage(ChatMessage message)
@@ -198,30 +219,53 @@ namespace DCL.Chat.HUD
         private void HandleMessageReceived(ChatMessage[] messages)
         {
             var messageLogUpdated = false;
-            
+
+            var ownPlayerAlreadyMentioned = false;
+
             foreach (var message in messages)
             {
+                if (!ownPlayerAlreadyMentioned)
+                    ownPlayerAlreadyMentioned = CheckOwnPlayerMentionInChannels(message);
+
+                if (!isVisible) continue;
+
                 if (!IsMessageFomCurrentChannel(message)) continue;
 
                 UpdateOldestMessage(message);
 
-                message.isChannelMessage = true;
                 // TODO: right now the channel history is disabled, but we must find a workaround to support history + max message limit allocation for performance reasons
                 // one approach could be to increment the max amount of messages depending on how many pages you loaded from the history
                 // for example: 1 page = 30 messages, 2 pages = 60 messages, and so on..
-                chatHudController.AddChatMessage(message, limitMaxEntries: true);
+                chatHudController.SetChatMessage(message, limitMaxEntries: true);
+
+                dataStore.channels.SetAvailableMemberInChannel(message.sender, channelId);
 
                 View?.SetLoadingMessagesActive(false);
                 View?.SetOldMessagesLoadingActive(false);
 
                 messageLogUpdated = true;
             }
-            
+
             if (View.IsActive && messageLogUpdated)
             {
                 // The messages from 'channelId' are marked as read if the channel window is currently open
                 MarkChannelMessagesAsRead();
             }
+        }
+
+        private bool CheckOwnPlayerMentionInChannels(ChatMessage message)
+        {
+            var ownUserProfile = userProfileBridge.GetOwn();
+
+            if (message.sender == ownUserProfile.userId ||
+                message.messageType != ChatMessage.Type.PUBLIC ||
+                string.IsNullOrEmpty(message.recipient) ||
+                (message.recipient == channelId && View.IsActive) ||
+                !MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, message.body))
+                return false;
+
+            dataStore.mentions.ownPlayerMentionedInChannel.Set(message.recipient, true);
+            return true;
         }
 
         private void UpdateOldestMessage(ChatMessage message)
@@ -238,26 +282,14 @@ namespace DCL.Chat.HUD
             OnClosed?.Invoke();
         }
 
-        private void HandlePressBack() => OnPressBack?.Invoke();
+        private void HandlePressBack() =>
+            OnPressBack?.Invoke();
 
         private bool IsMessageFomCurrentChannel(ChatMessage message) =>
             message.sender == channelId || message.recipient == channelId || (View.IsActive && message.messageType == ChatMessage.Type.SYSTEM);
 
-        private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
-
-        private void HandleChatInputTriggered(DCLAction_Trigger action)
-        {
-            // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
-            // chat input trigger is the same key as sending the chat message from the input field
-            if (skipChatInputTrigger)
-            {
-                skipChatInputTrigger = false;
-                return;
-            }
-
-            if (!View.IsActive) return;
-            chatHudController.FocusInputField();
-        }
+        private void MarkChannelMessagesAsRead() =>
+            chatController.MarkChannelMessagesAsSeen(channelId);
 
         private void RequestMessages(string channelId, int limit, string fromMessageId = null)
         {
@@ -295,6 +327,7 @@ namespace DCL.Chat.HUD
             await UniTask.WaitUntil(() =>
                     Time.realtimeSinceStartup - lastRequestTime > REQUEST_MESSAGES_TIME_OUT,
                 cancellationToken: cancellationToken);
+
             if (cancellationToken.IsCancellationRequested) return;
 
             View?.SetLoadingMessagesActive(false);
@@ -328,9 +361,11 @@ namespace DCL.Chat.HUD
             channelMembersHUDController.SetMembersCount(updatedChannel.MemberCount);
         }
 
-        private void ShowMembersList() => channelMembersHUDController.SetVisibility(true);
+        private void ShowMembersList() =>
+            channelMembersHUDController.SetVisibility(true);
 
-        private void HideMembersList() => channelMembersHUDController.SetVisibility(false);
+        private void HideMembersList() =>
+            channelMembersHUDController.SetVisibility(false);
 
         private void MuteChannel(bool muted)
         {
@@ -358,11 +393,10 @@ namespace DCL.Chat.HUD
                 channel.Joined, channel.MemberCount, channel.Muted,
                 showOnlyOnlineMembersOnPublicChannels);
         }
-        
+
         private void ClearChatControllerListeners()
         {
             if (chatController == null) return;
-            chatController.OnAddMessage -= HandleMessageReceived;
             chatController.OnChannelLeft -= HandleChannelLeft;
             chatController.OnChannelUpdated -= HandleChannelUpdated;
         }
@@ -372,17 +406,25 @@ namespace DCL.Chat.HUD
             chatHudController.FocusInputField();
             MarkChannelMessagesAsRead();
         }
-        
+
         private void HandleMessageBlockedBySpam(ChatMessage message)
         {
-            chatHudController.AddChatMessage(new ChatEntryModel
+            chatHudController.SetChatMessage(new ChatEntryModel
             {
-                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
                 messageId = Guid.NewGuid().ToString(),
                 messageType = ChatMessage.Type.SYSTEM,
                 subType = ChatEntryModel.SubType.RECEIVED
-            });
+            }).Forget();
+        }
+
+        private void SomeoneMentionedFromContextMenu(string mention, string _)
+        {
+            if (!View.IsActive)
+                return;
+
+            View.ChatHUD.AddTextIntoInputField(mention);
         }
     }
 }

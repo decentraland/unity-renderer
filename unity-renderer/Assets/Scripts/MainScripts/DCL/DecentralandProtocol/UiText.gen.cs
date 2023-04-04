@@ -98,6 +98,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "value" field.</summary>
     public const int ValueFieldNumber = 1;
     private string value_ = "";
+    /// <summary>
+    /// the text content
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Value {
@@ -111,7 +114,7 @@ namespace DCL.ECSComponents {
     public const int ColorFieldNumber = 2;
     private global::Decentraland.Common.Color4 color_;
     /// <summary>
-    /// default=(1.0,1.0,1.0,1.0)
+    /// RGBA color (default: opaque white)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -126,7 +129,7 @@ namespace DCL.ECSComponents {
     public const int TextAlignFieldNumber = 3;
     private global::DCL.ECSComponents.TextAlignMode textAlign_;
     /// <summary>
-    /// default='center'
+    /// alignment within the bounds (default: center)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -154,7 +157,7 @@ namespace DCL.ECSComponents {
     public const int FontFieldNumber = 4;
     private global::DCL.ECSComponents.Font font_;
     /// <summary>
-    /// default=0
+    /// font for the text (default: sans-serif)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -182,7 +185,7 @@ namespace DCL.ECSComponents {
     public const int FontSizeFieldNumber = 5;
     private int fontSize_;
     /// <summary>
-    /// default=10
+    /// size of the text (default: 10)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using NSubstitute;
 using NUnit.Framework;
 using DCL.Social.Passports;
 using DCL;
+using System.Threading;
 
 public class PassportHUDViewShould
 {
@@ -14,7 +12,7 @@ public class PassportHUDViewShould
     public void SetUp()
     {
         view = PlayerPassportHUDView.CreateView();
-        view.Initialize();
+        view.Initialize(Substitute.For<MouseCatcher>());
     }
 
     [TearDown]
@@ -29,7 +27,7 @@ public class PassportHUDViewShould
         view.SetVisibility(true);
         Assert.IsTrue(view.gameObject.activeSelf);
     }
-    
+
     [Test]
     public void Hide()
     {
@@ -54,7 +52,6 @@ public class PassportHUDViewShould
         view.SetPassportPanelVisibility(false);
 
         Assert.IsTrue(view.gameObject.activeSelf);
-        Assert.IsFalse(view.container.activeSelf);
     }
 
 }

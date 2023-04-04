@@ -1,6 +1,9 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 using DCL.Emotes;
+using DCLServices.WearablesCatalogService;
+using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -42,12 +45,16 @@ namespace DCL.EmotesWheel
         private InputAction_Trigger auxShortcut8InputAction;
         private InputAction_Trigger auxShortcut9InputAction;
         private UserProfile userProfile;
-        private BaseDictionary<string, WearableItem> catalog;
         private readonly IEmotesCatalogService emoteCatalog;
+        private readonly IWearablesCatalogService wearablesCatalogService;
         private bool ownedWearablesAlreadyRequested = false;
         private BaseDictionary<string, EmoteWheelSlot> slotsInLoadingState = new BaseDictionary<string, EmoteWheelSlot>();
+        private CancellationTokenSource loadOwnedWearablesCTS = new CancellationTokenSource();
 
-        public EmotesWheelController(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, IEmotesCatalogService emoteCatalog)
+        public EmotesWheelController(
+            UserProfile userProfile,
+            IEmotesCatalogService emoteCatalog,
+            IWearablesCatalogService wearablesCatalogService)
         {
             closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
             closeWindow.OnTriggered += OnCloseWindowPressed;
@@ -64,8 +71,8 @@ namespace DCL.EmotesWheel
             isStartMenuOpen.OnChange += IsStartMenuOpenChanged;
 
             this.userProfile = userProfile;
-            this.catalog = catalog;
             this.emoteCatalog = emoteCatalog;
+            this.wearablesCatalogService = wearablesCatalogService;
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
             OnEquippedEmotesSet(emotesCustomizationDataStore.equippedEmotes.Get());
             emoteAnimations.OnAdded += OnAnimationAdded;
@@ -161,6 +168,20 @@ namespace DCL.EmotesWheel
 
         public void SetVisibility_Internal(bool visible)
         {
+            async UniTaskVoid RequestOwnedWearablesAsync(CancellationToken ct)
+            {
+                var ownedWearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
+                    userProfile.userId,
+                    1,
+                    int.MaxValue,
+                    true,
+                    ct);
+
+                ownedWearablesAlreadyRequested = true;
+                userProfile.SetInventory(ownedWearables.wearables.Select(x => x.id));
+                UpdateEmoteSlots();
+            }
+
             if (visible && isStartMenuOpen.Get())
                 return;
 
@@ -180,13 +201,10 @@ namespace DCL.EmotesWheel
                     !string.IsNullOrEmpty(userProfile.userId) &&
                     !ownedWearablesAlreadyRequested)
                 {
-                    CatalogController.RequestOwnedWearables(userProfile.userId)
-                        .Then((ownedWearables) =>
-                        {
-                            ownedWearablesAlreadyRequested = true;
-                            userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                            UpdateEmoteSlots();
-                        });
+                    loadOwnedWearablesCTS?.Cancel();
+                    loadOwnedWearablesCTS?.Dispose();
+                    loadOwnedWearablesCTS = new CancellationTokenSource();
+                    RequestOwnedWearablesAsync(loadOwnedWearablesCTS.Token).Forget();
                 }
             }
 
@@ -223,6 +241,10 @@ namespace DCL.EmotesWheel
             auxShortcut7InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             auxShortcut8InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             auxShortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
+
+            loadOwnedWearablesCTS?.Cancel();
+            loadOwnedWearablesCTS?.Dispose();
+            loadOwnedWearablesCTS = null;
 
             if (view != null)
             {

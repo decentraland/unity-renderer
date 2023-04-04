@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Fonts
+  m_EditorClassIdentifier: 
+  m_GroupName: Fonts
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 03787049e5024224093312ce055333db
+  m_SerializeEntries:
+  - m_GUID: 82f86e6c95d775f4e8488447b6885323
+    m_Address: Assets/Fonts/Fonts Sources/NotoSansJP-SemiBold SDF.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - fonts
+    - cjk-fonts
+    - font-cjk
+  - m_GUID: e942926d8b6dad246920ce7dd79a67d2
+    m_Address: Assets/Fonts/Fonts Sources/NotoSansSC-SemiBold.otf
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1801d33e8e688a74ea5dd704a91cfac1
+    m_Address: Assets/Fonts/Fonts Sources/NotoSansSC-SemiBold SDF.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - fonts
+    - font-cjk
+  - m_GUID: 16e3d6ebbb2afa8478140aa1fffd9d09
+    m_Address: Assets/Fonts/Fonts Sources/NotoSansKR-SemiBold.otf
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4cc5b9c92b8be214dbbd4f1f502110de
+    m_Address: Assets/Fonts/Fonts Sources/NotoSansKR-SemiBold SDF.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - fonts
+    - cjk-fonts
+    - font-cjk
+  - m_GUID: d099dcb408c7dcf499ea688b4e74fe09
+    m_Address: Assets/Fonts/Fonts Sources/NotoSansJP-SemiBold.otf
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2f7972f7875d736469bc2abcd26c7e99, type: 2}

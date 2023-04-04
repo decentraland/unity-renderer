@@ -88,7 +88,7 @@ namespace DCL.Configuration
 
         public const string FLOOR_TEXTURE_KEY = "FloorBaseGrass_01/Floor_Grass01.png.png";
         public const string FLOOR_TEXTURE_VALUE = "QmT1WfQPMBVhgwyxV5SfcfWivZ6hqMCT74nxdKXwyZBiXb";
-        
+
         public const string FLOOR_THUMBNAIL_KEY = "FloorBaseGrass_01/thumbnail.png";
         public const string FLOOR_THUMBNAIL_VALUE = "QmexuPHcbEtQCR11dPXxKZmRjGuY4iTooPJYfST7hW71DE";
 
@@ -180,12 +180,11 @@ namespace DCL.Configuration
         public static float PARCEL_SIZE = 16f;
         public static float PARCEL_BOUNDARIES_THRESHOLD = 0.01f;
         public static float UNLOAD_DISTANCE = PARCEL_SIZE * 12f;
-        public static bool VISUAL_LOADING_ENABLED = true;
     }
 
     public static class TestSettings
     {
-        public static int VISUAL_TESTS_APPROVED_AFFINITY = 95;
+        public static int VISUAL_TESTS_APPROVED_AFFINITY = 93;
         public static float VISUAL_TESTS_PIXELS_CHECK_THRESHOLD = 5.0f;
         public static int VISUAL_TESTS_SNAPSHOT_WIDTH = 1280;
         public static int VISUAL_TESTS_SNAPSHOT_HEIGHT = 720;

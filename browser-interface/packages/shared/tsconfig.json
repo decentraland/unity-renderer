@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "../../dist",
+    "baseUrl": "..",
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "strict": true,
+    "types": ["@dcl/posix"]
+  },
+  "include": ["*.ts", "web3/getEthereumNetworkFromProvider.ts", "web3/fetchCatalystNodesFromDAO.ts", "web3/queryGraph.ts"],
+  "extends": "../../tsconfig.json"
+}

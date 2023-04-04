@@ -1,0 +1,28 @@
+.dcl-dropdown {
+    flex-grow: 1;
+    margin : 0;
+}
+
+.dcl-dropdown > .unity-base-popup-field__input > .unity-base-popup-field__text {
+    margin: 0;
+}
+
+.dcl-dropdown > .unity-base-popup-field__input,
+.dcl-dropdown:hover > .unity-base-popup-field__input {
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.unity-base-dropdown__item:hover {
+    background-color: #c2c2c2;
+}
+
+.unity-enum-field:hover.dcl-dropdown-readonly:hover > .unity-enum-field__input,
+.unity-base-popup-field:hover.dcl-dropdown-readonly:hover > .unity-base-popup-field__input {
+    background-color: #bcbcbc;
+}
+
+/* override unity default style to hide the arrow */
+.unity-base-popup-field__arrow {
+    visibility: hidden;
+}

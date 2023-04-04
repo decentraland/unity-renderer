@@ -25,9 +25,9 @@ public class GraphicCardNotification : Notification
 
     protected override void Dismiss()
     {
-        PlayerPrefsUtils.SetInt(DONT_SHOW_GRAPHIC_CARD_POPUP_KEY, dontShowAgain.isOn ? 1 : 0);
+        PlayerPrefsBridge.SetInt(DONT_SHOW_GRAPHIC_CARD_POPUP_KEY, dontShowAgain.isOn ? 1 : 0);
         base.Dismiss();
     }
 
-    public static bool CanShowGraphicCardPopup() => PlayerPrefs.GetInt(DONT_SHOW_GRAPHIC_CARD_POPUP_KEY, 0) == 0;
+    public static bool CanShowGraphicCardPopup() => PlayerPrefsBridge.GetInt(DONT_SHOW_GRAPHIC_CARD_POPUP_KEY, 0) == 0;
 }

@@ -27,22 +27,9 @@ namespace DCL.Social.Friends
         {
             view.Show();
 
-            Assert.IsTrue(view.gameObject.activeSelf);
-            Assert.IsTrue(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
-            Assert.IsFalse(view.successContainer.activeSelf);
+            Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
             Assert.IsFalse(view.pendingToSendContainer.activeSelf);
-        }
-
-        [Test]
-        public void ShowFailed()
-        {
-            view.ShowSendFailed();
-
-            Assert.IsFalse(view.defaultContainer.activeSelf);
-            Assert.IsTrue(view.failedContainer.activeSelf);
-            Assert.IsFalse(view.successContainer.activeSelf);
-            Assert.IsFalse(view.pendingToSendContainer.activeSelf);
+            Assert.IsFalse(view.showHideAnimatorForSuccessState.isVisible);
         }
 
         [Test]
@@ -50,10 +37,9 @@ namespace DCL.Social.Friends
         {
             view.ShowSendSuccess();
 
-            Assert.IsFalse(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
-            Assert.IsTrue(view.successContainer.activeSelf);
+            Assert.IsFalse(view.showHideAnimatorForDefaultState.isVisible);
             Assert.IsFalse(view.pendingToSendContainer.activeSelf);
+            Assert.IsTrue(view.showHideAnimatorForSuccessState.isVisible);
         }
 
         [Test]
@@ -61,18 +47,9 @@ namespace DCL.Social.Friends
         {
             view.ShowPendingToSend();
 
-            Assert.IsFalse(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
-            Assert.IsFalse(view.successContainer.activeSelf);
+            Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
             Assert.IsTrue(view.pendingToSendContainer.activeSelf);
-        }
-
-        [Test]
-        public void Close()
-        {
-            view.Close();
-
-            Assert.IsFalse(view.gameObject.activeSelf);
+            Assert.IsFalse(view.showHideAnimatorForSuccessState.isVisible);
         }
 
         [TestCase("bleh")]
@@ -82,7 +59,6 @@ namespace DCL.Social.Friends
             view.SetName(expectedName);
 
             Assert.AreEqual(expectedName, view.nameLabel.text);
-            Assert.AreEqual($"Sending friend request to {expectedName}", view.pendingStateLabel.text);
             Assert.AreEqual($"Friend request sent to {expectedName}", view.successStateLabel.text);
         }
 
@@ -120,6 +96,14 @@ namespace DCL.Social.Friends
             view.SetProfilePicture(observer);
 
             observer.Received(1).AddListener(Arg.Any<Action<Texture2D>>());
+        }
+
+        [TestCase("hey", "3/140")]
+        [TestCase("whassah", "7/140")]
+        public void ShowBodyMessageLengthWhenInputChanges(string message, string expectedLengthText)
+        {
+            view.messageBodyInput.onValueChanged.Invoke(message);
+            Assert.AreEqual(expectedLengthText, view.messageBodyLengthLabel.text);
         }
     }
 }

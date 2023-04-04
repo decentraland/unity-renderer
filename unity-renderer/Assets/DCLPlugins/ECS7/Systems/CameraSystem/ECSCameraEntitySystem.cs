@@ -1,4 +1,3 @@
-using DCL;
 using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.ECS7;
@@ -18,7 +17,6 @@ namespace ECSSystems.CameraSystem
         private readonly PBCameraMode reusableCameraMode;
         private readonly PBPointerLock reusablePointerLock;
         private readonly BaseVariable<Transform> cameraTransform;
-        private readonly RendererState rendererState;
         private readonly Vector3Variable worldOffset;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly IECSComponentWriter componentsWriter;
@@ -28,14 +26,15 @@ namespace ECSSystems.CameraSystem
         private Quaternion lastCameraRotation = Quaternion.identity;
         private bool newSceneAdded = false;
 
-        public ECSCameraEntitySystem(IECSComponentWriter componentsWriter,  PBCameraMode reusableCameraMode, PBPointerLock reusablePointerLock)
+        public ECSCameraEntitySystem(IECSComponentWriter componentsWriter, PBCameraMode reusableCameraMode, PBPointerLock reusablePointerLock,
+            BaseList<IParcelScene> loadedScenes, BaseVariable<Transform> cameraTransform, Vector3Variable worldOffset,
+            BaseVariableAsset<CameraMode.ModeId> cameraMode)
         {
-            cameraTransform = DataStore.i.camera.transform;
-            rendererState = CommonScriptableObjects.rendererState;
-            worldOffset = CommonScriptableObjects.worldOffset;
-            loadedScenes = DataStore.i.ecs7.scenes;
+            this.cameraTransform = cameraTransform;
+            this.worldOffset = worldOffset;
+            this.loadedScenes = loadedScenes;
             this.componentsWriter = componentsWriter;
-            cameraMode = CommonScriptableObjects.cameraMode;
+            this.cameraMode = cameraMode;
             this.reusableCameraMode = reusableCameraMode;
             this.reusablePointerLock = reusablePointerLock;
 
@@ -49,13 +48,13 @@ namespace ECSSystems.CameraSystem
 
         public void Update()
         {
-            if (!rendererState.Get())
+            var currentCameraTransform = cameraTransform.Get();
+
+            if (currentCameraTransform == null)
                 return;
 
-            Transform cameraT = cameraTransform.Get();
-
-            Vector3 cameraPosition = cameraT.position;
-            Quaternion cameraRotation = cameraT.rotation;
+            Vector3 cameraPosition = currentCameraTransform.position;
+            Quaternion cameraRotation = currentCameraTransform.rotation;
 
             bool updateTransform = newSceneAdded || (lastCameraPosition != cameraPosition || lastCameraRotation != cameraRotation);
             newSceneAdded = false;
@@ -63,10 +62,11 @@ namespace ECSSystems.CameraSystem
             lastCameraPosition = cameraPosition;
             lastCameraRotation = cameraRotation;
 
-            reusableCameraMode.Mode = ProtoConvertUtils.UnityEnumToPBCameraEnum(cameraMode.Get());
+            var currentCameraMode = cameraMode.Get();
+            reusableCameraMode.Mode = ProtoConvertUtils.UnityEnumToPBCameraEnum(currentCameraMode);
             reusablePointerLock.IsPointerLocked = Utils.IsCursorLocked;
 
-            Vector3 worldOffset = this.worldOffset.Get();
+            Vector3 currentWorldOffset = worldOffset.Get();
             IReadOnlyList<IParcelScene> loadedScenes = this.loadedScenes;
 
             IParcelScene scene;
@@ -84,7 +84,7 @@ namespace ECSSystems.CameraSystem
                 if (!updateTransform)
                     continue;
 
-                var transform = TransformHelper.SetTransform(scene, ref cameraPosition, ref cameraRotation, ref worldOffset);
+                var transform = TransformHelper.SetTransform(scene, ref cameraPosition, ref cameraRotation, ref currentWorldOffset);
 
                 componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM,
                     transform);

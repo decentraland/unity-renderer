@@ -1,0 +1,12 @@
+version: "3"
+services:
+  browser-interface:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/app
+    entrypoint: sh -c "/init.sh"
+    environment:
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+    network_mode: "host"

@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2018",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "declaration": false,
+    "strictFunctionTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "alwaysStrict": true,
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "newLine": "LF",
+    "stripInternal": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "jsx": "react",
+    "jsxFactory": "createElement",
+    "removeComments": true,
+    "pretty": true,
+    "outDir": "../../static/systems",
+    "lib": ["es2018", "webworker"],
+    "baseUrl": "..",
+    "types": ["@dcl/posix"]
+  },
+  "exclude": ["../../node_modules"]
+}

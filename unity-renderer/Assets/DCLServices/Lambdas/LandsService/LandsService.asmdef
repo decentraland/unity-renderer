@@ -1,0 +1,20 @@
+﻿{
+  "name": "LandsService",
+  "rootNamespace": "",
+  "references": [
+    "GUID:f51ebe6a0ceec4240a699833d6309b23",
+    "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+    "GUID:6c1761dc8f737004198eb333521bd665",
+    "GUID:68069f49d86442cd9618861b4d74b1aa",
+    "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

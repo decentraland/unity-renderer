@@ -1,30 +1,32 @@
-using System;
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
-using DCL.Helpers;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using NSubstitute;
-using NSubstitute.Core;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Environment = DCL.Environment;
 
 public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 {
-    private static readonly string[] IDS = new [] { "userId", "userId1", "userId2", "userId3", "userId4", "userId5", "blockedUserId" };
+    private static readonly string[] IDS = new[] { "userId", "userId1", "userId2", "userId3", "userId4", "userId5", "blockedUserId" };
 
     private PlayerInfoCardHUDController controller;
     private Dictionary<string, UserProfile> userProfiles;
     private DataStore dataStore;
-    private IWearableCatalogBridge wearableCatalogBridge;
+    private IWearablesCatalogService wearablesCatalogService;
     private WearableItem[] wearables;
     private FriendsController_Mock friendsController;
     private IUserProfileBridge userProfileBridge;
     private ISocialAnalytics socialAnalytics;
-    private RegexProfanityFilter profanityFilter;
+    private IProfanityFilter profanityFilter;
     private StringVariable currentPlayerIdData;
 
     protected override IEnumerator SetUp()
@@ -42,6 +44,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         GivenWearableCatalog();
 
         dataStore = new DataStore();
+        dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["friends_enabled"] = true } });
         GivenProfanityFiltering();
         GivenProfanityFilteringAvailability(true);
 
@@ -51,7 +54,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         controller = new PlayerInfoCardHUDController(friendsController,
             currentPlayerIdData,
             userProfileBridge,
-            wearableCatalogBridge,
+            wearablesCatalogService,
             socialAnalytics,
             profanityFilter,
             dataStore,
@@ -108,6 +111,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     {
         currentPlayerIdData.Set(IDS[0]);
         Assert.AreEqual(userProfiles[IDS[0]].inventory.Count, controller.view.playerInfoCollectibles.Count);
+
         Assert.IsTrue(wearables.All(wearable =>
             controller.view.playerInfoCollectibles.Any(item => item.collectible == wearable)));
     }
@@ -152,22 +156,31 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(controller.view.requestReceivedContainer.gameObject.activeSelf);
     }
 
-    [TestCase("fucker123", "****er123")]
-    [TestCase("holyshit", "holy****")]
-    public void FilterProfanityName(string originalName, string filteredName)
+    [UnityTest]
+    [TestCase("fucker123", "****er123", ExpectedResult = (IEnumerator)null)]
+    [TestCase("holyshit", "holy****", ExpectedResult = (IEnumerator)null)]
+    public IEnumerator FilterProfanityName(string originalName, string filteredName)
     {
+        profanityFilter.Filter(originalName).Returns(UniTask.FromResult(filteredName));
         currentPlayerIdData.Set(IDS[0]);
         GivenUserName(IDS[0], originalName);
+
+        // must wait the switch to main thread
+        yield return null;
 
         Assert.AreEqual(filteredName, controller.view.name.text);
     }
 
-    [TestCase("fuckerrrrr", "****errrrr")]
-    [TestCase("shit bro thats some nonsense", "**** bro thats some nonsense")]
-    public void FilterProfanityDescription(string originalDescription, string filteredDescription)
+    [TestCase("fuckerrrrr", "****errrrr", ExpectedResult = (IEnumerator)null)]
+    [TestCase("shit bro thats some nonsense", "**** bro thats some nonsense", ExpectedResult = (IEnumerator)null)]
+    public IEnumerator FilterProfanityDescription(string originalDescription, string filteredDescription)
     {
+        profanityFilter.Filter(originalDescription).Returns(UniTask.FromResult(filteredDescription));
         currentPlayerIdData.Set(IDS[0]);
         GivenUserDescription(IDS[0], originalDescription);
+
+        // must wait the switch to main thread
+        yield return null;
 
         Assert.AreEqual(filteredDescription, controller.view.description.text);
     }
@@ -225,9 +238,10 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         userProfiles = IDS.ToDictionary(x => x, x => GetUserProfile(x, wearables));
     }
 
-    private UserProfile GetUserProfile(string id, string[] inventory)
+    private UserProfile GetUserProfile(string id, IEnumerable<string> inventory)
     {
-        UserProfile userProfile =  ScriptableObject.CreateInstance<UserProfile>();
+        UserProfile userProfile = ScriptableObject.CreateInstance<UserProfile>();
+
         userProfile.UpdateData(
             new UserProfileModel()
             {
@@ -236,6 +250,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
                 description = $"description_{id}",
                 email = $"email_{id}"
             });
+
         userProfile.SetInventory(inventory);
         return userProfile;
     }
@@ -247,26 +262,25 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
             userId = userId,
             friendshipStatus = status
         };
+
         friendsController.AddFriend(friendStatus);
     }
 
     private void GivenUserName(string userId, string name)
     {
         userProfiles[userId]
-            .UpdateData(new UserProfileModel
-        {
-            userId = userId,
-            name = name,
-            description = null
-        });
+           .UpdateData(new UserProfileModel
+            {
+                userId = userId,
+                name = name,
+                description = null
+            });
     }
 
     private void GivenProfanityFiltering()
     {
-        var profanityWordProvider = Substitute.For<IProfanityWordProvider>();
-        profanityWordProvider.GetNonExplicitWords().Returns(new[] { "fuck", "shit" });
-        profanityWordProvider.GetExplicitWords().Returns(new[] { "ass" });
-        profanityFilter = new RegexProfanityFilter(profanityWordProvider);
+        profanityFilter = Substitute.For<IProfanityFilter>();
+        profanityFilter.Filter(Arg.Any<string>()).Returns(info => UniTask.FromResult(info[0]?.ToString() ?? ""));
     }
 
     private void GivenWearableCatalog()
@@ -280,17 +294,19 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
             new WearableItem { id = "unique", rarity = WearableLiterals.ItemRarity.UNIQUE }
         };
 
-        wearableCatalogBridge = Substitute.For<IWearableCatalogBridge>();
-        wearableCatalogBridge.IsValidWearable(Arg.Any<string>()).Returns(true);
-        Func<CallInfo, Promise<WearableItem[]>> requestOwnedWearables = info =>
-        {
-            var promise = new Promise<WearableItem[]>();
-            promise.Resolve(wearables);
-            return promise;
-        };
+        wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+        wearablesCatalogService.IsValidWearable(Arg.Any<string>()).Returns(true);
+
         foreach (string id in IDS)
         {
-            wearableCatalogBridge.RequestOwnedWearables(id).Returns(requestOwnedWearables);
+            wearablesCatalogService
+               .RequestOwnedWearablesAsync(id, Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+               .Returns(_ =>
+                {
+                    UniTaskCompletionSource<(IReadOnlyList<WearableItem> wearables, int totalAmount)> mockedResult = new UniTaskCompletionSource<(IReadOnlyList<WearableItem> wearables, int totalAmount)>();
+                    mockedResult.TrySetResult((wearables, wearables.Length));
+                    return mockedResult.Task;
+                });
         }
     }
 
@@ -305,13 +321,16 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private void GivenUserDescription(string userId, string originalDescription)
     {
         userProfiles[userId]
-            .UpdateData(new UserProfileModel
-        {
-            userId = userId,
-            name = "test",
-            description = originalDescription
-        });
+           .UpdateData(new UserProfileModel
+            {
+                userId = userId,
+                name = "test",
+                description = originalDescription
+            });
     }
 
-    private void GivenProfanityFilteringAvailability(bool enabled) { dataStore.settings.profanityChatFilteringEnabled.Set(enabled); }
+    private void GivenProfanityFilteringAvailability(bool enabled)
+    {
+        dataStore.settings.profanityChatFilteringEnabled.Set(enabled);
+    }
 }

@@ -85,8 +85,12 @@ public class NFTItemInfo : MonoBehaviour
     [SerializeField] internal TextMeshProUGUI rarityName;
     [SerializeField] internal Button sellButton;
     [SerializeField] internal Button closeButton;
+    [SerializeField] internal GameObject categoryInfoContainer;
 
     private Model currentModel;
+
+    public Button.ButtonClickedEvent OnCloseButtonClick => closeButton?.onClick;
+
     public void SetSkin(string rarityName, NFTItemToggleSkin skin)
     {
         this.rarityName.text = rarityName;
@@ -151,6 +155,10 @@ public class NFTItemInfo : MonoBehaviour
 
         rarityName.text = name;
     }
+
+    public void SetSellButtonActive(bool isActive) => sellButton.gameObject.SetActive(isActive);
+
+    public void SetCategoryInfoActive(bool isActive) => categoryInfoContainer.SetActive(isActive);
 
     private void UpdateItemThumbnail(Asset_Texture texture)
     {

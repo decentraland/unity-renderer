@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DCL.Huds.QuestsTracker
 {
-    public interface IQuestsTrackerHUDView
+    public interface IQuestsTrackerHUDView: IDisposable
     {
         void UpdateQuest(string questId, bool hasProgressed);
         void RemoveEntry(string questId);
@@ -16,7 +16,6 @@ namespace DCL.Huds.QuestsTracker
         void ClearEntries();
         void SetVisibility(bool visibility);
         void AddReward(string questId, QuestReward reward);
-        void Dispose();
     }
 
     public class QuestsTrackerHUDView : MonoBehaviour, IQuestsTrackerHUDView
@@ -30,22 +29,15 @@ namespace DCL.Huds.QuestsTracker
         [SerializeField] private DynamicScrollSensitivity dynamicScrollSensitivity;
         [SerializeField] internal QuestsNotificationsController notificationsController;
 
-        internal readonly Dictionary<string, QuestsTrackerEntry> currentEntries = new Dictionary<string, QuestsTrackerEntry>();
+        internal readonly Dictionary<string, QuestsTrackerEntry> currentEntries = new ();
         private bool layoutRebuildRequested;
 
-        private bool isDestroyed = false;
+        private bool isDestroyed;
 
-        public static QuestsTrackerHUDView Create()
+        private void Awake()
         {
-            QuestsTrackerHUDView view = Instantiate(Resources.Load<GameObject>("QuestsTrackerHUD")).GetComponent<QuestsTrackerHUDView>();
-
-#if UNITY_EDITOR
-            view.gameObject.name = "_QuestsTrackerHUDView";
-#endif
-            return view;
+            StartCoroutine(RemoveEntriesRoutine());
         }
-
-        private void Awake() { StartCoroutine(RemoveEntriesRoutine()); }
 
         public void UpdateQuest(string questId, bool hasProgressed)
         {

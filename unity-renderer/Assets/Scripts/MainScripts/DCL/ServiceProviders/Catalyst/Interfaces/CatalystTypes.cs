@@ -112,4 +112,5 @@ public class CatalystSceneEntityMetadata
     public string main;
     public string[] tags;
     public string[] requiredPermissions;
+    public string[] allowedMediaHostnames;
 }

@@ -1,3 +1,4 @@
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ namespace DCL.Chat.HUD
         {
             conversationList = Object.Instantiate(Resources.Load<WorldChatWindowComponentView>("SocialBarV1/ConversationListHUD"));
             view = conversationList.searchResultsList;
+             view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
         }
 
         [TearDown]
@@ -28,7 +30,7 @@ namespace DCL.Chat.HUD
 
             Assert.IsFalse(view.emptyStateContainer.activeSelf);
         }
-        
+
         [Test]
         public void DisableEmptyStateWhenSetPublicChat()
         {
@@ -44,17 +46,17 @@ namespace DCL.Chat.HUD
             GivenPublicChatEntry();
 
             view.Clear();
-            
+
             Assert.IsTrue(view.emptyStateContainer.activeSelf);
         }
-        
+
         [Test]
         public void EnableEmptyStateWhenEntryIsRemovedAndIsEmpty()
         {
             GivenPrivateChatEntry();
 
             view.Remove("usr");
-            
+
             Assert.IsTrue(view.emptyStateContainer.activeSelf);
         }
 
@@ -63,20 +65,20 @@ namespace DCL.Chat.HUD
         {
             GivenPrivateChatEntry();
             GivenPublicChatEntry();
-            
+
             view.Filter(entry => false);
-            
+
             Assert.IsTrue(view.emptyStateContainer.activeSelf);
         }
-        
+
         [Test]
         public void DisableEmptyStateWhenFilterMatchesAnyElement()
         {
             GivenPrivateChatEntry();
             GivenPublicChatEntry();
-            
+
             view.Filter(entry => true);
-            
+
             Assert.IsFalse(view.emptyStateContainer.activeSelf);
         }
 

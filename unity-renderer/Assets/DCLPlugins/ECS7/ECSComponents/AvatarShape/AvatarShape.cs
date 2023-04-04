@@ -1,18 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
-using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
-using GPUSkinning;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.ExceptionServices;
+using System.Threading;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
 
@@ -21,15 +19,15 @@ namespace DCL.ECSComponents
     public interface IAvatarShape
     {
         /// <summary>
-        /// This will initialize the AvatarShape and set 
+        /// This will initialize the AvatarShape and set
         /// </summary>
         void Init();
-        
+
         /// <summary>
         /// Clean up the avatar shape so we can reutilizate it using the pool
         /// </summary>
         void Cleanup();
-        
+
         /// <summary>
         /// Apply the model of the avatar, it will reload if necessary
         /// </summary>
@@ -42,14 +40,19 @@ namespace DCL.ECSComponents
         /// Get the transform of the avatar shape
         /// </summary>
         Transform transform { get; }
+
+        /// <summary>
+        /// Get non-monobehaviour internal IAvatar object that contains the merged renderer
+        /// </summary>
+        IAvatar internalAvatar { get; }
     }
-    
+
     public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer, IAvatarShape, IPoolLifecycleHandler
     {
         private const float AVATAR_Y_AXIS_OFFSET = -0.72f;
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
-        private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         internal const string IN_HIDE_AREA = "IN_HIDE_AREA";
+        private const string OPEN_PASSPORT_SOURCE = "World";
 
         [SerializeField] private GameObject avatarContainer;
         [SerializeField] internal Collider avatarCollider;
@@ -57,65 +60,64 @@ namespace DCL.ECSComponents
         [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
         [SerializeField] internal GameObject playerNameContainer;
-        
+
         internal IAvatarMovementController avatarMovementController;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
-        private StringVariable currentPlayerInfoCardId;
+        private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
 
         internal bool initializedPosition = false;
 
         internal Player player = null;
         internal BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        
+
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
         internal IAvatar avatar;
         internal CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
+        private IUserProfileBridge userProfileBridge;
         private bool isGlobalSceneAvatar = true;
 
         public IPoolableObject poolableObject { get; set; }
         internal PBAvatarShape model;
         internal IDCLEntity entity;
-        
+
+        private Service<IAvatarFactory> avatarFactory;
+        private Service<IEmotesCatalogService> emotesCatalog;
+        public IAvatar internalAvatar => avatar;
+
         private void Awake()
         {
             avatarMovementController = GetComponent<IAvatarMovementController>();
-            
-            currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+            // TODO: avoid instantiation, user profile bridge should be retrieved from the service locator
+            userProfileBridge = new UserProfileWebInterfaceBridge();
+
+            currentPlayerInfoCardId = DataStore.i.HUDs.currentPlayerId;
             Visibility visibility = new Visibility();
             avatarMovementController.SetAvatarTransform(transform);
-            
+
             // Right now the avatars that are not part of the global scene of avatar are not using LOD since
             // AvatarsLodController are no taking them into account. It needs product definition and a refactor to include them
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
-            avatar = new AvatarWithHologram(
-                baseAvatar,
-                new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-                new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                animator,
-                visibility,
-                avatarLOD,
-                new SimpleGPUSkinning(),
-                new GPUSkinningThrottler(),
-                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+            avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, avatarRevealContainer, armatureContainer, animator, avatarLOD, visibility);
 
-            if (avatarReporterController == null)
-                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
-            
+            avatarReporterController ??= new AvatarReporterController(Environment.i.world.state);
+
             onPointerDown.OnPointerDownReport += PlayerClicked;
             onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport += PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport += PlayerPointerExit;
         }
 
         public void Init()
         {
             // The avatars have an offset in the Y axis, so we set the offset after the avatar has been restored from the pool
-            transform.position = new UnityEngine.Vector3(transform.position.x, AVATAR_Y_AXIS_OFFSET, transform.position.z);
+            transform.position = new Vector3(transform.position.x, AVATAR_Y_AXIS_OFFSET, transform.position.z);
             SetPlayerNameReference();
         }
 
@@ -126,12 +128,12 @@ namespace DCL.ECSComponents
             playerName = GetComponentInChildren<IPlayerName>();
             playerName?.Hide(true);
         }
-        
+
         private void PlayerClicked()
         {
             if (model == null)
                 return;
-            currentPlayerInfoCardId.Set(model.Id);
+            currentPlayerInfoCardId.Set((model.Id, OPEN_PASSPORT_SOURCE));
         }
 
         public void OnDestroy()
@@ -145,11 +147,11 @@ namespace DCL.ECSComponents
         public async void ApplyModel(IParcelScene scene, IDCLEntity entity, PBAvatarShape newModel)
         {
             this.entity = entity;
-            
+
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
 
             DisablePassport();
-            
+
             bool needsLoading = !AvatarUtils.HaveSameWearablesAndColors(model,newModel);
             model = newModel;
 
@@ -173,7 +175,7 @@ namespace DCL.ECSComponents
             wearableItems.Add(model.GetBodyShape());
 
             // temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
             HashSet<string> emotes = new HashSet<string>();
             emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
@@ -189,11 +191,13 @@ namespace DCL.ECSComponents
                 }
                 catch (Exception e)
                 {
-                    // If the load of the avatar fails, we do it silently so the scene continue to operate. 
-                    // The LoadAvatar function will show the error in console already so in order to avoid noise, we just capture the exception
+                    // If the load of the avatar fails, we do it silently so the scene continue to operate.
+                    // The LoadAvatar function will show the wearables but not the error itself, we need extra context
+                    if (e is not OperationCanceledException)
+                        Debug.LogException(e);
                 }
             }
-            
+
             // If the model contains a value for expressionTriggerId then we try it, if value doesn't exist, we skip
             if(model.HasExpressionTriggerId)
                 avatar.PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
@@ -201,14 +205,16 @@ namespace DCL.ECSComponents
             UpdatePlayerStatus(entity, model);
 
             onPointerDown.Initialize(
-                new OnPointerDown.Model()
+                new OnPointerEvent.Model()
                 {
                     type = OnPointerDown.NAME,
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "view profile"
+                    hoverText = "View Profile"
                 },
                 entity, player
             );
+
+            outlineOnHover.Initialize(new OnPointerEvent.Model(), entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -228,7 +234,8 @@ namespace DCL.ECSComponents
                 avatarCollider.gameObject.SetActive(false);
 
                 SetImpostor(model.Id);
-                playerName.SetName(model.GetName());
+                UserProfile profile = userProfileBridge.Get(model.Id);
+                playerName.SetName(model.GetName(), profile?.hasClaimedName ?? false, profile?.isGuest ?? false);
                 playerName.Show(true);
                 await avatar.Load(wearableItems, emotes.ToList(),new AvatarSettings
                 {
@@ -248,10 +255,7 @@ namespace DCL.ECSComponents
             {
                 Cleanup();
                 Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearableItems)}] for bodyshape:{model.BodyShape} and player {model.Name}");
-                if (e.InnerException != null)
-                    ExceptionDispatchInfo.Capture(e.InnerException).Throw();
-                else
-                    throw;
+                throw;
             }
             finally
             {
@@ -275,7 +279,7 @@ namespace DCL.ECSComponents
         }
 
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
-        
+
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
         internal void UpdatePlayerStatus(IDCLEntity entity, PBAvatarShape model)
@@ -290,7 +294,7 @@ namespace DCL.ECSComponents
             bool isNew = player == null;
             if (isNew)
                 player = new Player();
-            
+
             bool isNameDirty = player.name != model.GetName();
 
             player.id = model.Id;
@@ -309,7 +313,7 @@ namespace DCL.ECSComponents
                 if (isGlobalSceneAvatar)
                 {
                     // TODO: Note: This is having a problem, sometimes the users has been detected as new 2 times and it shouldn't happen
-                    // we should investigate this 
+                    // we should investigate this
                     if (otherPlayers.ContainsKey(player.id))
                         otherPlayers.Remove(player.id);
                     otherPlayers.Add(player.id, player);
@@ -325,8 +329,12 @@ namespace DCL.ECSComponents
 
             player.playerName.SetIsTalking(model.Talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
+
             if (isNameDirty)
-                player.playerName.SetName(model.GetName());
+            {
+                UserProfile profile = userProfileBridge.Get(model.Id);
+                player.playerName.SetName(model.GetName(), profile?.hasClaimedName ?? false, profile?.isGuest ?? false);
+            }
         }
 
         private void Update()
@@ -361,18 +369,18 @@ namespace DCL.ECSComponents
             OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
         }
 
-        private void OnEntityTransformChanged(in UnityEngine.Vector3 position, in Quaternion rotation, bool inmediate)
+        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
             if (entity == null)
                 return;
-            
+
             if (isGlobalSceneAvatar)
             {
                 avatarMovementController.OnTransformChanged(position, rotation, inmediate);
             }
             else
             {
-                var scenePosition = DCL.Helpers.Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
+                var scenePosition = Helpers.Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
                 avatarMovementController.OnTransformChanged(scenePosition + position, rotation, inmediate);
             }
             initializedPosition = true;
@@ -382,7 +390,7 @@ namespace DCL.ECSComponents
         {
             Cleanup();
         }
-        
+
         public void OnPoolGet()
         {
             initializedPosition = false;
@@ -413,11 +421,11 @@ namespace DCL.ECSComponents
                 otherPlayers.Remove(player.id);
                 player = null;
             }
-            
+
             loadingCts?.Cancel();
             loadingCts?.Dispose();
             loadingCts = null;
-            
+
             currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
             avatar.Dispose();
 
@@ -429,6 +437,8 @@ namespace DCL.ECSComponents
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport -= PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport -= PlayerPointerExit;
 
             if (entity != null)
             {

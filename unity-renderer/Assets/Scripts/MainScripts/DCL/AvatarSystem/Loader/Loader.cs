@@ -33,22 +33,16 @@ namespace AvatarSystem
             avatarMeshCombiner.uploadMeshToGpu = true;
         }
 
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth,
-            List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken cancellationToken = default)
         {
-            await Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, null, ct);
-        }
-
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken ct = default)
-        {
-            ct.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
             try
             {
                 status = ILoader.Status.Loading;
-                await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, ct);
-                await LoadWearables(wearables, settings, toCleanUp, ct);
+                await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, cancellationToken);
+                await LoadWearables(wearables, settings, toCleanUp, cancellationToken);
                 SkinnedMeshRenderer skinnedContainer = bonesContainer == null ? bodyshapeLoader.upperBodyRenderer : bonesContainer;
                 // Update Status accordingly
                 status = ComposeStatus(loaders);
@@ -68,7 +62,7 @@ namespace AvatarSystem
 
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
 
-                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, skinnedContainer, ct);
+                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, skinnedContainer, cancellationToken);
                 facialFeaturesRenderers = new List<Renderer>();
                 if (headVisible)
                 {
@@ -189,8 +183,7 @@ namespace AvatarSystem
             // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
             // once that's fixed we can remove this wait
             // AttachExternalCancellation is needed because cancellation will take a wait to trigger
-            await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
-            var featureFlags = DataStore.i.featureFlags.flags.Get();
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, ct).AttachExternalCancellation(ct);
             avatarMeshCombiner.useCullOpaqueHeuristic = true;
             avatarMeshCombiner.enableCombinedMesh = false;
             bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());
@@ -201,6 +194,7 @@ namespace AvatarSystem
             }
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
+            avatarMeshCombiner.container.transform.localScale = Vector3.one;
             return avatarMeshCombiner.renderer;
         }
 

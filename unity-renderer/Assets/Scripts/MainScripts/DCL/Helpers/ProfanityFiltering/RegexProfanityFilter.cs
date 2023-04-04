@@ -1,25 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using Cysharp.Threading.Tasks;
+using System.Threading;
 
-public class RegexProfanityFilter : IProfanityFilter
+namespace DCL.ProfanityFiltering
 {
-    private readonly Regex regex;
-
-    public RegexProfanityFilter(IProfanityWordProvider wordProvider)
+    public class RegexProfanityFilter : IProfanityFilter
     {
-        var explicitWords = ToRegex(wordProvider.GetExplicitWords());
-        var nonExplicitWords = ToRegex(wordProvider.GetNonExplicitWords());
-        regex = new Regex(@$"\b({explicitWords})\b|({nonExplicitWords})", RegexOptions.IgnoreCase);
-    }
+        private readonly IProfanityWordProvider wordProvider;
+        private Regex regex;
 
-    public async UniTask<string> Filter(string message)
-    {
-        if (string.IsNullOrEmpty(message)) return message;
-        return regex.Replace(message,
-            match => new StringBuilder().Append('*', match.Value.Length).ToString());
-    }
+        public RegexProfanityFilter(IProfanityWordProvider wordProvider)
+        {
+            this.wordProvider = wordProvider;
+        }
 
-    private string ToRegex(IEnumerable<string> words) => string.Join("|", words);
+        public void Initialize()
+        {
+            string explicitWords = ToRegex(wordProvider.GetExplicitWords());
+            string nonExplicitWords = ToRegex(wordProvider.GetNonExplicitWords());
+            regex = new Regex(@$"\b({explicitWords})\b|({nonExplicitWords})", RegexOptions.IgnoreCase);
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public async UniTask<string> Filter(string message, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (string.IsNullOrEmpty(message)) return message;
+            return regex.Replace(message,
+                match => new StringBuilder().Append('*', match.Value.Length).ToString());
+        }
+
+        private string ToRegex(IEnumerable<string> words) => string.Join("|", words);
+    }
 }

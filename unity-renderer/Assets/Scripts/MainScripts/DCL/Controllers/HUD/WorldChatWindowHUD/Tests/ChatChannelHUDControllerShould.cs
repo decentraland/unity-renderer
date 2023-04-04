@@ -1,10 +1,16 @@
-using System;
-using DCL.Chat.Channels;
+using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
+using DCL.Social.Chat.Mentions;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
 {
@@ -20,11 +26,13 @@ namespace DCL.Chat.HUD
         private DataStore dataStore;
         private ISocialAnalytics socialAnalytics;
         private IProfanityFilter profanityFilter;
+        private IUserProfileBridge userProfileBridge;
+        private IChatMentionSuggestionProvider mentionSuggestionProvider;
 
         [SetUp]
         public void SetUp()
         {
-            var userProfileBridge = Substitute.For<IUserProfileBridge>();
+            userProfileBridge = Substitute.For<IUserProfileBridge>();
             var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
             ownUserProfile.UpdateData(new UserProfileModel
             {
@@ -32,25 +40,30 @@ namespace DCL.Chat.HUD
                 name = "self"
             });
             userProfileBridge.GetOwn().Returns(ownUserProfile);
-            
+
             chatController = Substitute.For<IChatController>();
             chatController.GetAllocatedChannel(CHANNEL_ID)
                 .Returns(new Channel(CHANNEL_ID, CHANNEL_NAME, 4, 12, true, false, "desc"));
 
             dataStore = new DataStore();
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["chat_mentions_enabled"] = true } });
             socialAnalytics = Substitute.For<ISocialAnalytics>();
             profanityFilter = Substitute.For<IProfanityFilter>();
+            mentionSuggestionProvider = Substitute.For<IChatMentionSuggestionProvider>();
+
             controller = new ChatChannelHUDController(dataStore,
                 userProfileBridge,
                 chatController,
                 Substitute.For<IMouseCatcher>(),
-                ScriptableObject.CreateInstance<InputAction_Trigger>(),
                 socialAnalytics,
-                profanityFilter);
+                profanityFilter,
+                mentionSuggestionProvider);
+
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
             view.ChatHUD.Returns(chatView);
-            controller.Initialize(view);
+
+            controller.Initialize(view, false);
             controller.Setup(CHANNEL_ID);
         }
 
@@ -103,21 +116,30 @@ namespace DCL.Chat.HUD
         public void MuteChannel()
         {
             view.OnMuteChanged += Raise.Event<Action<bool>>(true);
-            
+
             chatController.Received(1).MuteChannel(CHANNEL_ID);
         }
-        
+
         [Test]
         public void UnmuteChannel()
         {
             view.OnMuteChanged += Raise.Event<Action<bool>>(false);
-            
+
             chatController.Received(1).UnmuteChannel(CHANNEL_ID);
         }
 
         [Test]
         public void MarkMessagesAsSeenOnlyOnceWhenReceivedManyMessages()
         {
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "user",
+                name = "userName",
+            });
+
+            userProfileBridge.Get("user").Returns(senderUserProfile);
+
             controller.SetVisibility(true);
             view.IsActive.Returns(true);
             chatController.ClearReceivedCalls();
@@ -132,8 +154,45 @@ namespace DCL.Chat.HUD
             };
 
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1, msg2});
-            
+
             chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void CheckOwnPlayerMentionInChannelsCorrectly(bool ownPlayerIsMentioned)
+        {
+            controller.SetVisibility(false);
+            dataStore.mentions.ownPlayerMentionedInChannel.Set(null, false);
+            string testMessage = ownPlayerIsMentioned
+                ? $"Hi <link=mention://{userProfileBridge.GetOwn().userName}><color=#4886E3><u>@{userProfileBridge.GetOwn().userName}</u></color></link>"
+                : "test message";
+            view.IsActive.Returns(false);
+
+            var testMentionMessage = new ChatMessage
+            {
+                messageType = ChatMessage.Type.PUBLIC,
+                body = testMessage,
+                recipient = CHANNEL_ID,
+                timestamp = 100,
+            };
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {testMentionMessage});
+
+            Assert.AreEqual(ownPlayerIsMentioned ? CHANNEL_ID : null, dataStore.mentions.ownPlayerMentionedInChannel.Get());
+        }
+
+        [TestCase("@", "")]
+        [TestCase("hey @f", "f")]
+        [TestCase("im super @dude", "dude")]
+        public void SuggestNearbyUsers(string text, string name)
+        {
+            mentionSuggestionProvider.GetProfilesFromChatChannelsStartingWith(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+                                     .Returns(UniTask.FromResult(new List<UserProfile>()));
+
+            chatView.OnMessageUpdated += Raise.Event<Action<string, int>>(text, 1);
+
+            mentionSuggestionProvider.Received(1).GetProfilesFromChatChannelsStartingWith(name, CHANNEL_ID, 5, Arg.Any<CancellationToken>());
         }
     }
 }

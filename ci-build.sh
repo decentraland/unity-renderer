@@ -2,10 +2,15 @@
 
 source ci-setup.sh
 
-echo "Building for $BUILD_TARGET at $PROJECT_PATH"
+echo "Building for $BUILD_TARGET at $PROJECT_PATH in $BUILD_PATH"
 
-export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
+
+# Only import AVPro for Desktop Builds
+if [[ "$BUILD_TARGET" != "WebGL" ]]; then
+  ./ci-import-avpro.sh
+  ./ci-setup-license.sh # we need to re-import the license after we import something
+fi
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -quit \
@@ -20,9 +25,6 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
 
 UNITY_EXIT_CODE=$?
 
-cat "$PROJECT_PATH/build-logs.txt"
-find "$BUILD_PATH"
-
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
   echo "Run succeeded, no failures occurred";
 elif [ $UNITY_EXIT_CODE -eq 2 ]; then
@@ -32,8 +34,6 @@ elif [ $UNITY_EXIT_CODE -eq 3 ]; then
 else
   echo "Unexpected exit code $UNITY_EXIT_CODE";
 fi
-
-ls -la "$BUILD_PATH"
 
 if [ -z "$(ls -A "$BUILD_PATH")" ]; then
   echo "directory BUILD_PATH $BUILD_PATH is empty"

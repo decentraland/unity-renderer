@@ -1,9 +1,11 @@
 using DCL;
 using DCL.Controllers;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
+using DCL.ECSComponents.UIText;
 using DCL.ECSRuntime;
 using DCL.Models;
-using DCL.ECSComponents;
 using ECSSystems.ScenesUiSystem;
 using NSubstitute;
 using NUnit.Framework;
@@ -24,10 +26,11 @@ namespace Tests
         {
             var factory = new ECSComponentsFactory();
             var manager = new ECSComponentsManager(factory.componentBuilders);
-            var internalComponents = new InternalECSComponents(manager, factory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            var internalComponents = new InternalECSComponents(manager, factory, executors);
             uiContainerComponent = internalComponents.uiContainerComponent;
 
-            sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager);
+            sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager, executors);
             uiDocument = Object.Instantiate(Resources.Load<UIDocument>("ScenesUI"));
         }
 
@@ -63,7 +66,7 @@ namespace Tests
         public void ClearUICorrectly()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
-            var model = new InternalUiContainer();
+            var model = new InternalUiContainer(0);
 
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
             uiDocument.rootVisualElement.Add(model.rootElement);
@@ -88,7 +91,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -125,7 +128,7 @@ namespace Tests
             Assert.IsFalse(ECSScenesUiSystem.ApplySceneUI(uiContainerComponent, uiDocument, scene));
 
             // but should be applied when component exist
-            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer());
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
             Assert.IsTrue(ECSScenesUiSystem.ApplySceneUI(uiContainerComponent, uiDocument, scene));
             Assert.AreEqual(1, uiDocument.rootVisualElement.childCount);
         }
@@ -134,18 +137,19 @@ namespace Tests
         public void CreateSceneRootUIContainerCorrectly()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             // root scene ui component should not exist
             Assert.IsNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
             // add ui element to scene
             const int entityId = 111;
-            var model = new InternalUiContainer();
+            var model = new InternalUiContainer(0);
             model.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, model);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // root scene ui component should exist now
             Assert.IsNotNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -176,28 +180,29 @@ namespace Tests
         public void ApplyParenting()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             const int childEntityId = 111;
             const int parentEntityId = 112;
 
-            var childModel = new InternalUiContainer() { parentId = parentEntityId };
+            var childModel = new InternalUiContainer(childEntityId) { parentId = parentEntityId };
             childModel.components.Add(1);
 
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // parent doesnt exist yet, so it shouldn't be any parenting
             Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
 
             // create parent container
-            var parentModel = new InternalUiContainer();
+            var parentModel = new InternalUiContainer(parentEntityId);
             parentModel.components.Add(1);
             uiContainerComponent.PutFor(scene, parentEntityId, parentModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // parenting should be applied
             var parentEntityModel = uiContainerComponent.GetFor(scene, parentEntityId).model;
@@ -222,7 +227,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -249,7 +254,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -292,8 +297,8 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scenes
-            InternalUiContainer rootScene1Container = new InternalUiContainer();
-            InternalUiContainer rootScene2Container = new InternalUiContainer();
+            InternalUiContainer rootScene1Container = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
+            InternalUiContainer rootScene2Container = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene1, SpecialEntityId.SCENE_ROOT_ENTITY, rootScene1Container);
             uiContainerComponent.PutFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY, rootScene2Container);
 
@@ -371,7 +376,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -401,7 +406,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for global scene
-            InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(globalScene, SpecialEntityId.SCENE_ROOT_ENTITY, rootGlobalSceneContainer);
 
             // do system update
@@ -411,7 +416,7 @@ namespace Tests
             Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootGlobalSceneContainer.rootElement));
 
             // create root ui for non global scene
-            InternalUiContainer rootNonGlobalSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootNonGlobalSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(nonGlobalScene, SpecialEntityId.SCENE_ROOT_ENTITY, rootNonGlobalSceneContainer);
 
             // do system update
@@ -445,12 +450,12 @@ namespace Tests
             ECS7TestEntity entity2 = scene.CreateEntity(112);
             ECS7TestEntity entity3 = scene.CreateEntity(113);
 
-            InternalUiContainer modelEntity0 = new InternalUiContainer();
-            InternalUiContainer modelEntity1 = new InternalUiContainer();
-            InternalUiContainer modelEntity2 = new InternalUiContainer();
-            InternalUiContainer modelEntity3 = new InternalUiContainer();
+            InternalUiContainer modelEntity0 = new InternalUiContainer(entity0.entityId);
+            InternalUiContainer modelEntity1 = new InternalUiContainer(entity1.entityId);
+            InternalUiContainer modelEntity2 = new InternalUiContainer(entity2.entityId);
+            InternalUiContainer modelEntity3 = new InternalUiContainer(entity3.entityId);
 
-            InternalUiContainer sceneModel = new InternalUiContainer();
+            InternalUiContainer sceneModel = new InternalUiContainer(0);
             sceneModel.rootElement.Add(modelEntity0.rootElement);
             sceneModel.rootElement.Add(modelEntity1.rootElement);
             sceneModel.rootElement.Add(modelEntity2.rootElement);
@@ -516,6 +521,7 @@ namespace Tests
         public void AvoidMovingNonUiContainerElementsWhenSorting()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             ECS7TestEntity baseParentEntity = scene.CreateEntity(110);
             ECS7TestEntity baseParentChildEntity = scene.CreateEntity(111);
@@ -559,7 +565,7 @@ namespace Tests
             });
 
             // Sort
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
             ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
 
             // Check the Label Ui Element keeps being the first child of baseParentChildEntity root element
@@ -575,14 +581,15 @@ namespace Tests
         {
             const int sceneNumber = 666;
             ECS7TestScene scene = sceneTestHelper.CreateScene(sceneNumber);
+            HashSet<IParcelScene> scenesToSortUi = new HashSet<IParcelScene>();
 
             const int entityId = 111;
 
-            var entityModel = new InternalUiContainer() { shouldSort = false };
+            var entityModel = new InternalUiContainer(entityId) { shouldSort = false };
             entityModel.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 
-            HashSet<IParcelScene> scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, sceneNumber);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSortUi, uiDocument, uiContainerComponent, sceneNumber);
 
             // Since not `shouldSort` is flagged collection should be empty
             Assert.IsEmpty(scenesToSortUi);
@@ -591,7 +598,7 @@ namespace Tests
             entityModel.shouldSort = true;
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 
-            scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, sceneNumber);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSortUi, uiDocument, uiContainerComponent, sceneNumber);
 
             Assert.IsNotEmpty(scenesToSortUi);
         }

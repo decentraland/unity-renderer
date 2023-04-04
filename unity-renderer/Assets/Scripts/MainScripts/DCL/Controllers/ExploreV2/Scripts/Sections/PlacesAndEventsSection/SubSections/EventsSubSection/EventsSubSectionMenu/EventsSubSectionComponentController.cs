@@ -5,256 +5,134 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Environment = DCL.Environment;
 
-public interface IEventsSubSectionComponentController : IDisposable
-{
-    /// <summary>
-    /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.
-    /// </summary>
-    event Action OnCloseExploreV2;
-
-    /// <summary>
-    /// Request all events from the API.
-    /// </summary>
-    void RequestAllEvents();
-
-    /// <summary>
-    /// Load the featured events with the last requested ones.
-    /// </summary>
-    void LoadFeaturedEvents();
-
-    /// <summary>
-    /// Load the trending events with the last requested ones.
-    /// </summary>
-    void LoadTrendingEvents();
-
-    /// <summary>
-    /// Load the upcoming events with the last requested ones.
-    /// </summary>
-    void LoadUpcomingEvents();
-
-    /// <summary>
-    /// Increment the number of upcoming events loaded.
-    /// </summary>
-    void ShowMoreUpcomingEvents();
-
-    /// <summary>
-    /// Load the going events with the last requested ones.
-    /// </summary>
-    void LoadGoingEvents();
-}
-
-public class EventsSubSectionComponentController : IEventsSubSectionComponentController
+public class EventsSubSectionComponentController : IEventsSubSectionComponentController, IPlacesAndEventsAPIRequester
 {
     public event Action OnCloseExploreV2;
-    internal event Action OnEventsFromAPIUpdated;
 
-    internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
+    private const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
     internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
-    internal const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
-    internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
-    internal IEventsSubSectionComponentView view;
-    internal IEventsAPIController eventsAPIApiController;
-    internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
-    internal int currentUpcomingEventsShowed = 0;
-    internal bool reloadEvents = false;
-    internal IExploreV2Analytics exploreV2Analytics;
-    internal float lastTimeAPIChecked = 0;
-    private DataStore dataStore;
+    private const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
+    private const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
 
-    public EventsSubSectionComponentController(
-        IEventsSubSectionComponentView view,
-        IEventsAPIController eventsAPI,
-        IExploreV2Analytics exploreV2Analytics,
-        DataStore dataStore)
+    internal readonly IEventsSubSectionComponentView view;
+    internal readonly IEventsAPIController eventsAPIApiController;
+    private readonly DataStore dataStore;
+    private readonly IExploreV2Analytics exploreV2Analytics;
+
+    internal readonly PlaceAndEventsCardsReloader cardsReloader;
+
+    internal List<EventFromAPIModel> eventsFromAPI = new ();
+    internal int availableUISlots;
+
+    public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
+        cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
+
         this.view = view;
+
         this.view.OnReady += FirstLoading;
+
         this.view.OnInfoClicked += ShowEventDetailedInfo;
-        this.view.OnJumpInClicked += JumpInToEvent;
+        this.view.OnJumpInClicked += OnJumpInToEvent;
+
         this.view.OnSubscribeEventClicked += SubscribeToEvent;
         this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
+
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
+
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         eventsAPIApiController = eventsAPI;
-        OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
 
         this.exploreV2Analytics = exploreV2Analytics;
 
         view.ConfigurePools();
     }
 
-    internal void FirstLoading()
+    public void Dispose()
     {
-        reloadEvents = true;
-        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-        RequestAllEvents();
+        view.OnReady -= FirstLoading;
 
+        view.OnInfoClicked -= ShowEventDetailedInfo;
+        view.OnJumpInClicked -= OnJumpInToEvent;
+        view.OnSubscribeEventClicked -= SubscribeToEvent;
+        view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
+        view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
+        view.OnEventsSubSectionEnable -= RequestAllEvents;
+
+        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+
+        cardsReloader.Dispose();
+    }
+
+    private void FirstLoading()
+    {
         view.OnEventsSubSectionEnable += RequestAllEvents;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        cardsReloader.Initialize();
     }
 
-    internal void OnExploreV2Open(bool current, bool previous)
+    internal void RequestAllEvents()
     {
-        if (current)
-            return;
+        if (cardsReloader.CanReload())
+        {
+            availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
+            view.SetShowMoreButtonActive(false);
 
-        reloadEvents = true;
+            cardsReloader.RequestAll();
+        }
     }
 
-    public void RequestAllEvents()
-    {
-        if (!reloadEvents)
-            return;
-
-        view.RestartScrollViewPosition();
-
-        if (Time.realtimeSinceStartup < lastTimeAPIChecked + PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
-            return;
-
-        currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
-        
-        view.SetAllEventGroupsAsLoading();
-        view.SetShowMoreUpcomingEventsButtonActive(false);
-
-        reloadEvents = false;
-        lastTimeAPIChecked = Time.realtimeSinceStartup;
-
-        if (!dataStore.exploreV2.isInShowAnimationTransiton.Get())
-            RequestAllEventsFromAPI();
-        else
-            dataStore.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
-    }
-
-    internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
-    {
-        dataStore.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
-        RequestAllEventsFromAPI();
-    }
-
-    internal void RequestAllEventsFromAPI()
+    public void RequestAllFromAPI()
     {
         eventsAPIApiController.GetAllEvents(
-            (eventList) =>
-            {
-                eventsFromAPI = eventList;
-                OnEventsFromAPIUpdated?.Invoke();
-            },
-            (error) =>
-            {
-                Debug.LogError($"Error receiving events from the API: {error}");
-            });
+            OnSuccess: OnRequestedEventsUpdated,
+            OnFail: error => { Debug.LogError($"Error receiving events from the API: {error}"); });
     }
 
-    internal void OnRequestedEventsUpdated()
+    internal void OnRequestedEventsUpdated(List<EventFromAPIModel> eventList)
     {
-        LoadFeaturedEvents();
-        LoadTrendingEvents();
-        LoadUpcomingEvents();
-        LoadGoingEvents();
+        eventsFromAPI = eventList;
+
+        view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
+        view.SetTrendingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents()));
+        view.SetUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterUpcomingEvents()));
+        view.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterGoingEvents()));
+
+        view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
-    public void LoadFeaturedEvents()
+    internal List<EventFromAPIModel> FilterFeaturedEvents()
     {
-        List<EventCardComponentModel> featuredEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
 
         if (eventsFiltered.Count == 0)
             eventsFiltered = eventsFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_EVENTS).ToList();
 
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            featuredEvents.Add(eventCardModel);
-        }
-
-        view.SetFeaturedEvents(featuredEvents);
+        return eventsFiltered;
     }
-
-    public void LoadTrendingEvents()
-    {
-        List<EventCardComponentModel> trendingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.trending).ToList();
-
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            trendingEvents.Add(eventCardModel);
-        }
-
-        view.SetTrendingEvents(trendingEvents);
-    }
-
-    public void LoadUpcomingEvents()
-    {
-        List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(currentUpcomingEventsShowed).ToList();
-
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            upcomingEvents.Add(eventCardModel);
-        }
-
-        view.SetUpcomingEvents(upcomingEvents);
-        view.SetShowMoreUpcomingEventsButtonActive(currentUpcomingEventsShowed < eventsFromAPI.Count);
-    }
+    internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
+    internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
+    internal List<EventFromAPIModel> FilterGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
 
     public void ShowMoreUpcomingEvents()
     {
-        List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = new List<EventFromAPIModel>();
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentUpcomingEventsShowed / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - currentUpcomingEventsShowed;
-        int numberOfItemsToAdd = view.currentUpcomingEventsPerRow * SHOW_MORE_UPCOMING_ROWS_INCREMENT + numberOfExtraItemsToAdd;
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - availableUISlots;
+        int numberOfItemsToAdd = (view.currentUpcomingEventsPerRow * SHOW_MORE_UPCOMING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
-        if (currentUpcomingEventsShowed + numberOfItemsToAdd <= eventsFromAPI.Count)
-            eventsFiltered = eventsFromAPI.GetRange(currentUpcomingEventsShowed, numberOfItemsToAdd);
-        else
-            eventsFiltered = eventsFromAPI.GetRange(currentUpcomingEventsShowed, eventsFromAPI.Count - currentUpcomingEventsShowed);
+        List<EventFromAPIModel> eventsFiltered = availableUISlots + numberOfItemsToAdd <= eventsFromAPI.Count
+            ? eventsFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
+            : eventsFromAPI.GetRange(availableUISlots, eventsFromAPI.Count - availableUISlots);
 
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel placeCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            upcomingEvents.Add(placeCardModel);
-        }
+        view.AddUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsFiltered));
 
-        view.AddUpcomingEvents(upcomingEvents);
+        availableUISlots += numberOfItemsToAdd;
+        if (availableUISlots > eventsFromAPI.Count)
+            availableUISlots = eventsFromAPI.Count;
 
-        currentUpcomingEventsShowed += numberOfItemsToAdd;
-        if (currentUpcomingEventsShowed > eventsFromAPI.Count)
-            currentUpcomingEventsShowed = eventsFromAPI.Count;
-
-        view.SetShowMoreUpcomingEventsButtonActive(currentUpcomingEventsShowed < eventsFromAPI.Count);
-    }
-
-    public void LoadGoingEvents()
-    {
-        List<EventCardComponentModel> goingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.attending).ToList();
-
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            goingEvents.Add(eventCardModel);
-        }
-
-        view.SetGoingEvents(goingEvents);
-    }
-
-    public void Dispose()
-    {
-        view.OnReady -= FirstLoading;
-        view.OnInfoClicked -= ShowEventDetailedInfo;
-        view.OnJumpInClicked -= JumpInToEvent;
-        view.OnSubscribeEventClicked -= SubscribeToEvent;
-        view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
-        view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
-        view.OnEventsSubSectionEnable -= RequestAllEvents;
-        OnEventsFromAPIUpdated -= OnRequestedEventsUpdated;
-        dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
-        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+        view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
@@ -263,15 +141,16 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
     }
 
-    internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
+    internal void OnJumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        ExploreEventsUtils.JumpInToEvent(eventFromAPI);
+        JumpInToEvent(eventFromAPI);
         view.HideEventModal();
+
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    internal void SubscribeToEvent(string eventId)
+    public static void SubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
         WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
@@ -290,7 +169,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         //    });
     }
 
-    internal void UnsubscribeToEvent(string eventId)
+    public static void UnsubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
         WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
@@ -316,5 +195,22 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
+    }
+
+    /// <summary>
+    /// Makes a jump in to the event defined by the given place data from API.
+    /// </summary>
+    /// <param name="eventFromAPI">Event data from API.</param>
+    public static void JumpInToEvent(EventFromAPIModel eventFromAPI)
+    {
+        Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
+        string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new[] { "", "" } : eventFromAPI.realm.Split('-');
+        string serverName = realmFromAPI[0];
+        string layerName = realmFromAPI[1];
+
+        if (string.IsNullOrEmpty(serverName))
+            Environment.i.world.teleportController.Teleport(coords.x, coords.y);
+        else
+            Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
     }
 }

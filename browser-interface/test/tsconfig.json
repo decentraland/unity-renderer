@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "outDir": "out",
+    "declaration": false,
+    "strictNullChecks": true,
+    "lib": ["es2020", "dom"],
+    "baseUrl": "../packages",
+    "types": ["mocha", "@dcl/posix"],
+    "typeRoots": ["../node_modules/"]
+  },
+  "exclude": ["../packages/engine"],
+  "extends": "../tsconfig.json"
+}

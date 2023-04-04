@@ -36,8 +36,8 @@ public class AvatarModel : BaseModel
             return false;
 
         //wearables are the same
-        if (!(wearables.Count == other.wearables.Count 
-              && wearables.All(other.wearables.Contains) 
+        if (!(wearables.Count == other.wearables.Count
+              && wearables.All(other.wearables.Contains)
               && other.wearables.All(wearables.Contains)))
             return false;
 
@@ -74,8 +74,10 @@ public class AvatarModel : BaseModel
 
     public bool Equals(AvatarModel other)
     {
-        bool wearablesAreEqual = wearables.All(other.wearables.Contains) 
-                                 && other.wearables.All(wearables.Contains) 
+        if (other == null) return false;
+
+        bool wearablesAreEqual = wearables.All(other.wearables.Contains)
+                                 && other.wearables.All(wearables.Contains)
                                  && wearables.Count == other.wearables.Count;
 
         return id == other.id &&
@@ -110,5 +112,5 @@ public class AvatarModel : BaseModel
     }
 
     public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<AvatarModel>(json); }
-    
+
 }

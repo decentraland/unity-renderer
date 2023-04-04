@@ -15,23 +15,27 @@ namespace DCL.Social.Friends
             FriendsController friendsController = FriendsController.i;
             DataStore dataStore = DataStore.i;
             var socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileBridge);
-            StringVariable openPassportVariable = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+
+            var receivedFriendRequestHUDComponentView = ReceivedFriendRequestHUDComponentView.Create();
 
             receivedFriendRequestHUDController = new ReceivedFriendRequestHUDController(
                 dataStore,
-                ReceivedFriendRequestHUDComponentView.Create(),
+                receivedFriendRequestHUDComponentView,
+                new FriendRequestHUDController(receivedFriendRequestHUDComponentView),
                 friendsController,
                 userProfileBridge,
-                openPassportVariable);
+                socialAnalytics);
 
-            sendFriendRequestHUDController = new SendFriendRequestHUDController(SendFriendRequestHUDComponentView.Create(),
+            var sendFriendRequestHUDComponentView = SendFriendRequestHUDComponentView.Create();
+
+            sendFriendRequestHUDController = new SendFriendRequestHUDController(sendFriendRequestHUDComponentView,
+                new FriendRequestHUDController(sendFriendRequestHUDComponentView),
                 dataStore, userProfileBridge, friendsController,
                 socialAnalytics);
 
             sentFriendRequestHUDController = new SentFriendRequestHUDController(SentFriendRequestHUDComponentView.Create(),
                 dataStore, userProfileBridge, friendsController,
-                socialAnalytics,
-                openPassportVariable);
+                socialAnalytics);
         }
 
         public void Dispose()

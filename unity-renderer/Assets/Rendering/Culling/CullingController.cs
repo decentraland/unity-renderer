@@ -17,6 +17,7 @@ namespace DCL.Rendering
     public class CullingController : ICullingController
     {
         private const string ANIMATION_CULLING_STATUS_FEATURE_FLAG = "animation_culling_status";
+        private const string SMR_UPDATE_OFFSCREEN_FEATURE_FLAG = "smr_update_offscreen";
         private const bool DRAW_GIZMOS = false;
         internal List<CullingControllerProfile> profiles = null;
 
@@ -34,6 +35,7 @@ namespace DCL.Rendering
         private bool playerPositionDirty;
         private bool objectPositionsDirty;
         private bool running = false;
+        private bool offScreenUpdate = true;
 
         // Cache to avoid allocations when getting names
         private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
@@ -72,6 +74,7 @@ namespace DCL.Rendering
         private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
         {
             SetAnimationCulling(current.IsFeatureEnabled(ANIMATION_CULLING_STATUS_FEATURE_FLAG));
+            offScreenUpdate = current.IsFeatureEnabled(SMR_UPDATE_OFFSCREEN_FEATURE_FLAG);
         }
 
         /// <summary>
@@ -89,6 +92,12 @@ namespace DCL.Rendering
             MeshesInfo.OnAnyUpdated += MarkDirty;
             objectsTracker?.MarkDirty();
             StartInternal();
+        }
+
+        public void Restart()
+        {
+            Stop();
+            Start();
         }
 
         private void StartInternal()
@@ -114,7 +123,7 @@ namespace DCL.Rendering
             CommonScriptableObjects.playerUnityPosition.OnChange -= OnPlayerUnityPositionChange;
             MeshesInfo.OnAnyUpdated -= MarkDirty;
             StopInternal();
-            objectsTracker?.ForcePopulateRenderersList(true);
+            objectsTracker?.ForcePopulateRenderersList();
             ResetObjects();
         }
 
@@ -134,22 +143,18 @@ namespace DCL.Rendering
         /// <returns>IEnumerator to be yielded.</returns>
         internal IEnumerator ProcessProfile(CullingControllerProfile profile)
         {
-            IEnumerable<Renderer> renderers = null;
+            // If profile matches the skinned renderer profile in settings the skinned renderers are going to be used.
+            IReadOnlyList<Renderer> renderers = profile ==
+                settings.rendererProfile ?
+                objectsTracker.GetRenderers() :
+                objectsTracker.GetSkinnedRenderers();
 
-            // If profile matches the skinned renderer profile in settings,
-            // the skinned renderers are going to be used.
-            if (profile == settings.rendererProfile)
-                renderers = objectsTracker.GetRenderers();
-            else
-                renderers = objectsTracker.GetSkinnedRenderers();
-
-            if (settings.enableShadowCulling)
-                yield return ProcessProfileWithEnabledCulling(profile, renderers);
-            else
-                yield return ProcessProfileWithDisabledCulling(profile, renderers);
+            yield return settings.enableShadowCulling
+                ? ProcessProfileWithEnabledCulling(profile, renderers)
+                : (object)ProcessProfileWithDisabledCulling(profile, renderers);
         }
 
-        internal IEnumerator ProcessProfileWithEnabledCulling(CullingControllerProfile profile, IEnumerable<Renderer> renderers)
+        internal IEnumerator ProcessProfileWithEnabledCulling(CullingControllerProfile profile, IReadOnlyList<Renderer> renderers)
         {
             Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
             float currentStartTime = Time.realtimeSinceStartup;
@@ -159,7 +164,7 @@ namespace DCL.Rendering
                 if (r == null)
                     continue;
 
-                if (Time.realtimeSinceStartup - currentStartTime >= settings.maxTimeBudget)
+                if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
                 {
                     yield return null;
                     playerPosition = CommonScriptableObjects.playerUnityPosition;
@@ -193,7 +198,7 @@ namespace DCL.Rendering
                     if (IsAvatarRenderer(mat))
                         shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
 
-                    skr.updateWhenOffscreen = false;
+                    skr.updateWhenOffscreen = offScreenUpdate;
                 }
 
                 if (OnDataReport != null)
@@ -222,7 +227,7 @@ namespace DCL.Rendering
                 if (r == null)
                     continue;
 
-                if (Time.realtimeSinceStartup - currentStartTime >= settings.maxTimeBudget)
+                if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
                 {
                     yield return null;
                     playerPosition = CommonScriptableObjects.playerUnityPosition;
@@ -240,7 +245,7 @@ namespace DCL.Rendering
                 bool shouldHaveShadow = TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
                 if (r is SkinnedMeshRenderer skr)
-                    skr.updateWhenOffscreen = false;
+                    skr.updateWhenOffscreen = offScreenUpdate;
 
                 if (OnDataReport != null)
                 {
@@ -323,11 +328,8 @@ namespace DCL.Rendering
                 }
 
                 int profilesCount = profiles.Count;
-
-                for (int pIndex = 0; pIndex < profilesCount; pIndex++)
-                {
-                    yield return ProcessProfile(profiles[pIndex]);
-                }
+                for (int profileIndex = 0; profileIndex < profilesCount; profileIndex++)
+                    yield return ProcessProfile(profiles[profileIndex]);
 
                 RaiseDataReport();
                 timeBudgetCount = 0;
@@ -366,7 +368,7 @@ namespace DCL.Rendering
 
             for (var i = 0; i < animsLength; i++)
             {
-                if (timeBudgetCount > settings.maxTimeBudget)
+                if (timeBudgetCount > CullingControllerSettings.MAX_TIME_BUDGET)
                 {
                     timeBudgetCount = 0;
                     yield return null;
@@ -410,7 +412,7 @@ namespace DCL.Rendering
             foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
             {
                 if (skinnedRenderer != null)
-                    skinnedRenderer.updateWhenOffscreen = true;
+                    skinnedRenderer.updateWhenOffscreen = offScreenUpdate;
             }
 
             for (int i = 0; i < animations?.Length; i++)

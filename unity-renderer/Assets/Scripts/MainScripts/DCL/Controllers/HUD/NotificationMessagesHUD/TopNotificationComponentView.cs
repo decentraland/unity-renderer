@@ -14,8 +14,8 @@ namespace DCL.Chat.Notifications
         private const float NORMAL_HEADER_X_POS = 70;
         private const int NEW_NOTIFICATION_DELAY = 5000;
 
-        public event Action<string> OnClickedNotification;
-        public event Action<string> OnClickedFriendRequest;
+        public event Action<string> OnClickedChatMessage;
+        public event ITopNotificationsComponentView.ClickedNotificationDelegate OnClickedFriendRequest;
 
         [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
         [SerializeField] private FriendRequestNotificationComponentView friendRequestNotificationComponentView;
@@ -45,7 +45,6 @@ namespace DCL.Chat.Notifications
             offsetHeaderXPos = NORMAL_HEADER_X_POS - X_OFFSET;
 
             chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
-            chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
             notificationRect = chatNotificationComponentView.gameObject.GetComponent<RectTransform>();
             chatNotificationComponentView.shouldAnimateFocus = false;
             chatNotificationComponentView.SetIsPrivate(true);
@@ -81,7 +80,6 @@ namespace DCL.Chat.Notifications
             {
                 OnResetFade?.Invoke(true);
                 PopulateMultipleNotification();
-                chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
                 AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
                 return;
             }
@@ -89,7 +87,6 @@ namespace DCL.Chat.Notifications
             stackedNotifications--;
             OnResetFade?.Invoke(true);
             PopulatePrivateNotification(model);
-            chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
             ShowNotificationCooldown().Forget();
         }
@@ -115,7 +112,6 @@ namespace DCL.Chat.Notifications
             {
                 OnResetFade?.Invoke(true);
                 PopulateMultipleNotification();
-                chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
                 AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
                 return;
             }
@@ -123,7 +119,6 @@ namespace DCL.Chat.Notifications
             stackedNotifications--;
             OnResetFade?.Invoke(true);
             PopulatePublicNotification(model);
-            chatNotificationComponentView.SetPositionOffset(offsetHeaderXPos, offsetContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
             ShowNotificationCooldown().Forget();
         }
@@ -157,7 +152,7 @@ namespace DCL.Chat.Notifications
 
             AddNewChatNotification(model);
         }
-    
+
         private async UniTaskVoid WaitBeforeShowingNewNotification(PrivateChatMessageNotificationModel model, CancellationToken cancellationToken)
         {
             while (isShowingNotification)
@@ -202,23 +197,31 @@ namespace DCL.Chat.Notifications
 
         private void PopulatePrivateNotification(PrivateChatMessageNotificationModel model)
         {
+            string senderName = model.ImTheSender ? "You" : model.SenderUsername;
+
             chatNotificationComponentView.SetIsPrivate(true);
+            chatNotificationComponentView.SetMaxContentCharacters(40 - senderName.Length);
             chatNotificationComponentView.SetMessage(model.Body);
-            chatNotificationComponentView.SetNotificationHeader("Private message");
-            chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
-            chatNotificationComponentView.SetNotificationTargetId(model.SenderId);
+            chatNotificationComponentView.SetNotificationHeader($"DM - {model.PeerUsername}");
+            chatNotificationComponentView.SetNotificationSender($"{senderName}:");
+            chatNotificationComponentView.SetNotificationTargetId(model.TargetId);
+            chatNotificationComponentView.SetImageVisibility(true);
+            chatNotificationComponentView.SetOwnPlayerMention(model.IsOwnPlayerMentioned);
+            chatNotificationComponentView.SetImage(model.ProfilePicture);
         }
 
         private void PopulatePublicNotification(PublicChannelMessageNotificationModel model)
         {
+            string channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
+            string senderName = model.ImTheSender ? "You" : model.Username;
+
             chatNotificationComponentView.SetIsPrivate(false);
+            chatNotificationComponentView.SetMaxContentCharacters(40 - senderName.Length);
             chatNotificationComponentView.SetMessage(model.Body);
-
-            var channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
-
             chatNotificationComponentView.SetNotificationTargetId(model.ChannelId);
             chatNotificationComponentView.SetNotificationHeader(channelName);
-            chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
+            chatNotificationComponentView.SetNotificationSender($"{senderName}:");
+            chatNotificationComponentView.SetImageVisibility(false);
         }
 
         private void PopulateFriendRequestNotification(FriendRequestNotificationModel model)
@@ -283,15 +286,15 @@ namespace DCL.Chat.Notifications
             HideNotification();
             isShowingNotification = false;
             stackedNotifications = 0;
-            OnClickedNotification?.Invoke(targetId);
+            OnClickedChatMessage?.Invoke(targetId);
         }
 
-        private void ClickedOnFriendRequestNotification(string friendRequestId)
+        private void ClickedOnFriendRequestNotification(string friendRequestId, string userId, bool isAcceptedFromPeer)
         {
             HideNotification();
             isShowingNotification = false;
             stackedNotifications = 0;
-            OnClickedFriendRequest?.Invoke(friendRequestId);
+            OnClickedFriendRequest?.Invoke(friendRequestId, userId, isAcceptedFromPeer);
         }
 
         public override void Dispose()

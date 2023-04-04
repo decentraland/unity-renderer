@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6302203761313059702}
   - component: {fileID: 2187314204779372662}
   - component: {fileID: 5573392751968575400}
-  - component: {fileID: 1642827476921401958}
   - component: {fileID: 8120479377996349607}
   - component: {fileID: 5518980491538372058}
   - component: {fileID: 4936655407855709455}
@@ -32,6 +31,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5168634940499044205}
   m_Father: {fileID: 0}
@@ -80,25 +80,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!95 &1642827476921401958
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6719010960977733696}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!225 &8120479377996349607
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -126,7 +107,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
-  visibleParam: visible
+  canvasGroup: {fileID: 0}
 --- !u!114 &4936655407855709455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,12 +120,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0aaf5a1daa0c8548ba499d4a0332eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   image: {fileID: 5573392751968575400}
   loadingIndicator: {fileID: 8638032630233208891}
   model:
     sprite: {fileID: 21300000, guid: 647c19a2d48324d368a4da9362adedad, type: 3}
     texture: {fileID: 0}
     uri: 
+    lastUriCached: 0
+    fitParent: 0
 --- !u!1001 &6308189525845565106
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -269,15 +253,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d565b61885fb1ef41b1582a285e748e9, type: 3}
---- !u!1 &8638032630233208891 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2336035712942851721, guid: d565b61885fb1ef41b1582a285e748e9,
-    type: 3}
-  m_PrefabInstance: {fileID: 6308189525845565106}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5168634940499044205 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
+    type: 3}
+  m_PrefabInstance: {fileID: 6308189525845565106}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8638032630233208891 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2336035712942851721, guid: d565b61885fb1ef41b1582a285e748e9,
     type: 3}
   m_PrefabInstance: {fileID: 6308189525845565106}
   m_PrefabAsset: {fileID: 0}

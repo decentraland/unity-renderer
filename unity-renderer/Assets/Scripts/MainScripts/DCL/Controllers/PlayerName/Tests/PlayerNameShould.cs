@@ -1,13 +1,24 @@
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.ProfanityFiltering;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
 public class PlayerNameShould : MonoBehaviour
 {
     private PlayerName playerName;
+    private IProfanityFilter profanityFilter;
 
     [SetUp]
-    public void SetUp() { playerName = Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>(); }
+    public void SetUp()
+    {
+        playerName = Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>();
+        ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+        Environment.Setup(serviceLocator);
+        profanityFilter = serviceLocator.Get<IProfanityFilter>();
+        profanityFilter.Filter(Arg.Any<string>()).Returns(info => UniTask.FromResult(info[0].ToString()));
+    }
 
     [Test]
     public void BeInitializedProperly()
@@ -59,8 +70,11 @@ public class PlayerNameShould : MonoBehaviour
     [TestCase("VeryLongName")]
     public void SetNameCorrectly(string name)
     {
-        playerName.SetName(name);
-        Assert.AreEqual(name, playerName.nameText.text);
+        profanityFilter.Filter(Arg.Any<string>()).Returns(info => UniTask.FromResult(info[0].ToString()));
+
+        playerName.SetName(name, false, false);
+
+        Assert.AreEqual($"<color=#CFCDD4>{name}</color>", playerName.nameText.text);
         Assert.AreEqual(new Vector2(playerName.nameText.GetPreferredValues().x + PlayerName.BACKGROUND_EXTRA_WIDTH, PlayerName.BACKGROUND_HEIGHT), playerName.background.rectTransform.sizeDelta);
     }
 
@@ -72,9 +86,9 @@ public class PlayerNameShould : MonoBehaviour
         playerName.Update(float.MaxValue);
 
         var canvasRenderers = playerName.canvasRenderers;
-        Assert.IsTrue(canvasRenderers != null 
+        Assert.IsTrue(canvasRenderers != null
                       && canvasRenderers.
-                          TrueForAll(r => 
+                          TrueForAll(r =>
                               r.GetAlpha() < 0.01f));
     }
 
@@ -115,14 +129,49 @@ public class PlayerNameShould : MonoBehaviour
         Destroy(cameraStub);
     }
 
-    [TestCase("shitholename", "****holename")]
-    [TestCase("fuckfaceboob", "****face****")]
+    [TestCase("filteredname", "***teredn***")]
+    [TestCase("otherfilteredname", "***erfilte***name")]
     public void ApplyProfanityFilteringToOffensiveNames(string originalName, string displayedName)
     {
         DataStore.i.settings.profanityChatFilteringEnabled.Set(true);
-        var defaultName = playerName.nameText.text;
-        playerName.SetName(originalName);
-        Assert.IsTrue(displayedName.Equals(playerName.nameText.text) || defaultName.Equals(playerName.nameText.text));
+        profanityFilter.Filter(originalName).Returns(UniTask.FromResult(displayedName));
+
+        playerName.SetName(originalName, false, false);
+
+        Assert.AreEqual($"<color=#CFCDD4>{displayedName}</color>", playerName.nameText.text);
+    }
+
+    [Test]
+    public void SetGuestColor()
+    {
+        const string NAME = "hey#83df";
+        profanityFilter.Filter(NAME).Returns(UniTask.FromResult(NAME));
+
+        playerName.SetName(NAME, false, true);
+
+        Assert.AreEqual("<color=#A09BA8>hey</color><color=#716B7C>#83df</color>", playerName.nameText.text);
+    }
+
+    [Test]
+    public void SetWeb3Color()
+    {
+        const string NAME = "hey#83df";
+        profanityFilter.Filter(NAME).Returns(UniTask.FromResult(NAME));
+
+        playerName.SetName(NAME, false, false);
+
+        Assert.AreEqual("<color=#CFCDD4>hey</color><color=#A09BA8>#83df</color>", playerName.nameText.text);
+    }
+
+    [Test]
+    public void SetClaimedColor()
+    {
+        const string NAME = "hey";
+        profanityFilter.Filter(NAME).Returns(UniTask.FromResult(NAME));
+
+        playerName.SetName(NAME, true, false);
+
+        Assert.AreEqual("<color=#FFFFFF>hey</color>", playerName.nameText.text);
     }
 
     [TearDown]

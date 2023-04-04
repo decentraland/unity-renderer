@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
@@ -7,6 +5,8 @@ using DCL.ECSRuntime;
 using NSubstitute;
 using NUnit.Framework;
 using RPC.Context;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -17,7 +17,6 @@ namespace Tests
         private Dictionary<int, ICRDTExecutor> crdtExecutors;
         private ECSComponentsManager componentsManager;
         private ISceneController sceneController;
-        private IWorldState worldState;
         private CRDTServiceContext rpcCrdtServiceContext;
         private CrdtExecutorsManager executorsManager;
         private ECS7TestUtilsScenesAndEntities testUtils;
@@ -29,8 +28,7 @@ namespace Tests
             componentsManager = new ECSComponentsManager(new Dictionary<int, ECSComponentsFactory.ECSComponentBuilder>());
             rpcCrdtServiceContext = new CRDTServiceContext();
             sceneController = Substitute.For<ISceneController>();
-            worldState = Substitute.For<IWorldState>();
-            executorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, worldState, rpcCrdtServiceContext);
+            executorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, rpcCrdtServiceContext);
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
         }
 
@@ -65,6 +63,16 @@ namespace Tests
         }
 
         [Test]
+        public void CreateCrdtExecutorOnSceneLoad()
+        {
+            const int sceneNumber = 666;
+            IParcelScene scene = testUtils.CreateScene(sceneNumber);
+
+            sceneController.OnNewSceneAdded += Raise.Event<Action<IParcelScene>>(scene);
+            Assert.AreEqual(1, crdtExecutors.Count);
+        }
+
+        [Test]
         public void IgnoreCrdtMessageWhenSceneNotLoaded()
         {
             const int sceneNumber = 666;
@@ -77,25 +85,18 @@ namespace Tests
         {
             const int sceneNumber = 666;
             ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
-            scene.crdtExecutor = null;
-
-            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
-                      .Returns(param =>
-                      {
-                          param[1] = scene;
-                          return true;
-                      });
+            crdtExecutors[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage crdtMessage = new CRDTMessage()
             {
                 timestamp = 1,
                 data = new byte[0],
-                key1 = 1,
-                key2 = 2
+                entityId = 1,
+                componentId = 2
             };
 
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage);
-            CRDTMessage crtState = crdtExecutors[sceneNumber].crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
+            CRDTProtocol.EntityComponentData crtState = crdtExecutors[sceneNumber].crdtProtocol.GetState(crdtMessage.entityId, crdtMessage.componentId);
             AssertCrdtMessageEqual(crdtMessage, crtState);
         }
 
@@ -104,59 +105,45 @@ namespace Tests
         {
             const int sceneNumber = 666;
             ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
-            scene.crdtExecutor = null;
-
-            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
-                      .Returns(param =>
-                      {
-                          param[1] = scene;
-                          return true;
-                      });
+            crdtExecutors[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage crdtMessage1 = new CRDTMessage()
             {
                 timestamp = 1,
                 data = new byte[0],
-                key1 = 1,
-                key2 = 2
+                entityId = 1,
+                componentId = 2
             };
 
             CRDTMessage crdtMessage2 = new CRDTMessage()
             {
                 timestamp = 1,
                 data = new byte[0],
-                key1 = 2,
-                key2 = 2
+                entityId = 2,
+                componentId = 2
             };
 
             // Send first message
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage1);
             ICRDTExecutor sceneExecutor = crdtExecutors[sceneNumber];
 
-            // Clear executors dictionary and make worldState.TryGetScene assert
+            // Clear executors dictionary
             crdtExecutors.Clear();
-            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
-                      .Returns(param =>
-                      {
-                          Assert.Fail("this shouldn't be called");
-                          return true;
-                      });
 
             // Send second message for same scene
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage2);
 
-            CRDTMessage crtStateMsg1 = sceneExecutor.crdtProtocol.GetState(crdtMessage1.key1, crdtMessage1.key2);
-            CRDTMessage crtStateMsg2 = sceneExecutor.crdtProtocol.GetState(crdtMessage2.key1, crdtMessage2.key2);
+            CRDTProtocol.EntityComponentData crtStateMsg1 = sceneExecutor.crdtProtocol.GetState(crdtMessage1.entityId, crdtMessage1.componentId);
+            CRDTProtocol.EntityComponentData crtStateMsg2 = sceneExecutor.crdtProtocol.GetState(crdtMessage2.entityId, crdtMessage2.componentId);
+
             AssertCrdtMessageEqual(crdtMessage1, crtStateMsg1);
             AssertCrdtMessageEqual(crdtMessage2, crtStateMsg2);
         }
 
-        static void AssertCrdtMessageEqual(CRDTMessage crdt1, CRDTMessage crdt2)
+        static void AssertCrdtMessageEqual(CRDTMessage crdt1, CRDTProtocol.EntityComponentData componentData)
         {
-            Assert.AreEqual(crdt1.timestamp, crdt2.timestamp);
-            Assert.AreEqual(crdt1.key1, crdt2.key1);
-            Assert.AreEqual(crdt1.key2, crdt2.key2);
-            Assert.IsTrue(AreEqual((byte[])crdt1.data, (byte[])crdt2.data));
+            Assert.AreEqual(crdt1.timestamp, componentData.timestamp);
+            Assert.IsTrue(AreEqual((byte[])crdt1.data, (byte[])componentData.data));
         }
 
         static bool AreEqual(byte[] a, byte[] b)

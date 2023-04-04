@@ -15,6 +15,7 @@ public class WearableItem
     {
         public string key;
         public string hash;
+        public string url;
     }
 
     [Serializable]
@@ -189,7 +190,7 @@ public class WearableItem
 
     public void SanitizeHidesLists()
     {
-        //remove bodyshape from hides list 
+        //remove bodyshape from hides list
         if (data.hides != null)
             data.hides = data.hides.Except(new [] { WearableLiterals.Categories.BODY_SHAPE }).ToArray();
         for (int i = 0; i < data.representations.Length; i++)
@@ -280,7 +281,7 @@ public class WearableItem
         return result;
     }
 
-    //Workaround to know the net of a wearable. 
+    //Workaround to know the net of a wearable.
     //Once wearables are allowed to be moved from Ethereum to Polygon this method wont be reliable anymore
     //To retrieve this properly first we need the catalyst to send the net of each wearable, not just the ID
     public bool IsInL2()
@@ -291,6 +292,13 @@ public class WearableItem
     }
 
     public bool IsEmote() { return emoteDataV0 != null; }
+
+    public NftInfo GetNftInfo() =>
+        new ()
+        {
+            Id = id,
+            Category = IsEmote() ? "emote" : data?.category,
+        };
 
     public virtual bool ShowInBackpack() { return true; }
 

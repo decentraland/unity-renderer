@@ -1,0 +1,25 @@
+{
+    "name": "DCL.Plugins.SentryPlugin.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:c34e38f41494f834abff029ddf82af43",
+        "GUID:203a48519aead80408325875c74b7401",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "Sentry.Unity.dll",
+        "Sentry.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

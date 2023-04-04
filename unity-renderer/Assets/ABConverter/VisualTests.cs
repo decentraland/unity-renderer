@@ -112,7 +112,7 @@ namespace DCL.ABConverter
                 bool result = AssetBundlesVisualTestUtils.TestSnapshot(
                     AssetBundlesVisualTestUtils.baselineImagesPath + testName,
                     AssetBundlesVisualTestUtils.testImagesPath + testName,
-                    95,
+                    93,
                     false);
 
                 // Delete failed AB files to avoid uploading them

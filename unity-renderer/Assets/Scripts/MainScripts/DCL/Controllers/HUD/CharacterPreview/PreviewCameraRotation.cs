@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,6 +8,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
     public class PreviewCameraRotation : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         public event System.Action<float> OnHorizontalRotation;
+        public event System.Action<double> OnEndDragEvent;
 
         public float rotationFactor = -15f;
 
@@ -19,8 +21,13 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private Coroutine slowDownCoroutine;
 
         private float timer;
+        private DateTime startDragDateTime;
 
-        public void OnBeginDrag(PointerEventData eventData) { AudioScriptableObjects.buttonClick.Play(true); }
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            startDragDateTime = DateTime.Now;
+            AudioScriptableObjects.buttonClick.Play(true);
+        }
 
         public void OnDrag(PointerEventData eventData)
         {
@@ -44,6 +51,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 slowDownCoroutine = StartCoroutine(SlowDown());
             }
 
+            OnEndDragEvent?.Invoke((DateTime.Now - startDragDateTime).TotalMilliseconds);
             AudioScriptableObjects.buttonRelease.Play(true);
         }
 

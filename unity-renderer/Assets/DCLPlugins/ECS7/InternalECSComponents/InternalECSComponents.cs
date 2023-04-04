@@ -1,37 +1,54 @@
-using System;
-using System.Collections.Generic;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
+using System;
+using System.Collections.Generic;
 
 public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
-    internal readonly IList<InternalComponentWriteData> scheduledWrite = new List<InternalComponentWriteData>(50);
+    internal readonly KeyValueSet<ComponentIdentifier, ComponentWriteData> markAsDirtyComponents =
+        new KeyValueSet<ComponentIdentifier, ComponentWriteData>(100);
+
+    private readonly KeyValueSet<ComponentIdentifier, ComponentWriteData> removeAsDirtyComponents =
+        new KeyValueSet<ComponentIdentifier, ComponentWriteData>(100);
+
+    private readonly IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors;
 
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
+    public IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent { get; }
+    public IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent { get; }
     public IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     public IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
     public IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent { get; }
     public IInternalECSComponent<InternalRenderers> renderersComponent { get; }
     public IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
     public IInternalECSComponent<InternalUiContainer> uiContainerComponent { get; }
+    public IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
+    public IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
+    public IInternalECSComponent<InternalAudioSource> audioSourceComponent { get; }
 
-    public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
+    public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
+        IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
     {
+        this.crdtExecutors = crdtExecutors;
+
         texturizableComponent = new InternalECSComponent<InternalTexturizable>(
             InternalECSComponentsId.TEXTURIZABLE,
             componentsManager,
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalTexturizable>(
                 () => texturizableComponent, model => model.renderers.Count == 0),
-            scheduledWrite);
+            markAsDirtyComponents,
+            crdtExecutors);
 
         materialComponent = new InternalECSComponent<InternalMaterial>(
             InternalECSComponentsId.MATERIAL,
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite);
+            markAsDirtyComponents,
+            crdtExecutors);
 
         onPointerColliderComponent = new InternalECSComponent<InternalColliders>(
             InternalECSComponentsId.COLLIDER_POINTER,
@@ -39,7 +56,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
                 () => onPointerColliderComponent, model => model.colliders.Count == 0),
-            scheduledWrite);
+            markAsDirtyComponents,
+            crdtExecutors);
 
         physicColliderComponent = new InternalECSComponent<InternalColliders>(
             InternalECSComponentsId.COLLIDER_PHYSICAL,
@@ -47,7 +65,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
                 () => physicColliderComponent, model => model.colliders.Count == 0),
-            scheduledWrite);
+            markAsDirtyComponents,
+            crdtExecutors);
 
         renderersComponent = new InternalECSComponent<InternalRenderers>(
             InternalECSComponentsId.RENDERERS,
@@ -55,33 +74,81 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalRenderers>(
                 () => renderersComponent, model => model.renderers.Count == 0),
-            scheduledWrite);
+            markAsDirtyComponents,
+            crdtExecutors);
 
         visibilityComponent = new InternalECSComponent<InternalVisibility>(
             InternalECSComponentsId.VISIBILITY,
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite);
+            markAsDirtyComponents,
+            crdtExecutors);
 
         inputEventResultsComponent = new InternalECSComponent<InternalInputEventResults>(
             InternalECSComponentsId.INPUT_EVENTS_RESULT,
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite);
+            markAsDirtyComponents,
+            crdtExecutors);
 
         uiContainerComponent = new InternalECSComponent<InternalUiContainer>(
             InternalECSComponentsId.UI_CONTAINER,
             componentsManager,
             componentsFactory,
             () => new UiContainerHandler(() => uiContainerComponent),
-            scheduledWrite);
+            markAsDirtyComponents,
+            crdtExecutors);
+
+        uiInputResultsComponent = new InternalECSComponent<InternalUIInputResults>(
+            InternalECSComponentsId.UI_INPUT_EVENTS_RESULT,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors
+        );
+
+        videoPlayerComponent = new InternalECSComponent<InternalVideoPlayer>(
+            InternalECSComponentsId.VIDEO_PLAYER,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors);
+
+        videoMaterialComponent = new InternalECSComponent<InternalVideoMaterial>(
+            InternalECSComponentsId.VIDEO_MATERIAL,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors);
+
+        sceneBoundsCheckComponent = new InternalECSComponent<InternalSceneBoundsCheck>(
+            InternalECSComponentsId.SCENE_BOUNDS_CHECK,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors
+        );
+
+        audioSourceComponent = new InternalECSComponent<InternalAudioSource>(
+            InternalECSComponentsId.AUDIO_SOURCE,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors
+        );
     }
 
     public void Dispose()
     {
-        scheduledWrite.Clear();
+        markAsDirtyComponents.Clear();
+        removeAsDirtyComponents.Clear();
 
         texturizableComponent.Dispose();
         materialComponent.Dispose();
@@ -89,26 +156,63 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         physicColliderComponent.Dispose();
         renderersComponent.Dispose();
         inputEventResultsComponent.Dispose();
+        videoPlayerComponent.Dispose();
+        videoMaterialComponent.Dispose();
     }
 
-    public void WriteSystemUpdate()
+    public void MarkDirtyComponentsUpdate()
     {
-        for (int i = 0; i < scheduledWrite.Count; i++)
-        {
-            var writeData = scheduledWrite[i];
-            if (writeData.scene?.crdtExecutor == null)
-                continue;
+        var markAsDirty = markAsDirtyComponents.Pairs;
 
-            InternalComponent data = writeData.data;
-            if (data != null)
+        for (int i = 0; i < markAsDirty.Count; i++)
+        {
+            int sceneNumber = markAsDirty[i].key.SceneNumber;
+            long entityId = markAsDirty[i].key.EntityId;
+            int componentId = markAsDirty[i].key.ComponentId;
+            InternalComponent data = markAsDirty[i].value.Data;
+            bool isRemoval = markAsDirty[i].value.IsDelayedRemoval;
+
+            if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
             {
-                data._dirty = false;
+                continue;
+            }
+
+            data._dirty = true;
+            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
+            removeAsDirtyComponents[markAsDirty[i].key] = new ComponentWriteData(data, isRemoval);
+        }
+
+        markAsDirtyComponents.Clear();
+    }
+
+    public void ResetDirtyComponentsUpdate()
+    {
+        var resetDirtyComponents = removeAsDirtyComponents.Pairs;
+
+        for (int i = 0; i < resetDirtyComponents.Count; i++)
+        {
+            int sceneNumber = resetDirtyComponents[i].key.SceneNumber;
+            long entityId = resetDirtyComponents[i].key.EntityId;
+            int componentId = resetDirtyComponents[i].key.ComponentId;
+            InternalComponent data = resetDirtyComponents[i].value.Data;
+            bool isRemoval = resetDirtyComponents[i].value.IsDelayedRemoval;
+
+            if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
+            {
+                continue;
+            }
+
+            if (isRemoval)
+            {
+                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
             }
             else
             {
-                writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, null);
+                data._dirty = false;
+                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
             }
         }
-        scheduledWrite.Clear();
+
+        removeAsDirtyComponents.Clear();
     }
 }

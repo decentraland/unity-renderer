@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using System.Linq;
+using System.Threading;
 
 public class UserProfileWebInterfaceBridge : IUserProfileBridge
 {
@@ -9,8 +11,11 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public void RequestFullUserProfile(string userId) => WebInterface.SendRequestUserProfile(userId);
 
+    public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken) =>
+        UserProfileController.i.RequestFullUserProfileAsync(userId, cancellationToken);
+
     public UserProfile GetOwn() => UserProfile.GetOwnUserProfile();
-    
+
     public void AddUserProfileToCatalog(UserProfileModel userProfileModel)
     {
         UserProfileController.i.AddUserProfileToCatalog(userProfileModel);
@@ -18,6 +23,7 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public UserProfile Get(string userId)
     {
+        if (userId == null) return null;
         return UserProfileController.userProfilesCatalog.Get(userId);
     }
 

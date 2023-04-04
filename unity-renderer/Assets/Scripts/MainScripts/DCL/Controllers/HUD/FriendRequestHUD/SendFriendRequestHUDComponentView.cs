@@ -1,28 +1,29 @@
 using DCL.Helpers;
 using System;
 using TMPro;
+using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Social.Friends
 {
-    public class SendFriendRequestHUDComponentView : BaseComponentView, ISendFriendRequestHUDView
+    public class SendFriendRequestHUDComponentView : BaseComponentView<SendFriendRequestHUDModel>, ISendFriendRequestHUDView, IFriendRequestHUDView
     {
-        [SerializeField] internal GameObject defaultContainer;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForDefaultState;
         [SerializeField] internal GameObject pendingToSendContainer;
-        [SerializeField] internal GameObject failedContainer;
-        [SerializeField] internal GameObject successContainer;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForSuccessState;
         [SerializeField] internal TMP_Text nameLabel;
-        [SerializeField] internal TMP_Text pendingStateLabel;
         [SerializeField] internal TMP_Text successStateLabel;
         [SerializeField] internal Button[] cancelButtons;
         [SerializeField] internal Button sendButton;
-        [SerializeField] internal Button retryButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
+        [SerializeField] internal TMP_Text messageBodyLengthLabel;
+        [SerializeField] internal Image messageBodyMaxLimitMark;
         [SerializeField] internal ImageComponentView profileImage;
+        [SerializeField] internal Color bodyMaxLimitColor;
 
-        private readonly Model model = new Model();
         private ILazyTextureObserver lastProfilePictureObserver;
+        private Color messageBodyLengthOriginalColor;
 
         public event Action<string> OnMessageBodyChanged;
         public event Action OnSend;
@@ -39,9 +40,14 @@ namespace DCL.Social.Friends
             foreach (var button in cancelButtons)
                 button.onClick.AddListener(() => OnCancel?.Invoke());
 
-            messageBodyInput.onValueChanged.AddListener(s => OnMessageBodyChanged?.Invoke(s));
+            messageBodyInput.onValueChanged.AddListener(s =>
+            {
+                RefreshMessageBodyValidations(s);
+                OnMessageBodyChanged?.Invoke(s);
+            });
             sendButton.onClick.AddListener(() => OnSend?.Invoke());
-            retryButton.onClick.AddListener(() => OnSend?.Invoke());
+
+            messageBodyLengthOriginalColor = messageBodyLengthLabel.color;
         }
 
         public override void Dispose()
@@ -52,13 +58,16 @@ namespace DCL.Social.Friends
 
         public override void RefreshControl()
         {
-            defaultContainer.SetActive(model.State == Model.LayoutState.Default);
-            pendingToSendContainer.SetActive(model.State == Model.LayoutState.Pending);
-            failedContainer.SetActive(model.State == Model.LayoutState.Failed);
-            successContainer.SetActive(model.State == Model.LayoutState.Success);
+            sendButton.gameObject.SetActive(model.State != SendFriendRequestHUDModel.LayoutState.Pending);
+            sendButton.interactable = model.State != SendFriendRequestHUDModel.LayoutState.Pending;
+
+            foreach (Button cancelButton in cancelButtons)
+                cancelButton.interactable = model.State != SendFriendRequestHUDModel.LayoutState.Pending;
+
             nameLabel.text = model.Name;
-            pendingStateLabel.text = $"Sending friend request to {model.Name}";
             successStateLabel.text = $"Friend request sent to {model.Name}";
+            messageBodyLengthLabel.text = $"{messageBodyInput.text.Length}/{messageBodyInput.characterLimit}";
+            RefreshMessageBodyValidations(messageBodyInput.text);
 
             // the load of the profile picture gets stuck if the same listener is registered many times
             if (lastProfilePictureObserver != model.ProfilePictureObserver)
@@ -69,17 +78,15 @@ namespace DCL.Social.Friends
             }
         }
 
-        public void Close()
-        {
-            base.Hide(instant: true);
-            gameObject.SetActive(false);
-        }
+        public void Close() => base.Hide();
 
-        public void Show()
+        public override void Show(bool instant = false)
         {
-            gameObject.SetActive(true);
-            base.Show(instant: true);
-            model.State = Model.LayoutState.Default;
+            base.Show(instant);
+            model.State = SendFriendRequestHUDModel.LayoutState.Default;
+            showHideAnimatorForDefaultState.Show(true);
+            pendingToSendContainer.SetActive(false);
+            showHideAnimatorForSuccessState.Hide(true);
             RefreshControl();
         }
 
@@ -97,37 +104,30 @@ namespace DCL.Social.Friends
 
         public void ShowPendingToSend()
         {
-            model.State = Model.LayoutState.Pending;
+            model.State = SendFriendRequestHUDModel.LayoutState.Pending;
+            showHideAnimatorForDefaultState.Show(true);
+            pendingToSendContainer.SetActive(true);
+            showHideAnimatorForSuccessState.Hide(true);
             RefreshControl();
         }
 
         public void ShowSendSuccess()
         {
-            model.State = Model.LayoutState.Success;
-            RefreshControl();
-        }
-
-        public void ShowSendFailed()
-        {
-            model.State = Model.LayoutState.Failed;
+            model.State = SendFriendRequestHUDModel.LayoutState.Success;
+            showHideAnimatorForDefaultState.Hide(true);
+            pendingToSendContainer.SetActive(false);
+            showHideAnimatorForSuccessState.Show();
             RefreshControl();
         }
 
         public void ClearInputField() => messageBodyInput.text = "";
 
-        private class Model
+        private void RefreshMessageBodyValidations(string message)
         {
-            public string Name;
-            public LayoutState State;
-            public ILazyTextureObserver ProfilePictureObserver;
-
-            public enum LayoutState
-            {
-                Default,
-                Pending,
-                Failed,
-                Success
-            }
+            messageBodyLengthLabel.text = $"{message.Length}/{messageBodyInput.characterLimit}";
+            messageBodyMaxLimitMark.gameObject.SetActive(message.Length >= messageBodyInput.characterLimit);
+            messageBodyMaxLimitMark.color = messageBodyMaxLimitMark.gameObject.activeSelf ? bodyMaxLimitColor : messageBodyLengthOriginalColor;
+            messageBodyLengthLabel.color = messageBodyMaxLimitMark.gameObject.activeSelf ? bodyMaxLimitColor : messageBodyLengthOriginalColor;
         }
     }
 }

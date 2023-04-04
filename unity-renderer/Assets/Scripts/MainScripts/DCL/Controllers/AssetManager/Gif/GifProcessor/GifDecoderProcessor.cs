@@ -32,7 +32,6 @@ namespace DCL
             }
         }
 
-        private static bool isRunning;
         private bool isRunningInternal;
         private readonly ThrottlingCounter throttlingCounter = new ThrottlingCounter();
 
@@ -48,14 +47,14 @@ namespace DCL
         }
 
         public GifDecoderProcessor(Stream stream) { this.stream = stream; }
-        
+
         public void DisposeGif()
         {
             gifFrameData = null;
             webRequestController.Dispose();
             stream?.Dispose();
         }
-        
+
         public async UniTask Load(Action<GifFrameData[]> loadSuccsess, Action<Exception> fail, CancellationToken token)
         {
             try
@@ -64,23 +63,18 @@ namespace DCL
             }
             catch (Exception e) when (!(e is OperationCanceledException))
             {
-                Debug.LogException(e);
                 fail(e);
             }
         }
-        
+
         private async UniTask StartDecoding(Action<GifFrameData[]> loadSuccsess, Action<Exception> fail, CancellationToken token)
         {
             try
             {
-                // (Kinerius): I noticed that overall the loading of multiple gifs at the same time is faster when only 
+                // (Kinerius): I noticed that overall the loading of multiple gifs at the same time is faster when only
                 //          one is loading, this also avoids the "burst" of gifs loading at the same time, overall
                 //          improving the smoothness and the experience, this could be further improved by prioritizing
-                //          the processing of gifs whether im close or looking at them like GLFTs.
-                await UniTask.WaitUntil(() => isRunning == false, cancellationToken: token);
-
-                isRunning = false;
-                isRunningInternal = true;
+                //          the processing of gifs whether im close or looking at them like GLFTs
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -100,7 +94,7 @@ namespace DCL
 
                 token.ThrowIfCancellationRequested();
 
-                await TaskUtils.RunThrottledCoroutine(ProcessGifData(images, gifStream.Header.width, gifStream.Header.height), fail, throttlingCounter.EvaluateTimeBudget)
+                await TaskUtils.RunThrottledCoroutine(ProcessGifData(images, gifStream.Header.adjustedWidth, gifStream.Header.adjustedHeight), fail, throttlingCounter.EvaluateTimeBudget)
                                .AttachExternalCancellation(token);
 
                 loadSuccsess(gifFrameData);
@@ -110,11 +104,6 @@ namespace DCL
             catch (Exception e) when (!(e is OperationCanceledException))
             {
                 throw;
-            }
-            finally
-            {
-                if (isRunningInternal)
-                    isRunning = false;
             }
         }
 
@@ -147,9 +136,9 @@ namespace DCL
         private async UniTask<byte[]> DownloadGifAndReadStream(CancellationToken token)
         {
             var operation = webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
-            await UniTask.WaitUntil( () => operation.isDone || operation.isDisposed || operation.isSucceded, cancellationToken: token);
+            await operation.WithCancellation(token);
 
-            if (!operation.isSucceded)
+            if (!operation.isSucceeded)
             {
                 throw new GifWebRequestException(url);
             }

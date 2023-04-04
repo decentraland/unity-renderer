@@ -1,6 +1,7 @@
 using KernelConfigurationTypes;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class KernelConfigModel
@@ -16,6 +17,7 @@ public class KernelConfigModel
     public Debugging debugConfig = new Debugging();
     public ProceduralSkybox proceduralSkyboxConfig = new ProceduralSkybox();
     public string avatarTextureAPIBaseUrl = string.Empty;
+    public bool urlParamsForWearablesDebug = false;
 
     public override bool Equals(object obj) { return obj is KernelConfigModel other && Equals(other); }
 
@@ -42,7 +44,8 @@ public class KernelConfigModel
                && rendererVersion == other.rendererVersion
                && debugConfig.Equals(other.debugConfig)
                && proceduralSkyboxConfig.Equals(other.proceduralSkyboxConfig)
-               && avatarTextureAPIBaseUrl == other.avatarTextureAPIBaseUrl;
+               && avatarTextureAPIBaseUrl == other.avatarTextureAPIBaseUrl
+               && urlParamsForWearablesDebug == other.urlParamsForWearablesDebug;
     }
 
     public KernelConfigModel Clone()
@@ -60,6 +63,7 @@ public class KernelConfigModel
         clone.debugConfig = debugConfig.Clone();
         clone.proceduralSkyboxConfig = proceduralSkyboxConfig.Clone();
         clone.avatarTextureAPIBaseUrl = avatarTextureAPIBaseUrl;
+        clone.urlParamsForWearablesDebug = urlParamsForWearablesDebug;
         return clone;
     }
 }

@@ -7,6 +7,10 @@ namespace UIComponents.Scripts.Components.Tooltip
     {
         public string message;
 
+        public TooltipComponentModel()
+        {
+        }
+
         public TooltipComponentModel(string message)
         {
             this.message = message;

@@ -1,4 +1,3 @@
-using DCL.Social.Friends;
 using System;
 using UnityEngine;
 
@@ -6,8 +5,11 @@ namespace DCL.Chat.Notifications
 {
     public interface ITopNotificationsComponentView
     {
+        public delegate void ClickedNotificationDelegate(string friendRequestId, string userId, bool isAcceptedFromPeer);
+
         event Action<bool> OnResetFade;
-        event Action<string> OnClickedFriendRequest;
+        event Action<string> OnClickedChatMessage;
+        event ClickedNotificationDelegate OnClickedFriendRequest;
 
         Transform GetPanelTransform();
         void AddNewChatNotification(PrivateChatMessageNotificationModel model);

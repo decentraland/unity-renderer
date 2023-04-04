@@ -26,16 +26,17 @@ namespace Decentraland.Renderer.RendererServices {
           string.Concat(
             "CjJkZWNlbnRyYWxhbmQvcmVuZGVyZXIvcmVuZGVyZXJfc2VydmljZXMvY3Jk",
             "dC5wcm90bxInZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZp",
-            "Y2VzIksKEENSRFRNYW55TWVzc2FnZXMSEAoIc2NlbmVfaWQYASABKAkSDwoH",
-            "cGF5bG9hZBgCIAEoDBIUCgxzY2VuZV9udW1iZXIYAyABKAUiDgoMQ1JEVFJl",
-            "c3BvbnNlIjkKD1B1bGxDUkRUUmVxdWVzdBIQCghzY2VuZV9pZBgBIAEoCRIU",
-            "CgxzY2VuZV9udW1iZXIYAyABKAUykQIKC0NSRFRTZXJ2aWNlEn4KCFNlbmRD",
-            "cmR0EjkuZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2Vz",
-            "LkNSRFRNYW55TWVzc2FnZXMaNS5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVu",
-            "ZGVyZXJfc2VydmljZXMuQ1JEVFJlc3BvbnNlIgASgQEKCFB1bGxDcmR0Ejgu",
-            "ZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2VzLlB1bGxD",
-            "UkRUUmVxdWVzdBo5LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9z",
-            "ZXJ2aWNlcy5DUkRUTWFueU1lc3NhZ2VzIgBiBnByb3RvMw=="));
+            "Y2VzIk8KEENSRFRNYW55TWVzc2FnZXMSEAoIc2NlbmVfaWQYASABKAkSDwoH",
+            "cGF5bG9hZBgCIAEoDBIUCgxzY2VuZV9udW1iZXIYAyABKAU6AhgBIhIKDENS",
+            "RFRSZXNwb25zZToCGAEiPQoPUHVsbENSRFRSZXF1ZXN0EhAKCHNjZW5lX2lk",
+            "GAEgASgJEhQKDHNjZW5lX251bWJlchgDIAEoBToCGAEymAIKC0NSRFRTZXJ2",
+            "aWNlEoEBCghTZW5kQ3JkdBI5LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5k",
+            "ZXJlcl9zZXJ2aWNlcy5DUkRUTWFueU1lc3NhZ2VzGjUuZGVjZW50cmFsYW5k",
+            "LnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2VzLkNSRFRSZXNwb25zZSIDiAIB",
+            "EoQBCghQdWxsQ3JkdBI4LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJl",
+            "cl9zZXJ2aWNlcy5QdWxsQ1JEVFJlcXVlc3QaOS5kZWNlbnRyYWxhbmQucmVu",
+            "ZGVyZXIucmVuZGVyZXJfc2VydmljZXMuQ1JEVE1hbnlNZXNzYWdlcyIDiAIB",
+            "YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -48,6 +49,7 @@ namespace Decentraland.Renderer.RendererServices {
 
   }
   #region Messages
+  [global::System.ObsoleteAttribute]
   public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -311,6 +313,7 @@ namespace Decentraland.Renderer.RendererServices {
 
   }
 
+  [global::System.ObsoleteAttribute]
   public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -463,6 +466,7 @@ namespace Decentraland.Renderer.RendererServices {
 
   }
 
+  [global::System.ObsoleteAttribute]
   public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine.Networking;
 
 namespace DCL
@@ -17,13 +18,17 @@ namespace DCL
                    request.responseCode < 600;
         }
 
+        public static bool WebRequestTimedOut(this UnityWebRequest request) =>
+            request != null &&
+            request.error == "Request timeout";
+
         public static bool WebRequestAborted(this UnityWebRequest request)
         {
             return request != null &&
                    request.result == UnityWebRequest.Result.ConnectionError &&
                    request.result == UnityWebRequest.Result.ProtocolError &&
                    !string.IsNullOrEmpty(request.error) &&
-                   request.error.ToLower().Contains("aborted");
+                   request.error.Contains("aborted", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -1,10 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Rendering;
 using NSubstitute;
 using NSubstitute.Exceptions;
 using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -27,7 +26,7 @@ namespace CullingControllerTests
                 settings ?? new CullingControllerSettings(),
                 cullingObjectsTracker ?? new CullingObjectsTracker());
 
-            result.SetSettings(new CullingControllerSettings() { maxTimeBudget = float.MaxValue });
+            result.SetSettings(new CullingControllerSettings());
 
             return result;
         }
@@ -176,7 +175,6 @@ namespace CullingControllerTests
 
             // Assert
             Assert.IsFalse(r.forceRenderingOff);
-            Assert.IsTrue(skr.updateWhenOffscreen);
             Assert.IsTrue(anim.cullingType == AnimationCullingType.AlwaysAnimate);
 
             // Annihilate

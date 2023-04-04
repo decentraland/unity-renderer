@@ -131,9 +131,19 @@ namespace DCL.Models
         {
             OnCleanup?.Invoke();
             meshRootGameObjectValue = null;
+            animation = null; 
             currentShape = null;
             renderers = null;
             colliders.Clear();
+
+            var arrayLength = meshFilters.Length;
+            for (int i = 0; i < arrayLength; i++)
+            {
+                meshFilters[i] = null;
+            }
+            innerGameObject = null;
+
+            OnCleanup = null;
         }
 
         public void UpdateExistingMeshAtIndex(Mesh mesh, uint meshFilterIndex = 0)

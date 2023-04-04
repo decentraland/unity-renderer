@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IHighlightsSubSectionComponentView
+public interface IHighlightsSubSectionComponentView: IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Colors used for the background of the friends heads.
@@ -28,6 +28,11 @@ public interface IHighlightsSubSectionComponentView
     /// It will be triggered when the place JumpIn button is clicked.
     /// </summary>
     event Action<HotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
+
+    /// <summary>
+    /// It will be triggered when the place favorite button is clicked.
+    /// </summary>
+    event Action<string, bool> OnFavoriteClicked;
 
     /// <summary>
     /// It will be triggered when the event JumpIn button is clicked.
@@ -117,11 +122,6 @@ public interface IHighlightsSubSectionComponentView
     /// Hides the Event Card modal.
     /// </summary>
     void HideEventModal();
-
-    /// <summary>
-    /// Set the current scroll view position to 1.
-    /// </summary>
-    void RestartScrollViewPosition();
 
     /// <summary>
     /// Configure the needed pools for the places and events instantiation.

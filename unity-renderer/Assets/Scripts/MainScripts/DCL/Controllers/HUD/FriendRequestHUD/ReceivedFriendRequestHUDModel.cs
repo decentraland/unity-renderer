@@ -16,7 +16,6 @@ namespace DCL.Social.Friends
         {
             Default,
             Pending,
-            Failed,
             ConfirmSuccess,
             RejectSuccess
         }

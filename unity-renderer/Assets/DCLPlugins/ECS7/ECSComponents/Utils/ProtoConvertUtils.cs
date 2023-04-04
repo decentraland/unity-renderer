@@ -1,5 +1,8 @@
 using DCL.CameraTool;
 using DCL.Helpers;
+using DCL.UIElements.Structures;
+using Google.Protobuf.Collections;
+using JetBrains.Annotations;
 using Decentraland.Common;
 using UnityEngine;
 using Vector3 = Decentraland.Common.Vector3;
@@ -111,6 +114,59 @@ namespace DCL.ECSComponents
                 default:
                     return SANS_SERIF;
             }
+        }
+
+        public static TextAnchor ToUnityTextAlign(this TextAlignMode align)
+        {
+            switch (align)
+            {
+                case TextAlignMode.TamTopCenter:
+                    return TextAnchor.UpperCenter;
+                case TextAlignMode.TamTopLeft:
+                    return TextAnchor.UpperLeft;
+                case TextAlignMode.TamTopRight:
+                    return TextAnchor.UpperRight;
+
+                case TextAlignMode.TamBottomCenter:
+                    return TextAnchor.LowerCenter;
+                case TextAlignMode.TamBottomLeft:
+                    return TextAnchor.LowerLeft;
+                case TextAlignMode.TamBottomRight:
+                    return TextAnchor.LowerRight;
+
+                case TextAlignMode.TamMiddleCenter:
+                    return TextAnchor.MiddleCenter;
+                case TextAlignMode.TamMiddleLeft:
+                    return TextAnchor.MiddleLeft;
+                case TextAlignMode.TamMiddleRight:
+                    return TextAnchor.MiddleRight;
+
+                default:
+                    return TextAnchor.MiddleCenter;
+            }
+        }
+
+        public static Vector4 ToUnityBorder([CanBeNull] this BorderRect rect) =>
+            rect == null ? Vector4.zero : new Vector4(rect.Left, rect.Top, rect.Right, rect.Bottom);
+
+        public static DCLUVs ToDCLUVs([CanBeNull] this RepeatedField<float> uvs) =>
+            uvs is not { Count: 8 }
+                ? DCLUVs.Default
+                : new DCLUVs(
+                    new UnityEngine.Vector2(uvs[0], uvs[1]),
+                    new UnityEngine.Vector2(uvs[2], uvs[3]),
+                    new UnityEngine.Vector2(uvs[4], uvs[5]),
+                    new UnityEngine.Vector2(uvs[6], uvs[7]));
+
+        public static DCLImageScaleMode ToDCLImageScaleMode(this BackgroundTextureMode textureMode)
+        {
+            return textureMode switch
+                   {
+                       BackgroundTextureMode.Center => DCLImageScaleMode.CENTER,
+                       BackgroundTextureMode.Stretch => DCLImageScaleMode.STRETCH,
+                       BackgroundTextureMode.NineSlices => DCLImageScaleMode.NINE_SLICES,
+                       _ => DCLImageScaleMode.STRETCH
+                   };
         }
     }
 }

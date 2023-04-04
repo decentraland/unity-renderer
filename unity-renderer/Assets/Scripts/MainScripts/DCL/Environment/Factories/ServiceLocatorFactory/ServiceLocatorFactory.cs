@@ -3,9 +3,19 @@ using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
 using DCL.Emotes;
+using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Rendering;
 using DCL.Services;
+using DCL.Social.Chat;
+using DCLServices.Lambdas;
+using DCLServices.Lambdas.LandsService;
+using DCLServices.Lambdas.NamesService;
+using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using MainScripts.DCL.Helpers.SentryUtils;
+using System.Collections.Generic;
 using UnityEngine;
 using WorldsFeaturesAnalytics;
 
@@ -16,6 +26,11 @@ namespace DCL
         public static ServiceLocator CreateDefault()
         {
             var result = new ServiceLocator();
+            IRPC irpc = new RPC();
+
+            //Addressable Resource Provider
+            var addressableResourceProvider = new AddressableResourceProvider();
+            result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
             // Platform
             result.Register<IMemoryManager>(() => new MemoryManager());
@@ -23,15 +38,27 @@ namespace DCL
             result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
-            result.Register<IWebRequestController>(WebRequestController.Create);
+            result.Register<IRPC>(() => irpc);
+            result.Register<IWebRequestController>(() => new WebRequestController(
+                new GetWebRequestFactory(),
+                new WebRequestAssetBundleFactory(),
+                new WebRequestTextureFactory(),
+                new WebRequestAudioFactory(),
+                new PostWebRequestFactory(),
+                new RPCSignRequest(irpc)
+            ));
             result.Register<IServiceProviders>(() => new ServiceProviders());
+            result.Register<ILambdasService>(() => new LambdasService());
+            result.Register<INamesService>(() => new NamesService());
+            result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
-            result.Register<IRPC>(() => new RPC());
+            result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());
             result.Register<IAvatarsLODController>(() => new AvatarsLODController());
             result.Register<IFeatureFlagController>(() => new FeatureFlagController());
+            result.Register<IGPUSkinningThrottlerService>(() => GPUSkinningThrottlerService.Create(true));
             result.Register<ISceneController>(() => new SceneController());
             result.Register<IWorldState>(() => new WorldState());
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
@@ -39,16 +66,45 @@ namespace DCL
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
             result.Register<IAvatarFactory>(() => new AvatarFactory(result));
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
-
+            result.Register<IChatController>(() => new ChatController(WebInterfaceChatBridge.GetOrCreate(), DataStore.i));
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
-            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
+            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
+            result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
+                new LambdasWearablesCatalogService(DataStore.i.common.wearables, result.Get<ILambdasService>()),
+                WebInterfaceWearablesCatalogService.Instance,
+                DataStore.i.common.wearables,
+                KernelConfig.i,
+                new WearablesWebInterfaceBridge(),
+                DataStore.i.featureFlags.flags));
+
+            result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
+                new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
+
+            // Asset Providers
+            result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
+            {
+                { AssetSource.EMBEDDED, new EmbeddedTextureProvider() },
+                { AssetSource.WEB, new AssetTextureWebLoader() },
+            }, DataStore.i.featureFlags));
+
+            result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
+            {
+                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) },
+            }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
+
+            result.Register<IFontAssetResolver>(() => new FontAssetResolver(new Dictionary<AssetSource, IFontAssetProvider>
+            {
+                { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
+                { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
+            }, DataStore.i.featureFlags));
 
             // HUD
-            result.Register<IHUDFactory>(() => new HUDFactory());
-            result.Register<IHUDController>(() => new HUDController());
+            result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));
+            result.Register<IHUDController>(() => new HUDController(result.Get<IWearablesCatalogService>(), DataStore.i));
+
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPlacesSubSectionComponentView
+public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Colors used for the background of the friends heads.
@@ -13,7 +13,7 @@ public interface IPlacesSubSectionComponentView
     /// Number of places per row that fit with the current places grid configuration.
     /// </summary>
     int currentPlacesPerRow { get; }
-    
+
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>
@@ -80,12 +80,9 @@ public interface IPlacesSubSectionComponentView
     void HidePlaceModal();
 
     /// <summary>
-    /// Set the current scroll view position to 1.
-    /// </summary>
-    void RestartScrollViewPosition();
-
-    /// <summary>
     /// Configure the needed pools for the places instantiation.
     /// </summary>
     void ConfigurePools();
+
+    void SetShowMoreButtonActive(bool isActive);
 }

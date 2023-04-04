@@ -1,5 +1,7 @@
+using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
+using Sentry;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -7,6 +9,8 @@ namespace DCL.Components
 {
     public class RendereableAssetLoadHelper
     {
+        private const string NEW_CDN_FF = "ab-new-cdn";
+
         public event Action<Rendereable> OnSuccessEvent;
         public event Action<Exception> OnFailEvent;
 
@@ -40,6 +44,8 @@ namespace DCL.Components
         private AssetPromise_GLTF gltfPromise;
         private AssetPromise_GLTFast_Instance gltfastPromise;
         private AssetPromise_AB_GameObject abPromise;
+        private string currentLoadingSystem;
+        private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
         public bool isFinished
         {
@@ -91,40 +97,41 @@ namespace DCL.Components
 #if UNITY_EDITOR
             loadStartTime = Time.realtimeSinceStartup;
 #endif
-
             LoadingType finalLoadingType = forcedLoadingType == LoadingType.DEFAULT ? defaultLoadingType : forcedLoadingType;
 
             switch (finalLoadingType)
             {
                 case LoadingType.ASSET_BUNDLE_ONLY:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, OnFailEvent);
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, OnFailEvent, false);
                     break;
                 case LoadingType.GLTF_ONLY:
-                    ProxyLoadGltf(targetUrl);
+                    ProxyLoadGltf(targetUrl, false);
                     break;
                 case LoadingType.OLD_GLTF:
-                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
+                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, false);
                     break;
                 case LoadingType.DEFAULT:
                 case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => ProxyLoadGltf(targetUrl));
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => ProxyLoadGltf(targetUrl, false), true);
                     break;
                 case LoadingType.ASSET_BUNDLE_WITH_OLD_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, false), true);
                     break;
             }
         }
 
-        private void ProxyLoadGltf(string targetUrl)
+        private void ProxyLoadGltf(string targetUrl, bool hasFallback)
         {
             if (IsGltFastEnabled())
                 LoadGLTFast(targetUrl, OnSuccessEvent, _ =>
                 {
-                    Debug.LogError($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
-                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
-                });
+                    if (VERBOSE)
+                        Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
+
+                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
+                }, true);
             else
-                LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
+                LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
         }
 
         public void Unload()
@@ -149,8 +156,10 @@ namespace DCL.Components
             if (gltfastPromise != null) { AssetPromiseKeeper_GLTFast_Instance.i.Forget(gltfastPromise); }
         }
 
-        void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
+        void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
+            currentLoadingSystem = AB_GO_NAME_PREFIX;
+
             if (abPromise != null)
             {
                 UnloadAB();
@@ -163,15 +172,36 @@ namespace DCL.Components
 
             if (string.IsNullOrEmpty(bundlesBaseUrl))
             {
-                OnFailWrapper(OnFail, new Exception("bundlesBaseUrl is null"));
+                OnFailWrapper(OnFail, new Exception("bundlesBaseUrl is null"), hasFallback);
                 return;
             }
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
-                OnFailWrapper(OnFail, new Exception($"Content url does not contains {targetUrl}"));
+                OnFailWrapper(OnFail, new Exception($"Content url does not contains {targetUrl}"), hasFallback);
                 return;
             }
+
+            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            {
+                if (contentProvider.assetBundles.Contains(hash))
+                    bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
+                else
+                {
+                    // we track the failing asset for it to be fixed in the asset bundle converter
+                    SentrySdk.CaptureMessage("Scene Asset not converted to AssetBundles", scope =>
+                    {
+                        scope.SetExtra("hash", hash);
+                        scope.SetExtra("baseUrl", contentProvider.assetBundlesBaseUrl);
+                        scope.SetExtra("sceneCid", contentProvider.sceneCid);
+                    });
+
+                    // exception is null since we are expected to fallback
+                    OnFailWrapper(OnFail, null, hasFallback);
+                    return;
+                }
+            }
+
 
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
@@ -195,18 +225,21 @@ namespace DCL.Components
                     meshDataSize = x.meshDataSize
                 };
 
-                foreach (var someRenderer in r.renderers) { someRenderer.tag = FROM_ASSET_BUNDLE_TAG; }
+                foreach (var someRenderer in r.renderers)
+                    someRenderer.tag = FROM_ASSET_BUNDLE_TAG;
 
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            abPromise.OnFailEvent += (x, exception) => OnFailWrapper(OnFail, exception);
+            abPromise.OnFailEvent += (x, exception) => OnFailWrapper(OnFail, exception, hasFallback);
 
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
-        void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
+        void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
+            currentLoadingSystem = GLTF_GO_NAME_PREFIX;
+
             if (gltfPromise != null)
             {
                 UnloadGLTF();
@@ -217,7 +250,7 @@ namespace DCL.Components
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
-                OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"));
+                OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"), hasFallback);
                 return;
             }
 
@@ -243,18 +276,21 @@ namespace DCL.Components
                     animationClips = x.animationClips
                 };
 
-                foreach (var someRenderer in r.renderers) { someRenderer.tag = FROM_RAW_GLTF_TAG; }
+                foreach (var someRenderer in r.renderers)
+                    someRenderer.tag = FROM_RAW_GLTF_TAG;
 
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            gltfPromise.OnFailEvent += (asset, exception) => OnFailWrapper(OnFail, exception);
+            gltfPromise.OnFailEvent += (asset, exception) => OnFailWrapper(OnFail, exception, hasFallback);
 
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }
 
-        private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
+        private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
+            currentLoadingSystem = GLTFAST_GO_NAME_PREFIX;
+
             if (gltfastPromise != null)
             {
                 UnloadGLTFast();
@@ -265,11 +301,12 @@ namespace DCL.Components
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
-                OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"));
+                OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"), hasFallback);
                 return;
             }
 
-            gltfastPromise = new AssetPromise_GLTFast_Instance(targetUrl, hash, Environment.i.platform.webRequest, contentProvider, settings);
+            gltfastPromise = new AssetPromise_GLTFast_Instance(targetUrl, hash,
+                Environment.i.platform.webRequest, contentProvider, settings);
 
             gltfastPromise.OnSuccessEvent += (Asset_GLTFast_Instance x) =>
             {
@@ -278,23 +315,34 @@ namespace DCL.Components
 #endif
                 Rendereable r = x.ToRendereable();
 
+                foreach (var someRenderer in r.renderers)
+                    someRenderer.tag = FROM_RAW_GLTF_TAG;
+
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            gltfastPromise.OnFailEvent += (asset, exception) =>
-            {
-                Debug.LogException(exception);
-                OnFailWrapper(OnFail, exception);
-            };
+            gltfastPromise.OnFailEvent += (asset, exception) => { OnFailWrapper(OnFail, exception, hasFallback); };
 
             AssetPromiseKeeper_GLTFast_Instance.i.Keep(gltfastPromise);
         }
 
-        private void OnFailWrapper(Action<Exception> OnFail, Exception exception)
+        private void OnFailWrapper(Action<Exception> OnFail, Exception exception, bool hasFallback)
         {
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
+
+            // If the entity is destroyed while loading, the exception is expected to be null and no error should be thrown
+            if (exception != null)
+            {
+                if (!hasFallback)
+                    Debug.LogException(exception);
+                else if (VERBOSE)
+                {
+                    Debug.Log($"Load Fail Detected, trying to use a fallback, " +
+                              $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
+                }
+            }
 
             OnFail?.Invoke(exception);
             ClearEvents();

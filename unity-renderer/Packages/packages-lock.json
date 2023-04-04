@@ -19,7 +19,7 @@
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.6.6"
       },
-      "hash": "fdbba5350fda2da9708aafbcb9336c59cb2b6a32"
+      "hash": "7a85b6c2f6bebca719b0754cf8134f1b8c7b8294"
     },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",
@@ -54,7 +54,14 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "5577bd123883e2fa96f51b8d534abd75bad0535f"
+      "hash": "1b462119ed2ca0a100d22cea1e482d28dde41dc8"
+    },
+    "com.decentraland.videoplayer": {
+      "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "06e147c3b999e7da725d5896aaf154f329b88642"
     },
     "com.decentraland.webgl-ime-input": {
       "version": "https://github.com/decentraland/webgl-ime-input.git",
@@ -82,6 +89,20 @@
       "source": "builtin",
       "dependencies": {}
     },
+    "com.unity.addressables": {
+      "version": "1.19.19",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.scriptablebuildpipeline": "1.19.6",
+        "com.unity.modules.assetbundle": "1.0.0",
+        "com.unity.modules.imageconversion": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.build-report-inspector": {
       "version": "https://github.com/needle-mirror/com.unity.build-report-inspector.git",
       "depth": 0,
@@ -90,7 +111,7 @@
       "hash": "b538913dd9e0656b1363db3ffc12a723563242d9"
     },
     "com.unity.burst": {
-      "version": "1.7.3",
+      "version": "1.8.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -115,14 +136,14 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ext.nunit": {
-      "version": "1.0.6",
+      "version": "2.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.16",
+      "version": "3.0.18",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -131,7 +152,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.16",
+      "version": "2.0.17",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -163,7 +184,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.performance.profile-analyzer": {
-      "version": "1.1.1",
+      "version": "1.2.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -179,7 +200,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
-      "version": "12.1.8",
+      "version": "12.1.10",
       "depth": 1,
       "source": "builtin",
       "dependencies": {
@@ -189,14 +210,14 @@
       }
     },
     "com.unity.render-pipelines.universal": {
-      "version": "12.1.8",
+      "version": "12.1.10",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
-        "com.unity.burst": "1.7.3",
-        "com.unity.render-pipelines.core": "12.1.8",
-        "com.unity.shadergraph": "12.1.8"
+        "com.unity.burst": "1.8.2",
+        "com.unity.render-pipelines.core": "12.1.10",
+        "com.unity.shadergraph": "12.1.10"
       }
     },
     "com.unity.scriptablebuildpipeline": {
@@ -221,20 +242,20 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {
-      "version": "12.1.8",
+      "version": "12.1.10",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
-        "com.unity.render-pipelines.core": "12.1.8",
+        "com.unity.render-pipelines.core": "12.1.10",
         "com.unity.searcher": "4.9.1"
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.31",
+      "version": "2.0.1-pre.18",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.ext.nunit": "1.0.6",
+        "com.unity.ext.nunit": "2.0.2",
         "com.unity.modules.imgui": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
@@ -251,7 +272,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.testtools.codecoverage": {
-      "version": "1.1.0",
+      "version": "1.2.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -300,6 +321,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "io.sentry.unity": {
+      "version": "https://github.com/getsentry/unity.git#0.28.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "b42ca43f54f29c64bfb633e7655bfcb314bc1b8c"
+    },
     "net.tnrd.nsubstitute": {
       "version": "https://github.com/decentraland/Unity3D-NSubstitute.git",
       "depth": 0,
@@ -308,11 +336,11 @@
       "hash": "cdd11bb74398afae73e71b6fe01114f597a6ce08"
     },
     "ru.threedisevenzeror.unitygifdecoder": {
-      "version": "https://github.com/3DI70R/Unity-GifDecoder.git",
+      "version": "https://github.com/decentraland/Unity-GifDecoder.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "90ffa399087521817ab03ce9213ec33b38e4492f"
+      "hash": "10864e9fd9b15f6342e9d5326d417b98e0e13e9e"
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",

@@ -7,6 +7,7 @@ namespace DCL.NotificationModel
         GENERIC,
         SCRIPTING_ERROR,
         COMMS_ERROR,
+        [Obsolete("Deprecated behaviour")]
         AIRDROPPING,
         GENERIC_WITHOUT_BUTTON,
         CUSTOM,
@@ -14,7 +15,8 @@ namespace DCL.NotificationModel
         GRAPHIC_CARD_WARNING,
         WARNING,
         CAMERA_MODE_LOCKED_BY_SCENE,
-        WARNING_NO_ICON
+        WARNING_NO_ICON,
+        ERROR
     }
 
     public class Model

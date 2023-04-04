@@ -3,6 +3,8 @@ using DCL;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.CRDT;
+using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -11,6 +13,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NSubstitute;
+using RPC.Context;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -88,6 +92,30 @@ public class SceneTests : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
+    public IEnumerator CreateSdk7GlobalScene()
+    {
+
+        Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
+        CRDTServiceContext rpcCrdtServiceContext = Substitute.For<CRDTServiceContext>();
+        ECSComponentsManager componentsManager = new ECSComponentsManager(new Dictionary<int, ECSComponentsFactory.ECSComponentBuilder>());
+        CrdtExecutorsManager executorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, rpcCrdtServiceContext);
+
+        int sceneNumberWithoutSdk7 = 83;
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage() { sceneNumber = sceneNumberWithoutSdk7 });
+        Assert.AreEqual(0, crdtExecutors.Count);
+
+        int sceneNumberWithSdk7 = 84;
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage() { sceneNumber = sceneNumberWithSdk7, sdk7 = true});
+        Assert.AreEqual(1, crdtExecutors.Count);
+
+        sceneController.UnloadParcelSceneExecute(sceneNumberWithoutSdk7);
+        sceneController.UnloadParcelSceneExecute(sceneNumberWithSdk7);
+        executorsManager.Dispose();
+
+        yield break;
+    }
+
+    [UnityTest]
     public IEnumerator UnloadGlobalScene()
     {
         int sceneNumber = 56;
@@ -143,7 +171,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator LoadScene()
     {
-        sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
+        sceneController.LoadParcelScenes(AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text);
         yield return new WaitForAllMessagesProcessed();
 
         string loadedSceneID = "0,0";
@@ -156,7 +184,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator UnloadScene()
     {
-        sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
+        sceneController.LoadParcelScenes(AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text);
 
         yield return new WaitForAllMessagesProcessed();
 
@@ -193,7 +221,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator LoadManyParcelsFromJSON()
     {
-        string severalParcelsJson = (Resources.Load("TestJSON/TestSceneSeveralParcels") as TextAsset).text;
+        string severalParcelsJson = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/TestSceneSeveralParcels.json").text;
 
         //Not really elegant, but does the trick
         var jsonScenes = JsonConvert
@@ -443,7 +471,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public IEnumerator ReloadedSceneShouldBeCleanedProperly()
     {
         const int loadedSceneNumber = 666;
-        string sceneJson = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+        string sceneJson = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text;
         sceneController.LoadParcelScenes(sceneJson);
         yield return new WaitForAllMessagesProcessed();
 

@@ -45,7 +45,8 @@ public class ChatNotificationMessageComponentViewTest
             messageSender = "SpottyGoat",
             isPrivate = false,
             imageUri = null,
-            notificationTargetId = "testId"
+            notificationTargetId = "testId",
+            isImageVisible = false,
         };
 
         // Act
@@ -54,6 +55,7 @@ public class ChatNotificationMessageComponentViewTest
         // Assert
         Assert.AreEqual(testModel, chatNotificationComponent.model, "The model does not match after configuring the notification.");
         Assert.False(chatNotificationComponent.image.gameObject.activeInHierarchy);
+        Assert.False(chatNotificationComponent.imageContainer.activeInHierarchy);
     }
 
     [Test]
@@ -68,7 +70,8 @@ public class ChatNotificationMessageComponentViewTest
             messageSender = "SpottyGoat",
             isPrivate = true,
             imageUri = null,
-            notificationTargetId = "testId"
+            notificationTargetId = "testId",
+            isImageVisible = true
         };
 
         // Act
@@ -77,6 +80,7 @@ public class ChatNotificationMessageComponentViewTest
         // Assert
         Assert.AreEqual(testModel, chatNotificationComponent.model, "The model does not match after configuring the notification.");
         Assert.True(chatNotificationComponent.image.gameObject.activeInHierarchy);
+        Assert.True(chatNotificationComponent.imageContainer.activeInHierarchy);
     }
 
     [Test]
@@ -123,22 +127,6 @@ public class ChatNotificationMessageComponentViewTest
         // Assert
         Assert.AreEqual(messageText, chatNotificationComponent.model.message, "The message text does not match in the model.");
         Assert.AreEqual(messageText, chatNotificationComponent.notificationMessage.text, "The message text does not match.");
-    }
-
-    [Test]
-    public void SetMessageTextAboveSizeCorrectly()
-    {
-        // Arrange
-        string messageText = "My test message";
-        string truncatedMessageText = "My t...";
-
-        // Act
-        chatNotificationComponent.SetMaxContentCharacters(4);
-        chatNotificationComponent.SetMessage(messageText);
-
-        // Assert
-        Assert.AreEqual(messageText, chatNotificationComponent.model.message, "The message text does not match in the model.");
-        Assert.AreEqual(truncatedMessageText, chatNotificationComponent.notificationMessage.text, "The message text does not match.");
     }
 
     [Test]

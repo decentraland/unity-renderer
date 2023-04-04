@@ -38,7 +38,13 @@ namespace Tests
             result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
             result.Register<IWorldState>( () => new WorldState());
             result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());
-            result.Register<IWebRequestController>( WebRequestController.Create );
+            result.Register<IWebRequestController>( () => new WebRequestController(
+                new GetWebRequestFactory(),
+                new WebRequestAssetBundleFactory(),
+                new WebRequestTextureFactory(),
+                new WebRequestAudioFactory(),
+                new PostWebRequestFactory()
+            ) );
             return result;
         }
 
@@ -54,8 +60,7 @@ namespace Tests
             cursorController.hoverCursor.name = "Hover";
             cursorController.cursorImage = cursorController.gameObject.AddComponent<Image>();
             cursorController.cursorImage.enabled = false;
-            cursorController.canvasGroup = cursorController.gameObject.AddComponent<CanvasGroup>();
-            cursorController.SetNormalCursor();
+            cursorController.SetCursor(cursorController.normalCursor);
 
             yield return base.SetUp();
 
@@ -300,7 +305,7 @@ namespace Tests
             UIContainerRect uiContainerRectShape =
                 TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model() { color = Color.white });
-            
+
             yield return uiContainerRectShape.routine;
 
             yield return null;

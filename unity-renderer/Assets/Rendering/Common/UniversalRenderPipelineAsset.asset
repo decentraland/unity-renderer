@@ -18,7 +18,7 @@ MonoBehaviour:
   m_RendererData: {fileID: 0}
   m_RendererDataList:
   - {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
-  - {fileID: 11400000, guid: d3701c38da6da46f0b09e3faa2a54f9f, type: 2}
+  - {fileID: 11400000, guid: 65de5db491a79354ca7dd152df1048f0, type: 2}
   m_DefaultRendererIndex: 0
   m_RequireDepthTexture: 0
   m_RequireOpaqueTexture: 1
@@ -26,7 +26,7 @@ MonoBehaviour:
   m_SupportsTerrainHoles: 0
   m_StoreActionsOptimization: 0
   m_SupportsHDR: 1
-  m_MSAA: 4
+  m_MSAA: 1
   m_RenderScale: 0.8
   m_UpscalingFilter: 0
   m_FsrOverrideSharpness: 0
@@ -34,7 +34,7 @@ MonoBehaviour:
   m_MainLightRenderingMode: 1
   m_MainLightShadowsSupported: 1
   m_MainLightShadowmapResolution: 4096
-  m_AdditionalLightsRenderingMode: 2
+  m_AdditionalLightsRenderingMode: 0
   m_AdditionalLightsPerObjectLimit: 4
   m_AdditionalLightShadowsSupported: 0
   m_AdditionalLightsShadowmapResolution: 512

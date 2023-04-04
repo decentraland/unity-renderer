@@ -5,16 +5,19 @@ namespace DCL.Huds.QuestsTracker
 {
     public class QuestsTrackerHUDController : IHUD
     {
+        internal readonly IQuestsTrackerHUDView view;
+        internal IQuestsController questsController;
         private static BaseDictionary<string, QuestModel> quests => DataStore.i.Quests.quests;
         private static BaseCollection<string> pinnedQuests => DataStore.i.Quests.pinnedQuests;
 
-        internal IQuestsTrackerHUDView view;
-        internal IQuestsController questsController;
+        public QuestsTrackerHUDController(IQuestsTrackerHUDView view)
+        {
+            this.view = view;
+        }
 
         public void Initialize(IQuestsController controller)
         {
             questsController = controller;
-            view = CreateView();
 
             questsController.OnQuestUpdated += OnQuestUpdated;
             questsController.OnRewardObtained += AddReward;
@@ -99,7 +102,5 @@ namespace DCL.Huds.QuestsTracker
             quests.OnSet -= OnQuestsSet;
             quests.OnRemoved -= OnQuestRemoved;
         }
-
-        internal virtual IQuestsTrackerHUDView CreateView() => QuestsTrackerHUDView.Create();
     }
 }

@@ -4,18 +4,21 @@ using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCl.Social.Friends;
 using JetBrains.Annotations;
+using System.Threading;
 using UnityEngine;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
     public partial class WebInterfaceFriendsApiBridge : MonoBehaviour, IFriendsApiBridge
     {
+        private const string GET_FRIENDS_REQUEST_MESSAGE_ID = "GetFriendsRequest";
+
         private readonly Dictionary<string, IUniTaskSource> pendingRequests = new ();
         private readonly Dictionary<string, UniTaskCompletionSource<FriendshipUpdateStatusMessage>> updatedFriendshipPendingRequests = new ();
 
         public event Action<FriendshipInitializationMessage> OnInitialized;
         public event Action<string> OnFriendNotFound;
-        public event Action<AddFriendsPayload> OnFriendsAdded;
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         public event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
         public event Action<UserStatus> OnUserPresenceUpdated;
@@ -33,8 +36,18 @@ namespace DCL.Social.Friends
             OnFriendNotFound?.Invoke(name);
 
         [PublicAPI]
-        public void AddFriends(string json) =>
-            OnFriendsAdded?.Invoke(JsonUtility.FromJson<AddFriendsPayload>(json));
+        public void AddFriends(string json)
+        {
+            var payload = JsonUtility.FromJson<AddFriendsPayload>(json);
+            string messageId = GET_FRIENDS_REQUEST_MESSAGE_ID;
+            if (!pendingRequests.ContainsKey(messageId))
+                return;
+
+            var task = (UniTaskCompletionSource<AddFriendsPayload>)pendingRequests[messageId];
+
+            pendingRequests.Remove(messageId);
+            task.TrySetResult(payload);
+        }
 
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         [PublicAPI]
@@ -145,7 +158,7 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId) =>
+        public UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken) =>
             throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
 
         public void RemoveFriend(string userId)
@@ -157,11 +170,29 @@ namespace DCL.Social.Friends
             });
         }
 
-        public void GetFriends(int limit, int skip) =>
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var task = new UniTaskCompletionSource<AddFriendsPayload>();
+
+            pendingRequests[GET_FRIENDS_REQUEST_MESSAGE_ID] = task;
             WebInterface.GetFriends(limit, skip);
 
-        public void GetFriends(string usernameOrId, int limit) =>
+            return task.Task.AttachExternalCancellation(cancellationToken);
+        }
+
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var task = new UniTaskCompletionSource<AddFriendsPayload>();
+
+            pendingRequests[GET_FRIENDS_REQUEST_MESSAGE_ID] = task;
             WebInterface.GetFriends(usernameOrId, limit);
+
+            return task.Task.AttachExternalCancellation(cancellationToken);
+        }
 
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
@@ -175,7 +206,7 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
+        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken) =>
             throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
@@ -190,8 +221,10 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody)
+        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var task = new UniTaskCompletionSource<RequestFriendshipConfirmationPayload>();
 
             // TODO: optimize unique id length for performance reasons
@@ -205,11 +238,13 @@ namespace DCL.Social.Friends
                 userId = userId
             });
 
-            return task.Task;
+            return task.Task.AttachExternalCancellation(cancellationToken);
         }
 
-        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId)
+        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var task = new UniTaskCompletionSource<CancelFriendshipConfirmationPayload>();
 
             // TODO: optimize unique id length for performance reasons
@@ -223,11 +258,13 @@ namespace DCL.Social.Friends
                     friendRequestId = friendRequestId
                 });
 
-            return task.Task;
+            return task.Task.AttachExternalCancellation(cancellationToken);
         }
 
-        public UniTask CancelRequestByUserIdAsync(string userId)
+        public UniTask CancelRequestByUserIdAsync(string userId, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var task = updatedFriendshipPendingRequests.ContainsKey(userId)
                 ? updatedFriendshipPendingRequests[userId]
                 : new UniTaskCompletionSource<FriendshipUpdateStatusMessage>();
@@ -240,7 +277,7 @@ namespace DCL.Social.Friends
                 action = WebInterface.FriendshipAction.CANCELLED
             });
 
-            return task.Task;
+            return task.Task.AttachExternalCancellation(cancellationToken);
         }
 
         public void CancelRequestByUserId(string userId)
@@ -261,7 +298,10 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId) =>
+        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken) =>
+            throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
+
+        public UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken) =>
             throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
     }
 }

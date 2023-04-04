@@ -11,7 +11,7 @@ public static class NotificationScriptableObjects
 
     private static FloatVariable pendingFriendRequestsValue;
     public static FloatVariable pendingFriendRequests => CommonScriptableObjects.GetOrLoad(ref pendingFriendRequestsValue, "ScriptableObjects/NotificationBadge_PendingFriendRequests");
-    
+
     public static void UnloadAll()
     {
         Resources.UnloadAsset(newApprovedFriendsValue);
@@ -75,6 +75,9 @@ public static class AudioScriptableObjects
     private static AudioEvent chatReceivePrivateEvent;
     public static AudioEvent chatReceivePrivate => CommonScriptableObjects.GetOrLoad(ref chatReceivePrivateEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceivePrivate");
 
+    private static AudioEvent chatReceiveMentionEvent;
+    public static AudioEvent ChatReceiveMentionEvent => CommonScriptableObjects.GetOrLoad(ref chatReceiveMentionEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceiveMention");
+
     private static AudioEvent chatSendEvent;
     public static AudioEvent chatSend => CommonScriptableObjects.GetOrLoad(ref chatSendEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatSend");
 
@@ -104,7 +107,10 @@ public static class AudioScriptableObjects
 
     private static AudioEvent tooltipPopupEvent;
     public static AudioEvent tooltipPopup => CommonScriptableObjects.GetOrLoad(ref tooltipPopupEvent, "ScriptableObjects/AudioEvents/HUDCommon/TooltipPopup");
-    
+
+    private static AudioEvent friendRequestEvent;
+    public static AudioEvent FriendRequestEvent => CommonScriptableObjects.GetOrLoad(ref friendRequestEvent, "ScriptableObjects/AudioEvents/HUDCommon/FriendRequest");
+
     public static void UnloadAll()
     {
         Resources.UnloadAsset(cameraFadeInEvent);
@@ -124,6 +130,7 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(listItemAppearEvent);
         Resources.UnloadAsset(chatReceiveGlobalEvent);
         Resources.UnloadAsset(chatReceivePrivateEvent);
+        Resources.UnloadAsset(chatReceiveMentionEvent);
         Resources.UnloadAsset(chatSendEvent);
         Resources.UnloadAsset(joinChannelEvent);
         Resources.UnloadAsset(leaveChannelEvent);
@@ -134,6 +141,7 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(UIHideEvent);
         Resources.UnloadAsset(UIShowEvent);
         Resources.UnloadAsset(tooltipPopupEvent);
+        Resources.UnloadAsset(friendRequestEvent);
     }
 }
 
@@ -185,7 +193,7 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable playerInfoCardVisibleStateValue;
     public static BooleanVariable playerInfoCardVisibleState => GetOrLoad(ref playerInfoCardVisibleStateValue, "ScriptableObjects/PlayerInfoCardVisibleState");
-    
+
     private static BooleanVariable forcePerformanceMeterValue;
     public static BooleanVariable forcePerformanceMeter => GetOrLoad(ref forcePerformanceMeterValue, "ScriptableObjects/ForcePerformanceMeter");
 
@@ -209,7 +217,7 @@ public static class CommonScriptableObjects
 
     private static CameraMode cameraModeValue;
     public static CameraMode cameraMode => GetOrLoad(ref cameraModeValue, "ScriptableObjects/CameraMode");
-    
+
     private static BooleanVariable cameraModeInputLockedValue;
     public static BooleanVariable cameraModeInputLocked => GetOrLoad(ref cameraModeInputLockedValue, "ScriptableObjects/CameraModeInputLocked");
 
@@ -218,7 +226,7 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable isFullscreenHUDOpenValue;
     public static BooleanVariable isFullscreenHUDOpen => GetOrLoad(ref isFullscreenHUDOpenValue, "ScriptableObjects/IsAvatarHUDOpen");
-    
+
     private static BooleanVariable isLoadingHUDOpenValue;
     public static BooleanVariable isLoadingHUDOpen => GetOrLoad(ref isLoadingHUDOpenValue, "ScriptableObjects/IsLoadingHUDOpen");
 
@@ -230,7 +238,7 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable featureKeyTriggersBlockedValue;
     public static BooleanVariable featureKeyTriggersBlocked => GetOrLoad(ref featureKeyTriggersBlockedValue, "ScriptableObjects/FeatureKeyTriggersBlocked");
-    
+
     private static BooleanVariable userMovementKeysBlockedValue;
     public static BooleanVariable userMovementKeysBlocked => GetOrLoad(ref userMovementKeysBlockedValue, "ScriptableObjects/UserMovementKeysBlocked");
 

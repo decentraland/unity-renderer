@@ -10,26 +10,33 @@ namespace DCL
         public float resizingFactor = 1;
         public Asset_Texture dependencyAsset; // to store the default tex asset and release it accordingly
         public event System.Action OnCleanup;
-        
-        public void ConfigureTexture(TextureWrapMode textureWrapMode, FilterMode textureFilterMode, bool makeNoLongerReadable = true)
+
+        public void ConfigureTexture(TextureWrapMode textureWrapMode, FilterMode textureFilterMode, bool? overrideCompression = null, bool makeNoLongerReadable = true)
         {
             if (texture == null)
                 return;
 
             texture.wrapMode = textureWrapMode;
             texture.filterMode = textureFilterMode;
-            
-            if (DataStore.i.textureConfig.runCompression.Get())
+
+            if (overrideCompression ?? DataStore.i.textureConfig.runCompression.Get())
                 texture.Compress(false);
-            
+
             texture.Apply(textureFilterMode != FilterMode.Point, makeNoLongerReadable);
         }
 
         public override void Cleanup()
         {
             OnCleanup?.Invoke();
+            OnCleanup = null;
+
             PersistentAssetCache.RemoveImage(texture);
             Object.Destroy(texture);
+            if (this.texture != null)
+                Object.Destroy(this.texture);
+            this.texture = null;
+
+            dependencyAsset = null;
         }
 
         public void Dispose() { Cleanup(); }

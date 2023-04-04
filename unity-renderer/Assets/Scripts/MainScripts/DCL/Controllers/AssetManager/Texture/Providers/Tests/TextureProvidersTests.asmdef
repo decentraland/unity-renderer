@@ -1,0 +1,25 @@
+{
+    "name": "TextureProvidersTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:28f74c468a54948bfa9f625c5d428f56"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

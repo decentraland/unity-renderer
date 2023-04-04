@@ -1,18 +1,21 @@
 {
-  "name": "WebRequest",
-  "rootNamespace": "",
-  "references": [
-    "GUID:760a1d365aad58044916992b072cf2a6",
-    "GUID:ee6523961ef177343ad763fcd55c7c46",
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "WebRequest",
+    "rootNamespace": "",
+    "references": [
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:ee6523961ef177343ad763fcd55c7c46",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:969d64792712b4653a1b6b1bd6a52abe",
+        "GUID:3c7b57a14671040bd8c549056adc04f5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

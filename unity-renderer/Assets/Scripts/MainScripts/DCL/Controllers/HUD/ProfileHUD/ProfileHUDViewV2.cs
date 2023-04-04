@@ -2,7 +2,7 @@ using DCL;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +13,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private const float COPY_TOAST_VISIBLE_TIME = 3;
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
+    private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] internal GameObject loadingSpinner;
@@ -81,12 +82,11 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private InputAction_Trigger.Triggered closeActionDelegate;
 
-    private Coroutine copyToastRoutine = null;
-    private UserProfile profile = null;
-    private Regex nameRegex = null;
+    private Coroutine copyToastRoutine;
+    private UserProfile profile;
     private string description;
     private string userId;
-    private StringVariable currentPlayerId;
+    private BaseVariable<(string playerId, string source)> currentPlayerId;
 
     public event EventHandler ClaimNamePressed;
     public event EventHandler SignedUpPressed;
@@ -107,99 +107,9 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public RectTransform ExpandedMenu => mainRootLayout;
     public RectTransform TutorialReference => tutorialTooltipReference;
 
-
-    public bool HasManaCounterView() => manaCounterView != null;
-    public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
-    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionInputText.characterLimit < descriptionInputText.text.Length;
-    public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
-    public void SetPolygonBalance(double balance) => polygonManaCounterView.SetBalance(balance);
-    public void SetWalletSectionEnabled(bool isEnabled) => connectedWalletSection.SetActive(isEnabled);
-    public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
-    public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
-    public override void RefreshControl() { }
-
-    public void SetProfile(UserProfile userProfile)
+    public override void Awake()
     {
-        profile = userProfile;
-        if (userProfile.hasClaimedName)
-            HandleClaimedProfileName(userProfile);
-        else
-            HandleUnverifiedProfileName(userProfile);
-
-        SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
-        HandleProfileAddress(userProfile);
-        HandleProfileSnapshot(userProfile);
-        SetDescriptionEnabled(userProfile.hasConnectedWeb3);
-        SetUserId(userProfile);
-        ForceLayoutToRefreshSize();
-
-        description = profile.description;
-        descriptionInputText.text = description;
-
-        string[] nameSplits = profile.userName.Split('#');
-        if (nameSplits.Length >= 2)
-        {
-            textName.text = nameSplits[0];
-            textPostfix.text = $"#{nameSplits[1]};";
-        }
-        else
-        {
-            textName.text = profile.userName;
-            textPostfix.text = profile.userId;
-        }
-    }
-
-    private void SetUserId(UserProfile userProfile)
-    {
-        userId = userProfile.userId;
-    }
-
-    private void OpenStartMenu()
-    {
-        if (isStartMenuInitialized)
-        {
-            if (!DataStore.i.exploreV2.isOpen.Get())
-            {
-                var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
-                exploreV2Analytics.SendStartMenuVisibility(
-                    true,
-                    ExploreUIVisibilityMethod.FromClick);
-            }
-            DataStore.i.exploreV2.isOpen.Set(true);
-        }
-    }
-
-    public void ShowProfileIcon(bool show)
-    {
-        profilePicObject.SetActive(show);
-    }
-
-    public void ShowExpanded(bool show)
-    {
-        expandedObject.SetActive(show);
-    }
-
-    public void ActivateProfileNameEditionMode(bool activate)
-    {
-        if (profile != null && profile.hasClaimedName)
-            return;
-
-        textName.gameObject.SetActive(!activate);
-        inputName.gameObject.SetActive(activate);
-
-        if (activate)
-        {
-            inputName.text = textName.text;
-            inputName.Select();
-        }
-    }
-
-    public void SetDescriptionCharLiitEnabled(bool active) => charLimitDescriptionContainer.SetActive(active);
-
-    private void Awake()
-    {
-        if (currentPlayerId == null)
-            currentPlayerId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        currentPlayerId = DataStore.i.HUDs.currentPlayerId;
 
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
         buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
@@ -231,16 +141,18 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
         buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
 
         descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
         descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
+        descriptionInputText.onTextSelection.AddListener((description, x, y) =>
+        {
+            descriptionInputText.text = profile.description;
+            SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(description);
+        });
         descriptionInputText.onSelect.AddListener(x =>
         {
-            descriptionInputText.text = description;
+            descriptionInputText.text = profile.description;
             SetDescriptionIsEditing(true);
             UpdateDescriptionCharLimit(description);
         });
@@ -248,10 +160,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         descriptionInputText.onDeselect.AddListener(description =>
         {
             this.description = description;
+            DescriptionSubmitted?.Invoke(this, description);
+
             SetDescriptionIsEditing(false);
             UpdateLinksInformation(description);
-
-            DescriptionSubmitted?.Invoke(this, description);
         });
         SetDescriptionIsEditing(false);
 
@@ -263,13 +175,121 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         Show(false);
     }
 
+    public bool HasManaCounterView() => manaCounterView != null;
+    public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
+    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionInputText.characterLimit < descriptionInputText.text.Length;
+    public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
+    public void SetPolygonBalance(double balance) => polygonManaCounterView.SetBalance(balance);
+    public void SetWalletSectionEnabled(bool isEnabled) => connectedWalletSection.SetActive(isEnabled);
+    public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
+    public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
+    public override void RefreshControl() { }
+
+    public void SetProfile(UserProfile userProfile)
+    {
+        UpdateLayoutByProfile(userProfile);
+        if (profile == null)
+        {
+            description = userProfile.description;
+            descriptionInputText.text = description;
+            UpdateLinksInformation(description);
+        }
+
+        profile = userProfile;
+    }
+
+    public void ShowProfileIcon(bool show)
+    {
+        profilePicObject.SetActive(show);
+    }
+
+    public void ShowExpanded(bool show)
+    {
+        expandedObject.SetActive(show);
+        if (show && profile)
+            UpdateLayoutByProfile(profile);
+    }
+
+    public void SetDescriptionIsEditing(bool isEditing)
+    {
+        SetDescriptionCharLimitEnabled(isEditing);
+        descriptionStartEditingGo.SetActive(!isEditing);
+        descriptionIsEditingGo.SetActive(isEditing);
+    }
+
+    private void UpdateLayoutByProfile(UserProfile userProfile)
+    {
+        if (userProfile.hasClaimedName)
+            HandleClaimedProfileName(userProfile);
+        else
+            HandleUnverifiedProfileName(userProfile);
+
+        SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
+        HandleProfileAddress(userProfile);
+        HandleProfileSnapshot(userProfile);
+        SetDescriptionEnabled(userProfile.hasConnectedWeb3);
+        SetUserId(userProfile);
+
+        string[] nameSplits = userProfile.userName.Split('#');
+        if (nameSplits.Length >= 2)
+        {
+            textName.text = nameSplits[0];
+            textPostfix.text = $"#{nameSplits[1]};";
+        }
+        else
+        {
+            textName.text = userProfile.userName;
+            textPostfix.text = userProfile.userId;
+        }
+    }
+
+    private void SetUserId(UserProfile userProfile)
+    {
+        userId = userProfile.userId;
+    }
+
+    private void OpenStartMenu()
+    {
+        if (isStartMenuInitialized)
+        {
+            if (!DataStore.i.exploreV2.isOpen.Get())
+            {
+                var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+                exploreV2Analytics.SendStartMenuVisibility(
+                    true,
+                    ExploreUIVisibilityMethod.FromClick);
+            }
+            DataStore.i.exploreV2.isOpen.Set(true);
+        }
+    }
+
+    private void ActivateProfileNameEditionMode(bool activate)
+    {
+        if (profile != null && profile.hasClaimedName)
+            return;
+
+        textName.gameObject.SetActive(!activate);
+        inputName.gameObject.SetActive(activate);
+
+        if (activate)
+        {
+            inputName.text = textName.text;
+            inputName.Select();
+        }
+    }
+
+    private void SetDescriptionCharLimitEnabled(bool enabled)
+    {
+        charLimitDescriptionContainer.SetActive(enabled);
+    }
+
     private void OpenPassport()
     {
         if (string.IsNullOrEmpty(userId))
             return;
 
         ShowExpanded(false);
-        currentPlayerId.Set(userId);
+        currentPlayerId.Set((userId, OPEN_PASSPORT_SOURCE));
     }
 
     private void HandleProfileSnapshot(UserProfile userProfile)
@@ -300,8 +320,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         nonConnectedWalletSection.SetActive(!active);
         buttonLogOut.gameObject.SetActive(active);
     }
-
-    private void ForceLayoutToRefreshSize() { LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout); }
 
     private void SetActiveUnverifiedNameGOs(bool active)
     {
@@ -350,13 +368,9 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private void UpdateNameCharLimit(string newValue) { textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}"; }
 
-    private void SetDescriptionEnabled(bool enabled) => descriptionContainer.SetActive(enabled);
-
-    public void SetDescriptionIsEditing(bool isEditing)
+    private void SetDescriptionEnabled(bool enabled)
     {
-        SetDescriptionCharLiitEnabled(isEditing);
-        descriptionStartEditingGo.SetActive(!isEditing);
-        descriptionIsEditingGo.SetActive(isEditing);
+        descriptionContainer.SetActive(enabled);
     }
 
     private void UpdateDescriptionCharLimit(string description) =>
@@ -364,17 +378,21 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private void UpdateLinksInformation(string description)
     {
-        string[] words = description.Split(' ');
+        string[] words = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        bool[] areLinks = new bool[words.Length];
         bool linksFound = false;
 
         for (int i = 0; i < words.Length; i++)
         {
-            if (words[i].Contains("www."))
+            if (words[i].StartsWith("[") && words[i].Contains("]") && words[i].Contains("(") && words[i].EndsWith(")"))
             {
+                string link = words[i].Split("(")[0].Replace("[", "").Replace("]", "");
+                string id = words[i].Split("]")[1].Replace("(", "").Replace(")", "");
                 string[] elements = words[i].Split('.');
-                if (elements.Length >= 1)
+                if (elements.Length >= 2)
                 {
-                    words[i] = $"<color=\"blue\"><link=\"{words[i]}\">{elements[1]}</link></color>";
+                    words[i] = $"<color=\"blue\"><link=\"{id}\">{link}</link></color>";
+                    areLinks[i] = true;
                     linksFound = true;
                 }
             }
@@ -388,20 +406,17 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
                 if (string.IsNullOrEmpty(words[i]))
                     continue;
 
-                if (!foundLinksAtTheEnd && !words[i].Contains("<link=\""))
+                if (!foundLinksAtTheEnd && !areLinks[i])
                     break;
 
-                if (words[i].Contains("<link=\""))
+                if (areLinks[i])
                 {
                     foundLinksAtTheEnd = true;
                     continue;
                 }
 
-                if (foundLinksAtTheEnd && i > 0)
-                {
-                    words[i] += "\n\n";
-                    break;
-                }
+                words[i] += "\n\n";
+                break;
             }
             descriptionInputText.text = string.Join(" ", words);
         }

@@ -48,7 +48,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject loadMoreEntriesContainer;
         [SerializeField] internal TMP_Text loadMoreEntriesLabel;
         [SerializeField] internal GameObject loadMoreEntriesLoading;
-        
+
         [Header("Guest")]
         [SerializeField] internal GameObject connectWalletContainer;
         [SerializeField] internal Button connectWalletButton;
@@ -93,7 +93,7 @@ namespace DCL.Chat.HUD
         public override void Awake()
         {
             base.Awake();
-        
+
             int SortByAlphabeticalOrder(PublicChatEntry u1, PublicChatEntry u2)
             {
                 if (u1.Model.name == NEARBY_CHANNEL)
@@ -103,7 +103,7 @@ namespace DCL.Chat.HUD
 
                 return string.Compare(u1.Model.name, u2.Model.name, StringComparison.InvariantCultureIgnoreCase);
             }
-        
+
             openChannelSearchButton.onClick.AddListener(() => OnOpenChannelSearch?.Invoke());
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             directChatList.SortingMethod = (a, b) => b.Model.lastMessageTimestamp.CompareTo(a.Model.lastMessageTimestamp);
@@ -127,11 +127,13 @@ namespace DCL.Chat.HUD
             UpdateLayout();
         }
 
-        public void Initialize(IChatController chatController)
+        public void Initialize(
+            IChatController chatController,
+            DataStore_Mentions mentionsDataStore)
         {
-            directChatList.Initialize(chatController);
-            publicChannelList.Initialize(chatController);
-            searchResultsList.Initialize(chatController);
+            directChatList.Initialize(chatController, mentionsDataStore);
+            publicChannelList.Initialize(chatController, mentionsDataStore);
+            searchResultsList.Initialize(chatController, mentionsDataStore);
         }
 
         public override void Update()
@@ -160,7 +162,7 @@ namespace DCL.Chat.HUD
 
         public void Hide() => gameObject.SetActive(false);
 
-        public void SetPrivateChat(PrivateChatModel model) => privateChatsCreationQueue[model.user.userId] = model;
+        public void SetPrivateChat(PrivateChatModel model) => privateChatsCreationQueue[model.userId] = model;
 
         public void RemovePrivateChat(string userId)
         {
@@ -298,7 +300,7 @@ namespace DCL.Chat.HUD
         public void SetCreateChannelButtonActive(bool isActive) => createChannelButton.gameObject.SetActive(isActive);
 
         public void SetSearchAndCreateContainerActive(bool isActive) => searchAndCreateContainer.SetActive(isActive);
-        
+
         public void ShowConnectWallet()
         {
             isConnectWalletMode = true;
@@ -334,17 +336,16 @@ namespace DCL.Chat.HUD
 
         private void Set(PrivateChatModel model)
         {
-            var user = model.user;
-            var userId = user.userId;
+            string userId = model.userId;
 
             var entry = new PrivateChatEntryModel(
-                user.userId,
-                user.userName,
+                userId,
+                model.userName,
                 model.recentMessage != null ? model.recentMessage.body : string.Empty,
-                user.face256SnapshotURL,
+                model.faceSnapshotUrl,
                 model.isBlocked,
                 model.isOnline,
-                model.recentMessage != null ? model.recentMessage.timestamp : 0);
+                model.recentMessage?.timestamp ?? 0);
 
             if (isSearchMode)
                 searchResultsList.Set(entry);
@@ -355,7 +356,7 @@ namespace DCL.Chat.HUD
             UpdateLayout();
             SortLists();
         }
-    
+
         private void Set(PublicChatModel model)
         {
             var channelId = model.channelId;
@@ -402,12 +403,12 @@ namespace DCL.Chat.HUD
         {
             model.isLoadingDirectChats = visible;
             directChatsLoadingContainer.SetActive(visible);
-        
+
             if (visible)
                 directChatList.Hide();
             else if (!isSearchMode)
                 directChatList.Show();
-        
+
             scroll.enabled = !visible;
             isLoadingPrivateChannels = visible;
         }
@@ -433,21 +434,21 @@ namespace DCL.Chat.HUD
                     Set(model);
                 }
             }
-            
+
             for (var i = 0; i < CREATION_AMOUNT_PER_FRAME && publicChatsCreationQueue.Count > 0; i++)
             {
                 var (userId, model) = publicChatsCreationQueue.First();
                 publicChatsCreationQueue.Remove(userId);
                 Set(model);
             }
-            
+
             HideMoreChatsLoading();
         }
 
         private void FetchProfilePicturesForVisibleEntries()
         {
             if (isSearchMode) return;
-            
+
             foreach (var entry in directChatList.Entries.Values.Skip(currentAvatarSnapshotIndex)
                          .Take(AVATAR_SNAPSHOTS_PER_FRAME))
             {
@@ -462,7 +463,7 @@ namespace DCL.Chat.HUD
             if (currentAvatarSnapshotIndex >= directChatList.Entries.Count)
                 currentAvatarSnapshotIndex = 0;
         }
-        
+
         private void RequestMorePrivateChats(Vector2 position)
         {
             if (!loadMoreEntriesContainer.activeInHierarchy
@@ -483,7 +484,7 @@ namespace DCL.Chat.HUD
 
             lastScrollPosition = position;
         }
-    
+
         private IEnumerator WaitThenRequireMoreEntries()
         {
             yield return new WaitForSeconds(1f);

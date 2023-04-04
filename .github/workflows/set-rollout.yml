@@ -7,7 +7,7 @@ on: [deployment_status]
 jobs:
   set-rollouts-automatic:
     if: ${{ github.event.deployment.task == 'upload-to-cdn' && github.event.deployment_status.state == 'success' }}
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: hmarr/debug-action@v2
       - name: set-rollout-zone
@@ -25,7 +25,7 @@ jobs:
 
           # Rollout information
           deploymentDomain: "play.decentraland.zone"
-          deploymentName: "@dcl/unity-renderer"
+          deploymentName: "@dcl/explorer"
           percentage: 100
 
       - name: set-rollout-today
@@ -43,7 +43,7 @@ jobs:
 
           # Rollout information
           deploymentDomain: "play.decentraland.today"
-          deploymentName: "@dcl/unity-renderer"
+          deploymentName: "@dcl/explorer"
           percentage: 100
 
       - name: set-rollout-org
@@ -61,5 +61,5 @@ jobs:
 
           # Rollout information
           deploymentDomain: "play.decentraland.org"
-          deploymentName: "@dcl/unity-renderer"
-          percentage: 100
+          deploymentName: "@dcl/explorer"
+          percentage: 0

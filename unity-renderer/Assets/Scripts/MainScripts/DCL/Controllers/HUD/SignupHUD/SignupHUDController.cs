@@ -1,34 +1,35 @@
 using DCL;
 using DCL.Interface;
+using JetBrains.Annotations;
 
 namespace SignupHUD
 {
     public class SignupHUDController : IHUD
     {
-        internal ISignupHUDView view;
+        private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
+        private readonly DataStore_LoadingScreen loadingScreenDataStore;
+        internal readonly ISignupHUDView view;
 
         internal string name;
         internal string email;
-        internal BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
+        private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
         internal IHUD avatarEditorHUD;
-        private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
 
-        internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
-
-        public SignupHUDController()
+        public SignupHUDController(ISignupHUDView view)
         {
-            
+            this.view = view;
         }
 
-        public SignupHUDController(IAnalytics analytics)
+        public SignupHUDController(IAnalytics analytics, ISignupHUDView view, DataStore_LoadingScreen loadingScreenDataStore)
         {
             newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
+            this.view = view;
+            this.loadingScreenDataStore = loadingScreenDataStore;
+            loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenAppear;
         }
 
         public void Initialize(IHUD avatarEditorHUD)
         {
-            view = CreateView();
-
             if (view == null)
                 return;
 
@@ -41,7 +42,7 @@ namespace SignupHUD
             view.OnEditAvatar += OnEditAvatar;
             view.OnTermsOfServiceAgreed += OnTermsOfServiceAgreed;
             view.OnTermsOfServiceBack += OnTermsOfServiceBack;
-            
+
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnLoadingScreenAppear;
         }
         private void OnLoadingScreenAppear(bool current, bool previous)
@@ -98,6 +99,7 @@ namespace SignupHUD
             view.OnTermsOfServiceAgreed -= OnTermsOfServiceAgreed;
             view.OnTermsOfServiceBack -= OnTermsOfServiceBack;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnLoadingScreenAppear;
+            loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenAppear;
             view.Dispose();
         }
     }

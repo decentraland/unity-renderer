@@ -1,0 +1,23 @@
+{
+    "name": "AddressablesTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:d8caa1f2d8e6c2b49a7c564e2b81bf89",
+        "GUID:3bdb7fe910cce8d4888137cded3ba4a2",
+        "GUID:69448af7b92c7f342b298e06a37122aa"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -33,20 +33,27 @@ namespace Decentraland.Common {
             "IAEoCRI8Cgl3cmFwX21vZGUYAiABKA4yJC5kZWNlbnRyYWxhbmQuY29tbW9u",
             "LlRleHR1cmVXcmFwTW9kZUgAiAEBEkAKC2ZpbHRlcl9tb2RlGAMgASgOMiYu",
             "ZGVjZW50cmFsYW5kLmNvbW1vbi5UZXh0dXJlRmlsdGVyTW9kZUgBiAEBQgwK",
-            "Cl93cmFwX21vZGVCDgoMX2ZpbHRlcl9tb2RlIoQBCgxUZXh0dXJlVW5pb24S",
-            "LwoHdGV4dHVyZRgBIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVy",
-            "ZUgAEjwKDmF2YXRhcl90ZXh0dXJlGAIgASgLMiIuZGVjZW50cmFsYW5kLmNv",
-            "bW1vbi5BdmF0YXJUZXh0dXJlSABCBQoDdGV4KlUKD1RleHR1cmVXcmFwTW9k",
-            "ZRIOCgpUV01fUkVQRUFUEAASDQoJVFdNX0NMQU1QEAESDgoKVFdNX01JUlJP",
-            "UhACEhMKD1RXTV9NSVJST1JfT05DRRADKkcKEVRleHR1cmVGaWx0ZXJNb2Rl",
-            "Eg0KCVRGTV9QT0lOVBAAEhAKDFRGTV9CSUxJTkVBUhABEhEKDVRGTV9UUklM",
-            "SU5FQVIQAmIGcHJvdG8z"));
+            "Cl93cmFwX21vZGVCDgoMX2ZpbHRlcl9tb2RlIskBCgxWaWRlb1RleHR1cmUS",
+            "GwoTdmlkZW9fcGxheWVyX2VudGl0eRgBIAEoDRI8Cgl3cmFwX21vZGUYAiAB",
+            "KA4yJC5kZWNlbnRyYWxhbmQuY29tbW9uLlRleHR1cmVXcmFwTW9kZUgAiAEB",
+            "EkAKC2ZpbHRlcl9tb2RlGAMgASgOMiYuZGVjZW50cmFsYW5kLmNvbW1vbi5U",
+            "ZXh0dXJlRmlsdGVyTW9kZUgBiAEBQgwKCl93cmFwX21vZGVCDgoMX2ZpbHRl",
+            "cl9tb2RlIsABCgxUZXh0dXJlVW5pb24SLwoHdGV4dHVyZRgBIAEoCzIcLmRl",
+            "Y2VudHJhbGFuZC5jb21tb24uVGV4dHVyZUgAEjwKDmF2YXRhcl90ZXh0dXJl",
+            "GAIgASgLMiIuZGVjZW50cmFsYW5kLmNvbW1vbi5BdmF0YXJUZXh0dXJlSAAS",
+            "OgoNdmlkZW9fdGV4dHVyZRgDIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24u",
+            "VmlkZW9UZXh0dXJlSABCBQoDdGV4KlUKD1RleHR1cmVXcmFwTW9kZRIOCgpU",
+            "V01fUkVQRUFUEAASDQoJVFdNX0NMQU1QEAESDgoKVFdNX01JUlJPUhACEhMK",
+            "D1RXTV9NSVJST1JfT05DRRADKkcKEVRleHR1cmVGaWx0ZXJNb2RlEg0KCVRG",
+            "TV9QT0lOVBAAEhAKDFRGTV9CSUxJTkVBUhABEhEKDVRGTV9UUklMSU5FQVIQ",
+            "AmIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Common.TextureWrapMode), typeof(global::Decentraland.Common.TextureFilterMode), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Common.Texture), global::Decentraland.Common.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Common.AvatarTexture), global::Decentraland.Common.AvatarTexture.Parser, new[]{ "UserId", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Common.TextureUnion), global::Decentraland.Common.TextureUnion.Parser, new[]{ "Texture", "AvatarTexture" }, new[]{ "Tex" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Common.VideoTexture), global::Decentraland.Common.VideoTexture.Parser, new[]{ "VideoPlayerEntity", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Common.TextureUnion), global::Decentraland.Common.TextureUnion.Parser, new[]{ "Texture", "AvatarTexture", "VideoTexture" }, new[]{ "Tex" }, null, null, null)
           }));
     }
     #endregion
@@ -663,6 +670,303 @@ namespace Decentraland.Common {
 
   }
 
+  public sealed partial class VideoTexture : pb::IMessage<VideoTexture>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<VideoTexture> _parser = new pb::MessageParser<VideoTexture>(() => new VideoTexture());
+    private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<VideoTexture> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Common.TextureReflection.Descriptor.MessageTypes[2]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public VideoTexture() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public VideoTexture(VideoTexture other) : this() {
+      _hasBits0 = other._hasBits0;
+      videoPlayerEntity_ = other.videoPlayerEntity_;
+      wrapMode_ = other.wrapMode_;
+      filterMode_ = other.filterMode_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public VideoTexture Clone() {
+      return new VideoTexture(this);
+    }
+
+    /// <summary>Field number for the "video_player_entity" field.</summary>
+    public const int VideoPlayerEntityFieldNumber = 1;
+    private uint videoPlayerEntity_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public uint VideoPlayerEntity {
+      get { return videoPlayerEntity_; }
+      set {
+        videoPlayerEntity_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "wrap_mode" field.</summary>
+    public const int WrapModeFieldNumber = 2;
+    private global::Decentraland.Common.TextureWrapMode wrapMode_;
+    /// <summary>
+    /// default = TextureWrapMode.Clamp
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.TextureWrapMode WrapMode {
+      get { if ((_hasBits0 & 1) != 0) { return wrapMode_; } else { return global::Decentraland.Common.TextureWrapMode.TwmRepeat; } }
+      set {
+        _hasBits0 |= 1;
+        wrapMode_ = value;
+      }
+    }
+    /// <summary>Gets whether the "wrap_mode" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasWrapMode {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "wrap_mode" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearWrapMode() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "filter_mode" field.</summary>
+    public const int FilterModeFieldNumber = 3;
+    private global::Decentraland.Common.TextureFilterMode filterMode_;
+    /// <summary>
+    /// default = FilterMode.Bilinear
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.TextureFilterMode FilterMode {
+      get { if ((_hasBits0 & 2) != 0) { return filterMode_; } else { return global::Decentraland.Common.TextureFilterMode.TfmPoint; } }
+      set {
+        _hasBits0 |= 2;
+        filterMode_ = value;
+      }
+    }
+    /// <summary>Gets whether the "filter_mode" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasFilterMode {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "filter_mode" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearFilterMode() {
+      _hasBits0 &= ~2;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as VideoTexture);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(VideoTexture other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (VideoPlayerEntity != other.VideoPlayerEntity) return false;
+      if (WrapMode != other.WrapMode) return false;
+      if (FilterMode != other.FilterMode) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (VideoPlayerEntity != 0) hash ^= VideoPlayerEntity.GetHashCode();
+      if (HasWrapMode) hash ^= WrapMode.GetHashCode();
+      if (HasFilterMode) hash ^= FilterMode.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (VideoPlayerEntity != 0) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(VideoPlayerEntity);
+      }
+      if (HasWrapMode) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) WrapMode);
+      }
+      if (HasFilterMode) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) FilterMode);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (VideoPlayerEntity != 0) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(VideoPlayerEntity);
+      }
+      if (HasWrapMode) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) WrapMode);
+      }
+      if (HasFilterMode) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) FilterMode);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (VideoPlayerEntity != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(VideoPlayerEntity);
+      }
+      if (HasWrapMode) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) WrapMode);
+      }
+      if (HasFilterMode) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) FilterMode);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(VideoTexture other) {
+      if (other == null) {
+        return;
+      }
+      if (other.VideoPlayerEntity != 0) {
+        VideoPlayerEntity = other.VideoPlayerEntity;
+      }
+      if (other.HasWrapMode) {
+        WrapMode = other.WrapMode;
+      }
+      if (other.HasFilterMode) {
+        FilterMode = other.FilterMode;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            VideoPlayerEntity = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            WrapMode = (global::Decentraland.Common.TextureWrapMode) input.ReadEnum();
+            break;
+          }
+          case 24: {
+            FilterMode = (global::Decentraland.Common.TextureFilterMode) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            VideoPlayerEntity = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            WrapMode = (global::Decentraland.Common.TextureWrapMode) input.ReadEnum();
+            break;
+          }
+          case 24: {
+            FilterMode = (global::Decentraland.Common.TextureFilterMode) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
   public sealed partial class TextureUnion : pb::IMessage<TextureUnion>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -677,7 +981,7 @@ namespace Decentraland.Common {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Common.TextureReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Decentraland.Common.TextureReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -703,6 +1007,9 @@ namespace Decentraland.Common {
           break;
         case TexOneofCase.AvatarTexture:
           AvatarTexture = other.AvatarTexture.Clone();
+          break;
+        case TexOneofCase.VideoTexture:
+          VideoTexture = other.VideoTexture.Clone();
           break;
       }
 
@@ -745,12 +1052,28 @@ namespace Decentraland.Common {
       }
     }
 
+    /// <summary>Field number for the "video_texture" field.</summary>
+    public const int VideoTextureFieldNumber = 3;
+    /// <summary>
+    /// default = null
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.VideoTexture VideoTexture {
+      get { return texCase_ == TexOneofCase.VideoTexture ? (global::Decentraland.Common.VideoTexture) tex_ : null; }
+      set {
+        tex_ = value;
+        texCase_ = value == null ? TexOneofCase.None : TexOneofCase.VideoTexture;
+      }
+    }
+
     private object tex_;
     /// <summary>Enum of possible cases for the "tex" oneof.</summary>
     public enum TexOneofCase {
       None = 0,
       Texture = 1,
       AvatarTexture = 2,
+      VideoTexture = 3,
     }
     private TexOneofCase texCase_ = TexOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -783,6 +1106,7 @@ namespace Decentraland.Common {
       }
       if (!object.Equals(Texture, other.Texture)) return false;
       if (!object.Equals(AvatarTexture, other.AvatarTexture)) return false;
+      if (!object.Equals(VideoTexture, other.VideoTexture)) return false;
       if (TexCase != other.TexCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -793,6 +1117,7 @@ namespace Decentraland.Common {
       int hash = 1;
       if (texCase_ == TexOneofCase.Texture) hash ^= Texture.GetHashCode();
       if (texCase_ == TexOneofCase.AvatarTexture) hash ^= AvatarTexture.GetHashCode();
+      if (texCase_ == TexOneofCase.VideoTexture) hash ^= VideoTexture.GetHashCode();
       hash ^= (int) texCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -820,6 +1145,10 @@ namespace Decentraland.Common {
         output.WriteRawTag(18);
         output.WriteMessage(AvatarTexture);
       }
+      if (texCase_ == TexOneofCase.VideoTexture) {
+        output.WriteRawTag(26);
+        output.WriteMessage(VideoTexture);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -838,6 +1167,10 @@ namespace Decentraland.Common {
         output.WriteRawTag(18);
         output.WriteMessage(AvatarTexture);
       }
+      if (texCase_ == TexOneofCase.VideoTexture) {
+        output.WriteRawTag(26);
+        output.WriteMessage(VideoTexture);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -853,6 +1186,9 @@ namespace Decentraland.Common {
       }
       if (texCase_ == TexOneofCase.AvatarTexture) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AvatarTexture);
+      }
+      if (texCase_ == TexOneofCase.VideoTexture) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(VideoTexture);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -878,6 +1214,12 @@ namespace Decentraland.Common {
             AvatarTexture = new global::Decentraland.Common.AvatarTexture();
           }
           AvatarTexture.MergeFrom(other.AvatarTexture);
+          break;
+        case TexOneofCase.VideoTexture:
+          if (VideoTexture == null) {
+            VideoTexture = new global::Decentraland.Common.VideoTexture();
+          }
+          VideoTexture.MergeFrom(other.VideoTexture);
           break;
       }
 
@@ -914,6 +1256,15 @@ namespace Decentraland.Common {
             AvatarTexture = subBuilder;
             break;
           }
+          case 26: {
+            global::Decentraland.Common.VideoTexture subBuilder = new global::Decentraland.Common.VideoTexture();
+            if (texCase_ == TexOneofCase.VideoTexture) {
+              subBuilder.MergeFrom(VideoTexture);
+            }
+            input.ReadMessage(subBuilder);
+            VideoTexture = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -945,6 +1296,15 @@ namespace Decentraland.Common {
             }
             input.ReadMessage(subBuilder);
             AvatarTexture = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Common.VideoTexture subBuilder = new global::Decentraland.Common.VideoTexture();
+            if (texCase_ == TexOneofCase.VideoTexture) {
+              subBuilder.MergeFrom(VideoTexture);
+            }
+            input.ReadMessage(subBuilder);
+            VideoTexture = subBuilder;
             break;
           }
         }

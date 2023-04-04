@@ -3,6 +3,7 @@ using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using UnityEditor;
 using UnityEngine;
 
 public class EntityMaterialUpdateTestController : MonoBehaviour
@@ -10,7 +11,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
     void Start()
     {
         var sceneController = Environment.i.world.sceneController;
-        var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+        var scenesToLoad = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/Tests/TestJSON/SceneLoadingTest").text;
 
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(scenesToLoad);

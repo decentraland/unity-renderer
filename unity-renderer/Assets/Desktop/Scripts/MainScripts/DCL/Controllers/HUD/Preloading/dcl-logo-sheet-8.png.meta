@@ -1,0 +1,4722 @@
+fileFormatVersion: 2
+guid: 77c4cc2655b6a4acfbaa0c49d2931e2b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6564196114392002561
+    second: dcl-logo-sheet-8_0
+  - first:
+      213: -599311166747458298
+    second: dcl-logo-sheet-8_1
+  - first:
+      213: 7310306212558117134
+    second: dcl-logo-sheet-8_2
+  - first:
+      213: 6236779839642256020
+    second: dcl-logo-sheet-8_3
+  - first:
+      213: 8120601120413960067
+    second: dcl-logo-sheet-8_4
+  - first:
+      213: 2075320740844558936
+    second: dcl-logo-sheet-8_5
+  - first:
+      213: -3281239992404277481
+    second: dcl-logo-sheet-8_6
+  - first:
+      213: -6366540677377407495
+    second: dcl-logo-sheet-8_7
+  - first:
+      213: 6831562475961525310
+    second: dcl-logo-sheet-8_8
+  - first:
+      213: 9171080029735732808
+    second: dcl-logo-sheet-8_9
+  - first:
+      213: 6322138436626222090
+    second: dcl-logo-sheet-8_10
+  - first:
+      213: -3876469241221732795
+    second: dcl-logo-sheet-8_11
+  - first:
+      213: -4570698362677196533
+    second: dcl-logo-sheet-8_12
+  - first:
+      213: -582970132661264009
+    second: dcl-logo-sheet-8_13
+  - first:
+      213: -3576958095862952218
+    second: dcl-logo-sheet-8_14
+  - first:
+      213: 7842938216295815274
+    second: dcl-logo-sheet-8_15
+  - first:
+      213: -9196550056353838114
+    second: dcl-logo-sheet-8_16
+  - first:
+      213: -2812475195188686264
+    second: dcl-logo-sheet-8_17
+  - first:
+      213: -8455422452764359865
+    second: dcl-logo-sheet-8_18
+  - first:
+      213: 513408843663828377
+    second: dcl-logo-sheet-8_19
+  - first:
+      213: -1507237447633899366
+    second: dcl-logo-sheet-8_20
+  - first:
+      213: 6804968024216762294
+    second: dcl-logo-sheet-8_21
+  - first:
+      213: 2962700630183233659
+    second: dcl-logo-sheet-8_22
+  - first:
+      213: 6543633674534146910
+    second: dcl-logo-sheet-8_23
+  - first:
+      213: 30655125140989759
+    second: dcl-logo-sheet-8_24
+  - first:
+      213: -739778135582260594
+    second: dcl-logo-sheet-8_25
+  - first:
+      213: -4872438122318171324
+    second: dcl-logo-sheet-8_26
+  - first:
+      213: -5306620065340079128
+    second: dcl-logo-sheet-8_27
+  - first:
+      213: -3679329821057122254
+    second: dcl-logo-sheet-8_28
+  - first:
+      213: -1339079699423872386
+    second: dcl-logo-sheet-8_29
+  - first:
+      213: 5699750388770320737
+    second: dcl-logo-sheet-8_30
+  - first:
+      213: 5509797872876695970
+    second: dcl-logo-sheet-8_31
+  - first:
+      213: -8443645627465799347
+    second: dcl-logo-sheet-8_32
+  - first:
+      213: -3322778136531006693
+    second: dcl-logo-sheet-8_33
+  - first:
+      213: -4546976831098336097
+    second: dcl-logo-sheet-8_34
+  - first:
+      213: -7143438524404359011
+    second: dcl-logo-sheet-8_35
+  - first:
+      213: 6047591263731790696
+    second: dcl-logo-sheet-8_36
+  - first:
+      213: -5662486047365957622
+    second: dcl-logo-sheet-8_37
+  - first:
+      213: 3254956606946488122
+    second: dcl-logo-sheet-8_38
+  - first:
+      213: -2991606802372532849
+    second: dcl-logo-sheet-8_39
+  - first:
+      213: -8468503498299648680
+    second: dcl-logo-sheet-8_40
+  - first:
+      213: -3892031587369339511
+    second: dcl-logo-sheet-8_41
+  - first:
+      213: -4641510677235557847
+    second: dcl-logo-sheet-8_42
+  - first:
+      213: -3638556296690758564
+    second: dcl-logo-sheet-8_43
+  - first:
+      213: 2631064143410692936
+    second: dcl-logo-sheet-8_44
+  - first:
+      213: -5070829439501578848
+    second: dcl-logo-sheet-8_45
+  - first:
+      213: 3845950923005957416
+    second: dcl-logo-sheet-8_46
+  - first:
+      213: 3944799867974415420
+    second: dcl-logo-sheet-8_47
+  - first:
+      213: 2594800177419925280
+    second: dcl-logo-sheet-8_48
+  - first:
+      213: -922041065967540893
+    second: dcl-logo-sheet-8_49
+  - first:
+      213: 2290073345888213160
+    second: dcl-logo-sheet-8_50
+  - first:
+      213: -3528978270154281674
+    second: dcl-logo-sheet-8_51
+  - first:
+      213: 4269214577061122312
+    second: dcl-logo-sheet-8_52
+  - first:
+      213: -7128446295946346782
+    second: dcl-logo-sheet-8_53
+  - first:
+      213: 8010659907498118111
+    second: dcl-logo-sheet-8_54
+  - first:
+      213: 5528456257090146681
+    second: dcl-logo-sheet-8_55
+  - first:
+      213: -4628246598063846510
+    second: dcl-logo-sheet-8_56
+  - first:
+      213: 637168490124730338
+    second: dcl-logo-sheet-8_57
+  - first:
+      213: 9112703696150278901
+    second: dcl-logo-sheet-8_58
+  - first:
+      213: -5979121160692039714
+    second: dcl-logo-sheet-8_59
+  - first:
+      213: -2959675717460164672
+    second: dcl-logo-sheet-8_60
+  - first:
+      213: -7858529428014514557
+    second: dcl-logo-sheet-8_61
+  - first:
+      213: 4858625185115857992
+    second: dcl-logo-sheet-8_62
+  - first:
+      213: 3213454091435705556
+    second: dcl-logo-sheet-8_63
+  - first:
+      213: -8250682690627960789
+    second: dcl-logo-sheet-8_64
+  - first:
+      213: 6378448583828118107
+    second: dcl-logo-sheet-8_65
+  - first:
+      213: -6863584063565455819
+    second: dcl-logo-sheet-8_66
+  - first:
+      213: 5046061242414085085
+    second: dcl-logo-sheet-8_67
+  - first:
+      213: 5255378374304204942
+    second: dcl-logo-sheet-8_68
+  - first:
+      213: 827163460724820975
+    second: dcl-logo-sheet-8_69
+  - first:
+      213: -6150013885480518409
+    second: dcl-logo-sheet-8_70
+  - first:
+      213: -849778287786138969
+    second: dcl-logo-sheet-8_71
+  - first:
+      213: 9018553255356905041
+    second: dcl-logo-sheet-8_72
+  - first:
+      213: 7792552696646426314
+    second: dcl-logo-sheet-8_73
+  - first:
+      213: 7331766943477849501
+    second: dcl-logo-sheet-8_74
+  - first:
+      213: -8788872022932124001
+    second: dcl-logo-sheet-8_75
+  - first:
+      213: -6312429260580084797
+    second: dcl-logo-sheet-8_76
+  - first:
+      213: 2434810008200109179
+    second: dcl-logo-sheet-8_77
+  - first:
+      213: 1045644465811868312
+    second: dcl-logo-sheet-8_78
+  - first:
+      213: 6866582787417948546
+    second: dcl-logo-sheet-8_79
+  - first:
+      213: 2962230587608220456
+    second: dcl-logo-sheet-8_80
+  - first:
+      213: -5913350207092506665
+    second: dcl-logo-sheet-8_81
+  - first:
+      213: 960102089162062830
+    second: dcl-logo-sheet-8_82
+  - first:
+      213: -8244992414090884572
+    second: dcl-logo-sheet-8_83
+  - first:
+      213: -1389387422568660110
+    second: dcl-logo-sheet-8_84
+  - first:
+      213: 2150173114668619888
+    second: dcl-logo-sheet-8_85
+  - first:
+      213: -3553351285112640552
+    second: dcl-logo-sheet-8_86
+  - first:
+      213: -5816939164872560361
+    second: dcl-logo-sheet-8_87
+  - first:
+      213: 3581500005145934798
+    second: dcl-logo-sheet-8_88
+  - first:
+      213: 864652694740785454
+    second: dcl-logo-sheet-8_89
+  - first:
+      213: -3921515019202725125
+    second: dcl-logo-sheet-8_90
+  - first:
+      213: -1934942164537373830
+    second: dcl-logo-sheet-8_91
+  - first:
+      213: -2728085904910798788
+    second: dcl-logo-sheet-8_92
+  - first:
+      213: -2491974183252431988
+    second: dcl-logo-sheet-8_93
+  - first:
+      213: -5440703294902300149
+    second: dcl-logo-sheet-8_94
+  - first:
+      213: 4521172196772346731
+    second: dcl-logo-sheet-8_95
+  - first:
+      213: 4053941630659847453
+    second: dcl-logo-sheet-8_96
+  - first:
+      213: -2466684227963581540
+    second: dcl-logo-sheet-8_97
+  - first:
+      213: -1454492317176462056
+    second: dcl-logo-sheet-8_98
+  - first:
+      213: 7336412892401544783
+    second: dcl-logo-sheet-8_99
+  - first:
+      213: 1436424337079450198
+    second: dcl-logo-sheet-8_100
+  - first:
+      213: -2530696656047036487
+    second: dcl-logo-sheet-8_101
+  - first:
+      213: 524902953856884694
+    second: dcl-logo-sheet-8_102
+  - first:
+      213: -858440811099808111
+    second: dcl-logo-sheet-8_103
+  - first:
+      213: 5465792034687391633
+    second: dcl-logo-sheet-8_104
+  - first:
+      213: -4620978122480386195
+    second: dcl-logo-sheet-8_105
+  - first:
+      213: -135630964287964549
+    second: dcl-logo-sheet-8_106
+  - first:
+      213: 4130334385838179526
+    second: dcl-logo-sheet-8_107
+  - first:
+      213: -5009626357589417943
+    second: dcl-logo-sheet-8_108
+  - first:
+      213: -3524652436710275574
+    second: dcl-logo-sheet-8_109
+  - first:
+      213: -1957229539670244993
+    second: dcl-logo-sheet-8_110
+  - first:
+      213: 1575363378761429971
+    second: dcl-logo-sheet-8_111
+  - first:
+      213: 866560960041419146
+    second: dcl-logo-sheet-8_112
+  - first:
+      213: -4351541533370688688
+    second: dcl-logo-sheet-8_113
+  - first:
+      213: 5966627577109247507
+    second: dcl-logo-sheet-8_114
+  - first:
+      213: 9163800239764307169
+    second: dcl-logo-sheet-8_115
+  - first:
+      213: -6047751816047455868
+    second: dcl-logo-sheet-8_116
+  - first:
+      213: -4949961095164131401
+    second: dcl-logo-sheet-8_117
+  - first:
+      213: 479770096863365579
+    second: dcl-logo-sheet-8_118
+  - first:
+      213: 7054310628199680943
+    second: dcl-logo-sheet-8_119
+  - first:
+      213: -1354149016206076279
+    second: dcl-logo-sheet-8_120
+  - first:
+      213: -5339180412571635986
+    second: dcl-logo-sheet-8_121
+  - first:
+      213: -4118204175642226172
+    second: dcl-logo-sheet-8_122
+  - first:
+      213: -6688697311820048824
+    second: dcl-logo-sheet-8_123
+  - first:
+      213: -6894364648091246116
+    second: dcl-logo-sheet-8_124
+  - first:
+      213: 8847074267983870361
+    second: dcl-logo-sheet-8_125
+  - first:
+      213: 2498401344525179741
+    second: dcl-logo-sheet-8_126
+  - first:
+      213: 8440344205025237099
+    second: dcl-logo-sheet-8_127
+  - first:
+      213: -2350481088415708575
+    second: dcl-logo-sheet-8_128
+  - first:
+      213: 5251155534611901361
+    second: dcl-logo-sheet-8_129
+  - first:
+      213: -2936063380074971828
+    second: dcl-logo-sheet-8_130
+  - first:
+      213: 4871999620593590388
+    second: dcl-logo-sheet-8_131
+  - first:
+      213: 4347253385352803812
+    second: dcl-logo-sheet-8_132
+  - first:
+      213: -5880377931005346060
+    second: dcl-logo-sheet-8_133
+  - first:
+      213: -160233173700937014
+    second: dcl-logo-sheet-8_134
+  - first:
+      213: 7630162894922125656
+    second: dcl-logo-sheet-8_135
+  - first:
+      213: -7721778768327699243
+    second: dcl-logo-sheet-8_136
+  - first:
+      213: -1476666785222741885
+    second: dcl-logo-sheet-8_137
+  - first:
+      213: -7392312580399673261
+    second: dcl-logo-sheet-8_138
+  - first:
+      213: 1422481112917159684
+    second: dcl-logo-sheet-8_139
+  - first:
+      213: -4737624261800227643
+    second: dcl-logo-sheet-8_140
+  - first:
+      213: -7713067954868079500
+    second: dcl-logo-sheet-8_141
+  - first:
+      213: 5202523912555564778
+    second: dcl-logo-sheet-8_142
+  - first:
+      213: 7156811538003306861
+    second: dcl-logo-sheet-8_143
+  - first:
+      213: -7312616366097664207
+    second: dcl-logo-sheet-8_144
+  - first:
+      213: 3932011516135469461
+    second: dcl-logo-sheet-8_145
+  - first:
+      213: 7876310792235458495
+    second: dcl-logo-sheet-8_146
+  - first:
+      213: 5387403010506632064
+    second: dcl-logo-sheet-8_147
+  - first:
+      213: 4864179666029479232
+    second: dcl-logo-sheet-8_148
+  - first:
+      213: -1955442472781240893
+    second: dcl-logo-sheet-8_149
+  - first:
+      213: 9121703068685808569
+    second: dcl-logo-sheet-8_150
+  - first:
+      213: -6003249400308289158
+    second: dcl-logo-sheet-8_151
+  - first:
+      213: 8792338106584749951
+    second: dcl-logo-sheet-8_152
+  - first:
+      213: -99108364740012471
+    second: dcl-logo-sheet-8_153
+  - first:
+      213: 7019367862962769187
+    second: dcl-logo-sheet-8_154
+  - first:
+      213: -3068371999166326161
+    second: dcl-logo-sheet-8_155
+  - first:
+      213: 2957265759428999439
+    second: dcl-logo-sheet-8_156
+  - first:
+      213: 8789879923553196363
+    second: dcl-logo-sheet-8_157
+  - first:
+      213: -7851281671919354597
+    second: dcl-logo-sheet-8_158
+  - first:
+      213: -4250656021986852475
+    second: dcl-logo-sheet-8_159
+  - first:
+      213: -469484460480607747
+    second: dcl-logo-sheet-8_160
+  - first:
+      213: 8101206958307880769
+    second: dcl-logo-sheet-8_161
+  - first:
+      213: 30775259177642093
+    second: dcl-logo-sheet-8_162
+  - first:
+      213: 6461311428044776773
+    second: dcl-logo-sheet-8_163
+  - first:
+      213: 2491092921746454277
+    second: dcl-logo-sheet-8_164
+  - first:
+      213: 6624084374585165122
+    second: dcl-logo-sheet-8_165
+  - first:
+      213: -58636307032249808
+    second: dcl-logo-sheet-8_166
+  - first:
+      213: 3743415624895263729
+    second: dcl-logo-sheet-8_167
+  - first:
+      213: -7638457911799989355
+    second: dcl-logo-sheet-8_168
+  - first:
+      213: -1782460231084776814
+    second: dcl-logo-sheet-8_169
+  - first:
+      213: 2482191468289697619
+    second: dcl-logo-sheet-8_170
+  - first:
+      213: -7253756642369625857
+    second: dcl-logo-sheet-8_171
+  - first:
+      213: -5124167147118178137
+    second: dcl-logo-sheet-8_172
+  - first:
+      213: -1447213308832963789
+    second: dcl-logo-sheet-8_173
+  - first:
+      213: -1863813034535355795
+    second: dcl-logo-sheet-8_174
+  - first:
+      213: -7806552943983098275
+    second: dcl-logo-sheet-8_175
+  - first:
+      213: 7244061211946165039
+    second: dcl-logo-sheet-8_176
+  - first:
+      213: 8085927144961666037
+    second: dcl-logo-sheet-8_177
+  - first:
+      213: 9197724526425450772
+    second: dcl-logo-sheet-8_178
+  - first:
+      213: -7640168058789509738
+    second: dcl-logo-sheet-8_179
+  - first:
+      213: -3322226891719096161
+    second: dcl-logo-sheet-8_180
+  - first:
+      213: -145525320708404196
+    second: dcl-logo-sheet-8_181
+  - first:
+      213: 1947981625387767932
+    second: dcl-logo-sheet-8_182
+  - first:
+      213: -1656234146764431145
+    second: dcl-logo-sheet-8_183
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 5500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 100b5526695b81b50800000000000000
+      internalID: 6564196114392002561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_1
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 5500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 605c71c4ba1dea7f0800000000000000
+      internalID: -599311166747458298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_2
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 5500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e099bd6c4cc637560800000000000000
+      internalID: 7310306212558117134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_3
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 5500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 492c134683e7d8650800000000000000
+      internalID: 6236779839642256020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_4
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 5500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 387c9e8b1bb22b070800000000000000
+      internalID: 8120601120413960067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_5
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 5500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85a5a01e7350dcc10800000000000000
+      internalID: 2075320740844558936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_6
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 5500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71700f59c91b672d0800000000000000
+      internalID: -3281239992404277481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_7
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 5500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f548dc3cf085a7a0800000000000000
+      internalID: -6366540677377407495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 5250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e34239070e59ece50800000000000000
+      internalID: 6831562475961525310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_9
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 5250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 846c31352b8364f70800000000000000
+      internalID: 9171080029735732808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_10
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 5250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0c03f7796fbcb750800000000000000
+      internalID: 6322138436626222090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_11
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 5250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 546204673c3043ac0800000000000000
+      internalID: -3876469241221732795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_12
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 5250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b098a254e0e9190c0800000000000000
+      internalID: -4570698362677196533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_13
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 5250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7712018c0cfd8e7f0800000000000000
+      internalID: -582970132661264009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_14
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 5250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ee81a730971c5ec0800000000000000
+      internalID: -3576958095862952218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_15
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 5250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a68d5a901c6b7dc60800000000000000
+      internalID: 7842938216295815274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 5000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edb4eebf27a4f5080800000000000000
+      internalID: -9196550056353838114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_17
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 5000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8425e2b06b418f8d0800000000000000
+      internalID: -2812475195188686264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_18
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 5000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7434e15f31e48aa80800000000000000
+      internalID: -8455422452764359865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_19
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 5000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99560278f9eff1700800000000000000
+      internalID: 513408843663828377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_20
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 5000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a907d9de687351be0800000000000000
+      internalID: -1507237447633899366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_21
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 5000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b7f45f1d5a107e50800000000000000
+      internalID: 6804968024216762294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_22
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 5000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b78c5eda680ad1920800000000000000
+      internalID: 2962700630183233659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_23
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 5000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5354e64828afca50800000000000000
+      internalID: 6543633674534146910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 4750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f37e2948ca8ec6000800000000000000
+      internalID: 30655125140989759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_25
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 4750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e82c40884b7cbb5f0800000000000000
+      internalID: -739778135582260594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_26
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 4750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4437721d75f916cb0800000000000000
+      internalID: -4872438122318171324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_27
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 4750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e3c17f8a291b56b0800000000000000
+      internalID: -5306620065340079128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_28
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 4750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 230836c850560fcc0800000000000000
+      internalID: -3679329821057122254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_29
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 4750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7a37edab12aa6de0800000000000000
+      internalID: -1339079699423872386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_30
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 4750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 161bc0fa7c4991f40800000000000000
+      internalID: 5699750388770320737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_31
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 4750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a1b40529fbb67c40800000000000000
+      internalID: 5509797872876695970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 4500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d49ee95c90522da80800000000000000
+      internalID: -8443645627465799347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_33
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 4500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1b82a0c3ee13e1d0800000000000000
+      internalID: -3322778136531006693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_34
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 4500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9cc37cb9a4e5e0c0800000000000000
+      internalID: -4546976831098336097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_35
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 4500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d90a90672886ddc90800000000000000
+      internalID: -7143438524404359011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_36
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 4500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8633d7d763c5de350800000000000000
+      internalID: 6047591263731790696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_37
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 4500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a087529e0feca61b0800000000000000
+      internalID: -5662486047365957622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_38
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 4500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3f2b5cd9cdeb2d20800000000000000
+      internalID: 3254956606946488122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_39
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 4500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8561f4a67dab76d0800000000000000
+      internalID: -2991606802372532849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 4250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85552b4bfe4d97a80800000000000000
+      internalID: -8468503498299648680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_41
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 4250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 985304464e9bcf9c0800000000000000
+      internalID: -3892031587369339511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_42
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 4250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92a113e71aa069fb0800000000000000
+      internalID: -4641510677235557847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_43
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 4250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5c8c787350418dc0800000000000000
+      internalID: -3638556296690758564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_44
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 4250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 843034106ea638420800000000000000
+      internalID: 2631064143410692936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_45
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 4250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ad4aedbd7bc0a9b0800000000000000
+      internalID: -5070829439501578848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_46
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 4250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8251b5ddcff8f5530800000000000000
+      internalID: 3845950923005957416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_47
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 4250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c347f98549ebeb630800000000000000
+      internalID: 3944799867974415420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 4000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0273c367305920420800000000000000
+      internalID: 2594800177419925280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_49
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 4000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 365aea229804433f0800000000000000
+      internalID: -922041065967540893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_50
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 4000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a8d1432399f7cf10800000000000000
+      internalID: 2290073345888213160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_51
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 4000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63da16be5fc860fc0800000000000000
+      internalID: -3528978270154281674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_52
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 4000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 801d5afd90c4f3b30800000000000000
+      internalID: 4269214577061122312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_53
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 4000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ee3ba9acdba21d90800000000000000
+      internalID: -7128446295946346782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_54
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 4000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdb83ea5eb49b2f60800000000000000
+      internalID: 8010659907498118111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_55
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 4000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 971d420cca509bc40800000000000000
+      internalID: 5528456257090146681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29b8e759d3a25cfb0800000000000000
+      internalID: -4628246598063846510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_57
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 3750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2efd4fbad5da7d800800000000000000
+      internalID: 637168490124730338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_58
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 3750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f23d600bb3d67e70800000000000000
+      internalID: 9112703696150278901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_59
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 3750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edffdebabf4e50da0800000000000000
+      internalID: -5979121160692039714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_60
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 3750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cfff62bd9e1de6d0800000000000000
+      internalID: -2959675717460164672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_61
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 3750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38ebd3a1f15e0f290800000000000000
+      internalID: -7858529428014514557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_62
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 3750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 844e89f1ddd4d6340800000000000000
+      internalID: 4858625185115857992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_63
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 3750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d40d06787b789c20800000000000000
+      internalID: 3213454091435705556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_64
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2008ae8ecfaf7d80800000000000000
+      internalID: -8250682690627960789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_65
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 3500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5a1b29413dc48850800000000000000
+      internalID: 6378448583828118107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_66
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 3500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53e1625b8a6afb0a0800000000000000
+      internalID: -6863584063565455819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_67
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 3500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd335fcf6f5370640800000000000000
+      internalID: 5046061242414085085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_68
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 3500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e880ca889cadee840800000000000000
+      internalID: 5255378374304204942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_69
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 3500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: feb8fa7f8ccaa7b00800000000000000
+      internalID: 827163460724820975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_70
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 3500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fcb63094f2c6aaa0800000000000000
+      internalID: -6150013885480518409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_71
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 3500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a2eaaa462bf434f0800000000000000
+      internalID: -849778287786138969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_72
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 156bd754766582d70800000000000000
+      internalID: 9018553255356905041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_73
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 3250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ace5f111465b42c60800000000000000
+      internalID: 7792552696646426314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_74
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 3250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9dd2f1903bafb560800000000000000
+      internalID: 7331766943477849501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_75
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 3250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9e03c8e577a70680800000000000000
+      internalID: -8788872022932124001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_76
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 3250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c3a75d380fb568a0800000000000000
+      internalID: -6312429260580084797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_77
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 3250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7c55526dce2ac120800000000000000
+      internalID: 2434810008200109179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_78
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 3250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89ac1120a10e28e00800000000000000
+      internalID: 1045644465811868312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_79
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 3250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 281cbd81aa00b4f50800000000000000
+      internalID: 6866582787417948546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_80
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8234f2d5605fb1920800000000000000
+      internalID: 2962230587608220456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_81
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 3000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dfb4c1215f8feda0800000000000000
+      internalID: -5913350207092506665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_82
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 3000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eeb7d9463c7f25d00800000000000000
+      internalID: 960102089162062830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_83
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 3000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42a825e4517e39d80800000000000000
+      internalID: -8244992414090884572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_84
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 3000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 273466e1087e7bce0800000000000000
+      internalID: -1389387422568660110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_85
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 3000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0781b614e03f6dd10800000000000000
+      internalID: 2150173114668619888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_86
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 3000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8dbeea825d5ffaec0800000000000000
+      internalID: -3553351285112640552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_87
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 3000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 711b6b526a4164fa0800000000000000
+      internalID: -5816939164872560361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_88
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecb78c1774b04b130800000000000000
+      internalID: 3581500005145934798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_89
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 2750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e29db147b0ddffb00800000000000000
+      internalID: 864652694740785454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_90
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 2750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfaff0bfddaf399c0800000000000000
+      internalID: -3921515019202725125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_91
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 2750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7b03d56a54b525e0800000000000000
+      internalID: -1934942164537373830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_92
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 2750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c30ba01d254e32ad0800000000000000
+      internalID: -2728085904910798788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_93
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 2750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8b6bc1feaaba6dd0800000000000000
+      internalID: -2491974183252431988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_94
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 2750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b021d0bed2dbe74b0800000000000000
+      internalID: -5440703294902300149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_95
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 2750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6bfcf4a82e6ebe30800000000000000
+      internalID: 4521172196772346731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_96
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d15e5a33f6e724830800000000000000
+      internalID: 4053941630659847453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_97
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 2500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9b0c2383c394cdd0800000000000000
+      internalID: -2466684227963581540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_98
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 2500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 815892a91fa90dbe0800000000000000
+      internalID: -1454492317176462056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_99
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 2500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4ea039d7ac20d560800000000000000
+      internalID: 7336412892401544783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_100
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 2500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65ab856f2543fe310800000000000000
+      internalID: 1436424337079450198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_101
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 2500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b72c0eacc821ecd0800000000000000
+      internalID: -2530696656047036487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_102
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 2500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6df513a9474d84700800000000000000
+      internalID: 524902953856884694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_103
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 2500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19e92b961a43614f0800000000000000
+      internalID: -858440811099808111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_104
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19793b385e46adb40800000000000000
+      internalID: 5465792034687391633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_105
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 2250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6f74be61ecfedfb0800000000000000
+      internalID: -4620978122480386195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_106
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 2250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7a72194b542e1ef0800000000000000
+      internalID: -135630964287964549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_107
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 2250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c4477f8d35e15930800000000000000
+      internalID: 4130334385838179526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_108
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 2250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 920e272be5b3a7ab0800000000000000
+      internalID: -5009626357589417943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_109
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 2250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a064b21884be51fc0800000000000000
+      internalID: -3524652436710275574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_110
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 2250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f71cd008a1686d4e0800000000000000
+      internalID: -1957229539670244993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_111
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 2250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d3fb3775a0dcd510800000000000000
+      internalID: 1575363378761429971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_112
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a818d771a94a60c00800000000000000
+      internalID: 866560960041419146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_113
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 2000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05bd416e7083c93c0800000000000000
+      internalID: -4351541533370688688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_114
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 2000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31675a83b28bdc250800000000000000
+      internalID: 5966627577109247507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_115
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 2000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ec7ac324cb5c2f70800000000000000
+      internalID: 9163800239764307169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_116
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 2000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48194c204c1121ca0800000000000000
+      internalID: -6047751816047455868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_117
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 2000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b70db62c943e4bb0800000000000000
+      internalID: -4949961095164131401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_118
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 2000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc945657c5c78a600800000000000000
+      internalID: 479770096863365579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_119
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 2000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fabca191422f5e160800000000000000
+      internalID: 7054310628199680943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_120
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9869714f4a8153de0800000000000000
+      internalID: -1354149016206076279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_121
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 1750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eeea1f4f3bb67e5b0800000000000000
+      internalID: -5339180412571635986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_122
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40290561f1339d6c0800000000000000
+      internalID: -4118204175642226172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_123
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 1750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8461bdeab39fc23a0800000000000000
+      internalID: -6688697311820048824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_124
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd1a28661eb4250a0800000000000000
+      internalID: -6894364648091246116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_125
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 1750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9997da44c2f17ca70800000000000000
+      internalID: 8847074267983870361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_126
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5b18c629ca1ca220800000000000000
+      internalID: 2498401344525179741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_127
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 1750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b685e8ae550222570800000000000000
+      internalID: 8440344205025237099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_128
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16a45b947e9616fd0800000000000000
+      internalID: -2350481088415708575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_129
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 1500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bb6edc032adfd840800000000000000
+      internalID: 5251155534611901361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_130
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4d399869e10147d0800000000000000
+      internalID: -2936063380074971828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_131
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 1500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 470a15b87d1dc9340800000000000000
+      internalID: 4871999620593590388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_132
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e57196dbeb845c30800000000000000
+      internalID: 4347253385352803812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_133
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 1500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fe31656d63b46ea0800000000000000
+      internalID: -5880377931005346060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_134
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aca725807ccb6cdf0800000000000000
+      internalID: -160233173700937014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_135
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 1500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85113320ab8c3e960800000000000000
+      internalID: 7630162894922125656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_136
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d49ca73f1bb6d490800000000000000
+      internalID: -7721778768327699243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_137
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 1250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3803e2fe163d18be0800000000000000
+      internalID: -1476666785222741885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_138
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35050a0dfda396990800000000000000
+      internalID: -7392312580399673261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_139
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 1250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40f212b190badb310800000000000000
+      internalID: 1422481112917159684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_140
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cc002cb5d3904eb0800000000000000
+      internalID: -4737624261800227643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_141
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 1250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 474b3a58f8da5f490800000000000000
+      internalID: -7713067954868079500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_142
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aee895f2fe3133840800000000000000
+      internalID: 5202523912555564778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_143
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 1250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d69aa17ec2a125360800000000000000
+      internalID: 7156811538003306861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_144
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1377a00b82e548a90800000000000000
+      internalID: -7312616366097664207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_145
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 1000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 591fff724af419630800000000000000
+      internalID: 3932011516135469461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_146
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbf15cf5fe64e4d60800000000000000
+      internalID: 7876310792235458495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_147
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 1000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08b2e1f8e76e3ca40800000000000000
+      internalID: 5387403010506632064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_148
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0458d5d72a9018340800000000000000
+      internalID: 4864179666029479232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_149
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 1000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c5a92f6e6fdcd4e0800000000000000
+      internalID: -1955442472781240893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_150
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b3bb93bc9cc69e70800000000000000
+      internalID: 9121703068685808569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_151
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 1000
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a713c8c1a7c20bca0800000000000000
+      internalID: -6003249400308289158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_152
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f775d149ce8a40a70800000000000000
+      internalID: 8792338106584749951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_153
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 946d665a775ef9ef0800000000000000
+      internalID: -99108364740012471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_154
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32d40b391edc96160800000000000000
+      internalID: 7019367862962769187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_155
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6a9fe67ce3fa65d0800000000000000
+      internalID: -3068371999166326161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_156
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f09f0393a815a0920800000000000000
+      internalID: 2957265759428999439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_157
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b49d9bd383debf970800000000000000
+      internalID: 8789879923553196363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_158
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1d36b1dae4aa0390800000000000000
+      internalID: -7851281671919354597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_159
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 750
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58149137ed2a205c0800000000000000
+      internalID: -4250656021986852475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_160
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df9cc71ee5e0c79f0800000000000000
+      internalID: -469484460480607747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_161
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14f2dd97ec44d6070800000000000000
+      internalID: 8101206958307880769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_162
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6867276fe55d6000800000000000000
+      internalID: 30775259177642093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_163
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 545e7c3a2803ba950800000000000000
+      internalID: 6461311428044776773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_164
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 507ff2f50d3229220800000000000000
+      internalID: 2491092921746454277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_165
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2454d5d84a97deb50800000000000000
+      internalID: 6624084374585165122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_166
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03ae664e69eaf2ff0800000000000000
+      internalID: -58636307032249808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_167
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 500
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f377886da843f330800000000000000
+      internalID: 3743415624895263729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_168
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59bb36fdffebef590800000000000000
+      internalID: -7638457911799989355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_169
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2926eeb1ddd6347e0800000000000000
+      internalID: -1782460231084776814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_170
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 357a9eb3df3827220800000000000000
+      internalID: 2482191468289697619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_171
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff0ad6c04ca755b90800000000000000
+      internalID: -7253756642369625857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_172
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a05b42f02d43e8b0800000000000000
+      internalID: -5124167147118178137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_173
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3332bccc9277aebe0800000000000000
+      internalID: -1447213308832963789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_174
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6af6c48be76226e0800000000000000
+      internalID: -1863813034535355795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_175
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 250
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d568b95557d89a390800000000000000
+      internalID: -7806552943983098275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_176
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f23ac35aa43188460800000000000000
+      internalID: 7244061211946165039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_177
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 0
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fbe023b5ebf63070800000000000000
+      internalID: 8085927144961666037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_178
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 0
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 419ac73a9b1e4af70800000000000000
+      internalID: 9197724526425450772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_179
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 0
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 695c09f31aba8f590800000000000000
+      internalID: -7640168058789509738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_180
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 0
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9845df6e3415e1d0800000000000000
+      internalID: -3322226891719096161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_181
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 0
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1cc959ed7dfafdf0800000000000000
+      internalID: -145525320708404196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_182
+      rect:
+        serializedVersion: 2
+        x: 1498
+        y: 0
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c78d93aa7fe980b10800000000000000
+      internalID: 1947981625387767932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dcl-logo-sheet-8_183
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 0
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d0eb3191dfd309e0800000000000000
+      internalID: -1656234146764431145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: cf222869bd81e46548fbf544bf4a1e24
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      dcl-logo-sheet-8_179: -7640168058789509738
+      dcl-logo-sheet-8_41: -3892031587369339511
+      dcl-logo-sheet-8_3: 6236779839642256020
+      dcl-logo-sheet-8_19: 513408843663828377
+      dcl-logo-sheet-8_24: 30655125140989759
+      dcl-logo-sheet-8_5: 2075320740844558936
+      dcl-logo-sheet-8_6: -3281239992404277481
+      dcl-logo-sheet-8_134: -160233173700937014
+      dcl-logo-sheet-8_119: 7054310628199680943
+      dcl-logo-sheet-8_158: -7851281671919354597
+      dcl-logo-sheet-8_181: -145525320708404196
+      dcl-logo-sheet-8_25: -739778135582260594
+      dcl-logo-sheet-8_182: 1947981625387767932
+      dcl-logo-sheet-8_45: -5070829439501578848
+      dcl-logo-sheet-8_180: -3322226891719096161
+      dcl-logo-sheet-8_82: 960102089162062830
+      dcl-logo-sheet-8_1: -599311166747458298
+      dcl-logo-sheet-8_64: -8250682690627960789
+      dcl-logo-sheet-8_155: -3068371999166326161
+      dcl-logo-sheet-8_9: 9171080029735732808
+      dcl-logo-sheet-8_160: -469484460480607747
+      dcl-logo-sheet-8_91: -1934942164537373830
+      dcl-logo-sheet-8_48: 2594800177419925280
+      dcl-logo-sheet-8_70: -6150013885480518409
+      dcl-logo-sheet-8_114: 5966627577109247507
+      dcl-logo-sheet-8_69: 827163460724820975
+      dcl-logo-sheet-8_129: 5251155534611901361
+      dcl-logo-sheet-8_137: -1476666785222741885
+      dcl-logo-sheet-8_138: -7392312580399673261
+      dcl-logo-sheet-8_153: -99108364740012471
+      dcl-logo-sheet-8_159: -4250656021986852475
+      dcl-logo-sheet-8_36: 6047591263731790696
+      dcl-logo-sheet-8_135: 7630162894922125656
+      dcl-logo-sheet-8_50: 2290073345888213160
+      dcl-logo-sheet-8_152: 8792338106584749951
+      dcl-logo-sheet-8_28: -3679329821057122254
+      dcl-logo-sheet-8_58: 9112703696150278901
+      dcl-logo-sheet-8_87: -5816939164872560361
+      dcl-logo-sheet-8_85: 2150173114668619888
+      dcl-logo-sheet-8_81: -5913350207092506665
+      dcl-logo-sheet-8_100: 1436424337079450198
+      dcl-logo-sheet-8_104: 5465792034687391633
+      dcl-logo-sheet-8_112: 866560960041419146
+      dcl-logo-sheet-8_52: 4269214577061122312
+      dcl-logo-sheet-8_47: 3944799867974415420
+      dcl-logo-sheet-8_140: -4737624261800227643
+      dcl-logo-sheet-8_71: -849778287786138969
+      dcl-logo-sheet-8_54: 8010659907498118111
+      dcl-logo-sheet-8_95: 4521172196772346731
+      dcl-logo-sheet-8_107: 4130334385838179526
+      dcl-logo-sheet-8_89: 864652694740785454
+      dcl-logo-sheet-8_178: 9197724526425450772
+      dcl-logo-sheet-8_146: 7876310792235458495
+      dcl-logo-sheet-8_108: -5009626357589417943
+      dcl-logo-sheet-8_96: 4053941630659847453
+      dcl-logo-sheet-8_63: 3213454091435705556
+      dcl-logo-sheet-8_127: 8440344205025237099
+      dcl-logo-sheet-8_142: 5202523912555564778
+      dcl-logo-sheet-8_163: 6461311428044776773
+      dcl-logo-sheet-8_83: -8244992414090884572
+      dcl-logo-sheet-8_105: -4620978122480386195
+      dcl-logo-sheet-8_23: 6543633674534146910
+      dcl-logo-sheet-8_46: 3845950923005957416
+      dcl-logo-sheet-8_113: -4351541533370688688
+      dcl-logo-sheet-8_133: -5880377931005346060
+      dcl-logo-sheet-8_136: -7721778768327699243
+      dcl-logo-sheet-8_37: -5662486047365957622
+      dcl-logo-sheet-8_21: 6804968024216762294
+      dcl-logo-sheet-8_60: -2959675717460164672
+      dcl-logo-sheet-8_42: -4641510677235557847
+      dcl-logo-sheet-8_111: 1575363378761429971
+      dcl-logo-sheet-8_162: 30775259177642093
+      dcl-logo-sheet-8_154: 7019367862962769187
+      dcl-logo-sheet-8_88: 3581500005145934798
+      dcl-logo-sheet-8_18: -8455422452764359865
+      dcl-logo-sheet-8_79: 6866582787417948546
+      dcl-logo-sheet-8_150: 9121703068685808569
+      dcl-logo-sheet-8_170: 2482191468289697619
+      dcl-logo-sheet-8_141: -7713067954868079500
+      dcl-logo-sheet-8_93: -2491974183252431988
+      dcl-logo-sheet-8_10: 6322138436626222090
+      dcl-logo-sheet-8_156: 2957265759428999439
+      dcl-logo-sheet-8_80: 2962230587608220456
+      dcl-logo-sheet-8_53: -7128446295946346782
+      dcl-logo-sheet-8_73: 7792552696646426314
+      dcl-logo-sheet-8_109: -3524652436710275574
+      dcl-logo-sheet-8_115: 9163800239764307169
+      dcl-logo-sheet-8_15: 7842938216295815274
+      dcl-logo-sheet-8_128: -2350481088415708575
+      dcl-logo-sheet-8_139: 1422481112917159684
+      dcl-logo-sheet-8_59: -5979121160692039714
+      dcl-logo-sheet-8_171: -7253756642369625857
+      dcl-logo-sheet-8_55: 5528456257090146681
+      dcl-logo-sheet-8_118: 479770096863365579
+      dcl-logo-sheet-8_167: 3743415624895263729
+      dcl-logo-sheet-8_102: 524902953856884694
+      dcl-logo-sheet-8_173: -1447213308832963789
+      dcl-logo-sheet-8_90: -3921515019202725125
+      dcl-logo-sheet-8_29: -1339079699423872386
+      dcl-logo-sheet-8_30: 5699750388770320737
+      dcl-logo-sheet-8_84: -1389387422568660110
+      dcl-logo-sheet-8_94: -5440703294902300149
+      dcl-logo-sheet-8_151: -6003249400308289158
+      dcl-logo-sheet-8_16: -9196550056353838114
+      dcl-logo-sheet-8_20: -1507237447633899366
+      dcl-logo-sheet-8_13: -582970132661264009
+      dcl-logo-sheet-8_57: 637168490124730338
+      dcl-logo-sheet-8_72: 9018553255356905041
+      dcl-logo-sheet-8_165: 6624084374585165122
+      dcl-logo-sheet-8_126: 2498401344525179741
+      dcl-logo-sheet-8_17: -2812475195188686264
+      dcl-logo-sheet-8_7: -6366540677377407495
+      dcl-logo-sheet-8_2: 7310306212558117134
+      dcl-logo-sheet-8_11: -3876469241221732795
+      dcl-logo-sheet-8_101: -2530696656047036487
+      dcl-logo-sheet-8_106: -135630964287964549
+      dcl-logo-sheet-8_77: 2434810008200109179
+      dcl-logo-sheet-8_92: -2728085904910798788
+      dcl-logo-sheet-8_38: 3254956606946488122
+      dcl-logo-sheet-8_75: -8788872022932124001
+      dcl-logo-sheet-8_157: 8789879923553196363
+      dcl-logo-sheet-8_12: -4570698362677196533
+      dcl-logo-sheet-8_67: 5046061242414085085
+      dcl-logo-sheet-8_0: 6564196114392002561
+      dcl-logo-sheet-8_99: 7336412892401544783
+      dcl-logo-sheet-8_74: 7331766943477849501
+      dcl-logo-sheet-8_22: 2962700630183233659
+      dcl-logo-sheet-8_131: 4871999620593590388
+      dcl-logo-sheet-8_65: 6378448583828118107
+      dcl-logo-sheet-8_40: -8468503498299648680
+      dcl-logo-sheet-8_161: 8101206958307880769
+      dcl-logo-sheet-8_43: -3638556296690758564
+      dcl-logo-sheet-8_121: -5339180412571635986
+      dcl-logo-sheet-8_166: -58636307032249808
+      dcl-logo-sheet-8_175: -7806552943983098275
+      dcl-logo-sheet-8_66: -6863584063565455819
+      dcl-logo-sheet-8_86: -3553351285112640552
+      dcl-logo-sheet-8_76: -6312429260580084797
+      dcl-logo-sheet-8_169: -1782460231084776814
+      dcl-logo-sheet-8_145: 3932011516135469461
+      dcl-logo-sheet-8_8: 6831562475961525310
+      dcl-logo-sheet-8_61: -7858529428014514557
+      dcl-logo-sheet-8_14: -3576958095862952218
+      dcl-logo-sheet-8_51: -3528978270154281674
+      dcl-logo-sheet-8_164: 2491092921746454277
+      dcl-logo-sheet-8_148: 4864179666029479232
+      dcl-logo-sheet-8_27: -5306620065340079128
+      dcl-logo-sheet-8_172: -5124167147118178137
+      dcl-logo-sheet-8_98: -1454492317176462056
+      dcl-logo-sheet-8_56: -4628246598063846510
+      dcl-logo-sheet-8_49: -922041065967540893
+      dcl-logo-sheet-8_62: 4858625185115857992
+      dcl-logo-sheet-8_34: -4546976831098336097
+      dcl-logo-sheet-8_168: -7638457911799989355
+      dcl-logo-sheet-8_32: -8443645627465799347
+      dcl-logo-sheet-8_130: -2936063380074971828
+      dcl-logo-sheet-8_116: -6047751816047455868
+      dcl-logo-sheet-8_33: -3322778136531006693
+      dcl-logo-sheet-8_124: -6894364648091246116
+      dcl-logo-sheet-8_78: 1045644465811868312
+      dcl-logo-sheet-8_35: -7143438524404359011
+      dcl-logo-sheet-8_149: -1955442472781240893
+      dcl-logo-sheet-8_117: -4949961095164131401
+      dcl-logo-sheet-8_120: -1354149016206076279
+      dcl-logo-sheet-8_183: -1656234146764431145
+      dcl-logo-sheet-8_68: 5255378374304204942
+      dcl-logo-sheet-8_122: -4118204175642226172
+      dcl-logo-sheet-8_123: -6688697311820048824
+      dcl-logo-sheet-8_4: 8120601120413960067
+      dcl-logo-sheet-8_143: 7156811538003306861
+      dcl-logo-sheet-8_31: 5509797872876695970
+      dcl-logo-sheet-8_103: -858440811099808111
+      dcl-logo-sheet-8_174: -1863813034535355795
+      dcl-logo-sheet-8_125: 8847074267983870361
+      dcl-logo-sheet-8_176: 7244061211946165039
+      dcl-logo-sheet-8_26: -4872438122318171324
+      dcl-logo-sheet-8_97: -2466684227963581540
+      dcl-logo-sheet-8_39: -2991606802372532849
+      dcl-logo-sheet-8_110: -1957229539670244993
+      dcl-logo-sheet-8_144: -7312616366097664207
+      dcl-logo-sheet-8_132: 4347253385352803812
+      dcl-logo-sheet-8_147: 5387403010506632064
+      dcl-logo-sheet-8_177: 8085927144961666037
+      dcl-logo-sheet-8_44: 2631064143410692936
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

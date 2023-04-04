@@ -4,6 +4,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Video;
 
 namespace ECSSystems.MaterialSystem
 {

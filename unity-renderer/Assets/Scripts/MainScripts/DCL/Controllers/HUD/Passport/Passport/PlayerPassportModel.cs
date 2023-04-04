@@ -11,4 +11,5 @@ public record PlayerPassportModel
     public bool isBlocked;
     public bool hasBlocked;
     public FriendshipStatus friendshipStatus;
+    public bool isFriendshipVisible;
 }

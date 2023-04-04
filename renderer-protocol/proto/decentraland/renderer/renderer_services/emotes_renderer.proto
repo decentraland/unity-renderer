@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package decentraland.renderer.renderer_services;
+
+message TriggerSelfUserExpressionRequest {
+  string id = 1;
+}
+
+message TriggerSelfUserExpressionResponse {}
+
+// Service implemented in Renderer and used in Kernel
+service EmotesRendererService {
+  // Triggers an expression in our own avatar (use example: SDK triggers a expression)
+  rpc TriggerSelfUserExpression(TriggerSelfUserExpressionRequest) returns (TriggerSelfUserExpressionResponse) {}
+}

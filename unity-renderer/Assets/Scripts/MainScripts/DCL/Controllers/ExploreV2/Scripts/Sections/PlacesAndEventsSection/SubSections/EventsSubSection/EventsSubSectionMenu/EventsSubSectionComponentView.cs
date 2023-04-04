@@ -44,12 +44,12 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
 
     [SerializeField] private Canvas canvas;
-    
+
     internal Pool featuredEventCardsPool;
     internal Pool trendingEventCardsPool;
     internal Pool upcomingEventCardsPool;
     internal Pool goingEventCardsPool;
-    
+
     internal EventCardComponentView eventModal;
 
     private Canvas trendingEventsCanvas;
@@ -57,9 +57,16 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private Canvas goingEventsCanvas;
 
     private bool isUpdatingCardsVisual;
-    
+
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
-    
+
+
+    public void SetAllAsLoading() => SetAllEventGroupsAsLoading();
+
+    public void SetShowMoreButtonActive(bool isActive) => SetShowMoreUpcomingEventsButtonActive(isActive);
+
+    public int CurrentTilesPerRow => currentUpcomingEventsPerRow;
+
     public event Action OnReady;
     public event Action<EventCardComponentModel> OnInfoClicked;
     public event Action<EventFromAPIModel> OnJumpInClicked;
@@ -78,7 +85,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public override void Start()
     {
-        eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
+        eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
 
         featuredEvents.RemoveItems();
         trendingEvents.RemoveItems();
@@ -100,7 +107,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         base.Dispose();
         cancellationTokenSource.Cancel();
-        
+
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
 
         featuredEvents.Dispose();
@@ -124,13 +131,13 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         else
             OnDisable();
     }
-    
+
     public void ConfigurePools()
     {
-        ExploreEventsUtils.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
+        featuredEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
+        trendingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        upcomingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
+        goingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void RefreshControl()
@@ -140,11 +147,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         upcomingEvents.RefreshControl();
         goingEvents.RefreshControl();
     }
-    
+
     public void SetAllEventGroupsAsLoading()
     {
         SetFeaturedEventsGroupAsLoading();
-        
+
         SetEventsGroupAsLoading(isVisible: true, goingEventsCanvas, goingEventsLoading);
         SetEventsGroupAsLoading(isVisible: true, trendingEventsCanvas, trendingEventsLoading);
         SetEventsGroupAsLoading(isVisible: true, upcomingEventsCanvas, upcomingEventsLoading);
@@ -153,7 +160,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         trendingEventsNoDataText.gameObject.SetActive(false);
         upcomingEventsNoDataText.gameObject.SetActive(false);
     }
-    
+
     internal void SetFeaturedEventsGroupAsLoading()
     {
         featuredEvents.gameObject.SetActive(false);
@@ -172,7 +179,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+        EventsCardsConfigurator.Configure(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
     }
 
     public void HideEventModal()
@@ -181,9 +188,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             eventModal.Hide();
     }
 
-    public void RestartScrollViewPosition() => 
+    public void RestartScrollViewPosition() =>
         scrollView.verticalNormalizedPosition = 1;
-    
+
     public void SetTrendingEvents(List<EventCardComponentModel> events) =>
         SetEvents(events, trendingEvents, trendingEventsCanvas, trendingEventCardsPool, trendingEventsLoading, trendingEventsNoDataText);
 
@@ -218,8 +225,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         foreach (EventCardComponentModel eventInfo in events)
         {
             eventsGrid.AddItem(
-                ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, pool,
-                    OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+                PlacesAndEventsCardsFactory.CreateConfiguredEventCard(pool, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+
             await UniTask.NextFrame(cancellationToken);
         }
 
@@ -235,32 +242,32 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         featuredEventCardsPool.ReleaseAll();
 
         featuredEvents.ExtractItems();
-        
+
         cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsAsync(events, cancellationTokenSource.Token));
         UpdateCardsVisual();
     }
-    
+
     private async UniTask SetFeaturedEventsAsync(List<EventCardComponentModel> events, CancellationToken cancellationToken)
     {
         foreach (EventCardComponentModel eventInfo in events)
         {
             featuredEvents.AddItem(
-                ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, featuredEventCardsPool,
-                    OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+                PlacesAndEventsCardsFactory.CreateConfiguredEventCard(featuredEventCardsPool, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+
             await UniTask.NextFrame(cancellationToken);
         }
 
         featuredEvents.SetManualControlsActive();
         featuredEvents.GenerateDotsSelector();
-        
+
         poolsPrewarmAsyncsBuffer.Enqueue(() => featuredEventCardsPool.PrewarmAsync(events.Count, cancellationToken));
     }
-    
+
     private void UpdateCardsVisual()
     {
         if (!isUpdatingCardsVisual)
             ShowCardsProcess().Forget();
-        
+
         async UniTask ShowCardsProcess()
         {
             isUpdatingCardsVisual = true;

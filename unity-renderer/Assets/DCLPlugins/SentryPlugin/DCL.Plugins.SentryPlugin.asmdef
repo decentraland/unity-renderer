@@ -1,0 +1,20 @@
+{
+    "name": "DCL.Plugins.SentryPlugin",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:c34e38f41494f834abff029ddf82af43",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
