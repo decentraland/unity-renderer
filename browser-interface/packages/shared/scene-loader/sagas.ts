@@ -25,7 +25,7 @@ import { store } from 'shared/store/isolatedStore'
 import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
 import { getSceneWorkerBySceneID, setDesiredParcelScenes } from 'shared/world/parcelSceneManager'
-import { pickWorldSpawnpoint, positionObservable } from 'shared/world/positionThings'
+import { pickWorldSpawnpoint, positionObservable, receivePositionReport } from 'shared/world/positionThings'
 import { sceneEvents, SceneWorker } from 'shared/world/SceneWorker'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import {
@@ -174,10 +174,15 @@ function* rendererPositionSettler() {
   yield call(waitForUserAuthenticated)
 
   while (true) {
+    const isSettled: boolean = yield select(isPositionSettled)
     const spawnPointAndScene: ReturnType<typeof getPositionSpawnPointAndScene> = yield select(
       getPositionSpawnPointAndScene
     )
 
+    if (!isSettled && !!spawnPointAndScene.sceneId) {
+      // Then set the parcel position for the scene loader
+      receivePositionReport(spawnPointAndScene.spawnPoint.position)
+    }
     // then update the position in the engine
     getUnityInstance().Teleport(spawnPointAndScene.spawnPoint)
     yield take([POSITION_SETTLED, POSITION_UNSETTLED])
@@ -245,7 +250,7 @@ function* positionSettler() {
     if (!sceneId) {
       throw new Error(
         'Error in the logic of positionSettler saga:\n' +
-        'Someone sent a SCENE_START, SCENE_FAIL, or SCENE_UNLOAD message without an `id` field!'
+          'Someone sent a SCENE_START, SCENE_FAIL, or SCENE_UNLOAD message without an `id` field!'
       )
     }
 
@@ -272,7 +277,8 @@ function* onWorldPositionChange() {
   // start the loop to load scenes
   while (true) {
     const { sceneLoader, position, loadingRadius } = (yield select(getPositionChangeInfo)) as ReturnType<
-      typeof getPositionChangeInfo>
+      typeof getPositionChangeInfo
+    >
 
     if (sceneLoader) {
       const report: SceneLoaderPositionReport = {

@@ -46,7 +46,9 @@ export async function initializeEngine(_gameInstance: UnityGame): Promise<void> 
   getUnityInstance().Init(gameInstance)
 
   await browserInterface.startedFuture
-  
+
+  getUnityInstance().ActivateRendering()
+
   queueMicrotask(() => {
     // send an "engineStarted" notification, use a queueMicrotask
     // to escape the current stack leveraging the JS event loop
