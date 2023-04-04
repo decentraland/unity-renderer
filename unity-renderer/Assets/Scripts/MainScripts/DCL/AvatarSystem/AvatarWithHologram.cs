@@ -21,23 +21,23 @@ namespace AvatarSystem
         protected override async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
             baseAvatar.FadeGhost(linkedCt).Forget(); //Avoid making the ghost fading a blocking part of the avatar
-            animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
-            List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, baseAvatar.GetMainRenderer(), linkedCt: linkedCt);
-            Prepare(settings, emotes, baseAvatar.GetArmatureContainer());
+            animator.Prepare(settings.bodyshapeId, baseAvatar.ArmatureContainer);
+            List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, baseAvatar.SkinnedMeshRenderer, linkedCt: linkedCt);
+            Prepare(settings, emotes, baseAvatar.ArmatureContainer);
             Bind();
 
             MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
             Inform(newCombinedRenderer);
             if (visibility.IsMainRenderVisible())
-                await baseAvatar.Reveal(gpuSkinning.renderer, extents.y, linkedCt);
+                await baseAvatar.Reveal(GetMainRenderer(), extents.y, linkedCt);
             else
-                baseAvatar.RevealInstantly(gpuSkinning.renderer, extents.y);
+                baseAvatar.RevealInstantly(GetMainRenderer(), extents.y);
         }
 
         public override void AddVisibilityConstraint(string key)
         {
             base.AddVisibilityConstraint(key);
-            baseAvatar.RevealInstantly(gpuSkinning.renderer, extents.y);
+            baseAvatar.RevealInstantly(GetMainRenderer(), extents.y);
         }
     }
 }
