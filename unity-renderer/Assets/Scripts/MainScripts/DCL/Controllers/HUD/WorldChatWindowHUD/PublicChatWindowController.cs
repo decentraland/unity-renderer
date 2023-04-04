@@ -304,8 +304,12 @@ namespace DCL.Chat.HUD
         private void HideMembersList() =>
             nearbyMembersHUDController.SetVisibility(false);
 
-        private void GoToCrowd() =>
-            Environment.i.world.teleportController.GoToCrowd();
+        private void GoToCrowd()
+        {
+            // Requested temporally by product team since the "go to crowd" approach was always redirecting to the casino.
+            //Environment.i.world.teleportController.GoToCrowd();
+            Environment.i.world.teleportController.Teleport(0, 0);
+        }
 
         private void UpdateMembersCount(string userId, Player player) =>
             View.UpdateMembersCount(nearbyPlayers.Count());
