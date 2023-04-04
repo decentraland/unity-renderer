@@ -50,6 +50,8 @@ namespace DCL
 
             this.rendererConfiguration.RenderImage.EmbedMapCameraDragBehavior(rendererConfiguration.MapCameraDragBehaviorData);
 
+            SetRenderImageTransparency(true);
+
             rendererConfiguration.PixelPerfectMapRendererTextureProvider.SetHudCamera(hudCamera);
         }
 
@@ -74,6 +76,14 @@ namespace DCL
                 cameraController.Release();
                 cameraController = null;
             }
+        }
+
+        private void SetRenderImageTransparency(bool isTransparent)
+        {
+            // Make Render Image transparent before activation
+            var renderImageColor = this.rendererConfiguration.RenderImage.color;
+            renderImageColor.a = isTransparent ? 0 : 1;
+            this.rendererConfiguration.RenderImage.color = renderImageColor;
         }
 
         private void OnNavmapVisibilityChanged(bool isVisible, bool _) =>
@@ -130,6 +140,8 @@ namespace DCL
                         rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
                         zoom.zoomVerticalRange));
 
+                SetRenderImageTransparency(false);
+
                 navmapToastViewController.Activate();
                 navmapZoomViewController.Activate(cameraController);
                 rendererConfiguration.RenderImage.Activate(hudCamera, cameraController.GetRenderTexture(), cameraController);
@@ -143,6 +155,8 @@ namespace DCL
                 navmapZoomViewController.Deactivate();
                 rendererConfiguration.PixelPerfectMapRendererTextureProvider.Deactivate();
                 rendererConfiguration.RenderImage.Deactivate();
+
+                SetRenderImageTransparency(true);
 
                 cameraController.Release();
                 cameraController = null;
