@@ -37,14 +37,14 @@ namespace DCL.ECSComponents {
             "YWRpdXNfdG9wGAEgASgCSACIAQESGgoNcmFkaXVzX2JvdHRvbRgCIAEoAkgB",
             "iAEBQg0KC19yYWRpdXNfdG9wQhAKDl9yYWRpdXNfYm90dG9tGgsKCVBsYW5l",
             "TWVzaBoMCgpTcGhlcmVNZXNoQgYKBG1lc2hCEQoPX2NvbGxpc2lvbl9tYXNr",
-            "KrgCCg1Db2xsaWRlckxheWVyEgsKB0NMX05PTkUQABIOCgpDTF9QT0lOVEVS",
-            "EAESDgoKQ0xfUEhZU0lDUxACEhUKEUNMX1ZJU0lCTEVfTUVTSEVTEAQSEAoM",
-            "Q0xfUkVTRVJWRUQyEAgSEAoMQ0xfUkVTRVJWRUQzEBASEAoMQ0xfUkVTRVJW",
-            "RUQ0ECASEAoMQ0xfUkVTRVJWRUQ1EEASEQoMQ0xfUkVTRVJWRUQ2EIABEg8K",
-            "CkNMX0NVU1RPTTEQgAISDwoKQ0xfQ1VTVE9NMhCABBIPCgpDTF9DVVNUT00z",
-            "EIAIEg8KCkNMX0NVU1RPTTQQgBASDwoKQ0xfQ1VTVE9NNRCAIBIPCgpDTF9D",
-            "VVNUT002EIBAEhAKCkNMX0NVU1RPTTcQgIABEhAKCkNMX0NVU1RPTTgQgIAC",
-            "QhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "KrMCCg1Db2xsaWRlckxheWVyEgsKB0NMX05PTkUQABIOCgpDTF9QT0lOVEVS",
+            "EAESDgoKQ0xfUEhZU0lDUxACEhAKDENMX1JFU0VSVkVEMRAEEhAKDENMX1JF",
+            "U0VSVkVEMhAIEhAKDENMX1JFU0VSVkVEMxAQEhAKDENMX1JFU0VSVkVENBAg",
+            "EhAKDENMX1JFU0VSVkVENRBAEhEKDENMX1JFU0VSVkVENhCAARIPCgpDTF9D",
+            "VVNUT00xEIACEg8KCkNMX0NVU1RPTTIQgAQSDwoKQ0xfQ1VTVE9NMxCACBIP",
+            "CgpDTF9DVVNUT000EIAQEg8KCkNMX0NVU1RPTTUQgCASDwoKQ0xfQ1VTVE9N",
+            "NhCAQBIQCgpDTF9DVVNUT003EICAARIQCgpDTF9DVVNUT004EICAAkIUqgIR",
+            "RENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.ColliderLayer), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -74,10 +74,7 @@ namespace DCL.ECSComponents {
     /// collision affecting your player's physics i.e. walls, floor, moving platfroms
     /// </summary>
     [pbr::OriginalName("CL_PHYSICS")] ClPhysics = 2,
-    /// <summary>
-    /// all visible meshes, use with extreme care since the performance penalty is high
-    /// </summary>
-    [pbr::OriginalName("CL_VISIBLE_MESHES")] ClVisibleMeshes = 4,
+    [pbr::OriginalName("CL_RESERVED1")] ClReserved1 = 4,
     [pbr::OriginalName("CL_RESERVED2")] ClReserved2 = 8,
     [pbr::OriginalName("CL_RESERVED3")] ClReserved3 = 16,
     [pbr::OriginalName("CL_RESERVED4")] ClReserved4 = 32,

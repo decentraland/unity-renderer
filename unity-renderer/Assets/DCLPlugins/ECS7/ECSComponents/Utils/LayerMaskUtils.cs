@@ -5,7 +5,7 @@ namespace DCL.ECSComponents.Utils
         private const int nonCustomLayers = (int)ColliderLayer.ClPhysics
                                             | (int)ColliderLayer.ClPointer
                                             | (int)ColliderLayer.ClNone
-                                            // | (int)ColliderLayer.ClReserved1
+                                            | (int)ColliderLayer.ClReserved1
                                             | (int)ColliderLayer.ClReserved2
                                             | (int)ColliderLayer.ClReserved3
                                             | (int)ColliderLayer.ClReserved4
