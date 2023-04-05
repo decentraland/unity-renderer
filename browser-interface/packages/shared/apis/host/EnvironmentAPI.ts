@@ -1,5 +1,5 @@
 import { getSelectedNetwork } from 'shared/dao/selectors'
-import { getServerConfigurations, PREVIEW, RENDERER_WS } from 'config'
+import { getServerConfigurations, RENDERER_WS } from 'config'
 import { store } from 'shared/store/isolatedStore'
 import { getCommsIsland } from 'shared/comms/selectors'
 import { getRealmAdapter } from 'shared/realm/selectors'
@@ -38,7 +38,7 @@ export function registerEnvironmentApiServiceServerImplementation(
       }
     },
     async isPreviewMode(): Promise<PreviewModeResponse> {
-      return { isPreview: PREVIEW }
+      return { isPreview: true }
     },
     async getPlatform(): Promise<GetPlatformResponse> {
       if (RENDERER_WS) {

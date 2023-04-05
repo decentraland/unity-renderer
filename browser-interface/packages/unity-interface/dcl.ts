@@ -28,6 +28,11 @@ const hudWorkerRaw = require('../../static/systems/decentraland-ui.scene.js.txt'
 const hudWorkerBLOB = new Blob([hudWorkerRaw])
 export const hudWorkerUrl = URL.createObjectURL(hudWorkerBLOB)
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const questsWorkerRaw = require('../../static/systems/decentraland-quests.scene.js.txt')
+const questsWorkerBLOB = new Blob([questsWorkerRaw])
+export const questsWorkerUrl = URL.createObjectURL(questsWorkerBLOB)
+
 declare const globalThis: { clientDebug: ClientDebug }
 
 globalThis.clientDebug = clientDebug
@@ -77,6 +82,10 @@ export async function initializeEngine(_gameInstance: UnityGame): Promise<void> 
   }
 
   await startGlobalScene('dcl-gs-avatars', 'Avatars', hudWorkerUrl)
+  await startGlobalScene('dcl-quests', 'Quests', questsWorkerUrl, {
+    ecs7: true,
+    requiredPermissions: ['USE_WEBSOCKET']
+  })
 
   store.dispatch(avatarSceneInitialized())
 }
@@ -85,6 +94,7 @@ type GlobalSceneOptions = {
   ecs7?: boolean
   content?: ContentMapping[]
   baseUrl?: string
+  requiredPermissions?: string[]
 }
 async function startGlobalScene(cid: string, title: string, fileContentUrl: string, options: GlobalSceneOptions = {}) {
   const metadataScene: Scene = {
@@ -95,7 +105,8 @@ async function startGlobalScene(cid: string, title: string, fileContentUrl: stri
     scene: {
       base: '0,0',
       parcels: ['0,0']
-    }
+    },
+    requiredPermissions: options.requiredPermissions
   }
 
   const baseUrl = options.baseUrl || location.origin
