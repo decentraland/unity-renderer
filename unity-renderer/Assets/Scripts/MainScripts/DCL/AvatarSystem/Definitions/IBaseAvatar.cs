@@ -12,7 +12,7 @@ namespace AvatarSystem
 
         UniTask FadeGhost(CancellationToken cancellationToken = default);
 
-        UniTask Reveal(Renderer targetRenderer, float avatarHeight, CancellationToken cancellationToken = default);
+        UniTask Reveal(Renderer targetRenderer, float avatarHeight, float completionHeight, CancellationToken cancellationToken = default);
 
         void RevealInstantly(Renderer targetRenderer, float avatarHeight);
     }

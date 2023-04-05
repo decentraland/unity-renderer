@@ -9,6 +9,8 @@ namespace AvatarSystem
     // [ADR 65 - https://github.com/decentraland/adr]
     public class AvatarWithHologram : Avatar
     {
+        private const float AVATAR_REVEAL_COMPLETION_OFFSET = 10;
+
         private readonly IBaseAvatar baseAvatar;
 
         internal AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility,
@@ -29,15 +31,15 @@ namespace AvatarSystem
             MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
             Inform(newCombinedRenderer);
             if (visibility.IsMainRenderVisible())
-                await baseAvatar.Reveal(GetMainRenderer(), extents.y, linkedCt);
+                await baseAvatar.Reveal(GetMainRenderer(), extents.y, extents.y + AVATAR_REVEAL_COMPLETION_OFFSET, linkedCt);
             else
-                baseAvatar.RevealInstantly(GetMainRenderer(), extents.y);
+                baseAvatar.RevealInstantly(GetMainRenderer(), extents.y + AVATAR_REVEAL_COMPLETION_OFFSET);
         }
 
         public override void AddVisibilityConstraint(string key)
         {
             base.AddVisibilityConstraint(key);
-            baseAvatar.RevealInstantly(GetMainRenderer(), extents.y);
+            baseAvatar.RevealInstantly(GetMainRenderer(), extents.y + AVATAR_REVEAL_COMPLETION_OFFSET);
         }
     }
 }

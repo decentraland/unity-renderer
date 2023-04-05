@@ -51,7 +51,7 @@ namespace AvatarSystem
                  .ToUniTaskInstantCancelation(cancellationToken: linkedCts.Token);
         }
 
-        public async UniTask Reveal(Renderer targetRenderer, float avatarHeight, CancellationToken cancellationToken = default)
+        public async UniTask Reveal(Renderer targetRenderer, float avatarHeight, float completionHeight, CancellationToken cancellationToken = default)
         {
             revealCts?.Cancel();
             revealCts?.Dispose();
@@ -62,7 +62,7 @@ namespace AvatarSystem
             cachedMaterials.Clear();
             targetRenderer?.GetMaterials(cachedMaterials);
 
-            UniTask GetRevealTask(Material material, float revealPosition)
+            UniTask GetRevealTask(Material material, float revealPosition, float completionPosition)
             {
                 material.SetVector(REVEAL_NORMAL_ID, Vector3.up * -1);
                 material.SetVector(REVEAL_POSITION_ID, Vector3.zero);
@@ -72,18 +72,18 @@ namespace AvatarSystem
                                .OnComplete(() =>
                                 {
                                     baseAvatarReferences.ParticlesContainer.SetActive(false);
-                                    SetRevealPosition(material, revealPosition);
+                                    SetRevealPosition(material, completionPosition);
                                 })
                                .ToUniTaskInstantCancelation(true, cancellationToken: linkedCts.Token);
             }
 
             baseAvatarReferences.ParticlesContainer.SetActive(true);
             List<UniTask> tasks = new List<UniTask>();
-            tasks.Add(GetRevealTask(ghostMaterial, avatarHeight));
+            tasks.Add(GetRevealTask(ghostMaterial, avatarHeight, completionHeight));
 
             for (var index = 0; index < cachedMaterials.Count; index++)
             {
-                tasks.Add(GetRevealTask(cachedMaterials[index], -avatarHeight));
+                tasks.Add(GetRevealTask(cachedMaterials[index], -avatarHeight, -completionHeight));
             }
 
             await UniTask.WhenAll(tasks);

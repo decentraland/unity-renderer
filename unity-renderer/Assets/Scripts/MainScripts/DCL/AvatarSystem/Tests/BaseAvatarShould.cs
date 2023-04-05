@@ -106,16 +106,17 @@ namespace Test.AvatarSystem
         [TestCase(0.5f, 1f)]
         public async Task Reveal(float avatarHeight, float initialRevealPos)
         {
+            const float REVEAL_OFFSET = 10;
             baseAvatar.ghostMaterial.SetVector(BaseAvatar.REVEAL_POSITION_ID, Vector3.up * initialRevealPos);
 
             foreach (Material material in targetRenderer.materials)
                 material.SetVector(BaseAvatar.REVEAL_POSITION_ID, Vector3.up * initialRevealPos);
 
-            await baseAvatar.Reveal(targetRenderer, avatarHeight);
+            await baseAvatar.Reveal(targetRenderer, avatarHeight, avatarHeight + REVEAL_OFFSET);
 
-            Assert.AreEqual(Vector3.up * avatarHeight, (Vector3)baseAvatar.ghostMaterial.GetVector(BaseAvatar.REVEAL_POSITION_ID));
-            Assert.AreEqual(Vector3.up * -1 * avatarHeight, (Vector3)targetRenderer.materials[0].GetVector(BaseAvatar.REVEAL_POSITION_ID));
-            Assert.AreEqual(Vector3.up * -1 * avatarHeight, (Vector3)targetRenderer.materials[1].GetVector(BaseAvatar.REVEAL_POSITION_ID));
+            Assert.AreEqual(Vector3.up * (avatarHeight + REVEAL_OFFSET), (Vector3)baseAvatar.ghostMaterial.GetVector(BaseAvatar.REVEAL_POSITION_ID));
+            Assert.AreEqual(Vector3.up * -1 * (avatarHeight + REVEAL_OFFSET), (Vector3)targetRenderer.materials[0].GetVector(BaseAvatar.REVEAL_POSITION_ID));
+            Assert.AreEqual(Vector3.up * -1 * (avatarHeight + REVEAL_OFFSET), (Vector3)targetRenderer.materials[1].GetVector(BaseAvatar.REVEAL_POSITION_ID));
         }
 
         [TestCase(1f, 0)]
@@ -126,6 +127,7 @@ namespace Test.AvatarSystem
         [TestCase(0.5f, 1f)]
         public async Task CompleteRevealWhenCanceled(float avatarHeight, float initialRevealPos)
         {
+            const float REVEAL_OFFSET = 10;
             references.Configure().RevealSpeed.Returns(_ => 0.0001f); //Extremely slow to be able to cancel it
             baseAvatar.ghostMaterial.SetVector(BaseAvatar.REVEAL_POSITION_ID, Vector3.up * initialRevealPos);
 
@@ -134,13 +136,13 @@ namespace Test.AvatarSystem
 
             CancellationTokenSource cts = new CancellationTokenSource();
 
-            var task = baseAvatar.Reveal(targetRenderer, avatarHeight, cts.Token);
+            var task = baseAvatar.Reveal(targetRenderer, avatarHeight, avatarHeight + REVEAL_OFFSET, cts.Token);
             cts.Cancel();
             await task;
 
-            Assert.AreEqual(Vector3.up * avatarHeight, (Vector3)baseAvatar.ghostMaterial.GetVector(BaseAvatar.REVEAL_POSITION_ID));
-            Assert.AreEqual(Vector3.up * -1 * avatarHeight, (Vector3)targetRenderer.materials[0].GetVector(BaseAvatar.REVEAL_POSITION_ID));
-            Assert.AreEqual(Vector3.up * -1 * avatarHeight, (Vector3)targetRenderer.materials[1].GetVector(BaseAvatar.REVEAL_POSITION_ID));
+            Assert.AreEqual(Vector3.up * (avatarHeight + REVEAL_OFFSET), (Vector3)baseAvatar.ghostMaterial.GetVector(BaseAvatar.REVEAL_POSITION_ID));
+            Assert.AreEqual(Vector3.up * -1 * (avatarHeight + REVEAL_OFFSET), (Vector3)targetRenderer.materials[0].GetVector(BaseAvatar.REVEAL_POSITION_ID));
+            Assert.AreEqual(Vector3.up * -1 * (avatarHeight + REVEAL_OFFSET), (Vector3)targetRenderer.materials[1].GetVector(BaseAvatar.REVEAL_POSITION_ID));
         }
     }
 }
