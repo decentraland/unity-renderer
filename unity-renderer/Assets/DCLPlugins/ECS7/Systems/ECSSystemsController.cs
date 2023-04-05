@@ -98,7 +98,7 @@ public class ECSSystemsController : IDisposable
             ECSPointerInputSystem.CreateSystem(
                 context.internalEcsComponents.onPointerColliderComponent,
                 context.internalEcsComponents.inputEventResultsComponent,
-                context.pointerEvents,
+                context.internalEcsComponents.PointerEventsComponent,
                 interactionHoverCanvas,
                 Environment.i.world.state,
                 DataStore.i.ecs7),

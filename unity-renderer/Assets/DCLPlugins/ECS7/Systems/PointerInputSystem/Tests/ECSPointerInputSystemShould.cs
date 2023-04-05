@@ -61,7 +61,7 @@ namespace Tests
             systemUpdate = ECSPointerInputSystem.CreateSystem(
                 internalComponents.onPointerColliderComponent,
                 internalComponents.inputEventResultsComponent,
-                (ECSComponent<PBPointerEvents>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_EVENTS),
+                internalComponents.PointerEventsComponent,
                 interactionHoverCanvas,
                 worldState,
                 dataStoreEcs7);
