@@ -14,14 +14,6 @@ namespace DCL.ECSComponents
         private const int LAYER_PHYSICS = (int)ColliderLayer.ClPhysics;
         private const int LAYER_POINTER = (int)ColliderLayer.ClPointer;
         private const int LAYER_PHYSICS_POINTER = LAYER_PHYSICS | LAYER_POINTER;
-        private const int LAYER_CUSTOM1 = (int)ColliderLayer.ClCustom1;
-        private const int LAYER_CUSTOM2 = (int)ColliderLayer.ClCustom2;
-        private const int LAYER_CUSTOM3 = (int)ColliderLayer.ClCustom3;
-        private const int LAYER_CUSTOM4 = (int)ColliderLayer.ClCustom4;
-        private const int LAYER_CUSTOM5 = (int)ColliderLayer.ClCustom5;
-        private const int LAYER_CUSTOM6 = (int)ColliderLayer.ClCustom6;
-        private const int LAYER_CUSTOM7 = (int)ColliderLayer.ClCustom7;
-        private const int LAYER_CUSTOM8 = (int)ColliderLayer.ClCustom8;
 
         internal GameObject colliderGameObject;
         private Collider collider;
@@ -124,30 +116,16 @@ namespace DCL.ECSComponents
 
             int colliderLayer = model.GetColliderLayer();
 
-            // The order in this checks is important: from broader to more specific
-            if ((colliderLayer & LAYER_CUSTOM1) != 0 || (colliderLayer & LAYER_CUSTOM2) != 0
-              || (colliderLayer & LAYER_CUSTOM3) != 0 || (colliderLayer & LAYER_CUSTOM4) != 0
-              || (colliderLayer & LAYER_CUSTOM5) != 0 || (colliderLayer & LAYER_CUSTOM6) != 0
-              || (colliderLayer & LAYER_CUSTOM7) != 0 || (colliderLayer & LAYER_CUSTOM8) != 0)
-            {
-                colliderGameObject.layer = PhysicsLayers.sdkCustomLayer;
-            }
-            else if ((colliderLayer & LAYER_PHYSICS_POINTER) == LAYER_PHYSICS_POINTER)
-            {
+            if ((colliderLayer & LAYER_PHYSICS_POINTER) == LAYER_PHYSICS_POINTER)
                 colliderGameObject.layer = PhysicsLayers.defaultLayer;
-            }
             else if ((colliderLayer & LAYER_PHYSICS) == LAYER_PHYSICS)
-            {
                 colliderGameObject.layer = PhysicsLayers.characterOnlyLayer;
-            }
             else if ((colliderLayer & LAYER_POINTER) == LAYER_POINTER)
-            {
                 colliderGameObject.layer = PhysicsLayers.onPointerEventLayer;
-            }
+            else if (LayerMaskUtils.LayerMaskHasAnySDKCustomLayer((uint)colliderLayer))
+                colliderGameObject.layer = PhysicsLayers.sdkCustomLayer;
             else if (collider != null)
-            {
                 colliderGameObject.SetActive(false);
-            }
         }
 
         private void SetInternalColliderComponents(IParcelScene scene, IDCLEntity entity, PBMeshCollider model)
