@@ -40,8 +40,7 @@ export function generateRandomUserProfile(userId: string): Avatar {
         'urn:decentraland:off-chain:base-avatars:standard_hair',
         'urn:decentraland:off-chain:base-avatars:f_eyes_00',
         'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
-        'urn:decentraland:off-chain:base-avatars:f_mouth_00',
-        'urn:decentraland:off-chain:base-avatars:standard_hair'
+        'urn:decentraland:off-chain:base-avatars:f_mouth_00'
       ],
       snapshots: {
         face256: `QmZbyGxDnZ4PaMVX7kpA2NuGTrmnpwTJ8heKKTSCk4GRJL`,
