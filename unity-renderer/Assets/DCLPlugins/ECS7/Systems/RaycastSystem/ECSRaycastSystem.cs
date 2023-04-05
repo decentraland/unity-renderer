@@ -73,10 +73,9 @@ namespace ECSSystems.ECSRaycastSystem
                 };
 
                 // Hit everything by default except 'OnPointer' layer
-                LayerMask raycastLayerMask = new LayerMask()
-                                             | (1 << PhysicsLayers.defaultLayer)
-                                             | (1 << PhysicsLayers.characterLayer)
-                                             | (1 << PhysicsLayers.characterOnlyLayer);
+                int raycastLayerMask = (1 << PhysicsLayers.defaultLayer)
+                                     | (1 << PhysicsLayers.characterLayer)
+                                     | (1 << PhysicsLayers.characterOnlyLayer);
 
                 if (model.HasCollisionMask)
                     raycastLayerMask = CreateRaycastLayerMask(model.CollisionMask);
@@ -227,7 +226,7 @@ namespace ECSSystems.ECSRaycastSystem
         {
             bool hasPhysicsLayer = false;
             bool hasPointerLayer = false;
-            int unityLayerMask = new LayerMask();
+            int unityLayerMask = 0;
 
             if (LayerMaskUtils.IsInLayerMask(sdkLayerMask, (int)ColliderLayer.ClPointer))
             {
