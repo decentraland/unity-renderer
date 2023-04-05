@@ -92,7 +92,7 @@ namespace DCL.Social.Chat
                 messageType = ChatMessage.Type.PRIVATE,
                 timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
             };
-            
+
             AddMessages(new[] {msg, msg2});
         }
 
@@ -125,7 +125,6 @@ namespace DCL.Social.Chat
                     recipient = null,
                     messageType = ChatMessage.Type.PUBLIC,
                     timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    isChannelMessage = true,
                     messageId = Guid.NewGuid().ToString(),
                     senderName = user.name
                 };
@@ -165,7 +164,6 @@ namespace DCL.Social.Chat
                     recipient = GetAllocatedChannelByName("global").ChannelId,
                     messageType = ChatMessage.Type.PUBLIC,
                     timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    isChannelMessage = true,
                     messageId = Guid.NewGuid().ToString(),
                     senderName = user.name
                 };
