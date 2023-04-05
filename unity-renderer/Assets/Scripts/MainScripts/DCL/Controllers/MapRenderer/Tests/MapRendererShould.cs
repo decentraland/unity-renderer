@@ -40,6 +40,7 @@ namespace Tests
             MapRenderer.i.Cleanup();
             UnityEngine.Object.Destroy(viewport);
             DataStore.Clear();
+            MinimapMetadata.GetMetadata().Clear();
 
             yield return base.TearDown();
         }

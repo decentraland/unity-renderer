@@ -1,0 +1,34 @@
+{
+    "name": "MapRendererTestSceneEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c27391cd3f3b5aeb4b4c45372ede8043",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:f5673707083749dea905d94b72f6e3f8",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:d0d87470ef1844e08586dabeb6d672bd",
+        "GUID:b8662e798190944f4b638fbeb48e84f0",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:6c1761dc8f737004198eb333521bd665",
+        "GUID:ee6523961ef177343ad763fcd55c7c46",
+        "GUID:e9cee4050cfa5534d9b26e2782df20be",
+        "GUID:0e967802b778d404eac1ca5ea340e290",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:c44f6fd10d3d94432a107d581e0096b5",
+        "GUID:c34e38f41494f834abff029ddf82af43"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
