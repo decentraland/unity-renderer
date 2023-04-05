@@ -4,6 +4,7 @@ using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.Social.Chat.Mentions;
 using System;
+using System.Globalization;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,19 @@ namespace DCL.Chat.HUD
 {
     public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
+        public interface ILocalTimeConverterStrategy
+        {
+            DateTime GetLocalTime(ulong timestamp);
+        }
+
+        public class SystemLocalTimeConverterStrategy : ILocalTimeConverterStrategy
+        {
+            public DateTime GetLocalTime(ulong timestamp) =>
+                DateTimeOffset.FromUnixTimeMilliseconds((long)timestamp)
+                              .ToLocalTime()
+                              .DateTime;
+        }
+
         [SerializeField] internal TextMeshProUGUI body;
         [SerializeField] internal float timeToHoverPanel = 1f;
         [SerializeField] internal float timeToHoverGotoPanel = 1f;
@@ -37,10 +51,19 @@ namespace DCL.Chat.HUD
 
         public override ChatEntryModel Model => model;
 
-        public override string DateString =>
-            DateTimeOffset.FromUnixTimeMilliseconds((long) Model.timestamp)
-                .ToLocalTime()
-                .ToString("MM/dd/yyyy h:mm:ss tt");
+        public ILocalTimeConverterStrategy LocalTimeConverterStrategy { get; set; } = new SystemLocalTimeConverterStrategy();
+
+        public override string HoverString
+        {
+            get
+            {
+                var date = LocalTimeConverterStrategy.GetLocalTime(Model.timestamp)
+                                                     .ToString("MM/dd/yy h:mm:ss tt", CultureInfo.InvariantCulture);
+
+                return Model.isLoadingNames ? $"Loading name - {date}" : date;
+            }
+        }
+
         public override event Action<ChatEntry> OnUserNameClicked;
         public override event Action<ChatEntry> OnTriggerHover;
         public override event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
@@ -116,6 +139,7 @@ namespace DCL.Chat.HUD
                             baseName = $"<link=username://{baseName}>{baseName}</link>";
                             break;
                     }
+
                     break;
             }
 
@@ -145,6 +169,7 @@ namespace DCL.Chat.HUD
                             AudioScriptableObjects.chatSend.Play(true);
                         else
                             AudioScriptableObjects.chatReceiveGlobal.Play(true);
+
                         break;
                     case ChatMessage.Type.PRIVATE:
                         switch (chatEntryModel.subType)
@@ -170,8 +195,8 @@ namespace DCL.Chat.HUD
         private bool IsRecentMessage(ChatEntryModel chatEntryModel)
         {
             return chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp
-                   && (DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds((long) chatEntryModel.timestamp))
-                   .TotalSeconds < 30;
+                   && (DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds((long)chatEntryModel.timestamp))
+                  .TotalSeconds < 30;
         }
 
         public void OnPointerClick(PointerEventData pointerEventData)
@@ -180,6 +205,7 @@ namespace DCL.Chat.HUD
 
             int linkIndex =
                 TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
+
             if (linkIndex == -1) return;
 
             string link = body.textInfo.linkInfo[linkIndex].GetLinkID();
@@ -208,9 +234,11 @@ namespace DCL.Chat.HUD
                 return;
 
             hoverPanelTimer = 0f;
+
             var linkIndex =
                 TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position,
                     DataStore.i.camera.hudsCamera.Get());
+
             if (linkIndex == -1)
             {
                 isOverCoordinates = false;
@@ -296,6 +324,7 @@ namespace DCL.Chat.HUD
                 return;
 
             hoverPanelTimer -= Time.deltaTime;
+
             if (hoverPanelTimer <= 0f)
             {
                 hoverPanelTimer = 0f;
@@ -309,6 +338,7 @@ namespace DCL.Chat.HUD
                 return;
 
             hoverGotoPanelTimer -= Time.deltaTime;
+
             if (hoverGotoPanelTimer <= 0f)
             {
                 hoverGotoPanelTimer = 0f;

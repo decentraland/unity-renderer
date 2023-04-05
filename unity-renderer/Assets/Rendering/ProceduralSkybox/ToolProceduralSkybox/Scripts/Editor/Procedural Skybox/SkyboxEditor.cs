@@ -205,7 +205,7 @@ namespace DCL.Skybox
 
                 if (selectedConfiguration != configurations[selectedConfigurationIndex])
                 {
-                    UpdateConfigurationsList();
+                    configurations[selectedConfigurationIndex] = selectedConfiguration;
 
                     if (Application.isPlaying && SkyboxController.i != null && overridingController)
                     {

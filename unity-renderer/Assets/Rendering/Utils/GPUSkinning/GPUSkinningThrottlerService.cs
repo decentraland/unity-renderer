@@ -10,6 +10,16 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
 
     private CancellationTokenSource cts;
 
+    public static GPUSkinningThrottlerService Create(bool initializeOnSpawn)
+    {
+        GPUSkinningThrottlerService service = new GPUSkinningThrottlerService();
+
+        if (initializeOnSpawn)
+            service.Initialize();
+
+        return service;
+    }
+
     public void Initialize()
     {
         cts = new CancellationTokenSource();
@@ -21,7 +31,7 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
         if (!gpuSkinnings.ContainsKey(gpuSkinning))
             gpuSkinnings.Add(gpuSkinning, framesBetweenUpdates);
         else
-            Debug.LogWarning("GPUSkinningThrottlerService: Register called twice for the same IGPUSkinning");
+            ModifyThrottling(gpuSkinning, framesBetweenUpdates);
     }
 
     public void Unregister(IGPUSkinning gpuSkinning)
@@ -47,16 +57,6 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
         gpuSkinnings.Clear();
     }
 
-    public static GPUSkinningThrottlerService Create(bool initializeOnSpawn)
-    {
-        GPUSkinningThrottlerService service = new GPUSkinningThrottlerService();
-
-        if (initializeOnSpawn)
-            service.Initialize();
-
-        return service;
-    }
-
     private void Cancel()
     {
         if (cts != null)
@@ -69,18 +69,16 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
 
     private async UniTaskVoid ThrottleUpdateAsync(CancellationToken ct)
     {
-        await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate);
+        await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate, ct);
 
         // Cancel gracefully
         while (!ct.IsCancellationRequested)
         {
             foreach (KeyValuePair<IGPUSkinning, int> entry in gpuSkinnings)
-            {
                 if (Time.frameCount % entry.Value == 0)
                     entry.Key.Update();
-            }
 
-            await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate);
+            await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate, ct);
         }
     }
 }
