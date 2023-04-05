@@ -10,7 +10,7 @@ namespace DCL.ECS7.InternalComponents
     public class InternalComponent
     {
         public bool dirty => _dirty;
-        internal bool _dirty = true;
+        internal bool _dirty = false;
     }
 
     public class InternalTexturizable : InternalComponent
@@ -152,5 +152,13 @@ namespace DCL.ECS7.InternalComponents
         }
 
         public readonly List<Entry> PointerEvents = new List<Entry>();
+    }
+
+    public class InternalRegisteredUiPointerEvents : InternalComponent
+    {
+        public EventCallback<PointerDownEvent> OnPointerDownCallback;
+        public EventCallback<PointerUpEvent> OnPointerUpCallback;
+        public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
+        public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
     }
 }
