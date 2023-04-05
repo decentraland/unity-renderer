@@ -817,9 +817,11 @@ public class AvatarEditorHUDController : IHUD
                 view.sectionSelector.Show(true);
             }
 
-            LoadOwnedWereables(userProfile);
             if (!isSignUpFlow)
+            {
+                LoadOwnedWereables(userProfile);
                 LoadOwnedEmotes();
+            }
 
             LoadCollections();
             Environment.i.messaging.manager.paused = isSignUpFlow;
