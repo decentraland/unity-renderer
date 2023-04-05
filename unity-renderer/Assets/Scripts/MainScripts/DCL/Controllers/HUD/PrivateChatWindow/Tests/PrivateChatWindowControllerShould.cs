@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using NSubstitute;
@@ -90,7 +91,7 @@ public class PrivateChatWindowControllerShould
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] { msg3 });
 
         internalChatView.Received(3)
-                        .AddEntry(Arg.Is<ChatEntryModel>(model =>
+                        .SetEntry(Arg.Is<ChatEntryModel>(model =>
                              model.messageType == ChatMessage.Type.PRIVATE
                              && model.senderId == FRIEND_ID));
     }

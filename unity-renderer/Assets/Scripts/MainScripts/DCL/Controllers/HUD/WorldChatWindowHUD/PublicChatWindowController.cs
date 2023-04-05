@@ -70,6 +70,7 @@ namespace DCL.Chat.HUD
                 true,
                 (name, count, ct) => chatMentionSuggestionProvider.GetNearbyProfilesStartingWith(name, count, ct),
                 socialAnalytics,
+                chatController,
                 profanityFilter);
             // dont set any message's sorting strategy, just add them sequentally
             // comms cannot calculate a server timestamp for each message
@@ -229,7 +230,7 @@ namespace DCL.Chat.HUD
 
                 if (!string.IsNullOrEmpty(message.recipient)) continue;
 
-                chatHudController.AddChatMessage(message, View.IsActive);
+                chatHudController.SetChatMessage(message, View.IsActive);
                 messageLogUpdated = true;
             }
 
@@ -257,7 +258,7 @@ namespace DCL.Chat.HUD
 
         private void HandleMessageBlockedBySpam(ChatMessage message)
         {
-            chatHudController.AddChatMessage(new ChatEntryModel
+            chatHudController.SetChatMessage(new ChatEntryModel
             {
                 timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
@@ -304,8 +305,12 @@ namespace DCL.Chat.HUD
         private void HideMembersList() =>
             nearbyMembersHUDController.SetVisibility(false);
 
-        private void GoToCrowd() =>
-            Environment.i.world.teleportController.GoToCrowd();
+        private void GoToCrowd()
+        {
+            // Requested temporally by product team since the "go to crowd" approach was always redirecting to the casino.
+            //Environment.i.world.teleportController.GoToCrowd();
+            Environment.i.world.teleportController.Teleport(0, 0);
+        }
 
         private void UpdateMembersCount(string userId, Player player) =>
             View.UpdateMembersCount(nearbyPlayers.Count());

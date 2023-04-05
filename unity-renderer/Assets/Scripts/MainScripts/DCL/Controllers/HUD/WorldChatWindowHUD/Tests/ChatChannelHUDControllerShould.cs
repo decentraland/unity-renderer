@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using NSubstitute;
 using NUnit.Framework;
@@ -130,6 +131,15 @@ namespace DCL.Chat.HUD
         [Test]
         public void MarkMessagesAsSeenOnlyOnceWhenReceivedManyMessages()
         {
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "user",
+                name = "userName",
+            });
+
+            userProfileBridge.Get("user").Returns(senderUserProfile);
+
             controller.SetVisibility(true);
             view.IsActive.Returns(true);
             chatController.ClearReceivedCalls();

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using MainScripts.DCL.Controllers.HotScenes;
 
 [Serializable]
 public class PlaceCardComponentModel : BaseComponentModel
@@ -15,5 +16,5 @@ public class PlaceCardComponentModel : BaseComponentModel
     public Vector2Int[] parcels;
 
     [HideInInspector]
-    public HotScenesController.HotSceneInfo hotSceneInfo;
+    public IHotScenesController.HotSceneInfo hotSceneInfo;
 }

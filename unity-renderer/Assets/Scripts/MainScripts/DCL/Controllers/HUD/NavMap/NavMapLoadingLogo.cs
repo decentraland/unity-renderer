@@ -15,8 +15,7 @@ namespace DCL
         private void Awake()
         {
             DataStore.i.HUDs.navmapVisible.OnChange += OnOpeningNavMap;
-            DataStore.i.HUDs.navmapVisible.OnChange += SubscribeToMapRenderer;
-
+            DataStore.i.HUDs.navmapIsRendered.OnChange += OnNavMapIsRenderedChanged;
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreUiVisibilityChange;
         }
 
@@ -25,33 +24,24 @@ namespace DCL
             DataStore.i.HUDs.navmapVisible.OnChange -= OnOpeningNavMap;
             DataStore.i.exploreV2.isOpen.OnChange -= OnExploreUiVisibilityChange;
 
-            if (MapRenderer.i != null) { MapRenderer.i.MapVisibilityChanged -= OnNavMapLoaded; }
-        }
-
-        private void SubscribeToMapRenderer(bool current, bool previous)
-        {
-            DataStore.i.HUDs.navmapVisible.OnChange -= SubscribeToMapRenderer;
-            MapRenderer.i.MapVisibilityChanged += OnNavMapLoaded;
+            DataStore.i.HUDs.navmapIsRendered.OnChange -= OnNavMapIsRenderedChanged;
         }
 
         private void OnExploreUiVisibilityChange(bool isOpen, bool _)
         {
-            if (!isOpen && !sectionsContent.enabled)
-            {
-                SetImagesVisibility(visible: true);
-            }
+            if (!isOpen && !sectionsContent.enabled) { SetImagesVisibility(visible: true); }
         }
 
         private void OnOpeningNavMap(bool isShown, bool _)
         {
-            if (isShown)
-            {
-                SetImagesVisibility(visible: false);
-            }
+            if (isShown) { SetImagesVisibility(visible: false); }
         }
 
-        private void OnNavMapLoaded(bool _) =>
-            SetImagesVisibility(visible: true);
+        private void OnNavMapIsRenderedChanged(bool @new, bool previous)
+        {
+            if (@new)
+                SetImagesVisibility(true);
+        }
 
         private void SetImagesVisibility(bool visible)
         {

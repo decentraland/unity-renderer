@@ -3,6 +3,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Helpers;
 using DCL.Models;
+using DCLServices.MapRendererV2;
 using Decentraland.Common;
 using NSubstitute;
 using NUnit.Framework;
@@ -34,7 +35,10 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
 
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
+
+            Environment.Setup(serviceLocator);
         }
 
         [TearDown]
