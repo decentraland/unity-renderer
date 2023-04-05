@@ -121,4 +121,9 @@ namespace DCL.ECS7.InternalComponents
             rootElement.name += $"(Id: {entityId})";
         }
     }
+
+    public class InternalRaycast : InternalComponent
+    {
+        public PBRaycast raycastModel;
+    }
 }

@@ -28,6 +28,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
     public IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
     public IInternalECSComponent<InternalAudioSource> audioSourceComponent { get; }
+    public IInternalECSComponent<InternalRaycast> raycastComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -147,6 +148,15 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 
         audioSourceComponent = new InternalECSComponent<InternalAudioSource>(
             InternalECSComponentsId.AUDIO_SOURCE,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors
+        );
+
+        raycastComponent = new InternalECSComponent<InternalRaycast>(
+            InternalECSComponentsId.RAYCAST,
             componentsManager,
             componentsFactory,
             null,

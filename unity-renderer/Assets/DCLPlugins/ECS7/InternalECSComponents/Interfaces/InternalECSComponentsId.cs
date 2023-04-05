@@ -14,5 +14,6 @@ public enum InternalECSComponentsId
     VIDEO_MATERIAL = 12,
     SCENE_BOUNDS_CHECK = 13,
     AUDIO_SOURCE = 14,
-    COLLIDER_CUSTOM = 15
+    COLLIDER_CUSTOM = 15,
+    RAYCAST = 16
 }

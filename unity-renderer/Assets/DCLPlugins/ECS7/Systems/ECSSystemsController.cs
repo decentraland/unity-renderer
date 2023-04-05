@@ -76,7 +76,13 @@ public class ECSSystemsController : IDisposable
 
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
 
-        raycastSystem = new ECSRaycastSystem(context.raycasts, context.raycastResults, context.meshCollider, context.internalEcsComponents.physicColliderComponent, context.internalEcsComponents.onPointerColliderComponent, context.internalEcsComponents.customLayerColliderComponent, context.componentWriter);
+        raycastSystem = new ECSRaycastSystem(
+            context.meshCollider,
+            context.internalEcsComponents.raycastComponent,
+            context.internalEcsComponents.physicColliderComponent,
+            context.internalEcsComponents.onPointerColliderComponent,
+            context.internalEcsComponents.customLayerColliderComponent,
+            context.componentWriter);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             DataStore.i.ecs7.scenes,

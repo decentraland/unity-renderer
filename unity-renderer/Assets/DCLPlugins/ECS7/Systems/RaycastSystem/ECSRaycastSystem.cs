@@ -17,25 +17,22 @@ namespace ECSSystems.ECSRaycastSystem
 {
     public class ECSRaycastSystem
     {
-        private readonly ECSComponent<PBRaycast> raycastComponent;
-        private readonly ECSComponent<PBRaycastResult> raycastResultComponent;
         private readonly ECSComponent<PBMeshCollider> meshCollider;
+        private readonly IInternalECSComponent<InternalRaycast> internalRaycastComponent;
         private readonly IInternalECSComponent<InternalColliders> physicsColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> onPointerColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
         private readonly IECSComponentWriter componentWriter;
 
         public ECSRaycastSystem(
-            ECSComponent<PBRaycast> raycastComponent,
-            ECSComponent<PBRaycastResult> raycastResultComponent,
             ECSComponent<PBMeshCollider> meshCollider,
+            IInternalECSComponent<InternalRaycast> internalRaycastComponent,
             IInternalECSComponent<InternalColliders> physicsColliderComponent,
             IInternalECSComponent<InternalColliders> onPointerColliderComponent,
             IInternalECSComponent<InternalColliders> customLayerColliderComponent,
             IECSComponentWriter componentWriter)
         {
-            this.raycastComponent = raycastComponent;
-            this.raycastResultComponent = raycastResultComponent;
+            this.internalRaycastComponent = internalRaycastComponent;
             this.meshCollider = meshCollider;
             this.physicsColliderComponent = physicsColliderComponent;
             this.onPointerColliderComponent = onPointerColliderComponent;
@@ -45,22 +42,20 @@ namespace ECSSystems.ECSRaycastSystem
 
         public void Update()
         {
-            var raycasts = raycastComponent.Get();
-            int raycastsCount = raycasts.Count;
-            for (int i = 0; i < raycastsCount; i++)
+            var raycastComponentGroup = internalRaycastComponent.GetForAll();
+            int entitiesCount = raycastComponentGroup.Count;
+
+            // Note: the components are traversed backwards as some internal raycast components may be removed during iteration
+            for (int i = entitiesCount - 1; i >= 0 ; i--)
             {
-                PBRaycast model = raycasts[i].value.model;
-                IDCLEntity entity = raycasts[i].value.entity;
-                IParcelScene scene = raycasts[i].value.scene;
+                PBRaycast model = raycastComponentGroup[i].value.model.raycastModel;
+                IDCLEntity entity = raycastComponentGroup[i].value.entity;
+                IParcelScene scene = raycastComponentGroup[i].value.scene;
 
-                if (model.QueryType == RaycastQueryType.RqtNone) continue;
-
-                // If the entity has a raycastResult, the first ray was already cast
-                if (raycastResultComponent.HasComponent(scene, entity))
+                if (model.QueryType == RaycastQueryType.RqtNone)
                 {
-                    bool isContinuous = model.HasContinuous && model.Continuous;
-                    if (!isContinuous && raycastResultComponent.Get(scene, entity).model.Timestamp == model.Timestamp)
-                        continue;
+                    internalRaycastComponent.RemoveFor(scene, entity);
+                    continue;
                 }
 
                 Ray ray = CreateRay(scene, entity, model);
@@ -132,6 +127,12 @@ namespace ECSSystems.ECSRaycastSystem
                     ComponentID.RAYCAST_RESULT,
                     result
                 );
+
+                // If the raycast on that entity isn't 'continuous' the internal component is removed and won't
+                // be used for raycasting on the next system iteration. If its timestamp changes, the handler
+                // adds the internal raycast component again.
+                if(!model.HasContinuous || !model.Continuous)
+                    internalRaycastComponent.RemoveFor(scene, entity);
             }
         }
 
