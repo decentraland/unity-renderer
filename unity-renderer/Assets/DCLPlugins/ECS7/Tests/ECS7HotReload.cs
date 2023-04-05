@@ -5,6 +5,7 @@ using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.Models;
+using DCLServices.MapRendererV2;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using NSubstitute;
@@ -157,8 +158,8 @@ namespace Tests
         private static void LoadEnvironment()
         {
             ServiceLocator serviceLocator = ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
             Environment.Setup(serviceLocator);
-            serviceLocator.Initialize();
         }
 
         private static async UniTask LoadScene(int sceneNumber)

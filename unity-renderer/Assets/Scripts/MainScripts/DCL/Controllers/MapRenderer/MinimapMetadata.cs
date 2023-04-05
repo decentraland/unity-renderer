@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MinimapMetadata", menuName = "MinimapMetadata")]
@@ -26,9 +27,12 @@ public class MinimapMetadata : ScriptableObject
     private static MinimapMetadata minimapMetadata;
 
     private readonly HashSet<MinimapSceneInfo> scenesInfo = new ();
+
     private readonly Dictionary<Vector2Int, MinimapSceneInfo> sceneInfoMap = new ();
 
     public event Action<MinimapSceneInfo> OnSceneInfoUpdated;
+
+    public IReadOnlyCollection<MinimapSceneInfo> SceneInfos => scenesInfo;
 
     public MinimapSceneInfo GetSceneInfo(int x, int y) =>
         sceneInfoMap.TryGetValue(new Vector2Int(x, y), out MinimapSceneInfo result)
@@ -55,6 +59,7 @@ public class MinimapMetadata : ScriptableObject
 
         scenesInfo.Add(sceneInfo);
 
+        // it's not clear why we invoke the callback if `scenesInfo` already contains the scene
         OnSceneInfoUpdated?.Invoke(sceneInfo);
     }
 
@@ -73,7 +78,7 @@ public class MinimapMetadata : ScriptableObject
     }
 
     [Serializable]
-    public class MinimapSceneInfo
+    public class MinimapSceneInfo : IEquatable<MinimapSceneInfo>
     {
         public string name;
         public TileType type;
@@ -84,24 +89,44 @@ public class MinimapMetadata : ScriptableObject
         public string description;
         public string previewImageUrl;
 
-        [NonSerialized]
-        private int hashCode = -1;
+        [NonSerialized] private int? cachedHash;
 
-        public override bool Equals(object obj) =>
-            obj != null && obj.GetHashCode() == GetHashCode();
-
-        public override int GetHashCode()
+        public bool Equals(MinimapSceneInfo other)
         {
-            if (hashCode == -1)
-                hashCode = name.GetHashCode() + type.GetHashCode() + GenerateParcelHashCode() + isPOI.GetHashCode() + GenerateOwnerInfo();
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            // skip `previewImageUrl` on purpose
+            return name == other.name
+                   && type == other.type
+                   && parcels.SequenceEqual(other.parcels)
+                   && isPOI == other.isPOI
+                   && owner == other.owner
+                   && description == other.description;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((MinimapSceneInfo)obj);
+        }
+
+        public override int GetHashCode() =>
+            cachedHash ??= HashCode.Combine(name, (int)type, GetParcelsHashCode(), isPOI, owner, description);
+
+        private int GetParcelsHashCode()
+        {
+            if (parcels == null || parcels.Count == 0)
+                return 0;
+
+            var hashCode = parcels[0].GetHashCode();
+
+            for (var i = 1; i < parcels.Count; i++)
+                hashCode = HashCode.Combine(hashCode, parcels[i].GetHashCode());
 
             return hashCode;
-
-            int GenerateOwnerInfo() =>
-                owner == null ? 0 : owner.GetHashCode() + description.GetHashCode();
-
-            int GenerateParcelHashCode() =>
-                parcels.GetHashCode() + parcels.Count + (parcels.Count > 0 ? parcels[0].x + (parcels[0].y * 600) : 0);
         }
     }
 }

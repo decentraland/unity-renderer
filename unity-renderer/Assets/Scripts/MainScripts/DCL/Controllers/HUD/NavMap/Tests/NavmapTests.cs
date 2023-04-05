@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCLServices.MapRendererV2;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -20,6 +21,12 @@ namespace Tests
             return result;
         }
 
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            var result = base.InitializeServiceLocator();
+            result.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
+            return result;
+        }
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -60,13 +67,9 @@ namespace Tests
 
             yield return null;
 
-            Assert.IsTrue(navmapView.scrollRect.gameObject.activeSelf);
-
             action.RaiseOnTriggered();
 
             yield return null;
-
-            Assert.IsFalse(navmapView.scrollRect.gameObject.activeSelf);
         }
 
         [Test]

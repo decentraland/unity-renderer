@@ -27,6 +27,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
     public IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
     public IInternalECSComponent<InternalAudioSource> audioSourceComponent { get; }
+    public IInternalECSComponent<InternalPointerEvents> PointerEventsComponent { get; }
+    public IInternalECSComponent<InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -143,6 +145,24 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             markAsDirtyComponents,
             crdtExecutors
         );
+
+        PointerEventsComponent = new InternalECSComponent<InternalPointerEvents>(
+            InternalECSComponentsId.POINTER_EVENTS,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors
+        );
+
+        RegisteredUiPointerEventsComponent = new InternalECSComponent<InternalRegisteredUiPointerEvents>(
+            InternalECSComponentsId.REGISTERED_UI_POINTER_EVENTS,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors
+        );
     }
 
     public void Dispose()
@@ -158,6 +178,13 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         inputEventResultsComponent.Dispose();
         videoPlayerComponent.Dispose();
         videoMaterialComponent.Dispose();
+        visibilityComponent.Dispose();
+        uiContainerComponent.Dispose();
+        uiInputResultsComponent.Dispose();
+        sceneBoundsCheckComponent.Dispose();
+        audioSourceComponent.Dispose();
+        PointerEventsComponent.Dispose();
+        RegisteredUiPointerEventsComponent.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()

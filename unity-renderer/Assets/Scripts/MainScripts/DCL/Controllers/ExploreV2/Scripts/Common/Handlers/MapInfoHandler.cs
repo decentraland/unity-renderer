@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public class MapInfoHandler : IMapDataView
 {
@@ -11,7 +12,7 @@ public class MapInfoHandler : IMapDataView
 
     public Vector2Int[] parcels { private set; get; }
 
-    public void SetMinimapSceneInfo(HotScenesController.HotSceneInfo sceneInfo)
+    public void SetMinimapSceneInfo(IHotScenesController.HotSceneInfo sceneInfo)
     {
         baseCoord = sceneInfo.baseCoords;
         name = sceneInfo.name;

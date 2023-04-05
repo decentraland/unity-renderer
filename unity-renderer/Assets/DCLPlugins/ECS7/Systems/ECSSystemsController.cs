@@ -3,6 +3,7 @@ using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.ECSSceneBoundsCheckerSystem;
+using ECSSystems.ECSUiPointerEventsSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
@@ -84,6 +85,14 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.audioSourceComponent,
             DataStore.i.debugConfig.isDebugMode.Get());
 
+        ECSUiPointerEventsSystem uiPointerEventsSystem = new ECSUiPointerEventsSystem(
+            context.internalEcsComponents.RegisteredUiPointerEventsComponent,
+            context.internalEcsComponents.inputEventResultsComponent,
+            context.componentGroups.UnregisteredUiPointerEvents,
+            context.componentGroups.RegisteredUiPointerEvents,
+            context.componentGroups.RegisteredUiPointerEventsWithUiRemoved,
+            context.componentGroups.RegisteredUiPointerEventsWithPointerEventsRemoved);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -98,18 +107,19 @@ public class ECSSystemsController : IDisposable
             ECSPointerInputSystem.CreateSystem(
                 context.internalEcsComponents.onPointerColliderComponent,
                 context.internalEcsComponents.inputEventResultsComponent,
-                context.pointerEvents,
+                context.internalEcsComponents.PointerEventsComponent,
                 interactionHoverCanvas,
                 Environment.i.world.state,
                 DataStore.i.ecs7),
-            ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             billboardSystem.Update,
             videoPlayerSystem.Update,
         };
 
         lateUpdateSystems = new ECS7System[]
         {
+            uiPointerEventsSystem.Update,
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
+            ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             sceneBoundsCheckerSystem.Update // Should always be the last system

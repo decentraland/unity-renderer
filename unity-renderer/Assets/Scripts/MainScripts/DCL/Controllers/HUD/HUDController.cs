@@ -14,6 +14,7 @@ using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
 using System.Threading;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class HUDController : IHUDController
 {
@@ -169,6 +170,8 @@ public class HUDController : IHUDController
             case HUDElementID.MINIMAP:
                 if (minimapHud == null)
                 {
+                    // dependencies should be initialized
+                    await Environment.WaitUntilInitialized();
                     await CreateHudElement(configuration, hudElementId, cancellationToken);
                     minimapHud?.Initialize();
                 }

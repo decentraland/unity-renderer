@@ -90,8 +90,7 @@ export class BffRpcConnection implements IRealmAdapter<any> {
     public port: RpcClientPort,
     public peerId: string
   ) {
-    port.on('close', async () => {
-      this.logger.log('BFF transport closed')
+    port.on('close', () => {
       this.disconnect().catch(this.logger.error)
     })
 
@@ -105,6 +104,7 @@ export class BffRpcConnection implements IRealmAdapter<any> {
     if (this.disposed) {
       return
     }
+    this.logger.log('BFF transport closed')
 
     this.disposed = true
 

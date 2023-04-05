@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public interface IHighlightsSubSectionComponentView: IPlacesAndEventsSubSectionComponentView
 {
@@ -27,7 +28,7 @@ public interface IHighlightsSubSectionComponentView: IPlacesAndEventsSubSectionC
     /// <summary>
     /// It will be triggered when the place JumpIn button is clicked.
     /// </summary>
-    event Action<HotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
+    event Action<IHotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
 
     /// <summary>
     /// It will be triggered when the place favorite button is clicked.
