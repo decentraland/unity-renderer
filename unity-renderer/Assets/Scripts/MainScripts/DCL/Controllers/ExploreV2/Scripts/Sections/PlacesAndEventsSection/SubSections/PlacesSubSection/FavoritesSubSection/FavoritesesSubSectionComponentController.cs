@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static HotScenesController;
 using Environment = DCL.Environment;
+using MainScripts.DCL.Controllers.HotScenes;
+using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComponentController, IPlacesAndEventsAPIRequester
 {

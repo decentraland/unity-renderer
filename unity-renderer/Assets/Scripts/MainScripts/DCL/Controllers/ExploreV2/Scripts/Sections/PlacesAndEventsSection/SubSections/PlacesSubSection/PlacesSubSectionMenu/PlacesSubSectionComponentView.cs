@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
@@ -43,7 +44,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
-    public event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
+    public event Action<IHotScenesController.HotSceneInfo> OnJumpInClicked;
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;

@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
+using DCLServices.MapRendererV2;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -54,6 +55,7 @@ namespace DCL.ECSComponents.Tests
             IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
             emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
             result.Register<IEmotesCatalogService>(() => emotesCatalogService);
+            result.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
 
             return result;
         }

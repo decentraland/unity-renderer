@@ -1,52 +1,92 @@
 using System;
 using DCL.Helpers;
+using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.ConsumerUtils;
+using DCLServices.MapRendererV2.MapCameraController;
+using DCLServices.MapRendererV2.MapLayers;
 using UnityEngine;
-using UnityEngine.UI;
-using static DCL.MapGlobalUsersPositionMarkerController;
 
 namespace DCL
 {
     public class NavmapVisibilityBehaviour : IDisposable
     {
+        private static readonly MapLayer ACTIVE_MAP_LAYERS =
+            MapLayer.Atlas | MapLayer.HomePoint | MapLayer.ScenesOfInterest | MapLayer.PlayerMarker
+            | MapLayer.HotUsersMarkers | MapLayer.ColdUsersMarkers | MapLayer.ParcelHoverHighlight;
+
         private Vector3 atlasOriginalPosition;
-        
-        private Transform mapRendererMinimapParent;
-        private RectTransform minimapViewport;
 
         private bool waitingForFullscreenHUDOpen;
 
         private readonly BaseVariable<bool> navmapVisible;
-        
-        private readonly ScrollRect scrollRect;
-        private readonly Transform scrollRectContentTransform;
-        
-        private readonly NavmapZoom zoom;
-        private readonly NavmapToastView toastView;
 
-        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, ScrollRect scrollRect, Transform scrollRectContentTransform, NavmapZoom zoom, NavmapToastView toastView)
+        private readonly NavmapZoom zoom;
+        private readonly NavmapRendererConfiguration rendererConfiguration;
+
+        private readonly NavmapToastViewController navmapToastViewController;
+        private readonly NavmapZoomViewController navmapZoomViewController;
+        private readonly MapCameraDragBehavior mapCameraDragBehavior;
+
+        private Service<IMapRenderer> mapRenderer;
+
+        private readonly BaseVariable<bool> navmapIsRendered = DataStore.i.HUDs.navmapIsRendered;
+
+        private IMapCameraController cameraController;
+        private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
+
+        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoom zoom, NavmapToastView toastView,
+            NavmapRendererConfiguration rendererConfiguration)
         {
             this.navmapVisible = navmapVisible;
-            
-            this.scrollRect = scrollRect;
-            this.scrollRectContentTransform = scrollRectContentTransform;
-            
+
             this.zoom = zoom;
-            this.toastView = toastView;
-            
+            this.rendererConfiguration = rendererConfiguration;
+
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
+
+            navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage);
+            navmapZoomViewController = new NavmapZoomViewController(zoom);
+
+            this.rendererConfiguration.RenderImage.EmbedMapCameraDragBehavior(rendererConfiguration.MapCameraDragBehaviorData);
+
+            SetRenderImageTransparency(true);
+
+            rendererConfiguration.PixelPerfectMapRendererTextureProvider.SetHudCamera(hudCamera);
         }
-        
+
         public void Dispose()
         {
+            ReleaseCameraController();
+
             DataStore.i.exploreV2.isOpen.OnChange -= OnExploreOpenChanged;
             navmapVisible.OnChange -= OnNavmapVisibilityChanged;
 
             if (waitingForFullscreenHUDOpen == false)
                 CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullScreenOpened;
+
+            navmapToastViewController.Dispose();
+            navmapZoomViewController.Dispose();
         }
-        
-        private void OnNavmapVisibilityChanged(bool isVisible, bool _) => 
+
+        private void ReleaseCameraController()
+        {
+            if (cameraController != null)
+            {
+                cameraController.Release();
+                cameraController = null;
+            }
+        }
+
+        private void SetRenderImageTransparency(bool isTransparent)
+        {
+            // Make Render Image transparent before activation
+            var renderImageColor = this.rendererConfiguration.RenderImage.color;
+            renderImageColor.a = isTransparent ? 0 : 1;
+            this.rendererConfiguration.RenderImage.color = renderImageColor;
+        }
+
+        private void OnNavmapVisibilityChanged(bool isVisible, bool _) =>
             SetVisible(isVisible);
 
         private void OnExploreOpenChanged(bool isOpen, bool _)
@@ -63,9 +103,7 @@ namespace DCL
             if (visible)
             {
                 if (CommonScriptableObjects.isFullscreenHUDOpen.Get())
-                {
                     SetVisibility_Internal(true);
-                }
                 else
                 {
                     waitingForFullscreenHUDOpen = true;
@@ -73,9 +111,7 @@ namespace DCL
                 }
             }
             else
-            {
                 SetVisibility_Internal(false);
-            }
         }
 
         private void OnFullScreenOpened(bool isFullScreen, bool _)
@@ -91,55 +127,41 @@ namespace DCL
 
         private void SetVisibility_Internal(bool visible)
         {
-            if (MapRenderer.i == null)
-                return;
-
-            scrollRect.StopMovement();
-
-            scrollRect.gameObject.SetActive(visible);
-            MapRenderer.i.parcelHighlightEnabled = visible;
-
             if (visible)
             {
                 if (!DataStore.i.exploreV2.isInitialized.Get())
                     Utils.UnlockCursor();
 
-                MapRenderer.i.scaleFactor = zoom.Scale;
+                cameraController = mapRenderer.Ref.RentCamera(
+                    new MapCameraInput(
+                        ACTIVE_MAP_LAYERS,
+                        Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
+                        navmapZoomViewController.ResetZoom(),
+                        rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
+                        zoom.zoomVerticalRange));
 
-                if (minimapViewport == null || mapRendererMinimapParent == null)
-                {
-                    minimapViewport = MapRenderer.i.atlas.viewport;
-                    mapRendererMinimapParent = MapRenderer.i.transform.parent;
-                }
+                SetRenderImageTransparency(false);
 
-                atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
+                navmapToastViewController.Activate();
+                navmapZoomViewController.Activate(cameraController);
+                rendererConfiguration.RenderImage.Activate(hudCamera, cameraController.GetRenderTexture(), cameraController);
+                rendererConfiguration.PixelPerfectMapRendererTextureProvider.Activate(cameraController);
 
-                MapRenderer.i.atlas.viewport = scrollRect.viewport;
-                MapRenderer.i.transform.SetParent(scrollRectContentTransform);
-                MapRenderer.i.atlas.UpdateCulling();
-
-                scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
-
-                // Center map
-                MapRenderer.i.atlas.CenterToTile(Utils.WorldToGridPositionUnclamped(DataStore.i.player.playerWorldPosition.Get()));
-
-                // Set shorter interval of time for populated scenes markers fetch
-                MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(UpdateMode.FOREGROUND);
+                navmapIsRendered.Set(true);
             }
-            else if (minimapViewport != null)
+            else if (cameraController != null)
             {
-                zoom.ResetToDefault();
-                toastView.Close();
+                navmapToastViewController.Deactivate();
+                navmapZoomViewController.Deactivate();
+                rendererConfiguration.PixelPerfectMapRendererTextureProvider.Deactivate();
+                rendererConfiguration.RenderImage.Deactivate();
 
-                MapRenderer.i.atlas.viewport = minimapViewport;
-                MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
-                MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
-                MapRenderer.i.atlas.UpdateCulling();
+                SetRenderImageTransparency(true);
 
-                MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(DataStore.i.player.playerWorldPosition.Get()));
+                cameraController.Release();
+                cameraController = null;
 
-                // Set longer interval of time for populated scenes markers fetch
-                MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(UpdateMode.BACKGROUND);
+                navmapIsRendered.Set(false);
             }
         }
     }

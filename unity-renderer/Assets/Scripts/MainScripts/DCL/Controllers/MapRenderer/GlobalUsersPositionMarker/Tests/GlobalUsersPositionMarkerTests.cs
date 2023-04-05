@@ -1,3 +1,4 @@
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -16,8 +17,8 @@ namespace DCL
             const int INITIAL_SCENES_AMOUNT = 20; // Smaller than MAX_MARKERS
             const int FINAL_SCENES_AMOUNT = 237; // Greater than MAX_MARKERS
 
-            List<HotScenesController.HotSceneInfo> initialScenes = new List<HotScenesController.HotSceneInfo>();
-            List<HotScenesController.HotSceneInfo> finalScenes = new List<HotScenesController.HotSceneInfo>();
+            List<IHotScenesController.HotSceneInfo> initialScenes = new List<IHotScenesController.HotSceneInfo>();
+            List<IHotScenesController.HotSceneInfo> finalScenes = new List<IHotScenesController.HotSceneInfo>();
 
             for (int i = 0; i < FINAL_SCENES_AMOUNT; i++)
             {
@@ -89,7 +90,7 @@ namespace DCL
             Func<Vector2Int, Vector2> coordToMapPosFunc = (v) => { return new Vector2(v.x, v.y); };
 
             // create scenes to test
-            var scenes = new List<HotScenesController.HotSceneInfo>();
+            var scenes = new List<IHotScenesController.HotSceneInfo>();
             scenes.Add(CreateSceneInfo(new Vector2Int(0, 0)));
             scenes.Add(CreateSceneInfo(new Vector2Int(3, 4)));
             scenes.Add(CreateSceneInfo(new Vector2Int(-4, -4)));
@@ -123,14 +124,14 @@ namespace DCL
             UnityEngine.Object.Destroy(overlay);
         }
 
-        private HotScenesController.HotSceneInfo CreateSceneInfo(Vector2Int coords)
+        private IHotScenesController.HotSceneInfo CreateSceneInfo(Vector2Int coords)
         {
-            return new HotScenesController.HotSceneInfo()
+            return new IHotScenesController.HotSceneInfo()
             {
                 baseCoords = coords,
-                realms = new HotScenesController.HotSceneInfo.Realm[]
+                realms = new IHotScenesController.HotSceneInfo.Realm[]
                 {
-                    new HotScenesController.HotSceneInfo.Realm()
+                    new IHotScenesController.HotSceneInfo.Realm()
                     {
                         userParcels = new Vector2Int[] { coords },
                         usersCount = 1

@@ -74,6 +74,22 @@ namespace DCL
             for (int i = 0; i < objectsToInstantiate; i++) { Instantiate(); }
         }
 
+        public async UniTask PrewarmAsync(int createPerFrame, CancellationToken cancellationToken)
+        {
+            int objectsToInstantiate;
+
+            // It is dynamic in case we instantiate manually between frames
+            while ((objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount)) > 0)
+            {
+                objectsToInstantiate = Mathf.Min(createPerFrame, objectsToInstantiate);
+
+                for (var i = 0; i < objectsToInstantiate; i++)
+                    Instantiate();
+
+                await UniTask.NextFrame(cancellationToken);
+            }
+        }
+
         /// <summary>
         /// This will return an instance of the poolable object
         /// </summary>
@@ -114,20 +130,6 @@ namespace DCL
             RefreshName();
 #endif
             return po;
-        }
-
-        public async UniTask PrewarmAsync(int prewarmCount, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (unusedObjects.Count >= prewarmCount)
-                return;
-
-            for (int i = 0; i < prewarmCount; i++)
-            {
-                Instantiate();
-                await UniTask.NextFrame(cancellationToken);
-            }
         }
 
         public PoolableObject Instantiate()

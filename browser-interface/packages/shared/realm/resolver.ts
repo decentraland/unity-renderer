@@ -45,11 +45,7 @@ export async function adapterForRealmConfig(
     ...about.configurations
   }
 
-  // TODO: We are checking !v2 until all migration is finished
-  const isValidBff = about.comms?.protocol === 'v3' && about.bff?.healthy // about.bff?.healthy
-
-  // connect the real BFF
-  if (isValidBff) {
+  if (about.bff?.healthy) {
     return createBffRpcConnection(baseUrl, about, identity)
   }
 
