@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -7,6 +5,8 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -190,13 +190,26 @@ namespace DCL.ECSComponents
                 if (alreadyHasCollider)
                     continue;
 
+                Mesh colliderMesh;
+
+                if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
+                {
+                    colliderMesh = skinnedMeshRenderer.sharedMesh;
+                }
+                else
+                {
+                    MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+                    colliderMesh = meshFilter.sharedMesh;
+                }
+
+                if (!colliderMesh)
+                    continue;
+
                 GameObject colliderGo = new GameObject(POINTER_COLLIDER_NAME);
                 colliderGo.layer = PhysicsLayers.onPointerEventLayer;
                 MeshCollider collider = colliderGo.AddComponent<MeshCollider>();
-                MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
-                if (meshFilter == null) continue;
 
-                collider.sharedMesh = meshFilter.sharedMesh;
+                collider.sharedMesh = colliderMesh;
                 colliderGo.transform.SetParent(renderer.transform);
                 colliderGo.transform.ResetLocalTRS();
                 pointerColliders.Add(collider);
