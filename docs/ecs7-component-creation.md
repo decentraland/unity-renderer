@@ -55,7 +55,7 @@ message PBAudioSource {
 
 Download the following repo: https://github.com/decentraland/js-sdk-toolchain
 
-Run the following command at the root of the `js-sdk-toolchain` project:
+Run the following command at the root of the [js-sdk-toolchain](https://github.com/decentraland/js-sdk-toolchain) project:
 
 ```
 npm install @dcl/protocol@next
