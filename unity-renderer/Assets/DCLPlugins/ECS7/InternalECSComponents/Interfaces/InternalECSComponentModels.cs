@@ -83,7 +83,6 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers;
         public IList<Collider> physicsColliders;
         public IList<Collider> pointerColliders;
-        public IList<Collider> customLayerColliders;
         public AudioSource audioSource;
     }
 
