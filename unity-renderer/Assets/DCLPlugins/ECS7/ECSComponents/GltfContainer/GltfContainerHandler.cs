@@ -199,7 +199,7 @@ namespace DCL.ECSComponents
                 else
                 {
                     MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
-                    colliderMesh = meshFilter.sharedMesh;
+                    colliderMesh = meshFilter?.sharedMesh;
                 }
 
                 if (!colliderMesh)
