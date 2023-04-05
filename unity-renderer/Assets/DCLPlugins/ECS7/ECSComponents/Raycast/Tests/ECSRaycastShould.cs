@@ -1,7 +1,21 @@
-namespace ECSSystems.ECSRaycastSystem.Tests
-{
-    public class ECSRaycastSystemShould
-    {
+﻿using DCL.CRDT;
+using DCL.ECS7;
+using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
+using DCL.ECSRuntime;
+using DCL.Helpers;
+using DCLPlugins.ECSComponents.Raycast;
+using NSubstitute;
+using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.TestTools;
+
+// namespace Tests
+// {
+//     public class ECSRaycastShould
+//     {
 //         private IECSComponentWriter componentWriter;
 //
 //         private ECS7TestUtilsScenesAndEntities testUtils;
@@ -169,5 +183,5 @@ namespace ECSSystems.ECSRaycastSystem.Tests
 //                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
 //             );
 //         }
-    }
-}
+//     }
+// }
