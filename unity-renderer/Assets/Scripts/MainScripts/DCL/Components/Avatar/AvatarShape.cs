@@ -15,8 +15,6 @@ using DCL.Models;
 using UnityEngine;
 using UnityEngine.Serialization;
 using LOD = AvatarSystem.LOD;
-using Quaternion = UnityEngine.Quaternion;
-using Vector3 = UnityEngine.Vector3;
 
 namespace DCL
 {
@@ -46,6 +44,8 @@ namespace DCL
 
         public bool everythingIsLoaded;
 
+        bool initializedPosition = false;
+
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
@@ -64,7 +64,6 @@ namespace DCL
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = DataStore.i.HUDs.currentPlayerId;
-
             // TODO: user profile bridge should be retrieved from the service locator
             userProfileBridge = new UserProfileWebInterfaceBridge();
 
@@ -73,13 +72,16 @@ namespace DCL
             else
                 avatar = GetStandardAvatar();
 
-            if (avatarReporterController == null) { avatarReporterController = new AvatarReporterController(Environment.i.world.state); }
+            if (avatarReporterController == null)
+            {
+                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
+            }
         }
 
         public override void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             base.Initialize(scene, entity);
-            DataStore.i.sceneBoundariesChecker?.Add(entity, this);
+            DataStore.i.sceneBoundariesChecker?.Add(entity,this);
         }
 
         private IAvatar GetStandardAvatar()
@@ -123,13 +125,14 @@ namespace DCL
         {
             if (model == null)
                 return;
+
             currentPlayerInfoCardId.Set((((AvatarModel)model).id, OPEN_PASSPORT_SOURCE));
         }
 
         public void OnDestroy()
         {
-            if (entity != null)
-                DataStore.i.sceneBoundariesChecker?.Remove(entity, this);
+            if(entity != null)
+                DataStore.i.sceneBoundariesChecker?.Remove(entity,this);
 
             Cleanup();
 
@@ -137,22 +140,16 @@ namespace DCL
                 poolableObject.RemoveFromPool();
         }
 
-        // If the position is Vector3.zero, it means that the Transform entity had just been created but never initialized.
-        // We need to wait for a first initialization
-        private bool PositionCorrectlyInitialized() =>
-            !entity.gameObject.transform.position.Equals(Vector3.zero);
-
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
 
-            var model = (AvatarModel)newModel;
+            var model = (AvatarModel) newModel;
 
             bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
             currentAvatar.CopyFrom(model);
 
             if (string.IsNullOrEmpty(model.bodyShape) || model.wearables.Count == 0)
-
                 yield break;
 #if UNITY_EDITOR
             gameObject.name = $"Avatar Shape {model.name}";
@@ -164,11 +161,17 @@ namespace DCL
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
-            yield return new UnityEngine.WaitUntil(PositionCorrectlyInitialized);
+            // To deal with the cases in which the entity transform was configured before the AvatarShape
+            if (!initializedPosition && scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
+            {
+                initializedPosition = true;
+                OnEntityTransformChanged(entity.gameObject.transform.localPosition,
+                    entity.gameObject.transform.localRotation, true);
+            }
 
-            OnEntityTransformChanged(entity.gameObject.transform.localPosition,
-                entity.gameObject.transform.localRotation, true);
-
+            // NOTE: we subscribe here to transform changes since we might "lose" the message
+            // if we subscribe after a any yield
+            entity.OnTransformChange -= OnEntityTransformChanged;
             entity.OnTransformChange += OnEntityTransformChanged;
 
             var wearableItems = model.wearables.ToList();
@@ -180,7 +183,6 @@ namespace DCL
                 UniTask<EmbeddedEmotesSO>.Awaiter embeddedEmotesTask = emotesCatalogService.Ref.GetEmbeddedEmotes().GetAwaiter();
                 yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
                 var embeddedEmoteIds = embeddedEmotesTask.GetResult().emotes.Select(x => x.id);
-
                 //here we add emote ids to both new and old emote loading flow to merge the results later
                 //because some users might have emotes as wearables and others only as emotes
                 foreach (var emoteId in embeddedEmoteIds)
@@ -198,7 +200,6 @@ namespace DCL
                 loadingCts?.Cancel();
                 loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
-
                 if (DataStore.i.avatarConfig.useHologramAvatar.Get())
                 {
                     UserProfile profile = userProfileBridge.Get(model.id);
@@ -259,12 +260,10 @@ namespace DCL
         public void SetImpostor(string userId)
         {
             currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
-
             if (string.IsNullOrEmpty(userId))
                 return;
 
             UserProfile userProfile = UserProfileController.GetProfileByUserId(userId);
-
             if (userProfile == null)
                 return;
 
@@ -292,8 +291,10 @@ namespace DCL
                 return;
 
             bool isNew = player == null;
-
-            if (isNew) { player = new Player(); }
+            if (isNew)
+            {
+                player = new Player();
+            }
 
             bool isNameDirty = player.name != model.name;
 
@@ -310,17 +311,14 @@ namespace DCL
                 player.playerName = playerName;
                 player.playerName.Show();
                 player.anchorPoints = anchorPoints;
-
                 if (isGlobalSceneAvatar)
                 {
                     // TODO: Note: This is having a problem, sometimes the users has been detected as new 2 times and it shouldn't happen
                     // we should investigate this
                     if (otherPlayers.ContainsKey(player.id))
                         otherPlayers.Remove(player.id);
-
                     otherPlayers.Add(player.id, player);
                 }
-
                 avatarReporterController.ReportAvatarRemoved();
             }
 
@@ -353,17 +351,21 @@ namespace DCL
         private void OnEntityTransformChanged(object newModel)
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
-            OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation);
+            OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
         }
 
-        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate = false)
+        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
-            if (isGlobalSceneAvatar) { avatarMovementController.OnTransformChanged(position, rotation, inmediate); }
+            if (isGlobalSceneAvatar)
+            {
+                avatarMovementController.OnTransformChanged(position, rotation, inmediate);
+            }
             else
             {
                 var scenePosition = Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
                 avatarMovementController.OnTransformChanged(scenePosition + position, rotation, inmediate);
             }
+            initializedPosition = true;
         }
 
         public override void OnPoolGet()
@@ -371,8 +373,7 @@ namespace DCL
             base.OnPoolGet();
 
             everythingIsLoaded = false;
-            avatarCollider.gameObject.SetActive(false);
-            if (entity != null) entity.gameObject.transform.localPosition = Vector3.zero;
+            initializedPosition = false;
             model = new AvatarModel();
             player = null;
         }
@@ -386,14 +387,12 @@ namespace DCL
                 playerNameContainer.SetActive(false);
                 stickersControllers.ToggleHideArea(true);
             }
-
             currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
         }
 
         public void RemoveHideAvatarModifier()
         {
             currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
-
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
             {
                 avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAINT_HIDE_AREA);
@@ -405,16 +404,20 @@ namespace DCL
 
         public void ApplyHidePassportModifier()
         {
-            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT)) { DisablePassport(); }
-
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
+            {
+                DisablePassport();
+            }
             currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
         }
 
         public void RemoveHidePassportModifier()
         {
             currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
-
-            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT)) { EnablePasssport(); }
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
+            {
+                EnablePasssport();
+            }
         }
 
         private void EnablePasssport()
@@ -438,13 +441,11 @@ namespace DCL
             base.Cleanup();
 
             playerName?.Hide(true);
-
             if (player != null)
             {
                 // AvatarShape used from the SDK doesn't register the avatars in 'otherPlayers'
-                if (!string.IsNullOrEmpty(player.id))
+                if(!string.IsNullOrEmpty(player.id))
                     otherPlayers.Remove(player.id);
-
                 player = null;
             }
 
@@ -454,7 +455,10 @@ namespace DCL
             currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
             avatar.Dispose();
 
-            if (poolableObject != null) { poolableObject.OnRelease -= Cleanup; }
+            if (poolableObject != null)
+            {
+                poolableObject.OnRelease -= Cleanup;
+            }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
@@ -473,9 +477,10 @@ namespace DCL
 
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
         {
-            if (scene.isPersistent) { isInsideBoundaries = true; }
+            if (scene.isPersistent)
+                isInsideBoundaries = true;
 
-            if (isInsideBoundaries)
+            if(isInsideBoundaries)
                 avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS);
             else
                 avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS);
@@ -485,15 +490,10 @@ namespace DCL
             stickersControllers.ToggleHideArea(!isInsideBoundaries);
         }
 
-        public override int GetClassId()
-        {
-            return (int)CLASS_ID_COMPONENT.AVATAR_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }
 
         [ContextMenu("Print current profile")]
-        private void PrintCurrentProfile()
-        {
-            Debug.Log(JsonUtility.ToJson(model));
-        }
+        private void PrintCurrentProfile() { Debug.Log(JsonUtility.ToJson(model)); }
+
     }
 }
