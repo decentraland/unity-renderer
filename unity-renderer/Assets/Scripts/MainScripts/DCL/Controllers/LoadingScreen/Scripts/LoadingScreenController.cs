@@ -15,7 +15,7 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
-        private const int LOAD_SCENE_TIMEOUT = 12000;
+        private const int LOAD_SCENE_TIMEOUT = 120000;
 
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
@@ -54,8 +54,6 @@ namespace DCL.LoadingScreen
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
-
-            timeoutCTS = new CancellationTokenSource();
         }
 
         public void Dispose()
