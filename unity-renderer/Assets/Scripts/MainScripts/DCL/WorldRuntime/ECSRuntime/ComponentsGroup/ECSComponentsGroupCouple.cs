@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
+using System.Collections.Generic;
 using UnityEngine.Assertions;
 
 namespace DCL.ECSRuntime
@@ -21,14 +21,29 @@ namespace DCL.ECSRuntime
             this.component2 = component2;
         }
 
-        bool IECSComponentsGroup.Match(IParcelScene scene, IDCLEntity entity)
+        bool IECSComponentsGroup.MatchEntity(IParcelScene scene, IDCLEntity entity)
         {
             return component1.HasComponent(scene, entity) && component2.HasComponent(scene, entity);
         }
 
-        bool IECSComponentsGroup.Match(IECSComponent component)
+        bool IECSComponentsGroup.ShouldAddOnComponentAdd(IECSComponent component)
         {
             return component == component1 || component == component2;
+        }
+
+        bool IECSComponentsGroup.ShouldRemoveOnComponentRemove(IECSComponent component)
+        {
+            return component == component1 || component == component2;
+        }
+
+        bool IECSComponentsGroup.ShouldAddOnComponentRemove(IECSComponent component)
+        {
+            return false;
+        }
+
+        bool IECSComponentsGroup.ShouldRemoveOnComponentAdd(IECSComponent component)
+        {
+            return false;
         }
 
         void IECSComponentsGroup.Add(IParcelScene scene, IDCLEntity entity)
@@ -40,6 +55,7 @@ namespace DCL.ECSRuntime
                 componentData1: ((ECSComponent<T1>)component1).Get(scene, entity),
                 componentData2: ((ECSComponent<T2>)component2).Get(scene, entity)
             );
+
             list.Add(data);
         }
 
@@ -48,12 +64,14 @@ namespace DCL.ECSRuntime
             for (int i = 0; i < list.Count; i++)
             {
                 ECSComponentsGroupData<T1, T2> data = list[i];
+
                 if (data.entity != entity)
                     continue;
 
                 list.RemoveAt(i);
                 return true;
             }
+
             return false;
         }
     }
