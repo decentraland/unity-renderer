@@ -55,6 +55,7 @@ import {
 import { ISceneLoader, SceneLoaderPositionReport, SetDesiredScenesCommand } from './types'
 import { createWorldLoader } from './world-loader-impl'
 import { Entity } from '@dcl/schemas'
+import { getContentService } from "../dao/selectors";
 
 export function* sceneLoaderSaga() {
   yield takeLatest(SET_REALM_ADAPTER, setSceneLoaderOnSetRealmAction)
@@ -338,7 +339,7 @@ export async function fetchScenesByLocation(positions: string[]): Promise<Loadab
 }
 
 export async function fetchActiveSceneInWorldContext(position: string[]): Promise<Array<Entity>> {
-  const response = await fetch('https://peer.decentraland.org/content//entities/active', {
+  const response = await fetch(getContentService(store.getState()) + '/entities/active', {
     method: 'post',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ pointers: position })
