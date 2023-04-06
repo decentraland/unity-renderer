@@ -56,9 +56,18 @@ public class TeleportPromptHUDController : IHUD
         {
             try
             {
-                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y), 2, cancellationToken);
-                MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(coordinates.x, coordinates.y);
-                view.ShowTeleportToCoords(coordinates.ToString(), sceneInfo.name, sceneInfo.owner, sceneInfo.previewImageUrl);
+                Debug.Log(coordinates.x + " " + coordinates.y);
+                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(-27, 56), 2, DataStore.i.common.isWorld.Get(),cancellationToken);
+                MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(-27, 56);
+
+                if (sceneInfo != null)
+                {
+                    view.ShowTeleportToCoords(coordinates.ToString(), sceneInfo.name, sceneInfo.owner, sceneInfo.previewImageUrl);
+                }
+                else
+                {
+                    view.ShowTeleportToCoords(coordinates.ToString(), "Untitled Scene", "", "");
+                }
 
                 teleportData = new TeleportData()
                 {

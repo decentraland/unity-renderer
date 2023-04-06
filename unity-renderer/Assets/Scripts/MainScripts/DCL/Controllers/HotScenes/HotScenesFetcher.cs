@@ -45,6 +45,8 @@ namespace MainScripts.DCL.Controllers.HotScenes
             scenes.AddTo(cts.Token);
 
             UpdateLoop(cts.Token).Forget();
+
+            updateInterval = backgroundUpdateInterval;
         }
 
         public void SetUpdateMode(IHotScenesFetcher.UpdateMode mode)

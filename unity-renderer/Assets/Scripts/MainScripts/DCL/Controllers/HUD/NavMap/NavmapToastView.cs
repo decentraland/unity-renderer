@@ -38,7 +38,7 @@ namespace DCL
 
             var sceneInfo = minimapMetadata.GetSceneInfo(parcel.x, parcel.y);
             if (sceneInfo == null)
-                WebInterface.RequestScenesInfoAroundParcel(parcel, 15);
+                WebInterface.RequestScenesInfoAroundParcel(parcel, 15, DataStore.i.common.isWorld.Get());
 
             Populate(parcel, worldPosition, sceneInfo);
         }
@@ -125,7 +125,7 @@ namespace DCL
         {
             if (toastContainer == null || rectTransform == null)
                 return;
-            
+
             toastContainer.position = worldPosition;
 
             bool useBottom = toastContainer.localPosition.y > 0;

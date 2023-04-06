@@ -25,6 +25,8 @@ public class TeleportPromptHUDView : MonoBehaviour
     [SerializeField] private GameObject containerCrowd;
     [SerializeField] private GameObject containerScene;
     [SerializeField] private GameObject containerEvent;
+    [SerializeField] private GameObject creatorContainer;
+
 
     [Header("Scene info")]
     [SerializeField] private TextMeshProUGUI textCoords;
@@ -110,6 +112,7 @@ public class TeleportPromptHUDView : MonoBehaviour
 
         textCoords.text = coords;
         textSceneName.text = sceneName;
+        creatorContainer.SetActive(!string.IsNullOrEmpty(sceneCreator));
         textSceneOwner.text = sceneCreator;
         SetParcelImage(previewImageUrl);
     }

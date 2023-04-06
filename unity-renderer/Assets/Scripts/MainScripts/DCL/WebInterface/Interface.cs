@@ -531,6 +531,7 @@ namespace DCL.Interface
         {
             public Vector2 parcel;
             public int scenesAround;
+            public bool isWorldContext;
         }
 
         [System.Serializable]
@@ -1465,12 +1466,13 @@ namespace DCL.Interface
             });
         }
 
-        public static void RequestScenesInfoAroundParcel(Vector2 parcel, int maxScenesArea)
+        public static void RequestScenesInfoAroundParcel(Vector2 parcel, int maxScenesArea, bool isWorldContext)
         {
             SendMessage("RequestScenesInfoInArea", new RequestScenesInfoAroundParcelPayload()
             {
                 parcel = parcel,
-                scenesAround = maxScenesArea
+                scenesAround = maxScenesArea,
+                isWorldContext =  isWorldContext
             });
         }
 

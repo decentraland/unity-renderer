@@ -8,6 +8,7 @@ namespace DCL.Map
     {
         UniTask<MinimapMetadata.MinimapSceneInfo[]> GetScenesInformationAroundParcel(Vector2Int coordinate,
             int areaSize,
+            bool isWorldContext,
             CancellationToken cancellationToken);
     }
 }
