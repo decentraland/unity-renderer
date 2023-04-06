@@ -18,7 +18,7 @@ public interface IModalComponentView
     void Configure(ModalComponentModel model);
 
     /// <summary>
-    /// This will hide the close button of the pop up, forcing the user to take an action 
+    /// This will hide the close button of the pop up, forcing the user to take an action
     /// </summary>
     /// <param name="canBe"></param>
     void CanBeCancelled(bool canBe);
@@ -39,10 +39,8 @@ public class ModalComponentView : BaseComponentView, IModalComponentView
     internal GameObject content;
     internal bool canBeCanceled = true;
 
-    public override void Start()
+    public void Start()
     {
-        base.Start();
-
         closeButton.onClick.AddListener(CloseButtonClicked);
         alphaBackground.onClick.AddListener(CloseButtonClicked);
         RefreshControl();

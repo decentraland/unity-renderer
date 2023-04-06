@@ -164,7 +164,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         ConfigureManualButtonsEvents();
     }
 
-    public override void Start()
+    public void Start()
     {
         if (model.automaticTransition)
             StartCarousel();

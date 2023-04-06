@@ -48,10 +48,8 @@ namespace DCL.Chat.HUD
             scroll.onValueChanged.AddListener(LoadMoreEntries);
         }
 
-        public override void Update()
+        public void Update()
         {
-            base.Update();
-
             if (isLayoutDirty)
                 ((RectTransform)scroll.transform).ForceUpdateLayout();
 

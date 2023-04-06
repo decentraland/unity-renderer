@@ -174,7 +174,7 @@ namespace DCL.Chat.Notifications
                 AnimateNewEntry(entry.gameObject.transform, animationCancellationToken.Token).Forget();
             }
 
-            if (model.IsOwnPlayerMentioned)
+            if (model.ShouldPlayMentionSfx)
                 AudioScriptableObjects.ChatReceiveMentionEvent.Play(true);
 
             OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
