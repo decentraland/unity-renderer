@@ -62,6 +62,7 @@ namespace DCL.ECS7.InternalComponents
 
     public class InternalColliders : InternalComponent
     {
+        // TODO: CHANGE TO STRUCT WITH COLLIDER + LAYERMASK
         public IList<Collider> colliders = new List<Collider>();
     }
 
