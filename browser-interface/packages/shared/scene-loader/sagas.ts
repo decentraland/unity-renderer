@@ -55,7 +55,7 @@ import {
 import { ISceneLoader, SceneLoaderPositionReport, SetDesiredScenesCommand } from './types'
 import { createWorldLoader } from './world-loader-impl'
 import { Entity } from '@dcl/schemas'
-import { getContentService } from "../dao/selectors";
+import { getContentService } from '../dao/selectors'
 
 export function* sceneLoaderSaga() {
   yield takeLatest(SET_REALM_ADAPTER, setSceneLoaderOnSetRealmAction)
