@@ -14,7 +14,7 @@ import { SCENE_LOAD } from 'shared/loading/actions'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
-import {fetchActiveSceneInWorldContext, fetchScenesByLocation} from 'shared/scene-loader/sagas'
+import { fetchActiveSceneInWorldContext, fetchScenesByLocation } from 'shared/scene-loader/sagas'
 import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
 import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
 import { getSceneDescriptionFromJsonData } from 'lib/decentraland/sceneJson/getSceneDescriptionFromJsonData'
@@ -38,13 +38,14 @@ import {
   sendHomeScene,
   SEND_HOME_SCENE_TO_UNITY,
   SetHomeScene,
-  SET_HOME_SCENE, REPORT_SCENES_WORLD_CONTEXT, ReportScenesWorldContext
+  SET_HOME_SCENE,
+  REPORT_SCENES_WORLD_CONTEXT,
+  ReportScenesWorldContext
 } from './actions'
 import { getPoiTiles, postProcessSceneName } from './selectors'
 import { RootAtlasState } from './types'
 import { homePointKey } from './utils'
-import {Entity} from "@dcl/schemas";
-
+import { Entity } from '@dcl/schemas'
 
 export function* atlasSaga(): any {
   yield takeEvery(SCENE_LOAD, checkAndReportAround)
@@ -100,7 +101,10 @@ function* reportScenesWorldContext(action: ReportScenesWorldContext) {
   yield call(waitForPoiTilesInitialization)
   const pois = yield select(getPoiTiles)
 
-  const scenesResponse: Array<Entity> = yield call(fetchActiveSceneInWorldContext, getTilesRectFromCenter(action.payload.parcelCoord, action.payload.scenesAround));
+  const scenesResponse: Array<Entity> = yield call(
+    fetchActiveSceneInWorldContext,
+    getTilesRectFromCenter(action.payload.parcelCoord, action.payload.scenesAround)
+  )
   const minimapSceneInfoResult: MinimapSceneInfo[] = []
   scenesResponse.forEach((scene) => {
     const parcels: Vector2[] = []
@@ -126,7 +130,7 @@ function* reportScenesWorldContext(action: ReportScenesWorldContext) {
         name: postProcessSceneName(sceneName),
         owner: getOwnerNameFromJsonData(metadata),
         description: getSceneDescriptionFromJsonData(metadata),
-        previewImageUrl: getThumbnailUrlFromJsonDataAndContent(metadata, undefined, ""),
+        previewImageUrl: getThumbnailUrlFromJsonDataAndContent(metadata, undefined, ''),
         // type is not used by renderer
         type: undefined as any,
         parcels,

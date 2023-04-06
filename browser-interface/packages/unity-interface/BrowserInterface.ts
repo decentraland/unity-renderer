@@ -12,7 +12,7 @@ import { defaultLogger } from 'lib/logger'
 import { fetchENSOwner } from 'lib/web3/fetchENSOwner'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
-import {reportScenesAroundParcel, reportScenesWorldContext, setHomeScene} from 'shared/atlas/actions'
+import { reportScenesAroundParcel, reportScenesWorldContext, setHomeScene } from 'shared/atlas/actions'
 import { emotesRequest, wearablesRequest } from 'shared/catalogs/actions'
 import { EmotesRequestFilters, WearablesRequestFilters } from 'shared/catalogs/types'
 import { notifyStatusThroughChat } from 'shared/chat'
@@ -664,10 +664,14 @@ export class BrowserInterface {
     store.dispatch(unblockPlayers([data.userId]))
   }
 
-  public RequestScenesInfoInArea(data: { parcel: { x: number; y: number }; scenesAround: number; isWorldContext: boolean }) {
-    if(data.isWorldContext){
+  public RequestScenesInfoInArea(data: {
+    parcel: { x: number; y: number }
+    scenesAround: number
+    isWorldContext: boolean
+  }) {
+    if (data.isWorldContext) {
       store.dispatch(reportScenesWorldContext(data.parcel, data.scenesAround))
-    }else{
+    } else {
       store.dispatch(reportScenesAroundParcel(data.parcel, data.scenesAround))
     }
   }
