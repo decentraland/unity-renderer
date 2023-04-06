@@ -93,17 +93,14 @@ namespace DCL.ECS7.InternalComponents
 
     public class InternalInputEventResults : InternalComponent
     {
-        public class EventData
+        public struct EventData
         {
             public InputAction button;
             public RaycastHit hit;
             public PointerEventType type;
-            public int timestamp;
         }
 
-        public Queue<EventData> events;
-        public int lastTimestamp;
-        public long lastEntity;
+        public readonly IList<EventData> events = new List<EventData>(20);
     }
 
     public class InternalUiContainer : InternalComponent
