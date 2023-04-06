@@ -39,7 +39,7 @@ namespace DCL.Chat.Notifications
             return Instantiate(Resources.Load<TopNotificationComponentView>("SocialBarV1/TopNotificationHUD"));
         }
 
-        public override void Start()
+        public void Start()
         {
             offsetContentXPos = NORMAL_CONTENT_X_POS - X_OFFSET;
             offsetHeaderXPos = NORMAL_HEADER_X_POS - X_OFFSET;

@@ -89,7 +89,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         };
     }
 
-    public override void Start()
+    public void Start()
     {
         DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
         IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
@@ -97,7 +97,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         ConfigureCloseButton();
     }
 
-    public override void Update() =>
+    public void Update() =>
         CheckIfProfileCardShouldBeClosed();
 
     public void OnDestroy() =>

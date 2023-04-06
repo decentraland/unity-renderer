@@ -111,7 +111,7 @@ namespace DCL.Social.Passports
         private readonly List<NftPageView> ownedNftWearablePageViews = new List<NftPageView>();
         private readonly List<NftPageView> ownedNftEmotePageViews = new List<NftPageView>();
 
-        public override void Start()
+        public void Start()
         {
             collectiblesToggle.isOn = false;
             aboutToggle.isOn = true;
