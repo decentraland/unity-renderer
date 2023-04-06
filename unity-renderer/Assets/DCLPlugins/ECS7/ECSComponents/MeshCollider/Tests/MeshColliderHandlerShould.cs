@@ -99,10 +99,9 @@ namespace Tests
             handler.OnComponentCreated(scene, entity);
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider() { Sphere = new PBMeshCollider.Types.SphereMesh() });
 
-            SphereCollider sphereCollider = handler.colliderGameObject.GetComponent<SphereCollider>();
-            Assert.IsNotNull(sphereCollider);
-            Assert.AreEqual(1, sphereCollider.radius);
-            Assert.AreEqual(UnityEngine.Vector3.zero, sphereCollider.center);
+            MeshCollider meshCollider = handler.colliderGameObject.GetComponent<MeshCollider>();
+            Assert.IsNotNull(meshCollider);
+            Assert.IsNotNull(meshCollider.sharedMesh);
 
             handler.OnComponentRemoved(scene, entity);
             yield return null;
