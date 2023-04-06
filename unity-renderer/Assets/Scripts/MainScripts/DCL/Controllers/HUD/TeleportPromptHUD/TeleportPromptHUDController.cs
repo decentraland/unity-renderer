@@ -56,18 +56,13 @@ public class TeleportPromptHUDController : IHUD
         {
             try
             {
-                Debug.Log(coordinates.x + " " + coordinates.y);
-                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(-27, 56), 2, DataStore.i.common.isWorld.Get(),cancellationToken);
-                MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(-27, 56);
+                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y), 2, DataStore.i.common.isWorld.Get(), cancellationToken);
+                MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(coordinates.x, coordinates.y);
 
                 if (sceneInfo != null)
-                {
                     view.ShowTeleportToCoords(coordinates.ToString(), sceneInfo.name, sceneInfo.owner, sceneInfo.previewImageUrl);
-                }
                 else
-                {
                     view.ShowTeleportToCoords(coordinates.ToString(), "Untitled Scene", "", "");
-                }
 
                 teleportData = new TeleportData()
                 {
@@ -75,6 +70,7 @@ public class TeleportPromptHUDController : IHUD
                     sceneData = sceneInfo,
                     sceneEvent = null
                 };
+
                 UniTask.Delay(INITIAL_ANIMATION_DELAY, cancellationToken: cancellationToken);
                 view.SetLoadingCompleted();
             }
@@ -87,10 +83,7 @@ public class TeleportPromptHUDController : IHUD
                     sceneEvent = null
                 };
             }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+            catch (Exception e) { Debug.LogException(e); }
         }
 
         cancellationToken = cancellationToken.SafeRestart();
@@ -123,6 +116,7 @@ public class TeleportPromptHUDController : IHUD
         teleportData = Utils.SafeFromJson<TeleportData>(teleportDataJson);
 
         dataStore.HUDs.gotoPanelVisible.Set(true, true);
+
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_MAGIC:
@@ -133,10 +127,12 @@ public class TeleportPromptHUDController : IHUD
                 break;
             default:
                 dataStore.HUDs.gotoPanelCoordinates.Set(CoordinateUtils.ParseCoordinatesString(teleportData.destination));
+
                 view.ShowTeleportToCoords(teleportData.destination,
                     teleportData.sceneData.name,
                     teleportData.sceneData.owner,
                     teleportData.sceneData.previewImageUrl);
+
                 SetSceneEvent();
                 break;
         }
@@ -144,10 +140,8 @@ public class TeleportPromptHUDController : IHUD
 
     public void Dispose()
     {
-        if (view)
-        {
-            UnityEngine.Object.Destroy(view.gameObject);
-        }
+        if (view) { UnityEngine.Object.Destroy(view.gameObject); }
+
         dataStore.HUDs.gotoPanelVisible.OnChange -= ChangeVisibility;
         dataStore.HUDs.gotoPanelCoordinates.OnChange -= SetCoordinates;
     }
@@ -162,6 +156,7 @@ public class TeleportPromptHUDController : IHUD
         DateTime dateNow = DateTime.Now;
         DateTime eventStart;
         DateTime eventEnd;
+
         if (DateTime.TryParse(eventData.start_at, out eventStart) && DateTime.TryParse(eventData.finish_at, out eventEnd))
         {
             bool startsToday = eventStart.Date == dateNow.Date;
@@ -170,8 +165,10 @@ public class TeleportPromptHUDController : IHUD
             if (isNow || startsToday)
             {
                 string eventStatus = EVENT_STRING_LIVE;
+
                 if (!isNow && startsToday)
                     eventStatus = string.Format(EVENT_STRING_TODAY, eventStart);
+
                 view.SetEventInfo(eventData.name, eventStatus, eventData.total_attendees);
             }
         }
@@ -180,6 +177,7 @@ public class TeleportPromptHUDController : IHUD
     private void OnTeleportPressed()
     {
         ChangeVisibility(false, false);
+
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_CROWD:
