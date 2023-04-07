@@ -15,6 +15,7 @@ namespace DCL.Map
         public static WebInterfaceMinimapApiBridge i { get; private set; }
 
         private readonly Dictionary<string, IUniTaskSource> pendingTasks = new ();
+        private BaseVariable<bool> isWorld => DataStore.i.common.isWorld;
         private MinimapMetadata minimapMetadata => MinimapMetadata.GetMetadata();
 
         private void Awake()
@@ -25,6 +26,9 @@ namespace DCL.Map
         [PublicAPI]
         public void UpdateMinimapSceneInformation(string scenesInfoJson)
         {
+            if (isWorld.Get())
+                return;
+
             var scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);
 
             foreach (var sceneInfo in scenesInfo)
