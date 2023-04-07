@@ -134,10 +134,12 @@ namespace DCL
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
         {
+            textureFactory.isReadable = isReadable;
+            return await SendWebRequest(textureFactory, url, null, onSuccess, onfail, requestAttemps, timeout, cancellationToken, headers);
             // Note: textureFactory is not used because of the known issue introduced in Unity 2021.3.17f1 using the UnityWebRequestTexture.GetTexture method
             // textureFactory.isReadable = isReadable;
-            return await SendWebRequest(getWebRequestFactory, url, null, onSuccess, onfail, requestAttemps,
-                timeout, cancellationToken, headers);
+            // return await SendWebRequest(getWebRequestFactory, url, null, onSuccess, onfail, requestAttemps,
+            //     timeout, cancellationToken, headers);
         }
 
         public async UniTask<UnityWebRequest> GetAudioClipAsync(
@@ -298,9 +300,11 @@ namespace DCL
             bool isReadable = true,
             Dictionary<string, string> headers = null)
         {
+            textureFactory.isReadable = isReadable;
+            return SendWebRequest(textureFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
             // Note: textureFactory is not used because of the known issue introduced in Unity 2021.3.17f1 using the UnityWebRequestTexture.GetTexture method
             // textureFactory.isReadable = isReadable;
-            return SendWebRequest(getWebRequestFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
+            // return SendWebRequest(getWebRequestFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
 
         [Obsolete]
