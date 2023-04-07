@@ -84,7 +84,7 @@ namespace Tests.SignupHUD
 
             hudView.OnEditAvatar += Raise.Event<Action>();
             Assert.IsFalse(signupVisible.Get());
-            Assert.IsFalse(isAvatarEditorVisible);
+            Assert.IsTrue(isAvatarEditorVisible);
         }
 
         [Test]
