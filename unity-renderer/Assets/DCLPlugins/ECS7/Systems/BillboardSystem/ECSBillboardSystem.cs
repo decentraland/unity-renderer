@@ -63,7 +63,7 @@ namespace ECSSystems.BillboardSystem
                     forward.Normalize();
                 }
 
-                Quaternion rotation = Quaternion.LookRotation(forward, Vector3.up);
+                Quaternion rotation = forward != Vector3.zero ? Quaternion.LookRotation(forward) : Quaternion.identity;
 
                 // apply Z axis rotation
                 if ((billboardMode & BILLBOARD_Z) != 0)
