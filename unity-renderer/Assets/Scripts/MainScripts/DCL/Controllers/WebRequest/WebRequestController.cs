@@ -298,9 +298,6 @@ namespace DCL
         {
             textureFactory.isReadable = isReadable;
             return SendWebRequest(textureFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
-            // Note: textureFactory is not used because of the known issue introduced in Unity 2021.3.17f1 using the UnityWebRequestTexture.GetTexture method
-            // textureFactory.isReadable = isReadable;
-            // return SendWebRequest(getWebRequestFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
 
         [Obsolete]
