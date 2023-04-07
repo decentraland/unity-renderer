@@ -265,7 +265,7 @@ namespace ECSSystems.PointerInputSystem
             for (int i = 0; i < collidersData.Count; i++)
             {
                 var colliderData = collidersData[i].value;
-                if (colliderData.model.colliders.Contains(collider))
+                if (colliderData.model.colliders.ContainsKey(collider))
                 {
                     return colliderData;
                 }

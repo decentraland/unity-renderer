@@ -12,7 +12,7 @@ namespace ECSSystems.InputSenderSystem
         {
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
             public IECSComponentWriter componentWriter;
-            public int lastTimestamp = 0;
+            public uint lastTimestamp = 0;
         }
 
         public static Action CreateSystem(

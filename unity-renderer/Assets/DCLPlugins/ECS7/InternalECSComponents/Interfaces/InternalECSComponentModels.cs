@@ -62,7 +62,7 @@ namespace DCL.ECS7.InternalComponents
 
     public class InternalColliders : InternalComponent
     {
-        public IList<Collider> colliders = new List<Collider>();
+        public KeyValueSet<Collider, int> colliders = new KeyValueSet<Collider, int>();
     }
 
     public class InternalRenderers : InternalComponent
@@ -81,8 +81,8 @@ namespace DCL.ECS7.InternalComponents
         public Bounds entityLocalMeshBounds = new Bounds();
         public bool meshesDirty = false;
         public IList<Renderer> renderers;
-        public IList<Collider> physicsColliders;
-        public IList<Collider> pointerColliders;
+        public KeyValueSet<Collider, int> physicsColliders;
+        public KeyValueSet<Collider, int> pointerColliders;
         public AudioSource audioSource;
     }
 
@@ -157,5 +157,10 @@ namespace DCL.ECS7.InternalComponents
         public EventCallback<PointerUpEvent> OnPointerUpCallback;
         public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
         public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
+    }
+
+    public class InternalRaycast : InternalComponent
+    {
+        public PBRaycast raycastModel;
     }
 }

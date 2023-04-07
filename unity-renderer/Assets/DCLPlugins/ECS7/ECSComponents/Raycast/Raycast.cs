@@ -9,13 +9,13 @@ namespace DCLPlugins.ECSComponents
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private int componentId;
-        
+
         public RaycastRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             factory.AddOrReplaceComponent(
-                componentId, 
-                ProtoSerialization.Deserialize<PBRaycast>, 
-                () => new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent)
+                componentId,
+                ProtoSerialization.Deserialize<PBRaycast>,
+                () => new RaycastComponentHandler(internalComponents.raycastComponent)
             );
             componentWriter.AddOrReplaceComponentSerializer<PBRaycast>(componentId, ProtoSerialization.Serialize);
 
@@ -23,7 +23,7 @@ namespace DCLPlugins.ECSComponents
             this.componentWriter = componentWriter;
             this.componentId = componentId;
         }
-        
+
         public void Dispose()
         {
             factory.RemoveComponent(componentId);
