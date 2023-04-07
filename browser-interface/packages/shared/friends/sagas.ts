@@ -567,7 +567,7 @@ function getPrivateMessagingIdentityInfo(state: RootState) {
 
 function* refreshFriends() {
   try {
-    const client: SocialAPI = yield select(getSocialClient)
+    const client: SocialAPI | null = yield select(getSocialClient)
 
     if (!client) return
 
@@ -643,8 +643,6 @@ function* refreshFriends() {
     yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
 
     let token = client.getAccessToken()
-
-    console.log('TENGO TOKEN', token)
 
     if (token) {
       getUnityInstance().InitializeMatrix(token)
