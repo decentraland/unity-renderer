@@ -45,6 +45,7 @@ namespace DCL
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
+
             result.Register<IWebRequestController>(() => new WebRequestController(
                 new GetWebRequestFactory(),
                 new WebRequestAssetBundleFactory(),
@@ -54,6 +55,7 @@ namespace DCL
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             ));
+
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
@@ -84,7 +86,7 @@ namespace DCL
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                     webInterfaceFriendsApiBridge,
                     RPCFriendsApiBridge.CreateSharedInstance(rpc, webInterfaceFriendsApiBridge),
-                    DataStore.i), new RPCSocialApiBridge(rpc));
+                    DataStore.i), new RPCSocialApiBridge(rpc, MatrixInitializationBridge.i));
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());

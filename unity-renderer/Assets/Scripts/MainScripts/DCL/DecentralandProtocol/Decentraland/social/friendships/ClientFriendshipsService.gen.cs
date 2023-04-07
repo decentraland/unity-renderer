@@ -5,18 +5,17 @@
 // file: decentraland/social/friendships/friendships.proto
 using Cysharp.Threading.Tasks;
 using rpc_csharp;
-using Google.Protobuf.WellKnownTypes;
 
 namespace Decentraland.Social.Friendships {
 public interface IClientFriendshipsService
 {
-  IUniTaskAsyncEnumerable<Users> GetFriends(Empty request);
+  IUniTaskAsyncEnumerable<Users> GetFriends(Payload request);
 
-  UniTask<RequestEvents> GetRequestEvents(Empty request);
+  UniTask<RequestEvents> GetRequestEvents(Payload request);
 
   UniTask<UpdateFriendshipResponse> UpdateFriendshipEvent(UpdateFriendshipPayload request);
 
-  IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdates(Empty request);
+  IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdates(Payload request);
 }
 
 public class ClientFriendshipsService : IClientFriendshipsService
@@ -29,12 +28,12 @@ public class ClientFriendshipsService : IClientFriendshipsService
   }
 
   
-  public IUniTaskAsyncEnumerable<Users> GetFriends(Empty request)
+  public IUniTaskAsyncEnumerable<Users> GetFriends(Payload request)
   {
       return module.CallServerStream<Users>("GetFriends", request);
   }
 
-  public UniTask<RequestEvents> GetRequestEvents(Empty request)
+  public UniTask<RequestEvents> GetRequestEvents(Payload request)
   {
       return module.CallUnaryProcedure<RequestEvents>("GetRequestEvents", request);
   }
@@ -44,7 +43,7 @@ public class ClientFriendshipsService : IClientFriendshipsService
       return module.CallUnaryProcedure<UpdateFriendshipResponse>("UpdateFriendshipEvent", request);
   }
 
-  public IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdates(Empty request)
+  public IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdates(Payload request)
   {
       return module.CallServerStream<SubscribeFriendshipEventsUpdatesResponse>("SubscribeFriendshipEventsUpdates", request);
   }

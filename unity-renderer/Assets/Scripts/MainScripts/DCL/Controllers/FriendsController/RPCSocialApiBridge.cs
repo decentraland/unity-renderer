@@ -5,6 +5,7 @@ using DCL.Social.Friends;
 using Decentraland.Renderer.RendererServices;
 using Decentraland.Social.Friendships;
 using Google.Protobuf.WellKnownTypes;
+using JetBrains.Annotations;
 using NSubstitute.ReceivedExtensions;
 using RPC;
 using System;
@@ -13,12 +14,15 @@ using rpc_csharp;
 using rpc_csharp.transport;
 using System.Collections.Generic;
 using UnityEngine;
+using Payload = Decentraland.Social.Friendships.Payload;
 
 namespace MainScripts.DCL.Controllers.FriendsController
 {
     public class RPCSocialApiBridge : IRPCSocialApiBridge
     {
         private const int REQUEST_TIMEOUT = 30;
+
+        private string accessToken;
 
         private IRPC rpc;
 
@@ -30,15 +34,17 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
-        public RPCSocialApiBridge(IRPC rpc)
+        public RPCSocialApiBridge(IRPC rpc, MatrixInitializationBridge matrixInitializationBridge)
         {
             this.rpc = rpc;
+
+            matrixInitializationBridge.OnReceiveMatrixAccessToken += (token) => { this.accessToken = token;};
         }
 
         public async UniTaskVoid InitializeClient(CancellationToken cancellationToken = default)
         {
             // start listening to streams
-            await UniTask.WhenAny(this.ListenToFriendEvents(cancellationToken));
+            // await UniTask.WhenAny(this.ListenToFriendEvents(cancellationToken));
         }
 
         public async UniTask<FriendshipInitializationMessage> InitializeFriendshipsInformation(CancellationToken cancellationToken = default)
@@ -46,11 +52,14 @@ namespace MainScripts.DCL.Controllers.FriendsController
             cancellationToken.ThrowIfCancellationRequested();
             var ownUserProfile = UserProfile.GetOwnUserProfile();
 
-            await UniTask.WaitUntil(() => ownUserProfile.userId != null, PlayerLoopTiming.Update, cancellationToken);
+            await UniTask.WaitUntil(() =>
+                    !string.IsNullOrEmpty(ownUserProfile.userId) && !string.IsNullOrEmpty(this.accessToken),
+                PlayerLoopTiming.Update,
+                cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var friendsStream = rpc.Social().GetFriends(new Empty());
+            var friendsStream = rpc.Social().GetFriends(new Payload() { SynapseToken = this.accessToken });
 
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
@@ -59,29 +68,35 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var requestEvents = await rpc.Social().GetRequestEvents(new Empty());
 
-            foreach (var friendRequest in requestEvents.Incoming.Items)
-            {
-                OnFriendRequestAdded?.Invoke(new FriendRequest(
-                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, friendRequest.User.Address, ownUserProfile.userId, friendRequest.Message));
-            }
-
-            foreach (var friendRequest in requestEvents.Outgoing.Items)
-            {
-                OnFriendRequestAdded?.Invoke(new FriendRequest(
-                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, ownUserProfile.userId, friendRequest.User.Address, friendRequest.Message));
-            }
+            // var requestEvents = await rpc.Social().GetRequestEvents(new Empty());
+            //
+            // foreach (var friendRequest in requestEvents.Incoming.Items)
+            // {
+            //     OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
+            //         GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, friendRequest.User.Address, ownUserProfile.userId, friendRequest.Message));
+            // }
+            //
+            // foreach (var friendRequest in requestEvents.Outgoing.Items)
+            // {
+            //     OnOutgoingFriendRequestAdded?.Invoke(new FriendRequest(
+            //         GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, ownUserProfile.userId, friendRequest.User.Address, friendRequest.Message));
+            // }
 
             return new FriendshipInitializationMessage()
             {
-                totalReceivedRequests = requestEvents.Incoming.Items.Count,
+                // totalReceivedRequests = requestEvents.Incoming.Items.Count,
+                totalReceivedRequests = 0
             };
         }
 
         public async UniTask ListenToFriendEvents(CancellationToken cancellationToken = default)
         {
-            var stream = rpc.Social().SubscribeFriendshipEventsUpdates(new Empty());
+            var ownUserProfile = UserProfile.GetOwnUserProfile();
+
+            await UniTask.WaitUntil(() => ownUserProfile.userId != null, PlayerLoopTiming.Update, cancellationToken);
+
+            var stream = rpc.Social().SubscribeFriendshipEventsUpdates(new Payload() { SynapseToken = "" });
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -89,16 +104,18 @@ namespace MainScripts.DCL.Controllers.FriendsController
             {
                 foreach (var friendshipEvent in item.Events)
                 {
-                    switch (friendshipEvent.BodyCase)
-                    {
-                        case FriendshipEventResponse.BodyOneofCase.None: break;
-                        case FriendshipEventResponse.BodyOneofCase.Request: break;
-                        case FriendshipEventResponse.BodyOneofCase.Accept: break;
-                        case FriendshipEventResponse.BodyOneofCase.Reject: break;
-                        case FriendshipEventResponse.BodyOneofCase.Delete: break;
-                        case FriendshipEventResponse.BodyOneofCase.Cancel: break;
-                        default: throw new ArgumentOutOfRangeException();
-                    }
+                    // var action = ToFriendshipAction(friendshipEvent.BodyCase);
+                    //
+                    // OnReceivedFriendshipEvent?.Invoke(new FriendshipUpdateStatusMessage()
+                    // {
+                    //     case FriendshipEventResponse.BodyOneofCase.None: break;
+                    //     case FriendshipEventResponse.BodyOneofCase.Request: break;
+                    //     case FriendshipEventResponse.BodyOneofCase.Accept: break;
+                    //     case FriendshipEventResponse.BodyOneofCase.Reject: break;
+                    //     case FriendshipEventResponse.BodyOneofCase.Delete: break;
+                    //     case FriendshipEventResponse.BodyOneofCase.Cancel: break;
+                    //     default: throw new ArgumentOutOfRangeException();
+                    // }
                 }
             }
         }
