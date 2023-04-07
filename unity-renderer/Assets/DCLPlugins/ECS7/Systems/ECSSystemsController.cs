@@ -78,7 +78,6 @@ public class ECSSystemsController : IDisposable
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
 
         raycastSystem = new ECSRaycastSystem(
-            context.meshColliders,
             context.internalEcsComponents.raycastComponent,
             context.internalEcsComponents.physicColliderComponent,
             context.internalEcsComponents.onPointerColliderComponent,

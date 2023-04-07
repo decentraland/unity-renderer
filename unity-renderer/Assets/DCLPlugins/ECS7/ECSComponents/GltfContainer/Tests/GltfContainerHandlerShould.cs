@@ -9,6 +9,7 @@ using DCL.ECSRuntime;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -121,8 +122,8 @@ namespace Tests
             var physicColliderComponentData = physicColliderComponent.GetFor(scene, entity);
             var pointerColliderComponentData = pointerColliderComponent.GetFor(scene, entity);
 
-            Assert.AreEqual(physicCollider, physicColliderComponentData.model.colliders[0]);
-            Assert.AreEqual(pointerCollider, pointerColliderComponentData.model.colliders[0]);
+            Assert.AreEqual(physicCollider, physicColliderComponentData.model.colliders.First().Key);
+            Assert.AreEqual(pointerCollider, pointerColliderComponentData.model.colliders.First().Key);
         }
 
         [UnityTest]

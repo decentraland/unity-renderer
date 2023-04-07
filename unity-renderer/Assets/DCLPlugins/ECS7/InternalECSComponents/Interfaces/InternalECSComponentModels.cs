@@ -62,8 +62,7 @@ namespace DCL.ECS7.InternalComponents
 
     public class InternalColliders : InternalComponent
     {
-        // TODO: CHANGE TO STRUCT WITH COLLIDER + LAYERMASK
-        public IList<Collider> colliders = new List<Collider>();
+        public Dictionary<Collider, int> colliders = new Dictionary<Collider, int>();
     }
 
     public class InternalRenderers : InternalComponent
@@ -82,8 +81,8 @@ namespace DCL.ECS7.InternalComponents
         public Bounds entityLocalMeshBounds = new Bounds();
         public bool meshesDirty = false;
         public IList<Renderer> renderers;
-        public IList<Collider> physicsColliders;
-        public IList<Collider> pointerColliders;
+        public Dictionary<Collider, int> physicsColliders;
+        public Dictionary<Collider, int> pointerColliders;
         public AudioSource audioSource;
     }
 

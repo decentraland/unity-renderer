@@ -17,7 +17,6 @@ namespace ECSSystems.ECSRaycastSystem
 {
     public class ECSRaycastSystem
     {
-        private readonly ECSComponent<PBMeshCollider> meshCollider;
         private readonly IInternalECSComponent<InternalRaycast> internalRaycastComponent;
         private readonly IInternalECSComponent<InternalColliders> physicsColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> onPointerColliderComponent;
@@ -25,7 +24,6 @@ namespace ECSSystems.ECSRaycastSystem
         private readonly IECSComponentWriter componentWriter;
 
         public ECSRaycastSystem(
-            ECSComponent<PBMeshCollider> meshCollider,
             IInternalECSComponent<InternalRaycast> internalRaycastComponent,
             IInternalECSComponent<InternalColliders> physicsColliderComponent,
             IInternalECSComponent<InternalColliders> onPointerColliderComponent,
@@ -33,7 +31,6 @@ namespace ECSSystems.ECSRaycastSystem
             IECSComponentWriter componentWriter)
         {
             this.internalRaycastComponent = internalRaycastComponent;
-            this.meshCollider = meshCollider;
             this.physicsColliderComponent = physicsColliderComponent;
             this.onPointerColliderComponent = onPointerColliderComponent;
             this.customLayerColliderComponent = customLayerColliderComponent;
@@ -73,24 +70,31 @@ namespace ECSSystems.ECSRaycastSystem
                 };
 
                 // Hit everything by default except 'OnPointer' layer
-                int raycastLayerMask = CreateRaycastLayerMask(model);
+                int raycastUnityLayerMask = CreateRaycastLayerMask(model);
 
                 RaycastHit[] hits = null;
 
                 // RaycastAll is used because 'Default' layer represents a combination of ClPointer and ClPhysics
                 // and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
-                hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMask);
+                hits = Physics.RaycastAll(ray, model.MaxDistance, raycastUnityLayerMask);
                 if (hits != null)
                 {
                     DCL.ECSComponents.RaycastHit closestHit = null;
                     for (int j = 0; j < hits.Length; j++)
                     {
                         RaycastHit currentHit = hits[j];
-                        IDCLEntity hitColliderEntity = FindMatchingColliderEntity(physicsColliderComponent.GetForAll(), currentHit.collider)
-                                                       ?? FindMatchingColliderEntity(onPointerColliderComponent.GetForAll(), currentHit.collider)
-                                                       ?? FindMatchingColliderEntity(customLayerColliderComponent.GetForAll(), currentHit.collider);
+                        uint raycastSDKCollisionMask = model.GetCollisionMask();
+                        IDCLEntity hitColliderEntity = null;
+                        int hitColliderCollisionMask = -1;
 
-                        var hit = CreateSDKRaycastHit(scene, model, currentHit, hitColliderEntity, result.GlobalOrigin);
+                        if (LayerMaskUtils.IsInLayerMask(raycastSDKCollisionMask, (int)ColliderLayer.ClPhysics))
+                            (hitColliderEntity, hitColliderCollisionMask) = FindMatchingColliderEntity(physicsColliderComponent.GetForAll(), currentHit.collider);
+                        if(hitColliderEntity == null && LayerMaskUtils.IsInLayerMask(raycastSDKCollisionMask, (int)ColliderLayer.ClPointer))
+                            (hitColliderEntity, hitColliderCollisionMask) = FindMatchingColliderEntity(onPointerColliderComponent.GetForAll(), currentHit.collider);
+                        if(hitColliderEntity == null && LayerMaskUtils.LayerMaskHasAnySDKCustomLayer(raycastSDKCollisionMask))
+                            (hitColliderEntity, hitColliderCollisionMask) = FindMatchingColliderEntity(customLayerColliderComponent.GetForAll(), currentHit.collider);
+
+                        var hit = CreateSDKRaycastHit(scene, model, currentHit, hitColliderEntity, hitColliderCollisionMask, result.GlobalOrigin);
                         if (hit == null) continue;
 
                         if (model.QueryType == RaycastQueryType.RqtHitFirst)
@@ -124,21 +128,19 @@ namespace ECSSystems.ECSRaycastSystem
             }
         }
 
-        private IDCLEntity FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene,long,ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
+        private ( IDCLEntity, int ) FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
         {
-            // TODO: filter by collision layermask to make quicker
-            // TODO: Return struct with entity + collision layermask
-
             int componentsCount = componentGroup.Count;
-            for (int k = 0; k < componentsCount; k++)
+            for (int i = 0; i < componentsCount; i++)
             {
-                if (componentGroup[k].value.model.colliders.Contains(targetCollider))
+                var colliders = componentGroup[i].value.model.colliders;
+                if (colliders.ContainsKey(targetCollider))
                 {
-                    return componentGroup[k].value.entity;
+                    return ( componentGroup[i].value.entity, colliders[targetCollider] );
                 }
             }
 
-            return null;
+            return ( null, -1 );
         }
 
         private Ray CreateRay(IParcelScene scene, IDCLEntity entity, PBRaycast model)
@@ -177,26 +179,15 @@ namespace ECSSystems.ECSRaycastSystem
             return ray;
         }
 
-        private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, IDCLEntity hitEntity, Vector3 globalOrigin)
+        private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, IDCLEntity hitEntity, int hitColliderCollisionMask, Vector3 globalOrigin)
         {
             DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
             if (hitEntity != null)
             {
                 // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
                 // and ClPhysics and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
-                if (meshCollider.HasComponent(scene, hitEntity))
-                {
-                    int hitColliderRealCollisionMask = meshCollider.Get(scene, hitEntity).model.GetColliderLayer();
-
-                    // If the meshCollider collision mask is not in the raycast collision mask, we ignore that entity
-                    if ((model.GetCollisionMask() & hitColliderRealCollisionMask) == 0)
-                        return null;
-                }
-                // else if (GltfContainer.HasComponent(scene, hitEntity))
-                // {
-                //     if ((model.GetCollisionMask() & POINTER) == 0)
-                //         return null;
-                // }
+                if ((model.GetCollisionMask() & hitColliderCollisionMask) == 0)
+                    return null;
 
                 hit.EntityId = (uint)hitEntity.entityId;
             }
@@ -224,14 +215,14 @@ namespace ECSSystems.ECSRaycastSystem
             int unityLayerMask = (1 << PhysicsLayers.characterLayer);
             sdkLayerMask = model.GetCollisionMask();
 
-            if ((sdkLayerMask & (int)ColliderLayer.ClPointer) == (int)ColliderLayer.ClPointer)
+            if (sdkLayerMask == (int)ColliderLayer.ClPointer)
             {
                 unityLayerMask |= (1 << PhysicsLayers.onPointerEventLayer);
                 unityLayerMask |= (1 << PhysicsLayers.defaultLayer); // Pointer + Physics ends up in 'Default' GO Layer
                 return unityLayerMask;
             }
 
-            if ((sdkLayerMask & (int)ColliderLayer.ClPhysics) == (int)ColliderLayer.ClPhysics)
+            if (sdkLayerMask == (int)ColliderLayer.ClPhysics)
             {
                 unityLayerMask |= (1 << PhysicsLayers.characterOnlyLayer);
                 unityLayerMask |= (1 << PhysicsLayers.defaultLayer); // Pointer + Physics ends up in 'Default' GO Layer

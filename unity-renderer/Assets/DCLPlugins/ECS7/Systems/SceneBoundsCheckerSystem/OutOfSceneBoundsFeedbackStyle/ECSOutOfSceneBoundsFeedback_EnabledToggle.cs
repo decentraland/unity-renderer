@@ -10,8 +10,8 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         public void ApplyFeedback(IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel, bool isVisible, bool isInsideBounds)
         {
             IList<Renderer> renderers = sbcComponentModel.renderers;
-            IList<Collider> physicsColliders = sbcComponentModel.physicsColliders;
-            IList<Collider> pointerColliders = sbcComponentModel.pointerColliders;
+            Dictionary<Collider, int> physicsColliders = sbcComponentModel.physicsColliders;
+            Dictionary<Collider, int> pointerColliders = sbcComponentModel.pointerColliders;
 
             if (renderers != null)
             {
@@ -25,21 +25,17 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             if (physicsColliders != null)
             {
-                int count = physicsColliders.Count;
-
-                for (var i = 0; i < count; i++)
+                foreach (var keyValuePair in physicsColliders)
                 {
-                    physicsColliders[i].enabled = isInsideBounds;
+                    keyValuePair.Key.enabled = isInsideBounds;
                 }
             }
 
             if (pointerColliders != null)
             {
-                int count = pointerColliders.Count;
-
-                for (var i = 0; i < count; i++)
+                foreach (var keyValuePair in pointerColliders)
                 {
-                    pointerColliders[i].enabled = isInsideBounds;
+                    keyValuePair.Key.enabled = isInsideBounds;
                 }
             }
         }

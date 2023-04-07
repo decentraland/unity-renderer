@@ -133,17 +133,17 @@ namespace DCL.ECSComponents
             int colliderLayer = model.GetColliderLayer();
 
             if ((colliderLayer & LAYER_POINTER) != 0)
-                pointerColliderComponent.AddCollider(scene, entity, collider);
+                pointerColliderComponent.AddCollider(scene, entity, collider, colliderLayer);
             else
                 pointerColliderComponent.RemoveCollider(scene, entity, collider);
 
             if ((colliderLayer & LAYER_PHYSICS) != 0)
-                physicColliderComponent.AddCollider(scene, entity, collider);
+                physicColliderComponent.AddCollider(scene, entity, collider, colliderLayer);
             else
                 physicColliderComponent.RemoveCollider(scene, entity, collider);
 
             if (LayerMaskUtils.LayerMaskHasAnySDKCustomLayer((uint)colliderLayer))
-                customLayerColliderComponent.AddCollider(scene, entity, collider);
+                customLayerColliderComponent.AddCollider(scene, entity, collider, colliderLayer);
             else
                 customLayerColliderComponent.RemoveCollider(scene, entity, collider);
         }
