@@ -3,6 +3,7 @@ using Decentraland.Renderer.KernelServices;
 using Decentraland.Social.Friendships;
 using RPC;
 using rpc_csharp;
+using RPC.Transports;
 using System;
 using UnityEngine;
 
@@ -31,6 +32,7 @@ namespace DCL
 
         public ClientSignRequestKernelService SignRequestKernelService() =>
             signRequest;
+
         public IClientFriendshipsService Social() =>
             social;
 
@@ -50,7 +52,12 @@ namespace DCL
 
             signRequest = await SafeLoadModule(SignRequestKernelServiceCodeGen.ServiceName, port,
                 module => new ClientSignRequestKernelService(module));
-            social = await SafeLoadModule(FriendshipsServiceCodeGen.ServiceName, port,
+
+            var transport = new WebSocketClientTransport("ws://localhost:8085");
+            var client = new RpcClient(transport);
+            var socialPort = await client.CreatePort("test-port");
+
+            social = await SafeLoadModule(FriendshipsServiceCodeGen.ServiceName, socialPort,
                 module => new ClientFriendshipsService(module));
 
             modulesLoaded.TrySetResult();

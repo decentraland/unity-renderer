@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace DCL.Social.Friends
@@ -35,7 +36,7 @@ namespace DCL.Social.Friends
             rpc = Substitute.For<IRPC>();
             var clientSocial = Substitute.For<IClientFriendshipsService>();
 
-            clientSocial.GetFriends(new Empty())
+            clientSocial.GetFriends(new Payload() { SynapseToken = "" })
                         .Returns(UniTaskAsyncEnumerable.Create<Users>(async (writer, token) =>
                          {
                              foreach (var users in usersList)
@@ -45,7 +46,7 @@ namespace DCL.Social.Friends
                              }
                          }));
 
-            clientSocial.GetRequestEvents(new Empty())
+            clientSocial.GetRequestEvents(new Payload() { SynapseToken = "" })
                         .Returns(new UniTask<RequestEvents>(new RequestEvents()
                          {
                              Incoming = new Requests()
@@ -95,7 +96,9 @@ namespace DCL.Social.Friends
             UserProfile.GetOwnUserProfile().UpdateData(new UserProfileModel() { userId = OWN_ID });
 
             rpc.Social().Returns(clientSocial);
-            rpcSocialApiBridge = new RPCSocialApiBridge(rpc);
+            GameObject go = new GameObject();
+            var component = go.AddComponent<MatrixInitializationBridge>();
+            rpcSocialApiBridge = new RPCSocialApiBridge(rpc, component);
         }
 
         [UnityTest]

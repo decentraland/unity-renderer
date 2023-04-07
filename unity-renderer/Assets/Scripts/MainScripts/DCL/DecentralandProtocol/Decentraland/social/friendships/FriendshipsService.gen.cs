@@ -8,18 +8,17 @@ using Cysharp.Threading.Tasks;
 using Google.Protobuf;
 using rpc_csharp.protocol;
 using rpc_csharp;
-using Google.Protobuf.WellKnownTypes;
 namespace Decentraland.Social.Friendships {
 public interface IFriendshipsService<Context>
 {
 
-  IUniTaskAsyncEnumerable<Users> GetFriends(Empty request, Context context);
+  IUniTaskAsyncEnumerable<Users> GetFriends(Payload request, Context context);
 
-  UniTask<RequestEvents> GetRequestEvents(Empty request, Context context, CancellationToken ct);
+  UniTask<RequestEvents> GetRequestEvents(Payload request, Context context, CancellationToken ct);
 
   UniTask<UpdateFriendshipResponse> UpdateFriendshipEvent(UpdateFriendshipPayload request, Context context, CancellationToken ct);
 
-  IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdates(Empty request, Context context);
+  IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdates(Payload request, Context context);
 
 }
 
@@ -31,10 +30,10 @@ public static class FriendshipsServiceCodeGen
   {
     var result = new ServerModuleDefinition<Context>();
       
-    result.serverStreamDefinition.Add("GetFriends", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<Users>(service.GetFriends(Empty.Parser.ParseFrom(payload), context)); });
-    result.definition.Add("GetRequestEvents", async (payload, context, ct) => { var res = await service.GetRequestEvents(Empty.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.serverStreamDefinition.Add("GetFriends", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<Users>(service.GetFriends(Payload.Parser.ParseFrom(payload), context)); });
+    result.definition.Add("GetRequestEvents", async (payload, context, ct) => { var res = await service.GetRequestEvents(Payload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("UpdateFriendshipEvent", async (payload, context, ct) => { var res = await service.UpdateFriendshipEvent(UpdateFriendshipPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
-    result.serverStreamDefinition.Add("SubscribeFriendshipEventsUpdates", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<SubscribeFriendshipEventsUpdatesResponse>(service.SubscribeFriendshipEventsUpdates(Empty.Parser.ParseFrom(payload), context)); });
+    result.serverStreamDefinition.Add("SubscribeFriendshipEventsUpdates", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<SubscribeFriendshipEventsUpdatesResponse>(service.SubscribeFriendshipEventsUpdates(Payload.Parser.ParseFrom(payload), context)); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }
