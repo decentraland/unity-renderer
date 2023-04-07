@@ -1,7 +1,10 @@
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using System;
 using UnityEngine;
 using DCL.NotificationModel;
+using DCL.Tasks;
+using System.Threading;
 using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
@@ -12,6 +15,8 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
+        private const int LOAD_SCENE_TIMEOUT = 120000;
+
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
         private readonly DataStore_Player playerDataStore;
@@ -27,6 +32,8 @@ namespace DCL.LoadingScreen
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
         private bool onSignUpFlow;
+
+        private CancellationTokenSource timeoutCTS;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -53,6 +60,8 @@ namespace DCL.LoadingScreen
         {
             view.Dispose();
             percentageController.Dispose();
+            timeoutCTS.SafeCancelAndDispose();
+
             playerDataStore.lastTeleportPosition.OnChange -= TeleportRequested;
             commonDataStore.isSignUpFlow.OnChange -= OnSignupFlow;
             sceneController.OnReadyScene -= ReadyScene;
@@ -69,14 +78,7 @@ namespace DCL.LoadingScreen
             //We have to check that the latest scene loaded is the one from our current destination
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
             {
-                //We have to check if the player is loaded
-                if(commonDataStore.isPlayerRendererLoaded.Get())
-                    FadeOutView();
-                else
-                {
-                    percentageController.SetAvatarLoadingMessage();
-                    commonDataStore.isPlayerRendererLoaded.OnChange += PlayerLoaded;
-                }
+                HandlePlayerLoading();
             }
         }
 
@@ -113,14 +115,18 @@ namespace DCL.LoadingScreen
                 //Temporarily removing tips until V2
                 //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
-
                 view.FadeIn(false, true);
-            }
-            else
-            {
-                //We are going to check if the scene has timeout using the POSITION_SETTLED event.
-                CheckSceneTimeout(currentDestinationCandidate);
-            }
+                timeoutCTS = timeoutCTS.SafeRestart();
+                StartTimeoutCounter(timeoutCTS.Token);
+            }else if (IsSceneLoaded(currentDestinationCandidate))
+                HandlePlayerLoading();
+        }
+
+
+        private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
+        {
+            if (!await UniTask.Delay(TimeSpan.FromMilliseconds(LOAD_SCENE_TIMEOUT), cancellationToken: ct).SuppressCancellationThrow())
+                DoTimeout();
         }
 
         //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,
@@ -148,28 +154,39 @@ namespace DCL.LoadingScreen
         private bool IsNewScene(Vector2Int currentDestinationCandidate) =>
              worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
 
-        private void CheckSceneTimeout(Vector2Int currentDestinationCandidate)
+        private bool IsSceneLoaded(Vector2Int candidate) =>
+            worldState.GetScene(worldState.GetSceneNumberByCoords(candidate))?.loadingProgress >= 100;
+
+        private void HandlePlayerLoading()
         {
-            //If we are settling on the destination position, but loading is not complete, this means that kernel is calling for a timeout.
-            //For now, we hide the loading screen and add a notification
-            if (currentDestinationCandidate.Equals(currentDestination) &&
-                worldState.GetScene(worldState.GetSceneNumberByCoords(currentDestination))?.loadingProgress < 100)
-            {
-                notificationsController.ShowNotification(new Model
-                {
-                    message = "Loading scene timeout",
-                    type = Type.GENERIC,
-                    timer = 10f,
-                    destroyOnFinish = true
-                });
+            //We have to check if the player is loaded
+            if (commonDataStore.isPlayerRendererLoaded.Get())
                 FadeOutView();
+            else
+            {
+                percentageController.SetAvatarLoadingMessage();
+                commonDataStore.isPlayerRendererLoaded.OnChange += PlayerLoaded;
             }
+
         }
 
         private void FadeOutView()
         {
+            timeoutCTS.SafeCancelAndDispose();
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+        }
+
+        private void DoTimeout()
+        {
+            notificationsController.ShowNotification(new Model
+            {
+                message = "Loading scene timeout",
+                type = Type.GENERIC,
+                timer = 10f,
+                destroyOnFinish = true
+            });
+            FadeOutView();
         }
     }
 }

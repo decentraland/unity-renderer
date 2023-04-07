@@ -1,12 +1,14 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.SettingsCommon;
 using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Threading;
 using UnityEngine;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 using Channel = DCL.Chat.Channels.Channel;
 using Object = UnityEngine.Object;
 
@@ -26,6 +28,7 @@ namespace DCL.Chat.Notifications
         private GameObject topPanelTransform;
         private IProfanityFilter profanityFilter;
         private DataStore dataStore;
+        private ISettingsRepository<AudioSettings> audioSettings;
 
         [SetUp]
         public void SetUp()
@@ -43,6 +46,12 @@ namespace DCL.Chat.Notifications
             profanityFilter = Substitute.For<IProfanityFilter>();
             dataStore = new DataStore();
             dataStore.settings.profanityChatFilteringEnabled.Set(false);
+            audioSettings = Substitute.For<ISettingsRepository<AudioSettings>>();
+
+            audioSettings.Data.Returns(new AudioSettings
+            {
+                chatNotificationType = AudioSettings.ChatNotificationType.None,
+            });
 
             controller = new ChatNotificationController(dataStore,
                 mainNotificationsView,
@@ -50,7 +59,8 @@ namespace DCL.Chat.Notifications
                 chatController,
                 friendsController,
                 userProfileBridge,
-                profanityFilter);
+                profanityFilter,
+                audioSettings);
 
             // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
@@ -483,6 +493,41 @@ namespace DCL.Chat.Notifications
             mainNotificationsView.OnPanelFocus += Raise.Event<Action<bool>>(true);
 
             mainNotificationsView.Received().ShowPanel();
+        }
+
+        [TestCase(AudioSettings.ChatNotificationType.MentionsOnly, true)]
+        [TestCase(AudioSettings.ChatNotificationType.All, true)]
+        [TestCase(AudioSettings.ChatNotificationType.None, false)]
+        public void PlayMentionSfxWhenSettingsAllowsIt(AudioSettings.ChatNotificationType chatSfxSetting, bool expectedSfx)
+        {
+            audioSettings.Data.Returns(new AudioSettings
+            {
+                chatNotificationType = chatSfxSetting,
+            });
+
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "sender",
+                name = "imsender",
+                snapshots = new UserProfileModel.Snapshots { face256 = "face256" }
+            });
+
+            userProfileBridge.Get("sender").Returns(senderUserProfile);
+
+            chatController.GetAllocatedChannel("nearby")
+                          .Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                    ChatMessage.Type.PUBLIC, "sender", $"mention for @{OWN_USER_NAME}", (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+            });
+
+            mainNotificationsView.Received(1)
+                                 .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
+                                      m.IsOwnPlayerMentioned && m.ShouldPlayMentionSfx == expectedSfx));
         }
 
         private void GivenProfile(string userId, string userName)

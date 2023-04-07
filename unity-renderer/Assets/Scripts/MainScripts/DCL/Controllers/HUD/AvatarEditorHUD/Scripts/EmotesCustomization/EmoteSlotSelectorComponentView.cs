@@ -17,10 +17,8 @@ namespace DCL.EmotesCustomization
 
         public event Action<int, string> onSlotSelected;
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
-
             ConfigureSlotButtons();
         }
 
@@ -126,7 +124,7 @@ namespace DCL.EmotesCustomization
                 Debug.LogError("EmotesSlotSelectorComponentView: emotesSlots are accessed before serialized reference was initialized");
                 return new List<EmoteSlotCardComponentView>();
             }
-            
+
             return emotesSlots
                 .GetItems()
                 .Select(x => x as EmoteSlotCardComponentView)
