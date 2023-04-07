@@ -136,10 +136,6 @@ namespace DCL
         {
             textureFactory.isReadable = isReadable;
             return await SendWebRequest(textureFactory, url, null, onSuccess, onfail, requestAttemps, timeout, cancellationToken, headers);
-            // Note: textureFactory is not used because of the known issue introduced in Unity 2021.3.17f1 using the UnityWebRequestTexture.GetTexture method
-            // textureFactory.isReadable = isReadable;
-            // return await SendWebRequest(getWebRequestFactory, url, null, onSuccess, onfail, requestAttemps,
-            //     timeout, cancellationToken, headers);
         }
 
         public async UniTask<UnityWebRequest> GetAudioClipAsync(

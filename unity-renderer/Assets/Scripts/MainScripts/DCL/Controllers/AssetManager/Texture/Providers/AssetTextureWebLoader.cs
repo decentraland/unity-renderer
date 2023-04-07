@@ -24,18 +24,6 @@ namespace DCL
             }
 
             return DownloadHandlerTexture.GetContent(asyncOp.webRequest);
-            // Texture2D texture2D = new Texture2D(1, 1);
-            // try
-            // {
-            //     texture2D.LoadImage(asyncOp.webRequest.downloadHandler.data);
-            // }
-            // catch (Exception e)
-            // {
-            //     Debug.LogError($"Texture promise failed: {e}");
-            //     return null;
-            // }
-            //
-            // return texture2D;
         }
 
     }
