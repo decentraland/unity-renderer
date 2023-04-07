@@ -95,10 +95,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
         NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
     }
 
-    public override void Update()
+    public void Update()
     {
-        base.Update();
-
         if (isLayoutDirty)
             Utils.ForceRebuildLayoutImmediate((RectTransform) filledStateContainer.transform);
         isLayoutDirty = false;
