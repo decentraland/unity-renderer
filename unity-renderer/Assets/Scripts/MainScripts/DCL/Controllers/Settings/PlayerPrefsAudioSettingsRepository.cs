@@ -5,7 +5,7 @@ namespace DCL.SettingsCommon
 {
     public class PlayerPrefsAudioSettingsRepository : ISettingsRepository<AudioSettings>
     {
-        private const string CHAT_SFX_ENABLED = "chatSFXEnabled";
+        private const string CHAT_NOTIFICATIONS_TYPE = "chatNotificationsType";
         private const string MASTER_VOLUME = "masterVolume";
         private const string MUSIC_VOLUME = "musicVolume";
         private const string VOICE_CHAT_VOLUME = "voiceChatVolume";
@@ -16,7 +16,7 @@ namespace DCL.SettingsCommon
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly AudioSettings defaultSettings;
         private AudioSettings currentSettings;
-        
+
         public event Action<AudioSettings> OnChanged;
 
         public PlayerPrefsAudioSettingsRepository(
@@ -44,7 +44,7 @@ namespace DCL.SettingsCommon
 
         public void Save()
         {
-            settingsByKey.SetBool(CHAT_SFX_ENABLED, currentSettings.chatSFXEnabled);
+            settingsByKey.SetEnum(CHAT_NOTIFICATIONS_TYPE, currentSettings.chatNotificationType);
             settingsByKey.SetFloat(MASTER_VOLUME, currentSettings.masterVolume);
             settingsByKey.SetFloat(MUSIC_VOLUME, currentSettings.musicVolume);
             settingsByKey.SetFloat(VOICE_CHAT_VOLUME, currentSettings.voiceChatVolume);
@@ -58,10 +58,10 @@ namespace DCL.SettingsCommon
         private AudioSettings Load()
         {
             var settings = defaultSettings;
-            
+
             try
             {
-                settings.chatSFXEnabled = settingsByKey.GetBool(CHAT_SFX_ENABLED, defaultSettings.chatSFXEnabled);
+                settings.chatNotificationType = settingsByKey.GetEnum(CHAT_NOTIFICATIONS_TYPE, defaultSettings.chatNotificationType);
                 settings.masterVolume = settingsByKey.GetFloat(MASTER_VOLUME, defaultSettings.masterVolume);
                 settings.musicVolume = settingsByKey.GetFloat(MUSIC_VOLUME, defaultSettings.musicVolume);
                 settings.voiceChatVolume = settingsByKey.GetFloat(VOICE_CHAT_VOLUME, defaultSettings.voiceChatVolume);
