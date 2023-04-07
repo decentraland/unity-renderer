@@ -19,22 +19,24 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             else
                 AddInvalidMeshEffect(entity, sbcComponentModel);
 
-            Dictionary<Collider, int> physicsColliders = sbcComponentModel.physicsColliders;
-            Dictionary<Collider, int> pointerColliders = sbcComponentModel.pointerColliders;
+            KeyValueSet<Collider, int> physicsColliders = sbcComponentModel.physicsColliders;
+            KeyValueSet<Collider, int> pointerColliders = sbcComponentModel.pointerColliders;
 
             if (physicsColliders != null)
             {
-                foreach (var keyValuePair in physicsColliders)
+                var pairs = physicsColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    keyValuePair.Key.enabled = isInsideBounds;
+                    pairs[i].key.enabled = isInsideBounds;
                 }
             }
 
             if (pointerColliders != null)
             {
-                foreach (var keyValuePair in pointerColliders)
+                var pairs = pointerColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    keyValuePair.Key.enabled = isInsideBounds;
+                    pairs[i].key.enabled = isInsideBounds;
                 }
             }
         }

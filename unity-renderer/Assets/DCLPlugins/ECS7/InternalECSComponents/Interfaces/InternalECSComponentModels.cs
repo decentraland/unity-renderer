@@ -62,7 +62,7 @@ namespace DCL.ECS7.InternalComponents
 
     public class InternalColliders : InternalComponent
     {
-        public Dictionary<Collider, int> colliders = new Dictionary<Collider, int>();
+        public KeyValueSet<Collider, int> colliders = new KeyValueSet<Collider, int>();
     }
 
     public class InternalRenderers : InternalComponent
@@ -81,8 +81,8 @@ namespace DCL.ECS7.InternalComponents
         public Bounds entityLocalMeshBounds = new Bounds();
         public bool meshesDirty = false;
         public IList<Renderer> renderers;
-        public Dictionary<Collider, int> physicsColliders;
-        public Dictionary<Collider, int> pointerColliders;
+        public KeyValueSet<Collider, int> physicsColliders;
+        public KeyValueSet<Collider, int> pointerColliders;
         public AudioSource audioSource;
     }
 

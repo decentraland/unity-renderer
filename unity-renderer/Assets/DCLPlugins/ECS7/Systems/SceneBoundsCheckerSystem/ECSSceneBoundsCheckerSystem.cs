@@ -247,18 +247,20 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             if (physicsColliders != null)
             {
-                foreach (var keyValuePair in physicsColliders)
+                var pairs = physicsColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, keyValuePair.Key.bounds))
+                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, pairs[i].key.bounds))
                         return false;
                 }
             }
 
             if (pointerColliders != null)
             {
-                foreach (var keyValuePair in pointerColliders)
+                var pairs = pointerColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, keyValuePair.Key.bounds))
+                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, pairs[i].key.bounds))
                         return false;
                 }
             }
@@ -267,7 +269,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         }
 
         private static bool WereColliderComponentRemoved(IParcelScene scene, IDCLEntity entity,
-            Dictionary<Collider, int> sbcComponentColliders, IInternalECSComponent<InternalColliders> colliderComponent)
+            KeyValueSet<Collider, int> sbcComponentColliders, IInternalECSComponent<InternalColliders> colliderComponent)
         {
             return sbcComponentColliders != null && colliderComponent.GetFor(scene, entity) == null;
         }
@@ -378,17 +380,19 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             if (sbcInternalComponentModel.physicsColliders != null)
             {
-                foreach (var keyValuePair in sbcInternalComponentModel.physicsColliders)
+                var pairs = sbcInternalComponentModel.physicsColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(keyValuePair.Key));
+                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(pairs[i].key));
                 }
             }
 
             if (sbcInternalComponentModel.pointerColliders != null)
             {
-                foreach (var keyValuePair in sbcInternalComponentModel.pointerColliders)
+                var pairs = sbcInternalComponentModel.pointerColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(keyValuePair.Key));
+                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(pairs[i].key));
                 }
             }
 
