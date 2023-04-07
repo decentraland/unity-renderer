@@ -257,7 +257,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
                 type = pointerEventType,
                 hit = new RaycastHit
                 {
-                    EntityId = entity.entityId,
+                    EntityId = (uint)entity.entityId,
                     Length = 0,
                     Position = ProtoConvertUtils.UnityVectorToPBVector(position)
                 }
