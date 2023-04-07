@@ -26,8 +26,8 @@ namespace ECSSystems.BillboardSystem
             const uint BILLBOARD_XY = BILLBOARD_X | BILLBOARD_Y;
 
             Transform cameraT = camera.transform.Get();
-            Vector3 cameraUp = cameraT.up;
-            Vector3 cameraForward = cameraT.forward;
+            Vector3 cameraPos = cameraT.position;
+            Quaternion cameraRotationAxisZ = Quaternion.Euler(0, 0, cameraT.rotation.eulerAngles.z);
 
             var billboards = billboardComponent.Get();
 
@@ -39,47 +39,34 @@ namespace ECSSystems.BillboardSystem
 
                 if (billboardMode == BILLBOARD_NONE)
                 {
-                    billboardT.forward = Vector3.back;
                     continue;
                 }
-
-                uint billboardModeXY = (billboardMode & BILLBOARD_XY);
 
                 Vector3 billboardForward = billboardT.forward;
                 Vector3 billboardPos = billboardT.position;
 
                 Vector3 forward = billboardForward;
-                Vector3 up = Vector3.up;
 
                 // either or both X and Y are set
-                if (billboardModeXY != 0)
+                if ((billboardMode & BILLBOARD_XY) != 0)
                 {
-                    forward = cameraForward;
+                    forward = billboardPos - cameraPos;
 
-                    // only one of X and Y is set
-                    if (billboardModeXY != BILLBOARD_XY)
-                    {
-                        if ((billboardMode & BILLBOARD_Y) != 0)
-                        {
-                            forward.y = billboardForward.y;
-                        }
+                    if ((billboardMode & BILLBOARD_Y) == 0) forward.x = 0;
+                    if ((billboardMode & BILLBOARD_X) == 0) forward.y = 0;
 
-                        if ((billboardMode & BILLBOARD_X) != 0)
-                        {
-                            forward.x = billboardForward.x;
-                        }
-
-                        forward.Normalize();
-                    }
+                    forward.Normalize();
                 }
 
-                // Z is set
+                Quaternion rotation = Quaternion.LookRotation(forward, Vector3.up);
+
+                // apply Z axis rotation
                 if ((billboardMode & BILLBOARD_Z) != 0)
                 {
-                    up = cameraUp;
+                    rotation *= cameraRotationAxisZ;
                 }
 
-                billboardT.LookAt(billboardPos + forward, up);
+                billboardT.rotation = rotation;
             }
         }
     }
