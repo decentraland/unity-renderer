@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,7 @@ public class MinimapMetadata : ScriptableObject
 
     public void AddSceneInfo(MinimapSceneInfo sceneInfo)
     {
-        if (scenesInfo.Contains(sceneInfo))
+        if (scenesInfo.Contains(sceneInfo) || DataStore.i.common.isWorld.Get())
             return;
 
         int parcelsCount = sceneInfo.parcels.Count;
