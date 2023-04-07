@@ -2,7 +2,6 @@ using AvatarSystem;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
-using DCL.Emotes;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
@@ -19,7 +18,6 @@ using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using System.Collections.Generic;
-using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -117,7 +115,7 @@ namespace DCL
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));
-            result.Register<IHUDController>(() => new HUDController(result.Get<IWearablesCatalogService>(), DataStore.i));
+            result.Register<IHUDController>(() => new HUDController(DataStore.i));
 
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
