@@ -84,17 +84,16 @@ namespace ECSSystems.ECSRaycastSystem
                     {
                         RaycastHit currentHit = hits[j];
                         uint raycastSDKCollisionMask = model.GetCollisionMask();
-                        IDCLEntity hitEntity = null;
-                        int hitEntityCollisionMask = -1;
+                        KeyValuePair<IDCLEntity, int>? hitEntity = null;
 
                         if (LayerMaskUtils.IsInLayerMask(raycastSDKCollisionMask, (int)ColliderLayer.ClPhysics))
-                            (hitEntity, hitEntityCollisionMask) = FindMatchingColliderEntity(physicsColliderComponent.GetForAll(), currentHit.collider);
+                            hitEntity = FindMatchingColliderEntity(physicsColliderComponent.GetForAll(), currentHit.collider);
                         if(hitEntity == null && LayerMaskUtils.IsInLayerMask(raycastSDKCollisionMask, (int)ColliderLayer.ClPointer))
-                            (hitEntity, hitEntityCollisionMask) = FindMatchingColliderEntity(onPointerColliderComponent.GetForAll(), currentHit.collider);
+                            hitEntity = FindMatchingColliderEntity(onPointerColliderComponent.GetForAll(), currentHit.collider);
                         if(hitEntity == null && LayerMaskUtils.LayerMaskHasAnySDKCustomLayer(raycastSDKCollisionMask))
-                            (hitEntity, hitEntityCollisionMask) = FindMatchingColliderEntity(customLayerColliderComponent.GetForAll(), currentHit.collider);
+                            hitEntity = FindMatchingColliderEntity(customLayerColliderComponent.GetForAll(), currentHit.collider);
 
-                        var hit = CreateSDKRaycastHit(scene, model, currentHit, hitEntity, hitEntityCollisionMask, result.GlobalOrigin);
+                        var hit = CreateSDKRaycastHit(scene, model, currentHit, hitEntity, result.GlobalOrigin);
                         if (hit == null) continue;
 
                         if (model.QueryType == RaycastQueryType.RqtHitFirst)
@@ -128,7 +127,7 @@ namespace ECSSystems.ECSRaycastSystem
             }
         }
 
-        private ( IDCLEntity, int ) FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
+        private KeyValuePair<IDCLEntity, int>? FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
         {
             int componentsCount = componentGroup.Count;
             for (int i = 0; i < componentsCount; i++)
@@ -136,11 +135,11 @@ namespace ECSSystems.ECSRaycastSystem
                 var colliders = componentGroup[i].value.model.colliders;
                 if (colliders.ContainsKey(targetCollider))
                 {
-                    return ( componentGroup[i].value.entity, colliders[targetCollider] );
+                    return new KeyValuePair<IDCLEntity, int>(componentGroup[i].value.entity, colliders[targetCollider]);
                 }
             }
 
-            return ( null, -1 );
+            return null;
         }
 
         private Ray CreateRay(IParcelScene scene, IDCLEntity entity, PBRaycast model)
@@ -179,17 +178,20 @@ namespace ECSSystems.ECSRaycastSystem
             return ray;
         }
 
-        private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, IDCLEntity hitEntity, int hitEntityCollisionMask, Vector3 globalOrigin)
+        private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, int>? hitEntity, Vector3 globalOrigin)
         {
             DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
             if (hitEntity != null)
             {
+                IDCLEntity entity = hitEntity.Value.Key;
+                int collisionMask = hitEntity.Value.Value;
+
                 // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
                 // and ClPhysics and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
-                if ((model.GetCollisionMask() & hitEntityCollisionMask) == 0)
+                if ((model.GetCollisionMask() & collisionMask) == 0)
                     return null;
 
-                hit.EntityId = (uint)hitEntity.entityId;
+                hit.EntityId = (uint)entity.entityId;
             }
             hit.MeshName = unityRaycastHit.collider.name;
             hit.Length = unityRaycastHit.distance;
