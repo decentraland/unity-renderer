@@ -25,22 +25,27 @@ namespace ECSSystems.BillboardSystem
             const uint BILLBOARD_Z = (uint)BillboardMode.BmZ;
             const uint BILLBOARD_XY = BILLBOARD_X | BILLBOARD_Y;
 
+            var billboards = billboardComponent.Get();
+            int billboardsCount = billboards.Count;
+
+            if (billboardsCount == 0)
+                return;
+
             Transform cameraT = camera.transform.Get();
             Vector3 cameraPos = cameraT.position;
             Quaternion cameraRotationAxisZ = Quaternion.Euler(0, 0, cameraT.rotation.eulerAngles.z);
 
-            var billboards = billboardComponent.Get();
-
-            for (var i = 0; i < billboards.Count; i++)
+            for (var i = 0; i < billboardsCount; i++)
             {
                 uint billboardMode = (uint)billboards[i].value.model.GetBillboardMode();
-                IDCLEntity entity = billboards[i].value.entity;
-                Transform billboardT = entity.gameObject.transform;
 
                 if (billboardMode == BILLBOARD_NONE)
                 {
                     continue;
                 }
+
+                IDCLEntity entity = billboards[i].value.entity;
+                Transform billboardT = entity.gameObject.transform;
 
                 Vector3 billboardForward = billboardT.forward;
                 Vector3 billboardPos = billboardT.position;
