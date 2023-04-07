@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using MainScripts.DCL.Helpers.Utils;
@@ -11,7 +12,7 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 {
     internal class ScenesOfInterestMarkersController : MapLayerControllerBase, IMapCullingListener<ISceneOfInterestMarker>, IMapLayerController
     {
-        internal const int PREWARM_PER_FRAME = 20;
+        private const int PREWARM_PER_FRAME = 20;
         private const string EMPTY_PARCEL_NAME = "Empty parcel";
 
         internal delegate ISceneOfInterestMarker SceneOfInterestMarkerBuilder(
@@ -76,7 +77,7 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         {
             // Markers are not really updated, they can be just reported several times with essentially the same data
 
-            if (!sceneInfo.isPOI)
+            if (!sceneInfo.isPOI || DataStore.i.common.isWorld.Get())
                 return;
 
             // if it was possible to update them then we need to cache by parcel coordinates instead
