@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL
@@ -43,7 +44,7 @@ namespace DCL
 
         float startTime;
 
-        Coroutine blockedPromiseSolverCoroutine;
+        private CancellationTokenSource blockedPromiseSolverCancellationTokenSource;
 
         public bool IsBlocked(AssetPromiseType promise)
         {
@@ -69,14 +70,15 @@ namespace DCL
         public AssetPromiseKeeper(AssetLibraryType library)
         {
             this.library = library;
-            EnsureProcessBlockerPromiseQueueCoroutine();
+            EnsureProcessBlockerPromiseQueueTask();
         }
 
-        void EnsureProcessBlockerPromiseQueueCoroutine()
+        private void EnsureProcessBlockerPromiseQueueTask()
         {
-            if (blockedPromiseSolverCoroutine == null)
+            if (blockedPromiseSolverCancellationTokenSource == null)
             {
-                blockedPromiseSolverCoroutine = CoroutineStarter.Start(UniTask.ToCoroutine(ProcessBlockedPromisesQueueAsync));
+                blockedPromiseSolverCancellationTokenSource = new CancellationTokenSource();
+                ProcessBlockedPromisesQueueAsync(blockedPromiseSolverCancellationTokenSource.Token).Forget();
             }
         }
 
@@ -99,7 +101,7 @@ namespace DCL
             if (masterPromiseById.ContainsKey(id))
             {
                 // TODO(Brian): Remove once this class has a proper lifecycle and is on service locator.
-                EnsureProcessBlockerPromiseQueueCoroutine();
+                EnsureProcessBlockerPromiseQueueTask();
                 waitingPromises.Add(promise);
 
                 if (!masterToBlockedPromises.ContainsKey(id))
@@ -179,16 +181,19 @@ namespace DCL
             return toResolveBlockedPromisesQueue.Count <= 0;
         }
 
-        private async UniTask ProcessBlockedPromisesQueueAsync()
+        private async UniTask ProcessBlockedPromisesQueueAsync(CancellationToken cancellationToken)
         {
             startTime = Time.unscaledTime;
 
             while (true)
             {
-                await UniTask.WaitWhile(IsToResolveQueueEmpty);
+                await UniTask.WaitWhile(IsToResolveQueueEmpty, PlayerLoopTiming.Update, cancellationToken);
 
+                cancellationToken.ThrowIfCancellationRequested();
                 AssetPromiseType promise = toResolveBlockedPromisesQueue.Dequeue();
-                await ProcessBlockedPromisesDeferredAsync(promise);
+                await ProcessBlockedPromisesDeferredAsync(promise, cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
                 CleanPromise(promise);
 
                 if (promise.isForgotten)
@@ -200,7 +205,7 @@ namespace DCL
             }
         }
 
-        private async UniTask ProcessBlockedPromisesDeferredAsync(AssetPromiseType loadedPromise)
+        private async UniTask ProcessBlockedPromisesDeferredAsync(AssetPromiseType loadedPromise, CancellationToken cancellationToken)
         {
             object loadedPromiseId = loadedPromise.GetId();
 
@@ -222,9 +227,13 @@ namespace DCL
             while (masterToBlockedPromises.ContainsKey(loadedPromiseId) &&
                    masterToBlockedPromises[loadedPromiseId].Count > 0)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 List<AssetPromiseType> promisesToLoadForId = GetBlockedPromisesToLoadForId(loadedPromiseId);
 
                 await SkipFrameIfOverBudgetAsync();
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (loadedPromise.state != AssetPromiseState.FINISHED)
                     await ForceFailPromiseListAsync(promisesToLoadForId);
@@ -340,10 +349,11 @@ namespace DCL
 
         public void Cleanup()
         {
-            if (blockedPromiseSolverCoroutine != null)
+            if (blockedPromiseSolverCancellationTokenSource != null)
             {
-                CoroutineStarter.Stop(blockedPromiseSolverCoroutine);
-                blockedPromiseSolverCoroutine = null;
+                blockedPromiseSolverCancellationTokenSource.Cancel();
+                blockedPromiseSolverCancellationTokenSource.Dispose();
+                blockedPromiseSolverCancellationTokenSource = null;
             }
 
             blockedPromises = new HashSet<AssetPromiseType>();
