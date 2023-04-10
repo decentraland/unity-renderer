@@ -78,6 +78,8 @@ export async function initializeEngine(_gameInstance: UnityGame): Promise<void> 
 
   await startGlobalScene('dcl-gs-avatars', 'Avatars', hudWorkerUrl)
 
+  console.log("Log to avoid cache")
+
   store.dispatch(avatarSceneInitialized())
 }
 
