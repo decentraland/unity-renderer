@@ -43,7 +43,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
 
             cts = new CancellationTokenSource();
             scenes.AddTo(cts.Token);
-            
+
             updateInterval = backgroundUpdateInterval;
 
             UpdateLoop(cts.Token).Forget();
