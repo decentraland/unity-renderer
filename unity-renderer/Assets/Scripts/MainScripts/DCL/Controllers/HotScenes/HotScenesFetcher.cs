@@ -46,8 +46,6 @@ namespace MainScripts.DCL.Controllers.HotScenes
 
             updateInterval = backgroundUpdateInterval;
 
-            updateInterval = backgroundUpdateInterval;
-
             UpdateLoop(cts.Token).Forget();
         }
 
