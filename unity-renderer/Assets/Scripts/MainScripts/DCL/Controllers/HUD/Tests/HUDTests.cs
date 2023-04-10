@@ -3,6 +3,13 @@ using DCL;
 using DCL.Providers;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+<<<<<<< HEAD
+=======
+using DCLServices.MapRendererV2;
+using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.FriendsController;
+using NUnit.Framework;
+>>>>>>> 6a5789f69 (rebase)
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -18,9 +25,9 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-
-            FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
+            var friendController = new FriendsController(Substitute.For<IFriendsApiBridge>(), Substitute.For<IRPCSocialApiBridge>());
             hudController = new HUDController(new DataStore(), new HUDFactory(new AddressableResourceProvider()));
+
             hudController.Initialize();
             yield return null;
         }
