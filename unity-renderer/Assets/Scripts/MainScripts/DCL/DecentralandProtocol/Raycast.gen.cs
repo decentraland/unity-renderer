@@ -26,17 +26,25 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CilkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcmF5Y2FzdC5wcm90bxIb",
             "ZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiFkZWNlbnRyYWxhbmQvY29t",
-            "bW9uL3ZlY3RvcnMucHJvdG8iwwEKCVBCUmF5Y2FzdBIsCgZvcmlnaW4YAiAB",
-            "KAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlZlY3RvcjMSLwoJZGlyZWN0aW9u",
-            "GAMgASgLMhwuZGVjZW50cmFsYW5kLmNvbW1vbi5WZWN0b3IzEhQKDG1heF9k",
-            "aXN0YW5jZRgEIAEoAhJBCgpxdWVyeV90eXBlGAUgASgOMi0uZGVjZW50cmFs",
-            "YW5kLnNkay5jb21wb25lbnRzLlJheWNhc3RRdWVyeVR5cGUqOAoQUmF5Y2Fz",
+            "bW9uL3ZlY3RvcnMucHJvdG8i/gMKCVBCUmF5Y2FzdBIWCgl0aW1lc3RhbXAY",
+            "ASABKA1IAYgBARI4Cg1vcmlnaW5fb2Zmc2V0GAIgASgLMhwuZGVjZW50cmFs",
+            "YW5kLmNvbW1vbi5WZWN0b3IzSAKIAQESNwoPbG9jYWxfZGlyZWN0aW9uGAYg",
+            "ASgLMhwuZGVjZW50cmFsYW5kLmNvbW1vbi5WZWN0b3IzSAASOAoQZ2xvYmFs",
+            "X2RpcmVjdGlvbhgDIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9y",
+            "M0gAEjUKDWdsb2JhbF90YXJnZXQYByABKAsyHC5kZWNlbnRyYWxhbmQuY29t",
+            "bW9uLlZlY3RvcjNIABIXCg10YXJnZXRfZW50aXR5GAogASgNSAASFAoMbWF4",
+            "X2Rpc3RhbmNlGAQgASgCEkEKCnF1ZXJ5X3R5cGUYBSABKA4yLS5kZWNlbnRy",
+            "YWxhbmQuc2RrLmNvbXBvbmVudHMuUmF5Y2FzdFF1ZXJ5VHlwZRIXCgpjb250",
+            "aW51b3VzGAggASgISAOIAQESGwoOY29sbGlzaW9uX21hc2sYCSABKA1IBIgB",
+            "AUILCglkaXJlY3Rpb25CDAoKX3RpbWVzdGFtcEIQCg5fb3JpZ2luX29mZnNl",
+            "dEINCgtfY29udGludW91c0IRCg9fY29sbGlzaW9uX21hc2sqRgoQUmF5Y2Fz",
             "dFF1ZXJ5VHlwZRIRCg1SUVRfSElUX0ZJUlNUEAASEQoNUlFUX1FVRVJZX0FM",
-            "TBABQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "TBABEgwKCFJRVF9OT05FEAJCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.RaycastQueryType), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBRaycast), global::DCL.ECSComponents.PBRaycast.Parser, new[]{ "Origin", "Direction", "MaxDistance", "QueryType" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBRaycast), global::DCL.ECSComponents.PBRaycast.Parser, new[]{ "Timestamp", "OriginOffset", "LocalDirection", "GlobalDirection", "GlobalTarget", "TargetEntity", "MaxDistance", "QueryType", "Continuous", "CollisionMask" }, new[]{ "Direction", "Timestamp", "OriginOffset", "Continuous", "CollisionMask" }, null, null, null)
           }));
     }
     #endregion
@@ -47,14 +55,26 @@ namespace DCL.ECSComponents {
   /// RaycastQueryType indicates whether the ray should stop on the first collition, or continue.
   /// </summary>
   public enum RaycastQueryType {
+    /// <summary>
+    /// Pick the first (not necessarily the closest) hit within the range
+    /// </summary>
     [pbr::OriginalName("RQT_HIT_FIRST")] RqtHitFirst = 0,
+    /// <summary>
+    /// Pick all hits within the range
+    /// </summary>
     [pbr::OriginalName("RQT_QUERY_ALL")] RqtQueryAll = 1,
+    /// <summary>
+    /// Do not perform the raycast, only set the raycast result with empty hits
+    /// </summary>
+    [pbr::OriginalName("RQT_NONE")] RqtNone = 2,
   }
 
   #endregion
 
   #region Messages
   /// <summary>
+  /// The PBRaycast component and PBRaycastResult are defined in https://adr.decentraland.org/adr/ADR-200
+  ///
   /// The Raycast component allows scenes to request raycasting from the game engine. The results will
   /// be available in a RaycastResult component set later on the same Entity.
   /// </summary>
@@ -65,6 +85,7 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBRaycast> _parser = new pb::MessageParser<PBRaycast>(() => new PBRaycast());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBRaycast> Parser { get { return _parser; } }
@@ -92,10 +113,28 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBRaycast(PBRaycast other) : this() {
-      origin_ = other.origin_ != null ? other.origin_.Clone() : null;
-      direction_ = other.direction_ != null ? other.direction_.Clone() : null;
+      _hasBits0 = other._hasBits0;
+      timestamp_ = other.timestamp_;
+      originOffset_ = other.originOffset_ != null ? other.originOffset_.Clone() : null;
       maxDistance_ = other.maxDistance_;
       queryType_ = other.queryType_;
+      continuous_ = other.continuous_;
+      collisionMask_ = other.collisionMask_;
+      switch (other.DirectionCase) {
+        case DirectionOneofCase.LocalDirection:
+          LocalDirection = other.LocalDirection.Clone();
+          break;
+        case DirectionOneofCase.GlobalDirection:
+          GlobalDirection = other.GlobalDirection.Clone();
+          break;
+        case DirectionOneofCase.GlobalTarget:
+          GlobalTarget = other.GlobalTarget.Clone();
+          break;
+        case DirectionOneofCase.TargetEntity:
+          TargetEntity = other.TargetEntity;
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -105,33 +144,107 @@ namespace DCL.ECSComponents {
       return new PBRaycast(this);
     }
 
-    /// <summary>Field number for the "origin" field.</summary>
-    public const int OriginFieldNumber = 2;
-    private global::Decentraland.Common.Vector3 origin_;
+    /// <summary>Field number for the "timestamp" field.</summary>
+    public const int TimestampFieldNumber = 1;
+    private uint timestamp_;
     /// <summary>
-    /// the starting point of the ray in 3D space
+    /// Correlation ID, defined by the scene and used internally by the scene
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Vector3 Origin {
-      get { return origin_; }
+    public uint Timestamp {
+      get { if ((_hasBits0 & 1) != 0) { return timestamp_; } else { return 0; } }
       set {
-        origin_ = value;
+        _hasBits0 |= 1;
+        timestamp_ = value;
+      }
+    }
+    /// <summary>Gets whether the "timestamp" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasTimestamp {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "timestamp" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTimestamp() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "origin_offset" field.</summary>
+    public const int OriginOffsetFieldNumber = 2;
+    private global::Decentraland.Common.Vector3 originOffset_;
+    /// <summary>
+    /// How much to offset the starting point of the ray, relative to the entity's transform.
+    /// Defaults to vec3(0,0,0)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Vector3 OriginOffset {
+      get { return originOffset_; }
+      set {
+        originOffset_ = value;
       }
     }
 
-    /// <summary>Field number for the "direction" field.</summary>
-    public const int DirectionFieldNumber = 3;
-    private global::Decentraland.Common.Vector3 direction_;
+    /// <summary>Field number for the "local_direction" field.</summary>
+    public const int LocalDirectionFieldNumber = 6;
     /// <summary>
-    /// the direction of the ray in 3D space
+    /// The direction of the ray in local coordinates (relative to the origin point)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Vector3 Direction {
-      get { return direction_; }
+    public global::Decentraland.Common.Vector3 LocalDirection {
+      get { return directionCase_ == DirectionOneofCase.LocalDirection ? (global::Decentraland.Common.Vector3) direction_ : null; }
       set {
         direction_ = value;
+        directionCase_ = value == null ? DirectionOneofCase.None : DirectionOneofCase.LocalDirection;
+      }
+    }
+
+    /// <summary>Field number for the "global_direction" field.</summary>
+    public const int GlobalDirectionFieldNumber = 3;
+    /// <summary>
+    /// The direction of the ray in global coordinates (relative to origin)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Vector3 GlobalDirection {
+      get { return directionCase_ == DirectionOneofCase.GlobalDirection ? (global::Decentraland.Common.Vector3) direction_ : null; }
+      set {
+        direction_ = value;
+        directionCase_ = value == null ? DirectionOneofCase.None : DirectionOneofCase.GlobalDirection;
+      }
+    }
+
+    /// <summary>Field number for the "global_target" field.</summary>
+    public const int GlobalTargetFieldNumber = 7;
+    /// <summary>
+    /// Target coordinates of the raycast, in global coordinates
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Vector3 GlobalTarget {
+      get { return directionCase_ == DirectionOneofCase.GlobalTarget ? (global::Decentraland.Common.Vector3) direction_ : null; }
+      set {
+        direction_ = value;
+        directionCase_ = value == null ? DirectionOneofCase.None : DirectionOneofCase.GlobalTarget;
+      }
+    }
+
+    /// <summary>Field number for the "target_entity" field.</summary>
+    public const int TargetEntityFieldNumber = 10;
+    /// <summary>
+    /// Will point to the final world position of another entity
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public uint TargetEntity {
+      get { return directionCase_ == DirectionOneofCase.TargetEntity ? (uint) direction_ : 0; }
+      set {
+        direction_ = value;
+        directionCase_ = DirectionOneofCase.TargetEntity;
       }
     }
 
@@ -139,7 +252,7 @@ namespace DCL.ECSComponents {
     public const int MaxDistanceFieldNumber = 4;
     private float maxDistance_;
     /// <summary>
-    /// the maximum length of the ray
+    /// Maximum length of the ray in virtual meters (global space)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -154,7 +267,7 @@ namespace DCL.ECSComponents {
     public const int QueryTypeFieldNumber = 5;
     private global::DCL.ECSComponents.RaycastQueryType queryType_ = global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst;
     /// <summary>
-    /// the RaycastQueryType behavior (see above)
+    /// the RaycastQueryType behavior
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -163,6 +276,86 @@ namespace DCL.ECSComponents {
       set {
         queryType_ = value;
       }
+    }
+
+    /// <summary>Field number for the "continuous" field.</summary>
+    public const int ContinuousFieldNumber = 8;
+    private bool continuous_;
+    /// <summary>
+    /// Indicates the renderer to perform the raycast on every scene tick (ADR-148),
+    /// otherwise it will be performed only once, defaults to false
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Continuous {
+      get { if ((_hasBits0 & 2) != 0) { return continuous_; } else { return false; } }
+      set {
+        _hasBits0 |= 2;
+        continuous_ = value;
+      }
+    }
+    /// <summary>Gets whether the "continuous" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasContinuous {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "continuous" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearContinuous() {
+      _hasBits0 &= ~2;
+    }
+
+    /// <summary>Field number for the "collision_mask" field.</summary>
+    public const int CollisionMaskFieldNumber = 9;
+    private uint collisionMask_;
+    /// <summary>
+    /// Collision mask, by default all bits are 1 (0xFFFF_FFFF)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public uint CollisionMask {
+      get { if ((_hasBits0 & 4) != 0) { return collisionMask_; } else { return 0; } }
+      set {
+        _hasBits0 |= 4;
+        collisionMask_ = value;
+      }
+    }
+    /// <summary>Gets whether the "collision_mask" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasCollisionMask {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "collision_mask" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearCollisionMask() {
+      _hasBits0 &= ~4;
+    }
+
+    private object direction_;
+    /// <summary>Enum of possible cases for the "direction" oneof.</summary>
+    public enum DirectionOneofCase {
+      None = 0,
+      LocalDirection = 6,
+      GlobalDirection = 3,
+      GlobalTarget = 7,
+      TargetEntity = 10,
+    }
+    private DirectionOneofCase directionCase_ = DirectionOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public DirectionOneofCase DirectionCase {
+      get { return directionCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearDirection() {
+      directionCase_ = DirectionOneofCase.None;
+      direction_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -180,10 +373,17 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(Origin, other.Origin)) return false;
-      if (!object.Equals(Direction, other.Direction)) return false;
+      if (Timestamp != other.Timestamp) return false;
+      if (!object.Equals(OriginOffset, other.OriginOffset)) return false;
+      if (!object.Equals(LocalDirection, other.LocalDirection)) return false;
+      if (!object.Equals(GlobalDirection, other.GlobalDirection)) return false;
+      if (!object.Equals(GlobalTarget, other.GlobalTarget)) return false;
+      if (TargetEntity != other.TargetEntity) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MaxDistance, other.MaxDistance)) return false;
       if (QueryType != other.QueryType) return false;
+      if (Continuous != other.Continuous) return false;
+      if (CollisionMask != other.CollisionMask) return false;
+      if (DirectionCase != other.DirectionCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -191,10 +391,17 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (origin_ != null) hash ^= Origin.GetHashCode();
-      if (direction_ != null) hash ^= Direction.GetHashCode();
+      if (HasTimestamp) hash ^= Timestamp.GetHashCode();
+      if (originOffset_ != null) hash ^= OriginOffset.GetHashCode();
+      if (directionCase_ == DirectionOneofCase.LocalDirection) hash ^= LocalDirection.GetHashCode();
+      if (directionCase_ == DirectionOneofCase.GlobalDirection) hash ^= GlobalDirection.GetHashCode();
+      if (directionCase_ == DirectionOneofCase.GlobalTarget) hash ^= GlobalTarget.GetHashCode();
+      if (directionCase_ == DirectionOneofCase.TargetEntity) hash ^= TargetEntity.GetHashCode();
       if (MaxDistance != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxDistance);
       if (QueryType != global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst) hash ^= QueryType.GetHashCode();
+      if (HasContinuous) hash ^= Continuous.GetHashCode();
+      if (HasCollisionMask) hash ^= CollisionMask.GetHashCode();
+      hash ^= (int) directionCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -213,13 +420,17 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (origin_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Origin);
+      if (HasTimestamp) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(Timestamp);
       }
-      if (direction_ != null) {
+      if (originOffset_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(OriginOffset);
+      }
+      if (directionCase_ == DirectionOneofCase.GlobalDirection) {
         output.WriteRawTag(26);
-        output.WriteMessage(Direction);
+        output.WriteMessage(GlobalDirection);
       }
       if (MaxDistance != 0F) {
         output.WriteRawTag(37);
@@ -228,6 +439,26 @@ namespace DCL.ECSComponents {
       if (QueryType != global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst) {
         output.WriteRawTag(40);
         output.WriteEnum((int) QueryType);
+      }
+      if (directionCase_ == DirectionOneofCase.LocalDirection) {
+        output.WriteRawTag(50);
+        output.WriteMessage(LocalDirection);
+      }
+      if (directionCase_ == DirectionOneofCase.GlobalTarget) {
+        output.WriteRawTag(58);
+        output.WriteMessage(GlobalTarget);
+      }
+      if (HasContinuous) {
+        output.WriteRawTag(64);
+        output.WriteBool(Continuous);
+      }
+      if (HasCollisionMask) {
+        output.WriteRawTag(72);
+        output.WriteUInt32(CollisionMask);
+      }
+      if (directionCase_ == DirectionOneofCase.TargetEntity) {
+        output.WriteRawTag(80);
+        output.WriteUInt32(TargetEntity);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -239,13 +470,17 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (origin_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Origin);
+      if (HasTimestamp) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(Timestamp);
       }
-      if (direction_ != null) {
+      if (originOffset_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(OriginOffset);
+      }
+      if (directionCase_ == DirectionOneofCase.GlobalDirection) {
         output.WriteRawTag(26);
-        output.WriteMessage(Direction);
+        output.WriteMessage(GlobalDirection);
       }
       if (MaxDistance != 0F) {
         output.WriteRawTag(37);
@@ -254,6 +489,26 @@ namespace DCL.ECSComponents {
       if (QueryType != global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst) {
         output.WriteRawTag(40);
         output.WriteEnum((int) QueryType);
+      }
+      if (directionCase_ == DirectionOneofCase.LocalDirection) {
+        output.WriteRawTag(50);
+        output.WriteMessage(LocalDirection);
+      }
+      if (directionCase_ == DirectionOneofCase.GlobalTarget) {
+        output.WriteRawTag(58);
+        output.WriteMessage(GlobalTarget);
+      }
+      if (HasContinuous) {
+        output.WriteRawTag(64);
+        output.WriteBool(Continuous);
+      }
+      if (HasCollisionMask) {
+        output.WriteRawTag(72);
+        output.WriteUInt32(CollisionMask);
+      }
+      if (directionCase_ == DirectionOneofCase.TargetEntity) {
+        output.WriteRawTag(80);
+        output.WriteUInt32(TargetEntity);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -265,17 +520,35 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (origin_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Origin);
+      if (HasTimestamp) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Timestamp);
       }
-      if (direction_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Direction);
+      if (originOffset_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(OriginOffset);
+      }
+      if (directionCase_ == DirectionOneofCase.LocalDirection) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(LocalDirection);
+      }
+      if (directionCase_ == DirectionOneofCase.GlobalDirection) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GlobalDirection);
+      }
+      if (directionCase_ == DirectionOneofCase.GlobalTarget) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GlobalTarget);
+      }
+      if (directionCase_ == DirectionOneofCase.TargetEntity) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(TargetEntity);
       }
       if (MaxDistance != 0F) {
         size += 1 + 4;
       }
       if (QueryType != global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) QueryType);
+      }
+      if (HasContinuous) {
+        size += 1 + 1;
+      }
+      if (HasCollisionMask) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(CollisionMask);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -289,17 +562,14 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.origin_ != null) {
-        if (origin_ == null) {
-          Origin = new global::Decentraland.Common.Vector3();
-        }
-        Origin.MergeFrom(other.Origin);
+      if (other.HasTimestamp) {
+        Timestamp = other.Timestamp;
       }
-      if (other.direction_ != null) {
-        if (direction_ == null) {
-          Direction = new global::Decentraland.Common.Vector3();
+      if (other.originOffset_ != null) {
+        if (originOffset_ == null) {
+          OriginOffset = new global::Decentraland.Common.Vector3();
         }
-        Direction.MergeFrom(other.Direction);
+        OriginOffset.MergeFrom(other.OriginOffset);
       }
       if (other.MaxDistance != 0F) {
         MaxDistance = other.MaxDistance;
@@ -307,6 +577,36 @@ namespace DCL.ECSComponents {
       if (other.QueryType != global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst) {
         QueryType = other.QueryType;
       }
+      if (other.HasContinuous) {
+        Continuous = other.Continuous;
+      }
+      if (other.HasCollisionMask) {
+        CollisionMask = other.CollisionMask;
+      }
+      switch (other.DirectionCase) {
+        case DirectionOneofCase.LocalDirection:
+          if (LocalDirection == null) {
+            LocalDirection = new global::Decentraland.Common.Vector3();
+          }
+          LocalDirection.MergeFrom(other.LocalDirection);
+          break;
+        case DirectionOneofCase.GlobalDirection:
+          if (GlobalDirection == null) {
+            GlobalDirection = new global::Decentraland.Common.Vector3();
+          }
+          GlobalDirection.MergeFrom(other.GlobalDirection);
+          break;
+        case DirectionOneofCase.GlobalTarget:
+          if (GlobalTarget == null) {
+            GlobalTarget = new global::Decentraland.Common.Vector3();
+          }
+          GlobalTarget.MergeFrom(other.GlobalTarget);
+          break;
+        case DirectionOneofCase.TargetEntity:
+          TargetEntity = other.TargetEntity;
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -322,18 +622,24 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
+          case 8: {
+            Timestamp = input.ReadUInt32();
+            break;
+          }
           case 18: {
-            if (origin_ == null) {
-              Origin = new global::Decentraland.Common.Vector3();
+            if (originOffset_ == null) {
+              OriginOffset = new global::Decentraland.Common.Vector3();
             }
-            input.ReadMessage(Origin);
+            input.ReadMessage(OriginOffset);
             break;
           }
           case 26: {
-            if (direction_ == null) {
-              Direction = new global::Decentraland.Common.Vector3();
+            global::Decentraland.Common.Vector3 subBuilder = new global::Decentraland.Common.Vector3();
+            if (directionCase_ == DirectionOneofCase.GlobalDirection) {
+              subBuilder.MergeFrom(GlobalDirection);
             }
-            input.ReadMessage(Direction);
+            input.ReadMessage(subBuilder);
+            GlobalDirection = subBuilder;
             break;
           }
           case 37: {
@@ -342,6 +648,36 @@ namespace DCL.ECSComponents {
           }
           case 40: {
             QueryType = (global::DCL.ECSComponents.RaycastQueryType) input.ReadEnum();
+            break;
+          }
+          case 50: {
+            global::Decentraland.Common.Vector3 subBuilder = new global::Decentraland.Common.Vector3();
+            if (directionCase_ == DirectionOneofCase.LocalDirection) {
+              subBuilder.MergeFrom(LocalDirection);
+            }
+            input.ReadMessage(subBuilder);
+            LocalDirection = subBuilder;
+            break;
+          }
+          case 58: {
+            global::Decentraland.Common.Vector3 subBuilder = new global::Decentraland.Common.Vector3();
+            if (directionCase_ == DirectionOneofCase.GlobalTarget) {
+              subBuilder.MergeFrom(GlobalTarget);
+            }
+            input.ReadMessage(subBuilder);
+            GlobalTarget = subBuilder;
+            break;
+          }
+          case 64: {
+            Continuous = input.ReadBool();
+            break;
+          }
+          case 72: {
+            CollisionMask = input.ReadUInt32();
+            break;
+          }
+          case 80: {
+            TargetEntity = input.ReadUInt32();
             break;
           }
         }
@@ -359,18 +695,24 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
+          case 8: {
+            Timestamp = input.ReadUInt32();
+            break;
+          }
           case 18: {
-            if (origin_ == null) {
-              Origin = new global::Decentraland.Common.Vector3();
+            if (originOffset_ == null) {
+              OriginOffset = new global::Decentraland.Common.Vector3();
             }
-            input.ReadMessage(Origin);
+            input.ReadMessage(OriginOffset);
             break;
           }
           case 26: {
-            if (direction_ == null) {
-              Direction = new global::Decentraland.Common.Vector3();
+            global::Decentraland.Common.Vector3 subBuilder = new global::Decentraland.Common.Vector3();
+            if (directionCase_ == DirectionOneofCase.GlobalDirection) {
+              subBuilder.MergeFrom(GlobalDirection);
             }
-            input.ReadMessage(Direction);
+            input.ReadMessage(subBuilder);
+            GlobalDirection = subBuilder;
             break;
           }
           case 37: {
@@ -379,6 +721,36 @@ namespace DCL.ECSComponents {
           }
           case 40: {
             QueryType = (global::DCL.ECSComponents.RaycastQueryType) input.ReadEnum();
+            break;
+          }
+          case 50: {
+            global::Decentraland.Common.Vector3 subBuilder = new global::Decentraland.Common.Vector3();
+            if (directionCase_ == DirectionOneofCase.LocalDirection) {
+              subBuilder.MergeFrom(LocalDirection);
+            }
+            input.ReadMessage(subBuilder);
+            LocalDirection = subBuilder;
+            break;
+          }
+          case 58: {
+            global::Decentraland.Common.Vector3 subBuilder = new global::Decentraland.Common.Vector3();
+            if (directionCase_ == DirectionOneofCase.GlobalTarget) {
+              subBuilder.MergeFrom(GlobalTarget);
+            }
+            input.ReadMessage(subBuilder);
+            GlobalTarget = subBuilder;
+            break;
+          }
+          case 64: {
+            Continuous = input.ReadBool();
+            break;
+          }
+          case 72: {
+            CollisionMask = input.ReadUInt32();
+            break;
+          }
+          case 80: {
+            TargetEntity = input.ReadUInt32();
             break;
           }
         }

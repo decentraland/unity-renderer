@@ -91,8 +91,8 @@ namespace DCL.ECSComponents
             (pointerColliders, renderers) = SetUpPointerCollidersAndRenderers(rendereable.renderers);
 
             // set colliders and renderers
-            pointerColliderComponent.AddColliders(scene, entity, pointerColliders);
-            physicColliderComponent.AddColliders(scene, entity, physicColliders);
+            pointerColliderComponent.AddColliders(scene, entity, pointerColliders, (int)ColliderLayer.ClPointer);
+            physicColliderComponent.AddColliders(scene, entity, physicColliders, (int)ColliderLayer.ClPhysics);
             renderersComponent.AddRenderers(scene, entity, renderers);
 
             // TODO: modify Animator component to remove `AddShapeReady` usage

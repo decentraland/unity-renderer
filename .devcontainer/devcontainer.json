@@ -1,0 +1,14 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+	"name": "unity-renderer",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:0-18",
+	"features": {
+    "ghcr.io/devcontainers/features/git-lfs:1": {}
+	},
+  "containerEnv": {
+    "PUPPETEER_SKIP_DOWNLOAD": "true"
+  },
+	"forwardPorts": [8080]
+}
