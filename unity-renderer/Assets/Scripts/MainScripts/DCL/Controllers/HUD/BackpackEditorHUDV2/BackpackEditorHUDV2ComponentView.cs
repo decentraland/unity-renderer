@@ -8,6 +8,14 @@ namespace DCL.Backpack
     {
         public override bool isVisible => gameObject.activeInHierarchy;
 
+        private Transform thisTransform;
+
+        public override void Awake()
+        {
+            base.Awake();
+            thisTransform = transform;
+        }
+
         public static BackpackEditorHUDV2ComponentView Create() =>
             Instantiate(Resources.Load<BackpackEditorHUDV2ComponentView>("BackpackEditorHUDV2"));
 
@@ -23,7 +31,6 @@ namespace DCL.Backpack
 
         public override void RefreshControl()
         {
-            throw new NotImplementedException();
         }
 
         public void Show() =>
@@ -37,10 +44,12 @@ namespace DCL.Backpack
             if (parentTransform == null)
                 return;
 
-            transform.SetParent(parentTransform);
-            transform.localScale = Vector3.one;
+            thisTransform.SetParent(parentTransform);
+            thisTransform.localScale = Vector3.one;
 
-            RectTransform rectTransform = transform as RectTransform;
+            RectTransform rectTransform = thisTransform as RectTransform;
+            if (rectTransform == null)
+                return;
             rectTransform.anchorMin = Vector2.zero;
             rectTransform.anchorMax = Vector2.one;
             rectTransform.pivot = new Vector2(0.5f, 0.5f);
