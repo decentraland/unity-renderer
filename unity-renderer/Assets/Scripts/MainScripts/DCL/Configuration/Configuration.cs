@@ -223,6 +223,7 @@ namespace DCL.Configuration
         public static int onPointerEventLayer = LayerMask.NameToLayer("OnPointerEvent");
         public static int characterLayer = LayerMask.NameToLayer("CharacterController");
         public static int characterOnlyLayer = LayerMask.NameToLayer("CharacterOnly");
+        public static int sdkCustomLayer = LayerMask.NameToLayer("SDKCustomLayer");
         public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer;
 
         public static LayerMask physicsCastLayerMaskWithoutCharacter = (physicsCastLayerMask | (1 << defaultLayer))
