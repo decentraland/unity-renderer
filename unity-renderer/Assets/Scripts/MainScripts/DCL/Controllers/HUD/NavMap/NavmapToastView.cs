@@ -38,7 +38,7 @@ namespace DCL
 
             var sceneInfo = minimapMetadata.GetSceneInfo(parcel.x, parcel.y);
             if (sceneInfo == null)
-                WebInterface.RequestScenesInfoAroundParcel(parcel, 15, DataStore.i.common.isWorld.Get());
+                WebInterface.RequestScenesInfoAroundParcel(parcel, 15);
 
             Populate(parcel, worldPosition, sceneInfo);
         }

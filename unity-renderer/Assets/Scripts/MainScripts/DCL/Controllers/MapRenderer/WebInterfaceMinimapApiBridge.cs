@@ -38,7 +38,6 @@ namespace DCL.Map
 
         public UniTask<MinimapMetadata.MinimapSceneInfo[]> GetScenesInformationAroundParcel(Vector2Int coordinate,
             int areaSize,
-            bool isWorldContext,
             CancellationToken cancellationToken)
         {
             if (pendingTasks.TryGetValue(GET_SCENES_INFO_ID, out var pendingTask))
@@ -48,7 +47,7 @@ namespace DCL.Map
             UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]> task = new ();
             pendingTasks[GET_SCENES_INFO_ID] = task;
 
-            WebInterface.RequestScenesInfoAroundParcel(coordinate, areaSize, isWorldContext);
+            WebInterface.RequestScenesInfoAroundParcel(coordinate, areaSize);
 
             return task.Task.AttachExternalCancellation(cancellationToken);
         }

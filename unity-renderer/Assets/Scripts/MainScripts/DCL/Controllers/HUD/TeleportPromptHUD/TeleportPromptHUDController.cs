@@ -56,7 +56,7 @@ public class TeleportPromptHUDController : IHUD
         {
             try
             {
-                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y), 2, DataStore.i.common.isWorld.Get(), cancellationToken);
+                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y), 2, cancellationToken);
                 MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(coordinates.x, coordinates.y);
 
                 if (sceneInfo != null)
