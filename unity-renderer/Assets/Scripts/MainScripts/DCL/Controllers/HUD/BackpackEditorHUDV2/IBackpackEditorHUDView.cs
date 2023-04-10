@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace DCL.Backpack
 {
     public interface IBackpackEditorHUDView
@@ -5,5 +7,6 @@ namespace DCL.Backpack
         void Dispose();
         void Show();
         void Hide();
+        void SetAsFullScreenMenuMode(Transform parentTransform);
     }
 }
