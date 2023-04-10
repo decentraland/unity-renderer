@@ -1,5 +1,5 @@
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,9 +20,9 @@ namespace DCL
     /// <typeparam name="AssetLibraryType">Asset library type. It must handle the same type as AssetType.</typeparam>
     /// <typeparam name="AssetPromiseType">Asset promise type. It must handle the same type as AssetType.</typeparam>
     public class AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType>
-        where AssetType : Asset, new()
-        where AssetLibraryType : AssetLibrary<AssetType>, new()
-        where AssetPromiseType : AssetPromise<AssetType>
+        where AssetType: Asset, new()
+        where AssetLibraryType: AssetLibrary<AssetType>, new()
+        where AssetPromiseType: AssetPromise<AssetType>
     {
         public AssetLibraryType library;
 
@@ -45,7 +45,10 @@ namespace DCL
 
         Coroutine blockedPromiseSolverCoroutine;
 
-        public bool IsBlocked(AssetPromiseType promise) { return blockedPromises.Contains(promise); }
+        public bool IsBlocked(AssetPromiseType promise)
+        {
+            return blockedPromises.Contains(promise);
+        }
 
         public string GetMasterState(AssetPromiseType promise)
         {
@@ -73,7 +76,7 @@ namespace DCL
         {
             if (blockedPromiseSolverCoroutine == null)
             {
-                blockedPromiseSolverCoroutine = CoroutineStarter.Start(ProcessBlockedPromisesQueue());
+                blockedPromiseSolverCoroutine = CoroutineStarter.Start(UniTask.ToCoroutine(ProcessBlockedPromisesQueueAsync));
             }
         }
 
@@ -171,20 +174,21 @@ namespace DCL
             toResolveBlockedPromisesQueue.Enqueue(loadedPromise as AssetPromiseType);
         }
 
-        IEnumerator ProcessBlockedPromisesQueue()
+        private bool IsToResolveQueueEmpty()
+        {
+            return toResolveBlockedPromisesQueue.Count <= 0;
+        }
+
+        private async UniTask ProcessBlockedPromisesQueueAsync()
         {
             startTime = Time.unscaledTime;
 
             while (true)
             {
-                if (toResolveBlockedPromisesQueue.Count <= 0)
-                {
-                    yield return null;
-                    continue;
-                }
+                await UniTask.WaitWhile(IsToResolveQueueEmpty);
 
                 AssetPromiseType promise = toResolveBlockedPromisesQueue.Dequeue();
-                yield return ProcessBlockedPromisesDeferred(promise);
+                await ProcessBlockedPromisesDeferredAsync(promise);
                 CleanPromise(promise);
 
                 if (promise.isForgotten)
@@ -192,29 +196,25 @@ namespace DCL
                     promise.Unload();
                 }
 
-                var enumerator = SkipFrameIfOverBudget();
-
-                if (enumerator != null)
-                    yield return enumerator;
+                await SkipFrameIfOverBudgetAsync();
             }
         }
 
-        private IEnumerator ProcessBlockedPromisesDeferred(AssetPromiseType loadedPromise)
+        private async UniTask ProcessBlockedPromisesDeferredAsync(AssetPromiseType loadedPromise)
         {
             object loadedPromiseId = loadedPromise.GetId();
 
             if (!masterToBlockedPromises.ContainsKey(loadedPromiseId))
-                yield break;
+                return;
 
             if (!masterPromiseById.ContainsKey(loadedPromiseId))
-                yield break;
+                return;
 
             if (masterPromiseById[loadedPromiseId] != loadedPromise)
             {
                 Debug.LogWarning($"Unexpected issue: masterPromiseById promise isn't the same as loaded promise? id: {loadedPromiseId} (can be harmless)");
-                yield break;
+                return;
             }
-
 
             //NOTE(Brian): We have to keep checking to support the case in which
             //             new promises are enqueued while this promise ID is being
@@ -224,31 +224,25 @@ namespace DCL
             {
                 List<AssetPromiseType> promisesToLoadForId = GetBlockedPromisesToLoadForId(loadedPromiseId);
 
-                var enumerator = SkipFrameIfOverBudget();
-
-                if (enumerator != null)
-                    yield return enumerator;
+                await SkipFrameIfOverBudgetAsync();
 
                 if (loadedPromise.state != AssetPromiseState.FINISHED)
-                    yield return ForceFailPromiseList(promisesToLoadForId);
+                    await ForceFailPromiseListAsync(promisesToLoadForId);
                 else
-                    yield return LoadPromisesList(promisesToLoadForId);
+                    await LoadPromisesListAsync(promisesToLoadForId);
 
-                enumerator = SkipFrameIfOverBudget();
-
-                if (enumerator != null)
-                    yield return enumerator;
+                await SkipFrameIfOverBudgetAsync();
             }
 
             if (masterToBlockedPromises.ContainsKey(loadedPromiseId))
                 masterToBlockedPromises.Remove(loadedPromiseId);
         }
 
-        private IEnumerator SkipFrameIfOverBudget()
+        private async UniTask SkipFrameIfOverBudgetAsync()
         {
             if (useTimeBudget && Time.realtimeSinceStartup - startTime >= AssetPromiseKeeper.PROCESS_PROMISES_TIME_BUDGET)
             {
-                yield return null;
+                await UniTask.Yield();
                 startTime = Time.unscaledTime;
             }
         }
@@ -275,13 +269,14 @@ namespace DCL
             return blockedPromisesToLoadAux;
         }
 
-        private IEnumerator ForceFailPromiseList(List<AssetPromiseType> promises)
+        private async UniTask ForceFailPromiseListAsync(List<AssetPromiseType> promises)
         {
             int promisesCount = promises.Count;
 
             for (int i = 0; i < promisesCount; i++)
             {
                 var promise = promises[i];
+
                 if (promise.isForgotten)
                     continue;
 
@@ -289,20 +284,18 @@ namespace DCL
                 Forget(promise);
                 CleanPromise(promise);
 
-                IEnumerator enumerator = SkipFrameIfOverBudget();
-
-                if (enumerator != null)
-                    yield return enumerator;
+                await SkipFrameIfOverBudgetAsync();
             }
         }
 
-        private IEnumerator LoadPromisesList(List<AssetPromiseType> promises)
+        private async UniTask LoadPromisesListAsync(List<AssetPromiseType> promises)
         {
             int promisesCount = promises.Count;
 
             for (int i = 0; i < promisesCount; i++)
             {
                 AssetPromiseType promise = promises[i];
+
                 if (promise.isForgotten)
                     continue;
 
@@ -310,10 +303,7 @@ namespace DCL
                 CleanPromise(promise);
                 promise.Load();
 
-                var enumerator = SkipFrameIfOverBudget();
-
-                if (enumerator != null)
-                    yield return enumerator;
+                await SkipFrameIfOverBudgetAsync();
             }
         }
 
