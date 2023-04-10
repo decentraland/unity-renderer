@@ -180,19 +180,18 @@ namespace ECSSystems.ECSRaycastSystem
 
         private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, int>? hitEntity, Vector3 globalOrigin)
         {
+            if (hitEntity == null) return null;
+
             DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
-            if (hitEntity != null)
-            {
-                IDCLEntity entity = hitEntity.Value.Key;
-                int collisionMask = hitEntity.Value.Value;
+            IDCLEntity entity = hitEntity.Value.Key;
+            int collisionMask = hitEntity.Value.Value;
 
-                // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
-                // and ClPhysics and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
-                if ((model.GetCollisionMask() & collisionMask) == 0)
-                    return null;
+            // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
+            // and ClPhysics, and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
+            if ((model.GetCollisionMask() & collisionMask) == 0)
+                return null;
 
-                hit.EntityId = (uint)entity.entityId;
-            }
+            hit.EntityId = (uint)entity.entityId;
             hit.MeshName = unityRaycastHit.collider.name;
             hit.Length = unityRaycastHit.distance;
             hit.GlobalOrigin = globalOrigin;
