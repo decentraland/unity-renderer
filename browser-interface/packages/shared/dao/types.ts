@@ -19,6 +19,7 @@ type BaseCandidate = {
   protocol: string
   domain: string
   catalystName: string
+  version: { bff: string, comms: string, lambdas: string, content: string }
   elapsed: number
   status: ServerConnectionStatus
   lastConnectionAttempt?: number
