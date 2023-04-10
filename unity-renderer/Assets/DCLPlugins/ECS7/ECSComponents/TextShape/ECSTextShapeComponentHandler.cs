@@ -46,7 +46,6 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textComponent = textGameObject.AddComponent<TextMeshPro>();
         textRenderer = textComponent.renderer;
         rectTransform.SetParent(entity.gameObject.transform, false);
-        rectTransform.localRotation = Quaternion.Euler(0, 180, 0);
 
         textComponent.text = string.Empty;
         textComponent.richText = true;
@@ -64,7 +63,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 
         Object.Destroy(textGameObject);
     }
-    
+
     private void OnTextRendererUpdated(TMP_TextInfo tmproInfo)
     {
         var model = sbcInternalComponent.GetFor(scene, entity)?.model;
