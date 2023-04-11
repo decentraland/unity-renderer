@@ -29,12 +29,8 @@ namespace DCL.Map
             var scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);
 
             foreach (var sceneInfo in scenesInfo)
-            {
-                Debug.Log(sceneInfo);
-
                 if (!isWorld.Get())
                     minimapMetadata.AddSceneInfo(sceneInfo);
-            }
 
             if (!pendingTasks.ContainsKey(GET_SCENES_INFO_ID)) return;
             var task = (UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTasks[GET_SCENES_INFO_ID];
