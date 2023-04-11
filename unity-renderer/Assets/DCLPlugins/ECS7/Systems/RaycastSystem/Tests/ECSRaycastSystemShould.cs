@@ -11,11 +11,9 @@ using ECSSystems.ECSRaycastSystem;
 using Google.Protobuf.Collections;
 using NSubstitute;
 using NUnit.Framework;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.TestTools;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace Tests
@@ -42,6 +40,10 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, componentsManager, componentsFactory, null,
+                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
+                executors);
             componentWriter = Substitute.For<IECSComponentWriter>();
             system = new ECSRaycastSystem(
                 internalComponents.raycastComponent,
@@ -54,16 +56,7 @@ namespace Tests
 
             scene = testUtils.CreateScene(666);
             entityRaycaster = scene.CreateEntity(512);
-
-            // The raycast component has to be added otherwise the entity is disposed when the internalRaycast component is removed
-            /*componentWriter.PutComponent(
-                scene.sceneData.sceneNumber, entityRaycaster.entityId,
-                ComponentID.RAYCAST,
-                new PBRaycast()
-            );
-            var raycastComponent = (ECSComponent<PBRaycast>)componentsManager.GetOrCreateComponent(ComponentID.RAYCAST);
-            Assert.IsNotNull(raycastComponent);
-            Assert.IsNotNull(raycastComponent.Get(scene, entityRaycaster));*/
+            keepEntityAliveComponent.PutFor(scene, entityRaycaster, new InternalComponent());
 
             // Test collider entities in line
             testEntity_PhysicsCollider = CreateColliderEntity(513, new Vector3(8, 1, 2), new[] { ColliderLayer.ClPhysics });
@@ -408,8 +401,7 @@ namespace Tests
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z.Equals(localDirectionNormalized.z))
             );
 
-            // GO is destroyed after raycasting...
-            // entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
+            entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
         }
 
         [Test]
@@ -470,11 +462,10 @@ namespace Tests
                 Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.down.normalized)
             );
 
-            // GO is destroyed after raycasting...
-            // entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
+            entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
         }
 
-        /*[Test]
+        [Test]
         public void KeepRaycastingWithContinuousProperty()
         {
             // 'continuous' disabled
@@ -494,7 +485,6 @@ namespace Tests
             raycastHandler.OnComponentCreated(scene, entityRaycaster);
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
-            // the entityRaycaster gameobject is being destroyed after this system.Update()... WHY!?!?!?!?!??!!?
             system.Update();
             componentWriter.Received(1).PutComponent(
                 scene.sceneData.sceneNumber,
@@ -514,6 +504,7 @@ namespace Tests
             Assert.IsNull(internalComponents.raycastComponent.GetFor(scene, entityRaycaster));
 
             // enable 'continuous'
+            raycast = raycast.Clone();
             raycast.Continuous = true;
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
@@ -544,7 +535,7 @@ namespace Tests
                 ComponentID.RAYCAST_RESULT,
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp)
             );
-        }*/
+        }
 
         private ECS7TestEntity CreateColliderEntity(int entityId, Vector3 position, ColliderLayer[] layers)
         {
