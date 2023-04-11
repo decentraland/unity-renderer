@@ -5,7 +5,6 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace ECSSystems.ScenesUiSystem
@@ -17,6 +16,7 @@ namespace ECSSystems.ScenesUiSystem
         private readonly IWorldState worldState;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly BooleanVariable hideUiEventVariable;
+        private readonly BaseVariable<bool> isSceneUIEnabled;
 
         private int lastSceneNumber;
         private bool isPendingSceneUI;
@@ -27,28 +27,32 @@ namespace ECSSystems.ScenesUiSystem
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             BaseList<IParcelScene> loadedScenes,
             IWorldState worldState,
-            BooleanVariable hideUiEventVariable)
+            BooleanVariable hideUiEventVariable,
+            BaseVariable<bool> isSceneUIEnabled)
         {
             this.uiDocument = uiDocument;
             this.internalUiContainerComponent = internalUiContainerComponent;
             this.worldState = worldState;
             this.loadedScenes = loadedScenes;
             this.hideUiEventVariable = hideUiEventVariable;
+            this.isSceneUIEnabled = isSceneUIEnabled;
 
             lastSceneNumber = -1;
             isPendingSceneUI = true;
             currentScene = null;
 
             loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
-            hideUiEventVariable.OnChange += OnHideUiEvent;
+            hideUiEventVariable.OnChange += OnHideAllUiEvent;
+            isSceneUIEnabled.OnChange += OnHideSceneUiEvent;
 
-            OnHideUiEvent(hideUiEventVariable.Get(), false);
+            OnHideAllUiEvent(hideUiEventVariable.Get(), false);
         }
 
         public void Dispose()
         {
             loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
-            hideUiEventVariable.OnChange -= OnHideUiEvent;
+            hideUiEventVariable.OnChange -= OnHideAllUiEvent;
+            isSceneUIEnabled.OnChange -= OnHideSceneUiEvent;
         }
 
         public void Update()
@@ -86,7 +90,7 @@ namespace ECSSystems.ScenesUiSystem
                 // we apply current scene UI
                 if (currentScene != null)
                 {
-                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene))
+                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isSceneUIEnabled))
                     {
                         isPendingSceneUI = false;
                     }
@@ -102,9 +106,24 @@ namespace ECSSystems.ScenesUiSystem
             }
         }
 
-        private void OnHideUiEvent(bool current, bool previous)
+        private void OnHideAllUiEvent(bool current, bool previous)
         {
             SetDocumentActive(uiDocument, !current);
+        }
+
+        private void OnHideSceneUiEvent(bool enabled, bool previous)
+        {
+            if (currentScene == null)
+                return;
+
+            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+                internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            if (currentSceneContainer == null)
+                return;
+
+            InternalUiContainer model = currentSceneContainer.model;
+            model.rootElement.style.display = new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
         internal static void ApplyParenting(ref HashSet<IParcelScene> scenesToSort, UIDocument uiDocument,
@@ -205,7 +224,7 @@ namespace ECSSystems.ScenesUiSystem
         }
 
         internal static bool ApplySceneUI(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
-            UIDocument uiDocument, IParcelScene currentScene)
+            UIDocument uiDocument, IParcelScene currentScene, BaseVariable<bool> isSceneUIEnabled)
         {
             IECSReadOnlyComponentData<InternalUiContainer> sceneRootUiContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -215,6 +234,7 @@ namespace ECSSystems.ScenesUiSystem
                 var model = sceneRootUiContainer.model;
                 uiDocument.rootVisualElement.Insert(0, model.rootElement);
                 model.parentElement = uiDocument.rootVisualElement;
+                model.rootElement.style.display = new StyleEnum<DisplayStyle>(isSceneUIEnabled.Get() ? DisplayStyle.Flex : DisplayStyle.None);
                 internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
                 return true;
             }

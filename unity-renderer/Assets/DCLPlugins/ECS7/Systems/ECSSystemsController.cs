@@ -57,9 +57,13 @@ public class ECSSystemsController : IDisposable
         scenesUiDocument.name = "_ECSScenesUI";
         scenesUi = scenesUiDocument.gameObject;
 
-        uiSystem = new ECSScenesUiSystem(scenesUiDocument,
+        uiSystem = new ECSScenesUiSystem(
+            scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
-            DataStore.i.ecs7.scenes, Environment.i.world.state, CommonScriptableObjects.allUIHidden);
+            DataStore.i.ecs7.scenes,
+            Environment.i.world.state,
+            CommonScriptableObjects.allUIHidden,
+            DataStore.i.HUDs.isSceneUIEnabled);
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
         videoPlayerSystem = new ECSVideoPlayerSystem(context.internalEcsComponents.videoPlayerComponent, context.internalEcsComponents.videoMaterialComponent);
