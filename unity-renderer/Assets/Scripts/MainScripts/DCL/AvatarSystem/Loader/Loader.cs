@@ -33,22 +33,16 @@ namespace AvatarSystem
             avatarMeshCombiner.uploadMeshToGpu = true;
         }
 
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth,
-            List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken cancellationToken = default)
         {
-            await Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, null, ct);
-        }
-
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken ct = default)
-        {
-            ct.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
             try
             {
                 status = ILoader.Status.Loading;
-                await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, ct);
-                await LoadWearables(wearables, settings, toCleanUp, ct);
+                await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, cancellationToken);
+                await LoadWearables(wearables, settings, toCleanUp, cancellationToken);
                 SkinnedMeshRenderer skinnedContainer = bonesContainer == null ? bodyshapeLoader.upperBodyRenderer : bonesContainer;
                 // Update Status accordingly
                 status = ComposeStatus(loaders);
@@ -68,7 +62,7 @@ namespace AvatarSystem
 
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
 
-                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, skinnedContainer, ct);
+                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, skinnedContainer, cancellationToken);
                 facialFeaturesRenderers = new List<Renderer>();
                 if (headVisible)
                 {

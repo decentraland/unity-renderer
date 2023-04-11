@@ -14,6 +14,7 @@ using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
 using System.Threading;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class HUDController : IHUDController
 {
@@ -102,9 +103,6 @@ public class HUDController : IHUDController
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
-    public TeleportPromptHUDController teleportHud =>
-        GetHUDElement(HUDElementID.TELEPORT_DIALOG) as TeleportPromptHUDController;
-
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
     public HelpAndSupportHUDController helpAndSupportHud =>
@@ -172,6 +170,8 @@ public class HUDController : IHUDController
             case HUDElementID.MINIMAP:
                 if (minimapHud == null)
                 {
+                    // dependencies should be initialized
+                    await Environment.WaitUntilInitialized();
                     await CreateHudElement(configuration, hudElementId, cancellationToken);
                     minimapHud?.Initialize();
                 }
@@ -354,9 +354,6 @@ public class HUDController : IHUDController
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.NFT_INFO_DIALOG:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                break;
-            case HUDElementID.TELEPORT_DIALOG:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.CONTROLS_HUD:

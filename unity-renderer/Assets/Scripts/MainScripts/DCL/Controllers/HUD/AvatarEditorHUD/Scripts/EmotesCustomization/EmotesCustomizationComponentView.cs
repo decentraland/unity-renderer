@@ -42,10 +42,8 @@ namespace DCL.EmotesCustomization
             ConfigureEmotesPool();
         }
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
-
             emoteSlotSelector.SelectSlot(DEFAULT_SELECTED_SLOT);
         }
 
@@ -106,10 +104,10 @@ namespace DCL.EmotesCustomization
                 {
                     existingEmoteCard.AssignSlot(slotNumber);
                     emoteSlotSelector.AssignEmoteIntoSlot(
-                        slotNumber, 
-                        emoteId, 
-                        emoteName, 
-                        existingEmoteCard.model.pictureSprite, 
+                        slotNumber,
+                        emoteId,
+                        emoteName,
+                        existingEmoteCard.model.pictureSprite,
                         existingEmoteCard.model.pictureUri,
                         existingEmoteCard.model.rarity);
 
@@ -139,9 +137,9 @@ namespace DCL.EmotesCustomization
             }
 
             emoteSlotSelector.AssignEmoteIntoSlot(
-                slotNumber, 
-                string.Empty, 
-                string.Empty, 
+                slotNumber,
+                string.Empty,
+                string.Empty,
                 null,
                 null,
                 string.Empty);
@@ -208,7 +206,7 @@ namespace DCL.EmotesCustomization
             emoteGO.onInfoClick.RemoveAllListeners();
             emoteGO.onInfoClick.AddListener(() => OpenEmoteInfoPanel(
                 emoteGO.model,
-                emoteGO.rarityMark.gameObject.activeSelf ? emoteGO.rarityMark.color : Color.grey, 
+                emoteGO.rarityMark.gameObject.activeSelf ? emoteGO.rarityMark.color : Color.grey,
                 emoteGO.emoteInfoAnchor));
             emoteGO.onEmoteSelected -= OnEmoteSelected;
             emoteGO.onEmoteSelected += OnEmoteSelected;
