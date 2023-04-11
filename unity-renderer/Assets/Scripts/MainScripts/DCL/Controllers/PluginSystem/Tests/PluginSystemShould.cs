@@ -1,14 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
-using DCL.Helpers;
 using NSubstitute;
-using Tests;
-using UnityEngine;
-using Tests;
 using NUnit.Framework;
-using UnityEngine.TestTools;
+using System;
 
 public class PluginSystemShould
 {
@@ -18,7 +11,7 @@ public class PluginSystemShould
     public interface Plugin4 : Plugin3 {}
     public interface Plugin5 : Plugin4 {}
     public interface Plugin6 : Plugin5 {}
-    
+
     [Test]
     public void EnablePluginWhenFlagIsSetBeforeAddingIt()
     {
@@ -163,5 +156,24 @@ public class PluginSystemShould
         Assert.That(pluginInfo != null, Is.True);
         Assert.That(pluginInfo.builder == pluginBuilder2, Is.True);
         pluginSystem.Dispose();
+    }
+
+    [Test]
+    public void RegisterWithFeatureFlagCallback()
+    {
+        var pluginSystem = new PluginSystem();
+
+        PluginBuilder pluginBuilder1 = () => Substitute.For<Plugin1>();
+        PluginBuilder pluginBuilder2 = () => Substitute.For<Plugin2>();
+
+        pluginSystem.RegisterWithFlag<Plugin1>(pluginBuilder1, flag => true);
+        pluginSystem.RegisterWithFlag<Plugin2>(pluginBuilder2, flag => false);
+        pluginSystem.Initialize();
+
+        var flagData = new BaseVariable<FeatureFlag>(new FeatureFlag());
+        pluginSystem.SetFeatureFlagsData(flagData);
+
+        Assert.IsTrue(pluginSystem.IsEnabled<Plugin1>());
+        Assert.IsFalse(pluginSystem.IsEnabled<Plugin2>());
     }
 }

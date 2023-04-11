@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace DCL
 {
     public delegate IPlugin PluginBuilder();
+    public delegate bool IsPluginEnabledBuilder(FeatureFlag featureFlag);
 
     /// <summary>
     /// This class implements a plugin system pattern described in:
     /// https://github.com/decentraland/adr/blob/main/docs/ADR-56-plugin-system.md
-    /// 
+    ///
     /// - Many plugins can share the same feature flag
     /// - Plugins are registered by using a PluginBuilder delegate that must create and return the plugin instance.
     /// - Any active plugin is an instantiated plugin. A disabled plugin is a never created or disposed plugin.
@@ -20,9 +22,22 @@ namespace DCL
     public class PluginSystem : IDisposable
     {
         private static ILogger logger = new Logger(Debug.unityLogger);
-        internal PluginGroup allPlugins = new PluginGroup();
-        private Dictionary<string, PluginGroup> pluginGroupByFlag = new Dictionary<string, PluginGroup>();
+        internal readonly PluginGroup allPlugins = new PluginGroup();
+        private readonly Dictionary<string, PluginGroup> pluginGroupByFlag = new Dictionary<string, PluginGroup>();
+        private readonly List<(PluginGroup plugins, IsPluginEnabledBuilder isPluginEnabled)> pluginGroupByFlagCallback = new ();
         private BaseVariable<FeatureFlag> featureFlagsDataSource;
+
+        public void Dispose()
+        {
+            foreach ( var kvp in allPlugins.plugins )
+            {
+                PluginInfo info = kvp.Value;
+                info.Disable();
+            }
+
+            if ( featureFlagsDataSource != null )
+                featureFlagsDataSource.OnChange -= OnFeatureFlagsChange;
+        }
 
         /// <summary>
         /// Returns true if the plugin defined by the PluginBuilder delegate is currently enabled.
@@ -49,6 +64,25 @@ namespace DCL
         {
             Register<T>(pluginBuilder, false);
             BindFlag<T>(pluginBuilder, featureFlag);
+        }
+
+        /// <summary>
+        /// Registers a plugin depending on feature flags allowing to process how it should be bind
+        /// </summary>
+        /// <param name="pluginBuilder"></param>
+        /// <param name="isPluginEnabledBuilder"></param>
+        /// <typeparam name="T"></typeparam>
+        public void RegisterWithFlag<T>(PluginBuilder pluginBuilder, IsPluginEnabledBuilder isPluginEnabledBuilder)
+            where T: IPlugin
+        {
+            Register<T>(pluginBuilder, false);
+
+            Type type = typeof(T);
+            Assert.IsNotNull(pluginBuilder);
+
+            var plugins = new PluginGroup();
+            plugins.Add(type, allPlugins.plugins[type]);
+            pluginGroupByFlagCallback.Add((plugins, isPluginEnabledBuilder));
         }
 
         /// <summary>
@@ -98,10 +132,14 @@ namespace DCL
                 }
             }
 
+            foreach ((PluginGroup plugins, IsPluginEnabledBuilder isPluginEnabled) tuple
+                     in pluginGroupByFlagCallback.Where(tuple => tuple.plugins.ContainsKey(type)))
+                pluginGroupByFlagCallback.Remove(tuple);
+
             allPlugins.Remove(type);
             info.Disable();
         }
-        
+
         /// <summary>
         /// Initialize all enabled and registered plugin.
         /// </summary>
@@ -112,75 +150,6 @@ namespace DCL
                 PluginInfo info = kvp.Value;
                 if (info.enableOnInit)
                     info.Enable();
-            }
-        }
-
-        /// <summary>
-        /// Bind a feature flag to the given plugin builder.
-        /// When the given feature flag is set to true, this class will construct the plugin, initializing it.
-        /// </summary>
-        /// <param name="plugin">The given plugin builder.</param>
-        /// <param name="featureFlag">The given feature flag. If this feature flag is set to true the plugin will be created.</param>
-        public void BindFlag<T>(PluginBuilder plugin, string featureFlag) where T : IPlugin
-        {
-            Type type = typeof(T);
-            Assert.IsNotNull(plugin);
-
-            if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
-                pluginGroupByFlag.Add(featureFlag, new PluginGroup());
-
-            allPlugins.plugins[type].flag = featureFlag;
-            pluginGroupByFlag[featureFlag].Add(type, allPlugins.plugins[type]);
-        }
-
-        /// <summary>
-        /// Sets a feature flag. Disabling or enabling any plugin that was bounded to it.
-        /// </summary>
-        /// <param name="featureFlag">The given feature flag to set.</param>
-        /// <param name="enabled">The feature flag is enabled?</param>
-        public void SetFlag(string featureFlag, bool enabled)
-        {
-            if (enabled)
-                EnableFlag(featureFlag);
-            else
-                DisableFlag(featureFlag);
-        }
-
-        /// <summary>
-        /// Enables a given feature flag. This enables any plugin that was bounded to it.
-        /// Enabling a plugin means that the plugin instance will be created.
-        /// </summary>
-        /// <param name="featureFlag">The feature flag to enable</param>
-        public void EnableFlag(string featureFlag)
-        {
-            if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
-                return;
-
-            PluginGroup pluginGroup = pluginGroupByFlag[featureFlag];
-
-            foreach ( var feature in pluginGroup.plugins )
-            {
-                PluginInfo info = feature.Value;
-                info.Enable();
-            }
-        }
-
-        /// <summary>
-        /// Disables a given feature flag. This disables any plugin that was bounded to it.
-        /// Disabling a plugin means that the plugin instance will be disposed.
-        /// </summary>
-        /// <param name="featureFlag">The feature flag to enable</param>
-        public void DisableFlag(string featureFlag)
-        {
-            if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
-                return;
-
-            PluginGroup pluginGroup = pluginGroupByFlag[featureFlag];
-
-            foreach ( var feature in pluginGroup.plugins )
-            {
-                PluginInfo info = feature.Value;
-                info.Disable();
             }
         }
 
@@ -201,26 +170,91 @@ namespace DCL
             OnFeatureFlagsChange(featureFlagsBaseVariable.Get(), featureFlagsBaseVariable.Get());
         }
 
+        /// <summary>
+        /// Bind a feature flag to the given plugin builder.
+        /// When the given feature flag is set to true, this class will construct the plugin, initializing it.
+        /// </summary>
+        /// <param name="plugin">The given plugin builder.</param>
+        /// <param name="featureFlag">The given feature flag. If this feature flag is set to true the plugin will be created.</param>
+        private void BindFlag<T>(PluginBuilder plugin, string featureFlag) where T : IPlugin
+        {
+            Type type = typeof(T);
+            Assert.IsNotNull(plugin);
+
+            if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
+                pluginGroupByFlag.Add(featureFlag, new PluginGroup());
+
+            allPlugins.plugins[type].flag = featureFlag;
+            pluginGroupByFlag[featureFlag].Add(type, allPlugins.plugins[type]);
+        }
+
+        /// <summary>
+        /// Sets a feature flag. Disabling or enabling any plugin that was bounded to it.
+        /// </summary>
+        /// <param name="featureFlag">The given feature flag to set.</param>
+        /// <param name="enabled">The feature flag is enabled?</param>
+        private void SetFlag(string featureFlag, bool enabled)
+        {
+            if (enabled)
+                EnableFlag(featureFlag);
+            else
+                DisableFlag(featureFlag);
+        }
+
+        /// <summary>
+        /// Enables a given feature flag. This enables any plugin that was bounded to it.
+        /// Enabling a plugin means that the plugin instance will be created.
+        /// </summary>
+        /// <param name="featureFlag">The feature flag to enable</param>
+        private void EnableFlag(string featureFlag)
+        {
+            if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
+                return;
+
+            PluginGroup pluginGroup = pluginGroupByFlag[featureFlag];
+
+            foreach ( var feature in pluginGroup.plugins )
+            {
+                PluginInfo info = feature.Value;
+                info.Enable();
+            }
+        }
+
+        /// <summary>
+        /// Disables a given feature flag. This disables any plugin that was bounded to it.
+        /// Disabling a plugin means that the plugin instance will be disposed.
+        /// </summary>
+        /// <param name="featureFlag">The feature flag to enable</param>
+        private void DisableFlag(string featureFlag)
+        {
+            if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
+                return;
+
+            PluginGroup pluginGroup = pluginGroupByFlag[featureFlag];
+
+            foreach ( var feature in pluginGroup.plugins )
+            {
+                PluginInfo info = feature.Value;
+                info.Disable();
+            }
+        }
+
         private void OnFeatureFlagsChange(FeatureFlag current, FeatureFlag previous)
         {
             Assert.IsNotNull(current, "Current feature flags object should never be null!");
 
             foreach ( var flag in current.flags )
-            {
                 SetFlag(flag.Key, current.IsFeatureEnabled(flag.Key));
-            }
-        }
 
-        public void Dispose()
-        {
-            foreach ( var kvp in allPlugins.plugins )
+            foreach ((PluginGroup plugins, IsPluginEnabledBuilder isPluginEnabled) in pluginGroupByFlagCallback)
             {
-                PluginInfo info = kvp.Value;
-                info.Disable();
+                if (isPluginEnabled.Invoke(current))
+                    foreach (KeyValuePair<Type,PluginInfo> plugin in plugins.plugins)
+                        plugin.Value.Enable();
+                else
+                    foreach (KeyValuePair<Type,PluginInfo> plugin in plugins.plugins)
+                        plugin.Value.Disable();
             }
-
-            if ( featureFlagsDataSource != null )
-                featureFlagsDataSource.OnChange -= OnFeatureFlagsChange;
         }
     }
 }
