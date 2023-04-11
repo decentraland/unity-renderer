@@ -2,7 +2,6 @@ using AvatarSystem;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
-using DCL.Emotes;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
