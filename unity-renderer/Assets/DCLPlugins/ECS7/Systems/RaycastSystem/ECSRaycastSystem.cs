@@ -161,8 +161,10 @@ namespace ECSSystems.ECSRaycastSystem
                     break;
                 case PBRaycast.DirectionOneofCase.TargetEntity:
                     // Target entity to cast the ray towards
-                    IDCLEntity targetEntity = scene.GetEntityById(model.TargetEntity);
-                    rayDirection = targetEntity.gameObject.transform.position - entityTransform.position;
+                    if(scene.entities.TryGetValue(model.TargetEntity, out IDCLEntity targetEntity))
+                        rayDirection = targetEntity.gameObject.transform.position - entityTransform.position;
+                    else
+                        Debug.LogError("Raycast error: can't find targetEntity, direction calculation failed.");
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalDirection:
                     // The direction of the ray in global coordinates

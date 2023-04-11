@@ -24,11 +24,6 @@ public class ECS7TestScene : IParcelScene
     public bool IsInitMessageDone() =>
         true;
 
-    IDCLEntity IParcelScene.GetEntityById(long entityId)
-    {
-        entities.TryGetValue(entityId, out IDCLEntity entity);
-        return entity;
-    }
     IDCLEntity IParcelScene.CreateEntity(long id)
     {
         return CreateEntity(id);
@@ -47,6 +42,10 @@ public class ECS7TestScene : IParcelScene
     IECSComponentsManagerLegacy IParcelScene.componentsManagerLegacy => throw new NotImplementedException();
     bool IParcelScene.isTestScene => throw new NotImplementedException();
     float IParcelScene.loadingProgress => throw new NotImplementedException();
+    IDCLEntity IParcelScene.GetEntityById(long entityId)
+    {
+        throw new NotImplementedException();
+    }
     string IParcelScene.GetSceneName()
     {
         throw new NotImplementedException();
