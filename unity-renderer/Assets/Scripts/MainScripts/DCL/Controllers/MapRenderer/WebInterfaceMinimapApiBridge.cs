@@ -26,13 +26,15 @@ namespace DCL.Map
         [PublicAPI]
         public void UpdateMinimapSceneInformation(string scenesInfoJson)
         {
-            if (isWorld.Get())
-                return;
-
             var scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);
 
             foreach (var sceneInfo in scenesInfo)
-                minimapMetadata.AddSceneInfo(sceneInfo);
+            {
+                Debug.Log(sceneInfo);
+
+                if (!isWorld.Get())
+                    minimapMetadata.AddSceneInfo(sceneInfo);
+            }
 
             if (!pendingTasks.ContainsKey(GET_SCENES_INFO_ID)) return;
             var task = (UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTasks[GET_SCENES_INFO_ID];
