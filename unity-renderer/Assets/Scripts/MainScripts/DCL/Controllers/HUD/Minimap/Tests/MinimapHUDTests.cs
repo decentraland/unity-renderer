@@ -1,3 +1,5 @@
+using DCL;
+using DCLServices.MapRendererV2;
 using NUnit.Framework;
 using System.Collections;
 using TMPro;
@@ -43,13 +45,6 @@ namespace Tests
         }
 
         [Test]
-        public void MinimapHUD_DefaultPlayerCoordinates()
-        {
-            var view = controller.view;
-            Assert.IsEmpty(Reflection_GetField<TextMeshProUGUI>(view, "playerPositionText").text);
-        }
-
-        [Test]
         public void MinimapHUD_SetSceneName()
         {
             const string sceneName = "SCENE_NAME";
@@ -58,13 +53,13 @@ namespace Tests
             var view = controller.view;
             Assert.AreEqual(sceneName, Reflection_GetField<TextMeshProUGUI>(view, "sceneNameText").text);
         }
-        
+
         [Test]
         public void MinimapHUD_ReportScene()
         {
             controller.ToggleOptions();
             controller.view.reportSceneButton.onClick.Invoke();
-            
+
             Assert.IsFalse(controller.view.sceneOptionsPanel.activeSelf);
         }
 

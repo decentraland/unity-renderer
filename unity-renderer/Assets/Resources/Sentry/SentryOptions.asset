@@ -16,7 +16,7 @@ MonoBehaviour:
   <Dsn>k__BackingField: https://dsn.dsn/
   <CaptureInEditor>k__BackingField: 1
   <EnableLogDebouncing>k__BackingField: 1
-  <TracesSampleRate>k__BackingField: 0.05000000074505806
+  <TracesSampleRate>k__BackingField: 0.009999999776482582
   <PerformanceAutoInstrumentationEnabled>k__BackingField: 1
   <AutoSessionTracking>k__BackingField: 1
   <AutoSessionTrackingInterval>k__BackingField: 30000

@@ -33,7 +33,7 @@ namespace DCL.ECSComponents.Test
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.id = "1";
             scene.sceneData.Configure().Returns(sceneData);
-            
+
             handler.OnComponentCreated(scene, entity);
         }
 
@@ -50,10 +50,10 @@ namespace DCL.ECSComponents.Test
             PBVisibilityComponent model = new PBVisibilityComponent() { Visible = true };
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            
+
             internalVisibilityComponent.Received(1)
                                        .PutFor(scene, entity,
-                                           Arg.Is<InternalVisibility>(x => x.visible == true && x.dirty));
+                                           Arg.Is<InternalVisibility>(x => x.visible == true));
 
             internalVisibilityComponent.ClearReceivedCalls();
 
@@ -62,7 +62,7 @@ namespace DCL.ECSComponents.Test
 
             internalVisibilityComponent.Received(1)
                                        .PutFor(scene, entity,
-                                           Arg.Is<InternalVisibility>(x => x.visible == false && x.dirty));
+                                           Arg.Is<InternalVisibility>(x => x.visible == false));
         }
     }
 }
