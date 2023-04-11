@@ -20,6 +20,7 @@ namespace Tests
         private ECS7TestUtilsScenesAndEntities sceneTestHelper;
         private UIDocument uiDocument;
         private IInternalECSComponent<InternalUiContainer> uiContainerComponent;
+        private BooleanVariable hideUiEventVariable;
 
         [SetUp]
         public void SetUp()
@@ -32,6 +33,8 @@ namespace Tests
 
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager, executors);
             uiDocument = Object.Instantiate(Resources.Load<UIDocument>("ScenesUI"));
+            hideUiEventVariable = CommonScriptableObjects.allUIHidden;
+            hideUiEventVariable.Set(true);
         }
 
         [TearDown]
@@ -39,6 +42,7 @@ namespace Tests
         {
             sceneTestHelper.Dispose();
             Object.Destroy(uiDocument.gameObject);
+            CommonScriptableObjects.UnloadAll();
         }
 
         [Test]
@@ -88,7 +92,7 @@ namespace Tests
                 uiContainerComponent,
                 new BaseList<IParcelScene> { scene },
                 worldState,
-                new BaseVariable<bool>(true));
+                new BooleanVariable());
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -174,6 +178,7 @@ namespace Tests
             Assert.AreEqual(Align.Stretch, style.alignItems.value);
             Assert.AreEqual(Align.Auto, style.alignSelf.value);
             Assert.AreEqual(Align.Stretch, style.alignContent.value);
+            Assert.AreEqual(Position.Absolute, style.position.value);
         }
 
         [Test]
@@ -224,7 +229,7 @@ namespace Tests
                 uiContainerComponent,
                 new BaseList<IParcelScene> { scene },
                 worldState,
-                new BaseVariable<bool>(true));
+                hideUiEventVariable);
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -251,7 +256,7 @@ namespace Tests
                 uiContainerComponent,
                 loadedScenes,
                 worldState,
-                new BaseVariable<bool>(true));
+                hideUiEventVariable);
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -294,7 +299,7 @@ namespace Tests
                 uiContainerComponent,
                 loadedScenes,
                 worldState,
-                new BaseVariable<bool>(true));
+                hideUiEventVariable);
 
             // create root ui for scenes
             InternalUiContainer rootScene1Container = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -373,7 +378,7 @@ namespace Tests
                 uiContainerComponent,
                 new BaseList<IParcelScene>(),
                 worldState,
-                new BaseVariable<bool>(true));
+                hideUiEventVariable);
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -403,7 +408,7 @@ namespace Tests
                 uiContainerComponent,
                 new BaseList<IParcelScene> { nonGlobalScene },
                 worldState,
-                new BaseVariable<bool>(true));
+                hideUiEventVariable);
 
             // create root ui for global scene
             InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -607,22 +612,22 @@ namespace Tests
         public void ShowAndHideUiDuringLoadingScreen()
         {
             // start with loading screen not visible
-            BaseVariable<bool> loadingHudVisibleVariable = new BaseVariable<bool>(false);
+            hideUiEventVariable.Set(false);
 
             var system = new ECSScenesUiSystem(
                 uiDocument,
                 Substitute.For<IInternalECSComponent<InternalUiContainer>>(),
                 new BaseList<IParcelScene>(),
                 Substitute.For<IWorldState>(),
-                loadingHudVisibleVariable);
+                hideUiEventVariable);
 
             Assert.AreEqual(DisplayStyle.Flex, uiDocument.rootVisualElement.style.display.value);
 
-            loadingHudVisibleVariable.Set(true);
+            hideUiEventVariable.Set(true);
 
             Assert.AreEqual(DisplayStyle.None, uiDocument.rootVisualElement.style.display.value);
 
-            loadingHudVisibleVariable.Set(false);
+            hideUiEventVariable.Set(false);
 
             Assert.AreEqual(DisplayStyle.Flex, uiDocument.rootVisualElement.style.display.value);
         }

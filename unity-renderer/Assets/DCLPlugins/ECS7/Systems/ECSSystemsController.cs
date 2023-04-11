@@ -39,7 +39,6 @@ public class ECSSystemsController : IDisposable
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
-    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
     public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
     {
@@ -58,13 +57,9 @@ public class ECSSystemsController : IDisposable
         scenesUiDocument.name = "_ECSScenesUI";
         scenesUi = scenesUiDocument.gameObject;
 
-        BaseVariable<bool> loadingScreenVisible;
-
-        loadingScreenVisible = dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible;
-
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
-            DataStore.i.ecs7.scenes, Environment.i.world.state, loadingScreenVisible);
+            DataStore.i.ecs7.scenes, Environment.i.world.state, CommonScriptableObjects.allUIHidden);
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
         videoPlayerSystem = new ECSVideoPlayerSystem(context.internalEcsComponents.videoPlayerComponent, context.internalEcsComponents.videoMaterialComponent);

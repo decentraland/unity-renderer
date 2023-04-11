@@ -16,7 +16,7 @@ namespace ECSSystems.ScenesUiSystem
         private readonly IInternalECSComponent<InternalUiContainer> internalUiContainerComponent;
         private readonly IWorldState worldState;
         private readonly BaseList<IParcelScene> loadedScenes;
-        private readonly BaseVariable<bool> loadingHudVisibleVariable;
+        private readonly BooleanVariable hideUiEventVariable;
 
         private int lastSceneNumber;
         private bool isPendingSceneUI;
@@ -27,28 +27,28 @@ namespace ECSSystems.ScenesUiSystem
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             BaseList<IParcelScene> loadedScenes,
             IWorldState worldState,
-            BaseVariable<bool> loadingHudVisibleVariable)
+            BooleanVariable hideUiEventVariable)
         {
             this.uiDocument = uiDocument;
             this.internalUiContainerComponent = internalUiContainerComponent;
             this.worldState = worldState;
             this.loadedScenes = loadedScenes;
-            this.loadingHudVisibleVariable = loadingHudVisibleVariable;
+            this.hideUiEventVariable = hideUiEventVariable;
 
             lastSceneNumber = -1;
             isPendingSceneUI = true;
             currentScene = null;
 
             loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
-            loadingHudVisibleVariable.OnChange += LoadingHudVisibleOnOnChange;
+            hideUiEventVariable.OnChange += OnHideUiEvent;
 
-            LoadingHudVisibleOnOnChange(loadingHudVisibleVariable.Get(), false);
+            OnHideUiEvent(hideUiEventVariable.Get(), false);
         }
 
         public void Dispose()
         {
             loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
-            loadingHudVisibleVariable.OnChange -= LoadingHudVisibleOnOnChange;
+            hideUiEventVariable.OnChange -= OnHideUiEvent;
         }
 
         public void Update()
@@ -102,7 +102,7 @@ namespace ECSSystems.ScenesUiSystem
             }
         }
 
-        private void LoadingHudVisibleOnOnChange(bool current, bool previous)
+        private void OnHideUiEvent(bool current, bool previous)
         {
             SetDocumentActive(uiDocument, !current);
         }
@@ -247,6 +247,7 @@ namespace ECSSystems.ScenesUiSystem
                 style.alignItems = new StyleEnum<Align>(Align.Stretch);
                 style.alignSelf = new StyleEnum<Align>(Align.Auto);
                 style.alignContent = new StyleEnum<Align>(Align.Stretch);
+                style.position = new StyleEnum<Position>(Position.Absolute);
             }
 
             return parentDataModel;
