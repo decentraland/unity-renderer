@@ -24,6 +24,7 @@ namespace DCL.AvatarEditor
 
         public void Dispose()
         {
+            featureFlags.flags.OnChange -= InitializeHUD;
             hudController.Dispose();
         }
 
