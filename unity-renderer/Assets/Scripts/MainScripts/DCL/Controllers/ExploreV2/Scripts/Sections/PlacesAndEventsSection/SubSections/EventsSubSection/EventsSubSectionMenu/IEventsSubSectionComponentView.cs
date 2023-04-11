@@ -48,6 +48,8 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     /// </summary>
     event Action OnShowMoreGoingEventsClicked;
 
+    event Action OnConnectWallet;
+
     /// <summary>
     /// It will be triggered each time the view is enabled.
     /// </summary>
@@ -123,4 +125,6 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
 
     void SetShowMoreButtonActive(bool isActive);
     void SetShowMoreGoingButtonActive(bool isActive);
+
+    void SetIsGuestUser(bool isGuestUser);
 }

@@ -44,6 +44,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
     [SerializeField] internal GameObject showMoreGoingEventsButtonContainer;
     [SerializeField] internal ButtonComponentView showMoreGoingEventsButton;
+    [SerializeField] internal GameObject guestGoingToPanel;
+    [SerializeField] internal ButtonComponentView connectWalletGuest;
 
     [SerializeField] private Canvas canvas;
 
@@ -59,10 +61,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private Canvas goingEventsCanvas;
 
     private bool isUpdatingCardsVisual;
+    private bool isGuest;
 
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
     public int currentGoingEventsPerRow => goingEvents.currentItemsPerRow;
-
 
     public void SetAllAsLoading() => SetAllEventGroupsAsLoading();
 
@@ -81,6 +83,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public event Action<string> OnUnsubscribeEventClicked;
     public event Action OnShowMoreUpcomingEventsClicked;
     public event Action OnShowMoreGoingEventsClicked;
+    public event Action OnConnectWallet;
     public event Action OnEventsSubSectionEnable;
 
     public override void Awake()
@@ -89,6 +92,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         trendingEventsCanvas = trendingEvents.GetComponent<Canvas>();
         upcomingEventsCanvas = upcomingEvents.GetComponent<Canvas>();
         goingEventsCanvas = goingEvents.GetComponent<Canvas>();
+        guestGoingToPanel.SetActive(false);
     }
 
     public void Start()
@@ -103,7 +107,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
         showMoreUpcomingEventsButton.onClick.AddListener(() => OnShowMoreUpcomingEventsClicked?.Invoke());
         showMoreGoingEventsButton.onClick.RemoveAllListeners();
-        showMoreGoingEventsButton.onClick.AddListener(()=>OnShowMoreGoingEventsClicked?.Invoke());
+        showMoreGoingEventsButton.onClick.AddListener(() => OnShowMoreGoingEventsClicked?.Invoke());
+        connectWalletGuest.onClick.RemoveAllListeners();
+        connectWalletGuest.onClick.AddListener(() => OnConnectWallet?.Invoke());
 
         OnReady?.Invoke();
     }
@@ -111,6 +117,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public override void OnEnable()
     {
         OnEventsSubSectionEnable?.Invoke();
+    }
+
+    public void SetIsGuestUser(bool isGuestUser)
+    {
+        isGuest = isGuestUser;
     }
 
     public override void Dispose()
@@ -208,8 +219,21 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void SetTrendingEvents(List<EventCardComponentModel> events) =>
         SetEvents(events, trendingEvents, trendingEventsCanvas, trendingEventCardsPool, trendingEventsLoading, trendingEventsNoDataText);
 
-    public void SetGoingEvents(List<EventCardComponentModel> events) =>
-        SetEvents(events, goingEvents, goingEventsCanvas, goingEventCardsPool, goingEventsLoading, goingEventsNoDataText);
+    public void SetGoingEvents(List<EventCardComponentModel> events)
+    {
+        if (isGuest)
+        {
+            goingEventsCanvas.gameObject.SetActive(false);
+            goingEventsLoading.SetActive(false);
+            guestGoingToPanel.SetActive(true);
+        }
+        else
+        {
+            goingEventsCanvas.gameObject.SetActive(true);
+            guestGoingToPanel.SetActive(false);
+            SetEvents(events, goingEvents, goingEventsCanvas, goingEventCardsPool, goingEventsLoading, goingEventsNoDataText);
+        }
+    }
 
     public void SetUpcomingEvents(List<EventCardComponentModel> events) =>
         SetEvents(events, upcomingEvents, upcomingEventsCanvas, upcomingEventCardsPool, upcomingEventsLoading, upcomingEventsNoDataText);
