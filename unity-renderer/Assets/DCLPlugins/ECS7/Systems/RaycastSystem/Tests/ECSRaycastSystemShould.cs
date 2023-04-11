@@ -546,32 +546,6 @@ namespace Tests
             );
         }*/
 
-        /*[Test]
-        public void CreateInternalComponentCorrectly()
-        {
-            entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
-            PBRaycast raycast = new PBRaycast()
-            {
-                GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
-                MaxDistance = 16.0f,
-                QueryType = RaycastQueryType.RqtHitFirst
-            };
-
-            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
-            raycastHandler.OnComponentCreated(scene, entityRaycaster);
-            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
-
-            Assert.NotNull(internalComponents.raycastComponent.GetFor(scene, entityRaycaster));
-
-            system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
-                entityRaycaster.entityId,
-                ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1)
-            );
-        }*/
-
         private ECS7TestEntity CreateColliderEntity(int entityId, Vector3 position, ColliderLayer[] layers)
         {
             var entityCollider = scene.CreateEntity(entityId);
