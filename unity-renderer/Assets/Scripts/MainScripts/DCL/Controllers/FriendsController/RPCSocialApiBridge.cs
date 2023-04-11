@@ -38,7 +38,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
         {
             this.rpc = rpc;
 
-            matrixInitializationBridge.OnReceiveMatrixAccessToken += (token) => { this.accessToken = token;};
+            matrixInitializationBridge.OnReceiveMatrixAccessToken += (token) => {  this.accessToken = token;};
         }
 
         public async UniTaskVoid InitializeClient(CancellationToken cancellationToken = default)

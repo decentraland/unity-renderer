@@ -53,7 +53,7 @@ namespace DCL
             signRequest = await SafeLoadModule(SignRequestKernelServiceCodeGen.ServiceName, port,
                 module => new ClientSignRequestKernelService(module));
 
-            var transport = new WebSocketClientTransport("ws://localhost:8085");
+            var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
             var client = new RpcClient(transport);
             var socialPort = await client.CreatePort("test-port");
 
