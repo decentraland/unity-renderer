@@ -9,10 +9,12 @@ namespace DCL.Backpack
         private const int EMOTES_SECTION_INDEX = 1;
 
         [SerializeField] private SectionSelectorComponentView sectionSelector;
-        [SerializeField] private GameObject avatarSection;
+        [SerializeField] private GameObject wearablesSection;
         [SerializeField] private GameObject emotesSection;
+        [SerializeField] private RectTransform avatarPreviewRectTransform;
 
         public override bool isVisible => gameObject.activeInHierarchy;
+        public Transform EmotesSectionTransform => emotesSection.transform;
 
         private Transform thisTransform;
 
@@ -81,12 +83,23 @@ namespace DCL.Backpack
         {
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
-                avatarSection.SetActive(isSelected);
+                wearablesSection.SetActive(isSelected);
+                AnchorAvatarPreviewPanel(false);
             });
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
                 emotesSection.SetActive(isSelected);
+                AnchorAvatarPreviewPanel(true);
             });
+        }
+
+        private void AnchorAvatarPreviewPanel(bool anchorRight)
+        {
+            avatarPreviewRectTransform.pivot = new Vector2(anchorRight ? 1 : 0, avatarPreviewRectTransform.pivot.y);
+            avatarPreviewRectTransform.anchorMin = new Vector2(anchorRight ? 1 : 0, avatarPreviewRectTransform.anchorMin.y);
+            avatarPreviewRectTransform.anchorMax = new Vector2(anchorRight ? 1 : 0, avatarPreviewRectTransform.anchorMax.y);
+            avatarPreviewRectTransform.offsetMin = new Vector2(anchorRight ? -avatarPreviewRectTransform.rect.width : 0, avatarPreviewRectTransform.offsetMin.y);
+            avatarPreviewRectTransform.offsetMax = new Vector2(anchorRight ? 0 : avatarPreviewRectTransform.rect.width, avatarPreviewRectTransform.offsetMax.y);
         }
     }
 }
