@@ -13,7 +13,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     private const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
     internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
+    internal const int INITIAL_NUMBER_OF_GOING_ROWS = 1;
     private const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
+    private const int SHOW_MORE_GOING_ROWS_INCREMENT = 2;
     private const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
 
     internal readonly IEventsSubSectionComponentView view;
@@ -25,6 +27,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal List<EventFromAPIModel> eventsFromAPI = new ();
     internal int availableUISlots;
+    internal int availableUISlotsForGoing;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
@@ -41,6 +44,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
 
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
+        this.view.OnShowMoreGoingEventsClicked += ShowMoreGoingEvents;
 
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
@@ -79,6 +83,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
+            availableUISlotsForGoing = view.CurrentGoingTilesPerRow * INITIAL_NUMBER_OF_GOING_ROWS;
             view.SetShowMoreButtonActive(false);
 
             cardsReloader.RequestAll();
@@ -115,7 +120,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     }
     internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
     internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
-    internal List<EventFromAPIModel> FilterGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
+    internal List<EventFromAPIModel> FilterGoingEvents() => eventsFromAPI.Where(e => e.attending).Take(availableUISlotsForGoing).ToList();
 
     public void ShowMoreUpcomingEvents()
     {
@@ -133,6 +138,25 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             availableUISlots = eventsFromAPI.Count;
 
         view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
+    }
+
+    public void ShowMoreGoingEvents()
+    {
+        List<EventFromAPIModel> goingToEvents = eventsFromAPI.Where(e => e.attending).ToList();
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlotsForGoing / view.currentGoingEventsPerRow) * view.currentGoingEventsPerRow) - availableUISlotsForGoing;
+        int numberOfItemsToAdd = (view.currentGoingEventsPerRow * SHOW_MORE_GOING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
+
+        List<EventFromAPIModel> eventsFiltered = availableUISlotsForGoing + numberOfItemsToAdd <= goingToEvents.Count
+            ? goingToEvents.GetRange(availableUISlotsForGoing, numberOfItemsToAdd)
+            : goingToEvents.GetRange(availableUISlotsForGoing, goingToEvents.Count - availableUISlotsForGoing);
+
+        view.AddGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsFiltered));
+
+        availableUISlotsForGoing += numberOfItemsToAdd;
+        if (availableUISlotsForGoing > goingToEvents.Count)
+            availableUISlotsForGoing = goingToEvents.Count;
+
+        view.SetShowMoreGoingEventsButtonActive(availableUISlotsForGoing < goingToEvents.Count);
     }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
