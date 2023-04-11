@@ -1,22 +1,12 @@
-﻿using DCL.Configuration;
-using DCL.CRDT;
-using DCL.ECS7;
-using DCL.ECS7.InternalComponents;
+﻿using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCL.Helpers;
-using DCL.Models;
 using DCLPlugins.ECSComponents.Raycast;
 using ECSSystems.ECSRaycastSystem;
-using Google.Protobuf.Collections;
 using NSubstitute;
 using NUnit.Framework;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.TestTools;
-using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace Tests
 {
