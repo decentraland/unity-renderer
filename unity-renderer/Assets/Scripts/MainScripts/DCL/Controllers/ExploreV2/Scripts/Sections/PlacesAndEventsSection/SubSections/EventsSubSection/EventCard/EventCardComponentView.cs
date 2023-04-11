@@ -165,7 +165,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
     public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
 
-    public override void Start()
+    public void Start()
     {
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);

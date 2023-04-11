@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Map Renderer
+  m_EditorClassIdentifier: 
+  m_GroupName: Map Renderer
+  m_Data:
+    m_SerializedData: []
+  m_GUID: a1c43f08da43fba4e9a77e914d6f6927
+  m_SerializeEntries:
+  - m_GUID: f80a8f4fcad2b4246b66c94221314244
+    m_Address: AtlasChunk
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b54d9d4189903c2438fa811308f14ceb
+    m_Address: MapRendererConfiguration
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c01bf4765540308409298f7aeb6e1bfb
+    m_Address: HotUserMarker
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6f900aa04364deb4db6e22de443acb2b
+    m_Address: ColdUserMarker
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c1ddb1c666227e0409ad0fff238bb466
+    m_Address: SceneOfInterestMarker
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3efe8a48fc3905f47a0648abd6859394
+    m_Address: MapCameraObject
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 954088078919e5847a591711e6b53e20
+    m_Address: HomePoint
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7e150ada146ad0749b39e65968780157
+    m_Address: MapParcelHighlightMarker
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0ae66608be2735a4f96e0f1aa9b3a75b
+    m_Address: PlayerMarker
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 10fd8578af824b94f8192bb964083dc4
+    m_Address: MapRendererAtlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 0ea98bf76112b1946b4e0b8d1a71429f, type: 2}
+    - {fileID: 11400000, guid: c0618d4d27c34714586362a82e7e4c51, type: 2}

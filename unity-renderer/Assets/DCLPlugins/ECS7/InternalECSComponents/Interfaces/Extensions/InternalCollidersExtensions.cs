@@ -8,7 +8,7 @@ namespace DCL.ECS7.InternalComponents
     public static class InternalCollidersExtensions
     {
         public static void AddCollider(this IInternalECSComponent<InternalColliders> colliderInternalComponent,
-            IParcelScene scene, IDCLEntity entity, Collider collider)
+            IParcelScene scene, IDCLEntity entity, Collider collider, int colliderLayer)
         {
             if (collider is null)
                 return;
@@ -17,12 +17,12 @@ namespace DCL.ECS7.InternalComponents
                 return;
 
             var model = colliderInternalComponent.GetFor(scene, entity)?.model ?? new InternalColliders();
-            model.colliders.Add(collider);
+            model.colliders.Add(collider, colliderLayer);
             colliderInternalComponent.PutFor(scene, entity, model);
         }
 
         public static void AddColliders(this IInternalECSComponent<InternalColliders> colliderInternalComponent,
-            IParcelScene scene, IDCLEntity entity, IList<Collider> colliders)
+            IParcelScene scene, IDCLEntity entity, IList<Collider> colliders, int colliderLayer)
         {
             var model = colliderInternalComponent.GetFor(scene, entity)?.model ?? new InternalColliders();
 
@@ -33,10 +33,10 @@ namespace DCL.ECS7.InternalComponents
                 if (!collider)
                     continue;
 
-                if (model.colliders.Contains(collider))
+                if (model.colliders.ContainsKey(collider))
                     continue;
 
-                model.colliders.Add(collider);
+                model.colliders.Add(collider, colliderLayer);
             }
 
             if (model.colliders.Count > 0)
@@ -52,10 +52,9 @@ namespace DCL.ECS7.InternalComponents
                 return false;
 
             var compData = colliderInternalComponent.GetFor(scene, entity);
-
             if (compData != null)
             {
-                return compData.model.colliders.Contains(collider);
+                return compData.model.colliders.ContainsKey(collider);
             }
 
             return false;

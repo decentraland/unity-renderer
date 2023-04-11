@@ -240,7 +240,9 @@ public class VoiceChatWindowController : IHUD
 
     internal void GoToCrowd()
     {
-        DCL.Environment.i.world.teleportController.GoToCrowd();
+        // Requested temporally by product team since the "go to crowd" approach was always redirecting to the casino.
+        //DCL.Environment.i.world.teleportController.GoToCrowd();
+        DCL.Environment.i.world.teleportController.Teleport(0, 0);
     }
 
     internal void OnOtherPlayersStatusAdded(string userId, Player player)

@@ -58,10 +58,8 @@ namespace DCL.Chat.HUD
                 button.onClick.AddListener(() => OnCreateChannel?.Invoke());
         }
 
-        public override void Update()
+        public void Update()
         {
-            base.Update();
-
             if (isLayoutDirty)
                 ((RectTransform) scroll.transform).ForceUpdateLayout();
             isLayoutDirty = false;

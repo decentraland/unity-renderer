@@ -7,8 +7,5 @@ namespace DCL.Controllers.HUD
 
         public MinimapHUDControllerDesktop(MinimapMetadataController minimapMetadataController, IHomeLocationController locationController, global::DCL.Environment.Model environment)
             : base(minimapMetadataController, locationController, environment) { }
-
-        public MinimapHUDControllerDesktop(MinimapHUDModel model, MinimapMetadataController minimapMetadataController, IHomeLocationController locationController, global::DCL.Environment.Model environment)
-            : base(model, minimapMetadataController, locationController, environment) { }
     }
 }

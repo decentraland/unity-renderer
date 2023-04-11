@@ -1,4 +1,5 @@
 using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using System;
 using UnityEngine;
 

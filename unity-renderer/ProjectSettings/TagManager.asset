@@ -37,8 +37,8 @@ TagManager:
   - ViewportCullingIgnored
   - FX
   - Skybox
-  - 
-  - 
+  - SDKCustomLayer
+  - Minimap
   - 
   - 
   - 

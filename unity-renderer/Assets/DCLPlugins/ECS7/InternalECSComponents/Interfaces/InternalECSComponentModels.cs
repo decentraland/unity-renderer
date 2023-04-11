@@ -10,7 +10,7 @@ namespace DCL.ECS7.InternalComponents
     public class InternalComponent
     {
         public bool dirty => _dirty;
-        internal bool _dirty = true;
+        internal bool _dirty = false;
     }
 
     public class InternalTexturizable : InternalComponent
@@ -62,7 +62,7 @@ namespace DCL.ECS7.InternalComponents
 
     public class InternalColliders : InternalComponent
     {
-        public IList<Collider> colliders = new List<Collider>();
+        public KeyValueSet<Collider, int> colliders = new KeyValueSet<Collider, int>();
     }
 
     public class InternalRenderers : InternalComponent
@@ -81,8 +81,8 @@ namespace DCL.ECS7.InternalComponents
         public Bounds entityLocalMeshBounds = new Bounds();
         public bool meshesDirty = false;
         public IList<Renderer> renderers;
-        public IList<Collider> physicsColliders;
-        public IList<Collider> pointerColliders;
+        public KeyValueSet<Collider, int> physicsColliders;
+        public KeyValueSet<Collider, int> pointerColliders;
         public AudioSource audioSource;
     }
 
@@ -119,5 +119,51 @@ namespace DCL.ECS7.InternalComponents
         {
             rootElement.name += $"(Id: {entityId})";
         }
+    }
+
+    public class InternalPointerEvents : InternalComponent
+    {
+        public readonly struct Entry
+        {
+            public readonly PointerEventType EventType;
+            public readonly Info EventInfo;
+
+            public Entry(PointerEventType eventType, Info eventInfo)
+            {
+                EventType = eventType;
+                EventInfo = eventInfo;
+            }
+        }
+
+        public readonly struct Info
+        {
+            public readonly InputAction Button;
+            public readonly string HoverText;
+            public readonly float MaxDistance;
+            public readonly bool ShowFeedback;
+
+            public Info(InputAction button, string hoverText, float maxDistance, bool showFeedback)
+            {
+                Button = button;
+                HoverText = hoverText;
+                MaxDistance = maxDistance;
+                ShowFeedback = showFeedback;
+            }
+        }
+
+        public readonly List<Entry> PointerEvents = new List<Entry>();
+    }
+
+    public class InternalRegisteredUiPointerEvents : InternalComponent
+    {
+        public EventCallback<PointerDownEvent> OnPointerDownCallback;
+        public EventCallback<PointerUpEvent> OnPointerUpCallback;
+        public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
+        public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
+    }
+
+    public class InternalRaycast : InternalComponent
+    {
+        public PBRaycast raycastModel;
     }
 }

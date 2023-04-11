@@ -1,6 +1,6 @@
 using DCL.ECS7.InternalComponents;
-using System;
 using DCL.ECSRuntime;
+using System;
 
 namespace DCL.ECSComponents
 {
@@ -11,12 +11,13 @@ namespace DCL.ECSComponents
         private readonly int componentId;
 
         public PointerEventsRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
-            IInternalECSComponent<InternalUiContainer> internalUiContainer,
-            IInternalECSComponent<InternalInputEventResults> internalInputEventResults)
+            IInternalECSComponent<InternalPointerEvents> internalPointerEvents)
         {
+            var handler = new PointerEventsHandler(internalPointerEvents);
+
             factory.AddOrReplaceComponent(componentId,
                 ProtoSerialization.Deserialize<PBPointerEvents>,
-                () => new UIPointerEventsHandler(internalInputEventResults, internalUiContainer, componentId));
+                () => handler);
 
             componentWriter.AddOrReplaceComponentSerializer<PBPointerEvents>(componentId, ProtoSerialization.Serialize);
 
