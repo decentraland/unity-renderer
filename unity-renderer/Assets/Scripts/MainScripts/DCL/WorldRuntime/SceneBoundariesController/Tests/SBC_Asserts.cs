@@ -13,7 +13,6 @@ using DCL.Helpers.NFT;
 using NFTShape_Internal;
 using NSubstitute;
 using UnityEngine;
-using UnityGLTF.Loader;
 using Environment = DCL.Environment;
 
 namespace SceneBoundariesCheckerTests
@@ -42,7 +41,7 @@ namespace SceneBoundariesCheckerTests
             Assert.AreEqual(0, scene.entities.Count, "entity count should be zero");
             Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.entitiesToCheckCount, "entities to check should be zero!");
         }
-        
+
         public static IEnumerator EntityIsEvaluatedOnReparenting(ParcelScene scene)
         {
             var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(8, 2, 8));
@@ -50,13 +49,13 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             AssertMeshesAndCollidersValidState(shapeEntity.meshesInfo, true);
-         
+
             var newParentEntity = TestUtils.CreateSceneEntity(scene);
             TestUtils.SetEntityTransform(scene, newParentEntity, new DCLTransform.Model { position = new Vector3(100, 1, 100) });
-            
+
             // Our entities parenting moves the child's local position to Vector3.zero by default...
             TestUtils.SetEntityParent(scene, shapeEntity, newParentEntity);
-            
+
             yield return null;
             AssertMeshesAndCollidersValidState(shapeEntity.meshesInfo, false);
         }
@@ -122,10 +121,10 @@ namespace SceneBoundariesCheckerTests
 
             // Force entity evaluation avoiding outer boundaries check
             Environment.i.world.sceneBoundsChecker.RunEntityEvaluation(entity, onlyOuterBoundsCheck: false);
-            
+
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
         }
-        
+
         public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
         {
             var entity = TestUtils.CreateSceneEntity(scene);
@@ -133,11 +132,11 @@ namespace SceneBoundariesCheckerTests
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
                 JsonConvert.SerializeObject(new BoxShape.Model { })
             );
-            
+
             yield return null;
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
         }
-        
+
         public static IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
         {
             var entity = TestUtils.CreateSceneEntity(scene);
@@ -149,11 +148,11 @@ namespace SceneBoundariesCheckerTests
                 }));
             LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
-            
+
             yield return null;
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
         }
-        
+
         public static IEnumerator PShapeIsEvaluatedAfterCorrectTransformAttachment(ParcelScene scene)
         {
             var entity = TestUtils.CreateSceneEntity(scene);
@@ -161,17 +160,17 @@ namespace SceneBoundariesCheckerTests
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
                 JsonConvert.SerializeObject(new BoxShape.Model { })
             );
-            
+
             yield return null;
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
-            
+
             yield return null;
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
-            
+
             yield return null;
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
         }
-        
+
         public static IEnumerator GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(ParcelScene scene)
         {
             var entity = TestUtils.CreateSceneEntity(scene);
@@ -183,17 +182,17 @@ namespace SceneBoundariesCheckerTests
                 }));
             LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
-            
+
             yield return null;
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
-            
+
             yield return null;
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
-            
+
             yield return null;
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
         }
-        
+
         public static IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
         {
             var entity = TestUtils.CreateSceneEntity(scene);
@@ -322,7 +321,7 @@ namespace SceneBoundariesCheckerTests
             // Attach child
             long childEntityId = 20;
             TestUtils.InstantiateEntityWithShape(scene, childEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
-            
+
             yield return null;
             yield return null;
             AssertMeshesAndCollidersValidState(scene.entities[childEntityId].meshesInfo, true);
@@ -386,14 +385,14 @@ namespace SceneBoundariesCheckerTests
 
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
         }
-        
+
         public static IEnumerator OnPointerEventCollidersAreResetWhenReenteringBounds(ParcelScene scene)
         {
             var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(18, 1, 18));
             yield return boxShape.routine;
-            
+
             var entity = boxShape.attachedEntities.First();
-            
+
             // Attach onpointer event component
             string onPointerId = "pointerevent-1";
             var OnPointerDownModel = new OnPointerDown.Model()
@@ -401,7 +400,7 @@ namespace SceneBoundariesCheckerTests
                 type = "pointerUp",
                 uuid = onPointerId
             };
-            
+
             // Grab onpointer event collider
             var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);

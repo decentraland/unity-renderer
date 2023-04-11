@@ -9,6 +9,8 @@ using UnityEngine.Networking;
 
 namespace DCL.GLTFast.Wrappers
 {
+    public delegate bool AssetIdConverter(string uri, out string id);
+
     /// <summary>
     /// With this class we replace all of GLTFast web requests with our own
     /// </summary>
