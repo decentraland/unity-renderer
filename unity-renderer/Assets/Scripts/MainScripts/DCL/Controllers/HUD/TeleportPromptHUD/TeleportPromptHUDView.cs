@@ -155,7 +155,6 @@ public class TeleportPromptHUDView : MonoBehaviour
     private void OnClosePressed()
     {
         OnCloseEvent?.Invoke();
-        AudioScriptableObjects.dialogClose.Play(true);
     }
 
     private void OnTeleportPressed()
