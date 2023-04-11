@@ -40,7 +40,6 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
         yield return gltfShape.routine;
 
         yield return new WaitForAllMessagesProcessed();
-        yield return new DCL.WaitUntil(() => GLTFComponent.downloadingCount == 0);
 
         if (OnFinishLoading != null)
         {

@@ -22,7 +22,6 @@ namespace DCL.Helpers
                 result);
             PoolManagerDumper.Dump(PoolManager.i, result);
             QualitySettingsDumper.Dump(Settings.i.qualitySettings.Data, result);
-            GltfDumper.Dump(AssetPromiseKeeper_GLTF.i.library, result);
             AssetBundleDumper.Dump(AssetPromiseKeeper_AB.i.library, result);
             TextureDumper.Dump(AssetPromiseKeeper_Texture.i.library, PersistentAssetCache.ImageCacheByUri, result);
             PositionDumper.Dump(trackedMovements, trackedTeleports, result);
@@ -48,20 +47,6 @@ namespace DCL.Helpers
             public string id;
         }
 
-        public static void Dump(AssetLibrary_GLTF library, CrashPayload payload)
-        {
-            var assets = new AssetInfo[library.masterAssets.Count];
-
-            var ids = library.masterAssets
-                .Select(x =>
-                    new AssetInfo()
-                    {
-                        id = x.Key.ToString()
-                    })
-                .ToArray();
-
-            payload.fields.Add(CrashPayload.DumpLiterals.GLTFS, ids);
-        }
     }
 
     static class AssetBundleDumper
