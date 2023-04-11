@@ -8,6 +8,7 @@ import { allPeersScoreLink } from './allPeers'
 import { loadBalancingLink } from './loadBalancing'
 import { versionCatalystLink } from './versionCatalyst'
 import { forceCatalystLink } from './forceCatalyst'
+import { overloadedCatalystLink } from './overloadedCatalyst'
 import { trackEvent } from 'shared/analytics/trackEvent'
 
 function buildLink(linkConfig: AlgorithmLinkConfig) {
@@ -17,6 +18,9 @@ function buildLink(linkConfig: AlgorithmLinkConfig) {
     }
     case AlgorithmLinkTypes.VERSION_CATALYST: {
       return versionCatalystLink({ ...linkConfig.config })
+    }
+    case AlgorithmLinkTypes.OVERLOADED_CATALYST: {
+      return overloadedCatalystLink()
     }
     case AlgorithmLinkTypes.LARGE_LATENCY: {
       return largeLatencyLink({ ...defaultLargeLatencyConfig, ...linkConfig.config })

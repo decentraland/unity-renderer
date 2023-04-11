@@ -6,7 +6,8 @@ export enum AlgorithmLinkTypes {
   ALL_PEERS_SCORE = 'ALL_PEERS_SCORE',
   LOAD_BALANCING = 'LOAD_BALANCING',
   VERSION_CATALYST = 'VERSION_CATALYST',
-  FORCE_CATALYST = 'FORCE_CATALYST'
+  FORCE_CATALYST = 'FORCE_CATALYST',
+  OVERLOADED_CATALYST = 'OVERLOADED_CATALYST'
 }
 
 export type LargeLatencyConfig = {
@@ -83,6 +84,10 @@ export type AllPeersScoreConfig = {
   }
 }
 
+export type OverloadedCatalystConfig = {
+  type: AlgorithmLinkTypes.OVERLOADED_CATALYST
+}
+
 export type AllPeersScoreParameters = Required<AllPeersScoreConfig['config']> & {
   latencyDeductionsParameters: Required<LatencyDeductionsConfig>
 }
@@ -124,6 +129,7 @@ export type AlgorithmLinkConfig = (
   | LoadBalancingConfig
   | VersionCatalystConfig
   | ForceCatalystConfig
+  | OverloadedCatalystConfig
 ) & { name?: string }
 
 export type AlgorithmChainConfig = AlgorithmLinkConfig[]
