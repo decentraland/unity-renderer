@@ -27,7 +27,7 @@ jobs:
 
             ### SDK 6/7:
             - [Open SDK7 scenes in preview](https://sdk-test-scenes.decentraland.zone/?position=73,-8&realm=LocalPreview&explorer-branch=${{ github.head_ref }})
-            - [Open SDK6 scenes in preview](https://sdk-test-scenes.decentraland.zone/?position=-1,27&realm=LocalPreview&explorer-branch==${{ github.head_ref }})
+            - [Open SDK6 scenes in preview](https://sdk-test-scenes.decentraland.zone/?position=-1,27&realm=LocalPreview&explorer-branch=${{ github.head_ref }})
 
             ### More
             - Code coverage report: [https://renderer-artifacts.decentraland.org/branch-coverage/${{ github.head_ref }}](https://renderer-artifacts.decentraland.org/branch-coverage/${{ github.head_ref }})
