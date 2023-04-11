@@ -368,6 +368,41 @@ namespace Tests
         }
 
         [Test]
+        public void UseGlobalTargetDirectionCorrectlyFromChildEntity()
+        {
+            Vector3 globalTargetPosition = new Vector3(0f, 10f, 0f);
+
+            var raycasterParent = scene.CreateEntity(635);
+            Transform raycasterParentTransform = raycasterParent.gameObject.transform;
+            raycasterParentTransform.position = new Vector3(10, 0, 10);
+
+            Transform entityRaycasterTransform = entityRaycaster.gameObject.transform;
+            entityRaycasterTransform.parent = raycasterParentTransform;
+            entityRaycasterTransform.localPosition = new Vector3(10, 0, 10);
+
+            PBRaycast raycast = new PBRaycast()
+            {
+                GlobalTarget = ProtoConvertUtils.UnityVectorToPBVector(globalTargetPosition),
+                MaxDistance = 10f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e =>
+                    ProtoConvertUtils.PBVectorToUnityVector(e.GlobalOrigin) == new Vector3(20f, 0f, 20f)
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (globalTargetPosition - entityRaycasterTransform.position).normalized)
+            );
+        }
+
+        [Test]
         public void UseLocalDirectionCorrectly()
         {
             Vector3 localDirection = Vector3.down;
@@ -377,7 +412,6 @@ namespace Tests
             entityRaycaster.gameObject.transform.Rotate(Vector3.right, 45);
             Assert.AreNotEqual(-entityRaycaster.gameObject.transform.up, localDirection);
             Vector3 localDirectionNormalized = -entityRaycaster.gameObject.transform.up.normalized;
-            Debug.Log("rotated transform.down: " + localDirectionNormalized);
 
             PBRaycast raycast = new PBRaycast()
             {
@@ -401,6 +435,140 @@ namespace Tests
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z.Equals(localDirectionNormalized.z))
             );
 
+            entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
+        }
+
+        [Test]
+        public void UseLocalDirectionCorrectlyFromChildEntity()
+        {
+            Vector3 localDirection = Vector3.forward;
+            Transform parentEntityTransform = scene.CreateEntity(654).gameObject.transform;
+            parentEntityTransform.position = new Vector3(10, 0, 10);
+            parentEntityTransform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+            Transform entityRaycasterTransform = entityRaycaster.gameObject.transform;
+            entityRaycasterTransform.parent = parentEntityTransform;
+            entityRaycasterTransform.localPosition = new Vector3(10, 0, 10);
+            entityRaycasterTransform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+;
+            Assert.AreNotEqual(entityRaycasterTransform.forward.normalized, localDirection);
+
+            PBRaycast raycast = new PBRaycast()
+            {
+                LocalDirection = ProtoConvertUtils.UnityVectorToPBVector(localDirection),
+                MaxDistance = 10f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e =>
+                    ProtoConvertUtils.PBVectorToUnityVector(e.GlobalOrigin) == new Vector3(15f, 0f, 15f)
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).x.Equals(Vector3.right.x)
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).y.Equals(Vector3.right.y)
+                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z))
+            );
+            entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
+        }
+
+        [Test]
+        public void UseLocalDirectionCorrectlyFromGrandchildEntity()
+        {
+            Vector3 localDirection = Vector3.forward;
+
+            Transform grandparentEntityTransform = scene.CreateEntity(694).gameObject.transform;
+            grandparentEntityTransform.position = new Vector3(10, 0, 10);
+            grandparentEntityTransform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+            Transform parentEntityTransform = scene.CreateEntity(654).gameObject.transform;
+            parentEntityTransform.parent = grandparentEntityTransform;
+            parentEntityTransform.localPosition = new Vector3(10, 0, 10);
+            parentEntityTransform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+
+            Transform entityRaycasterTransform = entityRaycaster.gameObject.transform;
+            entityRaycasterTransform.parent = parentEntityTransform;
+            entityRaycasterTransform.localPosition = Vector3.zero;
+            entityRaycasterTransform.localRotation = Quaternion.identity;
+;
+            Assert.AreNotEqual(entityRaycasterTransform.forward.normalized, localDirection);
+
+            PBRaycast raycast = new PBRaycast()
+            {
+                LocalDirection = ProtoConvertUtils.UnityVectorToPBVector(localDirection),
+                MaxDistance = 10f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e =>
+                    ProtoConvertUtils.PBVectorToUnityVector(e.GlobalOrigin) == new Vector3(15f, 0f, 15f)
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).x.Equals(Vector3.right.x)
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).y.Equals(Vector3.right.y)
+                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z))
+            );
+            entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
+        }
+
+        [Test]
+        public void UseOffsetPropCorrectly()
+        {
+            Vector3 localDirection = Vector3.forward;
+
+            Transform grandparentEntityTransform = scene.CreateEntity(694).gameObject.transform;
+            grandparentEntityTransform.position = new Vector3(10, 0, 10);
+            grandparentEntityTransform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+            Transform parentEntityTransform = scene.CreateEntity(654).gameObject.transform;
+            parentEntityTransform.parent = grandparentEntityTransform;
+            parentEntityTransform.localPosition = new Vector3(10, 0, 10);
+            parentEntityTransform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+
+            Transform entityRaycasterTransform = entityRaycaster.gameObject.transform;
+            entityRaycasterTransform.parent = parentEntityTransform;
+            entityRaycasterTransform.localPosition = Vector3.zero;
+            entityRaycasterTransform.localRotation = Quaternion.identity;
+;
+            Assert.AreNotEqual(entityRaycasterTransform.forward.normalized, localDirection);
+
+            Vector3 offset = Vector3.forward;
+            PBRaycast raycast = new PBRaycast()
+            {
+                OriginOffset = ProtoConvertUtils.UnityVectorToPBVector(offset),
+                LocalDirection = ProtoConvertUtils.UnityVectorToPBVector(localDirection),
+                MaxDistance = 10f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e =>
+                    ProtoConvertUtils.PBVectorToUnityVector(e.GlobalOrigin) == entityRaycasterTransform.position + offset
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).x.Equals(Vector3.right.x)
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).y.Equals(Vector3.right.y)
+                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z))
+            );
             entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
         }
 
@@ -536,6 +704,7 @@ namespace Tests
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp)
             );
         }
+
 
         private ECS7TestEntity CreateColliderEntity(int entityId, Vector3 position, ColliderLayer[] layers)
         {
