@@ -16,7 +16,8 @@ const EXPECTED: Candidate = {
     [1, 1],
     [1, 1],
     [1, 1]
-  ]
+  ],
+  version: { content: '1.0.0', lambdas: '1.0.0', bff: '1.0.0', comms: 'v2' }
 }
 
 describe('Fetch catalyst server status', () => {
@@ -34,13 +35,21 @@ describe('Fetch catalyst server status', () => {
           httpStatus: 200,
           result: {
             comms: {
-              protocol: EXPECTED.protocol
+              protocol: EXPECTED.protocol,
+              version: EXPECTED.protocol
             },
             configurations: {
               realmName: EXPECTED.catalystName
             },
             bff: {
-              userCount: EXPECTED.usersCount
+              userCount: EXPECTED.usersCount,
+              version: '1.0.0'
+            },
+            content: {
+              version: '1.0.0'
+            },
+            lambdas: {
+              version: '1.0.0'
             }
           }
         }
