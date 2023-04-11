@@ -150,8 +150,8 @@ public class EventCardComponentViewTests
         Assert.AreEqual(!isLive, eventCardComponent.eventDateText.gameObject.activeSelf);
         Assert.AreEqual(isEventCardModal || isLive, eventCardComponent.jumpinButton.gameObject.activeSelf);
         Assert.AreEqual(!isEventCardModal && !isLive, eventCardComponent.jumpinButtonForNotLive.gameObject.activeSelf);
-        Assert.AreEqual(!isLive && !isSubscribed, eventCardComponent.subscribeEventButton.gameObject.activeSelf);
-        Assert.AreEqual(!isLive && isSubscribed, eventCardComponent.unsubscribeEventButton.gameObject.activeSelf);
+        Assert.AreEqual(!isLive && !eventCardComponent.model.eventFromAPIInfo.attending, eventCardComponent.subscribeEventButton.gameObject.activeSelf);
+        Assert.AreEqual(!isLive && eventCardComponent.model.eventFromAPIInfo.attending, eventCardComponent.unsubscribeEventButton.gameObject.activeSelf);
         Assert.AreEqual(isLive, eventCardComponent.eventStartedInTitleForLive.gameObject.activeSelf);
         Assert.AreEqual(!isLive, eventCardComponent.eventStartedInTitleForNotLive.gameObject.activeSelf);
         Assert.AreEqual(isLive, eventCardComponent.subscribedUsersTitleForLive.gameObject.activeSelf);
@@ -352,7 +352,7 @@ public class EventCardComponentViewTests
 
         // Act
         eventCardModalComponent.OnCloseActionTriggered(new DCLAction_Trigger());
-        
+
         // Assert
         Assert.IsFalse(eventCardModalComponent.isVisible);
     }
