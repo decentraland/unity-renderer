@@ -397,11 +397,11 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             settingController.Initialize();
 
             // Act
-            bool newValue = true;
+            AudioSettings.ChatNotificationType newValue = AudioSettings.ChatNotificationType.All;
             settingController.UpdateSetting(newValue);
 
             // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Chat SFX Toggle stored value mismatch");
+            Assert.AreEqual((int) newValue, settingController.GetStoredValue(), "Chat SFX Toggle stored value mismatch");
         }
 
         [Test]

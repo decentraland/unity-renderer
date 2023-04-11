@@ -10,9 +10,11 @@ namespace DCL.Chat.Notifications
         public string Username { get; }
         public bool ImTheSender { get; }
         public bool IsOwnPlayerMentioned { get; }
+        public bool ShouldPlayMentionSfx { get; }
 
         public PublicChannelMessageNotificationModel(string messageId, string body, string channelName,
-            string channelId, ulong timestamp, bool imTheSender, string username, bool isOwnPlayerMentioned)
+            string channelId, ulong timestamp, bool imTheSender, string username, bool isOwnPlayerMentioned,
+            bool shouldPlayMentionSfx)
         {
             MessageId = messageId;
             Body = body;
@@ -22,6 +24,7 @@ namespace DCL.Chat.Notifications
             ImTheSender = imTheSender;
             Username = username;
             IsOwnPlayerMentioned = isOwnPlayerMentioned;
+            ShouldPlayMentionSfx = shouldPlayMentionSfx;
         }
     }
 }

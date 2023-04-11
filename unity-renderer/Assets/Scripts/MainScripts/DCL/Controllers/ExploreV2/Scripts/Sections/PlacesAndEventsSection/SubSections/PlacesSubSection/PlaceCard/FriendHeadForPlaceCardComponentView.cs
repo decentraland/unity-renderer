@@ -28,7 +28,10 @@ public class FriendHeadForPlaceCardComponentView : BaseComponentView, IFriendHea
     [Header("Configuration")]
     [SerializeField] internal FriendHeadForPlaceCardComponentModel model;
 
-    public override void Start() { friendNameShowHideAnimator.gameObject.SetActive(false); }
+    public void Start()
+    {
+        friendNameShowHideAnimator.gameObject.SetActive(false);
+    }
 
     public void Configure(FriendHeadForPlaceCardComponentModel newModel)
     {

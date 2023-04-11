@@ -89,10 +89,10 @@ namespace Tests
             colliderEntity2 = colliderGO2.AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity1,
-                new InternalColliders() { colliders = new List<Collider>() { colliderEntity1 } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { colliderEntity1, 0 } }});
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity2,
-                new InternalColliders() { colliders = new List<Collider>() { colliderEntity2 } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { colliderEntity2, 0 } }});
         }
 
         [TearDown]
@@ -572,7 +572,7 @@ namespace Tests
             Collider testEntityCollider = new GameObject("testEntityCollider").AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(newTestScene, testEntity,
-                new InternalColliders() { colliders = new List<Collider>() { testEntityCollider } });
+            new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { testEntityCollider, 0 } }});
 
             // 2. position collider entity inside scene space
             ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
@@ -616,7 +616,7 @@ namespace Tests
                 X = entityLocalPosition.x,
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z - 3
-            }, enqueuedEvent.hit.Origin);
+            }, enqueuedEvent.hit.GlobalOrigin);
 
             // 6. Clean up
             Object.DestroyImmediate(testEntityCollider.gameObject);
