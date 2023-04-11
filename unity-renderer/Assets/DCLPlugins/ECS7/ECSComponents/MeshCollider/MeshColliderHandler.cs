@@ -1,6 +1,7 @@
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
@@ -10,6 +11,10 @@ namespace DCL.ECSComponents
 {
     public class MeshColliderHandler : IECSComponentHandler<PBMeshCollider>
     {
+        private const int LAYER_PHYSICS = (int)ColliderLayer.ClPhysics;
+        private const int LAYER_POINTER = (int)ColliderLayer.ClPointer;
+        private const int LAYER_PHYSICS_POINTER = LAYER_PHYSICS | LAYER_POINTER;
+
         internal GameObject colliderGameObject;
         private Collider collider;
         private AssetPromise_PrimitiveMesh primitiveMeshPromise;
@@ -17,12 +22,16 @@ namespace DCL.ECSComponents
 
         private readonly IInternalECSComponent<InternalColliders> pointerColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> physicColliderComponent;
+        private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
 
-        public MeshColliderHandler(IInternalECSComponent<InternalColliders> pointerColliderComponent,
-            IInternalECSComponent<InternalColliders> physicColliderComponent)
+        public MeshColliderHandler(
+            IInternalECSComponent<InternalColliders> pointerColliderComponent,
+            IInternalECSComponent<InternalColliders> physicColliderComponent,
+            IInternalECSComponent<InternalColliders> customLayerColliderComponent)
         {
             this.pointerColliderComponent = pointerColliderComponent;
             this.physicColliderComponent = physicColliderComponent;
+            this.customLayerColliderComponent = customLayerColliderComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -118,53 +127,38 @@ namespace DCL.ECSComponents
                 colliderGameObject.SetActive(true);
             }
 
-            const int physicsLayer = (int)ColliderLayer.ClPhysics;
-            const int pointerLayer = (int)ColliderLayer.ClPointer;
-            const int pointerAndPhysicsMask = physicsLayer | pointerLayer;
-
             int colliderLayer = model.GetColliderLayer();
 
-            if ((colliderLayer & pointerAndPhysicsMask) == pointerAndPhysicsMask)
-            {
+            if ((colliderLayer & LAYER_PHYSICS_POINTER) == LAYER_PHYSICS_POINTER)
                 colliderGameObject.layer = PhysicsLayers.defaultLayer;
-            }
-            else if ((colliderLayer & physicsLayer) == physicsLayer)
-            {
+            else if ((colliderLayer & LAYER_PHYSICS) == LAYER_PHYSICS)
                 colliderGameObject.layer = PhysicsLayers.characterOnlyLayer;
-            }
-            else if ((colliderLayer & pointerLayer) == pointerLayer)
-            {
+            else if ((colliderLayer & LAYER_POINTER) == LAYER_POINTER)
                 colliderGameObject.layer = PhysicsLayers.onPointerEventLayer;
-            }
+            else if (LayerMaskUtils.LayerMaskHasAnySDKCustomLayer((uint)colliderLayer))
+                colliderGameObject.layer = PhysicsLayers.sdkCustomLayer;
             else if (collider != null)
-            {
                 colliderGameObject.SetActive(false);
-            }
         }
 
         private void SetInternalColliderComponents(IParcelScene scene, IDCLEntity entity, PBMeshCollider model)
         {
-            const int physicsLayer = (int)ColliderLayer.ClPhysics;
-            const int pointerLayer = (int)ColliderLayer.ClPointer;
             int colliderLayer = model.GetColliderLayer();
 
-            if ((colliderLayer & pointerLayer) == pointerLayer)
-            {
-                pointerColliderComponent.AddCollider(scene, entity, collider);
-            }
+            if ((colliderLayer & LAYER_POINTER) != 0)
+                pointerColliderComponent.AddCollider(scene, entity, collider, colliderLayer);
             else
-            {
                 pointerColliderComponent.RemoveCollider(scene, entity, collider);
-            }
 
-            if ((colliderLayer & physicsLayer) == physicsLayer)
-            {
-                physicColliderComponent.AddCollider(scene, entity, collider);
-            }
+            if ((colliderLayer & LAYER_PHYSICS) != 0)
+                physicColliderComponent.AddCollider(scene, entity, collider, colliderLayer);
             else
-            {
                 physicColliderComponent.RemoveCollider(scene, entity, collider);
-            }
+
+            if (LayerMaskUtils.LayerMaskHasAnySDKCustomLayer((uint)colliderLayer))
+                customLayerColliderComponent.AddCollider(scene, entity, collider, colliderLayer);
+            else
+                customLayerColliderComponent.RemoveCollider(scene, entity, collider);
         }
     }
 }

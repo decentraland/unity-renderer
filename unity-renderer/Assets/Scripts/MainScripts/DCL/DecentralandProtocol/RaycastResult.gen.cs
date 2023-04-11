@@ -26,24 +26,18 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcmF5Y2FzdF9yZXN1bHQu",
             "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxohZGVjZW50cmFs",
-            "YW5kL2NvbW1vbi92ZWN0b3JzLnByb3RvIroBCg9QQlJheWNhc3RSZXN1bHQS",
-            "EQoJdGltZXN0YW1wGAEgASgFEiwKBm9yaWdpbhgCIAEoCzIcLmRlY2VudHJh",
-            "bGFuZC5jb21tb24uVmVjdG9yMxIvCglkaXJlY3Rpb24YAyABKAsyHC5kZWNl",
-            "bnRyYWxhbmQuY29tbW9uLlZlY3RvcjMSNQoEaGl0cxgEIAMoCzInLmRlY2Vu",
-            "dHJhbGFuZC5zZGsuY29tcG9uZW50cy5SYXljYXN0SGl0IqkCCgpSYXljYXN0",
-            "SGl0Ei4KCHBvc2l0aW9uGAEgASgLMhwuZGVjZW50cmFsYW5kLmNvbW1vbi5W",
-            "ZWN0b3IzEiwKBm9yaWdpbhgCIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24u",
-            "VmVjdG9yMxIvCglkaXJlY3Rpb24YAyABKAsyHC5kZWNlbnRyYWxhbmQuY29t",
-            "bW9uLlZlY3RvcjMSMAoKbm9ybWFsX2hpdBgEIAEoCzIcLmRlY2VudHJhbGFu",
-            "ZC5jb21tb24uVmVjdG9yMxIOCgZsZW5ndGgYBSABKAISFgoJbWVzaF9uYW1l",
-            "GAYgASgJSACIAQESFgoJZW50aXR5X2lkGAcgASgDSAGIAQFCDAoKX21lc2hf",
-            "bmFtZUIMCgpfZW50aXR5X2lkQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
-            "dG8z"));
+            "YW5kL2NvbW1vbi92ZWN0b3JzLnByb3RvGjRkZWNlbnRyYWxhbmQvc2RrL2Nv",
+            "bXBvbmVudHMvY29tbW9uL3JheWNhc3RfaGl0LnByb3RvItsBCg9QQlJheWNh",
+            "c3RSZXN1bHQSFgoJdGltZXN0YW1wGAEgASgNSACIAQESMwoNZ2xvYmFsX29y",
+            "aWdpbhgCIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMxIvCglk",
+            "aXJlY3Rpb24YAyABKAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlZlY3RvcjMS",
+            "PAoEaGl0cxgEIAMoCzIuLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5j",
+            "b21tb24uUmF5Y2FzdEhpdEIMCgpfdGltZXN0YW1wQhSqAhFEQ0wuRUNTQ29t",
+            "cG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, global::DCL.ECSComponents.RaycastHitReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBRaycastResult), global::DCL.ECSComponents.PBRaycastResult.Parser, new[]{ "Timestamp", "Origin", "Direction", "Hits" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.RaycastHit), global::DCL.ECSComponents.RaycastHit.Parser, new[]{ "Position", "Origin", "Direction", "NormalHit", "Length", "MeshName", "EntityId" }, new[]{ "MeshName", "EntityId" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBRaycastResult), global::DCL.ECSComponents.PBRaycastResult.Parser, new[]{ "Timestamp", "GlobalOrigin", "Direction", "Hits" }, new[]{ "Timestamp" }, null, null, null)
           }));
     }
     #endregion
@@ -51,8 +45,10 @@ namespace DCL.ECSComponents {
   }
   #region Messages
   /// <summary>
+  /// The PBRaycast component and PBRaycastResult are defined in https://adr.decentraland.org/adr/ADR-200
+  ///
   /// The RaycastResult component is added to an Entity when the results of a previously attached
-  /// Raycast component are available. It contains information about the ray and any objects it 
+  /// Raycast component are available. It contains information about the ray and any objects it
   /// collided with.
   /// </summary>
   public sealed partial class PBRaycastResult : pb::IMessage<PBRaycastResult>
@@ -62,6 +58,7 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBRaycastResult> _parser = new pb::MessageParser<PBRaycastResult>(() => new PBRaycastResult());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBRaycastResult> Parser { get { return _parser; } }
@@ -89,8 +86,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBRaycastResult(PBRaycastResult other) : this() {
+      _hasBits0 = other._hasBits0;
       timestamp_ = other.timestamp_;
-      origin_ = other.origin_ != null ? other.origin_.Clone() : null;
+      globalOrigin_ = other.globalOrigin_ != null ? other.globalOrigin_.Clone() : null;
       direction_ = other.direction_ != null ? other.direction_.Clone() : null;
       hits_ = other.hits_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -104,31 +102,44 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "timestamp" field.</summary>
     public const int TimestampFieldNumber = 1;
-    private int timestamp_;
+    private uint timestamp_;
     /// <summary>
-    /// the timestamp of the Raycast component addition
+    /// timestamp is a correlation id, copied from the PBRaycast
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Timestamp {
-      get { return timestamp_; }
+    public uint Timestamp {
+      get { if ((_hasBits0 & 1) != 0) { return timestamp_; } else { return 0; } }
       set {
+        _hasBits0 |= 1;
         timestamp_ = value;
       }
     }
+    /// <summary>Gets whether the "timestamp" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasTimestamp {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "timestamp" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTimestamp() {
+      _hasBits0 &= ~1;
+    }
 
-    /// <summary>Field number for the "origin" field.</summary>
-    public const int OriginFieldNumber = 2;
-    private global::Decentraland.Common.Vector3 origin_;
+    /// <summary>Field number for the "global_origin" field.</summary>
+    public const int GlobalOriginFieldNumber = 2;
+    private global::Decentraland.Common.Vector3 globalOrigin_;
     /// <summary>
-    /// the starting point of the ray
+    /// the starting point of the ray in global coordinates
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Vector3 Origin {
-      get { return origin_; }
+    public global::Decentraland.Common.Vector3 GlobalOrigin {
+      get { return globalOrigin_; }
       set {
-        origin_ = value;
+        globalOrigin_ = value;
       }
     }
 
@@ -136,7 +147,7 @@ namespace DCL.ECSComponents {
     public const int DirectionFieldNumber = 3;
     private global::Decentraland.Common.Vector3 direction_;
     /// <summary>
-    /// the direction vector of the ray
+    /// the direction vector of the ray in global coordinates
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -177,7 +188,7 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Timestamp != other.Timestamp) return false;
-      if (!object.Equals(Origin, other.Origin)) return false;
+      if (!object.Equals(GlobalOrigin, other.GlobalOrigin)) return false;
       if (!object.Equals(Direction, other.Direction)) return false;
       if(!hits_.Equals(other.hits_)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -187,8 +198,8 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
-      if (origin_ != null) hash ^= Origin.GetHashCode();
+      if (HasTimestamp) hash ^= Timestamp.GetHashCode();
+      if (globalOrigin_ != null) hash ^= GlobalOrigin.GetHashCode();
       if (direction_ != null) hash ^= Direction.GetHashCode();
       hash ^= hits_.GetHashCode();
       if (_unknownFields != null) {
@@ -209,13 +220,13 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Timestamp != 0) {
+      if (HasTimestamp) {
         output.WriteRawTag(8);
-        output.WriteInt32(Timestamp);
+        output.WriteUInt32(Timestamp);
       }
-      if (origin_ != null) {
+      if (globalOrigin_ != null) {
         output.WriteRawTag(18);
-        output.WriteMessage(Origin);
+        output.WriteMessage(GlobalOrigin);
       }
       if (direction_ != null) {
         output.WriteRawTag(26);
@@ -232,13 +243,13 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Timestamp != 0) {
+      if (HasTimestamp) {
         output.WriteRawTag(8);
-        output.WriteInt32(Timestamp);
+        output.WriteUInt32(Timestamp);
       }
-      if (origin_ != null) {
+      if (globalOrigin_ != null) {
         output.WriteRawTag(18);
-        output.WriteMessage(Origin);
+        output.WriteMessage(GlobalOrigin);
       }
       if (direction_ != null) {
         output.WriteRawTag(26);
@@ -255,11 +266,11 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Timestamp != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Timestamp);
+      if (HasTimestamp) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Timestamp);
       }
-      if (origin_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Origin);
+      if (globalOrigin_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GlobalOrigin);
       }
       if (direction_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Direction);
@@ -277,14 +288,14 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Timestamp != 0) {
+      if (other.HasTimestamp) {
         Timestamp = other.Timestamp;
       }
-      if (other.origin_ != null) {
-        if (origin_ == null) {
-          Origin = new global::Decentraland.Common.Vector3();
+      if (other.globalOrigin_ != null) {
+        if (globalOrigin_ == null) {
+          GlobalOrigin = new global::Decentraland.Common.Vector3();
         }
-        Origin.MergeFrom(other.Origin);
+        GlobalOrigin.MergeFrom(other.GlobalOrigin);
       }
       if (other.direction_ != null) {
         if (direction_ == null) {
@@ -309,14 +320,14 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Timestamp = input.ReadInt32();
+            Timestamp = input.ReadUInt32();
             break;
           }
           case 18: {
-            if (origin_ == null) {
-              Origin = new global::Decentraland.Common.Vector3();
+            if (globalOrigin_ == null) {
+              GlobalOrigin = new global::Decentraland.Common.Vector3();
             }
-            input.ReadMessage(Origin);
+            input.ReadMessage(GlobalOrigin);
             break;
           }
           case 26: {
@@ -346,14 +357,14 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            Timestamp = input.ReadInt32();
+            Timestamp = input.ReadUInt32();
             break;
           }
           case 18: {
-            if (origin_ == null) {
-              Origin = new global::Decentraland.Common.Vector3();
+            if (globalOrigin_ == null) {
+              GlobalOrigin = new global::Decentraland.Common.Vector3();
             }
-            input.ReadMessage(Origin);
+            input.ReadMessage(GlobalOrigin);
             break;
           }
           case 26: {
@@ -365,504 +376,6 @@ namespace DCL.ECSComponents {
           }
           case 34: {
             hits_.AddEntriesFrom(ref input, _repeated_hits_codec);
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  /// <summary>
-  /// RaycastHit contains information about the intersection of a ray with a mesh.
-  /// </summary>
-  public sealed partial class RaycastHit : pb::IMessage<RaycastHit>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<RaycastHit> _parser = new pb::MessageParser<RaycastHit>(() => new RaycastHit());
-    private pb::UnknownFieldSet _unknownFields;
-    private int _hasBits0;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<RaycastHit> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::DCL.ECSComponents.RaycastResultReflection.Descriptor.MessageTypes[1]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public RaycastHit() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public RaycastHit(RaycastHit other) : this() {
-      _hasBits0 = other._hasBits0;
-      position_ = other.position_ != null ? other.position_.Clone() : null;
-      origin_ = other.origin_ != null ? other.origin_.Clone() : null;
-      direction_ = other.direction_ != null ? other.direction_.Clone() : null;
-      normalHit_ = other.normalHit_ != null ? other.normalHit_.Clone() : null;
-      length_ = other.length_;
-      meshName_ = other.meshName_;
-      entityId_ = other.entityId_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public RaycastHit Clone() {
-      return new RaycastHit(this);
-    }
-
-    /// <summary>Field number for the "position" field.</summary>
-    public const int PositionFieldNumber = 1;
-    private global::Decentraland.Common.Vector3 position_;
-    /// <summary>
-    /// Position will be relative to the scene  
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Vector3 Position {
-      get { return position_; }
-      set {
-        position_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "origin" field.</summary>
-    public const int OriginFieldNumber = 2;
-    private global::Decentraland.Common.Vector3 origin_;
-    /// <summary>
-    /// the starting point of the ray
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Vector3 Origin {
-      get { return origin_; }
-      set {
-        origin_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "direction" field.</summary>
-    public const int DirectionFieldNumber = 3;
-    private global::Decentraland.Common.Vector3 direction_;
-    /// <summary>
-    /// the direction vector of the ray
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Vector3 Direction {
-      get { return direction_; }
-      set {
-        direction_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "normal_hit" field.</summary>
-    public const int NormalHitFieldNumber = 4;
-    private global::Decentraland.Common.Vector3 normalHit_;
-    /// <summary>
-    /// the entry vector of the ray into the collision mesh
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Vector3 NormalHit {
-      get { return normalHit_; }
-      set {
-        normalHit_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "length" field.</summary>
-    public const int LengthFieldNumber = 5;
-    private float length_;
-    /// <summary>
-    /// the distance between the ray origin and the hit position
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Length {
-      get { return length_; }
-      set {
-        length_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "mesh_name" field.</summary>
-    public const int MeshNameFieldNumber = 6;
-    private string meshName_;
-    /// <summary>
-    /// (unused) mesh ID if collision happened inside a GltfContainer
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string MeshName {
-      get { return meshName_ ?? ""; }
-      set {
-        meshName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "mesh_name" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMeshName {
-      get { return meshName_ != null; }
-    }
-    /// <summary>Clears the value of the "mesh_name" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMeshName() {
-      meshName_ = null;
-    }
-
-    /// <summary>Field number for the "entity_id" field.</summary>
-    public const int EntityIdFieldNumber = 7;
-    private long entityId_;
-    /// <summary>
-    /// the ID of the Entity that has the impacted mesh attached
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public long EntityId {
-      get { if ((_hasBits0 & 1) != 0) { return entityId_; } else { return 0L; } }
-      set {
-        _hasBits0 |= 1;
-        entityId_ = value;
-      }
-    }
-    /// <summary>Gets whether the "entity_id" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasEntityId {
-      get { return (_hasBits0 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "entity_id" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearEntityId() {
-      _hasBits0 &= ~1;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as RaycastHit);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(RaycastHit other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (!object.Equals(Position, other.Position)) return false;
-      if (!object.Equals(Origin, other.Origin)) return false;
-      if (!object.Equals(Direction, other.Direction)) return false;
-      if (!object.Equals(NormalHit, other.NormalHit)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Length, other.Length)) return false;
-      if (MeshName != other.MeshName) return false;
-      if (EntityId != other.EntityId) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (position_ != null) hash ^= Position.GetHashCode();
-      if (origin_ != null) hash ^= Origin.GetHashCode();
-      if (direction_ != null) hash ^= Direction.GetHashCode();
-      if (normalHit_ != null) hash ^= NormalHit.GetHashCode();
-      if (Length != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Length);
-      if (HasMeshName) hash ^= MeshName.GetHashCode();
-      if (HasEntityId) hash ^= EntityId.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (position_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(Position);
-      }
-      if (origin_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Origin);
-      }
-      if (direction_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(Direction);
-      }
-      if (normalHit_ != null) {
-        output.WriteRawTag(34);
-        output.WriteMessage(NormalHit);
-      }
-      if (Length != 0F) {
-        output.WriteRawTag(45);
-        output.WriteFloat(Length);
-      }
-      if (HasMeshName) {
-        output.WriteRawTag(50);
-        output.WriteString(MeshName);
-      }
-      if (HasEntityId) {
-        output.WriteRawTag(56);
-        output.WriteInt64(EntityId);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (position_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(Position);
-      }
-      if (origin_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Origin);
-      }
-      if (direction_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(Direction);
-      }
-      if (normalHit_ != null) {
-        output.WriteRawTag(34);
-        output.WriteMessage(NormalHit);
-      }
-      if (Length != 0F) {
-        output.WriteRawTag(45);
-        output.WriteFloat(Length);
-      }
-      if (HasMeshName) {
-        output.WriteRawTag(50);
-        output.WriteString(MeshName);
-      }
-      if (HasEntityId) {
-        output.WriteRawTag(56);
-        output.WriteInt64(EntityId);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (position_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Position);
-      }
-      if (origin_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Origin);
-      }
-      if (direction_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Direction);
-      }
-      if (normalHit_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(NormalHit);
-      }
-      if (Length != 0F) {
-        size += 1 + 4;
-      }
-      if (HasMeshName) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(MeshName);
-      }
-      if (HasEntityId) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(EntityId);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(RaycastHit other) {
-      if (other == null) {
-        return;
-      }
-      if (other.position_ != null) {
-        if (position_ == null) {
-          Position = new global::Decentraland.Common.Vector3();
-        }
-        Position.MergeFrom(other.Position);
-      }
-      if (other.origin_ != null) {
-        if (origin_ == null) {
-          Origin = new global::Decentraland.Common.Vector3();
-        }
-        Origin.MergeFrom(other.Origin);
-      }
-      if (other.direction_ != null) {
-        if (direction_ == null) {
-          Direction = new global::Decentraland.Common.Vector3();
-        }
-        Direction.MergeFrom(other.Direction);
-      }
-      if (other.normalHit_ != null) {
-        if (normalHit_ == null) {
-          NormalHit = new global::Decentraland.Common.Vector3();
-        }
-        NormalHit.MergeFrom(other.NormalHit);
-      }
-      if (other.Length != 0F) {
-        Length = other.Length;
-      }
-      if (other.HasMeshName) {
-        MeshName = other.MeshName;
-      }
-      if (other.HasEntityId) {
-        EntityId = other.EntityId;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            if (position_ == null) {
-              Position = new global::Decentraland.Common.Vector3();
-            }
-            input.ReadMessage(Position);
-            break;
-          }
-          case 18: {
-            if (origin_ == null) {
-              Origin = new global::Decentraland.Common.Vector3();
-            }
-            input.ReadMessage(Origin);
-            break;
-          }
-          case 26: {
-            if (direction_ == null) {
-              Direction = new global::Decentraland.Common.Vector3();
-            }
-            input.ReadMessage(Direction);
-            break;
-          }
-          case 34: {
-            if (normalHit_ == null) {
-              NormalHit = new global::Decentraland.Common.Vector3();
-            }
-            input.ReadMessage(NormalHit);
-            break;
-          }
-          case 45: {
-            Length = input.ReadFloat();
-            break;
-          }
-          case 50: {
-            MeshName = input.ReadString();
-            break;
-          }
-          case 56: {
-            EntityId = input.ReadInt64();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            if (position_ == null) {
-              Position = new global::Decentraland.Common.Vector3();
-            }
-            input.ReadMessage(Position);
-            break;
-          }
-          case 18: {
-            if (origin_ == null) {
-              Origin = new global::Decentraland.Common.Vector3();
-            }
-            input.ReadMessage(Origin);
-            break;
-          }
-          case 26: {
-            if (direction_ == null) {
-              Direction = new global::Decentraland.Common.Vector3();
-            }
-            input.ReadMessage(Direction);
-            break;
-          }
-          case 34: {
-            if (normalHit_ == null) {
-              NormalHit = new global::Decentraland.Common.Vector3();
-            }
-            input.ReadMessage(NormalHit);
-            break;
-          }
-          case 45: {
-            Length = input.ReadFloat();
-            break;
-          }
-          case 50: {
-            MeshName = input.ReadString();
-            break;
-          }
-          case 56: {
-            EntityId = input.ReadInt64();
             break;
           }
         }

@@ -136,10 +136,8 @@ namespace DCL.Chat.HUD
             searchResultsList.Initialize(chatController, mentionsDataStore);
         }
 
-        public override void Update()
+        public void Update()
         {
-            base.Update();
-
             SetQueuedEntries();
 
             if (isSortingDirty)
