@@ -15,6 +15,9 @@ namespace DCL.ECSComponents
         private const int LAYER_POINTER = (int)ColliderLayer.ClPointer;
         private const int LAYER_PHYSICS_POINTER = LAYER_PHYSICS | LAYER_POINTER;
 
+        private const int SPHERE_COLLIDER_LONGITUDE = 12;
+        private const int SPHERE_COLLIDER_LATITUDE = 6;
+
         internal GameObject colliderGameObject;
         private Collider collider;
         private AssetPromise_PrimitiveMesh primitiveMeshPromise;
@@ -94,7 +97,7 @@ namespace DCL.ECSComponents
                     collider = meshCollider;
 
                     primitiveMeshPromise = new AssetPromise_PrimitiveMesh(
-                        AssetPromise_PrimitiveMesh_Model.CreateSphere());
+                        AssetPromise_PrimitiveMesh_Model.CreateSphere(1, SPHERE_COLLIDER_LONGITUDE, SPHERE_COLLIDER_LATITUDE));
 
                     primitiveMeshPromise.OnSuccessEvent += asset => meshCollider.sharedMesh = asset.mesh;
                     primitiveMeshPromise.OnFailEvent += (mesh, exception) => Debug.LogException(exception);
