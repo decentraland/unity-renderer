@@ -340,8 +340,6 @@ export class UnityInterface implements IUnityInterface {
     const adapter = await ensureRealmAdapter()
     const isWorld = isWorldLoaderActive(adapter)
 
-    // this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', "")
-
     if (!isWorld)
     {
       for (let i = 0; i < info.length; i += MINIMAP_CHUNK_SIZE) {

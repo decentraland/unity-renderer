@@ -15,7 +15,6 @@ namespace DCL.Map
         public static WebInterfaceMinimapApiBridge i { get; private set; }
 
         private readonly Dictionary<string, IUniTaskSource> pendingTasks = new ();
-        private BaseVariable<bool> isWorld => DataStore.i.common.isWorld;
         private MinimapMetadata minimapMetadata => MinimapMetadata.GetMetadata();
 
         private void Awake()
