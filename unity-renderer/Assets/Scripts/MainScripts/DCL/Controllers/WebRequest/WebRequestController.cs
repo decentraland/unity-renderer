@@ -19,6 +19,7 @@ namespace DCL
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
         private IPutWebRequestFactory putWebRequestFactory;
+        private IPatchWebRequestFactory patchWebRequestFactory;
         private IDeleteWebRequestFactory deleteWebRequestFactory;
         private readonly IRPCSignRequest rpcSignRequest;
 
@@ -31,6 +32,7 @@ namespace DCL
             IWebRequestAudioFactory audioClipWebRequestFactory,
             IPostWebRequestFactory postWebRequestFactory,
             IPutWebRequestFactory putWebRequestFactory,
+            IPatchWebRequestFactory patchWebRequestFactory,
             IDeleteWebRequestFactory deleteWebRequestFactory,
             IRPCSignRequest rpcSignRequest = null
         )
@@ -41,6 +43,7 @@ namespace DCL
             this.audioClipWebRequestFactory = audioClipWebRequestFactory;
             this.postWebRequestFactory = postWebRequestFactory;
             this.putWebRequestFactory = putWebRequestFactory;
+            this.patchWebRequestFactory = patchWebRequestFactory;
             this.deleteWebRequestFactory = deleteWebRequestFactory;
             this.rpcSignRequest = rpcSignRequest;
         }
@@ -56,6 +59,7 @@ namespace DCL
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
                 new PutWebRequestFactory(),
+                new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory()
             );
 
@@ -101,9 +105,8 @@ namespace DCL
             Dictionary<string, string> headers = null,
             bool isSigned = false)
         {
-            putWebRequestFactory.SetBody(patchData);
-            putWebRequestFactory.SetPatchRequest(true);
-            return await SendWebRequest(putWebRequestFactory, url, downloadHandler, onSuccess, onFail, requestAttemps,
+            patchWebRequestFactory.SetBody(patchData);
+            return await SendWebRequest(patchWebRequestFactory, url, downloadHandler, onSuccess, onFail, requestAttemps,
                 timeout, cancellationToken, headers, isSigned);
         }
 

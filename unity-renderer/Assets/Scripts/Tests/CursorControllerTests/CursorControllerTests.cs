@@ -45,6 +45,7 @@ namespace Tests
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
                 new PutWebRequestFactory(),
+                new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory()
             ) );
             return result;

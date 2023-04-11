@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComponentController, IPlacesAndEventsAPIRequester
@@ -27,6 +28,8 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     internal List<PlaceInfo> favoritesFromAPI = new ();
     internal int availableUISlots;
+
+    private CancellationTokenSource cts = new ();
 
     public FavoritesesSubSectionComponentController(
         IFavoritesSubSectionComponentView view,
@@ -63,7 +66,11 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         {
             exploreV2Analytics.RemoveFavorite(placeUUID);
         }
-        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
+
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
     }
 
     public void Dispose()
@@ -78,6 +85,9 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
         cardsReloader.Dispose();
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
     }
 
     private void FirstLoading()
@@ -99,8 +109,10 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllFavorites(
-            OnCompleted: OnRequestedEventsUpdated);
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.GetAllFavorites(OnCompleted: OnRequestedEventsUpdated, cts.Token);
     }
 
     private void OnRequestedEventsUpdated(List<PlaceInfo> placeList)

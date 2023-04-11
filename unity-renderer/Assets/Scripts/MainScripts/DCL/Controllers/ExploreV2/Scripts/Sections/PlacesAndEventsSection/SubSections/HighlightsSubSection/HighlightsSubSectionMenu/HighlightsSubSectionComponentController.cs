@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public class HighlightsSubSectionComponentController : IHighlightsSubSectionComponentController, IPlacesAndEventsAPIRequester
@@ -29,6 +30,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal List<PlaceInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
+    private CancellationTokenSource cts = new ();
 
     public HighlightsSubSectionComponentController(
         IHighlightsSubSectionComponentView view,
@@ -92,6 +94,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
         cardsReloader.Dispose();
+
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
     }
 
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
@@ -104,7 +110,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         {
             exploreV2Analytics.RemoveFavorite(placeUUID);
         }
-        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
     }
 
     private void FirstLoading()
@@ -121,6 +130,9 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     public void RequestAllFromAPI()
     {
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
         placesAPIApiController.GetAllPlacesFromPlacesAPI(
             OnCompleted: (placeList, total) =>
             {
@@ -137,7 +149,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
                         OnRequestedPlacesAndEventsUpdated();
                         Debug.LogError($"Error receiving events from the API: {error}");
                     });
-            }, 0, 20);
+            }, 0, 20, cts.Token);
     }
 
     internal void OnRequestedPlacesAndEventsUpdated()

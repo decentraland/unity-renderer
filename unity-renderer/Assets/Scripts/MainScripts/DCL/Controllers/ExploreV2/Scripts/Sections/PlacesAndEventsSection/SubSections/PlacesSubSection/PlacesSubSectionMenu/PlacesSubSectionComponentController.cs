@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 using Environment = DCL.Environment;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
@@ -27,6 +28,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal List<PlaceInfo> placesFromAPI = new ();
     internal int availableUISlots;
+    private CancellationTokenSource cts;
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
@@ -81,7 +83,11 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         {
             exploreV2Analytics.RemoveFavorite(placeUUID);
         }
-        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite);
+
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
     }
 
     private void FirstLoading()
@@ -103,7 +109,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnRequestedEventsUpdated, 0, 20);
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnRequestedEventsUpdated, 0, 20, cts.Token);
     }
 
     private void OnRequestedEventsUpdated(List<PlaceInfo> placeList, int total)
@@ -122,7 +131,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void ShowMorePlaces()
     {
-        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnadditionalPageUpdated, placesFromAPI.Count, 8);
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnadditionalPageUpdated, placesFromAPI.Count, 8, cts.Token);
     }
 
     private void OnadditionalPageUpdated(List<PlaceInfo> places, int total)

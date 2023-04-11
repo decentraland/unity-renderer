@@ -49,6 +49,7 @@ namespace DCL
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
                 new PutWebRequestFactory(),
+                new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             ));

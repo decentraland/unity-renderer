@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public class HighlightsSubSectionComponentControllerTests
@@ -95,7 +96,7 @@ public class HighlightsSubSectionComponentControllerTests
         // Assert
         highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
         highlightsSubSectionComponentView.Received().SetAllAsLoading();
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
         Assert.IsFalse(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -106,7 +107,7 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Test]

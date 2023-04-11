@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 
 public class PlacesSubSectionComponentControllerTests
 {
@@ -86,7 +87,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
         placesSubSectionComponentView.Received().SetAllAsLoading();
         placesSubSectionComponentView.Received().SetShowMoreButtonActive(false);
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -97,7 +98,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -123,7 +124,7 @@ public class PlacesSubSectionComponentControllerTests
         // Act
         placesSubSectionComponentController.ShowMorePlaces();
         // Assert
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
