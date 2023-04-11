@@ -1,4 +1,3 @@
-using System;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 
@@ -6,6 +5,13 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDV2ComponentView : BaseComponentView<BackpackEditorHUDModel>, IBackpackEditorHUDView
     {
+        private const int AVATAR_SECTION_INDEX = 0;
+        private const int EMOTES_SECTION_INDEX = 1;
+
+        [SerializeField] private SectionSelectorComponentView sectionSelector;
+        [SerializeField] private GameObject avatarSection;
+        [SerializeField] private GameObject emotesSection;
+
         public override bool isVisible => gameObject.activeInHierarchy;
 
         private Transform thisTransform;
@@ -14,6 +20,19 @@ namespace DCL.Backpack
         {
             base.Awake();
             thisTransform = transform;
+        }
+
+        internal void Initialize()
+        {
+            ConfigureSectionSelector();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
+            sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
         }
 
         public static BackpackEditorHUDV2ComponentView Create() =>
@@ -56,6 +75,18 @@ namespace DCL.Backpack
             rectTransform.localPosition = Vector2.zero;
             rectTransform.offsetMax = Vector2.zero;
             rectTransform.offsetMin = Vector2.zero;
+        }
+
+        private void ConfigureSectionSelector()
+        {
+            sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+            {
+                avatarSection.SetActive(isSelected);
+            });
+            sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+            {
+                emotesSection.SetActive(isSelected);
+            });
         }
     }
 }
