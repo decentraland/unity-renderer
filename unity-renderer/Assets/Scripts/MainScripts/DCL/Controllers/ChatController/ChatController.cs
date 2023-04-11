@@ -394,7 +394,6 @@ Invite others to join by quoting the channel name in other chats or include it a
                 {
                     recipient = channel.ChannelId,
                     timestamp = 0,
-                    isChannelMessage = true,
                     messageId = Guid.NewGuid().ToString()
                 };
 

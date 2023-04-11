@@ -1,11 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine.Networking;
-using static HotScenesController;
 
 public interface IPlacesAPIController
 {
@@ -16,13 +16,13 @@ public interface IPlacesAPIController
     /// <param name="OnCompleted">It will be triggered when the operation has finished successfully.</param>
     /// <param name="pageNumber">Number of the page to request.</param>
     /// <param name="amountPerPage">Size of the page.</param>
-    UniTask GetAllPlacesFromPlacesAPI(Action<List<PlaceInfo>, int> OnCompleted, int pageNumber, int amountPerPage);
+    UniTask GetAllPlacesFromPlacesAPI(Action<List<IHotScenesController.PlaceInfo>, int> OnCompleted, int pageNumber, int amountPerPage);
 
     /// <summary>
     /// Request all favorite places from the server.
     /// </summary>
     /// <param name="OnCompleted">It will be triggered when the operation has finished successfully.</param>
-    UniTask GetAllFavorites(Action<List<PlaceInfo>> OnCompleted);
+    UniTask GetAllFavorites(Action<List<IHotScenesController.PlaceInfo>> OnCompleted);
 
     /// <summary>
     /// Set a place as favorite or not.
@@ -41,17 +41,17 @@ public class PlacesAPIController : IPlacesAPIController
     private const string FAVORITE_SET_URL_END = "/favorites";
     private Service<IWebRequestController> webRequestController;
 
-    public async UniTask GetAllPlacesFromPlacesAPI(Action<List<PlaceInfo>, int> OnCompleted, int offset, int amountPerPage)
+    public async UniTask GetAllPlacesFromPlacesAPI(Action<List<IHotScenesController.PlaceInfo>, int> OnCompleted, int offset, int amountPerPage)
     {
         UnityWebRequest result = await webRequestController.Ref.GetAsync(ComposePlacecsURLWithPage(offset, amountPerPage), isSigned: true);
-        PlacesAPIResponse placesAPIResponse = Utils.SafeFromJson<PlacesAPIResponse>(result.downloadHandler.text);
+        IHotScenesController.PlacesAPIResponse placesAPIResponse = Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text);
         OnCompleted?.Invoke(placesAPIResponse.data, placesAPIResponse.total);
     }
 
-    public async UniTask GetAllFavorites(Action<List<PlaceInfo>> OnCompleted)
+    public async UniTask GetAllFavorites(Action<List<IHotScenesController.PlaceInfo>> OnCompleted)
     {
         UnityWebRequest result = await webRequestController.Ref.GetAsync(FAVORITE_PLACES_URL, isSigned: true);
-        OnCompleted?.Invoke(Utils.SafeFromJson<PlacesAPIResponse>(result.downloadHandler.text).data);
+        OnCompleted?.Invoke(Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text).data);
     }
 
     public async UniTask SetPlaceFavorite(string placeUUID, bool isFavorite)

@@ -4,6 +4,7 @@ using DCL.Chat;
 using DCL.Chat.HUD;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using UnityEngine;
 
 public class ChatHUDController : IHUD
 {
@@ -31,11 +33,15 @@ public class ChatHUDController : IHUD
     private readonly InputAction_Trigger closeMentionSuggestionsTrigger;
     private readonly IProfanityFilter profanityFilter;
     private readonly ISocialAnalytics socialAnalytics;
+    private readonly IChatController chatController;
     private readonly Regex mentionRegex = new (@"(\B@\w+)|(\B@+)");
     private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
     private readonly List<ChatEntryModel> spamMessages = new ();
     private readonly List<string> lastMessagesSent = new ();
+    private readonly CancellationTokenSource profileFetchingCancellationToken = new ();
+    private readonly CancellationTokenSource addMessagesCancellationToken = new ();
+
     private int currentHistoryIteration;
     private IChatHUDComponentView view;
     private CancellationTokenSource mentionSuggestionCancellationToken = new ();
@@ -64,6 +70,7 @@ public class ChatHUDController : IHUD
         bool detectWhisper,
         GetSuggestedUserProfiles getSuggestedUserProfiles,
         ISocialAnalytics socialAnalytics,
+        IChatController chatController,
         IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
@@ -71,6 +78,7 @@ public class ChatHUDController : IHUD
         this.detectWhisper = detectWhisper;
         this.getSuggestedUserProfiles = getSuggestedUserProfiles;
         this.socialAnalytics = socialAnalytics;
+        this.chatController = chatController;
         this.profanityFilter = profanityFilter;
     }
 
@@ -109,12 +117,119 @@ public class ChatHUDController : IHUD
             HideMentionSuggestions();
     }
 
-    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true)
+    public void SetChatMessage(ChatMessage message, bool setScrollPositionToBottom = false,
+        bool spamFiltering = true, bool limitMaxEntries = true)
     {
-        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom, spamFiltering, limitMaxEntries).Forget();
+        async UniTaskVoid EnsureProfileThenUpdateMessage(string profileId, ChatEntryModel model,
+            Func<ChatEntryModel, UserProfile, ChatEntryModel> modificationCallback,
+            bool setScrollPositionToBottom, bool spamFiltering, bool limitMaxEntries,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                UserProfile requestedProfile = await userProfileBridge.RequestFullUserProfileAsync(profileId, cancellationToken);
+
+                model = modificationCallback.Invoke(model, requestedProfile);
+
+                // avoid any possible race condition with the current AddChatMessage operation
+                await UniTask.NextFrame(cancellationToken: cancellationToken);
+
+                await SetChatMessage(model, setScrollPositionToBottom, spamFiltering, limitMaxEntries, cancellationToken);
+            }
+            catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+        }
+
+        string GetEllipsisFormat(string address) =>
+            address.Length <= 8 ? address : $"{address[..4]}...{address[^4..]}";
+
+        var model = new ChatEntryModel();
+        var ownProfile = userProfileBridge.GetOwn();
+
+        model.messageId = message.messageId;
+        model.messageType = message.messageType;
+        model.bodyText = message.body;
+        model.timestamp = message.timestamp;
+
+        if (!string.IsNullOrEmpty(message.recipient))
+        {
+            model.isChannelMessage = chatController.GetAllocatedChannel(message.recipient) != null;
+
+            if (!model.isChannelMessage)
+            {
+                UserProfile recipientProfile = userProfileBridge.Get(message.recipient);
+
+                if (recipientProfile != null)
+                    model.recipientName = recipientProfile.userName;
+                else
+                {
+                    model.recipientName = GetEllipsisFormat(message.recipient);
+                    model.isLoadingNames = true;
+
+                    // sometimes there is no cached profile, so we request it
+                    // dont block the operation of showing the message immediately
+                    // just update the message information after we get the profile
+                    EnsureProfileThenUpdateMessage(message.recipient, model,
+                            (m, p) =>
+                            {
+                                m.recipientName = p.userName;
+                                return m;
+                            },
+                            setScrollPositionToBottom, spamFiltering,
+                            limitMaxEntries,
+                            profileFetchingCancellationToken.Token)
+                       .Forget();
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(message.sender))
+        {
+            model.senderId = message.sender;
+            UserProfile senderProfile = userProfileBridge.Get(message.sender);
+
+            if (senderProfile != null)
+                model.senderName = senderProfile.userName;
+            else
+            {
+                model.senderName = GetEllipsisFormat(message.sender);
+                model.isLoadingNames = true;
+
+                // sometimes there is no cached profile, so we request it
+                // dont block the operation of showing the message immediately
+                // just update the message information after we get the profile
+                EnsureProfileThenUpdateMessage(message.sender, model,
+                        (m, p) =>
+                        {
+                            m.senderName = p.userName;
+                            return m;
+                        },
+                        setScrollPositionToBottom, spamFiltering,
+                        limitMaxEntries,
+                        profileFetchingCancellationToken.Token)
+                   .Forget();
+            }
+        }
+
+        if (message.messageType == ChatMessage.Type.PRIVATE)
+        {
+            model.subType = message.sender == ownProfile.userId
+                ? ChatEntryModel.SubType.SENT
+                : ChatEntryModel.SubType.RECEIVED;
+        }
+        else if (message.messageType == ChatMessage.Type.PUBLIC)
+        {
+            model.subType = message.sender == ownProfile.userId
+                ? ChatEntryModel.SubType.SENT
+                : ChatEntryModel.SubType.RECEIVED;
+        }
+
+        SetChatMessage(model, setScrollPositionToBottom, spamFiltering, limitMaxEntries,
+                addMessagesCancellationToken.Token)
+           .Forget();
     }
 
-    public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true)
+    public async UniTask SetChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true,
+        CancellationToken cancellationToken = default)
     {
         if (IsSpamming(chatEntryModel.senderName) && spamFiltering) return;
 
@@ -122,18 +237,18 @@ public class ChatHUDController : IHUD
 
         if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
         {
-            chatEntryModel.bodyText = await profanityFilter.Filter(chatEntryModel.bodyText);
+            chatEntryModel.bodyText = await profanityFilter.Filter(chatEntryModel.bodyText, cancellationToken);
 
             if (!string.IsNullOrEmpty(chatEntryModel.senderName))
-                chatEntryModel.senderName = await profanityFilter.Filter(chatEntryModel.senderName);
+                chatEntryModel.senderName = await profanityFilter.Filter(chatEntryModel.senderName, cancellationToken);
 
             if (!string.IsNullOrEmpty(chatEntryModel.recipientName))
-                chatEntryModel.recipientName = await profanityFilter.Filter(chatEntryModel.recipientName);
+                chatEntryModel.recipientName = await profanityFilter.Filter(chatEntryModel.recipientName, cancellationToken);
         }
 
-        await UniTask.SwitchToMainThread();
+        await UniTask.SwitchToMainThread(cancellationToken: cancellationToken);
 
-        view.AddEntry(chatEntryModel, setScrollPositionToBottom);
+        view.SetEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (limitMaxEntries && view.EntryCount > MAX_CHAT_ENTRIES)
             view.RemoveOldestEntry();
@@ -158,6 +273,8 @@ public class ChatHUDController : IHUD
         OnInputFieldSelected = null;
         view.Dispose();
         mentionSuggestionCancellationToken.SafeCancelAndDispose();
+        profileFetchingCancellationToken.SafeCancelAndDispose();
+        addMessagesCancellationToken.SafeCancelAndDispose();
     }
 
     public void ClearAllEntries() =>
@@ -174,46 +291,6 @@ public class ChatHUDController : IHUD
 
     public void UnfocusInputField() =>
         view.UnfocusInputField();
-
-    private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
-    {
-        var model = new ChatEntryModel();
-        var ownProfile = userProfileBridge.GetOwn();
-
-        model.messageId = message.messageId;
-        model.messageType = message.messageType;
-        model.bodyText = message.body;
-        model.timestamp = message.timestamp;
-        model.isChannelMessage = message.isChannelMessage;
-
-        if (message.recipient != null)
-        {
-            var recipientProfile = userProfileBridge.Get(message.recipient);
-            model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
-        }
-
-        if (message.sender != null)
-        {
-            var senderProfile = userProfileBridge.Get(message.sender);
-            model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
-            model.senderId = message.sender;
-        }
-
-        if (message.messageType == ChatMessage.Type.PRIVATE)
-        {
-            model.subType = message.sender == ownProfile.userId
-                ? ChatEntryModel.SubType.SENT
-                : ChatEntryModel.SubType.RECEIVED;
-        }
-        else if (message.messageType == ChatMessage.Type.PUBLIC)
-        {
-            model.subType = message.sender == ownProfile.userId
-                ? ChatEntryModel.SubType.SENT
-                : ChatEntryModel.SubType.RECEIVED;
-        }
-
-        return model;
-    }
 
     private void ContextMenu_OnShowMenu() =>
         view.OnMessageCancelHover();

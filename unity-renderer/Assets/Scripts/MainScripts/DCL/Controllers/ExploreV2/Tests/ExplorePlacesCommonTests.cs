@@ -1,6 +1,7 @@
+using MainScripts.DCL.Controllers.HotScenes;
+using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 using NUnit.Framework;
 using UnityEngine;
-using static HotScenesController;
 
 public class ExplorePlacesCommonTests
 {
@@ -104,7 +105,7 @@ public class ExplorePlacesCommonTests
         return new PlaceCardComponentModel
         {
             coords = new Vector2Int(10, 10),
-            placeInfo = new HotScenesController.PlaceInfo()
+            placeInfo = new IHotScenesController.PlaceInfo()
             {
                 base_position = "10,10",
                 title = name,

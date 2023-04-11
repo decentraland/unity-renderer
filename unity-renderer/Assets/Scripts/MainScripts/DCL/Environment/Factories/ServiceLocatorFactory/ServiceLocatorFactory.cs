@@ -11,8 +11,11 @@ using DCL.Social.Chat;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using System.Collections.Generic;
@@ -73,6 +76,7 @@ namespace DCL
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
+
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables, result.Get<ILambdasService>()),
                 WebInterfaceWearablesCatalogService.Instance,
@@ -101,6 +105,16 @@ namespace DCL
                 { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
                 { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
             }, DataStore.i.featureFlags));
+
+            // Map
+            result.Register<IHotScenesFetcher>(() => new HotScenesFetcher(60f, 60f * 5f));
+
+            const int ATLAS_CHUNK_SIZE = 1020;
+            const int PARCEL_SIZE = 20;
+            // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
+            const float CULLING_BOUNDS_IN_PARCELS = 10;
+
+            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory(PARCEL_SIZE, ATLAS_CHUNK_SIZE, CULLING_BOUNDS_IN_PARCELS)));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using MainScripts.DCL.Controllers.HotScenes;
 
 [Serializable]
 public class PlaceCardComponentModel : BaseComponentModel
@@ -16,5 +17,5 @@ public class PlaceCardComponentModel : BaseComponentModel
     public bool isFavorite;
 
     [HideInInspector]
-    public HotScenesController.PlaceInfo placeInfo;
+    public IHotScenesController.PlaceInfo placeInfo;
 }

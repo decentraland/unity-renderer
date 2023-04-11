@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using static HotScenesController;
+using MainScripts.DCL.Controllers.HotScenes;
+using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 using Object = UnityEngine.Object;
 
 public static class PlacesAndEventsCardsFactory

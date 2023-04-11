@@ -7,7 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static HotScenesController;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public class PlacesSubSectionComponentControllerTests
 {
@@ -86,7 +86,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
         placesSubSectionComponentView.Received().SetAllAsLoading();
         placesSubSectionComponentView.Received().SetShowMoreButtonActive(false);
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -97,7 +97,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
     }
 
     [Test]
@@ -123,7 +123,7 @@ public class PlacesSubSectionComponentControllerTests
         // Act
         placesSubSectionComponentController.ShowMorePlaces();
         // Assert
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>());
     }
 
     [Test]
@@ -132,7 +132,7 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel
             {
-                placeInfo = new PlaceInfo()
+                placeInfo = new IHotScenesController.PlaceInfo()
                 {
                     base_position = "10,10",
                     title = "Test place"
@@ -153,7 +153,7 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         bool exploreClosed = false;
         placesSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
-        PlaceInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
+        IHotScenesController.PlaceInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
         placesSubSectionComponentController.OnJumpInToPlace(testPlaceFromAPI);

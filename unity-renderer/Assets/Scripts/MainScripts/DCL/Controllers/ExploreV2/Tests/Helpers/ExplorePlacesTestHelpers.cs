@@ -1,6 +1,7 @@
+using MainScripts.DCL.Controllers.HotScenes;
 using System.Collections.Generic;
 using UnityEngine;
-using static HotScenesController;
+using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public static class ExplorePlacesTestHelpers
 {

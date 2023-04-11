@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsSubSectionComponentView
 {
@@ -68,7 +69,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
     public event Action<EventCardComponentModel> OnEventInfoClicked;
-    public event Action<HotScenesController.PlaceInfo> OnPlaceJumpInClicked;
+    public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<string> OnEventSubscribeEventClicked;
@@ -77,7 +78,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnHighlightsSubSectionEnable;
 
-    public override void Start()
+    public void Start()
     {
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);

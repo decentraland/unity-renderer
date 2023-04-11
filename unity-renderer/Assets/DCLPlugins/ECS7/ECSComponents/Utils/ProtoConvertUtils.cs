@@ -1,4 +1,5 @@
 using DCL.CameraTool;
+using DCL.Configuration;
 using DCL.Helpers;
 using DCL.UIElements.Structures;
 using Google.Protobuf.Collections;
@@ -15,8 +16,8 @@ namespace DCL.ECSComponents
         {
             var hit = new RaycastHit();
             hit.Length = rawHit.distance;
-            hit.Origin = UnityVectorToPBVector(ray.origin);
-            hit.EntityId = (int)entityId;
+            hit.GlobalOrigin = UnityVectorToPBVector(ray.origin);
+            hit.EntityId = (uint)entityId;
             hit.MeshName = meshName;
             hit.Position = UnityVectorToPBVector(rawHit.point);
             hit.NormalHit = UnityVectorToPBVector(rawHit.normal);
@@ -31,7 +32,7 @@ namespace DCL.ECSComponents
             var ret = new RaycastHit
             {
                 Length = hitDistance,
-                Origin = UnityVectorToPBVector(ray.origin),
+                GlobalOrigin = UnityVectorToPBVector(ray.origin),
                 Position = UnityVectorToPBVector(hitPoint),
                 NormalHit = UnityVectorToPBVector(hitNormal),
                 Direction = UnityVectorToPBVector(ray.direction)
@@ -39,7 +40,7 @@ namespace DCL.ECSComponents
 
             if (isValidEntity)
             {
-                ret.EntityId = entityId;
+                ret.EntityId = (uint)entityId;
             }
             if (!string.IsNullOrEmpty(meshName))
             {

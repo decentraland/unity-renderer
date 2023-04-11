@@ -67,7 +67,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     internal string currentUriLoading = null;
     internal string lastLoadedUri = null;
 
-    public override void Start()
+    public void Start()
     {
         image.useSpriteMesh = false;
         imageObserver.AddListener(OnImageObserverUpdated);
