@@ -19,6 +19,7 @@ namespace DCL
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
         private IPutWebRequestFactory putWebRequestFactory;
+        private IDeleteWebRequestFactory deleteWebRequestFactory;
         private readonly IRPCSignRequest rpcSignRequest;
 
         private readonly List<WebRequestAsyncOperation> ongoingWebRequests = new();
@@ -30,6 +31,7 @@ namespace DCL
             IWebRequestAudioFactory audioClipWebRequestFactory,
             IPostWebRequestFactory postWebRequestFactory,
             IPutWebRequestFactory putWebRequestFactory,
+            IDeleteWebRequestFactory deleteWebRequestFactory,
             IRPCSignRequest rpcSignRequest = null
         )
         {
@@ -39,6 +41,7 @@ namespace DCL
             this.audioClipWebRequestFactory = audioClipWebRequestFactory;
             this.postWebRequestFactory = postWebRequestFactory;
             this.putWebRequestFactory = putWebRequestFactory;
+            this.deleteWebRequestFactory = deleteWebRequestFactory;
             this.rpcSignRequest = rpcSignRequest;
         }
 
@@ -52,7 +55,8 @@ namespace DCL
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
-                new PutWebRequestFactory()
+                new PutWebRequestFactory(),
+                new DeleteWebRequestFactory()
             );
 
             return newWebRequestController;
@@ -117,6 +121,21 @@ namespace DCL
         {
             postWebRequestFactory.SetBody(postData);
             return await SendWebRequest(postWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
+                timeout, cancellationToken, headers, isSigned);
+        }
+
+        public async UniTask<UnityWebRequest> DeleteAsync(
+            string url,
+            DownloadHandler downloadHandler = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            CancellationToken cancellationToken = default,
+            Dictionary<string, string> headers = null,
+            bool isSigned = false)
+        {
+            return await SendWebRequest(deleteWebRequestFactory, url, downloadHandler, onSuccess, onFail, requestAttemps,
                 timeout, cancellationToken, headers, isSigned);
         }
 

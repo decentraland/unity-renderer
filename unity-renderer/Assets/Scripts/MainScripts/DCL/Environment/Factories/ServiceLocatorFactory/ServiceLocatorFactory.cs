@@ -49,6 +49,7 @@ namespace DCL
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
                 new PutWebRequestFactory(),
+                new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             ));
             result.Register<IServiceProviders>(() => new ServiceProviders());

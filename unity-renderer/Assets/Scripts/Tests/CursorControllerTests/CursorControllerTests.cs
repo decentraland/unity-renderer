@@ -44,7 +44,8 @@ namespace Tests
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
-                new PutWebRequestFactory()
+                new PutWebRequestFactory(),
+                new DeleteWebRequestFactory()
             ) );
             return result;
         }
