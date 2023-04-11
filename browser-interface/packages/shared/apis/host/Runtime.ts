@@ -53,7 +53,7 @@ export function registerRuntimeServiceServerImplementation(port: RpcServerPort<P
           // fetch the actual content
           const baseUrl = ctx.sceneData.baseUrl.endsWith('/') ? ctx.sceneData.baseUrl : (ctx.sceneData.baseUrl + '/')
           const url = baseUrl + hash
-          const response = await fetch(baseUrl + hash)
+          const response = await fetch(url)
 
           if (!response.ok) throw new Error(`Error fetching file ${file} from ${url}`)
 
