@@ -22,8 +22,17 @@ internal class PrimitiveMeshFactory
                 }
                 break;
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Sphere:
-                mesh = PrimitiveMeshBuilder.BuildSphere(1f);
+            {
+                if (meshModelModel.properties is PropertySphere sphereProps)
+                {
+                    mesh = PrimitiveMeshBuilder.BuildSphere(sphereProps.Radius, sphereProps.Longitude, sphereProps.Latitude);
+                }
+                else
+                {
+                    mesh = PrimitiveMeshBuilder.BuildSphere(1f);
+                }
                 break;
+            }
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Plane:
                 {
                     if (meshModelModel.properties is PropertyUvs modelWithUvs)
