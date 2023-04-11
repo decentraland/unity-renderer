@@ -118,7 +118,15 @@ public class AvatarEditorHUDController : IHUD
         eyeColorList = Resources.Load<ColorList>("EyeColor");
         view.SetColors(skinColorList.colors, hairColorList.colors, eyeColorList.colors);
 
-        SetCatalog(wearablesCatalogService.WearablesCatalog);
+        async UniTask InitializeWearableCatalog()
+        {
+            // there is a race condition due feature flags..
+            // wearablesCatalogService.WearablesCatalog is null until WearablesCatalogServiceProxy.wearablesCatalogServiceInUse is valid
+            await UniTask.WaitUntil(() => wearablesCatalogService.WearablesCatalog != null);
+            SetCatalog(wearablesCatalogService.WearablesCatalog);
+        }
+
+        InitializeWearableCatalog().Forget();
 
         this.userProfile.OnUpdate += LoadUserProfile;
 
@@ -161,7 +169,7 @@ public class AvatarEditorHUDController : IHUD
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
 
-    public void SetCatalog(BaseDictionary<string, WearableItem> catalog)
+    private void SetCatalog(BaseDictionary<string, WearableItem> catalog)
     {
         if (this.catalog != null)
         {
@@ -172,6 +180,7 @@ public class AvatarEditorHUDController : IHUD
         this.catalog = catalog;
 
         ProcessCatalog(this.catalog);
+
         this.catalog.OnAdded += OnAdditionalWearableAdded;
         this.catalog.OnRemoved += OnAdditionalWearableRemoved;
     }
