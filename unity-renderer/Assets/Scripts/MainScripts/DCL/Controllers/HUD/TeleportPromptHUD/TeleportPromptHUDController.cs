@@ -42,7 +42,6 @@ public class TeleportPromptHUDController : IHUD
 
     private void ReceivedRequestTeleportData(string current, string previous)
     {
-        Debug.Log("To compile")
         if (string.IsNullOrEmpty(current))
             return;
 
