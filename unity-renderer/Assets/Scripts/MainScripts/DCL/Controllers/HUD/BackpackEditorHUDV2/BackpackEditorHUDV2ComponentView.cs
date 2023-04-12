@@ -24,7 +24,7 @@ namespace DCL.Backpack
             thisTransform = transform;
         }
 
-        internal void Initialize()
+        public void Initialize()
         {
             ConfigureSectionSelector();
         }

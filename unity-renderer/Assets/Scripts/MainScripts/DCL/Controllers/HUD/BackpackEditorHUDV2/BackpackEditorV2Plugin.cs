@@ -8,13 +8,11 @@ namespace DCL.Backpack
 
         public BackpackEditorV2Plugin()
         {
-            var view = BackpackEditorHUDV2ComponentView.Create();
             hudController = new BackpackEditorHUDController(
-                view,
+                BackpackEditorHUDV2ComponentView.Create(),
                 DataStore.i,
                 new UserProfileWebInterfaceBridge(),
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
-            view.Initialize();
         }
 
         public void Dispose()

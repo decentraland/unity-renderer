@@ -28,6 +28,7 @@ namespace DCL.Backpack
             IEmotesCatalogService emotesCatalogService)
         {
             this.view = view;
+            this.view.Initialize();
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.emotesCatalogService = emotesCatalogService;

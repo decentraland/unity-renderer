@@ -5,6 +5,8 @@ namespace DCL.Backpack
     public interface IBackpackEditorHUDView
     {
         Transform EmotesSectionTransform { get; }
+        
+        void Initialize();
         void Dispose();
         void Show();
         void Hide();
