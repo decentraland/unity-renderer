@@ -6,14 +6,12 @@ using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
-using DCL.Map;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
-using DCLServices.WearablesCatalogService;
 using SignupHUD;
 using SocialFeaturesAnalytics;
 using System;
@@ -67,11 +65,6 @@ public class HUDFactory : IHUDFactory
                     DataStore.i);
             case HUDElementID.NOTIFICATION:
                 return new NotificationHUDController();
-            case HUDElementID.AVATAR_EDITOR:
-                return new AvatarEditorHUDController(
-                    DataStore.i.featureFlags,
-                    Environment.i.platform.serviceProviders.analytics,
-                    Environment.i.serviceLocator.Get<IWearablesCatalogService>());
             case HUDElementID.SETTINGS_PANEL:
                 return new SettingsPanelHUDController();
             case HUDElementID.TERMS_OF_SERVICE:
@@ -172,7 +165,9 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.QUESTS_TRACKER:
                 return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
             case HUDElementID.SIGNUP:
-                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(cancellationToken), dataStoreLoadingScreen.Ref);
+                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(cancellationToken),
+                    dataStoreLoadingScreen.Ref,
+                    DataStore.i.HUDs);
         }
 
         return null;

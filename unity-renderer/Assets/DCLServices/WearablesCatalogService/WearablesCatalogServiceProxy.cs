@@ -14,7 +14,7 @@ namespace DCLServices.WearablesCatalogService
         private const string FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF = "force_to_request_wearables_through_kernel";
 
         public BaseDictionary<string, WearableItem> WearablesCatalog =>
-            wearablesCatalogServiceInUse.WearablesCatalog;
+            wearablesCatalogServiceInUse?.WearablesCatalog;
 
         private IWearablesCatalogService wearablesCatalogServiceInUse;
         private readonly IWearablesCatalogService lambdasWearablesCatalogService;
@@ -105,20 +105,20 @@ namespace DCLServices.WearablesCatalogService
             {
                 var currentKernelConfig = kernelConfig.EnsureConfigInitialized();
                 await currentKernelConfig;
-                SetServiceInUse(debugMode: currentKernelConfig.value.urlParamsForWearablesDebug);
+                SetCurrentService(currentKernelConfig.value.urlParamsForWearablesDebug);
             }
 
             featureFlags.OnChange -= CheckFeatureFlag;
 
             if (currentFeatureFlags.IsFeatureEnabled(FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF))
-                SetServiceInUse(debugMode: true);
+                SetCurrentService(true);
             else
                 SetServiceInUseDependingOnKernelConfig().Forget();
         }
 
-        private void SetServiceInUse(bool debugMode)
+        private void SetCurrentService(bool useKernel)
         {
-            if (debugMode)
+            if (useKernel)
             {
                 webInterfaceWearablesCatalogService.Initialize(wearablesWebInterfaceBridge, wearablesCatalog);
                 wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;

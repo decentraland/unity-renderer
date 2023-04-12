@@ -10,6 +10,7 @@ namespace DCL
         MINIMAP = 1,
         PROFILE_HUD = 2,
         NOTIFICATION = 3,
+        [Obsolete("Deprecated. Migrated to plugins. See AvatarEditorHUDPlugin, BackpackEditorV2Plugin")]
         AVATAR_EDITOR = 4,
         SETTINGS_PANEL = 5,
 
