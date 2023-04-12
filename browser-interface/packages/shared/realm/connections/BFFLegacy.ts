@@ -2,8 +2,8 @@ import mitt from 'mitt'
 import { RealmConnectionEvents, IRealmAdapter } from '../types'
 import { ExplorerIdentity } from 'shared/session/types'
 import { legacyServices } from '../local-services/legacy'
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { Vector3 } from 'lib/math/Vector3'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 
 export function localBff(baseUrl: string, about: AboutResponse, _identity: ExplorerIdentity): IRealmAdapter {
   const events = mitt<RealmConnectionEvents>()

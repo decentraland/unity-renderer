@@ -6,11 +6,11 @@ import { ExplorerIdentity } from 'shared/session/types'
 import { RealmConnectionEvents, IRealmAdapter, LegacyServices } from '../types'
 import mitt from 'mitt'
 import { legacyServices } from '../local-services/legacy'
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { ClientPacket, ServerPacket } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
 import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
 import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 
 // shared writer to leverage pools
 const writer = new Writer()
