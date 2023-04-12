@@ -17,6 +17,7 @@ using UnityEngine.Rendering.Universal;
 using Environment = DCL.Environment;
 using Random = UnityEngine.Random;
 using Type = DCL.NotificationModel.Type;
+using Categories = WearableLiterals.Categories;
 
 public class AvatarEditorHUDController : IHUD
 {
@@ -28,8 +29,8 @@ public class AvatarEditorHUDController : IHUD
     private const string THIRD_PARTY_COLLECTIONS_FEATURE_FLAG = "third_party_collections";
     private const int REQUESTS_COOLDOWN_TIME = 60;
     internal const string EQUIP_WEARABLE_METRIC = "equip_wearable";
-    protected static readonly string[] categoriesThatMustHaveSelection = { WearableLiterals.Categories.BODY_SHAPE, WearableLiterals.Categories.UPPER_BODY, WearableLiterals.Categories.LOWER_BODY, WearableLiterals.Categories.FEET, WearableLiterals.Categories.EYES, WearableLiterals.Categories.EYEBROWS, WearableLiterals.Categories.MOUTH };
-    protected static readonly string[] categoriesToRandomize = { WearableLiterals.Categories.HAIR, WearableLiterals.Categories.EYES, WearableLiterals.Categories.EYEBROWS, WearableLiterals.Categories.MOUTH, WearableLiterals.Categories.FACIAL, WearableLiterals.Categories.HAIR, WearableLiterals.Categories.UPPER_BODY, WearableLiterals.Categories.LOWER_BODY, WearableLiterals.Categories.FEET };
+    protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
+    protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
     [NonSerialized]
     public bool bypassUpdateAvatarPreview = false;
@@ -441,7 +442,7 @@ public class AvatarEditorHUDController : IHUD
         for (var i = 0; i < categoriesThatMustHaveSelection.Length; i++)
         {
             var category = categoriesThatMustHaveSelection[i];
-            if (category != WearableLiterals.Categories.BODY_SHAPE && !(categoriesInUse.Contains(category)))
+            if (category != Categories.BODY_SHAPE && !(categoriesInUse.Contains(category)))
             {
                 WearableItem wearable;
                 var defaultItemId = WearableLiterals.DefaultWearables.GetDefaultWearable(model.bodyShape.id, category);
@@ -467,7 +468,7 @@ public class AvatarEditorHUDController : IHUD
         wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out var wearable);
         if (wearable == null) return;
 
-        if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
+        if (wearable.data.category == Categories.BODY_SHAPE)
         {
             if (wearable.id == model.bodyShape.id)
                 return;
@@ -489,7 +490,7 @@ public class AvatarEditorHUDController : IHUD
             else
             {
                 if (IsTryingToReplaceSkin(wearable))
-                    UnequipWearable(model.GetWearable(WearableLiterals.Categories.SKIN));
+                    UnequipWearable(model.GetWearable(Categories.SKIN));
 
                 var sameCategoryEquipped = model.GetWearable(wearable.data.category);
                 if (sameCategoryEquipped != null)
@@ -562,7 +563,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void EquipBodyShape(WearableItem bodyShape)
     {
-        if (bodyShape.data.category != WearableLiterals.Categories.BODY_SHAPE)
+        if (bodyShape.data.category != Categories.BODY_SHAPE)
         {
             Debug.LogError($"Item ({bodyShape.id} is not a body shape");
             return;
@@ -1072,7 +1073,7 @@ public class AvatarEditorHUDController : IHUD
 
     private bool ShouldShowIncompatibleWearableToast(WearableItem wearable)
     {
-        if(wearable.data.category == WearableLiterals.Categories.BODY_SHAPE || wearable.data.category == WearableLiterals.Categories.SKIN)
+        if(wearable.data.category == Categories.BODY_SHAPE || wearable.data.category == Categories.SKIN)
             return false;
         else
             return !wearable.SupportsBodyShape(model.bodyShape.id);

@@ -85,6 +85,7 @@ namespace DCL
             pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin());
 
             pluginSystem.RegisterWithFlag<BackpackEditorV2Plugin>(() => new BackpackEditorV2Plugin(), "backpack_editor_v2");
+            // TODO: remove the v1 backpack editor when v2 is confirmed to be completely functional
             pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
