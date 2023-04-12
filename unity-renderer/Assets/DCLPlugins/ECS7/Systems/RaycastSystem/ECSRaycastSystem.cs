@@ -148,7 +148,9 @@ namespace ECSSystems.ECSRaycastSystem
             UnityEngine.Vector3 sceneWorldPosition = Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
             UnityEngine.Vector3 sceneUnityPosition = PositionUtils.WorldToUnityPosition(sceneWorldPosition);
             UnityEngine.Vector3 rayOrigin = entityTransform.position + (model.OriginOffset != null ? ProtoConvertUtils.PBVectorToUnityVector(model.OriginOffset) : UnityEngine.Vector3.zero);
-            UnityEngine.Vector3 rayDirection = UnityEngine.Vector3.zero;
+
+            // By default the direction is towards the scene's root entity
+            UnityEngine.Vector3 rayDirection = scene.GetSceneTransform().position - entityTransform.position;
             switch (model.DirectionCase)
             {
                 case PBRaycast.DirectionOneofCase.LocalDirection:
@@ -163,8 +165,6 @@ namespace ECSSystems.ECSRaycastSystem
                     // Target entity to cast the ray towards
                     if(scene.entities.TryGetValue(model.TargetEntity, out IDCLEntity targetEntity))
                         rayDirection = targetEntity.gameObject.transform.position - entityTransform.position;
-                    else
-                        Debug.LogError("Raycast error: can't find targetEntity, direction calculation failed.");
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalDirection:
                     // The direction of the ray in global coordinates

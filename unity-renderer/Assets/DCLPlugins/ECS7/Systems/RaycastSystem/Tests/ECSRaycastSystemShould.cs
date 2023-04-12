@@ -634,6 +634,31 @@ namespace Tests
         }
 
         [Test]
+        public void UseSceneRootEntityDirectionByDefault()
+        {
+            Vector3 raycastEntityPosition = new Vector3(0f, 10f, 0f);
+            entityRaycaster.gameObject.transform.position = raycastEntityPosition;
+            PBRaycast raycast = new PBRaycast()
+            {
+                TargetEntity = 015159510,
+                MaxDistance = 10f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (scene.GetSceneTransform().position - raycastEntityPosition).normalized)
+            );
+        }
+
+        [Test]
         public void KeepRaycastingWithContinuousProperty()
         {
             // 'continuous' disabled
