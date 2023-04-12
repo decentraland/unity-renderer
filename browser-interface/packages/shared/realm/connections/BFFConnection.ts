@@ -10,6 +10,7 @@ import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.g
 import { ClientPacket, ServerPacket } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
 import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
+import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
 
 // shared writer to leverage pools
 const writer = new Writer()
@@ -146,6 +147,10 @@ export class ArchipelagoConnection implements IRealmAdapter {
         case 'kicked': {
           // notifyStatusThroughChat(peerKicked.reason)
           // await this.disconnect(Error(message.peerKicked.reason))
+          const error = new Error(
+            'Disconnected from realm as the user id is already taken. Please make sure you are not logged into the world through another tab'
+          )
+          BringDownClientAndReportFatalError(error, ErrorContext.COMMS_INIT)
           break
         }
       }

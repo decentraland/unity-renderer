@@ -10,14 +10,10 @@ namespace DCL.ECS7.InternalComponents
             InternalInputEventResults.EventData data)
         {
             var entityId = data.hit.EntityId == 0 ? SpecialEntityId.SCENE_ROOT_ENTITY : data.hit.EntityId;
-            var model = component.GetFor(scene, entityId)?.model ??
-                        new InternalInputEventResults()
-                        {
-                            lastTimestamp = 0,
-                            events = new Queue<InternalInputEventResults.EventData>()
-                        };
 
-            model.events.Enqueue(data);
+            var model = component.GetFor(scene, entityId)?.model ?? new InternalInputEventResults();
+
+            model.events.Add(data);
 
             component.PutFor(scene, entityId, model);
         }
