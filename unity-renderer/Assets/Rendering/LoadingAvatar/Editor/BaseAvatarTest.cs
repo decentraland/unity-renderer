@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Rendering.LoadingAvatar.Editor
 {
+    [TestFixture]
+    [Category("EditModeCI")]
     public class BaseAvatarTest
     {
         private const string assetPath = "Assets/Rendering/LoadingAvatar/CrossSection/Avatar_Male_SingleMesh.glb";
