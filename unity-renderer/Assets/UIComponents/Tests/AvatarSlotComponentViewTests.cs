@@ -46,7 +46,7 @@ public class AvatarSlotComponentViewTests
     [Test]
     public void SetFocus()
     {
-        Assert.IsFalse(avatarSlot.focusedImage.enabled, "After the On Focus the focused outline is not correctly enabled");
+        Assert.IsFalse(avatarSlot.focusedImage.enabled, "Outline should be disabled by default");
         avatarSlot.OnFocus();
         Assert.IsTrue(avatarSlot.focusedImage.enabled, "After the On Focus the focused outline is not correctly enabled");
     }
@@ -55,6 +55,6 @@ public class AvatarSlotComponentViewTests
     public void SetOutOfFocus()
     {
         avatarSlot.OnLoseFocus();
-        Assert.IsFalse(avatarSlot.focusedImage.enabled, "After the On Focus the focused outline is not correctly enabled");
+        Assert.IsFalse(avatarSlot.focusedImage.enabled, "After the On Lose Focus the focused outline is not disabled");
     }
 }
