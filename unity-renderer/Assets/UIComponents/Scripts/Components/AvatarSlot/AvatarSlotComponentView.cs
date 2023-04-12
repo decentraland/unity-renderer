@@ -7,8 +7,8 @@ public class AvatarSlotComponentView : BaseComponentView, IAvatarSlotComponentVi
     [Header("Configuration")]
     [SerializeField] internal AvatarSlotComponentModel model;
 
-    [SerializeField] private NftTypeIconSO typeIcons;
-    [SerializeField] private Image typeImage;
+    [SerializeField] internal NftTypeIconSO typeIcons;
+    [SerializeField] internal Image typeImage;
     [SerializeField] private ImageComponentView nftImage;
     [SerializeField] private Image focusedImage;
     [SerializeField] private Image selectedImage;

@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NftTypeIcons", menuName = "Variables/NftTypeIcons")]
 public class NftTypeIconSO : ScriptableObject
 {
-    [SerializeField] SerializableKeyValuePair<string, Sprite>[] nftIcons;
+    [SerializeField] public SerializableKeyValuePair<string, Sprite>[] nftIcons;
 
     public Sprite GetTypeImage(string nftType)
     {
