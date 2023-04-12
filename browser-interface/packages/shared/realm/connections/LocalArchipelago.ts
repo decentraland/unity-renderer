@@ -5,7 +5,7 @@ import { legacyServices } from '../local-services/legacy'
 import { Vector3 } from 'lib/math/Vector3'
 import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 
-export function localBff(baseUrl: string, about: AboutResponse, _identity: ExplorerIdentity): IRealmAdapter {
+export function localArchipelago(baseUrl: string, about: AboutResponse, _identity: ExplorerIdentity): IRealmAdapter {
   const events = mitt<RealmConnectionEvents>()
 
   return {

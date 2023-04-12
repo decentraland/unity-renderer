@@ -21,7 +21,7 @@ function craftMessage(packet: ClientPacket): Uint8Array {
   return writer.finish()
 }
 
-export async function createBffRpcConnection(
+export async function createArchipelagoConnection(
   baseUrl: string,
   about: AboutResponse,
   identity: ExplorerIdentity
