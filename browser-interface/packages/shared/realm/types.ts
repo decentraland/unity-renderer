@@ -1,6 +1,5 @@
-import { RpcClientModule } from '@dcl/rpc/dist/codegen'
+import { Vector3 } from 'lib/math/Vector3'
 import { Emitter } from 'mitt'
-import { CommsServiceDefinition } from 'shared/protocol/decentraland/bff/comms_service.gen'
 import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { IslandChangedMessage } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
 
@@ -35,15 +34,11 @@ export type LegacyServices = {
   poiService: string
 }
 
-export type BffServices<CallContext = any> = {
-  comms: RpcClientModule<CommsServiceDefinition, CallContext>
-  legacy: LegacyServices
-}
-
-export interface IRealmAdapter<CallContext = any> {
+export interface IRealmAdapter {
   readonly about: AboutResponse
   readonly baseUrl: string
   disconnect(error?: Error): Promise<void>
+  sendHeartbeat(p: Vector3): void
   events: Emitter<RealmConnectionEvents>
-  services: BffServices<CallContext>
+  services: LegacyServices
 }

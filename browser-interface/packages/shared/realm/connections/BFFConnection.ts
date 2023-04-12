@@ -1,61 +1,23 @@
 import { ILogger, createLogger } from 'lib/logger'
 import { Authenticator } from '@dcl/crypto'
-import { createRpcClient, RpcClientPort } from '@dcl/rpc'
-import { WebSocketTransport } from '@dcl/rpc/dist/transports/WebSocket'
-import { loadService } from '@dcl/rpc/dist/codegen'
-import {
-  BffAuthenticationServiceDefinition,
-  WelcomePeerInformation
-} from 'shared/protocol/decentraland/bff/authentication_service.gen'
-import { CommsServiceDefinition } from 'shared/protocol/decentraland/bff/comms_service.gen'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { future } from 'fp-future'
+import { Writer } from 'protobufjs/minimal'
 import { ExplorerIdentity } from 'shared/session/types'
-import { RealmConnectionEvents, BffServices, IRealmAdapter } from '../types'
+import { RealmConnectionEvents, IRealmAdapter, LegacyServices } from '../types'
 import mitt from 'mitt'
 import { legacyServices } from '../local-services/legacy'
 import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
+import { ClientPacket, ServerPacket } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
+import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
+import { Vector3 } from 'lib/math/Vector3'
 
-export type TopicData = {
-  peerId: string
-  data: Uint8Array
-}
+// shared writer to leverage pools
+const writer = new Writer()
 
-export type TopicListener = {
-  subscriptionId: number
-}
-
-async function authenticatePort(port: RpcClientPort, identity: ExplorerIdentity): Promise<string> {
-  const address = identity.address
-
-  const auth = loadService(port, BffAuthenticationServiceDefinition)
-
-  const getChallengeResponse = await auth.getChallenge({ address })
-  if (getChallengeResponse.alreadyConnected) {
-    trackEvent('bff_auth_already_connected', {
-      address
-    })
-  }
-
-  const authChainJson = JSON.stringify(Authenticator.signPayload(identity, getChallengeResponse.challengeToSign))
-  const authResponse: WelcomePeerInformation = await auth.authenticate({ authChainJson })
-  return authResponse.peerId
-}
-
-function resolveBffUrl(baseUrl: string, bffPublicUrl?: string): string {
-  let url: string
-  if (bffPublicUrl && bffPublicUrl.startsWith('http')) {
-    url = bffPublicUrl
-    if (!url.endsWith('/')) {
-      url += '/'
-    }
-    url += 'rpc'
-  } else {
-    const relativeUrl = ((bffPublicUrl || '/bff') + '/rpc').replace(/(\/+)/g, '/')
-
-    url = new URL(relativeUrl, baseUrl).toString()
-  }
-
-  return url.replace(/^http/, 'ws')
+function craftMessage(packet: ClientPacket): Uint8Array {
+  writer.reset()
+  ClientPacket.encode(packet as any, writer)
+  return writer.finish()
 }
 
 export async function createBffRpcConnection(
@@ -63,40 +25,151 @@ export async function createBffRpcConnection(
   about: AboutResponse,
   identity: ExplorerIdentity
 ): Promise<IRealmAdapter> {
-  const wsUrl = resolveBffUrl(baseUrl, about.bff?.publicUrl)
-  const bffTransport = WebSocketTransport(new WebSocket(wsUrl, 'bff'))
+  const logger = createLogger('Archipelago handshake: ')
+  const address = identity.address
+  const url = new URL('/archipelago/ws', baseUrl).toString()
+  const wsUrl = url.replace(/^http/, 'ws')
 
-  const rpcClient = await createRpcClient(bffTransport)
-  const port = await rpcClient.createPort('kernel')
+  const connected = future<void>()
+  const ws = new WebSocket(wsUrl, 'archipelago')
+  ws.binaryType = 'arraybuffer'
+  ws.onopen = () => connected.resolve()
 
-  const peerId = await authenticatePort(port, identity)
+  ws.onerror = (event) => {
+    logger.error('socket error', event)
+    connected.reject(event as any)
+  }
 
-  // close the WS when the port is closed
-  port.on('close', () => bffTransport.close())
+  ws.onclose = () => {
+    logger.error('socket closed')
+    connected.reject(new Error('Socket closed'))
+  }
 
-  return new BffRpcConnection(baseUrl, about, port, peerId)
+  const channel = wsAsAsyncChannel<ServerPacket>(ws, ServerPacket.decode)
+  try {
+    await connected
+
+    {
+      // phase 0, identify ourselves
+      const identificationMessage = craftMessage({
+        message: {
+          $case: 'challengeRequest',
+          challengeRequest: {
+            address
+          }
+        }
+      })
+      ws.send(identificationMessage)
+    }
+
+    {
+      // phase 1, respond to challenge
+      const { message } = await channel.yield(1000, 'Error waiting for remote challenge')
+
+      if (!message) {
+        throw new Error('Protocol error: empty message')
+      }
+
+      switch (message.$case) {
+        case 'challengeResponse': {
+          const authChainJson = JSON.stringify(
+            Authenticator.signPayload(identity, message.challengeResponse.challengeToSign)
+          )
+          ws.send(
+            craftMessage({
+              message: {
+                $case: 'signedChallenge',
+                signedChallenge: { authChainJson }
+              }
+            })
+          )
+          break
+        }
+        default: {
+          throw new Error(`Protocol error: server did not provide a valid handshake message ${message.$case}`)
+        }
+      }
+    }
+
+    {
+      // phase 2, we are in
+      const { message } = await channel.yield(1000, 'Error waiting for welcome message')
+      if (!message || message.$case !== 'welcome') {
+        throw new Error('Protocol error: server did not send a welcomeMessage')
+      }
+
+      return new ArchipelagoConnection(baseUrl, about, ws, address)
+    }
+  } catch (err: any) {
+    connected.reject(err)
+    if (ws.readyState === ws.OPEN) {
+      ws.close()
+    }
+    throw err
+  } finally {
+    channel.close()
+  }
 }
 
-export class BffRpcConnection implements IRealmAdapter<any> {
+export class ArchipelagoConnection implements IRealmAdapter {
   public events = mitt<RealmConnectionEvents>()
-  public services: BffServices
+  public services: LegacyServices
 
-  private logger: ILogger = createLogger('BFF: ')
+  private logger: ILogger = createLogger('Archipelago: ')
   private disposed = false
 
   constructor(
     public baseUrl: string,
     public readonly about: AboutResponse,
-    public port: RpcClientPort,
+    public ws: WebSocket,
     public peerId: string
   ) {
-    port.on('close', () => {
+    ws.onclose = () => {
       this.disconnect().catch(this.logger.error)
+    }
+
+    ws.onerror = (event) => {
+      this.logger.error('socket error', event)
+    }
+
+    ws.addEventListener('message', ({ data }) => {
+      const { message } = ServerPacket.decode(new Uint8Array(data))
+      if (!message) {
+        return
+      }
+
+      switch (message.$case) {
+        case 'islandChanged': {
+          this.events.emit('setIsland', message.islandChanged)
+          break
+        }
+        case 'kicked': {
+          // notifyStatusThroughChat(peerKicked.reason)
+          // await this.disconnect(Error(message.peerKicked.reason))
+          break
+        }
+      }
     })
 
-    this.services = {
-      comms: loadService(port, CommsServiceDefinition),
-      legacy: legacyServices(baseUrl, about)
+    this.services = legacyServices(baseUrl, about)
+  }
+
+  sendHeartbeat(p: Vector3) {
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(
+        craftMessage({
+          message: {
+            $case: 'heartbeat',
+            heartbeat: {
+              position: {
+                x: p.x,
+                y: p.y,
+                z: p.z
+              }
+            }
+          }
+        })
+      )
     }
   }
 
@@ -104,14 +177,8 @@ export class BffRpcConnection implements IRealmAdapter<any> {
     if (this.disposed) {
       return
     }
-    this.logger.log('BFF transport closed')
-
+    this.logger.log('Archipelago adapter closed')
     this.disposed = true
-
-    if (this.port) {
-      this.port.close()
-    }
-
     this.events.emit('DISCONNECTION', { error })
   }
 }
