@@ -83,7 +83,7 @@ namespace DCL.Chat.Notifications
             const string body = "This is a test msg";
             ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", body);
             view.AddNewChatNotification(new PublicChannelMessageNotificationModel("publicMessageId",
-                body, "nearby", "nearby", 0, false, "UsernameTest", false));
+                body, "nearby", "nearby", 0, false, "UsernameTest", false, false));
 
             Assert.IsTrue(view.notificationQueue.Count == 1);
             Assert.IsTrue(view.poolableQueue.Count == 1);
@@ -102,7 +102,7 @@ namespace DCL.Chat.Notifications
             const string body = "This is a test msg";
             ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", body);
             view.AddNewChatNotification(new PublicChannelMessageNotificationModel("publicMessageId",
-                body, "nearby", "nearby", 0, true, "UsernameTest", false));
+                body, "nearby", "nearby", 0, true, "UsernameTest", false, false));
 
             Assert.IsTrue(view.notificationQueue.Count == 1);
             Assert.IsTrue(view.poolableQueue.Count == 1);
@@ -122,7 +122,7 @@ namespace DCL.Chat.Notifications
             const string body = "This is a test msg";
             ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", body);
             view.AddNewChatNotification(new PublicChannelMessageNotificationModel("publicMessageId",
-                body, "my-channel", "oi34j5o24j52", 0, false, "UsernameTest", false));
+                body, "my-channel", "oi34j5o24j52", 0, false, "UsernameTest", false, false));
 
             Assert.IsTrue(view.notificationQueue.Count == 1);
             Assert.IsTrue(view.poolableQueue.Count == 1);

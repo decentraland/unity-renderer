@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: ChatReceivePrivate
   m_EditorClassIdentifier: 
   loop: 0
-  volume: 1
+  initialVolume: 1
   initialPitch: 1
   randomPitch: 0
-  cooldownSeconds: 0.2
+  cooldownSeconds: 0
   clips:
     array:
     - {fileID: 8300000, guid: 7d9dba106af0f2b4fbd8fb4dabc179af, type: 3}
+  stopEventOnPlay: {fileID: 0}
   source: {fileID: 0}

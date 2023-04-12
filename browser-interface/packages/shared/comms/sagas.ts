@@ -408,7 +408,7 @@ function stripSnapshots(profile: Avatar): Avatar {
  */
 function* handleCommsReconnectionInterval() {
   while (true) {
-    const reason: any = yield race({
+    const reason = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
       USER_AUTHENTICATED: take(USER_AUTHENTICATED),

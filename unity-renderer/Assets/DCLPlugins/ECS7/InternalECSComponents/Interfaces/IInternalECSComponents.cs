@@ -12,6 +12,7 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent { get; }
     IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
+    IInternalECSComponent<InternalColliders> customLayerColliderComponent { get; }
     IInternalECSComponent<InternalRenderers> renderersComponent { get; }
     IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
     IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent { get; }
@@ -19,4 +20,7 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
     IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
     IInternalECSComponent<InternalAudioSource> audioSourceComponent { get; }
+    IInternalECSComponent<InternalPointerEvents> PointerEventsComponent { get; }
+    IInternalECSComponent<InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsComponent { get; }
+    IInternalECSComponent<InternalRaycast> raycastComponent { get; }
 }

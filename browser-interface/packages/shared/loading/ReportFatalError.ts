@@ -11,6 +11,8 @@ import { globalObservable } from '../observables'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { store } from 'shared/store/isolatedStore'
 import defaultLogger from 'lib/logger'
+import { setRealmAdapter } from 'shared/realm/actions'
+import { setRoomConnection } from 'shared/comms/actions'
 
 export function BringDownClientAndShowError(event: ExecutionLifecycleEvent | string) {
   if (ExecutionLifecycleEventsList.includes(event as any)) {
@@ -107,6 +109,8 @@ export function BringDownClientAndReportFatalError(
   })
 
   store.dispatch(fatalError(error.message || 'fatal error'))
+  store.dispatch(setRealmAdapter(undefined))
+  store.dispatch(setRoomConnection(undefined))
 
   globalObservable.emit('error', {
     error,

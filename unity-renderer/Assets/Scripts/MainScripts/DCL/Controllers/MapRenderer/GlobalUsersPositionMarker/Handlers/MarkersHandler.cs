@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MainScripts.DCL.Controllers.HotScenes;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -63,7 +64,7 @@ namespace DCL
         /// Then markers will be set and will be shown or hidden according to the current exclusion area.
         /// </summary>
         /// <param name="hotScenes">list of populated scenes</param>
-        public void SetMarkers(List<HotScenesController.HotSceneInfo> hotScenes)
+        public void SetMarkers(List<IHotScenesController.HotSceneInfo> hotScenes)
         {
             var parcelList = scenesFilter.Filter(hotScenes, maxMarkers);
             ResfreshMarkersPoolLists(parcelList.Count);

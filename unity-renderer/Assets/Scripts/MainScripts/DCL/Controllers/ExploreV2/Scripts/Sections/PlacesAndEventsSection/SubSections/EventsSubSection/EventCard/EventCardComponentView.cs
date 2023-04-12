@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -164,7 +165,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
     public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
 
-    public override void Start()
+    public void Start()
     {
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);
@@ -174,6 +175,23 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
+
+        onSubscribeClick.AddListener(PressedSubscribe);
+        onUnsubscribeClick.AddListener(PressedUnsubscribe);
+    }
+
+    private void PressedSubscribe()
+    {
+        model.isSubscribed = true;
+        model.eventFromAPIInfo.attending = true;
+        RefreshControl();
+    }
+
+    private void PressedUnsubscribe()
+    {
+        model.isSubscribed = false;
+        model.eventFromAPIInfo.attending = false;
+        RefreshControl();
     }
 
     public void Configure(EventCardComponentModel newModel)
@@ -254,6 +272,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.RemoveAllListeners();
+
+        onSubscribeClick.RemoveAllListeners();
+        onUnsubscribeClick.RemoveAllListeners();
     }
 
     public void SetEventPicture(Sprite sprite)
@@ -324,10 +345,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             jumpinButtonForNotLive.gameObject.SetActive(!isEventCardModal && !isLive);
 
         if (subscribeEventButton != null)
-            subscribeEventButton.gameObject.SetActive(!isLive && !model.isSubscribed);
+            subscribeEventButton.gameObject.SetActive(!isLive && !model.eventFromAPIInfo.attending);
 
         if (unsubscribeEventButton != null)
-            unsubscribeEventButton.gameObject.SetActive(!isLive && model.isSubscribed);
+            unsubscribeEventButton.gameObject.SetActive(!isLive && model.eventFromAPIInfo.attending);
 
         if (eventStartedInTitleForLive)
             eventStartedInTitleForLive.gameObject.SetActive(isLive);

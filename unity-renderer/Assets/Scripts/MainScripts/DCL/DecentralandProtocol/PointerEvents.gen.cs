@@ -27,22 +27,21 @@ namespace DCL.ECSComponents {
             "CjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9ldmVudHMu",
             "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxo1ZGVjZW50cmFs",
             "YW5kL3Nkay9jb21wb25lbnRzL2NvbW1vbi9pbnB1dF9hY3Rpb24ucHJvdG8i",
-            "zQMKD1BCUG9pbnRlckV2ZW50cxJKCg5wb2ludGVyX2V2ZW50cxgBIAMoCzIy",
+            "1AMKD1BCUG9pbnRlckV2ZW50cxJKCg5wb2ludGVyX2V2ZW50cxgBIAMoCzIy",
             "LmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQlBvaW50ZXJFdmVudHMu",
             "RW50cnka2QEKBEluZm8SRAoGYnV0dG9uGAEgASgOMi8uZGVjZW50cmFsYW5k",
             "LnNkay5jb21wb25lbnRzLmNvbW1vbi5JbnB1dEFjdGlvbkgAiAEBEhcKCmhv",
             "dmVyX3RleHQYAiABKAlIAYgBARIZCgxtYXhfZGlzdGFuY2UYAyABKAJIAogB",
             "ARIaCg1zaG93X2ZlZWRiYWNrGAQgASgISAOIAQFCCQoHX2J1dHRvbkINCgtf",
             "aG92ZXJfdGV4dEIPCg1fbWF4X2Rpc3RhbmNlQhAKDl9zaG93X2ZlZWRiYWNr",
-            "GpEBCgVFbnRyeRJBCgpldmVudF90eXBlGAEgASgOMi0uZGVjZW50cmFsYW5k",
-            "LnNkay5jb21wb25lbnRzLlBvaW50ZXJFdmVudFR5cGUSRQoKZXZlbnRfaW5m",
-            "bxgCIAEoCzIxLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQlBvaW50",
-            "ZXJFdmVudHMuSW5mbypWChBQb2ludGVyRXZlbnRUeXBlEgoKBlBFVF9VUBAA",
-            "EgwKCFBFVF9ET1dOEAESEwoPUEVUX0hPVkVSX0VOVEVSEAISEwoPUEVUX0hP",
-            "VkVSX0xFQVZFEANCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "GpgBCgVFbnRyeRJICgpldmVudF90eXBlGAEgASgOMjQuZGVjZW50cmFsYW5k",
+            "LnNkay5jb21wb25lbnRzLmNvbW1vbi5Qb2ludGVyRXZlbnRUeXBlEkUKCmV2",
+            "ZW50X2luZm8YAiABKAsyMS5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMu",
+            "UEJQb2ludGVyRXZlbnRzLkluZm9CFKoCEURDTC5FQ1NDb21wb25lbnRzYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.InputActionReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.PointerEventType), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents), global::DCL.ECSComponents.PBPointerEvents.Parser, new[]{ "PointerEvents" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents.Types.Info), global::DCL.ECSComponents.PBPointerEvents.Types.Info.Parser, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents.Types.Entry), global::DCL.ECSComponents.PBPointerEvents.Types.Entry.Parser, new[]{ "EventType", "EventInfo" }, null, null, null, null)})
           }));
@@ -50,19 +49,6 @@ namespace DCL.ECSComponents {
     #endregion
 
   }
-  #region Enums
-  /// <summary>
-  /// PointerEventType is a kind of interaction that can be detected.
-  /// </summary>
-  public enum PointerEventType {
-    [pbr::OriginalName("PET_UP")] PetUp = 0,
-    [pbr::OriginalName("PET_DOWN")] PetDown = 1,
-    [pbr::OriginalName("PET_HOVER_ENTER")] PetHoverEnter = 2,
-    [pbr::OriginalName("PET_HOVER_LEAVE")] PetHoverLeave = 3,
-  }
-
-  #endregion
-
   #region Messages
   /// <summary>
   /// PointerEvents adds configurable pointer-based interactions to the attached Entity.
