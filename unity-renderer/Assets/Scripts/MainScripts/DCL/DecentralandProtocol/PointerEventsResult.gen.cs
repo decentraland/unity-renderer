@@ -27,17 +27,17 @@ namespace DCL.ECSComponents {
             "CjdkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9ldmVudHNf",
             "cmVzdWx0LnByb3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMaNWRl",
             "Y2VudHJhbGFuZC9zZGsvY29tcG9uZW50cy9jb21tb24vaW5wdXRfYWN0aW9u",
-            "LnByb3RvGjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9l",
-            "dmVudHMucHJvdG8aMGRlY2VudHJhbGFuZC9zZGsvY29tcG9uZW50cy9yYXlj",
-            "YXN0X3Jlc3VsdC5wcm90byL/AQoVUEJQb2ludGVyRXZlbnRzUmVzdWx0Ej8K",
-            "BmJ1dHRvbhgBIAEoDjIvLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5j",
-            "b21tb24uSW5wdXRBY3Rpb24SNAoDaGl0GAIgASgLMicuZGVjZW50cmFsYW5k",
-            "LnNkay5jb21wb25lbnRzLlJheWNhc3RIaXQSPAoFc3RhdGUYBCABKA4yLS5k",
-            "ZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuUG9pbnRlckV2ZW50VHlwZRIR",
-            "Cgl0aW1lc3RhbXAYBSABKAUSEwoGYW5hbG9nGAYgASgCSACIAQFCCQoHX2Fu",
-            "YWxvZ0IUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "LnByb3RvGjRkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvY29tbW9uL3Jh",
+            "eWNhc3RfaGl0LnByb3RvIo0CChVQQlBvaW50ZXJFdmVudHNSZXN1bHQSPwoG",
+            "YnV0dG9uGAEgASgOMi8uZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLmNv",
+            "bW1vbi5JbnB1dEFjdGlvbhI7CgNoaXQYAiABKAsyLi5kZWNlbnRyYWxhbmQu",
+            "c2RrLmNvbXBvbmVudHMuY29tbW9uLlJheWNhc3RIaXQSQwoFc3RhdGUYBCAB",
+            "KA4yNC5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9uLlBvaW50",
+            "ZXJFdmVudFR5cGUSEQoJdGltZXN0YW1wGAUgASgNEhMKBmFuYWxvZxgGIAEo",
+            "AkgAiAEBQgkKB19hbmFsb2dCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.InputActionReflection.Descriptor, global::DCL.ECSComponents.PointerEventsReflection.Descriptor, global::DCL.ECSComponents.RaycastResultReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::DCL.ECSComponents.InputActionReflection.Descriptor, global::DCL.ECSComponents.RaycastHitReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult), global::DCL.ECSComponents.PBPointerEventsResult.Parser, new[]{ "Button", "Hit", "State", "Timestamp", "Analog" }, new[]{ "Analog" }, null, null, null)
           }));
@@ -140,13 +140,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "timestamp" field.</summary>
     public const int TimestampFieldNumber = 5;
-    private int timestamp_;
+    private uint timestamp_;
     /// <summary>
     /// could be a Lamport timestamp
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Timestamp {
+    public uint Timestamp {
       get { return timestamp_; }
       set {
         timestamp_ = value;
@@ -245,7 +245,7 @@ namespace DCL.ECSComponents {
       }
       if (Timestamp != 0) {
         output.WriteRawTag(40);
-        output.WriteInt32(Timestamp);
+        output.WriteUInt32(Timestamp);
       }
       if (HasAnalog) {
         output.WriteRawTag(53);
@@ -275,7 +275,7 @@ namespace DCL.ECSComponents {
       }
       if (Timestamp != 0) {
         output.WriteRawTag(40);
-        output.WriteInt32(Timestamp);
+        output.WriteUInt32(Timestamp);
       }
       if (HasAnalog) {
         output.WriteRawTag(53);
@@ -301,7 +301,7 @@ namespace DCL.ECSComponents {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) State);
       }
       if (Timestamp != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Timestamp);
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Timestamp);
       }
       if (HasAnalog) {
         size += 1 + 4;
@@ -367,7 +367,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 40: {
-            Timestamp = input.ReadInt32();
+            Timestamp = input.ReadUInt32();
             break;
           }
           case 53: {
@@ -405,7 +405,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 40: {
-            Timestamp = input.ReadInt32();
+            Timestamp = input.ReadUInt32();
             break;
           }
           case 53: {

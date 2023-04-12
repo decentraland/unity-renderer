@@ -78,7 +78,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnHighlightsSubSectionEnable;
 
-    public override void Start()
+    public void Start()
     {
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);

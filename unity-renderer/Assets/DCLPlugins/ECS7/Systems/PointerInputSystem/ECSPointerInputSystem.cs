@@ -161,7 +161,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 AddInputResultEvent(
                     state,
-                    InputAction.IaAny,
+                    InputAction.IaPointer,
                     state.lastHoverFeedback.scene,
                     state.lastHoverFeedback.entityId,
                     raycastRay,
@@ -172,7 +172,7 @@ namespace ECSSystems.PointerInputSystem
 
             AddInputResultEvent(
                 state,
-                InputAction.IaAny,
+                InputAction.IaPointer,
                 colliderData.scene,
                 colliderData.entity.entityId,
                 raycastRay,
@@ -196,7 +196,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 AddInputResultEvent(
                     state,
-                    InputAction.IaAny,
+                    InputAction.IaPointer,
                     state.lastHoverFeedback.scene,
                     state.lastHoverFeedback.entityId,
                     raycastRay,
@@ -215,7 +215,7 @@ namespace ECSSystems.PointerInputSystem
 
             AddInputResultEvent(
                 state,
-                InputAction.IaAny,
+                InputAction.IaPointer,
                 colliderData.scene,
                 colliderData.entity.entityId,
                 raycastRay,
@@ -265,7 +265,7 @@ namespace ECSSystems.PointerInputSystem
             for (int i = 0; i < collidersData.Count; i++)
             {
                 var colliderData = collidersData[i].value;
-                if (colliderData.model.colliders.Contains(collider))
+                if (colliderData.model.colliders.ContainsKey(collider))
                 {
                     return colliderData;
                 }

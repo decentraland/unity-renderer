@@ -1,9 +1,8 @@
-﻿using System;
-using DCL;
+﻿using DCL;
 using NSubstitute;
-using NSubstitute.Extensions;
 using NUnit.Framework;
 using SignupHUD;
+using System;
 
 namespace Tests.SignupHUD
 {
@@ -11,23 +10,26 @@ namespace Tests.SignupHUD
     {
         private SignupHUDController hudController;
         private ISignupHUDView hudView;
-        private IHUD avatarEditorHUD;
+        private DataStore_HUDs dataStoreHUDs;
         private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
 
         [SetUp]
         public void SetUp()
         {
             hudView = Substitute.For<ISignupHUDView>();
-            avatarEditorHUD = Substitute.For<IHUD>();
-            hudController = new SignupHUDController(hudView);
-            hudController.Initialize(avatarEditorHUD);
+            dataStoreHUDs = new DataStore_HUDs();
+
+            hudController = new SignupHUDController(Substitute.For<IAnalytics>(),
+                hudView,
+                new DataStore_LoadingScreen(),
+                dataStoreHUDs);
+            hudController.Initialize();
         }
 
         [Test]
         public void InitializeProperly()
         {
             Assert.AreEqual(hudView, hudController.view);
-            Assert.AreEqual(avatarEditorHUD, hudController.avatarEditorHUD);
             Assert.IsFalse(signupVisible.Get());
         }
 
@@ -77,9 +79,12 @@ namespace Tests.SignupHUD
         [Test]
         public void ReactsToEditAvatarProperly()
         {
+            var isAvatarEditorVisible = false;
+            dataStoreHUDs.avatarEditorVisible.OnChange += (current, previous) => isAvatarEditorVisible = current;
+
             hudView.OnEditAvatar += Raise.Event<Action>();
             Assert.IsFalse(signupVisible.Get());
-            avatarEditorHUD.Received().SetVisibility(true);
+            Assert.IsTrue(isAvatarEditorVisible);
         }
 
         [Test]

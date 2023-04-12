@@ -128,10 +128,8 @@ public class FriendsTabComponentView : BaseComponentView
         contextMenuPanel.Hide();
     }
 
-    public override void Update()
+    public void Update()
     {
-        base.Update();
-
         if (isLayoutDirty)
             Utils.ForceRebuildLayoutImmediate((RectTransform) filledStateContainer.transform);
         isLayoutDirty = false;
@@ -147,12 +145,12 @@ public class FriendsTabComponentView : BaseComponentView
         loadMoreEntriesRestrictionTime = Time.realtimeSinceStartup;
         scroll.verticalNormalizedPosition = 1f;
         creationQueue.Clear();
-        
+
         searchResultsFriendList.list.Clear();
-        
+
         ClearSearchResults();
         ClearOnlineAndOfflineFriends();
-        
+
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
     }
@@ -229,9 +227,9 @@ public class FriendsTabComponentView : BaseComponentView
             creationQueue[userId] = model;
             return;
         }
-        
+
         FriendEntryBase entry;
-        
+
         if (isSearchMode)
         {
             if (!searchResultsFriendList.list.Contains(userId))
@@ -247,7 +245,7 @@ public class FriendsTabComponentView : BaseComponentView
             else
                 entry = onlineFriendsList.list.Get(userId) ?? offlineFriendsList.list.Get(userId);
         }
-        
+
         Populate(userId, model, entry);
     }
 
@@ -283,7 +281,7 @@ public class FriendsTabComponentView : BaseComponentView
     public void EnableSearchMode()
     {
         isSearchMode = true;
-        
+
         ClearSearchResults();
 
         offlineFriendsList.Hide();
@@ -459,7 +457,7 @@ public class FriendsTabComponentView : BaseComponentView
 
         lastScrollPosition = position;
     }
-    
+
     private void ClearSearchResults()
     {
         foreach (var pooledObj in searchPooledEntries.Values)
@@ -467,12 +465,12 @@ public class FriendsTabComponentView : BaseComponentView
         searchPooledEntries.Clear();
         searchResultsFriendList.list.Clear();
     }
-    
+
     private void ClearOnlineAndOfflineFriends()
     {
         foreach (var pooledObj in pooledEntries.Values)
             entryPool.Release(pooledObj);
-        
+
         pooledEntries.Clear();
         onlineFriendsList.list.Clear();
         offlineFriendsList.list.Clear();

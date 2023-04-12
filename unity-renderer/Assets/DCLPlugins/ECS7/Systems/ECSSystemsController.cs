@@ -2,6 +2,7 @@ using DCL;
 using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
+using ECSSystems.ECSRaycastSystem;
 using ECSSystems.ECSSceneBoundsCheckerSystem;
 using ECSSystems.ECSUiPointerEventsSystem;
 using ECSSystems.InputSenderSystem;
@@ -34,6 +35,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSPlayerTransformSystem playerTransformSystem;
     private readonly ECSVideoPlayerSystem videoPlayerSystem;
     private readonly ECSUIInputSenderSystem uiInputSenderSystem;
+    private readonly ECSRaycastSystem raycastSystem;
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
@@ -74,6 +76,13 @@ public class ECSSystemsController : IDisposable
             DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
+
+        raycastSystem = new ECSRaycastSystem(
+            context.internalEcsComponents.raycastComponent,
+            context.internalEcsComponents.physicColliderComponent,
+            context.internalEcsComponents.onPointerColliderComponent,
+            context.internalEcsComponents.customLayerColliderComponent,
+            context.componentWriter);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             DataStore.i.ecs7.scenes,
@@ -122,6 +131,7 @@ public class ECSSystemsController : IDisposable
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
+            raycastSystem.Update, // should always be after player/entity transformations update
             sceneBoundsCheckerSystem.Update // Should always be the last system
         };
     }

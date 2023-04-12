@@ -83,7 +83,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         goingEventsCanvas = goingEvents.GetComponent<Canvas>();
     }
 
-    public override void Start()
+    public void Start()
     {
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
 
