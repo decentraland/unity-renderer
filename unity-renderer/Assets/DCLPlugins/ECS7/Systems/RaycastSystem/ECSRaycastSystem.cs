@@ -159,22 +159,28 @@ namespace ECSSystems.ECSRaycastSystem
             {
                 case PBRaycast.DirectionOneofCase.LocalDirection:
                     // The direction of the ray in local coordinates (relative to the origin point)
-                    UnityEngine.Vector3 localDirectionVector = ProtoConvertUtils.PBVectorToUnityVector(model.LocalDirection);
+                    UnityEngine.Vector3 localDirectionVector = entityTransform.rotation * ProtoConvertUtils.PBVectorToUnityVector(model.LocalDirection);
                     if(localDirectionVector != UnityEngine.Vector3.zero)
-                        rayDirection = entityTransform.rotation * localDirectionVector;
+                        rayDirection = localDirectionVector;
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalTarget:
                     // Target position to cast the ray towards, in global coordinates
-                    UnityEngine.Vector3 directionTowardsGlobalTarget = ProtoConvertUtils.PBVectorToUnityVector(model.GlobalTarget) - entityTransform.position;
+                    UnityEngine.Vector3 directionTowardsGlobalTarget = sceneUnityPosition + ProtoConvertUtils.PBVectorToUnityVector(model.GlobalTarget) - entityTransform.position;
                     if(directionTowardsGlobalTarget != UnityEngine.Vector3.zero)
-                        rayDirection = sceneUnityPosition + directionTowardsGlobalTarget;
+                        rayDirection = directionTowardsGlobalTarget;
                     break;
                 case PBRaycast.DirectionOneofCase.TargetEntity:
                     // Target entity to cast the ray towards
-                    if(scene.entities.TryGetValue(model.TargetEntity, out IDCLEntity targetEntity))
+                    if (scene.entities.TryGetValue(model.TargetEntity, out IDCLEntity targetEntity))
+                    {
                         rayDirection = targetEntity.gameObject.transform.position - entityTransform.position;
+                    }
                     else
-                        rayDirection = scene.GetSceneTransform().position - entityTransform.position;
+                    {
+                        UnityEngine.Vector3 directionTowardsSceneRootEntity = scene.GetSceneTransform().position - entityTransform.position;
+                        if (directionTowardsSceneRootEntity != UnityEngine.Vector3.zero)
+                            rayDirection = directionTowardsSceneRootEntity;
+                    }
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalDirection:
                     // The direction of the ray in global coordinates
