@@ -29,6 +29,9 @@ public class PlayerName : MonoBehaviour, IPlayerName
     [SerializeField] internal Transform pivot;
     [SerializeField] internal Animator talkingAnimator;
     [SerializeField] internal List<CanvasRenderer> canvasRenderers;
+    [SerializeField] internal Material nameMaterial;
+    [SerializeField] internal Material nameOnTopMaterial;
+    [SerializeField] internal Material bgOnTopMaterial;
 
     internal BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
     internal BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
@@ -132,8 +135,11 @@ public class PlayerName : MonoBehaviour, IPlayerName
     public void SetForceShow(bool forceShow)
     {
         canvas.enabled = forceShow || namesVisible.Get();
-        canvas.sortingOrder = forceShow ? FORCE_CANVAS_SORTING_ORDER : DEFAULT_CANVAS_SORTING_ORDER;
+
+        //canvas.sortingOrder = forceShow ? FORCE_CANVAS_SORTING_ORDER : DEFAULT_CANVAS_SORTING_ORDER;
         background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, forceShow ? 1 : namesOpacity.Get());
+        background.material = forceShow ? bgOnTopMaterial : null;
+        nameText.fontSharedMaterial = forceShow ? nameOnTopMaterial : nameMaterial;
         this.forceShow = forceShow;
 
         if (this.forceShow)
