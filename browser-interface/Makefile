@@ -13,7 +13,7 @@ build: empty-parcels
 	echo 'declare module "env" {}' > node_modules/env.d.ts
 	echo 'declare module "dcl" {}' > node_modules/dcl.d.ts
 # Prevent error on `estrella` compatibility with typescript 4.9+ & @types/node 18.0+
-	sed ${SED_OPTION} 's/interface FileWriteOptionsObj .*/interface FileWriteOptionsObj {/g' node_modules/estrella/estrella.d.ts
+	sed ${SED_OPTION} 's/interface FileWriteOptionsObj .*/interface FileWriteOptionsObj {/g' node_modules/estrella/estrella.d.ts || true
 	ESSENTIALS_ONLY=true node ./build.js
 	BUNDLES_ONLY=true node ./build.js
 
