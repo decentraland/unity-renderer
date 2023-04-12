@@ -22,5 +22,21 @@ namespace Tests.ValidationTests
 
             Assert.That(antiAliasingValue, Is.EqualTo("0"));
         }
+
+        [Test]
+        public void SplashScreenShouldBeFalse()
+        {
+            string qualityAssetPath = Application.dataPath.Remove(Application.dataPath.Length - "Assets".Length)
+                                      + "ProjectSettings/ProjectSettings.asset";
+
+            string antiAliasingValue =
+                File.ReadAllLines(qualityAssetPath)
+                    .First(x => x.Contains("ShowUnitySplashScreen"))
+                    .Split(':')
+                     [1]
+                    .Trim();
+
+            Assert.That(antiAliasingValue, Is.EqualTo("0"));
+        }
     }
 }
