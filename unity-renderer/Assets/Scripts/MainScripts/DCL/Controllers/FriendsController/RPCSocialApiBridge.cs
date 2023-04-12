@@ -6,7 +6,6 @@ using Decentraland.Renderer.RendererServices;
 using Decentraland.Social.Friendships;
 using Google.Protobuf.WellKnownTypes;
 using JetBrains.Annotations;
-using NSubstitute.ReceivedExtensions;
 using RPC;
 using System;
 using System.Threading;
