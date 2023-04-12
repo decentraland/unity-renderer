@@ -1026,7 +1026,10 @@ MonoBehaviour:
   sectionSelector: {fileID: 4937913390550088837}
   wearablesSection: {fileID: 8448101185958679783}
   emotesSection: {fileID: 8105447645029322740}
-  avatarPreviewRectTransform: {fileID: 3150290543190354886}
+  avatarPreviewPanel: {fileID: 3150290543190354886}
+  avatarPreviewRotation: {fileID: 6749458557699296124}
+  avatarPreviewImage: {fileID: 5221576635362755376}
+  avatarPreviewLoadingSpinner: {fileID: 4028908633907793762}
 --- !u!1 &3150290543190354887
 GameObject:
   m_ObjectHideFlags: 0
@@ -2476,7 +2479,7 @@ PrefabInstance:
     - target: {fileID: 2336035712942851721, guid: d565b61885fb1ef41b1582a285e748e9,
         type: 3}
       propertyPath: m_Name
-      value: LoadingSpinner
+      value: AvatarPreviewLoading
       objectReference: {fileID: 0}
     - target: {fileID: 2336035712942851721, guid: d565b61885fb1ef41b1582a285e748e9,
         type: 3}
@@ -2488,6 +2491,12 @@ PrefabInstance:
 --- !u!224 &554881733972111412 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1694139700094290411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4028908633907793762 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2336035712942851721, guid: d565b61885fb1ef41b1582a285e748e9,
     type: 3}
   m_PrefabInstance: {fileID: 1694139700094290411}
   m_PrefabAsset: {fileID: 0}

@@ -1,4 +1,5 @@
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 
 namespace DCL.Backpack
 {
@@ -8,10 +9,14 @@ namespace DCL.Backpack
 
         public BackpackEditorV2Plugin()
         {
+            var view = BackpackEditorHUDV2ComponentView.Create();
+            view.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+
             hudController = new BackpackEditorHUDController(
-                BackpackEditorHUDV2ComponentView.Create(),
+                view,
                 DataStore.i,
                 new UserProfileWebInterfaceBridge(),
+                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
         }
 

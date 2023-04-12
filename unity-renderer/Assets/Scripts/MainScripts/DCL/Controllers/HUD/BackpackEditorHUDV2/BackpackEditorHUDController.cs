@@ -2,10 +2,13 @@ using Cysharp.Threading.Tasks;
 using DCL.Emotes;
 using DCL.EmotesCustomization;
 using DCL.Tasks;
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace DCL.Backpack
 {
@@ -16,22 +19,28 @@ namespace DCL.Backpack
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IEmotesCatalogService emotesCatalogService;
         private IEmotesCustomizationComponentController emotesCustomizationComponentController;
         private bool isEmotesControllerInitialized;
         private CancellationTokenSource loadEmotesCTS = new ();
+        private readonly BackpackEditorHUDModel model = new ();
+        private bool avatarIsDirty;
+        private float prevRenderScale = 1.0f;
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
+            IWearablesCatalogService wearablesCatalogService,
             IEmotesCatalogService emotesCatalogService)
         {
             this.view = view;
-            this.view.Initialize();
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
+            this.wearablesCatalogService = wearablesCatalogService;
             this.emotesCatalogService = emotesCatalogService;
+            ownUserProfile.OnUpdate += LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange += SetVisibility;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
@@ -45,9 +54,15 @@ namespace DCL.Backpack
             loadEmotesCTS.SafeCancelAndDispose();
             loadEmotesCTS = null;
 
+            ownUserProfile.OnUpdate -= LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange -= SetVisibility;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
             dataStore.exploreV2.isOpen.OnChange -= ExploreV2IsOpenChanged;
+            dataStore.emotesCustomization.currentLoadedEmotes.OnAdded -= OnNewEmoteAdded;
+            emotesCustomizationComponentController.onEmotePreviewed -= OnPreviewEmote;
+            emotesCustomizationComponentController.onEmoteEquipped -= OnEmoteEquipped;
+            emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
+
             view.Dispose();
         }
 
@@ -60,7 +75,12 @@ namespace DCL.Backpack
                 view.Show();
             }
             else
+            {
                 view.Hide();
+                view.ResetPreviewEmote();
+            }
+
+            SetRenderScale(visible);
         }
 
         private void SetVisibility(bool current, bool _) =>
@@ -85,6 +105,13 @@ namespace DCL.Backpack
             emotesCustomizationComponentController.SetEquippedBodyShape(ownUserProfile.avatar.bodyShape);
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             isEmotesControllerInitialized = true;
+
+            dataStore.emotesCustomization.currentLoadedEmotes.OnAdded += OnNewEmoteAdded;
+            emotesCustomizationComponentController.onEmotePreviewed += OnPreviewEmote;
+            emotesCustomizationComponentController.onEmoteEquipped += OnEmoteEquipped;
+            emotesCustomizationComponentController.onEmoteUnequipped += OnEmoteUnequipped;
+
+            LoadUserProfile(ownUserProfile, true);
         }
 
         private void LoadEmotes()
@@ -114,8 +141,114 @@ namespace DCL.Backpack
 
         private void ExploreV2IsOpenChanged(bool current, bool previous)
         {
-            if (!current)
-                emotesCustomizationComponentController.RestoreEmoteSlots();
+            if (current || !avatarIsDirty)
+                return;
+
+            avatarIsDirty = false;
+            LoadUserProfile(ownUserProfile, true);
+            emotesCustomizationComponentController.RestoreEmoteSlots();
+        }
+
+        private void LoadUserProfile(UserProfile userProfile) =>
+            LoadUserProfile(userProfile, false);
+
+        private void LoadUserProfile(UserProfile userProfile, bool forceLoading)
+        {
+            bool avatarEditorNotVisible = CommonScriptableObjects.rendererState.Get() && !view.isVisible;
+            bool isPlaying = !Application.isBatchMode;
+
+            if (!forceLoading && isPlaying && avatarEditorNotVisible)
+                return;
+
+            if (userProfile == null)
+                return;
+
+            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
+                return;
+
+            wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
+
+            if (bodyShape == null)
+                return;
+
+            if (avatarIsDirty)
+                return;
+
+            EquipBodyShape(bodyShape);
+            EquipSkinColor(userProfile.avatar.skinColor);
+            EquipHairColor(userProfile.avatar.hairColor);
+            EquipEyesColor(userProfile.avatar.eyeColor);
+        }
+
+        private void UpdateAvatarPreview()
+        {
+            AvatarModel modelToUpdate = model.ToAvatarModel();
+
+            // We always keep the loaded emotes into the Avatar Preview
+            foreach (string emoteId in dataStore.emotesCustomization.currentLoadedEmotes.Get())
+                modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
+
+            view.UpdateAvatarPreview(modelToUpdate);
+        }
+
+        private void OnNewEmoteAdded(string emoteId) =>
+            UpdateAvatarPreview();
+
+        private void OnEmoteEquipped(string emoteId)
+        {
+            wearablesCatalogService.WearablesCatalog.TryGetValue(emoteId, out WearableItem equippedEmote);
+
+            if (equippedEmote != null && equippedEmote.IsEmote())
+                avatarIsDirty = true;
+        }
+
+        private void OnEmoteUnequipped(string emoteId)
+        {
+            wearablesCatalogService.WearablesCatalog.TryGetValue(emoteId, out WearableItem unequippedEmote);
+
+            if (unequippedEmote != null && unequippedEmote.IsEmote())
+                avatarIsDirty = true;
+        }
+
+        private void OnPreviewEmote(string emoteId) =>
+            view.PlayPreviewEmote(emoteId);
+
+        private void EquipBodyShape(WearableItem bodyShape)
+        {
+            if (bodyShape.data.category != WearableLiterals.Categories.BODY_SHAPE)
+            {
+                Debug.LogError($"Item ({bodyShape.id} is not a body shape");
+                return;
+            }
+
+            if (model.bodyShape == bodyShape)
+                return;
+
+            model.bodyShape = bodyShape;
+            emotesCustomizationComponentController.SetEquippedBodyShape(bodyShape.id);
+        }
+
+        private void EquipSkinColor(Color color) =>
+            model.skinColor = color;
+
+        private void EquipHairColor(Color color) =>
+            model.hairColor = color;
+
+        private void EquipEyesColor(Color color) =>
+            model.eyesColor = color;
+
+        private void SetRenderScale(bool visible)
+        {
+            // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
+            var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+
+            if (visible)
+            {
+                prevRenderScale = asset.renderScale;
+                asset.renderScale = 1.0f;
+            }
+            else
+                asset.renderScale = prevRenderScale;
         }
     }
 }
