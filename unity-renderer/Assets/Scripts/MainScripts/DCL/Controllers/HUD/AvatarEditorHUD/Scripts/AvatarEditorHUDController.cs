@@ -17,6 +17,7 @@ using UnityEngine.Rendering.Universal;
 using Environment = DCL.Environment;
 using Random = UnityEngine.Random;
 using Type = DCL.NotificationModel.Type;
+using Categories = WearableLiterals.Categories;
 
 public class AvatarEditorHUDController : IHUD
 {
@@ -1072,7 +1073,7 @@ public class AvatarEditorHUDController : IHUD
 
     private bool ShouldShowIncompatibleWearableToast(WearableItem wearable)
     {
-        if(wearable.data.category == WearableLiterals.Categories.BODY_SHAPE || wearable.data.category == WearableLiterals.Categories.SKIN)
+        if(wearable.data.category == Categories.BODY_SHAPE || wearable.data.category == Categories.SKIN)
             return false;
         else
             return !wearable.SupportsBodyShape(model.bodyShape.id);
