@@ -102,6 +102,14 @@ async function execute(
   })
 }
 
+function getProtofiles(pattern, cwd)
+{
+  return glob
+    .sync(
+      pattern, { cwd, absolute: true }
+    )
+}
+
 async function buildRendererProtocol() {
   console.log('> Building renderer protocol')
   try {
