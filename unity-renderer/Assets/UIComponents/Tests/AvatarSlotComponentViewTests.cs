@@ -42,4 +42,19 @@ public class AvatarSlotComponentViewTests
         avatarSlot.SetCategory(TEST_CATEGORY);
         Assert.IsTrue(Equals(avatarSlot.typeImage.sprite, nftTypeIconMapping.GetTypeImage(TEST_CATEGORY)), "The icon obtained from the mapping differs from the set one.");
     }
+
+    [Test]
+    public void SetFocus()
+    {
+        Assert.IsFalse(avatarSlot.focusedImage.enabled, "After the On Focus the focused outline is not correctly enabled");
+        avatarSlot.OnFocus();
+        Assert.IsTrue(avatarSlot.focusedImage.enabled, "After the On Focus the focused outline is not correctly enabled");
+    }
+
+    [Test]
+    public void SetOutOfFocus()
+    {
+        avatarSlot.OnLoseFocus();
+        Assert.IsFalse(avatarSlot.focusedImage.enabled, "After the On Focus the focused outline is not correctly enabled");
+    }
 }

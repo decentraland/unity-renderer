@@ -1,8 +1,10 @@
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class AvatarSlotComponentView : BaseComponentView, IAvatarSlotComponentView, IComponentModelConfig<AvatarSlotComponentModel>
+public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, IAvatarSlotComponentView, IComponentModelConfig<AvatarSlotComponentModel>
 {
     [Header("Configuration")]
     [SerializeField] internal AvatarSlotComponentModel model;
@@ -10,8 +12,8 @@ public class AvatarSlotComponentView : BaseComponentView, IAvatarSlotComponentVi
     [SerializeField] internal NftTypeIconSO typeIcons;
     [SerializeField] internal Image typeImage;
     [SerializeField] private ImageComponentView nftImage;
-    [SerializeField] private Image focusedImage;
-    [SerializeField] private Image selectedImage;
+    [SerializeField] internal Image focusedImage;
+    [SerializeField] internal Image selectedImage;
     [SerializeField] private GameObject emptySlot;
     [SerializeField] private GameObject hiddenSlot;
     [SerializeField] private GameObject tooltipContainer;
@@ -73,5 +75,10 @@ public class AvatarSlotComponentView : BaseComponentView, IAvatarSlotComponentVi
     {
         focusedImage.enabled = false;
         tooltipContainer.SetActive(false);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        selectedImage.enabled = true;
     }
 }
