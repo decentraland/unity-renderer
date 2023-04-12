@@ -16,7 +16,10 @@ namespace DCL.Providers
             string localUrl = Application.dataPath + "/../AssetBundles/" + hash;
 
             if (File.Exists(localUrl))
+            {
+                Debug.Log("VV:: LOADING FROM LOCAL");
                 return UniTask.FromResult(AssetBundle.LoadFromFile(localUrl));
+            }
 
             return UniTask.FromResult<AssetBundle>(null);
         }

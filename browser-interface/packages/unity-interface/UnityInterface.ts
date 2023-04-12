@@ -342,10 +342,7 @@ export class UnityInterface implements IUnityInterface {
 
     if (!isWorld)
     {
-      for (let i = 0; i < info.length; i += MINIMAP_CHUNK_SIZE) {
-        const chunk = info.slice(i, i + MINIMAP_CHUNK_SIZE)
-        this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
-      }
+      this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(info))
     }
   }
 
