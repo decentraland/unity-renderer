@@ -8,13 +8,16 @@ namespace Rendering.LoadingAvatar.Editor
     [Category("EditModeCI")]
     public class BaseAvatarTest
     {
-        private const string assetPath = "Assets/Rendering/LoadingAvatar/CrossSection/Avatar_Male_SingleMesh.glb";
+        private const string assetPath = "Assets/Rendering/LoadingAvatar/CrossSection/Resources/AvatarBase.prefab";
 
         [Test]
         public void BaseAvatarIsImportedCorrectly()
         {
             GameObject importedGameObject = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-            Assert.IsNotNull(importedGameObject);
+            Assert.IsNotNull(importedGameObject, "AvatarBase Asset");
+
+            var skinnedMeshRenderer = importedGameObject.GetComponentInChildren<SkinnedMeshRenderer>();
+            Assert.IsNotNull(skinnedMeshRenderer.sharedMesh, "AvatarBase renderer mesh");
         }
     }
 }
