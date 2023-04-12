@@ -10,14 +10,18 @@ public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, 
     [SerializeField] internal AvatarSlotComponentModel model;
 
     [SerializeField] internal NftTypeIconSO typeIcons;
+    [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
     [SerializeField] internal Image typeImage;
-    [SerializeField] private ImageComponentView nftImage;
+    [SerializeField] internal ImageComponentView nftImage;
+    [SerializeField] internal Image backgroundRarityImage;
     [SerializeField] internal Image focusedImage;
     [SerializeField] internal Image selectedImage;
     [SerializeField] private GameObject emptySlot;
     [SerializeField] private GameObject hiddenSlot;
     [SerializeField] private GameObject tooltipContainer;
     [SerializeField] private TMP_Text tooltipText;
+
+    public event Action<string> OnSelectAvatarSlot;
 
     public override void RefreshControl()
     {
@@ -63,6 +67,7 @@ public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, 
     public void SetRarity(string rarity)
     {
         model.rarity = rarity;
+        backgroundRarityImage.sprite = rarityBackgrounds.GetRarityImage(rarity);
     }
 
     public override void OnFocus()
@@ -79,6 +84,7 @@ public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, 
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        OnSelectAvatarSlot?.Invoke(model.category);
         selectedImage.enabled = true;
     }
 }

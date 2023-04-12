@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NftRarityBackground", menuName = "Variables/NftRarityBackground")]
 public class NftRarityBackgroundSO : ScriptableObject
 {
-    [SerializeField] SerializableKeyValuePair<string, Sprite>[] rarityIcons;
+    [SerializeField] public SerializableKeyValuePair<string, Sprite>[] rarityIcons;
 
     public Sprite GetRarityImage(string nftRarity)
     {

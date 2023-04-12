@@ -215,8 +215,10 @@ MonoBehaviour:
     imageUri: 
     category: 
   typeIcons: {fileID: 11400000, guid: 9525caf9cd97d4aa1b91f145f3a604e3, type: 2}
+  rarityBackgrounds: {fileID: 0}
   typeImage: {fileID: 4329488436158027747}
   nftImage: {fileID: 8486726043931597902}
+  backgroundRarityImage: {fileID: 2319109405909261016}
   focusedImage: {fileID: 6608887254494201105}
   selectedImage: {fileID: 8601390346333107926}
   emptySlot: {fileID: 778022788925054171}
