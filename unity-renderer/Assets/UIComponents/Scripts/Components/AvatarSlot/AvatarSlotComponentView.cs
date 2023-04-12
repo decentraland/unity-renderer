@@ -18,8 +18,8 @@ public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, 
     [SerializeField] internal Image selectedImage;
     [SerializeField] private GameObject emptySlot;
     [SerializeField] private GameObject hiddenSlot;
-    [SerializeField] private GameObject tooltipContainer;
-    [SerializeField] private TMP_Text tooltipText;
+    [SerializeField] internal GameObject tooltipContainer;
+    [SerializeField] internal TMP_Text tooltipText;
 
     public event Action<string> OnSelectAvatarSlot;
 
@@ -31,6 +31,7 @@ public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, 
         SetCategory(model.category);
         SetNftImage(model.imageUri);
         SetRarity(model.rarity);
+        SetIsHidden(model.isHidden, model.hiddenBy);
     }
 
     public void Configure(AvatarSlotComponentModel newModel)
@@ -40,6 +41,16 @@ public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, 
 
         model = newModel;
         RefreshControl();
+    }
+
+    public void SetIsHidden(bool isHidden, string hiddenBy)
+    {
+        model.isHidden = isHidden;
+        model.hiddenBy = hiddenBy;
+        hiddenSlot.SetActive(isHidden);
+
+        if(isHidden)
+            tooltipText.text = $"{tooltipText.text}\nHidden by: {hiddenBy}";
     }
 
     public void SetCategory(string category)
@@ -86,5 +97,10 @@ public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, 
     {
         OnSelectAvatarSlot?.Invoke(model.category);
         selectedImage.enabled = true;
+    }
+
+    public void OnPointerClickOnDifferentSlot()
+    {
+        selectedImage.enabled = false;
     }
 }

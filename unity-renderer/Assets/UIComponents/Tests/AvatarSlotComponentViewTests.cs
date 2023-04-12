@@ -70,6 +70,7 @@ public class AvatarSlotComponentViewTests
         Assert.IsFalse(avatarSlot.focusedImage.enabled, "Outline should be disabled by default");
         avatarSlot.OnFocus();
         Assert.IsTrue(avatarSlot.focusedImage.enabled, "After the On Focus the focused outline is not correctly enabled");
+        Assert.IsTrue(avatarSlot.tooltipContainer.activeInHierarchy, "Tooltip container was not enabled on the avatar slot focus");
     }
 
     [Test]
@@ -77,5 +78,32 @@ public class AvatarSlotComponentViewTests
     {
         avatarSlot.OnLoseFocus();
         Assert.IsFalse(avatarSlot.focusedImage.enabled, "After the On Lose Focus the focused outline is not disabled");
+        Assert.IsFalse(avatarSlot.tooltipContainer.activeInHierarchy, "Tooltip container was not disabled on the avatar slot un-focus");
+    }
+
+    [Test]
+    public void SetTooltipText1()
+    {
+        avatarSlot.Configure(new AvatarSlotComponentModel()
+        {
+            category = TEST_CATEGORY,
+            isHidden = true,
+            hiddenBy = "HidingCategory"
+        });
+
+        Assert.AreEqual(avatarSlot.tooltipText.text, $"{TEST_CATEGORY}\nHidden by: HidingCategory");
+    }
+
+    [Test]
+    public void SetTooltipText2()
+    {
+        avatarSlot.Configure(new AvatarSlotComponentModel()
+        {
+            category = TEST_CATEGORY,
+            isHidden = false,
+            hiddenBy = ""
+        });
+
+        Assert.AreEqual(avatarSlot.tooltipText.text, $"{TEST_CATEGORY}");
     }
 }
