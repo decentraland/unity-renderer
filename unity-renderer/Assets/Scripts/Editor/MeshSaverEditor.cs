@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Rendering.LoadingAvatar.Editor
+namespace Editor
 {
     public static class MeshSaverEditor
     {
