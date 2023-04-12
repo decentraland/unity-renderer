@@ -97,7 +97,7 @@ export async function fetchCatalystStatus(
       version: { bff: result.bff.version, content: result.content.version, lambdas: result.lambdas.version, comms: result.comms.protocol },
       elapsed: aboutResponse.elapsed!,
       usersCount: bff.userCount || comms.usersCount || 0,
-      acceptingUsers: bff.acceptingUsers,
+      acceptingUsers: result.acceptingUsers,
       maxUsers: 2000,
       usersParcels
     }
