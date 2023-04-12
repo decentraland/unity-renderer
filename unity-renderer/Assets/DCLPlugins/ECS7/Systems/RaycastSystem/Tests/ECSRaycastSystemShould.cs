@@ -411,7 +411,7 @@ namespace Tests
 
             entityRaycaster.gameObject.transform.Rotate(Vector3.right, 45);
             Assert.AreNotEqual(-entityRaycaster.gameObject.transform.up, localDirection);
-            Vector3 localDirectionNormalized = -entityRaycaster.gameObject.transform.up.normalized;
+            Vector3 localDirectionNormalized = -entityRaycaster.gameObject.transform.up;
 
             PBRaycast raycast = new PBRaycast()
             {
@@ -451,7 +451,7 @@ namespace Tests
             entityRaycasterTransform.localPosition = new Vector3(10, 0, 10);
             entityRaycasterTransform.localRotation = Quaternion.Euler(0f, 90f, 0f);
 ;
-            Assert.AreNotEqual(entityRaycasterTransform.forward.normalized, localDirection);
+            Assert.AreNotEqual(entityRaycasterTransform.forward, localDirection);
 
             PBRaycast raycast = new PBRaycast()
             {
@@ -497,7 +497,7 @@ namespace Tests
             entityRaycasterTransform.localPosition = Vector3.zero;
             entityRaycasterTransform.localRotation = Quaternion.identity;
 ;
-            Assert.AreNotEqual(entityRaycasterTransform.forward.normalized, localDirection);
+            Assert.AreNotEqual(entityRaycasterTransform.forward, localDirection);
 
             PBRaycast raycast = new PBRaycast()
             {
@@ -543,7 +543,7 @@ namespace Tests
             entityRaycasterTransform.localPosition = Vector3.zero;
             entityRaycasterTransform.localRotation = Quaternion.identity;
 ;
-            Assert.AreNotEqual(entityRaycasterTransform.forward.normalized, localDirection);
+            Assert.AreNotEqual(entityRaycasterTransform.forward, localDirection);
 
             Vector3 offset = Vector3.forward;
             PBRaycast raycast = new PBRaycast()
@@ -627,17 +627,19 @@ namespace Tests
                 scene.sceneData.sceneNumber,
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.down.normalized)
+                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.down)
             );
 
             entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
         }
 
         [Test]
-        public void UseSceneRootEntityDirectionByDefault()
+        public void DefaultTargetEntityDirectionTypeCorrectly()
         {
             Vector3 raycastEntityPosition = new Vector3(0f, 10f, 0f);
             entityRaycaster.gameObject.transform.position = raycastEntityPosition;
+
+            // Providing an invalid entity the raycast should default to target the scene root entity
             PBRaycast raycast = new PBRaycast()
             {
                 TargetEntity = 015159510,
@@ -655,6 +657,90 @@ namespace Tests
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
                 Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (scene.GetSceneTransform().position - raycastEntityPosition).normalized)
+            );
+        }
+
+        [Test]
+        public void DefaultGlobalDirectionTypeCorrectly()
+        {
+            Vector3 globalDirection = Vector3.zero;
+            Vector3 raycastEntityPosition = new Vector3(0f, 10f, 0f);
+            entityRaycaster.gameObject.transform.position = raycastEntityPosition;
+
+            // Providing a Vector3.Zero direction should end up using the defaulted Vector3.forward
+            PBRaycast raycast = new PBRaycast()
+            {
+                GlobalDirection = ProtoConvertUtils.UnityVectorToPBVector(globalDirection),
+                MaxDistance = 10f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward)
+            );
+        }
+
+        [Test]
+        public void DefaultGlobalTargetDirectionTypeCorrectly()
+        {
+            Vector3 raycastEntityPosition = Vector3.one;
+            entityRaycaster.gameObject.transform.position = raycastEntityPosition;
+
+            // Providing the same raycasting entity position as the global target will end up with a Vector3.Zero
+            // direction and it should be defaulted to Vector3.forward
+            PBRaycast raycast = new PBRaycast()
+            {
+                GlobalTarget = ProtoConvertUtils.UnityVectorToPBVector(raycastEntityPosition),
+                MaxDistance = 10f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward)
+            );
+        }
+
+        [Test]
+        public void DefaultLocalDirectionTypeCorrectly()
+        {
+            Vector3 localDirection = Vector3.zero;
+            Vector3 raycastEntityPosition = new Vector3(0f, 10f, 0f);
+            entityRaycaster.gameObject.transform.position = raycastEntityPosition;
+
+            // Providing a Vector3.Zero direction should end up using the defaulted Vector3.forward
+            PBRaycast raycast = new PBRaycast()
+            {
+                LocalDirection = ProtoConvertUtils.UnityVectorToPBVector(localDirection),
+                MaxDistance = 10f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward)
             );
         }
 

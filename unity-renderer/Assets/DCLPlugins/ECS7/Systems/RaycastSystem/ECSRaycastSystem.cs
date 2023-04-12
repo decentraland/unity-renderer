@@ -15,6 +15,11 @@ using Vector3 = Decentraland.Common.Vector3;
 
 namespace ECSSystems.ECSRaycastSystem
 {
+    /// <summary>
+    /// This system executes the needed raycasts on every entity that has a Raycast component and
+    /// adds a RaycastResult component to the corresponding raycasting entities, complying with
+    /// ADR-200: https://adr.decentraland.org/adr/ADR-200
+    /// </summary>
     public class ECSRaycastSystem
     {
         private readonly IInternalECSComponent<InternalRaycast> internalRaycastComponent;
@@ -149,26 +154,33 @@ namespace ECSSystems.ECSRaycastSystem
             UnityEngine.Vector3 sceneUnityPosition = PositionUtils.WorldToUnityPosition(sceneWorldPosition);
             UnityEngine.Vector3 rayOrigin = entityTransform.position + (model.OriginOffset != null ? ProtoConvertUtils.PBVectorToUnityVector(model.OriginOffset) : UnityEngine.Vector3.zero);
 
-            // By default the direction is towards the scene's root entity
-            UnityEngine.Vector3 rayDirection = scene.GetSceneTransform().position - entityTransform.position;
+            UnityEngine.Vector3 rayDirection = UnityEngine.Vector3.forward;
             switch (model.DirectionCase)
             {
                 case PBRaycast.DirectionOneofCase.LocalDirection:
                     // The direction of the ray in local coordinates (relative to the origin point)
-                    rayDirection = entityTransform.rotation * ProtoConvertUtils.PBVectorToUnityVector(model.LocalDirection);
+                    UnityEngine.Vector3 localDirectionVector = ProtoConvertUtils.PBVectorToUnityVector(model.LocalDirection);
+                    if(localDirectionVector != UnityEngine.Vector3.zero)
+                        rayDirection = entityTransform.rotation * localDirectionVector;
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalTarget:
                     // Target position to cast the ray towards, in global coordinates
-                    rayDirection = sceneUnityPosition + ProtoConvertUtils.PBVectorToUnityVector(model.GlobalTarget) - entityTransform.position;
+                    UnityEngine.Vector3 directionTowardsGlobalTarget = ProtoConvertUtils.PBVectorToUnityVector(model.GlobalTarget) - entityTransform.position;
+                    if(directionTowardsGlobalTarget != UnityEngine.Vector3.zero)
+                        rayDirection = sceneUnityPosition + directionTowardsGlobalTarget;
                     break;
                 case PBRaycast.DirectionOneofCase.TargetEntity:
                     // Target entity to cast the ray towards
                     if(scene.entities.TryGetValue(model.TargetEntity, out IDCLEntity targetEntity))
                         rayDirection = targetEntity.gameObject.transform.position - entityTransform.position;
+                    else
+                        rayDirection = scene.GetSceneTransform().position - entityTransform.position;
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalDirection:
                     // The direction of the ray in global coordinates
-                    rayDirection = ProtoConvertUtils.PBVectorToUnityVector(model.GlobalDirection);
+                    UnityEngine.Vector3 globalDirectionVector = ProtoConvertUtils.PBVectorToUnityVector(model.GlobalDirection);
+                    if(globalDirectionVector != UnityEngine.Vector3.zero)
+                        rayDirection = globalDirectionVector;
                     break;
             }
 
