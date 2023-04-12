@@ -27,6 +27,7 @@ namespace DCL.ABConverter
         /// <returns>A list of all the WearableItems found</returns>
         private static List<WearableItem> GetWearableItems(string url)
         {
+        Debug.log()
             UnityWebRequest w = UnityWebRequest.Get(url);
             w.SendWebRequest();
 
