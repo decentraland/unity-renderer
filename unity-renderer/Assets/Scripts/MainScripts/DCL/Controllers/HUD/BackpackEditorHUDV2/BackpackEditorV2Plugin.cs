@@ -6,9 +6,7 @@ namespace DCL.Backpack
 
         public BackpackEditorV2Plugin()
         {
-            var view = BackpackEditorHUDV2ComponentView.Create();
-            hudController = new BackpackEditorHUDController(view, DataStore.i);
-            view.Initialize();
+            hudController = new BackpackEditorHUDController(BackpackEditorHUDV2ComponentView.Create(), DataStore.i);
         }
 
         public void Dispose()

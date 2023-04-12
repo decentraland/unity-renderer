@@ -10,6 +10,7 @@ namespace DCL.Backpack
         public BackpackEditorHUDController(IBackpackEditorHUDView view, DataStore dataStore)
         {
             this.view = view;
+            this.view.Initialize();
             this.dataStore = dataStore;
             dataStore.HUDs.avatarEditorVisible.OnChange += SetVisibility;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
