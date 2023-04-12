@@ -1,6 +1,7 @@
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
 using Sentry;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -120,16 +121,22 @@ namespace DCL.Components
             }
         }
 
+        private void LoadOldGLTFlowFallback(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
+        {
+            if (VERBOSE)
+                Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
+
+            Dictionary<string, string> failedGLTF = new Dictionary<string, string>
+                { { "targetUrl", targetUrl } };
+            GenericAnalytics.SendAnalytic("failed_GLTFast_Load", failedGLTF);
+
+            LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
+        }
+
         private void ProxyLoadGltf(string targetUrl, bool hasFallback)
         {
             if (IsGltFastEnabled())
-                LoadGLTFast(targetUrl, OnSuccessEvent, _ =>
-                {
-                    if (VERBOSE)
-                        Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
-
-                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
-                }, true);
+                LoadGLTFast(targetUrl, OnSuccessEvent, _ => LoadOldGLTFlowFallback(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback), true);
             else
                 LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
         }
