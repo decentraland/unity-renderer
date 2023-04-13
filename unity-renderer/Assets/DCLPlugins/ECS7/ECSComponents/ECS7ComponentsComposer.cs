@@ -66,8 +66,7 @@ namespace DCL.ECSComponents
             videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentsWriter, internalComponents);
 
             // Multi-purposed components
-            pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter,
-                internalComponents.uiContainerComponent, internalComponents.inputEventResultsComponent);
+            pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter, internalComponents.PointerEventsComponent);
 
             // UI components
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);

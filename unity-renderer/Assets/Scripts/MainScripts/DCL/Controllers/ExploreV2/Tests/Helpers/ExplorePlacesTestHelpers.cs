@@ -1,6 +1,7 @@
+using MainScripts.DCL.Controllers.HotScenes;
 using System.Collections.Generic;
 using UnityEngine;
-using static HotScenesController;
+using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public static class ExplorePlacesTestHelpers
 {
@@ -19,7 +20,7 @@ public static class ExplorePlacesTestHelpers
         return new PlaceCardComponentModel
         {
             coords = new Vector2Int(10, 10),
-            hotSceneInfo = new HotScenesController.HotSceneInfo(),
+            hotSceneInfo = new HotSceneInfo(),
             numberOfUsers = 10,
             parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
             placeAuthor = "Test Author",

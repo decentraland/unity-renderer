@@ -38,7 +38,8 @@
         "GUID:9857fe4bae4e30441bc3a577c5de790a",
         "GUID:28f74c468a54948bfa9f625c5d428f56",
         "GUID:08b2edf8f14cdd3408988fd7746b749c",
-        "GUID:44a9db8f655ab05409802e5476cf9dd3"
+        "GUID:44a9db8f655ab05409802e5476cf9dd3",
+        "GUID:d0d87470ef1844e08586dabeb6d672bd"
     ],
     "includePlatforms": [
         "Android",
@@ -49,7 +50,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "NSubstitute.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

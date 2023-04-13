@@ -9,6 +9,7 @@ using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
 using DCL.SettingsCommon;
+using DCLServices.MapRendererV2;
 using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using System.Collections;
@@ -18,6 +19,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
+using MapRenderer = DCL.MapRenderer;
 
 public class IntegrationTestSuite_Legacy
 {
@@ -88,6 +90,7 @@ public class IntegrationTestSuite_Legacy
         wearablesCatalogService.WearablesCatalog.Returns(new BaseDictionary<string, WearableItem>());
         result.Register<IWearablesCatalogService>(() => wearablesCatalogService);
 
+        result.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
         return result;
     }
 

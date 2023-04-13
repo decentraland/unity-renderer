@@ -180,10 +180,8 @@ namespace DCL.Social.Chat
             closeMentionSuggestionsInput.OnTriggered -= HandleCloseMentionSuggestionsInput;
         }
 
-        public override void Update()
+        public void Update()
         {
-            base.Update();
-
             if (updateLayoutDelayedFrames > 0)
             {
                 updateLayoutDelayedFrames--;

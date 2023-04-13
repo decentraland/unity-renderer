@@ -1,23 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DCL.Configuration;
+﻿using DCL;
 using DCL.Controllers;
-using DCL.CRDT;
 using DCL.ECS7;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using ECSSystems.BillboardSystem;
-using Google.Protobuf;
 using NSubstitute;
-using NSubstitute.Extensions;
 using NUnit.Framework;
-using Tests;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TestTools;
 
-namespace DCL.ECSComponents.Test
+namespace Tests
 {
     public class BillboardShould
     {
@@ -34,19 +27,17 @@ namespace DCL.ECSComponents.Test
         [SetUp]
         protected void SetUp()
         {
-            scenes = DataStore.i.ecs7.scenes;
+            scenes = new List<IParcelScene>();
             scenes.Add(Substitute.For<IParcelScene>());
+
             scenes[0]
-                .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
+               .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
                 {
                     id = "temptation", basePosition = new Vector2Int(1, 0), sceneNumber = 1
                 });
 
             cameraGameObject = new GameObject("GO");
-            cameraGameObject.transform.position = new UnityEngine.Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
-
-            CommonScriptableObjects.rendererState.Set(true);
-            CommonScriptableObjects.worldOffset.Set(UnityEngine.Vector3.zero);
+            cameraGameObject.transform.position = new Vector3(16, 0, 0);
 
             testGameObject = new GameObject();
             testEntity = Substitute.For<IDCLEntity>();
@@ -56,9 +47,11 @@ namespace DCL.ECSComponents.Test
 
             ECSComponentsFactory componentFactory = new ECSComponentsFactory();
             ECSComponentsManager componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
-            var internalComponents = new InternalECSComponents(componentsManager, componentFactory, new Dictionary<int, ICRDTExecutor>());
-            var componentsComposer = new ECS7ComponentsComposer(componentFactory,
-                Substitute.For<IECSComponentWriter>(), internalComponents);
+
+            var registerBillboard = new BillboardRegister(
+                ComponentID.BILLBOARD,
+                componentFactory,
+                Substitute.For<IECSComponentWriter>());
 
             billboards = (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD);
 
@@ -73,9 +66,8 @@ namespace DCL.ECSComponents.Test
         [TearDown]
         protected void TearDown()
         {
-            GameObject.Destroy(testGameObject);
-            GameObject.Destroy(cameraGameObject);
-            CommonScriptableObjects.UnloadAll();
+            Object.Destroy(testGameObject);
+            Object.Destroy(cameraGameObject);
         }
 
         [Test]
@@ -85,11 +77,11 @@ namespace DCL.ECSComponents.Test
             billboards.SetModel(scenes[0], testEntity, CreateModel());
 
             var currentRotation = testGameObject.transform.rotation;
-            cameraGameObject.transform.position = new UnityEngine.Vector3(30, 2, 15);
+            cameraGameObject.transform.rotation = Quaternion.Euler(0, 3, 0);
             systemUpdate.Update();
 
             // Assert
-            Assert.AreNotEqual(currentRotation,  testGameObject.transform.rotation);
+            Assert.AreNotEqual(currentRotation, testGameObject.transform.rotation);
         }
 
         [Test]
@@ -103,6 +95,7 @@ namespace DCL.ECSComponents.Test
 
             // Assert
             Assert.AreEqual(model.BillboardMode, newModel.BillboardMode);
+
             // Assert.AreEqual(model.OppositeDirection, newModel.OppositeDirection);
         }
 
@@ -116,6 +109,7 @@ namespace DCL.ECSComponents.Test
         {
             PBBillboard model = new PBBillboard();
             model.BillboardMode = BillboardMode.BmY;
+
             // model.OppositeDirection = true;
             return model;
         }

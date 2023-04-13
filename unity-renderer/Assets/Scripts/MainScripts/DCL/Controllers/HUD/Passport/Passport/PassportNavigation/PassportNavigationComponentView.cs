@@ -111,7 +111,7 @@ namespace DCL.Social.Passports
         private readonly List<NftPageView> ownedNftWearablePageViews = new List<NftPageView>();
         private readonly List<NftPageView> ownedNftEmotePageViews = new List<NftPageView>();
 
-        public override void Start()
+        public void Start()
         {
             collectiblesToggle.isOn = false;
             aboutToggle.isOn = true;
@@ -129,6 +129,11 @@ namespace DCL.Social.Passports
             viewAllLANDs.onClick.AddListener(()=>OpenViewAllSection(PassportSection.Lands));
 
             descriptionText.SubscribeToClickEvents(OnDescriptionClicked);
+            nftWearablesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Wearables");
+            nftEmotesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Emotes");
+            nftNamesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Names");
+            nftLandsPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Lands");
+            nftIconsEntryPool = GetNftIconEntryPool();
         }
 
         private void OpenViewAllSection(PassportSection section)
@@ -174,11 +179,6 @@ namespace DCL.Social.Passports
 
         public void InitializeView()
         {
-            nftWearablesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Wearables");
-            nftEmotesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Emotes");
-            nftNamesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Names");
-            nftLandsPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Lands");
-            nftIconsEntryPool = GetNftIconEntryPool();
             ReleaseAllNftPagesPoolObjects();
             ReleaseAllNftIconsPoolObjects();
             SetInitialPage();

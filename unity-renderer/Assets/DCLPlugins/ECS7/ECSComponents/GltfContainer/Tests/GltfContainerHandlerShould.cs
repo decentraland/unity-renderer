@@ -121,8 +121,8 @@ namespace Tests
             var physicColliderComponentData = physicColliderComponent.GetFor(scene, entity);
             var pointerColliderComponentData = pointerColliderComponent.GetFor(scene, entity);
 
-            Assert.AreEqual(physicCollider, physicColliderComponentData.model.colliders[0]);
-            Assert.AreEqual(pointerCollider, pointerColliderComponentData.model.colliders[0]);
+            Assert.AreEqual(physicCollider, physicColliderComponentData.model.colliders.Pairs[0].key);
+            Assert.AreEqual(pointerCollider, pointerColliderComponentData.model.colliders.Pairs[0].key);
         }
 
         [UnityTest]
