@@ -157,27 +157,36 @@ namespace DCL.Backpack
             bool avatarEditorNotVisible = CommonScriptableObjects.rendererState.Get() && !view.isVisible;
             bool isPlaying = !Application.isBatchMode;
 
-            if (!forceLoading && isPlaying && avatarEditorNotVisible)
-                return;
-
-            if (userProfile == null)
-                return;
-
-            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
-                return;
+            if (!forceLoading && isPlaying && avatarEditorNotVisible) return;
+            if (userProfile == null) return;
+            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape)) return;
 
             wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
 
-            if (bodyShape == null)
-                return;
-
-            if (avatarIsDirty)
-                return;
+            if (bodyShape == null) return;
+            if (avatarIsDirty) return;
 
             EquipBodyShape(bodyShape);
             EquipSkinColor(userProfile.avatar.skinColor);
             EquipHairColor(userProfile.avatar.hairColor);
             EquipEyesColor(userProfile.avatar.eyeColor);
+
+            model.wearables.Clear();
+
+            int wearablesCount = userProfile.avatar.wearables.Count;
+
+            if (!DataStore.i.common.isPlayerRendererLoaded.Get()) return;
+
+            for (var i = 0; i < wearablesCount; i++)
+            {
+                if (!wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.wearables[i], out var wearable))
+                {
+                    Debug.LogError($"Couldn't find wearable with ID {userProfile.avatar.wearables[i]}");
+                    continue;
+                }
+                
+                model.wearables.Add(wearable);
+            }
         }
 
         private void UpdateAvatarPreview()
