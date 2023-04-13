@@ -199,8 +199,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
                 favoriteButtonContainer.SetActive(false);
         }
 
-        ShowFavoriteButton(false);
-
         RebuildCardLayouts();
     }
 
@@ -208,12 +206,13 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     {
         if (favoriteButton == null)
             return;
-
+        favoriteButton.gameObject.SetActive(true);
         favoriteButton.Configure(new FavoriteButtonComponentModel()
         {
             isFavorite = isFavorite,
             placeUUID = placeId
         });
+        ShowFavoriteButton(isFavorite);
 
         favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
         favoriteButton.OnFavoriteChange += FavoriteValueChanged;
