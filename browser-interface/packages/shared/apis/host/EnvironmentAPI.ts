@@ -65,7 +65,8 @@ export function registerEnvironmentApiServiceServerImplementation(
       return {
         clientUri: location.href,
         configurations: {
-          questsServerUrl: getServerConfigurations(getSelectedNetwork(store.getState())).questsUrl
+          questsServerUrl: getServerConfigurations(getSelectedNetwork(store.getState())).questsUrl,
+          'experimental-metrics': 'true'
         }
       }
     },

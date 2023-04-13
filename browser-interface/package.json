@@ -63,7 +63,7 @@
     "@dcl/legacy-ecs": "^6.11.11",
     "@dcl/protocol": "^1.0.0-4671230683.commit-a8d74c3",
     "@dcl/rpc": "^1.1.1",
-    "@dcl/scene-runtime": "^7.0.3-20230203154303.commit-ce68b8f",
+    "@dcl/scene-runtime": "https://sdk-team-cdn.decentraland.org/@dcl/scene-runtime/branch/testing/add-experimental-metrics/dcl-scene-runtime-7.0.6-20230413184946.commit-8c74c08.tgz",
     "@dcl/schemas": "^6.11.1",
     "@dcl/urn-resolver": "^2.0.3",
     "@types/mocha": "^10.0.1",
