@@ -451,6 +451,9 @@ function* handleAnnounceProfile() {
     // skip this process when there is no local profile
     if (!profile) continue
 
+    // user is in the avatar creation screen
+    if(profile.version == -1) continue
+
     if (reason.sendProfileToRenderer && profile.userId !== reason.sendProfileToRenderer.payload.userId) {
       // skip this process when sendProfileToRenderer is called for a different avatar
       continue
