@@ -6,7 +6,6 @@ namespace DCL.Backpack
     public interface IBackpackEditorHUDView
     {
         Transform EmotesSectionTransform { get; }
-        ICharacterPreviewController CharacterPreview { get; }
         bool isVisible { get; }
 
         void Initialize(ICharacterPreviewFactory characterPreviewFactory);

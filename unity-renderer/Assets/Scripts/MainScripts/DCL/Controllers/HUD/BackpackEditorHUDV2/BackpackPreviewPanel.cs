@@ -1,0 +1,58 @@
+﻿using Cysharp.Threading.Tasks;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace DCL.Backpack
+{
+    public class BackpackPreviewPanel : BaseComponentView
+    {
+        [SerializeField] private RectTransform avatarPreviewPanel;
+        [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
+        [SerializeField] private RawImage avatarPreviewImage;
+        [SerializeField] internal GameObject avatarPreviewLoadingSpinner;
+
+        private ICharacterPreviewController characterPreviewController;
+
+        public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
+        {
+            characterPreviewController = characterPreviewFactory.Create(CharacterPreviewMode.WithoutHologram, (RenderTexture) avatarPreviewImage.texture, false);
+            characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
+            avatarPreviewRotation.OnHorizontalRotation += OnPreviewRotation;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            characterPreviewController.Dispose();
+            avatarPreviewRotation.OnHorizontalRotation -= OnPreviewRotation;
+        }
+
+        public override void RefreshControl() { }
+
+        public void SetPreviewEnabled(bool isEnabled) =>
+            characterPreviewController.SetEnabled(isEnabled);
+
+        public void PlayPreviewEmote(string emoteId) =>
+            characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup);
+
+        public async UniTask TryUpdatePreviewModelAsync(AvatarModel avatarModelToUpdate) =>
+            await characterPreviewController.TryUpdateModelAsync(avatarModelToUpdate);
+
+        public void AnchorPreviewPanel(bool anchorRight)
+        {
+            avatarPreviewPanel.pivot = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.pivot.y);
+            avatarPreviewPanel.anchorMin = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.anchorMin.y);
+            avatarPreviewPanel.anchorMax = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.anchorMax.y);
+            avatarPreviewPanel.offsetMin = new Vector2(anchorRight ? -avatarPreviewPanel.rect.width : 0, avatarPreviewPanel.offsetMin.y);
+            avatarPreviewPanel.offsetMax = new Vector2(anchorRight ? 0 : avatarPreviewPanel.rect.width, avatarPreviewPanel.offsetMax.y);
+        }
+
+        public void SetLoadingActive(bool isActive) =>
+            avatarPreviewLoadingSpinner.SetActive(false);
+
+        private void OnPreviewRotation(float angularVelocity) =>
+            characterPreviewController.Rotate(angularVelocity);
+    }
+}

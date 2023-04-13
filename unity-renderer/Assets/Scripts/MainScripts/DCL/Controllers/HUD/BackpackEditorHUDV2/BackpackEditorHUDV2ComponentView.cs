@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
@@ -12,20 +11,13 @@ namespace DCL.Backpack
         private const int EMOTES_SECTION_INDEX = 1;
         private const string RESET_PREVIEW_ANIMATION = "Idle";
 
-        [Header("Sections")]
         [SerializeField] private SectionSelectorComponentView sectionSelector;
         [SerializeField] private GameObject wearablesSection;
         [SerializeField] private GameObject emotesSection;
-
-        [Header("Avatar Preview")]
-        [SerializeField] private RectTransform avatarPreviewPanel;
-        [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
-        [SerializeField] private RawImage avatarPreviewImage;
-        [SerializeField] internal GameObject avatarPreviewLoadingSpinner;
+        [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
-        public ICharacterPreviewController CharacterPreview { get; private set; }
 
         private Transform thisTransform;
         private bool isAvatarDirty;
@@ -35,15 +27,12 @@ namespace DCL.Backpack
         {
             base.Awake();
             thisTransform = transform;
-            avatarPreviewLoadingSpinner.SetActive(false);
+            backpackPreviewPanel.SetLoadingActive(false);
         }
 
         public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
         {
-            CharacterPreview = characterPreviewFactory.Create(CharacterPreviewMode.WithoutHologram, (RenderTexture) avatarPreviewImage.texture, false);
-            CharacterPreview.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
-            avatarPreviewRotation.OnHorizontalRotation += OnAvatarPreviewRotation;
-
+            backpackPreviewPanel.Initialize(characterPreviewFactory);
             ConfigureSectionSelector();
         }
 
@@ -56,9 +45,7 @@ namespace DCL.Backpack
 
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
-            CharacterPreview.Dispose();
-
-            avatarPreviewRotation.OnHorizontalRotation -= OnAvatarPreviewRotation;
+            backpackPreviewPanel.Dispose();
         }
 
         public static IBackpackEditorHUDView Create() =>
@@ -66,19 +53,17 @@ namespace DCL.Backpack
 
         public override void Show(bool instant = false)
         {
-            CharacterPreview.SetEnabled(true);
+            backpackPreviewPanel.SetPreviewEnabled(true);
             gameObject.SetActive(true);
         }
 
         public override void Hide(bool instant = false)
         {
-            CharacterPreview.SetEnabled(false);
+            backpackPreviewPanel.SetPreviewEnabled(false);
             gameObject.SetActive(false);
         }
 
-        public override void RefreshControl()
-        {
-        }
+        public override void RefreshControl() { }
 
         public void Show() =>
             Show(true);
@@ -95,8 +80,7 @@ namespace DCL.Backpack
             thisTransform.localScale = Vector3.one;
 
             RectTransform rectTransform = thisTransform as RectTransform;
-            if (rectTransform == null)
-                return;
+            if (rectTransform == null) return;
             rectTransform.anchorMin = Vector2.zero;
             rectTransform.anchorMax = Vector2.one;
             rectTransform.pivot = new Vector2(0.5f, 0.5f);
@@ -106,7 +90,7 @@ namespace DCL.Backpack
         }
 
         public void PlayPreviewEmote(string emoteId) =>
-            CharacterPreview.PlayEmote(emoteId, (long)Time.realtimeSinceStartup);
+            backpackPreviewPanel.PlayPreviewEmote(emoteId);
 
         public void ResetPreviewEmote() =>
             PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
@@ -123,7 +107,7 @@ namespace DCL.Backpack
             isAvatarDirty = true;
             avatarModelToUpdate = avatarModel;
 
-            avatarPreviewLoadingSpinner.SetActive(true);
+            backpackPreviewPanel.SetLoadingActive(true);
         }
 
         private void ConfigureSectionSelector()
@@ -131,7 +115,7 @@ namespace DCL.Backpack
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
                 wearablesSection.SetActive(isSelected);
-                AnchorAvatarPreviewPanel(false);
+                backpackPreviewPanel.AnchorPreviewPanel(false);
 
                 if (isSelected)
                     ResetPreviewEmote();
@@ -139,24 +123,12 @@ namespace DCL.Backpack
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
                 emotesSection.SetActive(isSelected);
-                AnchorAvatarPreviewPanel(true);
+                backpackPreviewPanel.AnchorPreviewPanel(true);
 
                 if (isSelected)
                     ResetPreviewEmote();
             });
         }
-
-        private void AnchorAvatarPreviewPanel(bool anchorRight)
-        {
-            avatarPreviewPanel.pivot = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.pivot.y);
-            avatarPreviewPanel.anchorMin = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.anchorMin.y);
-            avatarPreviewPanel.anchorMax = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.anchorMax.y);
-            avatarPreviewPanel.offsetMin = new Vector2(anchorRight ? -avatarPreviewPanel.rect.width : 0, avatarPreviewPanel.offsetMin.y);
-            avatarPreviewPanel.offsetMax = new Vector2(anchorRight ? 0 : avatarPreviewPanel.rect.width, avatarPreviewPanel.offsetMax.y);
-        }
-
-        private void OnAvatarPreviewRotation(float angularVelocity) =>
-            CharacterPreview.Rotate(angularVelocity);
 
         private void UpdateAvatarModelWhenNeeded()
         {
@@ -164,8 +136,8 @@ namespace DCL.Backpack
             {
                 async UniTaskVoid UpdateAvatarAsync()
                 {
-                    await CharacterPreview.TryUpdateModelAsync(avatarModelToUpdate);
-                    avatarPreviewLoadingSpinner.SetActive(false);
+                    await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate);
+                    backpackPreviewPanel.SetLoadingActive(false);
                 }
 
                 UpdateAvatarAsync().Forget();
