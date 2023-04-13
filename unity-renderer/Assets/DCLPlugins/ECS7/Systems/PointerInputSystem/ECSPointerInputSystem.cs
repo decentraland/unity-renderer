@@ -161,7 +161,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 AddInputResultEvent(
                     state,
-                    InputAction.IaAny,
+                    InputAction.IaPointer,
                     state.lastHoverFeedback.scene,
                     state.lastHoverFeedback.entityId,
                     raycastRay,
@@ -172,7 +172,7 @@ namespace ECSSystems.PointerInputSystem
 
             AddInputResultEvent(
                 state,
-                InputAction.IaAny,
+                InputAction.IaPointer,
                 colliderData.scene,
                 colliderData.entity.entityId,
                 raycastRay,
@@ -196,7 +196,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 AddInputResultEvent(
                     state,
-                    InputAction.IaAny,
+                    InputAction.IaPointer,
                     state.lastHoverFeedback.scene,
                     state.lastHoverFeedback.entityId,
                     raycastRay,
@@ -215,7 +215,7 @@ namespace ECSSystems.PointerInputSystem
 
             AddInputResultEvent(
                 state,
-                InputAction.IaAny,
+                InputAction.IaPointer,
                 colliderData.scene,
                 colliderData.entity.entityId,
                 raycastRay,

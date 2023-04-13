@@ -15,6 +15,11 @@ using Vector3 = Decentraland.Common.Vector3;
 
 namespace ECSSystems.ECSRaycastSystem
 {
+    /// <summary>
+    /// This system executes the needed raycasts on every entity that has a Raycast component and
+    /// adds a RaycastResult component to the corresponding raycasting entities, complying with
+    /// ADR-200: https://adr.decentraland.org/adr/ADR-200
+    /// </summary>
     public class ECSRaycastSystem
     {
         private readonly IInternalECSComponent<InternalRaycast> internalRaycastComponent;
@@ -148,25 +153,40 @@ namespace ECSSystems.ECSRaycastSystem
             UnityEngine.Vector3 sceneWorldPosition = Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
             UnityEngine.Vector3 sceneUnityPosition = PositionUtils.WorldToUnityPosition(sceneWorldPosition);
             UnityEngine.Vector3 rayOrigin = entityTransform.position + (model.OriginOffset != null ? ProtoConvertUtils.PBVectorToUnityVector(model.OriginOffset) : UnityEngine.Vector3.zero);
-            UnityEngine.Vector3 rayDirection = UnityEngine.Vector3.zero;
+
+            UnityEngine.Vector3 rayDirection = UnityEngine.Vector3.forward;
             switch (model.DirectionCase)
             {
                 case PBRaycast.DirectionOneofCase.LocalDirection:
                     // The direction of the ray in local coordinates (relative to the origin point)
-                    rayDirection = entityTransform.rotation * ProtoConvertUtils.PBVectorToUnityVector(model.LocalDirection);
+                    UnityEngine.Vector3 localDirectionVector = entityTransform.rotation * ProtoConvertUtils.PBVectorToUnityVector(model.LocalDirection);
+                    if(localDirectionVector != UnityEngine.Vector3.zero)
+                        rayDirection = localDirectionVector;
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalTarget:
                     // Target position to cast the ray towards, in global coordinates
-                    rayDirection = sceneUnityPosition + ProtoConvertUtils.PBVectorToUnityVector(model.GlobalTarget) - entityTransform.position;
+                    UnityEngine.Vector3 directionTowardsGlobalTarget = sceneUnityPosition + ProtoConvertUtils.PBVectorToUnityVector(model.GlobalTarget) - entityTransform.position;
+                    if(directionTowardsGlobalTarget != UnityEngine.Vector3.zero)
+                        rayDirection = directionTowardsGlobalTarget;
                     break;
                 case PBRaycast.DirectionOneofCase.TargetEntity:
                     // Target entity to cast the ray towards
-                    IDCLEntity targetEntity = scene.GetEntityById(model.TargetEntity);
-                    rayDirection = targetEntity.gameObject.transform.position - entityTransform.position;
+                    if (scene.entities.TryGetValue(model.TargetEntity, out IDCLEntity targetEntity))
+                    {
+                        rayDirection = targetEntity.gameObject.transform.position - entityTransform.position;
+                    }
+                    else
+                    {
+                        UnityEngine.Vector3 directionTowardsSceneRootEntity = scene.GetSceneTransform().position - entityTransform.position;
+                        if (directionTowardsSceneRootEntity != UnityEngine.Vector3.zero)
+                            rayDirection = directionTowardsSceneRootEntity;
+                    }
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalDirection:
                     // The direction of the ray in global coordinates
-                    rayDirection = ProtoConvertUtils.PBVectorToUnityVector(model.GlobalDirection);
+                    UnityEngine.Vector3 globalDirectionVector = ProtoConvertUtils.PBVectorToUnityVector(model.GlobalDirection);
+                    if(globalDirectionVector != UnityEngine.Vector3.zero)
+                        rayDirection = globalDirectionVector;
                     break;
             }
 
@@ -180,19 +200,18 @@ namespace ECSSystems.ECSRaycastSystem
 
         private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, int>? hitEntity, Vector3 globalOrigin)
         {
+            if (hitEntity == null) return null;
+
             DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
-            if (hitEntity != null)
-            {
-                IDCLEntity entity = hitEntity.Value.Key;
-                int collisionMask = hitEntity.Value.Value;
+            IDCLEntity entity = hitEntity.Value.Key;
+            int collisionMask = hitEntity.Value.Value;
 
-                // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
-                // and ClPhysics and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
-                if ((model.GetCollisionMask() & collisionMask) == 0)
-                    return null;
+            // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
+            // and ClPhysics, and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
+            if ((model.GetCollisionMask() & collisionMask) == 0)
+                return null;
 
-                hit.EntityId = (uint)entity.entityId;
-            }
+            hit.EntityId = (uint)entity.entityId;
             hit.MeshName = unityRaycastHit.collider.name;
             hit.Length = unityRaycastHit.distance;
             hit.GlobalOrigin = globalOrigin;

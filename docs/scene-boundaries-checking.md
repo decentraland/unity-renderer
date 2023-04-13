@@ -1,4 +1,7 @@
 # Scene Boundaries Checking
+This document describes the architecture behind the Scene Bounds Checker for SDK6 scenes, for a more higher level architecture description and details on the SDK7 Scene Bounds Checker read [ADR-192](https://adr.decentraland.org/adr/ADR-192).
+
+### Goal
 The main goal of the Scene Boundaries Checking System ([`SceneBoundsChecker` class](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsChecker.cs)) is to make sure that deployed content is only in effect inside the scenes they belong to.
 
 ### Approach

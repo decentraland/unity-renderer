@@ -44,7 +44,7 @@ MonoBehaviour:
     shadowDistance: 50
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
-    ssaoQuality: 1
+    ssaoQuality: 0
     maxHQAvatars: 40
     reflectionResolution: 1
     shaderQuality: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
     shadowDistance: 70
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
-    ssaoQuality: 2
+    ssaoQuality: 0
     maxHQAvatars: 60
     reflectionResolution: 2
     shaderQuality: 1
@@ -78,7 +78,7 @@ MonoBehaviour:
     shadowDistance: 100
     enableDetailObjectCulling: 0
     detailObjectCullingLimit: 0
-    ssaoQuality: 3
+    ssaoQuality: 0
     maxHQAvatars: 100
     reflectionResolution: 3
     shaderQuality: 2
