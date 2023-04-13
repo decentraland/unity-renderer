@@ -125,10 +125,8 @@ namespace DCL.Components
         {
             if (VERBOSE)
                 Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
-
-            Dictionary<string, string> failedGLTF = new Dictionary<string, string>
-                { { "targetUrl", targetUrl } };
-            GenericAnalytics.SendAnalytic("failed_GLTFast_Load", failedGLTF);
+                
+            GenericAnalytics.SendAnalytic("failed_GLTFast_Load", new Dictionary<string, string>  { { "targetUrl", targetUrl } });
 
             LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
         }
