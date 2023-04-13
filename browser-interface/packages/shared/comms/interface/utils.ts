@@ -93,7 +93,7 @@ export function rotateUsingQuaternion(pos: rfc4.Position, x: number, y: number, 
 export function positionReportToCommsPositionRfc4(report: Readonly<PositionReport>) {
   const p = {
     positionX: report.position.x,
-    positionY: report.position.y - report.cameraHeight,
+    positionY: report.position.y - report.playerHeight,
     positionZ: report.position.z,
     rotationX: report.quaternion.x,
     rotationY: report.quaternion.y,

@@ -36,8 +36,7 @@ namespace DCL.Interface
             /** Camera rotation */
             public Quaternion cameraRotation;
 
-            /** Camera height, relative to the feet of the avatar or ground */
-            public float cameraHeight;
+            public float playerHeight;
 
             public Vector3 mousePosition;
 
@@ -1025,11 +1024,11 @@ namespace DCL.Interface
             SendMessage("AllScenesEvent", allScenesEvent);
         }
 
-        public static void ReportPosition(Vector3 position, Quaternion rotation, float cameraHeight, Quaternion cameraRotation)
+        public static void ReportPosition(Vector3 position, Quaternion rotation, float playerHeight, Quaternion cameraRotation)
         {
             positionPayload.position = position;
             positionPayload.rotation = rotation;
-            positionPayload.cameraHeight = cameraHeight;
+            positionPayload.playerHeight = playerHeight;
             positionPayload.cameraRotation = cameraRotation;
 
             SendMessage("ReportPosition", positionPayload);

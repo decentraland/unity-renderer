@@ -559,7 +559,7 @@ public class DCLCharacterController : MonoBehaviour
         //                  - Random teleports to 0,0 or other positions that shouldn't happen.
         //We are sending a fixated camera height of 1.675f
         if (initialPositionAlreadySet)
-            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, 1.675f, cameraRotation);
+            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, characterController.height, cameraRotation);
 
         lastMovementReportTime = DCLTime.realtimeSinceStartup;
     }
