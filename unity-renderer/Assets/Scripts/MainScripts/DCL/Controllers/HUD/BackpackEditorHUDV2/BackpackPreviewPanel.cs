@@ -7,6 +7,8 @@ namespace DCL.Backpack
 {
     public class BackpackPreviewPanel : BaseComponentView
     {
+        private const string RESET_PREVIEW_ANIMATION = "Idle";
+
         [SerializeField] private RectTransform avatarPreviewPanel;
         [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
         [SerializeField] private RawImage avatarPreviewImage;
@@ -36,6 +38,9 @@ namespace DCL.Backpack
 
         public void PlayPreviewEmote(string emoteId) =>
             characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup);
+
+        public void ResetPreviewEmote() =>
+            PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
 
         public async UniTask TryUpdatePreviewModelAsync(AvatarModel avatarModelToUpdate) =>
             await characterPreviewController.TryUpdateModelAsync(avatarModelToUpdate);

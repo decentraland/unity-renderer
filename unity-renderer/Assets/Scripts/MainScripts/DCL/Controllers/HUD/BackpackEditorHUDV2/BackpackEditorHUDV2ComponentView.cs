@@ -9,7 +9,6 @@ namespace DCL.Backpack
     {
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
-        private const string RESET_PREVIEW_ANIMATION = "Idle";
 
         [SerializeField] private SectionSelectorComponentView sectionSelector;
         [SerializeField] private GameObject wearablesSection;
@@ -32,8 +31,8 @@ namespace DCL.Backpack
 
         public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
         {
-            backpackPreviewPanel.Initialize(characterPreviewFactory);
             ConfigureSectionSelector();
+            backpackPreviewPanel.Initialize(characterPreviewFactory);
         }
 
         private void Update() =>
@@ -53,14 +52,14 @@ namespace DCL.Backpack
 
         public override void Show(bool instant = false)
         {
-            backpackPreviewPanel.SetPreviewEnabled(true);
             gameObject.SetActive(true);
+            backpackPreviewPanel.SetPreviewEnabled(true);
         }
 
         public override void Hide(bool instant = false)
         {
-            backpackPreviewPanel.SetPreviewEnabled(false);
             gameObject.SetActive(false);
+            backpackPreviewPanel.SetPreviewEnabled(false);
         }
 
         public override void RefreshControl() { }
@@ -93,7 +92,7 @@ namespace DCL.Backpack
             backpackPreviewPanel.PlayPreviewEmote(emoteId);
 
         public void ResetPreviewEmote() =>
-            PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
+            backpackPreviewPanel.ResetPreviewEmote();
 
         public void UpdateAvatarPreview(AvatarModel avatarModel)
         {
