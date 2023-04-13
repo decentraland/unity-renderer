@@ -103,10 +103,7 @@ function* reportPositionSaga() {
 
   const observer = positionObservable.add((obj: Readonly<PositionReport>) => {
     if (latestRoom) {
-      console.log("DEBUG: LLEGUE CON LA ALTURA " + obj.playerHeight)
-      console.log("DEBUG: LLEGUE CON LA POSICION " + obj.position.y)
       const newPosition = positionReportToCommsPositionRfc4(obj)
-      console.log("DEBUG: VOY A ENVIAR LA POSICION " + newPosition.positionY)
       const now = Date.now()
       const elapsed = now - lastNetworkUpdatePosition
 

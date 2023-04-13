@@ -4,7 +4,7 @@ import { InstancedSpawnPoint } from '../types'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { DEBUG, playerHeight } from 'config'
+import { DEBUG } from 'config'
 import { isInsideWorldLimits, Scene, SpawnPoint } from '@dcl/schemas'
 import { halfParcelSize } from 'lib/decentraland/parcels/limits'
 
@@ -16,7 +16,7 @@ export type PositionReport = {
   /** Avatar rotation, euler from quaternion */
   rotation: EcsMathReadOnlyVector3
   /** Camera height, relative to the feet of the avatar or ground */
-  playerHeight: number
+  cameraHeight: number
   /** Should this position be applied immediately */
   immediate: boolean
   /** Camera rotation */
@@ -39,7 +39,7 @@ const positionEvent = {
   position: Vector3.Zero(),
   quaternion: Quaternion.Identity,
   rotation: Vector3.Zero(),
-  playerHeight: playerHeight,
+  cameraHeight: 0,
   mousePosition: Vector3.Zero(),
   immediate: false, // By default the renderer lerps avatars position
   cameraQuaternion: Quaternion.Identity,
@@ -50,19 +50,22 @@ export function receivePositionReport(
   position: ReadOnlyVector3,
   rotation?: ReadOnlyVector4,
   cameraRotation?: ReadOnlyVector4,
-  playerHeight?: number
+  cameraHeight?: number
 ) {
+  //The 0.875 constant (pivot and camera height correction) was previously in renderer. Move it here to keep consistency on everyone
+  //calling the receivePositionReport.
   positionEvent.position.set(position.x, position.y + 0.875, position.z)
 
   if (rotation) positionEvent.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
   positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
-  positionEvent.playerHeight = 1.675
+
+  //Setting it as a fixed value, since we are still not modifying it for different height in renderer
+  positionEvent.cameraHeight = 1.675
 
   const cameraQuaternion = cameraRotation ?? rotation
   if (cameraQuaternion)
     positionEvent.cameraQuaternion.set(cameraQuaternion.x, cameraQuaternion.y, cameraQuaternion.z, cameraQuaternion.w)
   positionEvent.cameraEuler.copyFrom(positionEvent.cameraQuaternion.eulerAngles)
-
 
   positionObservable.notifyObservers(positionEvent)
 }
