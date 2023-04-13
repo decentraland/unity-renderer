@@ -92,7 +92,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public void Start()
     {
         DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
-        DataStore.i.common.isWorld.OnChange += OnWorldChange;
         IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
 
         ConfigureCloseButton();
@@ -104,8 +103,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public void OnDestroy()
     {
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
-        DataStore.i.common.isWorld.OnChange -= OnWorldChange;
-
         hudCanvasCameraModeController?.Dispose();
     }
 
@@ -115,12 +112,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         exploreV2View.name = "_ExploreV2";
 
         return exploreV2View;
-    }
-
-    private void OnWorldChange(bool isWorld, bool _)
-    {
-        GoToSection(ExploreSection.Explore);
-        sectionSelector.GetSection((int)ExploreSection.Map).GameObject.SetActive(!isWorld);
     }
 
     private void IsInitialized_OnChange(bool current, bool previous)
