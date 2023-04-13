@@ -1,12 +1,13 @@
 using System;
 using TMPro;
+using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
-    public class AvatarSlotComponentView : BaseComponentView, IPointerClickHandler, IAvatarSlotComponentView, IComponentModelConfig<AvatarSlotComponentModel>
+    public class AvatarSlotComponentView : BaseComponentView<AvatarSlotComponentModel>, IPointerClickHandler, IAvatarSlotComponentView
     {
         [Header("Configuration")]
         [SerializeField] internal AvatarSlotComponentModel model;
@@ -34,15 +35,6 @@ namespace DCL.Backpack
             SetNftImage(model.imageUri);
             SetRarity(model.rarity);
             SetIsHidden(model.isHidden, model.hiddenBy);
-        }
-
-        public void Configure(AvatarSlotComponentModel newModel)
-        {
-            if (model == newModel)
-                return;
-
-            model = newModel;
-            RefreshControl();
         }
 
         public void SetIsHidden(bool isHidden, string hiddenBy)

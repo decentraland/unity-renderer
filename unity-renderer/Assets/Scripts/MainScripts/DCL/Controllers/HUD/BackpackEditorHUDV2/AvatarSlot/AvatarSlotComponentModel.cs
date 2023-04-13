@@ -3,7 +3,7 @@ using System;
 namespace DCL.Backpack
 {
     [Serializable]
-    public class AvatarSlotComponentModel : BaseComponentModel
+    public record AvatarSlotComponentModel
     {
         public string rarity;
         public string imageUri;
