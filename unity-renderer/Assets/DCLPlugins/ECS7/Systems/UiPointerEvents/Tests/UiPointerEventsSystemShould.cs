@@ -316,8 +316,9 @@ namespace Tests
 
             Assert.AreEqual(4, inputResult.events.Count);
 
-            while (inputResult.events.TryDequeue(out InternalInputEventResults.EventData result))
+            for (int i=0; i< inputResult.events.Count; i++)
             {
+                InternalInputEventResults.EventData result = inputResult.events[i];
                 Assert.AreEqual(entity.entityId, result.hit.EntityId);
                 Assert.AreEqual(InputAction.IaPointer, result.button);
                 Assert.AreEqual(expectedEventTypes.Dequeue(), result.type);
