@@ -102,7 +102,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void OnDestroy()
     {
-        DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
         hudCanvasCameraModeController?.Dispose();
     }
 
