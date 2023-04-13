@@ -68,7 +68,9 @@ namespace DCL
 
 #if UNITY_EDITOR
                 withSSL = DebugConfigComponent.i.webSocketSSL;
-                startPort = 5000;
+                startPort = 7666;
+#else
+                withSSL = CommandLineParserUtils.withSSL;
 #endif
 
                 int endPort = startPort + 100;
@@ -90,6 +92,8 @@ namespace DCL
 
         protected override void Dispose()
         {
+            SettingsDesktop.i.displaySettings.Save();
+
             try
             {
                 DataStore.i.wsCommunication.communicationEstablished.OnChange -= OnCommunicationEstablished;

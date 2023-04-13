@@ -2,6 +2,8 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Chat.Channels;
+using DCL.Tasks;
+using System.Collections.Generic;
 
 namespace DCL.Chat.HUD
 {
@@ -12,10 +14,12 @@ namespace DCL.Chat.HUD
         private const int MINUTES_FOR_AUTOMATIC_RELOADING = 1;
         private readonly IChatController chatController;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly DataStore_Channels dataStoreChannels;
         private IChannelMembersComponentView view;
         internal DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource reloadingCancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource showMembersCancellationToken = new ();
         private string currentChannelId;
         private int lastLimitRequested;
         private bool isSearching;
@@ -27,11 +31,13 @@ namespace DCL.Chat.HUD
         public bool IsVisible => isVisible;
 
         public ChannelMembersHUDController(IChannelMembersComponentView view, IChatController chatController,
-            IUserProfileBridge userProfileBridge)
+            IUserProfileBridge userProfileBridge,
+            DataStore_Channels dataStoreChannels)
         {
             this.view = view;
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
+            this.dataStoreChannels = dataStoreChannels;
         }
 
         public void SetChannelId(string channelId)
@@ -50,16 +56,16 @@ namespace DCL.Chat.HUD
             }
         }
 
-        public void SetMembersCount(int membersCount) => currentMembersCount = membersCount;
+        public void SetMembersCount(int membersCount) =>
+            currentMembersCount = membersCount;
 
         public void Dispose()
         {
             ClearListeners();
             view.Dispose();
-            loadingCancellationToken.Cancel();
-            loadingCancellationToken.Dispose();
-            reloadingCancellationToken.Cancel();
-            reloadingCancellationToken.Dispose();
+            loadingCancellationToken.SafeCancelAndDispose();
+            reloadingCancellationToken.SafeCancelAndDispose();
+            showMembersCancellationToken.SafeCancelAndDispose();
         }
 
         public void SetVisibility(bool visible)
@@ -95,7 +101,7 @@ namespace DCL.Chat.HUD
             view.ShowLoading();
 
             loadStartedTimestamp = DateTime.Now;
-            string[] channelsToGetInfo = {currentChannelId};
+            string[] channelsToGetInfo = { currentChannelId };
             chatController.GetChannelInfo(channelsToGetInfo);
             chatController.GetChannelMembers(currentChannelId, lastLimitRequested, 0);
 
@@ -133,15 +139,35 @@ namespace DCL.Chat.HUD
 
         private void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
         {
-            SetLoadingMoreVisible(true);
-            view.HideLoading();
-
-            foreach (ChannelMember member in channelMembers)
+            async UniTaskVoid UpdateChannelMembersAsync(IEnumerable<ChannelMember> channelMembers,
+                CancellationToken cancellationToken)
             {
-                UserProfile memberProfile = userProfileBridge.Get(member.userId);
+                SetLoadingMoreVisible(true);
+                view.HideLoading();
 
-                if (memberProfile != null)
+                foreach (ChannelMember member in channelMembers)
                 {
+                    UserProfile memberProfile = userProfileBridge.Get(member.userId);
+
+                    try { memberProfile ??= await userProfileBridge.RequestFullUserProfileAsync(member.userId, cancellationToken); }
+                    catch (Exception e) when (e is not OperationCanceledException)
+                    {
+                        var fallbackMemberEntry = new ChannelMemberEntryModel
+                        {
+                            isOnline = member.isOnline,
+                            thumnailUrl = "",
+                            userId = member.userId,
+                            userName = member.userId,
+                            isOptionsButtonHidden = member.userId == userProfileBridge.GetOwn().userId
+                        };
+
+                        view.Set(fallbackMemberEntry);
+                    }
+                    finally
+                    {
+                        dataStoreChannels.SetAvailableMemberInChannel(member.userId, currentChannelId);
+                    }
+
                     ChannelMemberEntryModel userToAdd = new ChannelMemberEntryModel
                     {
                         isOnline = member.isOnline,
@@ -153,26 +179,26 @@ namespace DCL.Chat.HUD
 
                     view.Set(userToAdd);
                 }
-            }
 
-            if (isSearching)
-            {
-                SetLoadingMoreVisible(false);
+                if (isSearching)
+                {
+                    SetLoadingMoreVisible(false);
 
-                if (view.EntryCount > 0)
-                    view.ShowResultsHeader();
+                    if (view.EntryCount > 0)
+                        view.ShowResultsHeader();
+                    else
+                        view.HideResultsHeader();
+                }
                 else
-                    view.HideResultsHeader();
+                    SetLoadingMoreVisible(true);
             }
-            else
-            {
-                SetLoadingMoreVisible(true);
-            }
+
+            UpdateChannelMembersAsync(channelMembers, showMembersCancellationToken.Token).Forget();
         }
 
         private void LoadMoreMembers()
         {
-            if (IsLoading() || 
+            if (IsLoading() ||
                 isSearching ||
                 lastLimitRequested >= currentMembersCount) return;
 
@@ -221,7 +247,8 @@ namespace DCL.Chat.HUD
             }
         }
 
-        private bool IsLoading() => (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;
+        private bool IsLoading() =>
+            (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;
 
         private void ClearListeners()
         {

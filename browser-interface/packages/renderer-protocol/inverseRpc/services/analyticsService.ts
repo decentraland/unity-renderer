@@ -1,10 +1,10 @@
 import { RpcServerPort } from '@dcl/rpc'
 import { RendererProtocolContext } from '../context'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { AnalyticsKernelServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/analytics.gen'
+import { AnalyticsKernelServiceDefinition } from 'shared/protocol/decentraland/renderer/kernel_services/analytics.gen'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDelightedSurveyEnabled } from 'unity-interface/delightedSurvey'
 import { browserInterface } from 'unity-interface/BrowserInterface'
 

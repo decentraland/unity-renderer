@@ -41,6 +41,17 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The AudioSource component can play an audio clips bundled with the scene, controlling some
+  /// of the behavior.
+  ///
+  /// In each AudioSource instance, the sound is spatially located at the associated entity’s position,
+  /// given by its Transform.
+  ///
+  /// Note that the `audio_clip_url` is not actually a URL, but rather the path of a file bundled with
+  /// the scene and declared in its manifest. The name was chosen because the URL use-case will
+  /// eventually be supported.
+  /// </summary>
   public sealed partial class PBAudioSource : pb::IMessage<PBAudioSource>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -94,6 +105,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "playing" field.</summary>
     public const int PlayingFieldNumber = 1;
     private bool playing_;
+    /// <summary>
+    /// whether the clip is currently playing.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Playing {
@@ -120,7 +134,7 @@ namespace DCL.ECSComponents {
     public const int VolumeFieldNumber = 2;
     private float volume_;
     /// <summary>
-    /// default=1.0f
+    /// the audio volume (default: 1.0).
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -147,6 +161,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "loop" field.</summary>
     public const int LoopFieldNumber = 3;
     private bool loop_;
+    /// <summary>
+    /// whether the clip should restart when finished.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Loop {
@@ -173,7 +190,7 @@ namespace DCL.ECSComponents {
     public const int PitchFieldNumber = 4;
     private float pitch_;
     /// <summary>
-    /// default=1.0f
+    /// the audio pitch (default: 1.0).
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -200,6 +217,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "audio_clip_url" field.</summary>
     public const int AudioClipUrlFieldNumber = 5;
     private string audioClipUrl_ = "";
+    /// <summary>
+    /// the clip path as given in the `files` array of the scene's manifest.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string AudioClipUrl {

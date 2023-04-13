@@ -37,9 +37,14 @@ namespace DCL.ECSComponents {
             "YWRpdXNfdG9wGAEgASgCSACIAQESGgoNcmFkaXVzX2JvdHRvbRgCIAEoAkgB",
             "iAEBQg0KC19yYWRpdXNfdG9wQhAKDl9yYWRpdXNfYm90dG9tGgsKCVBsYW5l",
             "TWVzaBoMCgpTcGhlcmVNZXNoQgYKBG1lc2hCEQoPX2NvbGxpc2lvbl9tYXNr",
-            "KjwKDUNvbGxpZGVyTGF5ZXISCwoHQ0xfTk9ORRAAEg4KCkNMX1BPSU5URVIQ",
-            "ARIOCgpDTF9QSFlTSUNTEAJCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
-            "bzM="));
+            "KrMCCg1Db2xsaWRlckxheWVyEgsKB0NMX05PTkUQABIOCgpDTF9QT0lOVEVS",
+            "EAESDgoKQ0xfUEhZU0lDUxACEhAKDENMX1JFU0VSVkVEMRAEEhAKDENMX1JF",
+            "U0VSVkVEMhAIEhAKDENMX1JFU0VSVkVEMxAQEhAKDENMX1JFU0VSVkVENBAg",
+            "EhAKDENMX1JFU0VSVkVENRBAEhEKDENMX1JFU0VSVkVENhCAARIPCgpDTF9D",
+            "VVNUT00xEIACEg8KCkNMX0NVU1RPTTIQgAQSDwoKQ0xfQ1VTVE9NMxCACBIP",
+            "CgpDTF9DVVNUT000EIAQEg8KCkNMX0NVU1RPTTUQgCASDwoKQ0xfQ1VTVE9N",
+            "NhCAQBIQCgpDTF9DVVNUT003EICAARIQCgpDTF9DVVNUT004EICAAkIUqgIR",
+            "RENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.ColliderLayer), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -53,15 +58,51 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
+  /// <summary>
+  /// ColliderLayer determines the kind of collision to detect, in OR-able bit flag form.
+  /// </summary>
   public enum ColliderLayer {
+    /// <summary>
+    /// no collisions
+    /// </summary>
     [pbr::OriginalName("CL_NONE")] ClNone = 0,
+    /// <summary>
+    /// collisions with the player's pointer ray (e.g. mouse cursor hovering)
+    /// </summary>
     [pbr::OriginalName("CL_POINTER")] ClPointer = 1,
+    /// <summary>
+    /// collision affecting your player's physics i.e. walls, floor, moving platfroms
+    /// </summary>
     [pbr::OriginalName("CL_PHYSICS")] ClPhysics = 2,
+    [pbr::OriginalName("CL_RESERVED1")] ClReserved1 = 4,
+    [pbr::OriginalName("CL_RESERVED2")] ClReserved2 = 8,
+    [pbr::OriginalName("CL_RESERVED3")] ClReserved3 = 16,
+    [pbr::OriginalName("CL_RESERVED4")] ClReserved4 = 32,
+    [pbr::OriginalName("CL_RESERVED5")] ClReserved5 = 64,
+    [pbr::OriginalName("CL_RESERVED6")] ClReserved6 = 128,
+    [pbr::OriginalName("CL_CUSTOM1")] ClCustom1 = 256,
+    [pbr::OriginalName("CL_CUSTOM2")] ClCustom2 = 512,
+    [pbr::OriginalName("CL_CUSTOM3")] ClCustom3 = 1024,
+    [pbr::OriginalName("CL_CUSTOM4")] ClCustom4 = 2048,
+    [pbr::OriginalName("CL_CUSTOM5")] ClCustom5 = 4096,
+    [pbr::OriginalName("CL_CUSTOM6")] ClCustom6 = 8192,
+    [pbr::OriginalName("CL_CUSTOM7")] ClCustom7 = 16384,
+    [pbr::OriginalName("CL_CUSTOM8")] ClCustom8 = 32768,
   }
 
   #endregion
 
   #region Messages
+  /// <summary>
+  /// The MeshCollider component provides basic collision detection between Entities and Avatars. It 
+  /// can behave like a cube, a plane, a sphere or a cylinder. 
+  ///
+  /// The Entity's Transform affects the MeshCollider, scaling it and rotating it appropriately. If
+  /// the Transform for the collision mesh must be different than the Transform for rendering the Entity,
+  /// two different Entities must be used.
+  ///
+  /// More complex shapes require the use of a `GltfContainer` component.
+  /// </summary>
   public sealed partial class PBMeshCollider : pb::IMessage<PBMeshCollider>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -127,7 +168,7 @@ namespace DCL.ECSComponents {
     public const int CollisionMaskFieldNumber = 1;
     private int collisionMask_;
     /// <summary>
-    /// default = ColliderLayer.Physics | ColliderLayer.Pointer
+    /// enabled ColliderLayers (default CL_POINTER | CL_PHYSICS)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -511,6 +552,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
+      /// <summary>
+      /// BoxMesh is a prism shape that contains the Entity.
+      /// </summary>
       public sealed partial class BoxMesh : pb::IMessage<BoxMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -663,6 +707,9 @@ namespace DCL.ECSComponents {
 
       }
 
+      /// <summary>
+      /// CylinderMesh is a truncated cone shape that contains the Entity.
+      /// </summary>
       public sealed partial class CylinderMesh : pb::IMessage<CylinderMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -714,7 +761,7 @@ namespace DCL.ECSComponents {
         public const int RadiusTopFieldNumber = 1;
         private float radiusTop_;
         /// <summary>
-        /// default=1.0
+        /// (default 1.0)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -742,7 +789,7 @@ namespace DCL.ECSComponents {
         public const int RadiusBottomFieldNumber = 2;
         private float radiusBottom_;
         /// <summary>
-        /// default=1.0
+        /// (default 1.0)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -923,6 +970,9 @@ namespace DCL.ECSComponents {
 
       }
 
+      /// <summary>
+      /// PlaneMesh is a 2D rectangle described by the Entity's Transform.
+      /// </summary>
       public sealed partial class PlaneMesh : pb::IMessage<PlaneMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -1075,6 +1125,9 @@ namespace DCL.ECSComponents {
 
       }
 
+      /// <summary>
+      /// SphereMesh is a sphere shape that contains the Entity.
+      /// </summary>
       public sealed partial class SphereMesh : pb::IMessage<SphereMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage

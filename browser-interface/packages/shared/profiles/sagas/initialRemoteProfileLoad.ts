@@ -5,7 +5,7 @@ import { call, put, select } from 'redux-saga/effects'
 import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
 import { getCurrentIdentity, getCurrentNetwork } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
-import { fetchOwnedENS } from 'shared/web3'
+import { fetchOwnedENS } from 'lib/web3/fetchOwnedENS'
 import { profileRequest, profileSuccess, saveProfileDelta } from '../actions'
 import { fetchProfile } from './fetchProfile'
 import { fetchLocalProfile } from './local/index'
@@ -37,10 +37,23 @@ export function* initialRemoteProfileLoad() {
   const net: ETHEREUM_NETWORK = yield select(getCurrentNetwork)
   const names: string[] = yield call(fetchOwnedENS, ethereumConfigurations[net].names, userId)
 
-  // check that the user still has the claimed name, otherwise pick one
-
+  // Check for consolidating strategies if the user has claimed name or owned names are available for the address
   if (profile.hasClaimedName || names.length) {
-    if (!names.includes(profile.name)) {
+    if (names.includes(profile.name)) {
+      if (!profile.hasClaimedName) {
+        // If the user has a name assigned and matches one of their owned names, consolidate the hasClaimedName setting to true
+        defaultLogger.info(
+          `Name currently set (${profile.name}) matches a claimed name for profile ${userId}, consolidating profile...`
+        )
+        profile = {
+          ...profile,
+          hasClaimedName: true,
+          version: profile?.version || 0
+        }
+        profileDirty = true
+      }
+    } else {
+      // User no longer has the current name but might have another, pick that one if available
       if (names.length) {
         defaultLogger.info(`Found missing claimed name '${names[0]}' for profile ${userId}, consolidating profile... `)
         profile = {
@@ -51,6 +64,7 @@ export function* initialRemoteProfileLoad() {
           tutorialStep: 0xfff
         }
       } else {
+        // User has no available names, set the hasClaimedName to false
         profile = { ...profile, hasClaimedName: false, tutorialStep: 0x0 }
       }
       profileDirty = true

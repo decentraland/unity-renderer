@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: ScenesUiPanelSettings
   m_EditorClassIdentifier: 
-  themeUss: {fileID: -4733365628477956816, guid: de12f39179342b6408bb91a479f95503,
+  themeUss: {fileID: -4733365628477956816, guid: 6bea5b47b23fc4f7db29f74088fa601a,
     type: 3}
   m_TargetTexture: {fileID: 0}
   m_ScaleMode: 0

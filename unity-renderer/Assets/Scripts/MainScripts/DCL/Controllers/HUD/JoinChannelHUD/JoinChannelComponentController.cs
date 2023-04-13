@@ -4,6 +4,7 @@ using DCL.Chat.Channels;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Channel = DCL.Chat.Channels.Channel;
@@ -17,7 +18,7 @@ namespace DCL.Social.Chat.Channels
         private readonly DataStore dataStore;
         internal readonly DataStore_Channels channelsDataStore;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly StringVariable currentPlayerInfoCardId;
+        private readonly BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
         private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private CancellationTokenSource joinChannelCancellationToken = new ();
         private string channelName;
@@ -27,7 +28,6 @@ namespace DCL.Social.Chat.Channels
             IChatController chatController,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics,
-            StringVariable currentPlayerInfoCardId,
             IChannelsFeatureFlagService channelsFeatureFlagService)
         {
             this.view = view;
@@ -35,7 +35,7 @@ namespace DCL.Social.Chat.Channels
             this.dataStore = dataStore;
             channelsDataStore = dataStore.channels;
             this.socialAnalytics = socialAnalytics;
-            this.currentPlayerInfoCardId = currentPlayerInfoCardId;
+            this.currentPlayerInfoCardId = dataStore.HUDs.currentPlayerId;
             this.channelsFeatureFlagService = channelsFeatureFlagService;
 
             channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
@@ -170,7 +170,7 @@ namespace DCL.Social.Chat.Channels
                 }
             }
 
-            if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get()))
+            if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get().playerId))
                 return ChannelLinkSource.Profile;
 
             var visibleTaskbarPanels = dataStore.HUDs.visibleTaskbarPanels.Get();

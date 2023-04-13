@@ -68,6 +68,7 @@ namespace DCL
         public DataStore_WorldBlockers worldBlockers => i.Get<DataStore_WorldBlockers>();
         public DataStore_Notifications notifications => i.Get<DataStore_Notifications>();
         public DataStore_Outliner outliner => i.Get<DataStore_Outliner>();
+        public DataStore_Mentions mentions => i.Get<DataStore_Mentions>();
     }
 
     public struct DataStoreRef<T> where T: class, new()

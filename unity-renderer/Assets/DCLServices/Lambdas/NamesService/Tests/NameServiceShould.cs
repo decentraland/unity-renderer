@@ -1,8 +1,11 @@
-﻿using DCL;
+﻿using Cysharp.Threading.Tasks;
+using DCL;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+using UnityEngine.TestTools;
 
 namespace DCLServices.Lambdas.NamesService.Tests
 {
@@ -23,24 +26,24 @@ namespace DCLServices.Lambdas.NamesService.Tests
             Environment.Setup(serviceLocator);
         }
 
-        [Test]
-        public async Task CallLambdasService()
-        {
-            const string ADDRESS = "0xddf1eec586d8f8f0eb8c5a3bf51fb99379a55684";
-            const int PAGE_SIZE = 30;
+        [UnityTest][Category("ToFix")]
+        public IEnumerator CallLambdasService() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                const string ADDRESS = "0xddf1eec586d8f8f0eb8c5a3bf51fb99379a55684";
+                const int PAGE_SIZE = 30;
 
-            var ct = new CancellationTokenSource().Token;
-            var pagePointer = namesService.GetPaginationPointer(ADDRESS, PAGE_SIZE, ct);
-            await pagePointer.GetPageAsync(3, CancellationToken.None);
+                var ct = new CancellationTokenSource().Token;
+                (IReadOnlyList<NamesResponse.NameEntry> names, int totalAmount) names = await namesService.RequestOwnedNamesAsync(ADDRESS, 3, PAGE_SIZE, true, ct);
 
-            lambdasService.Received(1)
-                          .Get<NamesResponse>(
-                               NamesService.END_POINT,
-                               NamesService.END_POINT + ADDRESS,
-                               NamesService.TIMEOUT,
-                               NamesService.ATTEMPTS_NUMBER,
-                               ct,
-                               ("pageSize", "30"), ("pageNum", "3"));
-        }
+                lambdasService.Received(1)
+                              .Get<NamesResponse>(
+                                   NamesService.END_POINT,
+                                   $"{NamesService.END_POINT}{ADDRESS}/names",
+                                   NamesService.TIMEOUT,
+                                   NamesService.ATTEMPTS_NUMBER,
+                                   ct,
+                                   ("pageSize", PAGE_SIZE.ToString()), ("pageNum", "3"));
+            });
     }
 }

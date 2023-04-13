@@ -1,53 +1,50 @@
-using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 public class CoordinateUtils
 {
-    public const string COORDINATE_MATCH_REGEX = "[-]?\\d{1,3},[-]?\\d{1,3}";
-    public const int MAX_X_COORDINATE = 163;
-    public const int MIN_X_COORDINATE = -150;
-    public const int MAX_Y_COORDINATE = 158;
-    public const int MIN_Y_COORDINATE = -150;
+    private const string COORDINATE_MATCH_REGEX = @"(?<!\w)(?<!<\/noparse>)[-]?\d{1,3},[-]?\d{1,3}(?!\w)(?!<\/\/noparse>)";
+    private const int MAX_X_COORDINATE = 163;
+    private const int MIN_X_COORDINATE = -150;
+    private const int MAX_Y_COORDINATE = 158;
+    private const int MIN_Y_COORDINATE = -150;
 
-    public static bool IsCoordinateInRange(int x, int y)
-    {
-        return x <= MAX_X_COORDINATE && x >= MIN_X_COORDINATE && y <= MAX_Y_COORDINATE && y >= MIN_Y_COORDINATE;
-    }
+    private static readonly Regex REGEX = new (COORDINATE_MATCH_REGEX, RegexOptions.IgnoreCase);
 
-    public static List<string> GetTextCoordinates(string text)
+    public static bool IsCoordinateInRange(int x, int y) =>
+        x is <= MAX_X_COORDINATE and >= MIN_X_COORDINATE && y is <= MAX_Y_COORDINATE and >= MIN_Y_COORDINATE;
+
+    public delegate string CoordinatesReplacementDelegate(string matchedText, (int x, int y) coordinates);
+
+    public static string ReplaceTextCoordinates(string text, CoordinatesReplacementDelegate replacementCallback)
     {
-        Regex filter = new Regex(COORDINATE_MATCH_REGEX);
-        List<string> matchingWords = new List<string>();
-        foreach (var item in text.Split(' '))
+        return REGEX.Replace(text, match =>
         {
-            var match = filter.Match(item);
-            int x;
-            int y;
-            if (match.Success)
-            {
-                Int32.TryParse(item.Split(',')[0], out x);
-                Int32.TryParse(item.Split(',')[1], out y);
+            string value = match.Value;
+            int.TryParse(value.Split(',')[0], out int x);
+            int.TryParse(value.Split(',')[1], out int y);
 
-                if (IsCoordinateInRange(x, y))
-                    matchingWords.Add(match.Value);
-            }
-        }
-
-        return matchingWords;
+            return IsCoordinateInRange(x, y) ? replacementCallback.Invoke(value, (x, y)) : value;
+        });
     }
 
     public static bool HasValidTextCoordinates(string text)
     {
-        return GetTextCoordinates(text).Count > 0;
+        MatchCollection matches = REGEX.Matches(text);
+
+        foreach (Match match in matches)
+        {
+            if (!match.Success) continue;
+            string value = match.Value;
+            int.TryParse(value.Split(',')[0], out int x);
+            int.TryParse(value.Split(',')[1], out int y);
+
+            if (IsCoordinateInRange(x, y))
+                return true;
+        }
+
+        return false;
     }
 
-    public static ParcelCoordinates ParseCoordinatesString(string coordinates)
-    {
-        return new ParcelCoordinates(Int32.Parse(coordinates.Split(',')[0]), Int32.Parse(coordinates.Split(',')[1]));
-    }
+    public static ParcelCoordinates ParseCoordinatesString(string coordinates) =>
+        new (int.Parse(coordinates.Split(',')[0]), int.Parse(coordinates.Split(',')[1]));
 }

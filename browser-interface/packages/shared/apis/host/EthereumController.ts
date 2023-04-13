@@ -1,11 +1,3 @@
-import * as EthProvider from 'shared/ethereum/provider'
-import * as EthService from 'shared/ethereum/EthereumService'
-
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-
-import * as codegen from '@dcl/rpc/dist/codegen'
-import type { RpcServerPort } from '@dcl/rpc/dist/types'
-import { EthereumControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/ethereum_controller.gen'
 import type {
   ConvertMessageToObjectRequest,
   ConvertMessageToObjectResponse,
@@ -17,10 +9,16 @@ import type {
   SendAsyncResponse,
   SignMessageRequest,
   SignMessageResponse
-} from '@dcl/protocol/out-ts/decentraland/kernel/apis/ethereum_controller.gen'
-import type { PortContext } from './context'
+} from 'shared/protocol/decentraland/kernel/apis/ethereum_controller.gen'
+import { EthereumControllerServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/ethereum_controller.gen'
+import { PermissionItem } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
+import * as codegen from '@dcl/rpc/dist/codegen'
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
+import * as EthService from 'lib/web3/EthereumService'
+import * as EthProvider from 'lib/web3/provider'
 import type { RPCSendableMessage } from 'shared/types'
-import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import type { PortContext } from './context'
 import { assertHasPermission } from './Permissions'
 
 async function requirePayment(req: RequirePaymentRequest, ctx: PortContext): Promise<RequirePaymentResponse> {

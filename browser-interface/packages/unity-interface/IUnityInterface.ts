@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import type { EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 import type { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
-import type { UnityGame } from '@dcl/unity-renderer/src'
+import type { UnityGame } from 'unity-interface/loader'
 import type { Observable } from 'mz-observable'
 import type {
   RenderProfile,
@@ -44,7 +44,7 @@ import type {
   NewProfileForRenderer
 } from 'lib/decentraland/profiles/transformations/types'
 import type { Emote } from 'shared/catalogs/types'
-import type { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import type { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 
 export type RealmInfo = {
   serverName: string

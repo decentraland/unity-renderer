@@ -1,3 +1,4 @@
+using DCL;
 using TMPro;
 using UnityEngine;
 
@@ -9,8 +10,10 @@ public class UnreadNotificationBadge : MonoBehaviour
     public TextMeshProUGUI notificationText;
     public GameObject notificationContainer;
     public int maxNumberToShow = 9;
+    public GameObject ownPlayerMentionMark;
 
     private IChatController chatController;
+    private DataStore_Mentions mentionsDataStore;
     private string currentUserId;
     private int currentUnreadMessagesValue;
     private bool isInitialized;
@@ -21,7 +24,7 @@ public class UnreadNotificationBadge : MonoBehaviour
         set
         {
             currentUnreadMessagesValue = value;
-            
+
             if (currentUnreadMessagesValue > 0)
             {
                 notificationContainer.SetActive(true);
@@ -30,6 +33,9 @@ public class UnreadNotificationBadge : MonoBehaviour
             else
             {
                 notificationContainer.SetActive(false);
+
+                if (ownPlayerMentionMark != null)
+                    ownPlayerMentionMark.SetActive(false);
             }
         }
     }
@@ -39,7 +45,10 @@ public class UnreadNotificationBadge : MonoBehaviour
     /// </summary>
     /// <param name="chatController">Chat Controlled to be listened</param>
     /// <param name="userId">User ID to listen to</param>
-    public void Initialize(IChatController chatController, string userId)
+    public void Initialize(
+        IChatController chatController,
+        string userId,
+        DataStore_Mentions mentionsDataStore)
     {
         if (chatController == null)
             return;
@@ -54,6 +63,15 @@ public class UnreadNotificationBadge : MonoBehaviour
 
         chatController.OnChannelUnseenMessagesUpdated -= HandleChannelUnseenMessagesUpdated;
         chatController.OnChannelUnseenMessagesUpdated += HandleChannelUnseenMessagesUpdated;
+
+        if (mentionsDataStore != null)
+        {
+            this.mentionsDataStore = mentionsDataStore;
+            mentionsDataStore.ownPlayerMentionedInChannel.OnChange -= HandleOwnPlayerMentioned;
+            mentionsDataStore.ownPlayerMentionedInChannel.OnChange += HandleOwnPlayerMentioned;
+            mentionsDataStore.ownPlayerMentionedInDM.OnChange -= HandleOwnPlayerMentioned;
+            mentionsDataStore.ownPlayerMentionedInDM.OnChange += HandleOwnPlayerMentioned;
+        }
 
         isInitialized = true;
     }
@@ -83,8 +101,18 @@ public class UnreadNotificationBadge : MonoBehaviour
             chatController.OnUserUnseenMessagesUpdated -= HandleUnseenMessagesUpdated;
             chatController.OnChannelUnseenMessagesUpdated -= HandleChannelUnseenMessagesUpdated;
         }
+
+        if (mentionsDataStore != null)
+            mentionsDataStore.ownPlayerMentionedInChannel.OnChange -= HandleOwnPlayerMentioned;
     }
 
     private void UpdateUnreadMessages() =>
         CurrentUnreadMessages = chatController.GetAllocatedUnseenMessages(currentUserId) + chatController.GetAllocatedUnseenChannelMessages(currentUserId);
+
+    private void HandleOwnPlayerMentioned(string channelId, string previous)
+    {
+        if (ownPlayerMentionMark == null) return;
+        if (channelId != currentUserId) return;
+        ownPlayerMentionMark.SetActive(true);
+    }
 }

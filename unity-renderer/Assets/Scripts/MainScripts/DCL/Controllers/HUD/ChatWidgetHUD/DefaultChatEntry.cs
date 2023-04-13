@@ -2,22 +2,43 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using DCL.Social.Chat.Mentions;
 using System;
+using System.Globalization;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.Chat.HUD
 {
     public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
+        public interface ILocalTimeConverterStrategy
+        {
+            DateTime GetLocalTime(ulong timestamp);
+        }
+
+        public class SystemLocalTimeConverterStrategy : ILocalTimeConverterStrategy
+        {
+            public DateTime GetLocalTime(ulong timestamp) =>
+                DateTimeOffset.FromUnixTimeMilliseconds((long)timestamp)
+                              .ToLocalTime()
+                              .DateTime;
+        }
+
         [SerializeField] internal TextMeshProUGUI body;
         [SerializeField] internal float timeToHoverPanel = 1f;
         [SerializeField] internal float timeToHoverGotoPanel = 1f;
         [SerializeField] internal bool showUserName = true;
         [SerializeField] private RectTransform hoverPanelPositionReference;
         [SerializeField] private RectTransform contextMenuPositionReference;
+        [SerializeField] private MentionLinkDetector mentionLinkDetector;
+        [SerializeField] private Color autoMentionBackgroundColor;
+        [SerializeField] private Image backgroundImage;
+        [SerializeField] internal UserProfile ownUserProfile;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -25,20 +46,35 @@ namespace DCL.Chat.HUD
         private bool isShowingPreview;
         private ParcelCoordinates currentCoordinates;
         private ChatEntryModel model;
+        private Color initialEntryColor;
 
         private readonly CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
 
         public override ChatEntryModel Model => model;
 
-        public override string DateString =>
-            DateTimeOffset.FromUnixTimeMilliseconds((long) Model.timestamp)
-                .ToLocalTime()
-                .ToString("MM/dd/yyyy h:mm:ss tt");
+        public ILocalTimeConverterStrategy LocalTimeConverterStrategy { get; set; } = new SystemLocalTimeConverterStrategy();
+
+        public override string HoverString
+        {
+            get
+            {
+                var date = LocalTimeConverterStrategy.GetLocalTime(Model.timestamp)
+                                                     .ToString("MM/dd/yy h:mm:ss tt", CultureInfo.InvariantCulture);
+
+                return Model.isLoadingNames ? $"Loading name - {date}" : date;
+            }
+        }
+
         public override event Action<ChatEntry> OnUserNameClicked;
         public override event Action<ChatEntry> OnTriggerHover;
         public override event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
         public override event Action OnCancelHover;
         public override event Action OnCancelGotoHover;
+
+        public void Awake()
+        {
+            initialEntryColor = backgroundImage.color;
+        }
 
         public override void Populate(ChatEntryModel chatEntryModel) =>
             PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
@@ -47,13 +83,16 @@ namespace DCL.Chat.HUD
         {
             model = chatEntryModel;
 
+            if(chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED && chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
+                backgroundImage.color = initialEntryColor;
+
             chatEntryModel.bodyText = body.ReplaceUnsupportedCharacters(chatEntryModel.bodyText, '?');
             chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
             var userString = GetUserString(chatEntryModel);
 
             // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
             // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
-            // TODO: Remove hack in a newer Unity/TMPro version 
+            // TODO: Remove hack in a newer Unity/TMPro version
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
@@ -101,6 +140,7 @@ namespace DCL.Chat.HUD
                             baseName = $"<link=username://{baseName}>{baseName}</link>";
                             break;
                     }
+
                     break;
             }
 
@@ -111,20 +151,8 @@ namespace DCL.Chat.HUD
 
         private string GetCoordinatesLink(string body)
         {
-            if (!CoordinateUtils.HasValidTextCoordinates(body))
-                return body;
-            var textCoordinates = CoordinateUtils.GetTextCoordinates(body);
-
-            for (var i = 0; i < textCoordinates.Count; i++)
-            {
-                // TODO: the preload should not be here
-                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
-
-                body = body.Replace(textCoordinates[i],
-                    $"</noparse><link={textCoordinates[i]}><color=#4886E3><u>{textCoordinates[i]}</u></color></link><noparse>");
-            }
-
-            return body;
+            return CoordinateUtils.ReplaceTextCoordinates(body, (text, coordinates) =>
+                $"</noparse><link={text}><color=#4886E3><u>{text}</u></color></link><noparse>");
         }
 
         private void PlaySfx(ChatEntryModel chatEntryModel)
@@ -132,7 +160,9 @@ namespace DCL.Chat.HUD
             if (HUDAudioHandler.i == null)
                 return;
 
-            if (IsRecentMessage(chatEntryModel) && Settings.i.audioSettings.Data.chatSFXEnabled)
+            bool areSoundsEnabled = Settings.i.audioSettings.Data.chatNotificationType == AudioSettings.ChatNotificationType.All;
+
+            if (IsRecentMessage(chatEntryModel) && areSoundsEnabled)
             {
                 switch (chatEntryModel.messageType)
                 {
@@ -142,6 +172,7 @@ namespace DCL.Chat.HUD
                             AudioScriptableObjects.chatSend.Play(true);
                         else
                             AudioScriptableObjects.chatReceiveGlobal.Play(true);
+
                         break;
                     case ChatMessage.Type.PRIVATE:
                         switch (chatEntryModel.subType)
@@ -167,35 +198,29 @@ namespace DCL.Chat.HUD
         private bool IsRecentMessage(ChatEntryModel chatEntryModel)
         {
             return chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp
-                   && (DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds((long) chatEntryModel.timestamp))
-                   .TotalSeconds < 30;
-        }
-
-        private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
-        {
-            if (MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y) == null)
-                WebInterface.RequestScenesInfoAroundParcel(new Vector2(parcelCoordinates.x, parcelCoordinates.y), 2);
+                   && (DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds((long)chatEntryModel.timestamp))
+                  .TotalSeconds < 30;
         }
 
         public void OnPointerClick(PointerEventData pointerEventData)
         {
-            if (pointerEventData.button == PointerEventData.InputButton.Left)
+            if (pointerEventData.button != PointerEventData.InputButton.Left) return;
+
+            int linkIndex =
+                TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
+
+            if (linkIndex == -1) return;
+
+            string link = body.textInfo.linkInfo[linkIndex].GetLinkID();
+
+            if (CoordinateUtils.HasValidTextCoordinates(link))
             {
-                var linkIndex =
-                    TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
-                if (linkIndex == -1) return;
-
-                var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
-
-                if (CoordinateUtils.HasValidTextCoordinates(link))
-                {
-                    DataStore.i.HUDs.gotoPanelVisible.Set(true);
-                    var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
-                    DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
-                }
-                else if (link.StartsWith("username://"))
-                    OnUserNameClicked?.Invoke(this);
+                DataStore.i.HUDs.gotoPanelVisible.Set(true, true);
+                var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
+                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }
+            else if (link.StartsWith("username://"))
+                OnUserNameClicked?.Invoke(this);
         }
 
         public void OnPointerEnter(PointerEventData pointerEventData)
@@ -212,9 +237,11 @@ namespace DCL.Chat.HUD
                 return;
 
             hoverPanelTimer = 0f;
+
             var linkIndex =
                 TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position,
                     DataStore.i.camera.hudsCamera.Get());
+
             if (linkIndex == -1)
             {
                 isOverCoordinates = false;
@@ -233,6 +260,9 @@ namespace DCL.Chat.HUD
         private void OnDestroy()
         {
             populationTaskCancellationTokenSource.Cancel();
+
+            if (mentionLinkDetector != null)
+                mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
         }
 
         public override void SetFadeout(bool enabled)
@@ -251,6 +281,16 @@ namespace DCL.Chat.HUD
         {
             panel.pivot = hoverPanelPositionReference.pivot;
             panel.position = hoverPanelPositionReference.position;
+        }
+
+        public override void ConfigureMentionLinkDetector(UserContextMenu userContextMenu)
+        {
+            if (mentionLinkDetector == null)
+                return;
+
+            mentionLinkDetector.SetContextMenu(userContextMenu);
+            mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
+            mentionLinkDetector.OnOwnPlayerMentioned += OnOwnPlayerMentioned;
         }
 
         private void Update()
@@ -274,7 +314,7 @@ namespace DCL.Chat.HUD
 
             var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
             if (!CoordinateUtils.HasValidTextCoordinates(link)) return;
-        
+
             isOverCoordinates = true;
             currentCoordinates = CoordinateUtils.ParseCoordinatesString(link);
             hoverGotoPanelTimer = timeToHoverGotoPanel;
@@ -287,6 +327,7 @@ namespace DCL.Chat.HUD
                 return;
 
             hoverPanelTimer -= Time.deltaTime;
+
             if (hoverPanelTimer <= 0f)
             {
                 hoverPanelTimer = 0f;
@@ -300,6 +341,7 @@ namespace DCL.Chat.HUD
                 return;
 
             hoverGotoPanelTimer -= Time.deltaTime;
+
             if (hoverGotoPanelTimer <= 0f)
             {
                 hoverGotoPanelTimer = 0f;
@@ -315,6 +357,14 @@ namespace DCL.Chat.HUD
             //NOTE(Brian): ContentSizeFitter doesn't fare well with tabs, so i'm replacing these
             //             with spaces.
             return text.Replace("\t", "    ");
+        }
+
+        private void OnOwnPlayerMentioned()
+        {
+            if (model.senderId == ownUserProfile.userId)
+                return;
+
+            backgroundImage.color = autoMentionBackgroundColor;
         }
     }
 }

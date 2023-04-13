@@ -1875,7 +1875,7 @@ CanvasGroup:
   m_IgnoreParentGroups: 0
 --- !u!95 &8682647602818152637
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1892,7 +1892,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &7150535707475580996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5749,6 +5750,7 @@ GameObject:
   - component: {fileID: 8540544952857596789}
   - component: {fileID: 8278114066472325544}
   - component: {fileID: 5103067147336230822}
+  - component: {fileID: 5128058886608645971}
   m_Layer: 5
   m_Name: ProfileHUD_V2
   m_TagString: Untagged
@@ -5906,6 +5908,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5128058886608645971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525154057530514719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4572852650187169043
 GameObject:
   m_ObjectHideFlags: 0
@@ -6781,7 +6795,7 @@ CanvasGroup:
   m_IgnoreParentGroups: 0
 --- !u!95 &8661708660305965707
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6798,7 +6812,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &9163568455852532486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7321,7 +7336,7 @@ CanvasGroup:
   m_IgnoreParentGroups: 0
 --- !u!95 &5844545661298511458
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -7338,7 +7353,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &5936786202935723071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8336,7 +8352,7 @@ CanvasGroup:
   m_IgnoreParentGroups: 0
 --- !u!95 &4194606861736440984
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -8353,7 +8369,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4057628118517757677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8817,7 +8834,7 @@ CanvasGroup:
   m_IgnoreParentGroups: 0
 --- !u!95 &5073981704574360024
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -8834,7 +8851,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4025895129313524444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10351,7 +10369,7 @@ CanvasGroup:
   m_IgnoreParentGroups: 0
 --- !u!95 &4684767672997992366
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -10368,7 +10386,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &2482333762970271612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10480,7 +10499,7 @@ CanvasGroup:
   m_IgnoreParentGroups: 0
 --- !u!95 &8043985350824423644
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -10497,7 +10516,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1764000292566057836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10980,7 +11000,7 @@ CanvasGroup:
   m_IgnoreParentGroups: 0
 --- !u!95 &7770126039037567867
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -10997,7 +11017,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &2035218209591236856
 MonoBehaviour:
   m_ObjectHideFlags: 0

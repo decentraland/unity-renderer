@@ -1,16 +1,15 @@
-import * as sinon from 'sinon'
-import { getUnityInstance, setUnityInstance } from '../../packages/unity-interface/IUnityInterface'
-import defaultLogger from '../../packages/lib/logger'
-import { lastPlayerPosition } from '../../packages/shared/world/positionThings'
-import { PermissionItem, permissionItemToJSON } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
-import { movePlayerTo, triggerEmote } from 'shared/apis/host/RestrictedActions'
-import { PortContext } from 'shared/apis/host/context'
 import { Vector3 } from '@dcl/ecs-math'
+import { PermissionItem, permissionItemToJSON } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
 import { EntityType, Scene } from '@dcl/schemas'
 import { expect } from 'chai'
-import Sinon from 'sinon'
-import { UnityInterface } from 'unity-interface/UnityInterface'
+import { PortContext } from 'shared/apis/host/context'
+import { movePlayerTo, triggerEmote } from 'shared/apis/host/RestrictedActions'
 import { buildStore } from 'shared/store/store'
+import Sinon, * as sinon from 'sinon'
+import { UnityInterface } from 'unity-interface/UnityInterface'
+import defaultLogger from 'lib/logger'
+import { lastPlayerPosition } from 'shared/world/positionThings'
+import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
 
 describe('RestrictedActions tests', () => {
   beforeEach(() => {
@@ -66,11 +65,16 @@ describe('RestrictedActions tests', () => {
     it('should move the player', async () => {
       setLastPlayerPosition()
       const ctx = getContextWithPermissions(PermissionItem.PI_ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE)
-      const stub = sinon.stub(getUnityInstance(), 'Teleport')
+      const spy = sinon.spy(getUnityInstance(), 'Teleport')
 
       movePlayerTo({ newRelativePosition: new Vector3(8, 0, 8) }, ctx)
-
-      Sinon.assert.calledWithExactly(stub, { position: { x: 8, y: 0, z: 1624 }, cameraTarget: undefined }, false)
+      const callArguments = spy.firstCall.args
+      expect(callArguments[0].position.x).to.eq(8)
+      expect(callArguments[0].position.y).to.eq(0)
+      expect(callArguments[0].position.z).to.eq(1624)
+      expect(callArguments[0].cameraTarget).to.be.undefined
+      expect(callArguments[1]).to.eq(false)
+      sinon.assert.calledOnce(spy)
     })
 
     it('should fail when position is outside scene', async () => {
@@ -79,8 +83,14 @@ describe('RestrictedActions tests', () => {
       const errorSpy = sinon.spy(defaultLogger, 'error')
       const stub = sinon.stub(getUnityInstance(), 'Teleport')
       movePlayerTo({ newRelativePosition: new Vector3(21, 0, 32) }, ctx)
-      Sinon.assert.calledWithExactly(errorSpy, 'Error: Position is out of scene', { x: 21, y: 0, z: 1648 })
-      Sinon.assert.callCount(stub, 0)
+
+      const callArguments = errorSpy.firstCall.args
+      expect(callArguments[0]).to.eq('Error: Position is out of scene')
+      expect((callArguments[1]! as any).x).to.eq(21)
+      expect((callArguments[1]! as any).y).to.eq(0)
+      expect((callArguments[1]! as any).z).to.eq(1648)
+      sinon.assert.notCalled(stub)
+      sinon.assert.calledOnce(errorSpy)
     })
 
     it('should fail when scene does not have permissions', async () => {

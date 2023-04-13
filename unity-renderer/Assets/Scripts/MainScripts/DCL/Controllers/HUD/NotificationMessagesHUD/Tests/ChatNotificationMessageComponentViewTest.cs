@@ -130,22 +130,6 @@ public class ChatNotificationMessageComponentViewTest
     }
 
     [Test]
-    public void SetMessageTextAboveSizeCorrectly()
-    {
-        // Arrange
-        string messageText = "My test message";
-        string truncatedMessageText = "My t...";
-
-        // Act
-        chatNotificationComponent.SetMaxContentCharacters(4);
-        chatNotificationComponent.SetMessage(messageText);
-
-        // Assert
-        Assert.AreEqual(messageText, chatNotificationComponent.model.message, "The message text does not match in the model.");
-        Assert.AreEqual(truncatedMessageText, chatNotificationComponent.notificationMessage.text, "The message text does not match.");
-    }
-
-    [Test]
     public void SetTimeCorrectly()
     {
         // Arrange

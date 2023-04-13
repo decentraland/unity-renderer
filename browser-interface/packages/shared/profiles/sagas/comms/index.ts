@@ -1,11 +1,11 @@
 import type { Avatar } from '@dcl/schemas'
 import { COMMS_PROFILE_TIMEOUT } from 'config'
 import { storeCondition } from 'lib/redux'
-import { delay } from 'redux-saga/effects'
 import { requestProfileFromPeers } from 'shared/comms/handlers'
 import { RoomConnection } from 'shared/comms/interface'
-import { incrementCounter } from 'shared/occurences'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { RootProfileState } from 'shared/profiles/types'
+import { sleep } from 'lib/javascript/sleep'
 
 export async function fetchPeerProfile(
   room: RoomConnection,
@@ -23,11 +23,12 @@ export async function fetchPeerProfile(
         return state.profiles.userInfo[userId]!.data
       }
     }),
-    delay(COMMS_PROFILE_TIMEOUT)
+    sleep(COMMS_PROFILE_TIMEOUT)
   ])
   incrementCounter(result ? 'profile-over-comms-succesful' : 'profile-over-comms-failed')
   if (!result) {
     return null
   }
+
   return result as Avatar
 }

@@ -82,8 +82,8 @@ MonoBehaviour:
     rarity: 
     description: robot
     issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: 2f2047d4c8513bf419cd0d03692ddfa4, type: 2}
-    maleAnimation: {fileID: 7400000, guid: f45ea28ca4b4286449c5f6197d2b949e, type: 2}
+    femaleAnimation: {fileID: 7400000, guid: a06943845657a49ddaebff409c8a4f53, type: 2}
+    maleAnimation: {fileID: 7400000, guid: a06943845657a49ddaebff409c8a4f53, type: 2}
     dontShowInBackpack: 0
   - data:
       representations: []
@@ -202,8 +202,8 @@ MonoBehaviour:
     rarity: 
     description: hammer
     issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: b58d42ab2f4af3a419f43ce183c48f70, type: 2}
-    maleAnimation: {fileID: 7400000, guid: b58d42ab2f4af3a419f43ce183c48f70, type: 2}
+    femaleAnimation: {fileID: 7400000, guid: 3913d7878afd045f382187b184d102a3, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 3913d7878afd045f382187b184d102a3, type: 2}
     dontShowInBackpack: 0
   - data:
       representations: []
@@ -226,8 +226,8 @@ MonoBehaviour:
     rarity: 
     description: tik
     issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: 155565c20994e334ea44df2fc77b9097, type: 2}
-    maleAnimation: {fileID: 7400000, guid: 155565c20994e334ea44df2fc77b9097, type: 2}
+    femaleAnimation: {fileID: 7400000, guid: 5b45081ecd37640e39b0aae3dce95412, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 5b45081ecd37640e39b0aae3dce95412, type: 2}
     dontShowInBackpack: 0
   - data:
       representations: []
@@ -250,8 +250,8 @@ MonoBehaviour:
     rarity: 
     description: tektonik
     issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: 642c7f952a6a39145a3e15f25654f8d5, type: 2}
-    maleAnimation: {fileID: 7400000, guid: 642c7f952a6a39145a3e15f25654f8d5, type: 2}
+    femaleAnimation: {fileID: 7400000, guid: 9b8964c80871240b6a07bcbd16ff6a9d, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 9b8964c80871240b6a07bcbd16ff6a9d, type: 2}
     dontShowInBackpack: 0
   - data:
       representations: []
@@ -346,8 +346,8 @@ MonoBehaviour:
     rarity: 
     description: disco
     issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: 3e0e78f668397014a9fe1da22b9d34b7, type: 2}
-    maleAnimation: {fileID: 7400000, guid: 3e0e78f668397014a9fe1da22b9d34b7, type: 2}
+    femaleAnimation: {fileID: 7400000, guid: 4d7ce977d9e374af3a33222a64b9f3b8, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 4d7ce977d9e374af3a33222a64b9f3b8, type: 2}
     dontShowInBackpack: 0
   - data:
       representations: []

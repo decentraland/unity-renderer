@@ -1,34 +1,35 @@
-import { call, put, select, take, takeEvery, takeLatest, fork } from 'redux-saga/effects'
+import { RpcClient, RpcClientPort, Transport } from '@dcl/rpc'
+import type { UnityGame } from 'unity-interface/loader'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
+import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
+import { deepEqual } from 'lib/javascript/deepEqual'
+import defaultLogger from 'lib/logger'
+import { call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { createRendererRpcClient } from 'renderer-protocol/rpcClient'
+import { registerEmotesService } from 'renderer-protocol/services/emotesService'
+import { registerFriendRequestRendererService } from 'renderer-protocol/services/friendRequestService'
+import { createRpcTransportService } from 'renderer-protocol/services/transportService'
+import { trackEvent } from 'shared/analytics/trackEvent'
+import { receivePeerUserData } from 'shared/comms/peers'
+import { getExploreRealmsService } from 'shared/dao/selectors'
 import { waitingForRenderer } from 'shared/loading/types'
-import { initializeEngine } from 'unity-interface/dcl'
-import type { UnityGame } from '@dcl/unity-renderer/src/index'
-import { InitializeRenderer, registerRendererModules, registerRendererPort, REGISTER_RPC_PORT } from './actions'
-import { getClientPort } from './selectors'
-import { RendererModules, RENDERER_INITIALIZE } from './types'
-import { trackEvent } from 'shared/analytics'
+import { getAllowedContentServer } from 'shared/meta/selectors'
 import {
+  addProfileToLastSentProfileVersionAndCatalog,
   SendProfileToRenderer,
-  SEND_PROFILE_TO_RENDERER_REQUEST,
   sendProfileToRenderer,
-  addProfileToLastSentProfileVersionAndCatalog
+  SEND_PROFILE_TO_RENDERER_REQUEST
 } from 'shared/profiles/actions'
 import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
-import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
-import { isCurrentUserId, getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
-import { ExplorerIdentity } from 'shared/session/types'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
-import { isFeatureToggleEnabled } from 'shared/selectors'
-import { CurrentRealmInfoForRenderer, NotificationType, VOICE_CHAT_FEATURE_TOGGLE } from 'shared/types'
-import { ProfileUserInfo } from 'shared/profiles/types'
+import { SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { getExploreRealmsService } from 'shared/dao/selectors'
-import defaultLogger from 'lib/logger'
-import { receivePeerUserData } from 'shared/comms/peers'
-import { deepEqual } from 'lib/javascript/deepEqual'
-import { waitForRendererInstance } from './sagas-helper'
-import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
+import { isSceneFeatureToggleEnabled } from 'lib/decentraland/sceneJson/isSceneFeatureToggleEnabled'
+import { SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
+import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
+import { RootState } from 'shared/store/rootTypes'
+import { CurrentRealmInfoForRenderer, NotificationType, VOICE_CHAT_FEATURE_TOGGLE } from 'shared/types'
 import {
   SetVoiceChatErrorAction,
   SET_VOICE_CHAT_ERROR,
@@ -38,19 +39,17 @@ import {
   VOICE_PLAYING_UPDATE,
   VOICE_RECORDING_UPDATE
 } from 'shared/voiceChat/actions'
-import { IRealmAdapter } from 'shared/realm/types'
-import { SET_REALM_ADAPTER } from 'shared/realm/actions'
-import { getAllowedContentServer } from 'shared/meta/selectors'
-import { SetCurrentScene, SET_CURRENT_SCENE } from 'shared/world/actions'
-import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { getVoiceHandler } from 'shared/voiceChat/selectors'
-import { SceneWorker } from 'shared/world/SceneWorker'
+import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import { SetCurrentScene, SET_CURRENT_SCENE } from 'shared/world/actions'
 import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
-import { RpcClient, RpcClientPort, Transport } from '@dcl/rpc'
-import { createRendererRpcClient } from 'renderer-protocol/rpcClient'
-import { registerEmotesService } from 'renderer-protocol/services/emotesService'
-import { createRpcTransportService } from 'renderer-protocol/services/transportService'
-import { registerFriendRequestRendererService } from 'renderer-protocol/services/friendRequestService'
+import { SceneWorker } from 'shared/world/SceneWorker'
+import { initializeEngine } from 'unity-interface/dcl'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { InitializeRenderer, registerRendererModules, registerRendererPort, REGISTER_RPC_PORT } from './actions'
+import { waitForRendererInstance } from './sagas-helper'
+import { getClientPort } from './selectors'
+import { RendererModules, RENDERER_INITIALIZE } from './types'
 
 export function* rendererSaga() {
   yield takeEvery(SEND_PROFILE_TO_RENDERER_REQUEST, handleSubmitProfileToRenderer)
@@ -197,8 +196,8 @@ function* listenToWhetherSceneSupportsVoiceChat(data: SetCurrentScene) {
     : undefined
 
   const nowEnabled = currentScene
-    ? isFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE, currentScene?.metadata)
-    : isFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE)
+    ? isSceneFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE, currentScene?.metadata)
+    : isSceneFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE)
 
   yield call(waitForRendererInstance)
 
@@ -263,23 +262,24 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
   const { userId } = action.payload
 
   yield call(waitForRendererInstance)
+  const bff: IRealmAdapter = yield call(waitForRealm)
+  const { profile, identity, isCurrentUser, lastSentProfileVersion } = (yield select(
+    getInformationToSubmitProfileFromStore,
+    userId
+  )) as ReturnType<typeof getInformationToSubmitProfileFromStore>
+  const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(bff)
 
-  const profile: ProfileUserInfo | null = yield select(getProfileFromStore, userId)
   if (!profile || !profile.data) {
     return
   }
 
-  const bff: IRealmAdapter = yield call(waitForRealm)
-  const fetchContentServerWithPrefix = yield call(getFetchContentUrlPrefixFromRealmAdapter, bff)
-
-  if (yield select(isCurrentUserId, userId)) {
-    const identity: ExplorerIdentity = yield select(getCurrentIdentity)
-
+  if (isCurrentUser) {
     const forRenderer = profileToRendererFormat(profile.data, {
-      address: identity.address,
+      address: identity?.address,
       baseUrl: fetchContentServerWithPrefix
     })
-    forRenderer.hasConnectedWeb3 = identity.hasConnectedWeb3
+    forRenderer.hasConnectedWeb3 = identity?.hasConnectedWeb3 || false
+
     // TODO: this condition shouldn't be necessary. Unity fails with setThrew
     //       if LoadProfile is called rapidly because it cancels ongoing
     //       requests and those cancellations throw exceptions
@@ -291,8 +291,6 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
       getUnityInstance().LoadProfile(forRenderer)
     }
   } else {
-    const lastSentProfileVersion: number | undefined = yield select(getLastSentProfileVersion, userId)
-
     // Add version check before submitting profile to renderer
     // Technically profile version might be `0` and make `!lastSentProfileVersion` always true
     if (typeof lastSentProfileVersion !== 'number' || lastSentProfileVersion < profile.data.version) {
@@ -305,7 +303,20 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
       yield put(addProfileToLastSentProfileVersionAndCatalog(userId, forRenderer.version))
     }
 
-    // send to Avatars scene
+    // Send to Avatars scene
+    // TODO: Consider refactor this so that it's distinguishable from a message received over the network
+    // (`receivePeerUserData` is a handler for a comms message!!!)
     receivePeerUserData(profile.data, fetchContentServerWithPrefix)
+  }
+}
+
+export function getInformationToSubmitProfileFromStore(state: RootState, userId: string) {
+  const identity = getCurrentIdentity(state)
+  const isCurrentUser = identity?.address.toLowerCase() === userId.toLowerCase()
+  return {
+    profile: getProfileFromStore(state, userId),
+    identity,
+    isCurrentUser,
+    lastSentProfileVersion: getLastSentProfileVersion(state, userId)
   }
 }

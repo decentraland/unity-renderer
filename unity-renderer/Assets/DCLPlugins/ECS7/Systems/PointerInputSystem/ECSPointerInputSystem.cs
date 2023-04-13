@@ -16,7 +16,7 @@ namespace ECSSystems.PointerInputSystem
         {
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
-            public ECSComponent<PBPointerEvents> pointerEvents;
+            public IInternalECSComponent<InternalPointerEvents> pointerEvents;
             public DataStore_ECS7 dataStoreEcs7;
             public EntityInput lastHoverFeedback;
             public IWorldState worldState;
@@ -37,7 +37,7 @@ namespace ECSSystems.PointerInputSystem
         public static Action CreateSystem(
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
-            ECSComponent<PBPointerEvents> pointerEvents,
+            IInternalECSComponent<InternalPointerEvents> pointerEvents,
             IECSInteractionHoverCanvas interactionHoverCanvas,
             IWorldState worldState,
             DataStore_ECS7 dataStoreEcs)
@@ -74,8 +74,6 @@ namespace ECSSystems.PointerInputSystem
             bool hasAnyButtonChangedItsState = false;
             bool hasHoverEventEmitted = false;
 
-            var inputActionEnum = (WebInterface.ACTION_BUTTON[]) Enum.GetValues(typeof(WebInterface.ACTION_BUTTON));
-
             // Emit command for button states
             var curState = state.dataStoreEcs7.inputActionState;
             var prevState = state.inputActionState;
@@ -86,7 +84,7 @@ namespace ECSSystems.PointerInputSystem
                 if (curState[i] != prevState[i])
                 {
                     PointerEventType pointerEventType = curState[i] ? PointerEventType.PetDown : PointerEventType.PetUp;
-                    InputAction inputAction = (InputAction)inputActionEnum[i];
+                    InputAction inputAction = (InputAction)i;
 
                     if (colliderData != null)
                     {
@@ -133,7 +131,7 @@ namespace ECSSystems.PointerInputSystem
 
             if (colliderData != null)
             {
-                var hoverEvents = state.pointerEvents.GetPointerEventsForEntity(colliderData.scene, colliderData.entity);
+                var hoverEvents = state.pointerEvents.GetFor(colliderData.scene, colliderData.entity)?.model.PointerEvents;
                 state.interactionHoverCanvas.ShowHoverTooltips(hoverEvents, curState, raycastHit.distance, isAnyButtonDown);
             }
         }
@@ -163,7 +161,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 AddInputResultEvent(
                     state,
-                    InputAction.IaAny,
+                    InputAction.IaPointer,
                     state.lastHoverFeedback.scene,
                     state.lastHoverFeedback.entityId,
                     raycastRay,
@@ -174,7 +172,7 @@ namespace ECSSystems.PointerInputSystem
 
             AddInputResultEvent(
                 state,
-                InputAction.IaAny,
+                InputAction.IaPointer,
                 colliderData.scene,
                 colliderData.entity.entityId,
                 raycastRay,
@@ -198,7 +196,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 AddInputResultEvent(
                     state,
-                    InputAction.IaAny,
+                    InputAction.IaPointer,
                     state.lastHoverFeedback.scene,
                     state.lastHoverFeedback.entityId,
                     raycastRay,
@@ -217,7 +215,7 @@ namespace ECSSystems.PointerInputSystem
 
             AddInputResultEvent(
                 state,
-                InputAction.IaAny,
+                InputAction.IaPointer,
                 colliderData.scene,
                 colliderData.entity.entityId,
                 raycastRay,
@@ -237,7 +235,7 @@ namespace ECSSystems.PointerInputSystem
             IReadOnlyList<IParcelScene> loadedScenes = state.dataStoreEcs7.scenes;
             for (int i = 0; i < loadedScenes.Count; i++)
             {
-                if (loadedScenes[i] != skipScene && loadedScenes[i].crdtExecutor != null)
+                if (loadedScenes[i] != skipScene)
                 {
                     AddInputResultEvent(state, buttonId, loadedScenes[i], entityId, ray, raycastHit, pointerEventType);
                 }
@@ -267,7 +265,7 @@ namespace ECSSystems.PointerInputSystem
             for (int i = 0; i < collidersData.Count; i++)
             {
                 var colliderData = collidersData[i].value;
-                if (colliderData.model.colliders.Contains(collider))
+                if (colliderData.model.colliders.ContainsKey(collider))
                 {
                     return colliderData;
                 }
@@ -276,24 +274,24 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void ShowHoverTooltips(this IECSInteractionHoverCanvas canvas,
-            IReadOnlyList<PBPointerEvents.Types.Entry> entityEvents, bool[] buttonState, float distance, bool isAnyButtonDown)
+            IReadOnlyList<InternalPointerEvents.Entry> entityEvents, bool[] buttonState, float distance, bool isAnyButtonDown)
         {
             if (entityEvents is null)
                 return;
 
             int tooltipIndex = -1;
             bool shouldAdd = false;
-            PBPointerEvents.Types.Entry pointerEvent = null;
+            InternalPointerEvents.Entry pointerEvent;
 
             for (int eventIndex = 0; eventIndex < entityEvents.Count; eventIndex++)
             {
                 shouldAdd = false;
                 pointerEvent = entityEvents[eventIndex];
 
-                if (!pointerEvent.EventInfo.GetShowFeedback() || distance > pointerEvent.EventInfo.GetMaxDistance())
+                if (!pointerEvent.EventInfo.ShowFeedback || distance > pointerEvent.EventInfo.MaxDistance)
                     continue;
 
-                int buttonId = (int)pointerEvent.EventInfo.GetButton();
+                int buttonId = (int)pointerEvent.EventInfo.Button;
 
                 if (buttonId == (int)InputAction.IaAny)
                 {
@@ -317,8 +315,8 @@ namespace ECSSystems.PointerInputSystem
                 if (shouldAdd)
                 {
                     tooltipIndex++;
-                    canvas.SetTooltipText(tooltipIndex, pointerEvent.EventInfo.GetHoverText());
-                    canvas.SetTooltipInput(tooltipIndex, pointerEvent.EventInfo.GetButton());
+                    canvas.SetTooltipText(tooltipIndex, pointerEvent.EventInfo.HoverText);
+                    canvas.SetTooltipInput(tooltipIndex, pointerEvent.EventInfo.Button);
                     canvas.SetTooltipActive(tooltipIndex, true);
                 }
             }

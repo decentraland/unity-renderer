@@ -18,9 +18,8 @@ namespace DCL.LoadingScreen
 
         public event Action<ShowHideAnimator> OnFadeInFinish;
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
             showHideAnimator.OnWillFinishStart += FadeInFinish;
 
             betaTag.SetActive(!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer);
@@ -56,6 +55,7 @@ namespace DCL.LoadingScreen
         public void FadeOut()
         {
             if (!isVisible) return;
+            rawImage.gameObject.SetActive(false);
 
             Hide();
         }

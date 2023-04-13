@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package decentraland.renderer.kernel_services;
+
+enum RequestMethod {
+    GET = 0;
+    POST = 1;
+    PUT = 2;
+    PATCH = 3;
+    DELETE = 4;
+}
+
+message SignBodyResponse {
+    repeated string auth_chain = 1;
+    uint64 timestamp = 2;
+    string metadata = 3;
+}
+
+message SignBodyRequest {
+    RequestMethod method = 1;
+    string url = 2;
+    string metadata = 3;
+}
+
+service SignRequestKernelService {
+    rpc GetRequestSignature(SignBodyRequest) returns (SignBodyResponse) {}
+}

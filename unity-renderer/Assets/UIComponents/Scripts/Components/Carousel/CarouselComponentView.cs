@@ -164,7 +164,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         ConfigureManualButtonsEvents();
     }
 
-    public override void Start()
+    public void Start()
     {
         if (model.automaticTransition)
             StartCarousel();
@@ -668,11 +668,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
             currentIndex++;
         }
-    }
-
-    public void CleanInstantiatedItems()
-    {
-        instantiatedItems = new List<BaseComponentView>();
     }
 
     public void ResetManualCarousel()

@@ -13,7 +13,7 @@ namespace DCLServices.WearablesCatalogService
     [Serializable]
     public class WearableWithDefinitionResponse : PaginatedResponse
     {
-        public List<WearableDefinition> wearables;
+        public List<WearableDefinition> elements;
     }
 
     [Serializable]

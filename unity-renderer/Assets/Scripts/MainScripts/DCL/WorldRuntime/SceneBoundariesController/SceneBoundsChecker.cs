@@ -16,18 +16,19 @@ namespace DCL.Controllers
         public int entitiesToCheckCount => entitiesToCheck.Count;
 
         private const bool VERBOSE = false;
-        private Logger logger = new Logger("SceneBoundsChecker") {verboseEnabled = VERBOSE};
-        private HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
-        private HashSet<IDCLEntity> checkedEntities = new HashSet<IDCLEntity>();
-        private HashSet<IDCLEntity> persistentEntities = new HashSet<IDCLEntity>();
+        private Logger logger = new ("SceneBoundsChecker") { verboseEnabled = VERBOSE };
+        private HashSet<IDCLEntity> entitiesToCheck = new ();
+        private HashSet<IDCLEntity> checkedEntities = new ();
+        private HashSet<IDCLEntity> persistentEntities = new ();
         private ISceneBoundsFeedbackStyle feedbackStyle;
-        private Coroutine entitiesCheckRoutine = null;
+        private Coroutine entitiesCheckRoutine;
         private float lastCheckTime;
 
         private Service<IMessagingControllersManager> messagingManagerService;
         private IMessagingControllersManager messagingManager => messagingManagerService.Ref;
 
         private bool isNerfed;
+        private bool isInsistent;
 
         public void Initialize()
         {
@@ -37,7 +38,9 @@ namespace DCL.Controllers
         public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null)
         {
             this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple();
-            isNerfed = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("NERF_SBC");
+            FeatureFlag featureFlag = DataStore.i.featureFlags.flags.Get();
+            isNerfed = featureFlag.IsFeatureEnabled("NERF_SBC");
+            isInsistent = featureFlag.IsFeatureEnabled("INSISTENT_SBC");
         }
 
         public void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle)
@@ -47,10 +50,15 @@ namespace DCL.Controllers
             Restart();
         }
 
-        public ISceneBoundsFeedbackStyle GetFeedbackStyle() { return feedbackStyle; }
+        public ISceneBoundsFeedbackStyle GetFeedbackStyle()
+        {
+            return feedbackStyle;
+        }
 
-        public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo) { return feedbackStyle.GetOriginalMaterials(meshesInfo); }
-
+        public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
+        {
+            return feedbackStyle.GetOriginalMaterials(meshesInfo);
+        }
 
         // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
         private IEnumerator CheckEntities()
@@ -61,6 +69,7 @@ namespace DCL.Controllers
                 var finalTimeBetweenChecks = isNerfed ? NERFED_TIME_BUDGET : timeBetweenChecks;
 
                 float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
+
                 if ((entitiesToCheck.Count > 0) && (finalTimeBetweenChecks <= 0f || elapsedTime >= finalTimeBetweenChecks))
                 {
                     var timeBudget = NERFED_TIME_BUDGET;
@@ -69,18 +78,21 @@ namespace DCL.Controllers
                     {
                         if (IsTimeBudgetDepleted(timeBudget))
                         {
-                            if(VERBOSE)
+                            if (VERBOSE)
                                 logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
+
                             return;
                         }
 
                         using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
+
                         while (iterator.MoveNext())
                         {
                             if (IsTimeBudgetDepleted(timeBudget))
                             {
-                                if(VERBOSE)
+                                if (VERBOSE)
                                     logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
+
                                 return;
                             }
 
@@ -94,7 +106,7 @@ namespace DCL.Controllers
 
                             if (!isNerfed)
                             {
-                                if ( messagingManager != null )
+                                if (messagingManager != null)
                                     messagingManager.timeBudgetCounter -= usedTimeBudget;
                             }
 
@@ -107,13 +119,10 @@ namespace DCL.Controllers
                     // As we can't modify the hashset while traversing it, we keep track of the entities that should be removed afterwards
                     using (var iterator = checkedEntities.GetEnumerator())
                     {
-                        while (iterator.MoveNext())
-                        {
-                            RemoveEntity(iterator.Current, removeIfPersistent: false, resetState: false);
-                        }
+                        while (iterator.MoveNext()) { RemoveEntity(iterator.Current, removeIfPersistent: false, resetState: false); }
                     }
 
-                    if(VERBOSE)
+                    if (VERBOSE)
                         logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}");
 
                     checkedEntities.Clear();
@@ -124,7 +133,11 @@ namespace DCL.Controllers
                 yield return null;
             }
         }
-        private bool IsTimeBudgetDepleted(float timeBudget) { return isNerfed ? timeBudget <= 0f : messagingManager != null && messagingManager.timeBudgetCounter <= 0f; }
+
+        private bool IsTimeBudgetDepleted(float timeBudget)
+        {
+            return isNerfed ? timeBudget <= 0f : messagingManager != null && messagingManager.timeBudgetCounter <= 0f;
+        }
 
         public void Restart()
         {
@@ -161,6 +174,7 @@ namespace DCL.Controllers
 
             // Entities from global or sdk7 scenes should not be added to this boundaries checker system
             bool isInvalidEntity = entityScene != null && (entityScene.isPersistent || entityScene.sceneData.sdk7);
+
             if (!enabled || isInvalidEntity)
                 return;
 
@@ -171,7 +185,7 @@ namespace DCL.Controllers
 
                 // No need to add the entity to be checked later if we already found it outside scene outer boundaries.
                 // When the correct events are triggered again, the entity will be checked again.
-                if (!isPersistent && !entity.isInsideSceneOuterBoundaries)
+                if (!isInsistent && !isPersistent && !entity.isInsideSceneOuterBoundaries)
                     return;
             }
 
@@ -189,11 +203,14 @@ namespace DCL.Controllers
             entitiesToCheck.Remove(entity);
             persistentEntities.Remove(entity);
 
-            if(resetState)
+            if (resetState)
                 SetMeshesAndComponentsInsideBoundariesState(entity, true);
         }
 
-        public bool WasAddedAsPersistent(IDCLEntity entity) { return persistentEntities.Contains(entity); }
+        public bool WasAddedAsPersistent(IDCLEntity entity)
+        {
+            return persistentEntities.Contains(entity);
+        }
 
         // TODO: When we remove the DCLBuilderEntity class we'll be able to remove this overload
         public void RunEntityEvaluation(IDCLEntity entity)
@@ -211,10 +228,7 @@ namespace DCL.Controllers
             {
                 using (var iterator = entity.children.GetEnumerator())
                 {
-                    while (iterator.MoveNext())
-                    {
-                        RunEntityEvaluation(iterator.Current.Value, onlyOuterBoundsCheck);
-                    }
+                    while (iterator.MoveNext()) { RunEntityEvaluation(iterator.Current.Value, onlyOuterBoundsCheck); }
                 }
             }
 
@@ -229,6 +243,7 @@ namespace DCL.Controllers
         private void EvaluateMeshBounds(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
         {
             var loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
+
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
 
@@ -301,9 +316,9 @@ namespace DCL.Controllers
         private bool HasMesh(IDCLEntity entity)
         {
             return entity.meshRootGameObject != null
-                    && (entity.meshesInfo.colliders.Count > 0
-                    || (entity.meshesInfo.renderers != null
-                    && entity.meshesInfo.renderers.Length > 0));
+                   && (entity.meshesInfo.colliders.Count > 0
+                       || (entity.meshesInfo.renderers != null
+                           && entity.meshesInfo.renderers.Length > 0));
         }
 
         public bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity)
@@ -317,10 +332,7 @@ namespace DCL.Controllers
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);
 
             // 2nd check (submeshes & colliders AABB)
-            if (!isInsideBoundaries)
-            {
-                isInsideBoundaries = AreSubmeshesInsideBoundaries(entity) && AreCollidersInsideBoundaries(entity);
-            }
+            if (!isInsideBoundaries) { isInsideBoundaries = AreSubmeshesInsideBoundaries(entity) && AreCollidersInsideBoundaries(entity); }
 
             return isInsideBoundaries;
         }
@@ -330,6 +342,7 @@ namespace DCL.Controllers
             for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
             {
                 Renderer renderer = entity.meshesInfo.renderers[i];
+
                 if (renderer == null)
                     continue;
 
@@ -385,13 +398,10 @@ namespace DCL.Controllers
 
         private void SetComponentsInsideBoundariesValidState(IDCLEntity entity, bool isInsideBoundaries)
         {
-            if(entity.isInsideSceneBoundaries == isInsideBoundaries || !DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
+            if (entity.isInsideSceneBoundaries == isInsideBoundaries || !DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
                 return;
 
-            foreach (IOutOfSceneBoundariesHandler component in DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId])
-            {
-                component.UpdateOutOfBoundariesState(isInsideBoundaries);
-            }
+            foreach (IOutOfSceneBoundariesHandler component in DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId]) { component.UpdateOutOfBoundariesState(isInsideBoundaries); }
         }
     }
 }

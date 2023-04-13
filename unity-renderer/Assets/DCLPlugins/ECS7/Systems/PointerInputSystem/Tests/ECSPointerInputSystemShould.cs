@@ -1,14 +1,16 @@
-using System;
-using System.Collections.Generic;
 using DCL;
+using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Interface;
 using DCL.Models;
 using ECSSystems.PointerInputSystem;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
@@ -43,7 +45,8 @@ namespace Tests
 
             var componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             var componentsComposer = new ECS7ComponentsComposer(componentsFactory,
                 Substitute.For<IECSComponentWriter>(), internalComponents);
@@ -58,12 +61,19 @@ namespace Tests
             systemUpdate = ECSPointerInputSystem.CreateSystem(
                 internalComponents.onPointerColliderComponent,
                 internalComponents.inputEventResultsComponent,
-                (ECSComponent<PBPointerEvents>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_EVENTS),
+                internalComponents.PointerEventsComponent,
                 interactionHoverCanvas,
                 worldState,
                 dataStoreEcs7);
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            // systemUpdate = () =>
+            // {
+            //     internalComponents.MarkDirtyComponentsUpdate();
+            //     inputSystemUpdate();
+            //     internalComponents.ResetDirtyComponentsUpdate();
+            // };
+
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             inputEventResultsComponent = internalComponents.inputEventResultsComponent;
 
             scene = testUtils.CreateScene(666);
@@ -79,10 +89,10 @@ namespace Tests
             colliderEntity2 = colliderGO2.AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity1,
-                new InternalColliders() { colliders = new List<Collider>() { colliderEntity1 } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { colliderEntity1, 0 } } });
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity2,
-                new InternalColliders() { colliders = new List<Collider>() { colliderEntity2 } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { colliderEntity2, 0 } } });
         }
 
         [TearDown]
@@ -105,10 +115,10 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            var enqueuedEvent = result.model.events.Dequeue();
+            var evt = result.model.events[0];
 
-            Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
+            Assert.AreEqual(entity1.entityId, evt.hit.EntityId);
+            Assert.IsTrue(evt.type == PointerEventType.PetDown);
         }
 
         [Test]
@@ -131,15 +141,15 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            result.model.events.Dequeue(); // first event would be pointerDown;
-            result.model.events.Dequeue(); // second event would be pointerHoverEnter
-            var enqueuedEvent = result.model.events.Dequeue();
 
-            Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetUp);
+            // first event would be pointerDown;
+            // second event would be pointerHoverEnter
+            // third event would be pointerUp
+            var evt = result.model.events[2];
 
-            // no remaining events because we don't leave the raycast on entity1
-            Assert.AreEqual(result.model.events.Count, 0);
+            Assert.AreEqual(entity1.entityId, evt.hit.EntityId);
+            Assert.IsTrue(evt.type == PointerEventType.PetUp);
+            Assert.AreEqual(3, result.model.events.Count);
         }
 
         [Test]
@@ -162,13 +172,13 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            result.model.events.Dequeue(); // first event would be pointerDown
+            result.model.events.RemoveAt(0); // first event would be pointerDown
 
             var result2 = inputEventResultsComponent.GetFor(scene, entity2.entityId);
-            var enqueuedEvent = result2.model.events.Dequeue();
+            var evt = result2.model.events[0];
 
-            Assert.AreEqual(enqueuedEvent.type, PointerEventType.PetUp);
-            Assert.AreEqual(enqueuedEvent.hit.EntityId, entity2.entityId);
+            Assert.AreEqual(evt.type, PointerEventType.PetUp);
+            Assert.AreEqual(evt.hit.EntityId, entity2.entityId);
 
             // remaining the pointerHoverLeave of entity1 and pointerHoveEnter of entity2
             Assert.AreEqual(result.model.events.Count, 2);
@@ -195,14 +205,14 @@ namespace Tests
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
             Assert.AreEqual(result.model.events.Count, 3);
+
             // up, hover and leave
 
             var result2 = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var enqueuedEvent = result2.model.events.Dequeue();
+            var evt = result2.model.events[0];
 
-            Assert.AreEqual(enqueuedEvent.type, PointerEventType.PetUp);
-            Assert.IsFalse(enqueuedEvent.hit.HasEntityId);
-
+            Assert.AreEqual(evt.type, PointerEventType.PetUp);
+            Assert.IsFalse(evt.hit.HasEntityId);
         }
 
         [Test]
@@ -217,10 +227,10 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            var enqueuedEvent = result.model.events.Dequeue();
+            var evt = result.model.events[0];
 
-            Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetHoverEnter);
+            Assert.AreEqual(entity1.entityId, evt.hit.EntityId);
+            Assert.IsTrue(evt.type == PointerEventType.PetHoverEnter);
         }
 
         [Test]
@@ -241,16 +251,17 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            result.model.events.Dequeue(); // hoverEnter - entity1
-            var enqueuedEventHoverExitEntity1 = result.model.events.Dequeue();
+
+            // result.model.events[0] == hoverEnter - entity1
+            var evtEventHoverExitEntity1 = result.model.events[1];
 
             var result2 = inputEventResultsComponent.GetFor(scene, entity2.entityId);
-            var enqueuedEventNewHoverEnter = result2.model.events.Dequeue();
+            var evtEventNewHoverEnter = result2.model.events[0];
 
-            Assert.AreEqual(entity2.entityId, enqueuedEventNewHoverEnter.hit.EntityId);
-            Assert.AreEqual(entity1.entityId, enqueuedEventHoverExitEntity1.hit.EntityId);
-            Assert.IsTrue(enqueuedEventNewHoverEnter.type == PointerEventType.PetHoverEnter);
-            Assert.IsTrue(enqueuedEventHoverExitEntity1.type == PointerEventType.PetHoverLeave);
+            Assert.AreEqual(entity2.entityId, evtEventNewHoverEnter.hit.EntityId);
+            Assert.AreEqual(entity1.entityId, evtEventHoverExitEntity1.hit.EntityId);
+            Assert.IsTrue(evtEventNewHoverEnter.type == PointerEventType.PetHoverEnter);
+            Assert.IsTrue(evtEventHoverExitEntity1.type == PointerEventType.PetHoverLeave);
         }
 
         [Test]
@@ -271,11 +282,12 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            result.model.events.Dequeue(); // hoverEnter - entity1
-            var enqueuedEventHoverExit = result.model.events.Dequeue();
 
-            Assert.AreEqual(entity1.entityId, enqueuedEventHoverExit.hit.EntityId);
-            Assert.IsTrue(enqueuedEventHoverExit.type == PointerEventType.PetHoverLeave);
+            //result.model.events[0] == hoverEnter - entity1
+            var evtEventHoverExit = result.model.events[1];
+
+            Assert.AreEqual(entity1.entityId, evtEventHoverExit.hit.EntityId);
+            Assert.IsTrue(evtEventHoverExit.type == PointerEventType.PetHoverLeave);
         }
 
         [Test]
@@ -443,7 +455,7 @@ namespace Tests
 
             systemUpdate();
 
-            interactionHoverCanvas.Received( MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
+            interactionHoverCanvas.Received(MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
             interactionHoverCanvas.DidNotReceive().SetTooltipText(Arg.Any<int>(), Arg.Any<string>());
             interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<InputAction>());
             interactionHoverCanvas.DidNotReceive().Show();
@@ -551,24 +563,25 @@ namespace Tests
         }
 
         [Test]
-        [TestCase(0,0)]
-        [TestCase(66,66)]
+        [TestCase(0, 0)]
+        [TestCase(66, 66)]
         public void ReturnResultHitPositionInSceneSpace(int sceneBaseCoordX, int sceneBaseCoordY)
         {
             // 1. Set scene, entity and its collider
             Vector2Int sceneBaseCoords = new Vector2Int(sceneBaseCoordX, sceneBaseCoordY);
-            var newTestScene = testUtils.CreateScene(2222, sceneBaseCoords, new List<Vector2Int>(){sceneBaseCoords});
+            var newTestScene = testUtils.CreateScene(2222, sceneBaseCoords, new List<Vector2Int>() { sceneBaseCoords });
             var testEntity = newTestScene.CreateEntity(12345);
             Collider testEntityCollider = new GameObject("testEntityCollider").AddComponent<BoxCollider>();
+
             internalComponents.onPointerColliderComponent.PutFor(newTestScene, testEntity,
-                new InternalColliders() { colliders = new List<Collider>() { testEntityCollider } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { testEntityCollider, 0 } } });
 
             // 2. position collider entity inside scene space
             ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
-                Substitute.For<BaseVariable<UnityEngine.Vector3>>(),
+                Substitute.For<BaseVariable<Vector3>>(),
                 Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
 
-            var entityLocalPosition = new UnityEngine.Vector3(8, 1, 8);
+            var entityLocalPosition = new Vector3(8, 1, 8);
             var transformModel = new ECSTransform() { position = entityLocalPosition };
             transformHandler.OnComponentModelUpdated(newTestScene, testEntity, transformModel);
 
@@ -581,16 +594,16 @@ namespace Tests
             // 3. update pointer ray hit values with object unity position
             var entityGlobalPosition = WorldStateUtils.ConvertSceneToUnityPosition(entityLocalPosition, newTestScene);
             dataStoreEcs7.lastPointerRayHit.hit.point = entityGlobalPosition;
-            dataStoreEcs7.lastPointerRayHit.ray.origin = entityGlobalPosition + UnityEngine.Vector3.back * 3;
+            dataStoreEcs7.lastPointerRayHit.ray.origin = entityGlobalPosition + Vector3.back * 3;
 
             // 4. Update to enqueue new events
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(newTestScene, testEntity.entityId);
-            var enqueuedEvent = result.model.events.Dequeue();
+            var evt = result.model.events[0];
 
-            Assert.AreEqual(testEntity.entityId, enqueuedEvent.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
+            Assert.AreEqual(testEntity.entityId, evt.hit.EntityId);
+            Assert.IsTrue(evt.type == PointerEventType.PetDown);
 
             // 5. Check enqueued event has correct position and origin
             Assert.AreEqual(new Decentraland.Common.Vector3()
@@ -598,18 +611,18 @@ namespace Tests
                 X = entityLocalPosition.x,
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z
-            }, enqueuedEvent.hit.Position);
+            }, evt.hit.Position);
+
             Assert.AreEqual(new Decentraland.Common.Vector3()
             {
                 X = entityLocalPosition.x,
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z - 3
-            }, enqueuedEvent.hit.Origin);
+            }, evt.hit.GlobalOrigin);
 
             // 6. Clean up
             Object.DestroyImmediate(testEntityCollider.gameObject);
         }
-
 
         [Test]
         public void DetectTwoInputDown()
@@ -625,18 +638,16 @@ namespace Tests
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
 
-            var enqueuedEvent1 = result.model.events.Dequeue();
-            Assert.AreEqual(InputAction.IaPrimary, enqueuedEvent1.button);
-            Assert.AreEqual(entity1.entityId, enqueuedEvent1.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent1.type == PointerEventType.PetDown);
+            var evt1 = result.model.events[0];
+            Assert.AreEqual(InputAction.IaPrimary, evt1.button);
+            Assert.AreEqual(entity1.entityId, evt1.hit.EntityId);
+            Assert.IsTrue(evt1.type == PointerEventType.PetDown);
 
-            var enqueuedEvent2 = result.model.events.Dequeue();
-            Assert.AreEqual(InputAction.IaAction3, enqueuedEvent2.button);
-            Assert.AreEqual(entity1.entityId, enqueuedEvent2.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent2.type == PointerEventType.PetDown);
+            var evt2 = result.model.events[1];
+            Assert.AreEqual(InputAction.IaAction3, evt2.button);
+            Assert.AreEqual(entity1.entityId, evt2.hit.EntityId);
+            Assert.IsTrue(evt2.type == PointerEventType.PetDown);
         }
-
-
 
         [Test]
         public void DetectGlobalInputDown()
@@ -651,10 +662,22 @@ namespace Tests
 
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
-            var enqueuedEvent1 = result.model.events.Dequeue();
-            Assert.AreEqual(InputAction.IaPrimary, enqueuedEvent1.button);
-            Assert.IsTrue(enqueuedEvent1.type == PointerEventType.PetDown);
+            var evt = result.model.events[0];
+            Assert.AreEqual(InputAction.IaPrimary, evt.button);
+            Assert.IsTrue(evt.type == PointerEventType.PetDown);
         }
 
+        [Test]
+        public void EnsureWebInterfaceAndProtobufInputEnumsMatch()
+        {
+            var inputActionsWebInterface = Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)) as int[];
+            var inputActionsProto = Enum.GetValues(typeof(InputAction)) as int[];
+            Assert.AreEqual(inputActionsProto!.Length, inputActionsWebInterface!.Length);
+
+            for (var i = 0; i < inputActionsWebInterface.Length; i++)
+            {
+                Assert.AreEqual(inputActionsWebInterface[i], inputActionsProto[i]);
+            }
+        }
     }
 }

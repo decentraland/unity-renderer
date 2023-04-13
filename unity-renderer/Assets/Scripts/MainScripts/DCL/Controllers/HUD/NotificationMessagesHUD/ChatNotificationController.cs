@@ -2,11 +2,14 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.SettingsCommon;
+using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.Notifications
@@ -23,16 +26,18 @@ namespace DCL.Chat.Notifications
         private readonly ITopNotificationsComponentView topNotificationView;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IProfanityFilter profanityFilter;
+        private readonly ISettingsRepository<AudioSettings> audioSettings;
         private readonly TimeSpan maxNotificationInterval = new (0, 1, 0);
         private readonly HashSet<string> notificationEntries = new ();
+        private readonly CancellationTokenSource addMessagesCancellationToken = new ();
+
         private BaseVariable<bool> shouldShowNotificationPanel => dataStore.HUDs.shouldShowNotificationPanel;
         private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private BaseVariable<Transform> topNotificationPanelTransform => dataStore.HUDs.topNotificationPanelTransform;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
         private BaseVariable<string> openedChat => dataStore.HUDs.openChat;
-        private CancellationTokenSource fadeOutCT = new ();
+        private CancellationTokenSource fadeOutCancellationToken = new ();
         private UserProfile internalOwnUserProfile;
-        private CancellationTokenSource addMessagesCancellationToken = new ();
 
         private UserProfile ownUserProfile
         {
@@ -51,13 +56,15 @@ namespace DCL.Chat.Notifications
             IChatController chatController,
             IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
-            IProfanityFilter profanityFilter)
+            IProfanityFilter profanityFilter,
+            ISettingsRepository<AudioSettings> audioSettings)
         {
             this.dataStore = dataStore;
             this.chatController = chatController;
             this.friendsController = friendsController;
             this.userProfileBridge = userProfileBridge;
             this.profanityFilter = profanityFilter;
+            this.audioSettings = audioSettings;
             this.mainChatNotificationView = mainChatNotificationView;
             this.topNotificationView = topNotificationView;
             mainChatNotificationView.OnResetFade += ResetFadeOut;
@@ -144,11 +151,11 @@ namespace DCL.Chat.Notifications
             }
         }
 
-        // TODO: add support for cancellation tokens in profanity filtering
         private async UniTaskVoid AddNotificationAsync(ChatMessage message, Channel channel = null, CancellationToken cancellationToken = default)
         {
             string body = message.body;
             string openedChatId = openedChat.Get();
+            bool isOwnPlayerMentioned = MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, body);
 
             if (message.messageType == ChatMessage.Type.PRIVATE)
             {
@@ -160,8 +167,15 @@ namespace DCL.Chat.Notifications
                 string peerProfilePicture = peerProfile?.face256SnapshotURL;
                 string senderName = senderProfile?.userName ?? message.sender;
 
-                var privateModel = new PrivateChatMessageNotificationModel(message.messageId,
-                    isMyMessage ? peerId : message.sender, body, message.timestamp, senderName, peerName, isMyMessage,
+                var privateModel = new PrivateChatMessageNotificationModel(
+                    message.messageId,
+                    isMyMessage ? peerId : message.sender,
+                    body,
+                    message.timestamp,
+                    senderName,
+                    peerName,
+                    isMyMessage,
+                    isOwnPlayerMentioned,
                     peerProfilePicture);
 
                 mainChatNotificationView.AddNewChatNotification(privateModel);
@@ -175,6 +189,15 @@ namespace DCL.Chat.Notifications
                 bool isMyMessage = message.sender == ownUserProfile.userId;
                 UserProfile senderProfile = isMyMessage ? ownUserProfile : userProfileBridge.Get(message.sender);
                 string senderName = senderProfile?.userName ?? message.sender;
+                bool shouldPlayMentionSfx = isOwnPlayerMentioned;
+
+                if (isOwnPlayerMentioned)
+                {
+                    AudioSettings.ChatNotificationType chatNotificationSfxType = audioSettings.Data.chatNotificationType;
+
+                    shouldPlayMentionSfx = chatNotificationSfxType is AudioSettings.ChatNotificationType.All
+                        or AudioSettings.ChatNotificationType.MentionsOnly;
+                }
 
                 if (IsProfanityFilteringEnabled())
                 {
@@ -182,9 +205,16 @@ namespace DCL.Chat.Notifications
                     body = await profanityFilter.Filter(message.body, cancellationToken);
                 }
 
-                var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
-                    body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp,
-                    isMyMessage, senderName);
+                var publicModel = new PublicChannelMessageNotificationModel(
+                    message.messageId,
+                    body,
+                    channel?.Name ?? message.recipient,
+                    channel?.ChannelId,
+                    message.timestamp,
+                    isMyMessage,
+                    senderName,
+                    isOwnPlayerMentioned,
+                    shouldPlayMentionSfx);
 
                 mainChatNotificationView.AddNewChatNotification(publicModel);
 
@@ -250,11 +280,11 @@ namespace DCL.Chat.Notifications
             if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                 topNotificationView.ShowNotification();
 
-            fadeOutCT.Cancel();
-            fadeOutCT = new CancellationTokenSource();
+            fadeOutCancellationToken.Cancel();
+            fadeOutCancellationToken = new CancellationTokenSource();
 
             if (fadeOutAfterDelay)
-                WaitThenFadeOutNotifications(fadeOutCT.Token).Forget();
+                WaitThenFadeOutNotifications(fadeOutCancellationToken.Token).Forget();
         }
 
         private void TogglePanelBackground(bool isInFocus)

@@ -1,49 +1,54 @@
-﻿using System;
+﻿using GLTFast;
+using System;
 using GLTFast.Loading;
-using UnityEngine;
-using UnityEngine.Networking;
 
 namespace DCL.GLTFast.Wrappers
 {
-    internal class GltfTextureDownloaderWrapper : ITextureDownload
+    internal class GLTFastTexturePromiseWrapper : ITextureDownload
     {
-        private readonly IWebRequestAsyncOperation asyncOp;
+        private readonly AssetPromiseKeeper_Texture texturePromiseKeeper;
+        private AssetPromise_Texture assetPromiseTexture;
 
-        public GltfTextureDownloaderWrapper(IWebRequestAsyncOperation asyncOp)
+        public GLTFastTexturePromiseWrapper(AssetPromiseKeeper_Texture texturePromiseKeeper, AssetPromise_Texture assetPromiseTexture)
         {
-            this.asyncOp = asyncOp;
-        }
+            this.texturePromiseKeeper = texturePromiseKeeper;
+            this.assetPromiseTexture = assetPromiseTexture;
 
-        public bool Success => asyncOp.isSucceeded;
-        public string Error => asyncOp.webRequest.error;
-        public byte[] Data => asyncOp.webRequest.downloadHandler.data;
-        public string Text => asyncOp.webRequest.downloadHandler.text;
-        public bool? IsBinary => true;
-
-        public bool MoveNext() =>
-            asyncOp.MoveNext();
-
-        public Texture2D Texture
-        {
-            get
-            {
-                Texture2D texture2D;
-
-                if (asyncOp.webRequest.downloadHandler is DownloadHandlerTexture downloadHandlerTexture) { texture2D = downloadHandlerTexture.texture; }
-                else { return null; }
-
-#if UNITY_WEBGL
-                texture2D.Compress(false);
-#endif
-                texture2D = TextureHelpers.ClampSize(texture2D, DataStore.i.textureConfig.gltfMaxSize.Get(), true);
-
-                return texture2D;
-            }
+            this.assetPromiseTexture.OnSuccessEvent += OnSuccess;
+            assetPromiseTexture.OnFailEvent += OnFail;
         }
 
         public void Dispose()
         {
-            asyncOp.Dispose();
+            if (assetPromiseTexture == null) return;
+
+            assetPromiseTexture.OnSuccessEvent -= OnSuccess;
+            assetPromiseTexture.OnFailEvent -= OnFail;
+
+            assetPromiseTexture = null;
+        }
+
+        public bool Success { get; private set; }
+
+        public string Error { get; private set; }
+
+        public byte[] Data => Array.Empty<byte>();
+
+        public string Text => string.Empty;
+
+        public bool? IsBinary => true;
+
+        public IDisposableTexture GetTexture(bool forceSampleLinear) =>
+            new GLTFastDisposableDisposableTexturePromise(assetPromiseTexture, texturePromiseKeeper);
+
+        private void OnSuccess(Asset_Texture assetTexture)
+        {
+            Success = true;
+        }
+
+        private void OnFail(Asset_Texture arg1, Exception arg2)
+        {
+            Error = arg2.Message;
         }
     }
 }

@@ -113,8 +113,10 @@ public class WebSocketCommunication : IKernelCommunication
         return wssUrl;
     }
 
-    private X509Certificate2 loadSelfSignedServerCertificate() =>
-        new X509Certificate2("self-signed.pfx", "");
+    private X509Certificate2 loadSelfSignedServerCertificate() {
+        byte[] rawData = Convert.FromBase64String(SelfCertificateData.data);
+        return new X509Certificate2(rawData, "cert");
+    }
 
     private void OnWebSocketLog(LogData logData, string message)
     {
@@ -211,7 +213,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["SetPlayerTalking"] = "HUDController";
         messageTypeToBridgeName["SetVoiceChatEnabledByScene"] = "HUDController";
         messageTypeToBridgeName["TriggerSelfUserExpression"] = "HUDController";
-        messageTypeToBridgeName["AirdroppingRequest"] = "HUDController";
 
         messageTypeToBridgeName["GetMousePosition"] = "BuilderController";
         messageTypeToBridgeName["SelectGizmo"] = "BuilderController";

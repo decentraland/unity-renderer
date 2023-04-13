@@ -24,6 +24,17 @@ namespace DCLPlugins.SentryPlugin
             this.playerStore.otherPlayers.OnRemoved += OtherPlayersOnChanged;
             this.playerStore.lastTeleportPosition.OnChange += LastTeleportPositionOnOnChange;
             this.realmStore.realmName.OnChange += RealmNameOnOnChange;
+            UserProfile.GetOwnUserProfile().OnUpdate += OnOnUpdate;
+        }
+
+        private void OnOnUpdate(UserProfile userProfile)
+        {
+            if (userProfile == null) return;
+            sentryHub.ConfigureScope(scope =>
+            {
+                scope.SetTag($"{prefix}wallet_address", $"{userProfile.userId}");
+                scope.SetTag($"{prefix}is_guest", $"{userProfile.isGuest}");
+            });
         }
 
         private void RealmNameOnOnChange(string current, string previous)

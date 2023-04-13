@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCLServices.MapRendererV2;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -20,7 +21,14 @@ namespace Tests
             result.Add(MainSceneFactory.CreateNavMap());
             return result;
         }
-        
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            var result = base.InitializeServiceLocator();
+            result.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
+            return result;
+        }
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
@@ -57,7 +65,7 @@ namespace Tests
             MinimapMetadata.GetMetadata().Clear();
             MinimapMetadata.GetMetadata().AddSceneInfo(sceneInfo);
 
-            navmapToastView.Populate(new Vector2Int(10, 11), sceneInfo);
+            navmapToastView.Populate(new Vector2Int(10, 11), new Vector2(10, 11), sceneInfo);
             Assert.IsTrue(navmapToastView.gameObject.activeSelf);
             navmapToastView.Close();
             Assert.IsFalse(navmapToastView.gameObject.activeSelf);
@@ -80,7 +88,7 @@ namespace Tests
             MinimapMetadata.GetMetadata().Clear();
             MinimapMetadata.GetMetadata().AddSceneInfo(sceneInfo);
 
-            navmapToastView.Populate(new Vector2Int(10, 11), sceneInfo);
+            navmapToastView.Populate(new Vector2Int(10, 11), new Vector2(10, 11), sceneInfo);
             Assert.IsTrue(navmapToastView.gameObject.activeSelf);
 
             Assert.IsTrue(navmapToastView.sceneLocationText.transform.parent.gameObject.activeInHierarchy);
@@ -110,7 +118,7 @@ namespace Tests
             MinimapMetadata.GetMetadata().Clear();
             MinimapMetadata.GetMetadata().AddSceneInfo(sceneInfo);
 
-            navmapToastView.Populate(new Vector2Int(10, 10), sceneInfo);
+            navmapToastView.Populate(new Vector2Int(10, 10), new Vector2(10, 11), sceneInfo);
             Assert.IsTrue(navmapToastView.gameObject.activeSelf);
 
             Assert.AreEqual(sceneInfo.name, navmapToastView.sceneTitleText.text);

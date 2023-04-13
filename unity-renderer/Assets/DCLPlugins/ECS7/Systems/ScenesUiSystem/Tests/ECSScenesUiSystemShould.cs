@@ -1,10 +1,11 @@
 using DCL;
 using DCL.Controllers;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
-using DCL.ECSRuntime;
-using DCL.Models;
 using DCL.ECSComponents;
 using DCL.ECSComponents.UIText;
+using DCL.ECSRuntime;
+using DCL.Models;
 using ECSSystems.ScenesUiSystem;
 using NSubstitute;
 using NUnit.Framework;
@@ -19,17 +20,21 @@ namespace Tests
         private ECS7TestUtilsScenesAndEntities sceneTestHelper;
         private UIDocument uiDocument;
         private IInternalECSComponent<InternalUiContainer> uiContainerComponent;
+        private BooleanVariable hideUiEventVariable;
 
         [SetUp]
         public void SetUp()
         {
             var factory = new ECSComponentsFactory();
             var manager = new ECSComponentsManager(factory.componentBuilders);
-            var internalComponents = new InternalECSComponents(manager, factory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            var internalComponents = new InternalECSComponents(manager, factory, executors);
             uiContainerComponent = internalComponents.uiContainerComponent;
 
-            sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager);
+            sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager, executors);
             uiDocument = Object.Instantiate(Resources.Load<UIDocument>("ScenesUI"));
+            hideUiEventVariable = CommonScriptableObjects.allUIHidden;
+            hideUiEventVariable.Set(true);
         }
 
         [TearDown]
@@ -37,6 +42,7 @@ namespace Tests
         {
             sceneTestHelper.Dispose();
             Object.Destroy(uiDocument.gameObject);
+            CommonScriptableObjects.UnloadAll();
         }
 
         [Test]
@@ -86,6 +92,7 @@ namespace Tests
                 uiContainerComponent,
                 new BaseList<IParcelScene> { scene },
                 worldState,
+                hideUiEventVariable,
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
@@ -123,11 +130,21 @@ namespace Tests
             Assert.IsNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
             // therefor scene ui should not apply
-            Assert.IsFalse(ECSScenesUiSystem.ApplySceneUI(uiContainerComponent, uiDocument, scene));
+            Assert.IsFalse(ECSScenesUiSystem.ApplySceneUI(
+                uiContainerComponent,
+                uiDocument,
+                scene,
+                new BaseVariable<bool>(true)));
 
             // but should be applied when component exist
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
-            Assert.IsTrue(ECSScenesUiSystem.ApplySceneUI(uiContainerComponent, uiDocument, scene));
+
+            Assert.IsTrue(ECSScenesUiSystem.ApplySceneUI(
+                uiContainerComponent,
+                uiDocument,
+                scene,
+                new BaseVariable<bool>(true)));
+
             Assert.AreEqual(1, uiDocument.rootVisualElement.childCount);
         }
 
@@ -135,6 +152,7 @@ namespace Tests
         public void CreateSceneRootUIContainerCorrectly()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             // root scene ui component should not exist
             Assert.IsNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -146,7 +164,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, entityId, model);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // root scene ui component should exist now
             Assert.IsNotNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -171,12 +189,14 @@ namespace Tests
             Assert.AreEqual(Align.Stretch, style.alignItems.value);
             Assert.AreEqual(Align.Auto, style.alignSelf.value);
             Assert.AreEqual(Align.Stretch, style.alignContent.value);
+            Assert.AreEqual(Position.Absolute, style.position.value);
         }
 
         [Test]
         public void ApplyParenting()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             const int childEntityId = 111;
             const int parentEntityId = 112;
@@ -187,7 +207,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // parent doesnt exist yet, so it shouldn't be any parenting
             Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
@@ -198,7 +218,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, parentEntityId, parentModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // parenting should be applied
             var parentEntityModel = uiContainerComponent.GetFor(scene, parentEntityId).model;
@@ -220,6 +240,7 @@ namespace Tests
                 uiContainerComponent,
                 new BaseList<IParcelScene> { scene },
                 worldState,
+                hideUiEventVariable,
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
@@ -247,6 +268,7 @@ namespace Tests
                 uiContainerComponent,
                 loadedScenes,
                 worldState,
+                hideUiEventVariable,
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
@@ -290,6 +312,7 @@ namespace Tests
                 uiContainerComponent,
                 loadedScenes,
                 worldState,
+                hideUiEventVariable,
                 new BaseVariable<bool>(true));
 
             // create root ui for scenes
@@ -369,6 +392,7 @@ namespace Tests
                 uiContainerComponent,
                 new BaseList<IParcelScene>(),
                 worldState,
+                hideUiEventVariable,
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
@@ -399,6 +423,7 @@ namespace Tests
                 uiContainerComponent,
                 new BaseList<IParcelScene> { nonGlobalScene },
                 worldState,
+                hideUiEventVariable,
                 new BaseVariable<bool>(true));
 
             // create root ui for global scene
@@ -517,6 +542,7 @@ namespace Tests
         public void AvoidMovingNonUiContainerElementsWhenSorting()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
             ECS7TestEntity baseParentEntity = scene.CreateEntity(110);
             ECS7TestEntity baseParentChildEntity = scene.CreateEntity(111);
@@ -560,7 +586,7 @@ namespace Tests
             });
 
             // Sort
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
             ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
 
             // Check the Label Ui Element keeps being the first child of baseParentChildEntity root element
@@ -576,6 +602,7 @@ namespace Tests
         {
             const int sceneNumber = 666;
             ECS7TestScene scene = sceneTestHelper.CreateScene(sceneNumber);
+            HashSet<IParcelScene> scenesToSortUi = new HashSet<IParcelScene>();
 
             const int entityId = 111;
 
@@ -583,7 +610,7 @@ namespace Tests
             entityModel.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 
-            HashSet<IParcelScene> scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, sceneNumber);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSortUi, uiDocument, uiContainerComponent, sceneNumber);
 
             // Since not `shouldSort` is flagged collection should be empty
             Assert.IsEmpty(scenesToSortUi);
@@ -592,33 +619,9 @@ namespace Tests
             entityModel.shouldSort = true;
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 
-            scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, sceneNumber);
+            ECSScenesUiSystem.ApplyParenting(ref scenesToSortUi, uiDocument, uiContainerComponent, sceneNumber);
 
             Assert.IsNotEmpty(scenesToSortUi);
-        }
-
-        [Test]
-        public void ShowAndHideUiDuringLoadingScreen()
-        {
-            // start with loading screen not visible
-            BaseVariable<bool> loadingHudVisibleVariable = new BaseVariable<bool>(false);
-
-            var system = new ECSScenesUiSystem(
-                uiDocument,
-                Substitute.For<IInternalECSComponent<InternalUiContainer>>(),
-                new BaseList<IParcelScene>(),
-                Substitute.For<IWorldState>(),
-                loadingHudVisibleVariable);
-
-            Assert.AreEqual(DisplayStyle.Flex, uiDocument.rootVisualElement.style.display.value);
-
-            loadingHudVisibleVariable.Set(true);
-
-            Assert.AreEqual(DisplayStyle.None, uiDocument.rootVisualElement.style.display.value);
-
-            loadingHudVisibleVariable.Set(false);
-
-            Assert.AreEqual(DisplayStyle.Flex, uiDocument.rootVisualElement.style.display.value);
         }
 
         [Test]
@@ -626,6 +629,107 @@ namespace Tests
         {
             Assert.AreEqual(0, uiDocument.panelSettings.sortingOrder);
             Assert.AreEqual(PanelScaleMode.ConstantPixelSize, uiDocument.panelSettings.scaleMode);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetAllUiVisibilityCorrectly(bool isVisible)
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            hideUiEventVariable.Set(!isVisible);
+
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
+
+            // create system
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                new BaseList<IParcelScene>(),
+                Substitute.For<IWorldState>(),
+                hideUiEventVariable,
+                new BaseVariable<bool>(true));
+
+            StyleEnum<DisplayStyle> style = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            Assert.IsTrue(style == uiDocument.rootVisualElement.style.display);
+        }
+
+        [Test]
+        public void ToggleAllUiVisibilityCorrectly()
+        {
+            hideUiEventVariable.Set(false);
+
+            // create system
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                new BaseList<IParcelScene>(),
+                Substitute.For<IWorldState>(),
+                hideUiEventVariable,
+                new BaseVariable<bool>(true));
+
+            Assert.IsTrue(DisplayStyle.Flex == uiDocument.rootVisualElement.style.display);
+
+            hideUiEventVariable.Set(true);
+            Assert.IsTrue(DisplayStyle.None == uiDocument.rootVisualElement.style.display);
+
+            hideUiEventVariable.Set(false);
+            Assert.IsTrue(DisplayStyle.Flex == uiDocument.rootVisualElement.style.display);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetSceneUiVisibilityCorrectly(bool isVisible)
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            var visibility = new BaseVariable<bool>(isVisible);
+
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
+
+            ECSScenesUiSystem.ApplySceneUI(
+                uiContainerComponent,
+                uiDocument,
+                scene,
+                visibility);
+
+            StyleEnum<DisplayStyle> style = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            Assert.IsTrue(style == uiDocument.rootVisualElement[0].style.display);
+        }
+
+        [Test]
+        public void ToggleSceneUiVisibilityCorrectly()
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+
+            IWorldState worldState = Substitute.For<IWorldState>();
+            worldState.GetCurrentSceneNumber().Returns(scene.sceneData.sceneNumber);
+
+            BaseList<IParcelScene> loadedScenes = new BaseList<IParcelScene>() { scene };
+
+            var sceneVisibilityToggle = new BaseVariable<bool>(true);
+
+            // create system
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                loadedScenes,
+                worldState,
+                hideUiEventVariable,
+                sceneVisibilityToggle);
+
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
+
+            // do system update
+            system.Update();
+
+            Assert.IsTrue(DisplayStyle.Flex == uiDocument.rootVisualElement[0].style.display);
+
+            sceneVisibilityToggle.Set(false);
+            Assert.IsTrue(DisplayStyle.None == uiDocument.rootVisualElement[0].style.display);
+
+            sceneVisibilityToggle.Set(true);
+            Assert.IsTrue(DisplayStyle.Flex == uiDocument.rootVisualElement[0].style.display);
         }
     }
 }

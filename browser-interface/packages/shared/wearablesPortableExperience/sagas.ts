@@ -83,7 +83,7 @@ function* handleWearablesSuccess(action: WearablesSuccess): any {
 
   if (wearablesToProcess.length > 0) {
     const adapter: IRealmAdapter = yield call(waitForRealm)
-    const defaultBaseUrl: string = yield call(getFetchContentUrlPrefixFromRealmAdapter, adapter)
+    const defaultBaseUrl: string = getFetchContentUrlPrefixFromRealmAdapter(adapter)
 
     for (const wearable of wearablesToProcess) {
       try {

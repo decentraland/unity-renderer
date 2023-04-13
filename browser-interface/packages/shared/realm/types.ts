@@ -1,8 +1,8 @@
 import { RpcClientModule } from '@dcl/rpc/dist/codegen'
 import { Emitter } from 'mitt'
-import { CommsServiceDefinition } from '@dcl/protocol/out-ts/decentraland/bff/comms_service.gen'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
-import { IslandChangedMessage } from '@dcl/protocol/out-ts/decentraland/kernel/comms/v3/archipelago.gen'
+import { CommsServiceDefinition } from 'shared/protocol/decentraland/bff/comms_service.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
+import { IslandChangedMessage } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
 
 export const OFFLINE_REALM = 'offline'
 
@@ -11,8 +11,14 @@ export type RealmState = {
   previousAdapter: IRealmAdapter | undefined
 }
 
+export type OnboardingState = {
+  isInOnboarding: boolean
+  onboardingRealm: string | undefined
+}
+
 export type RootRealmState = {
   realm: RealmState
+  onboarding: OnboardingState
 }
 
 export type RealmConnectionEvents = {

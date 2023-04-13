@@ -49,6 +49,16 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
+  /// <summary>
+  /// The AvatarShape component contains the information required to draw and animate avatar, acting as
+  /// a simplified GLTF container for this specific case. 
+  ///
+  /// All fields (except ID) are optional have reasonable default values. In the case of `wearables`,
+  /// each slot on the Avatar's body that is not explicitly included in the list has its own default.
+  ///
+  /// Note that, while AvatarShape can be attached to any Entity, it's only actually used in the global 
+  /// Avatar Scene. Other requirements are usually better served by GLTFs.
+  /// </summary>
   public sealed partial class PBAvatarShape : pb::IMessage<PBAvatarShape>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -108,6 +118,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "id" field.</summary>
     public const int IdFieldNumber = 1;
     private string id_ = "";
+    /// <summary>
+    /// the user ID
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Id {
@@ -121,7 +134,7 @@ namespace DCL.ECSComponents {
     public const int NameFieldNumber = 2;
     private string name_;
     /// <summary>
-    /// default = NPC
+    /// visible name (default: "NPC")
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -148,7 +161,7 @@ namespace DCL.ECSComponents {
     public const int BodyShapeFieldNumber = 3;
     private string bodyShape_;
     /// <summary>
-    /// default = urn:decentraland:off-chain:base-avatars:BaseFemale
+    /// shape URN (default "urn:decentraland:off-chain:base-avatars:BaseFemale")
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -175,7 +188,7 @@ namespace DCL.ECSComponents {
     public const int SkinColorFieldNumber = 4;
     private global::Decentraland.Common.Color3 skinColor_;
     /// <summary>
-    /// default = decentraland.common.Color3(R = 0.6f, G = 0.462f, B = 0.356f)
+    /// RGB (default [0.6, 0.462, 0.356])
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -190,7 +203,7 @@ namespace DCL.ECSComponents {
     public const int HairColorFieldNumber = 5;
     private global::Decentraland.Common.Color3 hairColor_;
     /// <summary>
-    /// default = decentraland.common.Color3(R = 0.283f, G = 0.142f, B = 0f)
+    /// RGB (default [0.283, 0.142, 0])
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -205,7 +218,7 @@ namespace DCL.ECSComponents {
     public const int EyeColorFieldNumber = 6;
     private global::Decentraland.Common.Color3 eyeColor_;
     /// <summary>
-    /// default = decentraland.common.Color3(R = 0.6f, G = 0.462f, B = 0.356f)
+    /// RGB (default [0.6, 0.462, 0.356])
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -219,6 +232,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "expression_trigger_id" field.</summary>
     public const int ExpressionTriggerIdFieldNumber = 7;
     private string expressionTriggerId_;
+    /// <summary>
+    /// current emote animations
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string ExpressionTriggerId {
@@ -244,7 +260,7 @@ namespace DCL.ECSComponents {
     public const int ExpressionTriggerTimestampFieldNumber = 8;
     private long expressionTriggerTimestamp_;
     /// <summary>
-    /// default = timestamp
+    /// start of emote animations (in the same order)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -271,6 +287,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "talking" field.</summary>
     public const int TalkingFieldNumber = 9;
     private bool talking_;
+    /// <summary>
+    /// whether to display the floating voice chat icon
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Talking {
@@ -299,14 +318,15 @@ namespace DCL.ECSComponents {
         = pb::FieldCodec.ForString(82);
     private readonly pbc::RepeatedField<string> wearables_ = new pbc::RepeatedField<string>();
     /// <summary>
-    ///*
-    /// default = ["urn:decentraland:off-chain:base-avatars:f_eyes_00", 
-    ///  "urn:decentraland:off-chain:base-avatars:f_eyebrows_00",
-    ///  "urn:decentraland:off-chain:base-avatars:f_mouth_00" 
-    ///  "urn:decentraland:off-chain:base-avatars:standard_hair", 
-    ///  "urn:decentraland:off-chain:base-avatars:f_simple_yellow_tshirt", 
-    ///  "urn:decentraland:off-chain:base-avatars:f_brown_trousers", 
-    ///  "urn:decentraland:off-chain:base-avatars:bun_shoes"]
+    /// Wearable URNs, one for each body slot.
+    ///   Default values for each unspecified slot:
+    ///     Eyes    : "urn:decentraland:off-chain:base-avatars:f_eyes_00", 
+    ///     Eyebrows: "urn:decentraland:off-chain:base-avatars:f_eyebrows_00",
+    ///     Mouth   : "urn:decentraland:off-chain:base-avatars:f_mouth_00" 
+    ///     Hair    : "urn:decentraland:off-chain:base-avatars:standard_hair", 
+    ///     Shirt   : "urn:decentraland:off-chain:base-avatars:f_simple_yellow_tshirt", 
+    ///     Trousers: "urn:decentraland:off-chain:base-avatars:f_brown_trousers", 
+    ///     Shoes   : "urn:decentraland:off-chain:base-avatars:bun_shoes"]
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -320,8 +340,7 @@ namespace DCL.ECSComponents {
         = pb::FieldCodec.ForString(90);
     private readonly pbc::RepeatedField<string> emotes_ = new pbc::RepeatedField<string>();
     /// <summary>
-    ///*
-    /// default = []
+    /// available emotes (default empty)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

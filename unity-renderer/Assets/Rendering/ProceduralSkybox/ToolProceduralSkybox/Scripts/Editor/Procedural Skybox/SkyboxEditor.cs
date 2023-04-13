@@ -36,12 +36,12 @@ namespace DCL.Skybox
         private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
 
         private CopyFunctionality copyPasteObj;
-        private SkyboxElements skyboxElements;
+        private static SkyboxElements skyboxElements;
 
-        private SkyboxConfiguration[] tConfigurations;
-        private MaterialReferenceContainer materialReferenceContainer;
+        private static SkyboxConfiguration[] tConfigurations;
+        private static MaterialReferenceContainer materialReferenceContainer;
         [MenuItem("Window/Skybox Editor")]
-        private async void Init()
+        private static async void Init()
         {
             AddressableResourceProvider addressableResourceProvider = new AddressableResourceProvider();
             materialReferenceContainer = await addressableResourceProvider.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
@@ -205,7 +205,7 @@ namespace DCL.Skybox
 
                 if (selectedConfiguration != configurations[selectedConfigurationIndex])
                 {
-                    UpdateConfigurationsList();
+                    configurations[selectedConfigurationIndex] = selectedConfiguration;
 
                     if (Application.isPlaying && SkyboxController.i != null && overridingController)
                     {

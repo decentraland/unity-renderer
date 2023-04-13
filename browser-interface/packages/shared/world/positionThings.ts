@@ -4,8 +4,9 @@ import { InstancedSpawnPoint } from '../types'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { DEBUG, playerConfigurations } from 'config'
-import { isInsideWorldLimits, Scene } from '@dcl/schemas'
+import { DEBUG, playerHeight } from 'config'
+import { isInsideWorldLimits, Scene, SpawnPoint } from '@dcl/schemas'
+import { halfParcelSize } from 'lib/decentraland/parcels/limits'
 
 export type PositionReport = {
   /** Camera position, world space */
@@ -38,7 +39,7 @@ const positionEvent = {
   position: Vector3.Zero(),
   quaternion: Quaternion.Identity,
   rotation: Vector3.Zero(),
-  playerHeight: playerConfigurations.height,
+  playerHeight: playerHeight,
   mousePosition: Vector3.Zero(),
   immediate: false, // By default the renderer lerps avatars position
   cameraQuaternion: Quaternion.Identity,
@@ -82,18 +83,16 @@ export function getInitialPositionFromUrl(): ReadOnlyVector2 | undefined {
  * The computation takes the spawning points defined in the scene document and computes the spawning point in the world based on the base parcel position.
  *
  * @param land Scene on which the player is spawning
+ * @param loadPosition Parcel position on which the player is teleporting to
  */
-export function pickWorldSpawnpoint(land: Scene): InstancedSpawnPoint {
-  const spawnpoint = pickSpawnpoint(land)
-
+export function pickWorldSpawnpoint(land: Scene, loadPosition: Vector3): InstancedSpawnPoint {
   const baseParcel = land.scene.base
   const [bx, by] = baseParcel.split(',')
-
   const basePosition = new Vector3()
-
-  const { position, cameraTarget } = spawnpoint
-
   gridToWorld(parseInt(bx, 10), parseInt(by, 10), basePosition)
+
+  const spawnpoint = pickSpawnpoint(land, loadPosition, basePosition)
+  const { position, cameraTarget } = spawnpoint
 
   return {
     position: basePosition.add(position),
@@ -101,15 +100,15 @@ export function pickWorldSpawnpoint(land: Scene): InstancedSpawnPoint {
   }
 }
 
-function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
+function pickSpawnpoint(land: Scene, targetWorldPosition: Vector3, basePosition: Vector3): InstancedSpawnPoint {
   let spawnPoints = land.spawnPoints
   if (!Array.isArray(spawnPoints) || spawnPoints.length === 0) {
     spawnPoints = [
       {
         position: {
-          x: [1, 15],
-          y: [0, 0],
-          z: [1, 15]
+          x: 1,
+          y: 0,
+          z: 1
         }
       }
     ]
@@ -124,8 +123,35 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
   // 2 - if no default spawn points => all existing spawn points
   const eligiblePoints = defaults.length === 0 ? spawnPoints : defaults
 
-  // 3 - pick randomly between spawn points
-  const { position, cameraTarget } = eligiblePoints[Math.floor(Math.random() * eligiblePoints.length)]
+  // 3 - get the closest spawn point
+  let closestIndex = 0
+  let closestDist = Number.MAX_SAFE_INTEGER
+
+  const centeredWorldPos = new Vector3(
+    targetWorldPosition.x + halfParcelSize,
+    targetWorldPosition.y,
+    targetWorldPosition.z + halfParcelSize
+  )
+
+  // we compare world positions from the target parcel and the spawn points
+  if (eligiblePoints.length > 1) {
+    const spawnDistances = eligiblePoints.map((value: SpawnPoint) => {
+      const pos = getSpawnPointWorldPosition(value).add(basePosition)
+      const dist = Vector3.Distance(centeredWorldPos, pos)
+      return dist
+    })
+
+    for (let i = 0; i < spawnDistances.length; i++) {
+      if (spawnDistances[i] < closestDist) {
+        closestDist = spawnDistances[i]
+        closestIndex = i
+      }
+    }
+  } else {
+    closestIndex = 0
+  }
+
+  const { position, cameraTarget } = eligiblePoints[closestIndex]
 
   // 4 - generate random x, y, z components when in arrays
   const finalPosition = {
@@ -136,20 +162,15 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
 
   // 5 - If the final position is outside the scene limits, we zero it
   if (!DEBUG) {
-    const sceneBaseParcelCoords = land.scene.base.split(',')
-    const sceneBaseParcelWorldPos = gridToWorld(
-      parseInt(sceneBaseParcelCoords[0], 10),
-      parseInt(sceneBaseParcelCoords[1], 10)
-    )
     const finalWorldPosition = {
-      x: sceneBaseParcelWorldPos.x + finalPosition.x,
+      x: basePosition.x + finalPosition.x,
       y: finalPosition.y,
-      z: sceneBaseParcelWorldPos.z + finalPosition.z
+      z: basePosition.z + finalPosition.z
     }
 
     if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
-      finalPosition.x = 8
-      finalPosition.z = 8
+      finalPosition.x = 1
+      finalPosition.z = 1
     }
   }
 
@@ -184,4 +205,38 @@ function computeComponentValue(x: number | number[]) {
   }
 
   return Math.random() * (max - min) + min
+}
+
+function getSpawnPointWorldPosition(spawnPoint: SpawnPoint) {
+  const x = getMidPoint(spawnPoint.position.x)
+  const y = getMidPoint(spawnPoint.position.y)
+  const z = getMidPoint(spawnPoint.position.z)
+  return new Vector3(x, y, z)
+}
+
+function getMidPoint(x: number | number[]) {
+  if (typeof x === 'number') {
+    return x
+  }
+
+  const length = x.length
+  if (length === 0) {
+    return 0
+  } else if (length < 2) {
+    return x[0]
+  } else if (length > 2) {
+    x = [x[0], x[1]]
+  }
+
+  let [min, max] = x
+
+  if (min === max) return max
+
+  if (min > max) {
+    const aux = min
+    min = max
+    max = aux
+  }
+
+  return (max - min) / 2 + min
 }

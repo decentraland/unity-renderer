@@ -1348,7 +1348,7 @@ namespace DCL.Helpers
                 newScene.InitializeDebugPlane();
 
             Environment.i.world.state.AddScene(newScene);
-            Environment.i.world.state.ForceCurrentScene(data.sceneNumber);
+            Environment.i.world.state.ForceCurrentScene(data.sceneNumber, data.id);
 
             return newScene;
         }

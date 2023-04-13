@@ -5,9 +5,9 @@ namespace DCL.SettingsCommon
 {
     public class DefaultSettingsFactory : ISettingsFactory
     {
-        const string QUALITY_SETTINGS_KEY = "Settings.Quality";
-        const string GENERAL_SETTINGS_KEY = "Settings.General";
-        const string AUDIO_SETTINGS_KEY = "Settings.Audio";
+        private const string QUALITY_SETTINGS_KEY = "Settings.Quality";
+        private const string GENERAL_SETTINGS_KEY = "Settings.General";
+        private const string AUDIO_SETTINGS_KEY = "Settings.Audio";
 
         private string graphicsQualitySettingsPresetPath = "ScriptableObjects/QualitySettingsData";
         private string audioMixerPath = "AudioMixer";
@@ -18,7 +18,7 @@ namespace DCL.SettingsCommon
             mouseSensitivity = 0.6f,
             invertYAxis = false,
 
-            scenesLoadRadius = 4,
+            scenesLoadRadius = 3,
             avatarsLODDistance = 16,
             maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
             voiceChatVolume = 1,
@@ -33,7 +33,7 @@ namespace DCL.SettingsCommon
             firstPersonCameraFOV = 60
         };
 
-        private AudioSettings defaultAudioSettings = new AudioSettings
+        private readonly AudioSettings defaultAudioSettings = new ()
         {
             masterVolume = 1f,
             voiceChatVolume = 1f,
@@ -41,7 +41,7 @@ namespace DCL.SettingsCommon
             uiSFXVolume = 1f,
             sceneSFXVolume = 1f,
             musicVolume = 1f,
-            chatSFXEnabled = true
+            chatNotificationType = AudioSettings.ChatNotificationType.All,
         };
 
         public DefaultSettingsFactory WithDefaultGeneralSettings(GeneralSettings settings)

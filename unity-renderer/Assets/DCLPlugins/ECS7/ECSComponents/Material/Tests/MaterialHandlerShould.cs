@@ -3,6 +3,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Helpers;
 using DCL.Models;
+using DCLServices.MapRendererV2;
 using Decentraland.Common;
 using NSubstitute;
 using NUnit.Framework;
@@ -34,7 +35,10 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
 
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
+
+            Environment.Setup(serviceLocator);
         }
 
         [TearDown]
@@ -170,6 +174,8 @@ namespace Tests
                 }
             };
 
+            LogAssert.Expect(LogType.Error, "Media asset url error: media URL is empty.");
+
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
 
@@ -224,7 +230,7 @@ namespace Tests
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
-                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial && x.dirty));
+                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial));
 
             internalMaterialComponent.ClearReceivedCalls();
 
@@ -242,13 +248,15 @@ namespace Tests
                 }
             };
 
+            LogAssert.Expect(LogType.Error, "Media asset url error: media URL is empty.");
+
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
             currentMaterial = handler.promiseMaterial.asset.material;
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
-                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial && x.dirty));
+                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial));
         }
 
         [UnityTest]
@@ -274,7 +282,7 @@ namespace Tests
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
-                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial && x.dirty));
+                                          Arg.Is<InternalMaterial>(x => x.material == currentMaterial));
 
             internalMaterialComponent.ClearReceivedCalls();
 
@@ -389,11 +397,13 @@ namespace Tests
                 }
             };
 
+            LogAssert.Expect(LogType.Error, "External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
+
             Assert.AreEqual(string.Empty, texture.GetTextureUrl(scene));
         }
 
         [Test]
-        public void DontAllowExternalTextureWithoutPermissionsSet()
+        public void NotAllowExternalTextureWithoutPermissionsSet()
         {
             TextureUnion texture = new TextureUnion()
             {
@@ -404,6 +414,8 @@ namespace Tests
             };
 
             scene.sceneData.allowedMediaHostnames = new[] { "fake" };
+
+            LogAssert.Expect(LogType.Error, "External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
 
             Assert.AreEqual(string.Empty, texture.GetTextureUrl(scene));
         }

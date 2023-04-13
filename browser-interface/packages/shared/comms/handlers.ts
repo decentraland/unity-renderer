@@ -1,10 +1,10 @@
-import * as proto from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import type { Avatar } from '@dcl/schemas'
 import { uuid } from 'lib/javascript/uuid'
 import { Observable } from 'mz-observable'
 import { eventChannel } from 'redux-saga'
 import { getBannedUsers } from 'shared/meta/selectors'
-import { incrementCounter } from 'shared/occurences'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { validateAvatar } from 'shared/profiles/schemaValidation'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
@@ -30,6 +30,8 @@ import {
   setupPeer as setupPeerTrackingInfo
 } from './peers'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
+import { globalObservable } from 'shared/observables'
+import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
 
 type PingRequest = {
   alias: number
@@ -91,12 +93,13 @@ export async function requestProfileFromPeers(
 
 function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConnection) {
   store.dispatch(handleRoomDisconnection(room))
+
   // when we are kicked, the explorer should re-load, or maybe go to offline~offline realm
   if (data.kicked) {
-    const url = new URL(document.location.toString())
-    url.search = ''
-    url.searchParams.set('disconnection-reason', 'logged-in-somewhere-else')
-    document.location = url.toString()
+    const error = new Error(
+      'Disconnected from realm as the user id is already taken. Please make sure you are not logged into the world through another tab'
+    )
+    BringDownClientAndReportFatalError(error, ErrorContext.COMMS_INIT)
   }
 }
 
@@ -161,6 +164,14 @@ const answeredPings = new Set<number>()
 function processChatMessage(message: Package<proto.Chat>) {
   const myProfile = getCurrentUserProfile(store.getState())
   const fromAlias: string = message.address
+  if (!fromAlias) {
+    globalObservable.emit('error', {
+      error: new Error(`Unexpected message without address: ${JSON.stringify(message)}`),
+      code: 'comms',
+      level: 'warning'
+    })
+    return
+  }
   const senderPeer = setupPeerTrackingInfo(fromAlias)
 
   senderPeer.lastUpdate = Date.now()

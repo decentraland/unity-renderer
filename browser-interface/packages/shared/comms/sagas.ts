@@ -1,6 +1,6 @@
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { IPFSv2 } from '@dcl/schemas'
 import type { Avatar, Snapshots } from '@dcl/schemas'
 import { genericAvatarSnapshots } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
@@ -8,8 +8,8 @@ import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
 import { deepEqual } from 'lib/javascript/deepEqual'
 import { isURL } from 'lib/javascript/isURL'
 import type { EventChannel } from 'redux-saga'
-import { BEFORE_UNLOAD } from 'shared/actions'
-import { trackEvent } from 'shared/analytics'
+import { BEFORE_UNLOAD } from 'shared/meta/actions'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { notifyStatusThroughChat } from 'shared/chat'
 import { setCatalystCandidates } from 'shared/dao/actions'
 import { selectAndReconnectRealm } from 'shared/dao/sagas'
@@ -17,7 +17,7 @@ import { getCatalystCandidates } from 'shared/dao/selectors'
 import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
-import { incrementCounter } from 'shared/occurences'
+import { incrementCounter } from 'shared/analytics/occurences'
 import type { SendProfileToRenderer } from 'shared/profiles/actions'
 import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared/profiles/actions'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
@@ -51,6 +51,8 @@ import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
 import { getConnectedPeerCount, processAvatarVisibility } from './peers'
 import { getCommsRoom, reconnectionState } from './selectors'
+import { RootState } from 'shared/store/rootTypes'
+import { now } from 'lib/javascript/now'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -203,6 +205,12 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     yield apply(adapter, adapter.connect, [])
     yield put(setRoomConnection(adapter))
   } catch (error: any) {
+    commsLogger.error(error)
+    trackEvent('error', {
+      context: 'handleConnectToComms',
+      message: error.message,
+      stack: error.stack
+    })
     notifyStatusThroughChat('Error connecting to comms. Will try another realm')
 
     const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
@@ -334,20 +342,22 @@ function* respondCommsProfileRequests() {
     // wait for the next event of the channel
     yield take(chan)
 
-    const context = (yield select(getCommsRoom)) as RoomConnection | undefined
-    const profile: Avatar | null = yield select(getCurrentUserProfile)
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+    const { context, profile, identity } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+      typeof getInformationForCommsProfileRequest
+    >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
-    const identity: ExplorerIdentity | null = yield select(getCurrentIdentity)
 
     if (profile && context) {
       profile.hasConnectedWeb3 = identity?.hasConnectedWeb3 || profile.hasConnectedWeb3
 
       // naive throttling
-      const now = Date.now()
-      const elapsed = now - lastMessage
-      if (elapsed < TIME_BETWEEN_PROFILE_RESPONSES) continue
-      lastMessage = now
+      const currentTimestamp = now()
+      const elapsed = currentTimestamp - lastMessage
+      if (elapsed < TIME_BETWEEN_PROFILE_RESPONSES) {
+        continue
+      }
+      lastMessage = currentTimestamp
 
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(stripSnapshots(profile)),
@@ -355,6 +365,14 @@ function* respondCommsProfileRequests() {
       }
       yield apply(context, context.sendProfileResponse, [response])
     }
+  }
+}
+
+function getInformationForCommsProfileRequest(state: RootState) {
+  return {
+    context: getCommsRoom(state),
+    profile: getCurrentUserProfile(state),
+    identity: getCurrentIdentity(state)
   }
 }
 
@@ -387,7 +405,7 @@ function stripSnapshots(profile: Avatar): Avatar {
  */
 function* handleCommsReconnectionInterval() {
   while (true) {
-    const reason: any = yield race({
+    const reason = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
       USER_AUTHENTICATED: take(USER_AUTHENTICATED),
@@ -486,6 +504,7 @@ export async function disconnectRoom(context: RoomConnection) {
 function* handleRoomDisconnectionSaga(action: HandleRoomDisconnection) {
   const room: RoomConnection = yield select(getCommsRoom)
 
+  // and only acts if the disconnected room is the current room
   if (room && room === action.payload.context) {
     // this also remove the context
     yield put(setRoomConnection(undefined))
