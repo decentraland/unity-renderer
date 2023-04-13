@@ -3,6 +3,7 @@ using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
+using DCLServices.MapRendererV2;
 using Decentraland.Common;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
@@ -51,6 +52,7 @@ namespace Tests
             testCancellationSource = new CancellationTokenSource();
 
             var serviceLocator = ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
             Environment.Setup(serviceLocator);
         }
 

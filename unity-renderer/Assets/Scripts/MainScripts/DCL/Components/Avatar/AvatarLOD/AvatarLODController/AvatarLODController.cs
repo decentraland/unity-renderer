@@ -19,44 +19,31 @@ namespace DCL
 
     public class AvatarLODController : IAvatarLODController
     {
-        private string VISIBILITY_CONSTRAIN = "behind_camera_or_out_of_limits";
+        private const string VISIBILITY_CONSTRAIN = "behind_camera_or_out_of_limits";
         public Player player { get; }
 
         public AvatarLODController(Player player)
         {
             this.player = player;
-            if (player?.avatar == null)
-                return;
-            player.avatar.SetLODLevel(0);
+            player?.avatar?.SetLODLevel(0);
         }
 
-        public void SetLOD0()
+        public void SetLOD0() =>
+            SetLODLevel(0, setPointerColliderEnabled: true);
+
+        public void SetLOD1() =>
+            SetLODLevel(1, setPointerColliderEnabled: true);
+
+        public void SetLOD2() =>
+            SetLODLevel(2, setPointerColliderEnabled: false);
+
+        private void SetLODLevel(int level, bool setPointerColliderEnabled)
         {
             if (player?.avatar == null)
                 return;
 
-            player.onPointerDownCollider.SetColliderEnabled(true);
-            player.avatar.SetLODLevel(0);
-            player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
-        }
-
-        public void SetLOD1()
-        {
-            if (player?.avatar == null)
-                return;
-
-            player.onPointerDownCollider.SetColliderEnabled(true);
-            player.avatar.SetLODLevel(1);
-            player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
-        }
-
-        public void SetLOD2()
-        {
-            if (player?.avatar == null)
-                return;
-
-            player.onPointerDownCollider.SetColliderEnabled(false);
-            player.avatar.SetLODLevel(2);
+            player.onPointerDownCollider.SetColliderEnabled(setPointerColliderEnabled);
+            player.avatar.SetLODLevel(level);
             player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
         }
 
@@ -69,13 +56,8 @@ namespace DCL
             player.onPointerDownCollider.SetColliderEnabled(false);
         }
 
-        public void SetAnimationThrottling(int framesBetweenUpdates)
-        {
-            if (player?.avatar == null)
-                return;
-            
-            player.avatar.SetAnimationThrottling(framesBetweenUpdates);
-        }
+        public void SetAnimationThrottling(int framesBetweenUpdates) =>
+            player?.avatar?.SetAnimationThrottling(framesBetweenUpdates);
 
         public void SetNameVisible(bool visible)
         {
@@ -84,13 +66,8 @@ namespace DCL
             else
                 player?.playerName.Hide();
         }
-        public void UpdateImpostorTint(float distanceToMainPlayer)
-        {
-            if (player?.avatar == null)
-                return;
-            
-            player.avatar.SetImpostorTint(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer));
-        }
+        public void UpdateImpostorTint(float distanceToMainPlayer) =>
+            player?.avatar?.SetImpostorTint(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer));
 
         public void Dispose() { }
     }

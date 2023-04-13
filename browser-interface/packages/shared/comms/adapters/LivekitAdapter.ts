@@ -49,6 +49,10 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         this.config.logger.log(this.room.name, 'connection state changed', state)
       })
       .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
+        if (this.disposed) {
+          return
+        }
+
         this.config.logger.log(this.room.name, 'disconnected from room', reason, {
           liveKitParticipantSid: this.room.localParticipant.sid,
           liveKitRoomSid: this.room.sid

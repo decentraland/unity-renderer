@@ -1,5 +1,6 @@
 using System;
 using DCL;
+using DCLServices.MapRendererV2.ConsumerUtils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,7 +27,18 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
     [SerializeField] internal ToggleComponentView setHomeScene;
 
-    [Header("Map Renderer")] public RectTransform mapRenderContainer;
+    [Header("Map Renderer")]
+    public RectTransform mapRenderContainer;
+
+    [field: SerializeField]
+    internal RawImage mapRendererTargetImage { get; private set; }
+
+    [field: SerializeField]
+    internal PixelPerfectMapRendererTextureProvider pixelPerfectMapRendererTextureProvider { get; private set; }
+
+    [field: SerializeField]
+    internal int mapRendererVisibleParcels { get; private set; }
+
     public RectTransform mapViewport;
 
     public static System.Action<MinimapHUDModel> OnUpdateData;
@@ -54,14 +66,15 @@ public class MinimapHUDView : MonoBehaviour
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += OnMouseLocked;
 
-        var renderer = MapRenderer.i;
+        /*var renderer = MapRenderer.i;
 
         if (renderer != null)
         {
             renderer.atlas.viewport = mapViewport;
             renderer.transform.SetParent(mapRenderContainer);
             renderer.transform.SetAsFirstSibling();
-        }
+        }*/
+
         usersAroundListHudButton.gameObject.SetActive(false);
     }
 
@@ -76,7 +89,7 @@ public class MinimapHUDView : MonoBehaviour
         controller.SetHomeScene(isOn);
     }
 
-    internal void OnMouseLocked() 
+    internal void OnMouseLocked()
     {
         sceneOptionsPanel.SetActive(false);
     }

@@ -25,6 +25,11 @@ jobs:
             - [Open custom protocol](https://renderer-artifacts.decentraland.org/desktop/index.html?dcl://DESKTOP-BRANCH=${{ github.head_ref }})
             - [Open custom protocol with Developer Mode](https://renderer-artifacts.decentraland.org/desktop/index.html?dcl://DESKTOP-BRANCH=${{ github.head_ref }}&DESKTOP-DEVELOPER-MODE)
 
+            ### SDK 6/7:
+            - [Open SDK7 scenes playground](https://playground.decentraland.org/?explorer-branch=${{ github.head_ref }})
+            - [Open SDK7 scenes in preview](https://sdk-test-scenes.decentraland.zone/?position=73,-8&realm=LocalPreview&explorer-branch=${{ github.head_ref }})
+            - [Open SDK6 scenes in preview](https://sdk-test-scenes.decentraland.zone/?position=-1,27&realm=LocalPreview&explorer-branch=${{ github.head_ref }})
+
             ### More
             - Code coverage report: [https://renderer-artifacts.decentraland.org/branch-coverage/${{ github.head_ref }}](https://renderer-artifacts.decentraland.org/branch-coverage/${{ github.head_ref }})
             - Benchmark report: [https://renderer-artifacts.decentraland.org/branch-benchmark/${{ github.head_ref }}/index.html](https://renderer-artifacts.decentraland.org/branch-benchmark/${{ github.head_ref }}/index.html)

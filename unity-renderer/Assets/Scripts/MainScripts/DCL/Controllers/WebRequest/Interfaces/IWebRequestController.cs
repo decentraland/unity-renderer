@@ -72,6 +72,28 @@ namespace DCL
             bool isSigned = false);
 
         /// <summary>
+        /// Make a delete request and download data from a url.
+        /// </summary>
+        /// <param name="url">Url where to make the request.</param>
+        /// <param name="downloadHandler">Downloader handler to be used by the GET request.</param>
+        /// <param name="onSuccess">This action will be executed if the request successfully finishes and it includes the request with the data downloaded.</param>
+        /// <param name="onFail">This action will be executed if the request fails.</param>
+        /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
+        /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
+        /// <param name="cancellationToken">Token capable of cancelling a request, if so, the result will be "Aborted"</param>
+        /// <param name="headers">This will set the headers for the request</param>
+        UniTask<UnityWebRequest> DeleteAsync(
+            string url,
+            DownloadHandler downloadHandler = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            CancellationToken cancellationToken = default,
+            Dictionary<string, string> headers = null,
+            bool isSigned = false);
+
+        /// <summary>
         /// Download an Asset Bundle from a url.
         /// </summary>
         /// <param name="url">Url where to make the request.</param>

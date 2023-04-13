@@ -138,8 +138,8 @@ namespace DCL.Social.Chat
                 subType = ChatEntryModel.SubType.RECEIVED,
             };
 
-            view.AddEntry(newMsg);
-            view.AddEntry(oldMsg);
+            view.SetEntry(newMsg);
+            view.SetEntry(oldMsg);
 
             yield return null;
 
@@ -191,9 +191,9 @@ namespace DCL.Social.Chat
                 subType = ChatEntryModel.SubType.SENT,
             };
 
-            view.AddEntry(msg1);
-            view.AddEntry(msg2);
-            view.AddEntry(msg3);
+            view.SetEntry(msg1);
+            view.SetEntry(msg2);
+            view.SetEntry(msg3);
 
             yield return null;
 

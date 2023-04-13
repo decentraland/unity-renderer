@@ -14,7 +14,7 @@ public class DateSeparatorEntry : ChatEntry
     private DateTime timestamp;
     private ChatEntryModel chatEntryModel;
 
-    public override string DateString =>
+    public override string HoverString =>
         GetDateFormat(GetDateTimeFromUnixTimestampMilliseconds(Model.timestamp));
     public override event Action<ChatEntry> OnUserNameClicked;
     public override event Action<ChatEntry> OnTriggerHover;

@@ -1,0 +1,4 @@
+{
+	"name": "TeleportHUDPlugin",
+	"references":[ "GUID:c4447d6e4315b45618cad98697304322", "GUID:28f74c468a54948bfa9f625c5d428f56", "GUID:0e967802b778d404eac1ca5ea340e290", "GUID:7fe146b43e76fe745aeaf2020feb54b7" ]
+}
