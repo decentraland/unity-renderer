@@ -70,7 +70,8 @@ export async function fetchCatalystStatus(
     result.bff &&
     result.content &&
     result.lambdas &&
-    result.acceptingUsers
+    result.acceptingUsers &&
+    !result.content.publicUrl.includes('peer.decentral.io')
   ) {
     const { comms, configurations, bff } = result
 
