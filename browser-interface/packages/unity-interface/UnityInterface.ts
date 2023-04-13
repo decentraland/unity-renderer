@@ -338,6 +338,9 @@ export class UnityInterface implements IUnityInterface {
       const chunk = info.slice(i, i + MINIMAP_CHUNK_SIZE)
       this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
     }
+
+    const WORKER_TIMEOUT = 60_000
+    setTimeout(() => this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', ""), WORKER_TIMEOUT)
   }
 
   public UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[]) {
