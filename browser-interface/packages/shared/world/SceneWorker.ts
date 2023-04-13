@@ -60,9 +60,9 @@ export enum SceneWorkerReadyState {
 const sdk6RuntimeRaw =
   process.env.NODE_ENV === 'production'
     ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@dcl/scene-runtime/dist/sdk6-webworker.js').default
+    require('@dcl/scene-runtime/dist/sdk6-webworker.js').default
     : // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@dcl/scene-runtime/dist/sdk6-webworker.dev.js').default
+    require('@dcl/scene-runtime/dist/sdk6-webworker.dev.js').default
 
 const sdk6RuntimeBLOB = new Blob([sdk6RuntimeRaw])
 const sdk6RuntimeUrl = URL.createObjectURL(sdk6RuntimeBLOB)
@@ -70,9 +70,9 @@ const sdk6RuntimeUrl = URL.createObjectURL(sdk6RuntimeBLOB)
 const sdk7RuntimeRaw =
   process.env.NODE_ENV === 'production'
     ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@dcl/scene-runtime/dist/sdk7-webworker.js').default
+    require('@dcl/scene-runtime/dist/sdk7-webworker.js').default
     : // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@dcl/scene-runtime/dist/sdk7-webworker.dev.js').default
+    require('@dcl/scene-runtime/dist/sdk7-webworker.dev.js').default
 
 const sdk7RuntimeBLOB = new Blob([sdk7RuntimeRaw])
 const sdk7RuntimeUrl = URL.createObjectURL(sdk7RuntimeBLOB)
@@ -130,8 +130,8 @@ export class SceneWorker {
   static async createSceneWorker(loadableScene: Readonly<LoadableScene>, rpcClient: RpcClient, transportBuilder: () => (Transport | undefined)) {
     ++globalSceneNumberCounter
     const sceneNumber = globalSceneNumberCounter
-    const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)  
-     const worker = new SceneWorker(loadableScene, sceneNumber, scenePort, transportBuilder)
+    const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
+    const worker = new SceneWorker(loadableScene, sceneNumber, scenePort, transportBuilder)
     await worker.attachTransport()
     return worker
   }
