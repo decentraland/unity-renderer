@@ -84,6 +84,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         view.OnAfterShowAnimation += OnAfterShowAnimation;
+        DataStore.i.common.isWorld.OnChange += OnWorldChange;
 
         DataStore.i.exploreV2.topMenuTooltipReference.Set(topMenuTooltipReference);
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
@@ -122,6 +123,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     public void Dispose()
     {
         realmController.Dispose();
+
+        DataStore.i.common.isWorld.OnChange -= OnWorldChange;
 
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
@@ -302,5 +305,16 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         SetVisibility(false);
         exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+    }
+
+    private void OnWorldChange(bool isWorld, bool _)
+    {
+        if (view.IsSectionActive(ExploreSection.Map))
+        {
+            view.GoToSection(ExploreSection.Explore);
+            isOpen.Set(false);
+        }
+
+        view.SetSectionActive(ExploreSection.Map, !isWorld);
     }
 }
