@@ -23,7 +23,7 @@ namespace DCL.Backpack
         private readonly IEmotesCatalogService emotesCatalogService;
         private IEmotesCustomizationComponentController emotesCustomizationComponentController;
         private bool isEmotesControllerInitialized;
-        private CancellationTokenSource loadEmotesCTS = new ();
+        private CancellationTokenSource loadEmotesCts = new ();
         private readonly BackpackEditorHUDModel model = new ();
         private bool avatarIsDirty;
         private float prevRenderScale = 1.0f;
@@ -51,8 +51,8 @@ namespace DCL.Backpack
 
         public void Dispose()
         {
-            loadEmotesCTS.SafeCancelAndDispose();
-            loadEmotesCTS = null;
+            loadEmotesCts.SafeCancelAndDispose();
+            loadEmotesCts = null;
 
             ownUserProfile.OnUpdate -= LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange -= SetVisibility;
@@ -120,12 +120,12 @@ namespace DCL.Backpack
             {
                 try
                 {
-                    EmbeddedEmotesSO embeddedEmotesSO = await emotesCatalogService.GetEmbeddedEmotes();
-                    var baseEmotes = embeddedEmotesSO.emotes;
+                    EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.GetEmbeddedEmotes();
+                    var baseEmotes = embeddedEmotesSo.emotes;
                     var ownedEmotes = await emotesCatalogService.RequestOwnedEmotesAsync(ownUserProfile.userId, ct);
-                    var allEmotes = ownedEmotes == null ? baseEmotes : baseEmotes.Concat(ownedEmotes);
+                    var allEmotes = ownedEmotes == null ? baseEmotes : baseEmotes.Concat(ownedEmotes).ToArray();
                     dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
-                    emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
+                    emotesCustomizationComponentController.SetEmotes(allEmotes);
 
                 }
                 catch (OperationCanceledException) { }
@@ -135,8 +135,8 @@ namespace DCL.Backpack
                 }
             }
 
-            loadEmotesCTS = loadEmotesCTS.SafeRestart();
-            LoadEmotesAsync(loadEmotesCTS.Token).Forget();
+            loadEmotesCts = loadEmotesCts.SafeRestart();
+            LoadEmotesAsync(loadEmotesCts.Token).Forget();
         }
 
         private void ExploreV2IsOpenChanged(bool current, bool previous)
@@ -184,7 +184,7 @@ namespace DCL.Backpack
                     Debug.LogError($"Couldn't find wearable with ID {userProfile.avatar.wearables[i]}");
                     continue;
                 }
-                
+
                 model.wearables.Add(wearable);
             }
         }
@@ -248,8 +248,11 @@ namespace DCL.Backpack
 
         private void SetRenderScale(bool visible)
         {
-            // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
+            // NOTE(Brian): SSAO doesn't work correctly with the offset avatar preview if the renderScale != 1.0
             var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+
+            if (asset == null)
+                return;
 
             if (visible)
             {
