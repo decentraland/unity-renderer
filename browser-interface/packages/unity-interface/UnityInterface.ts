@@ -339,16 +339,9 @@ export class UnityInterface implements IUnityInterface {
   {
     const adapter = await ensureRealmAdapter()
     const isWorld = isWorldLoaderActive(adapter)
+    const payload = isWorld? '' : JSON.stringify(info);
 
-    if (!isWorld)
-    {
-      this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(info))
-    }
-    else
-    {
-      const WORKER_TIMEOUT = 60_000
-      setTimeout(() => this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', ""), WORKER_TIMEOUT)
-    }
+    this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', payload)
   }
 
   public SetTutorialEnabled(tutorialConfig: TutorialInitializationMessage) {
