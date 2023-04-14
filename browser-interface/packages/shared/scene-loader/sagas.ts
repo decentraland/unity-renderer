@@ -339,7 +339,7 @@ export async function fetchScenesByLocation(positions: string[]): Promise<Loadab
 }
 
 export async function fetchActiveSceneInWorldContext(position: string[]): Promise<Array<Entity>> {
-  const response = await fetch(select(getContentService) + '/entities/active', {
+  const response = await fetch(getContentService(store.getState()) + '/entities/active', {
     method: 'post',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ pointers: position })

@@ -132,7 +132,7 @@ function* reportScenesWorldContext(action: ReportScenesWorldContext) {
         name: postProcessSceneName(sceneName),
         owner: getOwnerNameFromJsonData(metadata),
         description: getSceneDescriptionFromJsonData(metadata),
-        previewImageUrl: getThumbnailUrlFromJsonDataAndContent(metadata, scene.content, select(getContentService) + '/contents'),
+        previewImageUrl: getThumbnailUrlFromJsonDataAndContent(metadata, scene.content, getContentService(store.getState()) + '/contents'),
         // type is not used by renderer
         type: undefined as any,
         parcels,
