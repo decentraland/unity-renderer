@@ -9,7 +9,7 @@ import { Vector2 } from 'lib/math/Vector2'
 import { waitFor } from 'lib/redux'
 import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { getPOIService } from 'shared/dao/selectors'
+import {getContentService, getPOIService} from 'shared/dao/selectors'
 import { SCENE_LOAD } from 'shared/loading/actions'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
@@ -126,11 +126,13 @@ function* reportScenesWorldContext(action: ReportScenesWorldContext) {
         parcels.push(xy)
       })
 
+      debugger
+
       minimapSceneInfoResult.push({
         name: postProcessSceneName(sceneName),
         owner: getOwnerNameFromJsonData(metadata),
         description: getSceneDescriptionFromJsonData(metadata),
-        previewImageUrl: getThumbnailUrlFromJsonDataAndContent(metadata, undefined, ''),
+        previewImageUrl: getThumbnailUrlFromJsonDataAndContent(metadata, scene.content, select(getContentService) + '/contents'),
         // type is not used by renderer
         type: undefined as any,
         parcels,
