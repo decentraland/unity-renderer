@@ -21,6 +21,7 @@ public class TeleportPromptHUDController : IHUD
 
     private readonly DataStore dataStore;
     private readonly IMinimapApiBridge minimapApiBridge;
+    private bool isVisible;
 
     TeleportData teleportData;
     private CancellationTokenSource cancellationToken = new ();
@@ -32,7 +33,7 @@ public class TeleportPromptHUDController : IHUD
 
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("TeleportPromptHUD")).GetComponent<TeleportPromptHUDView>();
         view.name = "_TeleportPromptHUD";
-        view.OnCloseEvent += view.SetOutAnimation;
+        view.OnCloseEvent += CloseView;
         view.OnTeleportEvent += OnTeleportPressed;
 
         dataStore.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
@@ -40,9 +41,11 @@ public class TeleportPromptHUDController : IHUD
         dataStore.world.requestTeleportData.OnChange += ReceivedRequestTeleportData;
     }
 
+
+
     private void ReceivedRequestTeleportData(string current, string previous)
     {
-        if (string.IsNullOrEmpty(current))
+        if (string.IsNullOrEmpty(current) || isVisible)
             return;
 
         RequestTeleport(current);
@@ -88,6 +91,9 @@ public class TeleportPromptHUDController : IHUD
         SetCoordinatesAsync(current, cancellationToken.Token).Forget();
     }
 
+    private void CloseView() =>
+        SetVisibility(false);
+
     private void ChangeVisibility(bool current, bool previous) =>
         SetVisibility(current);
 
@@ -100,10 +106,11 @@ public class TeleportPromptHUDController : IHUD
         }
         else
         {
-            dataStore.HUDs.gotoPanelVisible.Set(false, false);
             view.SetOutAnimation();
             view.Reset();
+            AudioScriptableObjects.dialogClose.Play(true);
         }
+        isVisible = visible;
     }
 
     public void RequestTeleport(string teleportDataJson)
@@ -113,7 +120,7 @@ public class TeleportPromptHUDController : IHUD
         view.Reset();
         teleportData = Utils.SafeFromJson<TeleportData>(teleportDataJson);
 
-        dataStore.HUDs.gotoPanelVisible.Set(true, true);
+        SetVisibility(true);
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_MAGIC:
@@ -135,6 +142,9 @@ public class TeleportPromptHUDController : IHUD
 
     public void Dispose()
     {
+        view.OnCloseEvent -= CloseView;
+        view.OnTeleportEvent -= OnTeleportPressed;
+
         if (view)
         {
             UnityEngine.Object.Destroy(view.gameObject);
@@ -170,7 +180,7 @@ public class TeleportPromptHUDController : IHUD
 
     private void OnTeleportPressed()
     {
-        ChangeVisibility(false, false);
+        CloseView();
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_CROWD:
