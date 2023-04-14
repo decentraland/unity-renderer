@@ -1,5 +1,7 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 
@@ -21,6 +23,7 @@ namespace DCL.Backpack
         private Transform thisTransform;
         private bool isAvatarDirty;
         private AvatarModel avatarModelToUpdate;
+        private CancellationTokenSource updateAvatarCts = new ();
 
         public override void Awake()
         {
@@ -42,6 +45,9 @@ namespace DCL.Backpack
         public override void Dispose()
         {
             base.Dispose();
+
+            updateAvatarCts.SafeCancelAndDispose();
+            updateAvatarCts = null;
 
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
@@ -132,16 +138,17 @@ namespace DCL.Backpack
 
         private void UpdateAvatarModelWhenNeeded()
         {
-            async UniTaskVoid UpdateAvatarAsync()
+            async UniTaskVoid UpdateAvatarAsync(CancellationToken ct)
             {
-                await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate);
+                await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate, ct);
                 backpackPreviewPanel.SetLoadingActive(false);
             }
 
             if (!isAvatarDirty)
                 return;
 
-            UpdateAvatarAsync().Forget();
+            updateAvatarCts = updateAvatarCts.SafeRestart();
+            UpdateAvatarAsync(updateAvatarCts.Token).Forget();
             isAvatarDirty = false;
         }
     }

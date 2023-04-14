@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,8 +43,8 @@ namespace DCL.Backpack
         public void ResetPreviewEmote() =>
             PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
 
-        public async UniTask TryUpdatePreviewModelAsync(AvatarModel avatarModelToUpdate) =>
-            await characterPreviewController.TryUpdateModelAsync(avatarModelToUpdate);
+        public async UniTask TryUpdatePreviewModelAsync(AvatarModel avatarModelToUpdate, CancellationToken ct) =>
+            await characterPreviewController.TryUpdateModelAsync(avatarModelToUpdate, ct);
 
         public void AnchorPreviewPanel(bool anchorRight)
         {
