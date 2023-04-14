@@ -21,6 +21,7 @@ public class TeleportPromptHUDController : IHUD
 
     private readonly DataStore dataStore;
     private readonly IMinimapApiBridge minimapApiBridge;
+    private bool isVisible;
 
     TeleportData teleportData;
     private CancellationTokenSource cancellationToken = new ();
@@ -48,7 +49,7 @@ public class TeleportPromptHUDController : IHUD
 
     private void ReceivedRequestTeleportData(string current, string previous)
     {
-        if (string.IsNullOrEmpty(current))
+        if (string.IsNullOrEmpty(current) || isVisible)
             return;
 
         RequestTeleport(current);
@@ -96,6 +97,9 @@ public class TeleportPromptHUDController : IHUD
         SetCoordinatesAsync(current, cancellationToken.Token).Forget();
     }
 
+    private void CloseView() =>
+        SetVisibility(false);
+
     private void ChangeVisibility(bool current, bool previous) =>
         SetVisibility(current);
 
@@ -113,7 +117,9 @@ public class TeleportPromptHUDController : IHUD
             teleportData = null;
             view.SetOutAnimation();
             view.Reset();
+            AudioScriptableObjects.dialogClose.Play(true);
         }
+        isVisible = visible;
     }
 
     public void RequestTeleport(string teleportDataJson)
@@ -140,6 +146,9 @@ public class TeleportPromptHUDController : IHUD
 
     public void Dispose()
     {
+        view.OnCloseEvent -= CloseView;
+        view.OnTeleportEvent -= OnTeleportPressed;
+
         if (view)
         {
             view.OnCloseEvent -= ClosePanel;
@@ -149,8 +158,6 @@ public class TeleportPromptHUDController : IHUD
 
         dataStore.HUDs.gotoPanelVisible.OnChange -= ChangeVisibility;
         dataStore.HUDs.gotoPanelCoordinates.OnChange -= SetCoordinates;
-
-
     }
 
     private void SetSceneEvent()
@@ -183,6 +190,7 @@ public class TeleportPromptHUDController : IHUD
 
     private void OnTeleportPressed()
     {
+        CloseView();
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_CROWD:
@@ -195,7 +203,6 @@ public class TeleportPromptHUDController : IHUD
                 DCL.Environment.i.world.teleportController.Teleport(teleportData.GetCoordinates().x, teleportData.GetCoordinates().y);
                 break;
         }
-        ChangeVisibility(false, false);
     }
 
     [Serializable]
