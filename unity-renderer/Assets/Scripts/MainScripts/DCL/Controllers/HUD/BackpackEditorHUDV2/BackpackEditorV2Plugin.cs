@@ -24,6 +24,7 @@ namespace DCL.Backpack
             hudController = new BackpackEditorHUDController(
                 view,
                 DataStore.i,
+                CommonScriptableObjects.rendererState,
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 backpackEmotesSectionController);

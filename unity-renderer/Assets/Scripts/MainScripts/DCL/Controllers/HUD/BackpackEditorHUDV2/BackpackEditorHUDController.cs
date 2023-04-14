@@ -11,6 +11,7 @@ namespace DCL.Backpack
 
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
+        private readonly RendererState rendererState;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly BackpackEmotesSectionController backpackEmotesSectionController;
@@ -21,12 +22,14 @@ namespace DCL.Backpack
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
             DataStore dataStore,
+            RendererState rendererState,
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
             BackpackEmotesSectionController backpackEmotesSectionController)
         {
             this.view = view;
             this.dataStore = dataStore;
+            this.rendererState = rendererState;
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
             this.backpackEmotesSectionController = backpackEmotesSectionController;
@@ -88,7 +91,7 @@ namespace DCL.Backpack
 
         private void LoadUserProfile(UserProfile userProfile, bool forceLoading)
         {
-            bool avatarEditorNotVisible = CommonScriptableObjects.rendererState.Get() && !view.isVisible;
+            bool avatarEditorNotVisible = rendererState.Get() && !view.isVisible;
             bool isPlaying = !Application.isBatchMode;
 
             if (!forceLoading && isPlaying && avatarEditorNotVisible) return;
