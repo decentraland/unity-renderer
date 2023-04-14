@@ -11,8 +11,6 @@ using Environment = DCL.Environment;
 [Serializable]
 public class PlayerName : MonoBehaviour, IPlayerName
 {
-    internal const int DEFAULT_CANVAS_SORTING_ORDER = 0;
-    internal const int FORCE_CANVAS_SORTING_ORDER = 40;
     internal static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
     internal const float MINIMUM_ALPHA_TO_SHOW = 1f / 32f;
     internal const float ALPHA_TRANSITION_STEP_PER_SECOND = 1f / 0.25f;
@@ -80,7 +78,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
     private void Awake()
     {
         backgroundOriginalColor = background.color;
-        canvas.sortingOrder = DEFAULT_CANVAS_SORTING_ORDER;
         profanityFilterEnabled = DataStore.i.settings.profanityChatFilteringEnabled;
         namesVisible.OnChange += OnNamesVisibleChanged;
         namesOpacity.OnChange += OnNamesOpacityChanged;
@@ -136,7 +133,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
     {
         canvas.enabled = forceShow || namesVisible.Get();
 
-        //canvas.sortingOrder = forceShow ? FORCE_CANVAS_SORTING_ORDER : DEFAULT_CANVAS_SORTING_ORDER;
         background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, forceShow ? 1 : namesOpacity.Get());
         background.material = forceShow ? bgOnTopMaterial : null;
         nameText.fontSharedMaterial = forceShow ? nameOnTopMaterial : nameMaterial;
