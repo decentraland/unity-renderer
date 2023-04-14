@@ -14,7 +14,7 @@ import { RealmConnectionEvents, BffServices, IRealmAdapter } from '../types'
 import mitt from 'mitt'
 import { legacyServices } from '../local-services/legacy'
 import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
-import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
+import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 
 export type TopicData = {
   peerId: string
@@ -43,10 +43,10 @@ async function authenticatePort(port: RpcClientPort, identity: ExplorerIdentity)
   auth
     .getDisconnectionMessage({})
     .then(() => {
-      const error = new Error(
-        'Disconnected from realm as the user id is already taken. Please make sure you are not logged into the world through another tab'
+      BringDownClientAndShowError(
+        'Disconnected from realm as the user id is already taken.' +
+        'Please make sure you are not logged into the world through another tab'
       )
-      BringDownClientAndReportFatalError(error, ErrorContext.COMMS_INIT)
     })
     .catch(console.error)
   return authResponse.peerId
