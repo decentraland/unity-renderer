@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -56,7 +57,7 @@ namespace DCL.Components
             Bump
         }
 
-        public Material material { get; set; }
+        public Material material { get; private set; }
         private string currentMaterialResourcesFilename;
 
         const string MATERIAL_RESOURCES_PATH = "Materials/";
@@ -64,7 +65,13 @@ namespace DCL.Components
 
         private readonly DCLTexture[] textures = new DCLTexture[4];
 
-        private List<Coroutine> textureFetchCoroutines = new List<Coroutine>();
+        private readonly DCLTexture.Fetcher[] dclTextureFetcher = new DCLTexture.Fetcher[]
+        {
+            new DCLTexture.Fetcher(),
+            new DCLTexture.Fetcher(),
+            new DCLTexture.Fetcher(),
+            new DCLTexture.Fetcher()
+        };
 
         public PBRMaterial()
         {
@@ -124,15 +131,7 @@ namespace DCL.Components
             var fetchAlpha = FetchTexture(ShaderUtils.AlphaTexture, model.alphaTexture, (int)TextureType.Alpha);
             var fetchBump = FetchTexture(ShaderUtils.BumpMap, model.bumpTexture, (int)TextureType.Bump);
 
-            textureFetchCoroutines.Add(CoroutineStarter.Start(fetchEmission));
-            textureFetchCoroutines.Add(CoroutineStarter.Start(fetchBaseMap));
-            textureFetchCoroutines.Add(CoroutineStarter.Start(fetchAlpha));
-            textureFetchCoroutines.Add(CoroutineStarter.Start(fetchBump));
-
-            yield return fetchBaseMap;
-            yield return fetchAlpha;
-            yield return fetchBump;
-            yield return fetchEmission;
+            yield return UniTask.WhenAll(fetchEmission, fetchBaseMap, fetchAlpha, fetchBump).ToCoroutine();
 
             foreach (IDCLEntity entity in attachedEntities)
                 InitMaterial(entity);
@@ -277,24 +276,23 @@ namespace DCL.Components
             DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, material);
         }
 
-        IEnumerator FetchTexture(int materialPropertyId, string textureComponentId, int textureType)
+        private UniTask FetchTexture(int materialPropertyId, string textureComponentId, int textureType)
         {
             if (!string.IsNullOrEmpty(textureComponentId))
             {
                 if (!AreSameTextureComponent(textureType, textureComponentId))
                 {
-                    yield return DCLTexture.FetchTextureComponent(scene, textureComponentId,
-                        textureComponent =>
-                        {
-                            SwitchTextureComponent(textureType, textureComponent);
-                        },
-                        texture2D =>
-                        {
-                            if (material == null)
-                                return;
+                    return dclTextureFetcher[textureType]
+                       .Fetch(scene, textureComponentId,
+                            fetchedDCLTexture =>
+                            {
+                                if (material == null)
+                                    return false;
 
-                            material.SetTexture(materialPropertyId, texture2D);
-                        });
+                                material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
+                                SwitchTextureComponent(textureType, fetchedDCLTexture);
+                                return true;
+                            });
                 }
             }
             else
@@ -303,6 +301,8 @@ namespace DCL.Components
                 textures[textureType]?.DetachFrom(this);
                 textures[textureType] = null;
             }
+
+            return new UniTask();
         }
 
         bool AreSameTextureComponent(int textureType, string textureId)
@@ -323,6 +323,11 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            for (int i = 0; i < dclTextureFetcher.Length; i++)
+            {
+                dclTextureFetcher[i].Dispose();
+            }
+
             for (int i = 0; i < textures.Length; i++)
             {
                 textures[i]?.DetachFrom(this);
@@ -338,14 +343,6 @@ namespace DCL.Components
                     DetachFrom(attachedEntities.First());
                 }
                 Utils.SafeDestroy(material);
-            }
-
-            for (int i = 0; i < textureFetchCoroutines.Count; i++)
-            {
-                var coroutine = textureFetchCoroutines[i];
-
-                if ( coroutine != null )
-                    CoroutineStarter.Stop(coroutine);
             }
 
             base.Dispose();

@@ -1,18 +1,21 @@
+using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections;
-using DCL.Helpers;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
     public class DCLTexture : BaseDisposable
     {
-        [System.Serializable]
+        [Serializable]
         public class Model : BaseModel
         {
             public string src;
@@ -20,7 +23,10 @@ namespace DCL
             public FilterMode samplingMode = FilterMode.Bilinear;
             public bool hasAlpha = false;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public enum BabylonWrapMode
@@ -38,43 +44,19 @@ namespace DCL
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
         public Texture2D texture;
-        
+
         protected bool isDisposed;
+
         public float resizingFactor => texturePromise?.asset.resizingFactor ?? 1;
 
-        public override int GetClassId() { return (int) CLASS_ID.TEXTURE; }
-
-        public DCLTexture() { model = new Model(); }
-
-        public static IEnumerator FetchTextureComponent(IParcelScene scene, string componentId,
-            Action<DCLTexture> onTextureComponentFetched, Action<Texture2D> onTextureLoaded)
+        public override int GetClassId()
         {
-            if (!scene.componentsManagerLegacy.HasSceneSharedComponent(componentId))
-            {
-                Debug.Log($"couldn't fetch texture, the DCLTexture component with id {componentId} doesn't exist");
-                yield break;
-            }
+            return (int)CLASS_ID.TEXTURE;
+        }
 
-            DCLTexture textureComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as DCLTexture;
-
-            if (textureComponent == null)
-            {
-                Debug.Log($"couldn't fetch texture, the shared component with id {componentId} is NOT a DCLTexture");
-                yield break;
-            }
-
-            onTextureComponentFetched.Invoke(textureComponent);
-
-            // If texture was previously disposed we load it again
-            if (textureComponent.isDisposed)
-            {
-                textureComponent.isDisposed = false;
-                yield return textureComponent.ApplyChanges(textureComponent.model);
-            }
-
-            yield return new WaitUntil(() => textureComponent.texture != null);
-
-            onTextureLoaded.Invoke(textureComponent.texture);
+        public DCLTexture()
+        {
+            model = new Model();
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -86,7 +68,7 @@ namespace DCL
             if (isDisposed)
                 yield break;
 
-            Model model = (Model) newModel;
+            Model model = (Model)newModel;
 
             unitySamplingMode = model.samplingMode;
 
@@ -126,10 +108,10 @@ namespace DCL
                     {
                         texture.wrapMode = unityWrap;
                         texture.filterMode = unitySamplingMode;
-                        
+
                         if (DataStore.i.textureConfig.runCompression.Get())
                             texture.Compress(false);
-                        
+
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                         texture = TextureHelpers.ClampSize(texture, DataStore.i.textureConfig.generalMaxSize.Get());
                     }
@@ -205,7 +187,7 @@ namespace DCL
         {
             if (isDisposed)
                 return;
-            
+
             isDisposed = true;
 
             while (attachedEntitiesByComponent.Count > 0)
@@ -213,13 +195,96 @@ namespace DCL
                 RemoveReference(attachedEntitiesByComponent.First().Key);
             }
 
+            DisposeTexture();
+
+            base.Dispose();
+        }
+
+        private void DisposeTexture()
+        {
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
                 texturePromise = null;
             }
+            else if (texture)
+            {
+                Object.Destroy(texture);
+            }
+        }
 
-            base.Dispose();
+        public class Fetcher : IDisposable
+        {
+            private CancellationTokenSource cancellationTokenSource;
+
+            public async UniTask Fetch(IParcelScene scene, string componentId,
+                Func<DCLTexture, bool> attachCallback)
+            {
+                Cancel();
+
+                cancellationTokenSource = new CancellationTokenSource();
+                CancellationToken ct = cancellationTokenSource.Token;
+
+                if (!scene.componentsManagerLegacy.HasSceneSharedComponent(componentId))
+                {
+                    Debug.Log($"couldn't fetch texture, the DCLTexture component with id {componentId} doesn't exist");
+                    return;
+                }
+
+                DCLTexture textureComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as DCLTexture;
+
+                if (textureComponent == null)
+                {
+                    Debug.Log($"couldn't fetch texture, the shared component with id {componentId} is NOT a DCLTexture");
+                    return;
+                }
+
+                bool textureWasReLoaded = false;
+
+                // If texture was previously disposed we load it again
+                if (textureComponent.isDisposed)
+                {
+                    textureComponent.isDisposed = false;
+
+                    try
+                    {
+                        await textureComponent.ApplyChanges(textureComponent.model).WithCancellation(ct);
+                        ct.ThrowIfCancellationRequested();
+                        textureWasReLoaded = true;
+                    }
+                    catch (OperationCanceledException _)
+                    {
+                        textureComponent.DisposeTexture();
+                    }
+                }
+
+                await UniTask.WaitUntil(() => textureComponent.texture != null, PlayerLoopTiming.Update, ct);
+
+                // We dispose texture was re-loaded but attachment
+                // was unsuccessful
+                if (!attachCallback(textureComponent) && textureWasReLoaded)
+                {
+                    textureComponent.DisposeTexture();
+                }
+
+                cancellationTokenSource.Dispose();
+                cancellationTokenSource = null;
+            }
+
+            public void Cancel()
+            {
+                if (cancellationTokenSource != null)
+                {
+                    cancellationTokenSource.Cancel();
+                    cancellationTokenSource.Dispose();
+                    cancellationTokenSource = null;
+                }
+            }
+
+            public void Dispose()
+            {
+                Cancel();
+            }
         }
     }
 }
