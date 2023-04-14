@@ -75,11 +75,8 @@ public class HUDBridge : MonoBehaviour
 
     public void ShowAvatarEditorInSignUp()
     {
-        if (HUDController.i.avatarEditorHud != null)
-        {
-            DataStore.i.common.isSignUpFlow.Set(true);
-            HUDController.i.avatarEditorHud?.SetVisibility(true);
-        }
+        DataStore.i.common.isSignUpFlow.Set(true);
+        DataStore.i.HUDs.avatarEditorVisible.Set(true, true);
     }
 
     #endregion

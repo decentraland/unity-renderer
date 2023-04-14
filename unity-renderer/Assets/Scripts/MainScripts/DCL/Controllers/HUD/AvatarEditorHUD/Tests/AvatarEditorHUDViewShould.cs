@@ -54,9 +54,14 @@ namespace AvatarEditorHUD_Tests
 
             analytics = Substitute.For<IAnalytics>();
             wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService);
+
+            IUserProfileBridge userProfileBridge = Substitute.For<IUserProfileBridge>();
+            userProfileBridge.GetOwn().Returns(userProfile);
+
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService,
+                userProfileBridge);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, wearablesCatalogService.WearablesCatalog);
+            controller.Initialize();
         }
 
         [Test]

@@ -15,6 +15,9 @@ namespace DCL.ECSComponents
         private const int LAYER_POINTER = (int)ColliderLayer.ClPointer;
         private const int LAYER_PHYSICS_POINTER = LAYER_PHYSICS | LAYER_POINTER;
 
+        private const int SPHERE_COLLIDER_LONGITUDE = 12;
+        private const int SPHERE_COLLIDER_LATITUDE = 6;
+
         internal GameObject colliderGameObject;
         private Collider collider;
         private AssetPromise_PrimitiveMesh primitiveMeshPromise;
@@ -87,13 +90,25 @@ namespace DCL.ECSComponents
                     box.size = new UnityEngine.Vector3(1, 1, 0.01f);
                     break;
                 case PBMeshCollider.MeshOneofCase.Sphere:
-                    SphereCollider sphere = colliderGameObject.AddComponent<SphereCollider>();
-                    collider = sphere;
-                    sphere.radius = 1;
-                    break;
-                case PBMeshCollider.MeshOneofCase.Cylinder:
+                {
+                    // since unity's `SphereCollider` can't be deformed using it parent transform scaling
+                    // we a sphere mesh to set as collider
                     MeshCollider meshCollider = colliderGameObject.AddComponent<MeshCollider>();
                     collider = meshCollider;
+
+                    primitiveMeshPromise = new AssetPromise_PrimitiveMesh(
+                        AssetPromise_PrimitiveMesh_Model.CreateSphere(1, SPHERE_COLLIDER_LONGITUDE, SPHERE_COLLIDER_LATITUDE));
+
+                    primitiveMeshPromise.OnSuccessEvent += asset => meshCollider.sharedMesh = asset.mesh;
+                    primitiveMeshPromise.OnFailEvent += (mesh, exception) => Debug.LogException(exception);
+                    AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromise);
+                    break;
+                }
+                case PBMeshCollider.MeshOneofCase.Cylinder:
+                {
+                    MeshCollider meshCollider = colliderGameObject.AddComponent<MeshCollider>();
+                    collider = meshCollider;
+
                     primitiveMeshPromise = new AssetPromise_PrimitiveMesh(
                         AssetPromise_PrimitiveMesh_Model.CreateCylinder(
                             model.Cylinder.GetTopRadius(),
@@ -103,6 +118,7 @@ namespace DCL.ECSComponents
                     primitiveMeshPromise.OnFailEvent += (mesh, exception) => Debug.LogException(exception);
                     AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromise);
                     break;
+                }
             }
             AssetPromiseKeeper_PrimitiveMesh.i.Forget(prevMeshPromise);
         }
