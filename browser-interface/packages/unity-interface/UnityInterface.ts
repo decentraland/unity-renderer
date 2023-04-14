@@ -344,9 +344,11 @@ export class UnityInterface implements IUnityInterface {
     {
       this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(info))
     }
-
-    const WORKER_TIMEOUT = 60_000
-    setTimeout(() => this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', ""), WORKER_TIMEOUT)
+    else
+    {
+      const WORKER_TIMEOUT = 60_000
+      setTimeout(() => this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', ""), WORKER_TIMEOUT)
+    }
   }
 
   public SetTutorialEnabled(tutorialConfig: TutorialInitializationMessage) {
