@@ -14,7 +14,6 @@ namespace DCL.Backpack
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IBackpackEmotesSectionController backpackEmotesSectionController;
-        private bool isEmotesControllerInitialized;
         private readonly BackpackEditorHUDModel model = new ();
         private bool avatarIsDirty;
         private float prevRenderScale = 1.0f;
@@ -38,6 +37,10 @@ namespace DCL.Backpack
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
             dataStore.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
+            backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
+            backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
+            backpackEmotesSectionController.OnEmoteEquipped += OnEmoteEquipped;
+            backpackEmotesSectionController.OnEmoteUnequipped += OnEmoteUnequipped;
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get());
         }
 
@@ -61,8 +64,8 @@ namespace DCL.Backpack
         {
             if (visible)
             {
-                InitializeEmotesSectionControllerIfNeeded();
                 backpackEmotesSectionController.LoadEmotes();
+                LoadUserProfile(ownUserProfile, true);
                 view.Show();
             }
             else
@@ -79,20 +82,6 @@ namespace DCL.Backpack
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
-
-        private void InitializeEmotesSectionControllerIfNeeded()
-        {
-            if (isEmotesControllerInitialized)
-                return;
-
-            backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
-            backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
-            backpackEmotesSectionController.OnEmoteEquipped += OnEmoteEquipped;
-            backpackEmotesSectionController.OnEmoteUnequipped += OnEmoteUnequipped;
-
-            LoadUserProfile(ownUserProfile, true);
-            isEmotesControllerInitialized = true;
-        }
 
         private void ExploreV2IsOpenChanged(bool current, bool previous)
         {
