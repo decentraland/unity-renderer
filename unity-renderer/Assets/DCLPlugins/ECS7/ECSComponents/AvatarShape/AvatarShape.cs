@@ -56,12 +56,12 @@ namespace DCL.ECSComponents
 
         [SerializeField] private GameObject avatarContainer;
         [SerializeField] internal Collider avatarCollider;
-        [SerializeField] private Transform avatarRevealContainer;
-        [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
         [SerializeField] internal GameObject playerNameContainer;
+        [SerializeField] private Transform baseAvatarContainer;
+        [SerializeField] internal BaseAvatarReferences baseAvatarReferencesPrefab;
 
         internal IAvatarMovementController avatarMovementController;
         internal IPlayerName playerName;
@@ -103,7 +103,11 @@ namespace DCL.ECSComponents
             // AvatarsLodController are no taking them into account. It needs product definition and a refactor to include them
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, avatarRevealContainer, armatureContainer, animator, avatarLOD, visibility);
+
+            //Ensure base avatar references
+            var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+
+            avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), animator, avatarLOD, visibility);
 
             avatarReporterController ??= new AvatarReporterController(Environment.i.world.state);
 
