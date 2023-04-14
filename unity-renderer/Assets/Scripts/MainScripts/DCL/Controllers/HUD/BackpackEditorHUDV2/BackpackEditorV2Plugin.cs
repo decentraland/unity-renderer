@@ -9,15 +9,24 @@ namespace DCL.Backpack
 
         public BackpackEditorV2Plugin()
         {
+            var userProfileBridge = new UserProfileWebInterfaceBridge();
+
             var view = BackpackEditorHUDV2ComponentView.Create();
             view.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+
+            var backpackEmotesSectionController = new BackpackEmotesSectionController();
+            backpackEmotesSectionController.Initialize(
+                DataStore.i,
+                view.EmotesSectionTransform,
+                userProfileBridge,
+                Environment.i.serviceLocator.Get<IEmotesCatalogService>());
 
             hudController = new BackpackEditorHUDController(
                 view,
                 DataStore.i,
-                new UserProfileWebInterfaceBridge(),
+                userProfileBridge,
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
-                Environment.i.serviceLocator.Get<IEmotesCatalogService>());
+                backpackEmotesSectionController);
         }
 
         public void Dispose()

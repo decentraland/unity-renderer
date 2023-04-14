@@ -25,6 +25,7 @@ namespace DCL.Backpack
         public override void Awake()
         {
             base.Awake();
+
             thisTransform = transform;
             backpackPreviewPanel.SetLoadingActive(false);
         }
@@ -131,17 +132,17 @@ namespace DCL.Backpack
 
         private void UpdateAvatarModelWhenNeeded()
         {
-            if (isAvatarDirty)
+            async UniTaskVoid UpdateAvatarAsync()
             {
-                async UniTaskVoid UpdateAvatarAsync()
-                {
-                    await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate);
-                    backpackPreviewPanel.SetLoadingActive(false);
-                }
-
-                UpdateAvatarAsync().Forget();
-                isAvatarDirty = false;
+                await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate);
+                backpackPreviewPanel.SetLoadingActive(false);
             }
+
+            if (!isAvatarDirty)
+                return;
+
+            UpdateAvatarAsync().Forget();
+            isAvatarDirty = false;
         }
     }
 }

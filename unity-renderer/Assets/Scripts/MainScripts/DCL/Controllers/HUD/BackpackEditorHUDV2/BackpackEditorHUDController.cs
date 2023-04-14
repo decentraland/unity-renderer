@@ -1,11 +1,4 @@
-using Cysharp.Threading.Tasks;
-using DCL.Emotes;
-using DCL.EmotesCustomization;
-using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
-using System;
-using System.Linq;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -20,10 +13,8 @@ namespace DCL.Backpack
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
-        private readonly IEmotesCatalogService emotesCatalogService;
-        private IEmotesCustomizationComponentController emotesCustomizationComponentController;
+        private readonly IBackpackEmotesSectionController backpackEmotesSectionController;
         private bool isEmotesControllerInitialized;
-        private CancellationTokenSource loadEmotesCts = new ();
         private readonly BackpackEditorHUDModel model = new ();
         private bool avatarIsDirty;
         private float prevRenderScale = 1.0f;
@@ -33,35 +24,35 @@ namespace DCL.Backpack
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
-            IEmotesCatalogService emotesCatalogService)
+            IBackpackEmotesSectionController backpackEmotesSectionController)
         {
             this.view = view;
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
-            this.emotesCatalogService = emotesCatalogService;
+            this.backpackEmotesSectionController = backpackEmotesSectionController;
+
             ownUserProfile.OnUpdate += LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange += SetVisibility;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
-            dataStore.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
+            dataStore.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get());
         }
 
         public void Dispose()
         {
-            loadEmotesCts.SafeCancelAndDispose();
-            loadEmotesCts = null;
-
             ownUserProfile.OnUpdate -= LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange -= SetVisibility;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
             dataStore.exploreV2.isOpen.OnChange -= ExploreV2IsOpenChanged;
-            dataStore.emotesCustomization.currentLoadedEmotes.OnAdded -= OnNewEmoteAdded;
-            emotesCustomizationComponentController.onEmotePreviewed -= OnPreviewEmote;
-            emotesCustomizationComponentController.onEmoteEquipped -= OnEmoteEquipped;
-            emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
+
+            backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
+            backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
+            backpackEmotesSectionController.OnEmoteEquipped -= OnEmoteEquipped;
+            backpackEmotesSectionController.OnEmoteUnequipped -= OnEmoteUnequipped;
+            backpackEmotesSectionController.Dispose();
 
             view.Dispose();
         }
@@ -70,8 +61,8 @@ namespace DCL.Backpack
         {
             if (visible)
             {
-                InitializeEmotesControllerIfNeeded();
-                LoadEmotes();
+                InitializeEmotesSectionControllerIfNeeded();
+                backpackEmotesSectionController.LoadEmotes();
                 view.Show();
             }
             else
@@ -89,54 +80,18 @@ namespace DCL.Backpack
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
 
-        private void InitializeEmotesControllerIfNeeded()
+        private void InitializeEmotesSectionControllerIfNeeded()
         {
             if (isEmotesControllerInitialized)
                 return;
 
-            emotesCustomizationComponentController = new EmotesCustomizationComponentController();
-            IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(
-                dataStore.emotesCustomization,
-                dataStore.emotes,
-                dataStore.exploreV2,
-                dataStore.HUDs);
-
-            emotesSectionView.viewTransform.SetParent(view.EmotesSectionTransform, false);
-            emotesCustomizationComponentController.SetEquippedBodyShape(ownUserProfile.avatar.bodyShape);
-            dataStore.HUDs.isAvatarEditorInitialized.Set(true);
-            isEmotesControllerInitialized = true;
-
-            dataStore.emotesCustomization.currentLoadedEmotes.OnAdded += OnNewEmoteAdded;
-            emotesCustomizationComponentController.onEmotePreviewed += OnPreviewEmote;
-            emotesCustomizationComponentController.onEmoteEquipped += OnEmoteEquipped;
-            emotesCustomizationComponentController.onEmoteUnequipped += OnEmoteUnequipped;
+            backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
+            backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
+            backpackEmotesSectionController.OnEmoteEquipped += OnEmoteEquipped;
+            backpackEmotesSectionController.OnEmoteUnequipped += OnEmoteUnequipped;
 
             LoadUserProfile(ownUserProfile, true);
-        }
-
-        private void LoadEmotes()
-        {
-            async UniTaskVoid LoadEmotesAsync(CancellationToken ct = default)
-            {
-                try
-                {
-                    EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.GetEmbeddedEmotes();
-                    var baseEmotes = embeddedEmotesSo.emotes;
-                    var ownedEmotes = await emotesCatalogService.RequestOwnedEmotesAsync(ownUserProfile.userId, ct);
-                    var allEmotes = ownedEmotes == null ? baseEmotes : baseEmotes.Concat(ownedEmotes).ToArray();
-                    dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
-                    emotesCustomizationComponentController.SetEmotes(allEmotes);
-
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Error loading emotes: {e.Message}");
-                }
-            }
-
-            loadEmotesCts = loadEmotesCts.SafeRestart();
-            LoadEmotesAsync(loadEmotesCts.Token).Forget();
+            isEmotesControllerInitialized = true;
         }
 
         private void ExploreV2IsOpenChanged(bool current, bool previous)
@@ -146,7 +101,7 @@ namespace DCL.Backpack
 
             avatarIsDirty = false;
             LoadUserProfile(ownUserProfile, true);
-            emotesCustomizationComponentController.RestoreEmoteSlots();
+            backpackEmotesSectionController.RestoreEmoteSlots();
         }
 
         private void LoadUserProfile(UserProfile userProfile) =>
@@ -219,7 +174,7 @@ namespace DCL.Backpack
                 avatarIsDirty = true;
         }
 
-        private void OnPreviewEmote(string emoteId) =>
+        private void OnEmotePreviewed(string emoteId) =>
             view.PlayPreviewEmote(emoteId);
 
         private void EquipBodyShape(WearableItem bodyShape)
@@ -234,7 +189,7 @@ namespace DCL.Backpack
                 return;
 
             model.bodyShape = bodyShape;
-            emotesCustomizationComponentController.SetEquippedBodyShape(bodyShape.id);
+            backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
         }
 
         private void EquipSkinColor(Color color) =>
