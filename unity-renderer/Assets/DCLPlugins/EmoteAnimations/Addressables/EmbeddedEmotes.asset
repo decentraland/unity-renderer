@@ -82,8 +82,8 @@ MonoBehaviour:
     rarity: 
     description: robot
     issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: a06943845657a49ddaebff409c8a4f53, type: 2}
-    maleAnimation: {fileID: 7400000, guid: a06943845657a49ddaebff409c8a4f53, type: 2}
+    femaleAnimation: {fileID: 7400000, guid: 2f2047d4c8513bf419cd0d03692ddfa4, type: 2}
+    maleAnimation: {fileID: 7400000, guid: f45ea28ca4b4286449c5f6197d2b949e, type: 2}
     dontShowInBackpack: 0
   - data:
       representations: []
@@ -226,8 +226,8 @@ MonoBehaviour:
     rarity: 
     description: tik
     issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: 5b45081ecd37640e39b0aae3dce95412, type: 2}
-    maleAnimation: {fileID: 7400000, guid: 5b45081ecd37640e39b0aae3dce95412, type: 2}
+    femaleAnimation: {fileID: 7400000, guid: 155565c20994e334ea44df2fc77b9097, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 155565c20994e334ea44df2fc77b9097, type: 2}
     dontShowInBackpack: 0
   - data:
       representations: []

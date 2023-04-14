@@ -25,8 +25,6 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private CancellationTokenSource avatarLoadingCts;
     public GameObject avatarContainer;
-    public GameObject armatureContainer;
-    public Transform loadingAvatarContainer;
     public StickersController stickersControllers;
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
@@ -35,6 +33,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     public float cameraDistanceToDeactivate = 1.0f;
     [SerializeField] internal AvatarOnPointerDown onPointerDown;
     [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
+    [SerializeField] internal Transform baseAvatarContainer;
+    [SerializeField] internal BaseAvatarReferences baseAvatarReferencesPrefab;
 
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
     private bool repositioningWorld => DCLCharacterController.i.characterPosition.RepositionedWorldLastFrame();
@@ -94,10 +94,11 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private IAvatar GetAvatarWithHologram()
     {
+        var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+
         return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatarWithHologram(
             avatarContainer,
-            loadingAvatarContainer,
-            armatureContainer,
+            new BaseAvatar(baseAvatarReferences),
             GetComponentInChildren<AvatarAnimatorLegacy>(),
             NoLODs.i,
             new Visibility());
