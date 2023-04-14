@@ -81,11 +81,10 @@ namespace DCL
             {
                 // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
                 WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.i;
-                var rpc = Environment.i.serviceLocator.Get<IRPC>();
 
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                     webInterfaceFriendsApiBridge,
-                    RPCFriendsApiBridge.CreateSharedInstance(rpc, webInterfaceFriendsApiBridge),
+                    RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
                     DataStore.i), new RPCSocialApiBridge(MatrixInitializationBridge.i));
             });
 
