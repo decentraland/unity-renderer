@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
-    public class AvatarSlotComponentView : BaseComponentView<AvatarSlotComponentModel>, IPointerClickHandler, IAvatarSlotComponentView
+    public class AvatarSlotComponentView : BaseComponentView<AvatarSlotComponentModel>, IAvatarSlotComponentView
     {
         [Header("Configuration")]
         [SerializeField] internal AvatarSlotComponentModel model;
@@ -23,8 +23,16 @@ namespace DCL.Backpack
         [SerializeField] private GameObject hiddenSlot;
         [SerializeField] internal GameObject tooltipContainer;
         [SerializeField] internal TMP_Text tooltipText;
+        [SerializeField] internal Button button;
 
-        public event Action<string> OnSelectAvatarSlot;
+        public event Action<string, bool> OnSelectAvatarSlot;
+        private bool isSelected = false;
+
+        public void Start()
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnSlotClick);
+        }
 
         public override void RefreshControl()
         {
@@ -86,14 +94,17 @@ namespace DCL.Backpack
             tooltipContainer.SetActive(false);
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public void OnSlotClick()
         {
-            OnSelectAvatarSlot?.Invoke(model.category);
-            selectedImage.enabled = true;
+            isSelected = !isSelected;
+            selectedImage.enabled = isSelected;
+
+            OnSelectAvatarSlot?.Invoke(model.category, isSelected);
         }
 
         public void OnPointerClickOnDifferentSlot()
         {
+            isSelected = false;
             selectedImage.enabled = false;
         }
     }
