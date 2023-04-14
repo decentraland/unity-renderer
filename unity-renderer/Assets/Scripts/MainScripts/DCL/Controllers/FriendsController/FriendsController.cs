@@ -58,8 +58,9 @@ namespace DCL.Social.Friends
         {
             controllerCancellationTokenSource = new CancellationTokenSource();
 
-            socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.InitializeFriendships).Forget();
             socialApiBridge.InitializeClient(controllerCancellationTokenSource.Token).Forget();
+            socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.InitializeFriendships).Forget();
+            socialApiBridge.InitializeSubscriptions(controllerCancellationTokenSource.Token).Forget();
         }
 
         public void Dispose()

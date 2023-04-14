@@ -1,9 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using Decentraland.Renderer.KernelServices;
-using Decentraland.Social.Friendships;
 using RPC;
 using rpc_csharp;
-using RPC.Transports;
 using System;
 using UnityEngine;
 
@@ -15,7 +13,6 @@ namespace DCL
         private ClientFriendRequestKernelService friendRequests;
         private ClientFriendsKernelService friends;
         private ClientSignRequestKernelService signRequest;
-        private ClientFriendshipsService social;
 
         private readonly UniTaskCompletionSource modulesLoaded = new ();
 
@@ -33,9 +30,6 @@ namespace DCL
         public ClientSignRequestKernelService SignRequestKernelService() =>
             signRequest;
 
-        public IClientFriendshipsService Social() =>
-            social;
-
         public UniTask EnsureRpc() =>
             modulesLoaded.Task;
 
@@ -52,13 +46,6 @@ namespace DCL
 
             signRequest = await SafeLoadModule(SignRequestKernelServiceCodeGen.ServiceName, port,
                 module => new ClientSignRequestKernelService(module));
-
-            var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
-            var client = new RpcClient(transport);
-            var socialPort = await client.CreatePort("test-port");
-
-            social = await SafeLoadModule(FriendshipsServiceCodeGen.ServiceName, socialPort,
-                module => new ClientFriendshipsService(module));
 
             modulesLoaded.TrySetResult();
         }

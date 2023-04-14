@@ -95,10 +95,9 @@ namespace DCL.Social.Friends
 
             UserProfile.GetOwnUserProfile().UpdateData(new UserProfileModel() { userId = OWN_ID });
 
-            rpc.Social().Returns(clientSocial);
             GameObject go = new GameObject();
             var component = go.AddComponent<MatrixInitializationBridge>();
-            rpcSocialApiBridge = new RPCSocialApiBridge(rpc, component);
+            rpcSocialApiBridge = new RPCSocialApiBridge(component);
         }
 
         [UnityTest]

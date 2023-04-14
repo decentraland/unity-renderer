@@ -14,7 +14,5 @@ namespace DCL
 
         public ClientFriendsKernelService Friends();
         public ClientSignRequestKernelService SignRequestKernelService();
-
-        public IClientFriendshipsService Social();
     }
 }

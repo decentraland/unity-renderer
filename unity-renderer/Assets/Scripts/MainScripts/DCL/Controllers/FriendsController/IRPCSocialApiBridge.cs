@@ -21,6 +21,8 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         UniTaskVoid InitializeClient(CancellationToken cancellationToken = default);
 
+        UniTaskVoid InitializeSubscriptions(CancellationToken cancellationToken = default);
+
         UniTask<FriendshipInitializationMessage> InitializeFriendshipsInformation(CancellationToken cancellationToken = default);
 
         UniTask ListenToFriendEvents(CancellationToken cancellationToken = default);

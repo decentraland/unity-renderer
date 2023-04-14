@@ -86,7 +86,7 @@ namespace DCL
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                     webInterfaceFriendsApiBridge,
                     RPCFriendsApiBridge.CreateSharedInstance(rpc, webInterfaceFriendsApiBridge),
-                    DataStore.i), new RPCSocialApiBridge(rpc, MatrixInitializationBridge.i));
+                    DataStore.i), new RPCSocialApiBridge(MatrixInitializationBridge.i));
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
@@ -145,6 +145,7 @@ namespace DCL
 
             const int ATLAS_CHUNK_SIZE = 1020;
             const int PARCEL_SIZE = 20;
+
             // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
             const float CULLING_BOUNDS_IN_PARCELS = 10;
 

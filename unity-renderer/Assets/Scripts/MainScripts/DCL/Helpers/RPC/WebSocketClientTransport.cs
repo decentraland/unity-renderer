@@ -1,10 +1,9 @@
 using System;
-using System.IO;
-using System.Net.NetworkInformation;
-using rpc_csharp.transport;
 using WebSocketSharp;
-using WebSocketSharp.Server;
 using ErrorEventArgs = WebSocketSharp.ErrorEventArgs;
+using ITransport = rpc_csharp.transport.ITransport;
+using MessageEventArgs = WebSocketSharp.MessageEventArgs;
+using WebSocket = WebSocketSharp.WebSocket;
 
 namespace RPC.Transports
 {

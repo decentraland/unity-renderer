@@ -11,6 +11,7 @@ using System;
 using System.Threading;
 using rpc_csharp;
 using rpc_csharp.transport;
+using RPC.Transports;
 using System.Collections.Generic;
 using UnityEngine;
 using Payload = Decentraland.Social.Friendships.Payload;
@@ -23,8 +24,6 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         private string accessToken;
 
-        private IRPC rpc;
-
         public event Action<UserStatus> OnFriendAdded;
         public event Action<string> OnFriendRemoved;
         public event Action<FriendRequest> OnFriendRequestAdded;
@@ -33,15 +32,31 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
-        public RPCSocialApiBridge(IRPC rpc, MatrixInitializationBridge matrixInitializationBridge)
-        {
-            this.rpc = rpc;
+        private ClientFriendshipsService socialClient;
 
-            matrixInitializationBridge.OnReceiveMatrixAccessToken += (token) => {  this.accessToken = token;};
+        public RPCSocialApiBridge(MatrixInitializationBridge matrixInitializationBridge)
+        {
+            matrixInitializationBridge.OnReceiveMatrixAccessToken += (token) => { this.accessToken = token; };
         }
 
         public async UniTaskVoid InitializeClient(CancellationToken cancellationToken = default)
         {
+            var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
+            var client = new RpcClient(transport);
+            var socialPort = await client.CreatePort("social-service-port");
+            var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
+            socialClient = new ClientFriendshipsService(module);
+        }
+
+        public async UniTaskVoid InitializeSubscriptions(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await UniTask.WaitUntil(() =>
+                    socialClient != null,
+                PlayerLoopTiming.Update,
+                cancellationToken);
+
             // start listening to streams
             // await UniTask.WhenAny(this.ListenToFriendEvents(cancellationToken));
         }
@@ -49,6 +64,14 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public async UniTask<FriendshipInitializationMessage> InitializeFriendshipsInformation(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            await UniTask.WaitUntil(() =>
+                    socialClient != null,
+                PlayerLoopTiming.Update,
+                cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             var ownUserProfile = UserProfile.GetOwnUserProfile();
 
             await UniTask.WaitUntil(() =>
@@ -58,7 +81,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var friendsStream = rpc.Social().GetFriends(new Payload() { SynapseToken = this.accessToken });
+            var friendsStream = socialClient.GetFriends(new Payload() { SynapseToken = this.accessToken });
 
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
@@ -66,7 +89,6 @@ namespace MainScripts.DCL.Controllers.FriendsController
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-
 
             // var requestEvents = await rpc.Social().GetRequestEvents(new Empty());
             //
@@ -95,7 +117,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
             await UniTask.WaitUntil(() => ownUserProfile.userId != null, PlayerLoopTiming.Update, cancellationToken);
 
-            var stream = rpc.Social().SubscribeFriendshipEventsUpdates(new Payload() { SynapseToken = "" });
+            var stream = socialClient.SubscribeFriendshipEventsUpdates(new Payload() { SynapseToken = "" });
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -174,9 +196,9 @@ namespace MainScripts.DCL.Controllers.FriendsController
                 cancellationToken.ThrowIfCancellationRequested();
 
                 // TODO: pass cancellation token to rpc client when is supported
-                var response = await rpc.Social()
-                                        .UpdateFriendshipEvent(updateFriendshipPayload)
-                                        .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+                var response = await socialClient
+                                    .UpdateFriendshipEvent(updateFriendshipPayload)
+                                    .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 switch (response.ResponseCase)
                 {

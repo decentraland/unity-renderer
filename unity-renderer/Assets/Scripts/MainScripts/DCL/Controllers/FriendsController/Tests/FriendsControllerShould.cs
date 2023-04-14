@@ -22,10 +22,9 @@ namespace DCL.Social.Friends
         public void SetUp()
         {
             apiBridge = Substitute.For<IFriendsApiBridge>();
-            var rpc = Substitute.For<IRPC>();
             GameObject go = new GameObject();
             var component = go.AddComponent<MatrixInitializationBridge>();
-            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(rpc, component));
+            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component));
         }
 
         [Test]
