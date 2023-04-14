@@ -88,12 +88,13 @@ namespace DCL.Backpack
         [Test]
         public void SetTooltipText1()
         {
-            avatarSlot.Configure(new AvatarSlotComponentModel()
+            avatarSlot.model = new AvatarSlotComponentModel()
             {
                 category = TEST_CATEGORY,
                 isHidden = true,
                 hiddenBy = "HidingCategory"
-            });
+            };
+            avatarSlot.RefreshControl();
 
             Assert.AreEqual(avatarSlot.tooltipText.text, $"{TEST_CATEGORY}\nHidden by: HidingCategory");
         }
@@ -101,12 +102,13 @@ namespace DCL.Backpack
         [Test]
         public void SetTooltipText2()
         {
-            avatarSlot.Configure(new AvatarSlotComponentModel()
+            avatarSlot.model = new AvatarSlotComponentModel()
             {
                 category = TEST_CATEGORY,
                 isHidden = false,
                 hiddenBy = ""
-            });
+            };
+            avatarSlot.RefreshControl();
 
             Assert.AreEqual(avatarSlot.tooltipText.text, $"{TEST_CATEGORY}");
         }
