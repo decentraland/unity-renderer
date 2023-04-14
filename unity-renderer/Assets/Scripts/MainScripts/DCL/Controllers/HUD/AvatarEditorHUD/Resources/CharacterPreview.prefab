@@ -269,7 +269,9 @@ MonoBehaviour:
   bodySnapshotTemplate: {fileID: 4122678849617202556}
   previewTemplate: {fileID: 8359086198727238802}
   avatarContainer: {fileID: 6856622359626919856}
-  avatarRevealContainer: {fileID: 6693538414670061813}
+  baseAvatarContainer: {fileID: 6693538414670061813}
+  baseAvatarBaseAvatarReferences: {fileID: 4766333532709993497, guid: 7bf2abf753051c34c9e0a568a90fc0f0,
+    type: 3}
 --- !u!1 &5657874010593393711
 GameObject:
   m_ObjectHideFlags: 0
