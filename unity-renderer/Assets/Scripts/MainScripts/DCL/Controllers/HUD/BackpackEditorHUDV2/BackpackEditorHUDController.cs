@@ -1,7 +1,5 @@
 using DCLServices.WearablesCatalogService;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 namespace DCL.Backpack
 {
@@ -17,7 +15,6 @@ namespace DCL.Backpack
         private readonly BackpackEmotesSectionController backpackEmotesSectionController;
         private readonly BackpackEditorHUDModel model = new ();
         private bool avatarIsDirty;
-        private float prevRenderScale = 1.0f;
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -76,8 +73,6 @@ namespace DCL.Backpack
                 view.Hide();
                 view.ResetPreviewEmote();
             }
-
-            SetRenderScale(visible);
         }
 
         private void SetVisibility(bool current, bool _) =>
@@ -181,22 +176,5 @@ namespace DCL.Backpack
 
         private void EquipEyesColor(Color color) =>
             model.eyesColor = color;
-
-        private void SetRenderScale(bool visible)
-        {
-            // NOTE(Brian): SSAO doesn't work correctly with the offset avatar preview if the renderScale != 1.0
-            var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
-
-            if (asset == null)
-                return;
-
-            if (visible)
-            {
-                prevRenderScale = asset.renderScale;
-                asset.renderScale = 1.0f;
-            }
-            else
-                asset.renderScale = prevRenderScale;
-        }
     }
 }

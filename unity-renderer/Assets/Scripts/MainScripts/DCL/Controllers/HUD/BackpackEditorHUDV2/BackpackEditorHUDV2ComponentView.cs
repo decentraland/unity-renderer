@@ -71,12 +71,6 @@ namespace DCL.Backpack
 
         public override void RefreshControl() { }
 
-        public void Show() =>
-            Show(true);
-
-        public void Hide() =>
-            Hide(true);
-
         public void SetAsFullScreenMenuMode(Transform parentTransform)
         {
             if (parentTransform == null)

@@ -2,6 +2,8 @@
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
@@ -16,6 +18,7 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject avatarPreviewLoadingSpinner;
 
         private ICharacterPreviewController characterPreviewController;
+        private float prevRenderScale = 1.0f;
 
         public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
         {
@@ -34,8 +37,11 @@ namespace DCL.Backpack
 
         public override void RefreshControl() { }
 
-        public void SetPreviewEnabled(bool isEnabled) =>
+        public void SetPreviewEnabled(bool isEnabled)
+        {
             characterPreviewController.SetEnabled(isEnabled);
+            FixThePreviewRenderingSomehowRelatedToTheRenderScale(isEnabled);
+        }
 
         public void PlayPreviewEmote(string emoteId) =>
             characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup);
@@ -60,5 +66,23 @@ namespace DCL.Backpack
 
         private void OnPreviewRotation(float angularVelocity) =>
             characterPreviewController.Rotate(angularVelocity);
+
+        // TODO: We have to investigate why we have to use this workaround to fix the preview rendering
+        private void FixThePreviewRenderingSomehowRelatedToTheRenderScale(bool isEnabled)
+        {
+            // NOTE(Brian): SSAO doesn't work correctly with the offset avatar preview if the renderScale != 1.0
+            var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+
+            if (asset == null)
+                return;
+
+            if (isEnabled)
+            {
+                prevRenderScale = asset.renderScale;
+                asset.renderScale = 1.0f;
+            }
+            else
+                asset.renderScale = prevRenderScale;
+        }
     }
 }
