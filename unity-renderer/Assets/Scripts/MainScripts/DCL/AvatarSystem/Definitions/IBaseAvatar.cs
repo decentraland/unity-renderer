@@ -1,21 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine;
 
 namespace AvatarSystem
 {
-    public interface IBaseAvatar
+    public interface IBaseAvatar : IDisposable
     {
-        SkinnedMeshRenderer meshRenderer { get; }
-        IBaseAvatarRevealer avatarRevealer { get; set; }
+        SkinnedMeshRenderer SkinnedMeshRenderer { get; }
+        GameObject ArmatureContainer { get; }
 
-        void Initialize();
-        SkinnedMeshRenderer GetMainRenderer();
-        GameObject GetArmatureContainer();
-        UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken);
+        UniTask FadeGhost(CancellationToken cancellationToken = default);
 
-        void CancelTransition();
+        UniTask Reveal(Renderer targetRenderer, float avatarHeight, float completionHeight, CancellationToken cancellationToken = default);
+
+        void RevealInstantly(Renderer targetRenderer, float avatarHeight);
     }
 }
