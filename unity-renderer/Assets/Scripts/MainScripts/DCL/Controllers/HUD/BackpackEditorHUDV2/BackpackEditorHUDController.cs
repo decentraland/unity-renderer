@@ -13,7 +13,7 @@ namespace DCL.Backpack
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
-        private readonly IBackpackEmotesSectionController backpackEmotesSectionController;
+        private readonly BackpackEmotesSectionController backpackEmotesSectionController;
         private readonly BackpackEditorHUDModel model = new ();
         private bool avatarIsDirty;
         private float prevRenderScale = 1.0f;
@@ -23,7 +23,7 @@ namespace DCL.Backpack
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
-            IBackpackEmotesSectionController backpackEmotesSectionController)
+            BackpackEmotesSectionController backpackEmotesSectionController)
         {
             this.view = view;
             this.dataStore = dataStore;

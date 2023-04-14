@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace DCL.Backpack
 {
-    public class BackpackEmotesSectionController : IBackpackEmotesSectionController
+    public class BackpackEmotesSectionController : IDisposable
     {
         public event Action<string> OnNewEmoteAdded;
         public event Action<string> OnEmotePreviewed;
