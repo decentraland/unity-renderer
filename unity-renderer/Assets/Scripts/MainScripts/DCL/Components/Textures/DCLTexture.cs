@@ -255,6 +255,7 @@ namespace DCL
                     catch (OperationCanceledException _)
                     {
                         textureComponent.DisposeTexture();
+                        textureComponent.isDisposed = true;
                     }
                 }
 
@@ -265,6 +266,7 @@ namespace DCL
                 if (!attachCallback(textureComponent) && textureWasReLoaded)
                 {
                     textureComponent.DisposeTexture();
+                    textureComponent.isDisposed = true;
                 }
 
                 cancellationTokenSource.Dispose();
