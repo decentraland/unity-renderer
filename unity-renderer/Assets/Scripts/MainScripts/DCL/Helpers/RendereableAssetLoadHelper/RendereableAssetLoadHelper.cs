@@ -12,7 +12,7 @@ namespace DCL.Components
     public class RendereableAssetLoadHelper
     {
         private const string NEW_CDN_FF = "ab-new-cdn";
-        private const string FAILED_GLTFASTLOAD_EVENT = "failed_GLTFast_load";
+        private const string FAILED_GLTFAST_LOAD_EVENT = "failed_GLTFast_load";
         private const string SUCESS_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT = "success_GLTF_load_after_GLTFast_fail";
         private const string FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT = "failed_GLTF_load_after_GLTFast_fail";
 
@@ -135,7 +135,7 @@ namespace DCL.Components
 
         private void OnGLTFastLoadFail(string targetUrl, bool hasFallback, Exception exception)
         {
-            SendMetric(FAILED_GLTFASTLOAD_EVENT, targetUrl, exception.Message);
+            SendMetric(FAILED_GLTFAST_LOAD_EVENT, targetUrl, exception.Message);
 
             if (VERBOSE)
                 Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
@@ -320,7 +320,7 @@ namespace DCL.Components
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
-                SendMetric(FAILED_GLTFASTLOAD_EVENT, targetUrl, $"Content provider does not contains url {targetUrl}");
+                SendMetric(FAILED_GLTFAST_LOAD_EVENT, targetUrl, $"Content provider does not contains url {targetUrl}");
                 OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"), hasFallback);
                 return;
             }
@@ -343,7 +343,7 @@ namespace DCL.Components
 
             gltfastPromise.OnFailEvent += (asset, exception) =>
             {
-                SendMetric(FAILED_GLTFASTLOAD_EVENT, targetUrl, exception.Message);
+                SendMetric(FAILED_GLTFAST_LOAD_EVENT, targetUrl, exception.Message);
                 OnFailWrapper(OnFail, exception, hasFallback);
             };
 
