@@ -9,6 +9,19 @@ namespace DCL.Skybox
         private Camera skyboxCamera;
         private SkyboxCameraBehaviour camBehavior;
 
+        public SkyboxCamera(Camera mainCam)
+        {
+            if (mainCam == null)
+                return;
+            // Overriding skybox camera parameter with main camera
+            skyboxCameraGO = mainCam.gameObject;
+            skyboxCamera = mainCam;
+
+            var cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
+            cameraData.renderShadows = true;
+
+            cameraData.SetRenderer(0);
+        }
         public SkyboxCamera()
         {
             // Make a new camera

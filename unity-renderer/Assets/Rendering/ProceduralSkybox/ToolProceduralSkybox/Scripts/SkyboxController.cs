@@ -102,8 +102,9 @@ namespace DCL.Skybox
                 return;
             }
 
-            // Create skybox Camera
-            skyboxCam = new SkyboxCamera();
+            // Create skybox Camera                         // FD:: temporarily commented here
+            // skyboxCam = new SkyboxCamera();              // FD:: temporarily commented here
+            // skyboxCam = new SkyboxCamera(Camera.main);   // FD:: temporarily commented here
 
             // Get current time from the server
             GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
@@ -127,7 +128,7 @@ namespace DCL.Skybox
 
             // Register for camera references
             DataStore.i.camera.transform.OnChange += AssignCameraReferences;
-            AssignCameraReferences(DataStore.i.camera.transform.Get(), null);
+            // AssignCameraReferences(DataStore.i.camera.transform.Get(), null);    // FD:: temporarily commented here
 
             // Register UI related events
             DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
@@ -149,7 +150,7 @@ namespace DCL.Skybox
 
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
         {
-            skyboxCam.AssignTargetCamera(currentTransform);
+            // skyboxCam.AssignTargetCamera(currentTransform);          // FD:: temporarily commented here
             skyboxElements.AssignCameraInstance(currentTransform);
         }
 
@@ -255,6 +256,11 @@ namespace DCL.Skybox
             // make probe a child of main camera
             if (Camera.main != null)
             {
+                // FD:: test from here
+                skyboxCam = new SkyboxCamera(Camera.main);
+                AssignCameraReferences(DataStore.i.camera.transform.Get(), null);
+                // FD:: to here
+
                 GameObject mainCam = Camera.main.gameObject;
                 runtimeReflectionObj.followTransform = mainCam.transform;
                 probeParented = true;
