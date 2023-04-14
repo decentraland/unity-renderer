@@ -22,7 +22,7 @@ namespace DCL.Backpack
         private IEmotesCustomizationComponentController emotesCustomizationComponentController;
         private CancellationTokenSource loadEmotesCts = new ();
 
-        public void Initialize(
+        public BackpackEmotesSectionController(
             DataStore dataStore,
             Transform emotesSectionTransform,
             IUserProfileBridge userProfileBridge,

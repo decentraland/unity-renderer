@@ -14,8 +14,7 @@ namespace DCL.Backpack
             var view = BackpackEditorHUDV2ComponentView.Create();
             view.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
 
-            var backpackEmotesSectionController = new BackpackEmotesSectionController();
-            backpackEmotesSectionController.Initialize(
+            var backpackEmotesSectionController = new BackpackEmotesSectionController(
                 DataStore.i,
                 view.EmotesSectionTransform,
                 userProfileBridge,
