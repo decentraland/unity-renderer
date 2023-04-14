@@ -1,3 +1,5 @@
+using DCLServices.WearablesCatalogService;
+
 namespace DCL.Backpack
 {
     public class BackpackEditorV2Plugin : IPlugin
@@ -6,7 +8,9 @@ namespace DCL.Backpack
 
         public BackpackEditorV2Plugin()
         {
-            hudController = new BackpackEditorHUDController(BackpackEditorHUDV2ComponentView.Create(), DataStore.i);
+            hudController = new BackpackEditorHUDController(BackpackEditorHUDV2ComponentView.Create(), DataStore.i,
+                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
+                new UserProfileWebInterfaceBridge());
         }
 
         public void Dispose()

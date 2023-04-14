@@ -1,3 +1,6 @@
+using DCL.Components;
+using System;
+using System.Collections.Generic;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 
@@ -11,20 +14,41 @@ namespace DCL.Backpack
         [SerializeField] private SectionSelectorComponentView sectionSelector;
         [SerializeField] private GameObject avatarSection;
         [SerializeField] private GameObject emotesSection;
+        [SerializeField] private RectTransform wearablesContainer;
+        [SerializeField] private WearableGridItemComponentView wearableGridItemPrefab;
+        [SerializeField] private UIPageSelector pageSelector;
 
         public override bool isVisible => gameObject.activeInHierarchy;
 
+        private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
+
         private Transform thisTransform;
+        private Pool wearableGridItemsPool;
+
+        public event Action<int> OnWearablePageChanged;
 
         public override void Awake()
         {
             base.Awake();
-            thisTransform = transform;
-        }
 
-        public void Initialize()
-        {
-            ConfigureSectionSelector();
+            thisTransform = transform;
+            sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+            {
+                avatarSection.SetActive(isSelected);
+            });
+            sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+            {
+                emotesSection.SetActive(isSelected);
+            });
+
+            pageSelector.OnValueChanged += i => OnWearablePageChanged?.Invoke(i);
+
+            wearableGridItemsPool = PoolManager.i.AddPool(
+                $"GridWearableItems_{GetInstanceID()}",
+                Instantiate(wearableGridItemPrefab).gameObject,
+                maxPrewarmCount: 15,
+                isPersistent: true);
+            wearableGridItemsPool.ForcePrewarm();
         }
 
         public override void Dispose()
@@ -77,16 +101,30 @@ namespace DCL.Backpack
             rectTransform.offsetMin = Vector2.zero;
         }
 
-        private void ConfigureSectionSelector()
+        public void SetWearablePages(int currentPage, int totalPages)
         {
-            sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+            pageSelector.Setup(totalPages);
+            pageSelector.SelectPage(currentPage);
+        }
+
+        public void ShowWearables(IEnumerable<WearableGridItemModel> wearables)
+        {
+            foreach (WearableGridItemModel wearable in wearables)
             {
-                avatarSection.SetActive(isSelected);
-            });
-            sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
-            {
-                emotesSection.SetActive(isSelected);
-            });
+                PoolableObject poolObj = wearableGridItemsPool.Get();
+                WearableGridItemComponentView wearableGridItem = poolObj.gameObject.GetComponent<WearableGridItemComponentView>();
+                wearablePooledObjects[wearableGridItem] = poolObj;
+                wearableGridItem.SetModel(wearable);
+                wearableGridItem.transform.SetParent(wearablesContainer);
+            }
+        }
+
+        public void ClearWearables()
+        {
+            foreach ((WearableGridItemComponentView _, PoolableObject poolObj) in wearablePooledObjects)
+                poolObj.Release();
+
+            wearablePooledObjects.Clear();
         }
     }
 }
