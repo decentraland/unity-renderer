@@ -36,7 +36,6 @@ namespace DCL.Backpack
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
-            dataStore.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
             backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
             backpackEmotesSectionController.OnEmoteEquipped += OnEmoteEquipped;
@@ -49,7 +48,6 @@ namespace DCL.Backpack
             ownUserProfile.OnUpdate -= LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange -= SetVisibility;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
-            dataStore.exploreV2.isOpen.OnChange -= ExploreV2IsOpenChanged;
 
             backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
@@ -64,6 +62,8 @@ namespace DCL.Backpack
         {
             if (visible)
             {
+                avatarIsDirty = false;
+                backpackEmotesSectionController.RestoreEmoteSlots();
                 backpackEmotesSectionController.LoadEmotes();
                 LoadUserProfile(ownUserProfile, true);
                 view.Show();
@@ -82,16 +82,6 @@ namespace DCL.Backpack
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
-
-        private void ExploreV2IsOpenChanged(bool current, bool previous)
-        {
-            if (current || !avatarIsDirty)
-                return;
-
-            avatarIsDirty = false;
-            LoadUserProfile(ownUserProfile, true);
-            backpackEmotesSectionController.RestoreEmoteSlots();
-        }
 
         private void LoadUserProfile(UserProfile userProfile) =>
             LoadUserProfile(userProfile, false);
