@@ -320,7 +320,6 @@ namespace DCL.Components
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
-                SendMetric(FAILED_GLTFAST_LOAD_EVENT, targetUrl, $"Content provider does not contains url {targetUrl}");
                 OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"), hasFallback);
                 return;
             }
@@ -341,11 +340,7 @@ namespace DCL.Components
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            gltfastPromise.OnFailEvent += (asset, exception) =>
-            {
-                SendMetric(FAILED_GLTFAST_LOAD_EVENT, targetUrl, exception.Message);
-                OnFailWrapper(OnFail, exception, hasFallback);
-            };
+            gltfastPromise.OnFailEvent += (asset, exception) => { OnFailWrapper(OnFail, exception, hasFallback); };
 
             AssetPromiseKeeper_GLTFast_Instance.i.Keep(gltfastPromise);
         }
