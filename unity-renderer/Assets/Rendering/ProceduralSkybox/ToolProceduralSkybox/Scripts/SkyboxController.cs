@@ -133,6 +133,15 @@ namespace DCL.Skybox
             //Ensure current settings
             UseDynamicSkybox_OnChange(DataStore.i.skyboxConfig.mode.Get());
             FixedTime_OnChange(DataStore.i.skyboxConfig.fixedTime.Get());
+
+            // FD:: Asyncly search for main camera
+            await AssignCameraMainAsync();
+            // Run AssignCameraMainAsync every 1/3 of a second
+            while (!cameraMainFound)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(0.333));
+                await AssignCameraMainAsync();
+            }
         }
 
         private async UniTask LoadConfigurations(CancellationToken ct)
@@ -257,7 +266,7 @@ namespace DCL.Skybox
             }
         }
 
-        private void AssignCameraMain()
+        private async UniTask AssignCameraMainAsync()
         {
             if (cameraMainRef == null && Camera.main != null)
             {
@@ -492,8 +501,9 @@ namespace DCL.Skybox
         // Update is called once per frame
         public void Update()
         {
-            if (!cameraMainFound)
-                AssignCameraMain();
+            // FD:: commented
+            // if (!cameraMainFound)
+            //     AssignCameraMain();
 
             if (!DataStore.i.skyboxConfig.disableReflection.Get() && skyboxProbe != null && !probeParented)
             {
