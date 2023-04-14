@@ -111,7 +111,7 @@ namespace DCL.Backpack
 
             int wearablesCount = userProfile.avatar.wearables.Count;
 
-            if (!DataStore.i.common.isPlayerRendererLoaded.Get()) return;
+            if (!dataStore.common.isPlayerRendererLoaded.Get()) return;
 
             for (var i = 0; i < wearablesCount; i++)
             {
