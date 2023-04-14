@@ -92,9 +92,8 @@ namespace DCL.Backpack
         private void LoadUserProfile(UserProfile userProfile, bool forceLoading)
         {
             bool avatarEditorNotVisible = rendererState.Get() && !view.isVisible;
-            bool isPlaying = !Application.isBatchMode;
 
-            if (!forceLoading && isPlaying && avatarEditorNotVisible) return;
+            if (!forceLoading && avatarEditorNotVisible) return;
             if (userProfile == null) return;
             if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape)) return;
 
