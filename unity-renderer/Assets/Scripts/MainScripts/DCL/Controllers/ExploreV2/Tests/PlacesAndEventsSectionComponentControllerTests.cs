@@ -14,7 +14,7 @@ public class PlacesAndEventsSectionComponentControllerTests
     {
         placesAndEventsSectionComponentView = Substitute.For<IPlacesAndEventsSectionComponentView>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        placesAndEventsSectionComponentController = new PlacesAndEventsSectionComponentController(placesAndEventsSectionComponentView, exploreV2Analytics, DataStore.i);
+        placesAndEventsSectionComponentController = new PlacesAndEventsSectionComponentController(placesAndEventsSectionComponentView, exploreV2Analytics, DataStore.i, Substitute.For<IUserProfileBridge>());
     }
 
     [TearDown]

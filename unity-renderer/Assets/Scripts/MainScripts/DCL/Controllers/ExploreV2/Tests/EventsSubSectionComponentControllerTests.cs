@@ -12,6 +12,7 @@ public class EventsSubSectionComponentControllerTests
     private IEventsSubSectionComponentView eventsSubSectionComponentView;
     private IEventsAPIController eventsAPIController;
     private IExploreV2Analytics exploreV2Analytics;
+    private IUserProfileBridge userProfileBridge;
 
     [SetUp]
     public void SetUp()
@@ -23,7 +24,15 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics, DataStore.i);
+        userProfileBridge = Substitute.For<IUserProfileBridge>();
+        var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownUserProfile.UpdateData(new UserProfileModel
+        {
+            userId = "ownId",
+            hasConnectedWeb3 = true
+        });
+        userProfileBridge.GetOwn().Returns(ownUserProfile);
+        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics, DataStore.i, userProfileBridge);
     }
 
     [TearDown]

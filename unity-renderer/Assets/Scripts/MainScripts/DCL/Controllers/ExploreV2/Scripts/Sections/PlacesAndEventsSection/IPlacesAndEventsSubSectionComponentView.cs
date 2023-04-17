@@ -8,4 +8,5 @@ public interface IPlacesAndEventsSubSectionComponentView
     void SetAllAsLoading();
 
     int CurrentTilesPerRow { get; }
+    int CurrentGoingTilesPerRow { get; }
 }
