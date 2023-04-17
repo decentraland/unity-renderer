@@ -33,7 +33,8 @@ namespace DCL
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
 
-            // Addressable Resource Provider
+            //Addressable Resource Provider
+            var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
@@ -85,7 +86,7 @@ namespace DCL
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                     webInterfaceFriendsApiBridge,
                     RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
-                    DataStore.i), new RPCSocialApiBridge(MatrixInitializationBridge.i));
+                    DataStore.i), new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(), userProfileWebInterfaceBridge));
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
@@ -155,7 +156,7 @@ namespace DCL
             result.Register<IHUDController>(() => new HUDController(DataStore.i));
 
             result.Register<IChannelsFeatureFlagService>(() =>
-                new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
+                new ChannelsFeatureFlagService(DataStore.i, userProfileWebInterfaceBridge));
 
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 

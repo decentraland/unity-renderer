@@ -1,3 +1,5 @@
+using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using JetBrains.Annotations;
 using System;
@@ -9,11 +11,13 @@ namespace MainScripts.DCL.Controllers.FriendsController
     {
         public event Action<string> OnReceiveMatrixAccessToken;
 
-        public static MatrixInitializationBridge i { get; private set; }
-
-        void Awake()
+        public static MatrixInitializationBridge GetOrCreate()
         {
-            i = this;
+            var bridgeObj = SceneReferences.i?.bridgeGameObject;
+
+            return bridgeObj == null
+                ? new GameObject("Bridges").AddComponent<MatrixInitializationBridge>()
+                : bridgeObj.GetOrCreateComponent<MatrixInitializationBridge>();
         }
 
         [PublicAPI]

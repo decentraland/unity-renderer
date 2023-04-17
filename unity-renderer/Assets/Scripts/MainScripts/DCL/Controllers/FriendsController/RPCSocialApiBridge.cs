@@ -24,6 +24,8 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         private string accessToken;
 
+        private readonly IUserProfileBridge userProfileWebInterfaceBridge;
+
         public event Action<UserStatus> OnFriendAdded;
         public event Action<string> OnFriendRemoved;
         public event Action<FriendRequest> OnFriendRequestAdded;
@@ -34,9 +36,10 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         private ClientFriendshipsService socialClient;
 
-        public RPCSocialApiBridge(MatrixInitializationBridge matrixInitializationBridge)
+        public RPCSocialApiBridge(MatrixInitializationBridge matrixInitializationBridge, IUserProfileBridge userProfileWebInterfaceBridge)
         {
             matrixInitializationBridge.OnReceiveMatrixAccessToken += (token) => { this.accessToken = token; };
+            this.userProfileWebInterfaceBridge = userProfileWebInterfaceBridge;
         }
 
         public async UniTaskVoid InitializeClient(CancellationToken cancellationToken = default)
@@ -46,6 +49,8 @@ namespace MainScripts.DCL.Controllers.FriendsController
             var socialPort = await client.CreatePort("social-service-port");
             var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
             socialClient = new ClientFriendshipsService(module);
+
+            InitializeSubscriptions(cancellationToken).Forget();
         }
 
         public async UniTaskVoid InitializeSubscriptions(CancellationToken cancellationToken = default)
@@ -72,16 +77,16 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var ownUserProfile = UserProfile.GetOwnUserProfile();
+            var ownUserProfile = userProfileWebInterfaceBridge.GetOwn();
 
             await UniTask.WaitUntil(() =>
-                    !string.IsNullOrEmpty(ownUserProfile.userId) && !string.IsNullOrEmpty(this.accessToken),
+                    !string.IsNullOrEmpty(ownUserProfile.userId) && !string.IsNullOrEmpty(accessToken),
                 PlayerLoopTiming.Update,
                 cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var friendsStream = socialClient.GetFriends(new Payload() { SynapseToken = this.accessToken });
+            var friendsStream = socialClient.GetFriends(new Payload() { SynapseToken = accessToken });
 
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
@@ -113,7 +118,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         public async UniTask ListenToFriendEvents(CancellationToken cancellationToken = default)
         {
-            var ownUserProfile = UserProfile.GetOwnUserProfile();
+            var ownUserProfile = userProfileWebInterfaceBridge.GetOwn();
 
             await UniTask.WaitUntil(() => ownUserProfile.userId != null, PlayerLoopTiming.Update, cancellationToken);
 
@@ -199,6 +204,8 @@ namespace MainScripts.DCL.Controllers.FriendsController
                 var response = await socialClient
                                     .UpdateFriendshipEvent(updateFriendshipPayload)
                                     .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 switch (response.ResponseCase)
                 {

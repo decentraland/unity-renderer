@@ -60,7 +60,6 @@ namespace DCL.Social.Friends
 
             socialApiBridge.InitializeClient(controllerCancellationTokenSource.Token).Forget();
             socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.InitializeFriendships).Forget();
-            socialApiBridge.InitializeSubscriptions(controllerCancellationTokenSource.Token).Forget();
         }
 
         public void Dispose()
@@ -77,18 +76,20 @@ namespace DCL.Social.Friends
         // TODO (Joni): Replace by AddFriendRequests, this is just for successful compilation
         private void AddFriendRequest(FriendRequest friendRequest)
         {
-            this.friendRequests.Add(friendRequest.FriendRequestId, friendRequest);
+            this.friendRequests[friendRequest.FriendRequestId] = friendRequest;
         }
 
         private void AddFriend(UserStatus friend)
         {
-            this.friends.Add(friend.userId, friend);
+            this.friends[friend.userId] = friend;
+
             // todo (Joni): call onTotalFriendCountUpdated
         }
 
         private void InternalRemoveFriend(string userId)
         {
             this.friends.Remove(userId);
+
             // todo (Joni)
         }
 

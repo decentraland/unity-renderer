@@ -24,7 +24,7 @@ namespace DCL.Social.Friends
             apiBridge = Substitute.For<IFriendsApiBridge>();
             GameObject go = new GameObject();
             var component = go.AddComponent<MatrixInitializationBridge>();
-            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component));
+            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component,new UserProfileWebInterfaceBridge()));
         }
 
         [Test]

@@ -97,7 +97,8 @@ namespace DCL.Social.Friends
 
             GameObject go = new GameObject();
             var component = go.AddComponent<MatrixInitializationBridge>();
-            rpcSocialApiBridge = new RPCSocialApiBridge(component);
+            var userProfileBridge = Substitute.For<IUserProfileBridge>();
+            rpcSocialApiBridge = new RPCSocialApiBridge(component, userProfileBridge);
         }
 
         [UnityTest]
