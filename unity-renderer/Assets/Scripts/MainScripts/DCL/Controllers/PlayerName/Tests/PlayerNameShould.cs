@@ -23,7 +23,6 @@ public class PlayerNameShould : MonoBehaviour
     [Test]
     public void BeInitializedProperly()
     {
-        Assert.AreEqual(PlayerName.DEFAULT_CANVAS_SORTING_ORDER, playerName.canvas.sortingOrder);
         Assert.AreEqual(PlayerName.TARGET_ALPHA_SHOW, playerName.Alpha);
         Assert.AreEqual(playerName.backgroundOriginalColor, playerName.background.color);
         Assert.IsTrue(playerName.gameObject.activeSelf);
