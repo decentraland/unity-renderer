@@ -24,6 +24,8 @@ namespace RPC.Services
         // to be able to access request.Entity properties.
         private static readonly UnloadSceneResult defaultUnloadSceneResult = new UnloadSceneResult();
 
+        private static readonly SendBatchResponse defaultSendBatchResult = new SendBatchResponse();
+
         private const string REQUIRED_PORT_ID_START = "scene-";
 
         private int sceneNumber = -1;
@@ -272,6 +274,14 @@ namespace RPC.Services
             }
 
             return result;
+        }
+
+        
+        public async UniTask<SendBatchResponse> SendBatch(SendBatchRequest request, RPCContext context, CancellationToken ct)
+        {
+            await UniTask.SwitchToMainThread(ct);
+
+            return defaultSendBatchResult;
         }
     }
 }
