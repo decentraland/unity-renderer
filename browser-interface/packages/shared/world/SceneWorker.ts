@@ -43,6 +43,7 @@ import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
 import { protobufMsgBridge } from 'unity-interface/protobufMessagesBridge'
 import { PositionReport } from './positionThings'
+import { EntityAction as ProtocolEntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_interface_ecs6.gen'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -355,14 +356,14 @@ export class SceneWorker {
       if (!(this.ready & SceneWorkerReadyState.INITIALIZED)) {
         // this message should be sent upon failure to unlock the loading screen
         // when a scene is malformed and never emits InitMessagesFinished
-        this.sendBatch([{ payload: {}, type: 'InitMessagesFinished' }])
+        this.sendBatch([{ payload: { payload: { $case: 'initMessagesFinished', initMessagesFinished: {} } } }])
       }
 
       sceneEvents.emit(SCENE_FAIL, signalSceneFail(this.loadableScene))
     }
   }
 
-  private sendBatch(actions: EntityAction[]): void {
+  private sendBatch(actions: ProtocolEntityAction[]): void {
     if (this.loadableScene.id === 'dcl-gs-avatars') {
       incrementAvatarSceneMessages(actions.length)
     }
@@ -372,24 +373,15 @@ export class SceneWorker {
     if (!(this.ready & SceneWorkerReadyState.INITIALIZED)) {
       let present = false
       for (const action of actions) {
-        if (action.type === 'InitMessagesFinished') {
+        if (action.payload?.payload?.$case === 'initMessagesFinished') {
           present = true
           break
         }
       }
       if (!present) {
-        actions.push({
-          payload: {},
-          type: 'InitMessagesFinished'
-        })
+        actions.push({ payload: { payload: { $case: 'initMessagesFinished', initMessagesFinished: {} } } })
       }
       this.ready |= SceneWorkerReadyState.INITIALIZED
-    }
-
-    if (WSS_ENABLED || FORCE_SEND_MESSAGE) {
-      this.sendBatchWss(actions)
-    } else {
-      this.sendBatchNative(actions)
     }
   }
 
