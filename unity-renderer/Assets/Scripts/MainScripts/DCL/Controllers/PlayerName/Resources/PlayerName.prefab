@@ -315,6 +315,9 @@ MonoBehaviour:
   - {fileID: 124956044704516276}
   - {fileID: 6949274578128789743}
   - {fileID: 8369489764371317906}
+  nameMaterial: {fileID: 2100000, guid: 94bcf48f866a3b745ad66a6ab5f880eb, type: 2}
+  nameOnTopMaterial: {fileID: 2100000, guid: 62052bdd8fed78342a91fa0caa1cd358, type: 2}
+  bgOnTopMaterial: {fileID: 2100000, guid: 28c3b9df49eb5f84e84b00fb2fea0ddc, type: 2}
 --- !u!1 &4317848905128615993
 GameObject:
   m_ObjectHideFlags: 0
@@ -367,7 +370,7 @@ CanvasRenderer:
   m_CullTransparentMesh: 0
 --- !u!95 &4757240879941231793
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -384,7 +387,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &7775891645253354126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -509,7 +513,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6835120704062189924}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -566,7 +570,7 @@ MonoBehaviour:
   m_text: Player Name
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 94bcf48f866a3b745ad66a6ab5f880eb, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
