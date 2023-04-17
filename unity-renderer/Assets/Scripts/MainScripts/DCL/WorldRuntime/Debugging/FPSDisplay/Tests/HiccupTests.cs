@@ -1,32 +1,17 @@
 using DCL.FPSDisplay;
 using NUnit.Framework;
 using UnityEngine;
-using System.Collections;
 
 namespace FPSDisplayTests
 {
     public class HiccupTests
     {
-        [Test]
-        public void BehavesLikeFPSCounter()
-        {
-            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter();
-
-            const float tenMillis = 0.01f;
-            const float expectedFps = 100.0f;
-
-            for (int i = 0; i < 100; i++)
-            {
-                counter.AddDeltaTime(tenMillis);
-            }
-
-            Assert.AreEqual(counter.CurrentFPSCount(), expectedFps);
-        }
+        private const int SAMPLES_SIZE = 1000;
 
         [Test]
         public void DetectsOneHiccup()
         {
-            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter();
+            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter(SAMPLES_SIZE);
 
             const float tenMillis = 0.01f;
 
@@ -43,7 +28,7 @@ namespace FPSDisplayTests
         [Test]
         public void CorrectlyAccountsTimeInHiccups()
         {
-            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter();
+            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter(SAMPLES_SIZE);
 
             float hiccups = 0.0f;
             int hiccupCount = 0;
@@ -66,7 +51,7 @@ namespace FPSDisplayTests
         [Test]
         public void GetSumOfHiccupsAndTime()
         {
-            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter();
+            LinealBufferHiccupCounter counter = new LinealBufferHiccupCounter(SAMPLES_SIZE);
 
             float hiccups = 0.0f;
             float totalTime = 0.0f;
@@ -82,20 +67,21 @@ namespace FPSDisplayTests
             for (int i = 0; i < 1000; i++)
             {
                 float value = Random.Range(0.001f, 1f);
-                totalTime += value;
+
                 if (value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS)
                 {
                     hiccupCount += 1;
                     hiccups += value;
                 }
 
+                totalTime += value;
                 counter.AddDeltaTime(value);
             }
 
             const float eps = 0.002f;
             Assert.LessOrEqual(Mathf.Abs(counter.HiccupsSum - hiccups), eps);
             Assert.AreEqual(counter.HiccupsCountInBuffer, hiccupCount);
-            Assert.LessOrEqual(Mathf.Abs(counter.GetTotalSeconds() - totalTime), eps);
+            Assert.LessOrEqual(Mathf.Abs(counter.TotalSeconds - totalTime), eps);
         }
     }
 }

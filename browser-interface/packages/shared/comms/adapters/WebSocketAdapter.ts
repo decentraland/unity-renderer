@@ -131,7 +131,7 @@ export class WebSocketAdapter implements MinimumCommunicationsAdapter {
     }
   }
 
-  async getVoiceHandler(): Promise<VoiceHandler> {
+  async createVoiceHandler(): Promise<VoiceHandler> {
     return createOpusVoiceHandler()
   }
 

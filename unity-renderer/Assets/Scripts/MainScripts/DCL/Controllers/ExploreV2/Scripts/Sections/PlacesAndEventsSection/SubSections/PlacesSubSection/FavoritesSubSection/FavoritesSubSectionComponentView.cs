@@ -41,6 +41,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
     public void SetAllAsLoading() => SetFavoritesAsLoading(true);
     public void SetShowMoreButtonActive(bool isActive) => SetShowMoreFavoritesButtonActive(isActive);
     public int CurrentTilesPerRow => currentFavoritePlacesPerRow;
+    public int CurrentGoingTilesPerRow { get; }
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
