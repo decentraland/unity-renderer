@@ -140,7 +140,7 @@ function* reportScenesWorldContext(action: ReportScenesWorldContext) {
       })
     }
   })
-  getUnityInstance().UpdateMinimapSceneInformation(minimapSceneInfoResult)
+  getUnityInstance().UpdateMinimapSceneInformationFromAWorld(minimapSceneInfoResult)
 }
 
 function* initializePois() {
