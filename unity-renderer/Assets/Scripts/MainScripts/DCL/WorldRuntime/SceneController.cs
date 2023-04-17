@@ -288,6 +288,10 @@ namespace DCL
                             if (msgPayload is Protocol.SharedComponentUpdate payload)
                                 delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.componentId, payload.json) as IDelayedComponent;
 
+                            // delayedComponent = object {
+                            //     withCollisions: 
+                            //     uvs: []
+                            // }
                             break;
                         }
 

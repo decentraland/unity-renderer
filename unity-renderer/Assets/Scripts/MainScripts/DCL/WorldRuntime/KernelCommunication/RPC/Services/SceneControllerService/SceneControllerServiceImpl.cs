@@ -281,6 +281,37 @@ namespace RPC.Services
         {
             await UniTask.SwitchToMainThread(ct);
 
+            // switch (request.type) { 
+            //     case EntityActionType.EAT_UPDATE_ENTITY_COMPONENT:
+            //     {
+            //         var delayedComponent;
+            //         switch (request.payload.componentDataCase) {
+            //                 case ComponentData.ComponetDataOneofCase.BoxShape:
+            //                     delayedComponent = request.payload.componentUpdate.componentData.boxShape;
+            //                     // delayedComponent = object {
+            //                     //     withCollisions: false,
+            //                     //     visible: true,
+            //                     //     uvs: []
+            //                     // }
+            //         }
+
+            //         break;
+            //     }
+            //     case EntityActionType.EAT_COMPONENT_UPDATE:
+            //     {
+            //         // we have the COMPONENT id
+            //         var componentId = request.payload.id;
+            //         // at some point we need creating this function getClassIdFromComponentId
+            //         var classId = getClassIdFromComponentId(componentId);
+
+            //         // in this case i don't how tot get .boxSHape property
+            //         var delayedComponent = request.payload.componentUpdate.componentData.boxShape;
+                   
+
+            //         break;
+            //     }
+            // }
+
             return defaultSendBatchResult;
         }
     }

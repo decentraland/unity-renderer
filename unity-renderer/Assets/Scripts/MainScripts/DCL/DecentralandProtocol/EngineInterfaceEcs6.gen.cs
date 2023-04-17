@@ -29,132 +29,117 @@ namespace Decentraland.Sdk.Ecs6 {
             "ZGsvZWNzNi9jb21wb25lbnRzX2VjczYucHJvdG8iIgoTT3BlbkV4dGVybmFs",
             "VXJsQm9keRILCgN1cmwYASABKAkiZwoRT3Blbk5GVERpYWxvZ0JvZHkSHgoW",
             "YXNzZXRfY29udHJhY3RfYWRkcmVzcxgBIAEoCRIQCgh0b2tlbl9pZBgCIAEo",
-            "CRIUCgdjb21tZW50GAMgASgJSACIAQFCCgoIX2NvbW1lbnQi3hQKFENvbXBv",
-            "bmVudEJvZHlQYXlsb2FkElQKFGF2YXRhcl9tb2RpZmllcl9hcmVhGAEgASgL",
+            "CRIUCgdjb21tZW50GAMgASgJSACIAQFCCgoIX2NvbW1lbnQitRUKFENvbXBv",
+            "bmVudEJvZHlQYXlsb2FkElYKFGF2YXRhcl9tb2RpZmllcl9hcmVhGAEgASgL",
             "MjYuZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRBdmF0YXJN",
-            "b2RpZmllckFyZWESQAoJdHJhbnNmb3JtGAIgASgLMi0uZGVjZW50cmFsYW5k",
-            "LnNkay5lY3M2LkVDUzZDb21wb25lbnRUcmFuc2Zvcm0STAoQYXR0YWNoX3Rv",
-            "X2F2YXRhchgDIAEoCzIyLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2Q29t",
-            "cG9uZW50QXR0YWNoVG9BdmF0YXISQAoJYmlsbGJvYXJkGAQgASgLMi0uZGVj",
-            "ZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRCaWxsYm9hcmQSPwoJ",
-            "Ym94X3NoYXBlGAUgASgLMiwuZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZD",
-            "b21wb25lbnRCb3hTaGFwZRJFCgxzcGhlcmVfc2hhcGUYBiABKAsyLy5kZWNl",
-            "bnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFNwaGVyZVNoYXBlEkUK",
-            "DGNpcmNsZV9zaGFwZRgHIAEoCzIvLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5F",
-            "Q1M2Q29tcG9uZW50Q2lyY2xlU2hhcGUSQwoLcGxhbmVfc2hhcGUYCCABKAsy",
-            "Li5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFBsYW5lU2hh",
-            "cGUSQQoKY29uZV9zaGFwZRgJIAEoCzItLmRlY2VudHJhbGFuZC5zZGsuZWNz",
-            "Ni5FQ1M2Q29tcG9uZW50Q29uZVNoYXBlEkkKDmN5bGluZGVyX3NoYXBlGAog",
-            "ASgLMjEuZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRDeWxp",
-            "bmRlclNoYXBlEkEKCmdsdGZfc2hhcGUYCyABKAsyLS5kZWNlbnRyYWxhbmQu",
-            "c2RrLmVjczYuRUNTNkNvbXBvbmVudEdsdGZTaGFwZRI/CgluZnRfc2hhcGUY",
-            "DCABKAsyLC5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudE5m",
-            "dFNoYXBlEjwKB3RleHR1cmUYDSABKAsyKy5kZWNlbnRyYWxhbmQuc2RrLmVj",
-            "czYuRUNTNkNvbXBvbmVudFRleHR1cmUSPgoIYW5pbWF0b3IYDiABKAsyLC5k",
-            "ZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudEFuaW1hdG9yEj8K",
-            "CW9ial9zaGFwZRgPIAEoCzIsLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2",
-            "Q29tcG9uZW50T2JqU2hhcGUSNgoEZm9udBgQIAEoCzIoLmRlY2VudHJhbGFu",
-            "ZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50Rm9udBJBCgp0ZXh0X3NoYXBlGBEg",
-            "ASgLMi0uZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRUZXh0",
-            "U2hhcGUSPgoIbWF0ZXJpYWwYEiABKAsyLC5kZWNlbnRyYWxhbmQuc2RrLmVj",
-            "czYuRUNTNkNvbXBvbmVudE1hdGVyaWFsEkkKDmJhc2ljX21hdGVyaWFsGBMg",
-            "ASgLMjEuZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRCYXNp",
-            "Y01hdGVyaWFsEkcKDXV1aWRfY2FsbGJhY2sYFCABKAsyMC5kZWNlbnRyYWxh",
-            "bmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFV1aWRDYWxsYmFjaxJBCgpzbWFy",
-            "dF9pdGVtGBUgASgLMi0uZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21w",
-            "b25lbnRTbWFydEl0ZW0SQQoKdmlkZW9fY2xpcBgWIAEoCzItLmRlY2VudHJh",
-            "bGFuZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50VmlkZW9DbGlwEkcKDXZpZGVv",
-            "X3RleHR1cmUYFyABKAsyMC5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNv",
-            "bXBvbmVudFZpZGVvVGV4dHVyZRJMChBjYW1lcmFfbW9kZV9hcmVhGBggASgL",
-            "MjIuZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRDYW1lcmFN",
-            "b2RlQXJlYRJJCg5hdmF0YXJfdGV4dHVyZRgZIAEoCzIxLmRlY2VudHJhbGFu",
-            "ZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50QXZhdGFyVGV4dHVyZRJBCgphdWRp",
-            "b19jbGlwGBogASgLMi0uZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21w",
-            "b25lbnRBdWRpb0NsaXASRQoMYXVkaW9fc291cmNlGBsgASgLMi8uZGVjZW50",
-            "cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRBdWRpb1NvdXJjZRJFCgxh",
-            "dWRpb19zdHJlYW0YHCABKAsyLy5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNT",
-            "NkNvbXBvbmVudEF1ZGlvU3RyZWFtEkUKDGF2YXRhcl9zaGFwZRgdIAEoCzIv",
-            "LmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50QXZhdGFyU2hh",
-            "cGUSOgoGZ2l6bW9zGB4gASgLMiouZGVjZW50cmFsYW5kLnNkay5lY3M2LkVD",
-            "UzZDb21wb25lbnRHaXptb3MSPQoIdWlfc2hhcGUYHyABKAsyKy5kZWNlbnRy",
-            "YWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFVpU2hhcGUSTgoRdWlfY29u",
-            "dGFpbmVyX3JlY3QYICABKAsyMy5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNT",
-            "NkNvbXBvbmVudFVpQ29udGFpbmVyUmVjdBJQChJ1aV9jb250YWluZXJfc3Rh",
-            "Y2sYISABKAsyNC5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVu",
-            "dFVpQ29udGFpbmVyU3RhY2sSPwoJdWlfYnV0dG9uGCIgASgLMiwuZGVjZW50",
-            "cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRVaUJ1dHRvbhI7Cgd1aV90",
-            "ZXh0GCMgASgLMiouZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25l",
-            "bnRVaVRleHQSRgoNdWlfaW5wdXRfdGV4dBgkIAEoCzIvLmRlY2VudHJhbGFu",
-            "ZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50VWlJbnB1dFRleHQSPQoIdWlfaW1h",
-            "Z2UYJSABKAsyKy5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVu",
-            "dFVpSW1hZ2USSAoOdWlfc2Nyb2xsX3JlY3QYJiABKAsyMC5kZWNlbnRyYWxh",
-            "bmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFVpU2Nyb2xsUmVjdCIeChBDcmVh",
-            "dGVFbnRpdHlCb2R5EgoKAmlkGAEgASgJIh4KEFJlbW92ZUVudGl0eUJvZHkS",
-            "CgoCaWQYASABKAkikwEKGVVwZGF0ZUVudGl0eUNvbXBvbmVudEJvZHkSEQoJ",
-            "ZW50aXR5X2lkGAEgASgJEhAKCGNsYXNzX2lkGAIgASgFEgwKBG5hbWUYAyAB",
-            "KAkSQwoOY29tcG9uZW50X2RhdGEYBCABKAsyKy5kZWNlbnRyYWxhbmQuc2Rr",
-            "LmVjczYuQ29tcG9uZW50Qm9keVBheWxvYWQiSAoZQXR0YWNoRW50aXR5Q29t",
-            "cG9uZW50Qm9keRIRCgllbnRpdHlfaWQYASABKAkSDAoEbmFtZRgCIAEoCRIK",
-            "CgJpZBgDIAEoCSI3ChRDb21wb25lbnRSZW1vdmVkQm9keRIRCgllbnRpdHlf",
-            "aWQYASABKAkSDAoEbmFtZRgCIAEoCSI7ChNTZXRFbnRpdHlQYXJlbnRCb2R5",
-            "EhEKCWVudGl0eV9pZBgBIAEoCRIRCglwYXJlbnRfaWQYAiABKAkiUAoJUXVl",
-            "cnlCb2R5EjIKCHF1ZXJ5X2lkGAEgASgOMiAuZGVjZW50cmFsYW5kLnNkay5l",
-            "Y3M2LlF1ZXJ5VHlwZRIPCgdwYXlsb2FkGAIgASgJIkIKFENvbXBvbmVudENy",
-            "ZWF0ZWRCb2R5EgoKAmlkGAEgASgJEhAKCGNsYXNzX2lkGAIgASgFEgwKBG5h",
-            "bWUYAyABKAkiIwoVQ29tcG9uZW50RGlzcG9zZWRCb2R5EgoKAmlkGAEgASgJ",
-            "ImcKFENvbXBvbmVudFVwZGF0ZWRCb2R5EgoKAmlkGAEgASgJEkMKDmNvbXBv",
-            "bmVudF9kYXRhGAIgASgLMisuZGVjZW50cmFsYW5kLnNkay5lY3M2LkNvbXBv",
-            "bmVudEJvZHlQYXlsb2FkIhoKGEluaXRNZXNzYWdlc0ZpbmlzaGVkQm9keSKL",
-            "CgoTRW50aXR5QWN0aW9uUGF5bG9hZBJKChFvcGVuX2V4dGVybmFsX3VybBgB",
-            "IAEoCzIqLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5PcGVuRXh0ZXJuYWxVcmxC",
-            "b2R5SACIAQESRgoPb3Blbl9uZnRfZGlhbG9nGAIgASgLMiguZGVjZW50cmFs",
-            "YW5kLnNkay5lY3M2Lk9wZW5ORlREaWFsb2dCb2R5SAGIAQESQwoNY3JlYXRl",
-            "X2VudGl0eRgDIAEoCzInLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5DcmVhdGVF",
-            "bnRpdHlCb2R5SAKIAQESQwoNcmVtb3ZlX2VudGl0eRgEIAEoCzInLmRlY2Vu",
-            "dHJhbGFuZC5zZGsuZWNzNi5SZW1vdmVFbnRpdHlCb2R5SAOIAQESVgoXdXBk",
-            "YXRlX2VudGl0eV9jb21wb25lbnQYBSABKAsyMC5kZWNlbnRyYWxhbmQuc2Rr",
-            "LmVjczYuVXBkYXRlRW50aXR5Q29tcG9uZW50Qm9keUgEiAEBElYKF2F0dGFj",
-            "aF9lbnRpdHlfY29tcG9uZW50GAYgASgLMjAuZGVjZW50cmFsYW5kLnNkay5l",
-            "Y3M2LkF0dGFjaEVudGl0eUNvbXBvbmVudEJvZHlIBYgBARJLChFjb21wb25l",
-            "bnRfcmVtb3ZlZBgHIAEoCzIrLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5Db21w",
-            "b25lbnRSZW1vdmVkQm9keUgGiAEBEkoKEXNldF9lbnRpdHlfcGFyZW50GAgg",
-            "ASgLMiouZGVjZW50cmFsYW5kLnNkay5lY3M2LlNldEVudGl0eVBhcmVudEJv",
-            "ZHlIB4gBARI0CgVxdWVyeRgJIAEoCzIgLmRlY2VudHJhbGFuZC5zZGsuZWNz",
-            "Ni5RdWVyeUJvZHlICIgBARJLChFjb21wb25lbnRfY3JlYXRlZBgKIAEoCzIr",
-            "LmRlY2VudHJhbGFuZC5zZGsuZWNzNi5Db21wb25lbnRDcmVhdGVkQm9keUgJ",
-            "iAEBEk0KEmNvbXBvbmVudF9kaXNwb3NlZBgLIAEoCzIsLmRlY2VudHJhbGFu",
-            "ZC5zZGsuZWNzNi5Db21wb25lbnREaXNwb3NlZEJvZHlICogBARJLChFjb21w",
-            "b25lbnRfdXBkYXRlZBgMIAEoCzIrLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5D",
-            "b21wb25lbnRVcGRhdGVkQm9keUgLiAEBElQKFmluaXRfbWVzc2FnZXNfZmlu",
-            "aXNoZWQYDSABKAsyLy5kZWNlbnRyYWxhbmQuc2RrLmVjczYuSW5pdE1lc3Nh",
-            "Z2VzRmluaXNoZWRCb2R5SAyIAQFCFAoSX29wZW5fZXh0ZXJuYWxfdXJsQhIK",
-            "EF9vcGVuX25mdF9kaWFsb2dCEAoOX2NyZWF0ZV9lbnRpdHlCEAoOX3JlbW92",
-            "ZV9lbnRpdHlCGgoYX3VwZGF0ZV9lbnRpdHlfY29tcG9uZW50QhoKGF9hdHRh",
-            "Y2hfZW50aXR5X2NvbXBvbmVudEIUChJfY29tcG9uZW50X3JlbW92ZWRCFAoS",
-            "X3NldF9lbnRpdHlfcGFyZW50QggKBl9xdWVyeUIUChJfY29tcG9uZW50X2Ny",
-            "ZWF0ZWRCFQoTX2NvbXBvbmVudF9kaXNwb3NlZEIUChJfY29tcG9uZW50X3Vw",
-            "ZGF0ZWRCGQoXX2luaXRfbWVzc2FnZXNfZmluaXNoZWQinAEKDEVudGl0eUFj",
-            "dGlvbhI1CgR0eXBlGAEgASgOMicuZGVjZW50cmFsYW5kLnNkay5lY3M2LkVu",
-            "dGl0eUFjdGlvblR5cGUSEAoDdGFnGAIgASgJSACIAQESOwoHcGF5bG9hZBgD",
-            "IAEoCzIqLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FbnRpdHlBY3Rpb25QYXls",
-            "b2FkQgYKBF90YWcqeQoJUXVlcnlUeXBlEhkKFVFUX0lOVkFMSURfUVVFUllf",
-            "VFlQRRAAEhAKDFFUX0hJVF9GSVJTVBABEg4KClFUX0hJVF9BTEwQAhIXChNR",
-            "VF9ISVRfRklSU1RfQVZBVEFSEAMSFgoSUVRfSElUX0FMTF9BVkFUQVJTEAQq",
-            "hgMKEEVudGl0eUFjdGlvblR5cGUSFwoTRUFUX0lOVkFMSURfRUFfVFlQRRAA",
-            "EhkKFUVBVF9PUEVOX0VYVEVSTkFMX1VSTBABEhcKE0VBVF9PUEVOX05GVF9E",
-            "SUFMT0cQAhIVChFFQVRfQ1JFQVRFX0VOVElUWRADEhUKEUVBVF9SRU1PVkVf",
-            "RU5USVRZEAQSHwobRUFUX1VQREFURV9FTlRJVFlfQ09NUE9ORU5UEAUSHwob",
-            "RUFUX0FUVEFDSF9FTlRJVFlfQ09NUE9ORU5UEAYSGQoVRUFUX0NPTVBPTkVO",
-            "VF9SRU1PVkVEEAcSGQoVRUFUX1NFVF9FTlRJVFlfUEFSRU5UEAgSDQoJRUFU",
-            "X1FVRVJZEAkSGQoVRUFUX0NPTVBPTkVOVF9DUkVBVEVEEAoSGgoWRUFUX0NP",
-            "TVBPTkVOVF9ESVNQT1NFRBALEhkKFUVBVF9DT01QT05FTlRfVVBEQVRFRBAM",
-            "Eh4KGkVBVF9JTklUX01FU1NBR0VTX0ZJTklTSEVEEA1iBnByb3RvMw=="));
+            "b2RpZmllckFyZWFIABJCCgl0cmFuc2Zvcm0YAiABKAsyLS5kZWNlbnRyYWxh",
+            "bmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFRyYW5zZm9ybUgAEk4KEGF0dGFj",
+            "aF90b19hdmF0YXIYAyABKAsyMi5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNT",
+            "NkNvbXBvbmVudEF0dGFjaFRvQXZhdGFySAASQgoJYmlsbGJvYXJkGAQgASgL",
+            "Mi0uZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRCaWxsYm9h",
+            "cmRIABJBCglib3hfc2hhcGUYBSABKAsyLC5kZWNlbnRyYWxhbmQuc2RrLmVj",
+            "czYuRUNTNkNvbXBvbmVudEJveFNoYXBlSAASRwoMc3BoZXJlX3NoYXBlGAYg",
+            "ASgLMi8uZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRTcGhl",
+            "cmVTaGFwZUgAEkcKDGNpcmNsZV9zaGFwZRgHIAEoCzIvLmRlY2VudHJhbGFu",
+            "ZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50Q2lyY2xlU2hhcGVIABJFCgtwbGFu",
+            "ZV9zaGFwZRgIIAEoCzIuLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2Q29t",
+            "cG9uZW50UGxhbmVTaGFwZUgAEkMKCmNvbmVfc2hhcGUYCSABKAsyLS5kZWNl",
+            "bnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudENvbmVTaGFwZUgAEksK",
+            "DmN5bGluZGVyX3NoYXBlGAogASgLMjEuZGVjZW50cmFsYW5kLnNkay5lY3M2",
+            "LkVDUzZDb21wb25lbnRDeWxpbmRlclNoYXBlSAASQwoKZ2x0Zl9zaGFwZRgL",
+            "IAEoCzItLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50R2x0",
+            "ZlNoYXBlSAASQQoJbmZ0X3NoYXBlGAwgASgLMiwuZGVjZW50cmFsYW5kLnNk",
+            "ay5lY3M2LkVDUzZDb21wb25lbnROZnRTaGFwZUgAEj4KB3RleHR1cmUYDSAB",
+            "KAsyKy5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFRleHR1",
+            "cmVIABJACghhbmltYXRvchgOIAEoCzIsLmRlY2VudHJhbGFuZC5zZGsuZWNz",
+            "Ni5FQ1M2Q29tcG9uZW50QW5pbWF0b3JIABJBCglvYmpfc2hhcGUYDyABKAsy",
+            "LC5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudE9ialNoYXBl",
+            "SAASOAoEZm9udBgQIAEoCzIoLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2",
+            "Q29tcG9uZW50Rm9udEgAEkMKCnRleHRfc2hhcGUYESABKAsyLS5kZWNlbnRy",
+            "YWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFRleHRTaGFwZUgAEkAKCG1h",
+            "dGVyaWFsGBIgASgLMiwuZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21w",
+            "b25lbnRNYXRlcmlhbEgAEksKDmJhc2ljX21hdGVyaWFsGBMgASgLMjEuZGVj",
+            "ZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25lbnRCYXNpY01hdGVyaWFs",
+            "SAASSQoNdXVpZF9jYWxsYmFjaxgUIAEoCzIwLmRlY2VudHJhbGFuZC5zZGsu",
+            "ZWNzNi5FQ1M2Q29tcG9uZW50VXVpZENhbGxiYWNrSAASQwoKc21hcnRfaXRl",
+            "bRgVIAEoCzItLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50",
+            "U21hcnRJdGVtSAASQwoKdmlkZW9fY2xpcBgWIAEoCzItLmRlY2VudHJhbGFu",
+            "ZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50VmlkZW9DbGlwSAASSQoNdmlkZW9f",
+            "dGV4dHVyZRgXIAEoCzIwLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2Q29t",
+            "cG9uZW50VmlkZW9UZXh0dXJlSAASTgoQY2FtZXJhX21vZGVfYXJlYRgYIAEo",
+            "CzIyLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50Q2FtZXJh",
+            "TW9kZUFyZWFIABJLCg5hdmF0YXJfdGV4dHVyZRgZIAEoCzIxLmRlY2VudHJh",
+            "bGFuZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50QXZhdGFyVGV4dHVyZUgAEkMK",
+            "CmF1ZGlvX2NsaXAYGiABKAsyLS5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNT",
+            "NkNvbXBvbmVudEF1ZGlvQ2xpcEgAEkcKDGF1ZGlvX3NvdXJjZRgbIAEoCzIv",
+            "LmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50QXVkaW9Tb3Vy",
+            "Y2VIABJHCgxhdWRpb19zdHJlYW0YHCABKAsyLy5kZWNlbnRyYWxhbmQuc2Rr",
+            "LmVjczYuRUNTNkNvbXBvbmVudEF1ZGlvU3RyZWFtSAASRwoMYXZhdGFyX3No",
+            "YXBlGB0gASgLMi8uZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21wb25l",
+            "bnRBdmF0YXJTaGFwZUgAEjwKBmdpem1vcxgeIAEoCzIqLmRlY2VudHJhbGFu",
+            "ZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50R2l6bW9zSAASPwoIdWlfc2hhcGUY",
+            "HyABKAsyKy5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFVp",
+            "U2hhcGVIABJQChF1aV9jb250YWluZXJfcmVjdBggIAEoCzIzLmRlY2VudHJh",
+            "bGFuZC5zZGsuZWNzNi5FQ1M2Q29tcG9uZW50VWlDb250YWluZXJSZWN0SAAS",
+            "UgoSdWlfY29udGFpbmVyX3N0YWNrGCEgASgLMjQuZGVjZW50cmFsYW5kLnNk",
+            "ay5lY3M2LkVDUzZDb21wb25lbnRVaUNvbnRhaW5lclN0YWNrSAASQQoJdWlf",
+            "YnV0dG9uGCIgASgLMiwuZGVjZW50cmFsYW5kLnNkay5lY3M2LkVDUzZDb21w",
+            "b25lbnRVaUJ1dHRvbkgAEj0KB3VpX3RleHQYIyABKAsyKi5kZWNlbnRyYWxh",
+            "bmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFVpVGV4dEgAEkgKDXVpX2lucHV0",
+            "X3RleHQYJCABKAsyLy5kZWNlbnRyYWxhbmQuc2RrLmVjczYuRUNTNkNvbXBv",
+            "bmVudFVpSW5wdXRUZXh0SAASPwoIdWlfaW1hZ2UYJSABKAsyKy5kZWNlbnRy",
+            "YWxhbmQuc2RrLmVjczYuRUNTNkNvbXBvbmVudFVpSW1hZ2VIABJKCg51aV9z",
+            "Y3JvbGxfcmVjdBgmIAEoCzIwLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5FQ1M2",
+            "Q29tcG9uZW50VWlTY3JvbGxSZWN0SABCCQoHcGF5bG9hZCIeChBDcmVhdGVF",
+            "bnRpdHlCb2R5EgoKAmlkGAEgASgJIh4KEFJlbW92ZUVudGl0eUJvZHkSCgoC",
+            "aWQYASABKAkikwEKGVVwZGF0ZUVudGl0eUNvbXBvbmVudEJvZHkSEQoJZW50",
+            "aXR5X2lkGAEgASgJEhAKCGNsYXNzX2lkGAIgASgFEgwKBG5hbWUYAyABKAkS",
+            "QwoOY29tcG9uZW50X2RhdGEYBCABKAsyKy5kZWNlbnRyYWxhbmQuc2RrLmVj",
+            "czYuQ29tcG9uZW50Qm9keVBheWxvYWQiSAoZQXR0YWNoRW50aXR5Q29tcG9u",
+            "ZW50Qm9keRIRCgllbnRpdHlfaWQYASABKAkSDAoEbmFtZRgCIAEoCRIKCgJp",
+            "ZBgDIAEoCSI3ChRDb21wb25lbnRSZW1vdmVkQm9keRIRCgllbnRpdHlfaWQY",
+            "ASABKAkSDAoEbmFtZRgCIAEoCSI7ChNTZXRFbnRpdHlQYXJlbnRCb2R5EhEK",
+            "CWVudGl0eV9pZBgBIAEoCRIRCglwYXJlbnRfaWQYAiABKAkiUAoJUXVlcnlC",
+            "b2R5EjIKCHF1ZXJ5X2lkGAEgASgOMiAuZGVjZW50cmFsYW5kLnNkay5lY3M2",
+            "LlF1ZXJ5VHlwZRIPCgdwYXlsb2FkGAIgASgJIkIKFENvbXBvbmVudENyZWF0",
+            "ZWRCb2R5EgoKAmlkGAEgASgJEhAKCGNsYXNzX2lkGAIgASgFEgwKBG5hbWUY",
+            "AyABKAkiIwoVQ29tcG9uZW50RGlzcG9zZWRCb2R5EgoKAmlkGAEgASgJImcK",
+            "FENvbXBvbmVudFVwZGF0ZWRCb2R5EgoKAmlkGAEgASgJEkMKDmNvbXBvbmVu",
+            "dF9kYXRhGAIgASgLMisuZGVjZW50cmFsYW5kLnNkay5lY3M2LkNvbXBvbmVu",
+            "dEJvZHlQYXlsb2FkIhoKGEluaXRNZXNzYWdlc0ZpbmlzaGVkQm9keSLVBwoT",
+            "RW50aXR5QWN0aW9uUGF5bG9hZBJHChFvcGVuX2V4dGVybmFsX3VybBgBIAEo",
+            "CzIqLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5PcGVuRXh0ZXJuYWxVcmxCb2R5",
+            "SAASQwoPb3Blbl9uZnRfZGlhbG9nGAIgASgLMiguZGVjZW50cmFsYW5kLnNk",
+            "ay5lY3M2Lk9wZW5ORlREaWFsb2dCb2R5SAASQAoNY3JlYXRlX2VudGl0eRgD",
+            "IAEoCzInLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5DcmVhdGVFbnRpdHlCb2R5",
+            "SAASQAoNcmVtb3ZlX2VudGl0eRgEIAEoCzInLmRlY2VudHJhbGFuZC5zZGsu",
+            "ZWNzNi5SZW1vdmVFbnRpdHlCb2R5SAASUwoXdXBkYXRlX2VudGl0eV9jb21w",
+            "b25lbnQYBSABKAsyMC5kZWNlbnRyYWxhbmQuc2RrLmVjczYuVXBkYXRlRW50",
+            "aXR5Q29tcG9uZW50Qm9keUgAElMKF2F0dGFjaF9lbnRpdHlfY29tcG9uZW50",
+            "GAYgASgLMjAuZGVjZW50cmFsYW5kLnNkay5lY3M2LkF0dGFjaEVudGl0eUNv",
+            "bXBvbmVudEJvZHlIABJIChFjb21wb25lbnRfcmVtb3ZlZBgHIAEoCzIrLmRl",
+            "Y2VudHJhbGFuZC5zZGsuZWNzNi5Db21wb25lbnRSZW1vdmVkQm9keUgAEkcK",
+            "EXNldF9lbnRpdHlfcGFyZW50GAggASgLMiouZGVjZW50cmFsYW5kLnNkay5l",
+            "Y3M2LlNldEVudGl0eVBhcmVudEJvZHlIABIxCgVxdWVyeRgJIAEoCzIgLmRl",
+            "Y2VudHJhbGFuZC5zZGsuZWNzNi5RdWVyeUJvZHlIABJIChFjb21wb25lbnRf",
+            "Y3JlYXRlZBgKIAEoCzIrLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5Db21wb25l",
+            "bnRDcmVhdGVkQm9keUgAEkoKEmNvbXBvbmVudF9kaXNwb3NlZBgLIAEoCzIs",
+            "LmRlY2VudHJhbGFuZC5zZGsuZWNzNi5Db21wb25lbnREaXNwb3NlZEJvZHlI",
+            "ABJIChFjb21wb25lbnRfdXBkYXRlZBgMIAEoCzIrLmRlY2VudHJhbGFuZC5z",
+            "ZGsuZWNzNi5Db21wb25lbnRVcGRhdGVkQm9keUgAElEKFmluaXRfbWVzc2Fn",
+            "ZXNfZmluaXNoZWQYDSABKAsyLy5kZWNlbnRyYWxhbmQuc2RrLmVjczYuSW5p",
+            "dE1lc3NhZ2VzRmluaXNoZWRCb2R5SABCCQoHcGF5bG9hZCJlCgxFbnRpdHlB",
+            "Y3Rpb24SEAoDdGFnGAIgASgJSACIAQESOwoHcGF5bG9hZBgDIAEoCzIqLmRl",
+            "Y2VudHJhbGFuZC5zZGsuZWNzNi5FbnRpdHlBY3Rpb25QYXlsb2FkQgYKBF90",
+            "YWcqeQoJUXVlcnlUeXBlEhkKFVFUX0lOVkFMSURfUVVFUllfVFlQRRAAEhAK",
+            "DFFUX0hJVF9GSVJTVBABEg4KClFUX0hJVF9BTEwQAhIXChNRVF9ISVRfRklS",
+            "U1RfQVZBVEFSEAMSFgoSUVRfSElUX0FMTF9BVkFUQVJTEARiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Sdk.Ecs6.ComponentsEcs6Reflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Sdk.Ecs6.QueryType), typeof(global::Decentraland.Sdk.Ecs6.EntityActionType), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Sdk.Ecs6.QueryType), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody), global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody.Parser, new[]{ "Url" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody), global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody.Parser, new[]{ "AssetContractAddress", "TokenId", "Comment" }, new[]{ "Comment" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ComponentBodyPayload), global::Decentraland.Sdk.Ecs6.ComponentBodyPayload.Parser, new[]{ "AvatarModifierArea", "Transform", "AttachToAvatar", "Billboard", "BoxShape", "SphereShape", "CircleShape", "PlaneShape", "ConeShape", "CylinderShape", "GltfShape", "NftShape", "Texture", "Animator", "ObjShape", "Font", "TextShape", "Material", "BasicMaterial", "UuidCallback", "SmartItem", "VideoClip", "VideoTexture", "CameraModeArea", "AvatarTexture", "AudioClip", "AudioSource", "AudioStream", "AvatarShape", "Gizmos", "UiShape", "UiContainerRect", "UiContainerStack", "UiButton", "UiText", "UiInputText", "UiImage", "UiScrollRect" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ComponentBodyPayload), global::Decentraland.Sdk.Ecs6.ComponentBodyPayload.Parser, new[]{ "AvatarModifierArea", "Transform", "AttachToAvatar", "Billboard", "BoxShape", "SphereShape", "CircleShape", "PlaneShape", "ConeShape", "CylinderShape", "GltfShape", "NftShape", "Texture", "Animator", "ObjShape", "Font", "TextShape", "Material", "BasicMaterial", "UuidCallback", "SmartItem", "VideoClip", "VideoTexture", "CameraModeArea", "AvatarTexture", "AudioClip", "AudioSource", "AudioStream", "AvatarShape", "Gizmos", "UiShape", "UiContainerRect", "UiContainerStack", "UiButton", "UiText", "UiInputText", "UiImage", "UiScrollRect" }, new[]{ "Payload" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.CreateEntityBody), global::Decentraland.Sdk.Ecs6.CreateEntityBody.Parser, new[]{ "Id" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.RemoveEntityBody), global::Decentraland.Sdk.Ecs6.RemoveEntityBody.Parser, new[]{ "Id" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody), global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody.Parser, new[]{ "EntityId", "ClassId", "Name", "ComponentData" }, null, null, null, null),
@@ -166,8 +151,8 @@ namespace Decentraland.Sdk.Ecs6 {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ComponentDisposedBody), global::Decentraland.Sdk.Ecs6.ComponentDisposedBody.Parser, new[]{ "Id" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody), global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody.Parser, new[]{ "Id", "ComponentData" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody), global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.EntityActionPayload), global::Decentraland.Sdk.Ecs6.EntityActionPayload.Parser, new[]{ "OpenExternalUrl", "OpenNftDialog", "CreateEntity", "RemoveEntity", "UpdateEntityComponent", "AttachEntityComponent", "ComponentRemoved", "SetEntityParent", "Query", "ComponentCreated", "ComponentDisposed", "ComponentUpdated", "InitMessagesFinished" }, new[]{ "OpenExternalUrl", "OpenNftDialog", "CreateEntity", "RemoveEntity", "UpdateEntityComponent", "AttachEntityComponent", "ComponentRemoved", "SetEntityParent", "Query", "ComponentCreated", "ComponentDisposed", "ComponentUpdated", "InitMessagesFinished" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.EntityAction), global::Decentraland.Sdk.Ecs6.EntityAction.Parser, new[]{ "Type", "Tag", "Payload" }, new[]{ "Tag" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.EntityActionPayload), global::Decentraland.Sdk.Ecs6.EntityActionPayload.Parser, new[]{ "OpenExternalUrl", "OpenNftDialog", "CreateEntity", "RemoveEntity", "UpdateEntityComponent", "AttachEntityComponent", "ComponentRemoved", "SetEntityParent", "Query", "ComponentCreated", "ComponentDisposed", "ComponentUpdated", "InitMessagesFinished" }, new[]{ "Payload" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.EntityAction), global::Decentraland.Sdk.Ecs6.EntityAction.Parser, new[]{ "Tag", "Payload" }, new[]{ "Tag" }, null, null, null)
           }));
     }
     #endregion
@@ -180,26 +165,6 @@ namespace Decentraland.Sdk.Ecs6 {
     [pbr::OriginalName("QT_HIT_ALL")] QtHitAll = 2,
     [pbr::OriginalName("QT_HIT_FIRST_AVATAR")] QtHitFirstAvatar = 3,
     [pbr::OriginalName("QT_HIT_ALL_AVATARS")] QtHitAllAvatars = 4,
-  }
-
-  /// <summary>
-  /// Entity Action Type
-  /// </summary>
-  public enum EntityActionType {
-    [pbr::OriginalName("EAT_INVALID_EA_TYPE")] EatInvalidEaType = 0,
-    [pbr::OriginalName("EAT_OPEN_EXTERNAL_URL")] EatOpenExternalUrl = 1,
-    [pbr::OriginalName("EAT_OPEN_NFT_DIALOG")] EatOpenNftDialog = 2,
-    [pbr::OriginalName("EAT_CREATE_ENTITY")] EatCreateEntity = 3,
-    [pbr::OriginalName("EAT_REMOVE_ENTITY")] EatRemoveEntity = 4,
-    [pbr::OriginalName("EAT_UPDATE_ENTITY_COMPONENT")] EatUpdateEntityComponent = 5,
-    [pbr::OriginalName("EAT_ATTACH_ENTITY_COMPONENT")] EatAttachEntityComponent = 6,
-    [pbr::OriginalName("EAT_COMPONENT_REMOVED")] EatComponentRemoved = 7,
-    [pbr::OriginalName("EAT_SET_ENTITY_PARENT")] EatSetEntityParent = 8,
-    [pbr::OriginalName("EAT_QUERY")] EatQuery = 9,
-    [pbr::OriginalName("EAT_COMPONENT_CREATED")] EatComponentCreated = 10,
-    [pbr::OriginalName("EAT_COMPONENT_DISPOSED")] EatComponentDisposed = 11,
-    [pbr::OriginalName("EAT_COMPONENT_UPDATED")] EatComponentUpdated = 12,
-    [pbr::OriginalName("EAT_INIT_MESSAGES_FINISHED")] EatInitMessagesFinished = 13,
   }
 
   #endregion
@@ -703,44 +668,123 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ComponentBodyPayload(ComponentBodyPayload other) : this() {
-      avatarModifierArea_ = other.avatarModifierArea_ != null ? other.avatarModifierArea_.Clone() : null;
-      transform_ = other.transform_ != null ? other.transform_.Clone() : null;
-      attachToAvatar_ = other.attachToAvatar_ != null ? other.attachToAvatar_.Clone() : null;
-      billboard_ = other.billboard_ != null ? other.billboard_.Clone() : null;
-      boxShape_ = other.boxShape_ != null ? other.boxShape_.Clone() : null;
-      sphereShape_ = other.sphereShape_ != null ? other.sphereShape_.Clone() : null;
-      circleShape_ = other.circleShape_ != null ? other.circleShape_.Clone() : null;
-      planeShape_ = other.planeShape_ != null ? other.planeShape_.Clone() : null;
-      coneShape_ = other.coneShape_ != null ? other.coneShape_.Clone() : null;
-      cylinderShape_ = other.cylinderShape_ != null ? other.cylinderShape_.Clone() : null;
-      gltfShape_ = other.gltfShape_ != null ? other.gltfShape_.Clone() : null;
-      nftShape_ = other.nftShape_ != null ? other.nftShape_.Clone() : null;
-      texture_ = other.texture_ != null ? other.texture_.Clone() : null;
-      animator_ = other.animator_ != null ? other.animator_.Clone() : null;
-      objShape_ = other.objShape_ != null ? other.objShape_.Clone() : null;
-      font_ = other.font_ != null ? other.font_.Clone() : null;
-      textShape_ = other.textShape_ != null ? other.textShape_.Clone() : null;
-      material_ = other.material_ != null ? other.material_.Clone() : null;
-      basicMaterial_ = other.basicMaterial_ != null ? other.basicMaterial_.Clone() : null;
-      uuidCallback_ = other.uuidCallback_ != null ? other.uuidCallback_.Clone() : null;
-      smartItem_ = other.smartItem_ != null ? other.smartItem_.Clone() : null;
-      videoClip_ = other.videoClip_ != null ? other.videoClip_.Clone() : null;
-      videoTexture_ = other.videoTexture_ != null ? other.videoTexture_.Clone() : null;
-      cameraModeArea_ = other.cameraModeArea_ != null ? other.cameraModeArea_.Clone() : null;
-      avatarTexture_ = other.avatarTexture_ != null ? other.avatarTexture_.Clone() : null;
-      audioClip_ = other.audioClip_ != null ? other.audioClip_.Clone() : null;
-      audioSource_ = other.audioSource_ != null ? other.audioSource_.Clone() : null;
-      audioStream_ = other.audioStream_ != null ? other.audioStream_.Clone() : null;
-      avatarShape_ = other.avatarShape_ != null ? other.avatarShape_.Clone() : null;
-      gizmos_ = other.gizmos_ != null ? other.gizmos_.Clone() : null;
-      uiShape_ = other.uiShape_ != null ? other.uiShape_.Clone() : null;
-      uiContainerRect_ = other.uiContainerRect_ != null ? other.uiContainerRect_.Clone() : null;
-      uiContainerStack_ = other.uiContainerStack_ != null ? other.uiContainerStack_.Clone() : null;
-      uiButton_ = other.uiButton_ != null ? other.uiButton_.Clone() : null;
-      uiText_ = other.uiText_ != null ? other.uiText_.Clone() : null;
-      uiInputText_ = other.uiInputText_ != null ? other.uiInputText_.Clone() : null;
-      uiImage_ = other.uiImage_ != null ? other.uiImage_.Clone() : null;
-      uiScrollRect_ = other.uiScrollRect_ != null ? other.uiScrollRect_.Clone() : null;
+      switch (other.PayloadCase) {
+        case PayloadOneofCase.AvatarModifierArea:
+          AvatarModifierArea = other.AvatarModifierArea.Clone();
+          break;
+        case PayloadOneofCase.Transform:
+          Transform = other.Transform.Clone();
+          break;
+        case PayloadOneofCase.AttachToAvatar:
+          AttachToAvatar = other.AttachToAvatar.Clone();
+          break;
+        case PayloadOneofCase.Billboard:
+          Billboard = other.Billboard.Clone();
+          break;
+        case PayloadOneofCase.BoxShape:
+          BoxShape = other.BoxShape.Clone();
+          break;
+        case PayloadOneofCase.SphereShape:
+          SphereShape = other.SphereShape.Clone();
+          break;
+        case PayloadOneofCase.CircleShape:
+          CircleShape = other.CircleShape.Clone();
+          break;
+        case PayloadOneofCase.PlaneShape:
+          PlaneShape = other.PlaneShape.Clone();
+          break;
+        case PayloadOneofCase.ConeShape:
+          ConeShape = other.ConeShape.Clone();
+          break;
+        case PayloadOneofCase.CylinderShape:
+          CylinderShape = other.CylinderShape.Clone();
+          break;
+        case PayloadOneofCase.GltfShape:
+          GltfShape = other.GltfShape.Clone();
+          break;
+        case PayloadOneofCase.NftShape:
+          NftShape = other.NftShape.Clone();
+          break;
+        case PayloadOneofCase.Texture:
+          Texture = other.Texture.Clone();
+          break;
+        case PayloadOneofCase.Animator:
+          Animator = other.Animator.Clone();
+          break;
+        case PayloadOneofCase.ObjShape:
+          ObjShape = other.ObjShape.Clone();
+          break;
+        case PayloadOneofCase.Font:
+          Font = other.Font.Clone();
+          break;
+        case PayloadOneofCase.TextShape:
+          TextShape = other.TextShape.Clone();
+          break;
+        case PayloadOneofCase.Material:
+          Material = other.Material.Clone();
+          break;
+        case PayloadOneofCase.BasicMaterial:
+          BasicMaterial = other.BasicMaterial.Clone();
+          break;
+        case PayloadOneofCase.UuidCallback:
+          UuidCallback = other.UuidCallback.Clone();
+          break;
+        case PayloadOneofCase.SmartItem:
+          SmartItem = other.SmartItem.Clone();
+          break;
+        case PayloadOneofCase.VideoClip:
+          VideoClip = other.VideoClip.Clone();
+          break;
+        case PayloadOneofCase.VideoTexture:
+          VideoTexture = other.VideoTexture.Clone();
+          break;
+        case PayloadOneofCase.CameraModeArea:
+          CameraModeArea = other.CameraModeArea.Clone();
+          break;
+        case PayloadOneofCase.AvatarTexture:
+          AvatarTexture = other.AvatarTexture.Clone();
+          break;
+        case PayloadOneofCase.AudioClip:
+          AudioClip = other.AudioClip.Clone();
+          break;
+        case PayloadOneofCase.AudioSource:
+          AudioSource = other.AudioSource.Clone();
+          break;
+        case PayloadOneofCase.AudioStream:
+          AudioStream = other.AudioStream.Clone();
+          break;
+        case PayloadOneofCase.AvatarShape:
+          AvatarShape = other.AvatarShape.Clone();
+          break;
+        case PayloadOneofCase.Gizmos:
+          Gizmos = other.Gizmos.Clone();
+          break;
+        case PayloadOneofCase.UiShape:
+          UiShape = other.UiShape.Clone();
+          break;
+        case PayloadOneofCase.UiContainerRect:
+          UiContainerRect = other.UiContainerRect.Clone();
+          break;
+        case PayloadOneofCase.UiContainerStack:
+          UiContainerStack = other.UiContainerStack.Clone();
+          break;
+        case PayloadOneofCase.UiButton:
+          UiButton = other.UiButton.Clone();
+          break;
+        case PayloadOneofCase.UiText:
+          UiText = other.UiText.Clone();
+          break;
+        case PayloadOneofCase.UiInputText:
+          UiInputText = other.UiInputText.Clone();
+          break;
+        case PayloadOneofCase.UiImage:
+          UiImage = other.UiImage.Clone();
+          break;
+        case PayloadOneofCase.UiScrollRect:
+          UiScrollRect = other.UiScrollRect.Clone();
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -752,458 +796,515 @@ namespace Decentraland.Sdk.Ecs6 {
 
     /// <summary>Field number for the "avatar_modifier_area" field.</summary>
     public const int AvatarModifierAreaFieldNumber = 1;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea avatarModifierArea_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea AvatarModifierArea {
-      get { return avatarModifierArea_; }
+      get { return payloadCase_ == PayloadOneofCase.AvatarModifierArea ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea) payload_ : null; }
       set {
-        avatarModifierArea_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AvatarModifierArea;
       }
     }
 
     /// <summary>Field number for the "transform" field.</summary>
     public const int TransformFieldNumber = 2;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform transform_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform Transform {
-      get { return transform_; }
+      get { return payloadCase_ == PayloadOneofCase.Transform ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform) payload_ : null; }
       set {
-        transform_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Transform;
       }
     }
 
     /// <summary>Field number for the "attach_to_avatar" field.</summary>
     public const int AttachToAvatarFieldNumber = 3;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar attachToAvatar_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar AttachToAvatar {
-      get { return attachToAvatar_; }
+      get { return payloadCase_ == PayloadOneofCase.AttachToAvatar ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar) payload_ : null; }
       set {
-        attachToAvatar_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AttachToAvatar;
       }
     }
 
     /// <summary>Field number for the "billboard" field.</summary>
     public const int BillboardFieldNumber = 4;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard billboard_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard Billboard {
-      get { return billboard_; }
+      get { return payloadCase_ == PayloadOneofCase.Billboard ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard) payload_ : null; }
       set {
-        billboard_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Billboard;
       }
     }
 
     /// <summary>Field number for the "box_shape" field.</summary>
     public const int BoxShapeFieldNumber = 5;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape boxShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape BoxShape {
-      get { return boxShape_; }
+      get { return payloadCase_ == PayloadOneofCase.BoxShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape) payload_ : null; }
       set {
-        boxShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BoxShape;
       }
     }
 
     /// <summary>Field number for the "sphere_shape" field.</summary>
     public const int SphereShapeFieldNumber = 6;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape sphereShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape SphereShape {
-      get { return sphereShape_; }
+      get { return payloadCase_ == PayloadOneofCase.SphereShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape) payload_ : null; }
       set {
-        sphereShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.SphereShape;
       }
     }
 
     /// <summary>Field number for the "circle_shape" field.</summary>
     public const int CircleShapeFieldNumber = 7;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape circleShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape CircleShape {
-      get { return circleShape_; }
+      get { return payloadCase_ == PayloadOneofCase.CircleShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape) payload_ : null; }
       set {
-        circleShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.CircleShape;
       }
     }
 
     /// <summary>Field number for the "plane_shape" field.</summary>
     public const int PlaneShapeFieldNumber = 8;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape planeShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape PlaneShape {
-      get { return planeShape_; }
+      get { return payloadCase_ == PayloadOneofCase.PlaneShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape) payload_ : null; }
       set {
-        planeShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.PlaneShape;
       }
     }
 
     /// <summary>Field number for the "cone_shape" field.</summary>
     public const int ConeShapeFieldNumber = 9;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape coneShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape ConeShape {
-      get { return coneShape_; }
+      get { return payloadCase_ == PayloadOneofCase.ConeShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape) payload_ : null; }
       set {
-        coneShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ConeShape;
       }
     }
 
     /// <summary>Field number for the "cylinder_shape" field.</summary>
     public const int CylinderShapeFieldNumber = 10;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape cylinderShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape CylinderShape {
-      get { return cylinderShape_; }
+      get { return payloadCase_ == PayloadOneofCase.CylinderShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape) payload_ : null; }
       set {
-        cylinderShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.CylinderShape;
       }
     }
 
     /// <summary>Field number for the "gltf_shape" field.</summary>
     public const int GltfShapeFieldNumber = 11;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape gltfShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape GltfShape {
-      get { return gltfShape_; }
+      get { return payloadCase_ == PayloadOneofCase.GltfShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape) payload_ : null; }
       set {
-        gltfShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GltfShape;
       }
     }
 
     /// <summary>Field number for the "nft_shape" field.</summary>
     public const int NftShapeFieldNumber = 12;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape nftShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape NftShape {
-      get { return nftShape_; }
+      get { return payloadCase_ == PayloadOneofCase.NftShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape) payload_ : null; }
       set {
-        nftShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NftShape;
       }
     }
 
     /// <summary>Field number for the "texture" field.</summary>
     public const int TextureFieldNumber = 13;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture texture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture Texture {
-      get { return texture_; }
+      get { return payloadCase_ == PayloadOneofCase.Texture ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture) payload_ : null; }
       set {
-        texture_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Texture;
       }
     }
 
     /// <summary>Field number for the "animator" field.</summary>
     public const int AnimatorFieldNumber = 14;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator animator_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator Animator {
-      get { return animator_; }
+      get { return payloadCase_ == PayloadOneofCase.Animator ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator) payload_ : null; }
       set {
-        animator_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Animator;
       }
     }
 
     /// <summary>Field number for the "obj_shape" field.</summary>
     public const int ObjShapeFieldNumber = 15;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape objShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape ObjShape {
-      get { return objShape_; }
+      get { return payloadCase_ == PayloadOneofCase.ObjShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape) payload_ : null; }
       set {
-        objShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ObjShape;
       }
     }
 
     /// <summary>Field number for the "font" field.</summary>
     public const int FontFieldNumber = 16;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentFont font_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentFont Font {
-      get { return font_; }
+      get { return payloadCase_ == PayloadOneofCase.Font ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentFont) payload_ : null; }
       set {
-        font_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Font;
       }
     }
 
     /// <summary>Field number for the "text_shape" field.</summary>
     public const int TextShapeFieldNumber = 17;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape textShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape TextShape {
-      get { return textShape_; }
+      get { return payloadCase_ == PayloadOneofCase.TextShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape) payload_ : null; }
       set {
-        textShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.TextShape;
       }
     }
 
     /// <summary>Field number for the "material" field.</summary>
     public const int MaterialFieldNumber = 18;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial material_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial Material {
-      get { return material_; }
+      get { return payloadCase_ == PayloadOneofCase.Material ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial) payload_ : null; }
       set {
-        material_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Material;
       }
     }
 
     /// <summary>Field number for the "basic_material" field.</summary>
     public const int BasicMaterialFieldNumber = 19;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial basicMaterial_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial BasicMaterial {
-      get { return basicMaterial_; }
+      get { return payloadCase_ == PayloadOneofCase.BasicMaterial ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial) payload_ : null; }
       set {
-        basicMaterial_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BasicMaterial;
       }
     }
 
     /// <summary>Field number for the "uuid_callback" field.</summary>
     public const int UuidCallbackFieldNumber = 20;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback uuidCallback_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback UuidCallback {
-      get { return uuidCallback_; }
+      get { return payloadCase_ == PayloadOneofCase.UuidCallback ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback) payload_ : null; }
       set {
-        uuidCallback_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UuidCallback;
       }
     }
 
     /// <summary>Field number for the "smart_item" field.</summary>
     public const int SmartItemFieldNumber = 21;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem smartItem_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem SmartItem {
-      get { return smartItem_; }
+      get { return payloadCase_ == PayloadOneofCase.SmartItem ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem) payload_ : null; }
       set {
-        smartItem_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.SmartItem;
       }
     }
 
     /// <summary>Field number for the "video_clip" field.</summary>
     public const int VideoClipFieldNumber = 22;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip videoClip_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip VideoClip {
-      get { return videoClip_; }
+      get { return payloadCase_ == PayloadOneofCase.VideoClip ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip) payload_ : null; }
       set {
-        videoClip_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.VideoClip;
       }
     }
 
     /// <summary>Field number for the "video_texture" field.</summary>
     public const int VideoTextureFieldNumber = 23;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture videoTexture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture VideoTexture {
-      get { return videoTexture_; }
+      get { return payloadCase_ == PayloadOneofCase.VideoTexture ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture) payload_ : null; }
       set {
-        videoTexture_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.VideoTexture;
       }
     }
 
     /// <summary>Field number for the "camera_mode_area" field.</summary>
     public const int CameraModeAreaFieldNumber = 24;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea cameraModeArea_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea CameraModeArea {
-      get { return cameraModeArea_; }
+      get { return payloadCase_ == PayloadOneofCase.CameraModeArea ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea) payload_ : null; }
       set {
-        cameraModeArea_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.CameraModeArea;
       }
     }
 
     /// <summary>Field number for the "avatar_texture" field.</summary>
     public const int AvatarTextureFieldNumber = 25;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture avatarTexture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture AvatarTexture {
-      get { return avatarTexture_; }
+      get { return payloadCase_ == PayloadOneofCase.AvatarTexture ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture) payload_ : null; }
       set {
-        avatarTexture_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AvatarTexture;
       }
     }
 
     /// <summary>Field number for the "audio_clip" field.</summary>
     public const int AudioClipFieldNumber = 26;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip audioClip_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip AudioClip {
-      get { return audioClip_; }
+      get { return payloadCase_ == PayloadOneofCase.AudioClip ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip) payload_ : null; }
       set {
-        audioClip_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AudioClip;
       }
     }
 
     /// <summary>Field number for the "audio_source" field.</summary>
     public const int AudioSourceFieldNumber = 27;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource audioSource_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource AudioSource {
-      get { return audioSource_; }
+      get { return payloadCase_ == PayloadOneofCase.AudioSource ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource) payload_ : null; }
       set {
-        audioSource_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AudioSource;
       }
     }
 
     /// <summary>Field number for the "audio_stream" field.</summary>
     public const int AudioStreamFieldNumber = 28;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream audioStream_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream AudioStream {
-      get { return audioStream_; }
+      get { return payloadCase_ == PayloadOneofCase.AudioStream ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream) payload_ : null; }
       set {
-        audioStream_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AudioStream;
       }
     }
 
     /// <summary>Field number for the "avatar_shape" field.</summary>
     public const int AvatarShapeFieldNumber = 29;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape avatarShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape AvatarShape {
-      get { return avatarShape_; }
+      get { return payloadCase_ == PayloadOneofCase.AvatarShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape) payload_ : null; }
       set {
-        avatarShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AvatarShape;
       }
     }
 
     /// <summary>Field number for the "gizmos" field.</summary>
     public const int GizmosFieldNumber = 30;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos gizmos_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos Gizmos {
-      get { return gizmos_; }
+      get { return payloadCase_ == PayloadOneofCase.Gizmos ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos) payload_ : null; }
       set {
-        gizmos_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Gizmos;
       }
     }
 
     /// <summary>Field number for the "ui_shape" field.</summary>
     public const int UiShapeFieldNumber = 31;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape uiShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape UiShape {
-      get { return uiShape_; }
+      get { return payloadCase_ == PayloadOneofCase.UiShape ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape) payload_ : null; }
       set {
-        uiShape_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UiShape;
       }
     }
 
     /// <summary>Field number for the "ui_container_rect" field.</summary>
     public const int UiContainerRectFieldNumber = 32;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect uiContainerRect_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect UiContainerRect {
-      get { return uiContainerRect_; }
+      get { return payloadCase_ == PayloadOneofCase.UiContainerRect ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect) payload_ : null; }
       set {
-        uiContainerRect_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UiContainerRect;
       }
     }
 
     /// <summary>Field number for the "ui_container_stack" field.</summary>
     public const int UiContainerStackFieldNumber = 33;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack uiContainerStack_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack UiContainerStack {
-      get { return uiContainerStack_; }
+      get { return payloadCase_ == PayloadOneofCase.UiContainerStack ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack) payload_ : null; }
       set {
-        uiContainerStack_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UiContainerStack;
       }
     }
 
     /// <summary>Field number for the "ui_button" field.</summary>
     public const int UiButtonFieldNumber = 34;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton uiButton_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton UiButton {
-      get { return uiButton_; }
+      get { return payloadCase_ == PayloadOneofCase.UiButton ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton) payload_ : null; }
       set {
-        uiButton_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UiButton;
       }
     }
 
     /// <summary>Field number for the "ui_text" field.</summary>
     public const int UiTextFieldNumber = 35;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText uiText_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText UiText {
-      get { return uiText_; }
+      get { return payloadCase_ == PayloadOneofCase.UiText ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText) payload_ : null; }
       set {
-        uiText_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UiText;
       }
     }
 
     /// <summary>Field number for the "ui_input_text" field.</summary>
     public const int UiInputTextFieldNumber = 36;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText uiInputText_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText UiInputText {
-      get { return uiInputText_; }
+      get { return payloadCase_ == PayloadOneofCase.UiInputText ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText) payload_ : null; }
       set {
-        uiInputText_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UiInputText;
       }
     }
 
     /// <summary>Field number for the "ui_image" field.</summary>
     public const int UiImageFieldNumber = 37;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage uiImage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage UiImage {
-      get { return uiImage_; }
+      get { return payloadCase_ == PayloadOneofCase.UiImage ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage) payload_ : null; }
       set {
-        uiImage_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UiImage;
       }
     }
 
     /// <summary>Field number for the "ui_scroll_rect" field.</summary>
     public const int UiScrollRectFieldNumber = 38;
-    private global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect uiScrollRect_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect UiScrollRect {
-      get { return uiScrollRect_; }
+      get { return payloadCase_ == PayloadOneofCase.UiScrollRect ? (global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect) payload_ : null; }
       set {
-        uiScrollRect_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UiScrollRect;
       }
+    }
+
+    private object payload_;
+    /// <summary>Enum of possible cases for the "payload" oneof.</summary>
+    public enum PayloadOneofCase {
+      None = 0,
+      AvatarModifierArea = 1,
+      Transform = 2,
+      AttachToAvatar = 3,
+      Billboard = 4,
+      BoxShape = 5,
+      SphereShape = 6,
+      CircleShape = 7,
+      PlaneShape = 8,
+      ConeShape = 9,
+      CylinderShape = 10,
+      GltfShape = 11,
+      NftShape = 12,
+      Texture = 13,
+      Animator = 14,
+      ObjShape = 15,
+      Font = 16,
+      TextShape = 17,
+      Material = 18,
+      BasicMaterial = 19,
+      UuidCallback = 20,
+      SmartItem = 21,
+      VideoClip = 22,
+      VideoTexture = 23,
+      CameraModeArea = 24,
+      AvatarTexture = 25,
+      AudioClip = 26,
+      AudioSource = 27,
+      AudioStream = 28,
+      AvatarShape = 29,
+      Gizmos = 30,
+      UiShape = 31,
+      UiContainerRect = 32,
+      UiContainerStack = 33,
+      UiButton = 34,
+      UiText = 35,
+      UiInputText = 36,
+      UiImage = 37,
+      UiScrollRect = 38,
+    }
+    private PayloadOneofCase payloadCase_ = PayloadOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public PayloadOneofCase PayloadCase {
+      get { return payloadCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPayload() {
+      payloadCase_ = PayloadOneofCase.None;
+      payload_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1259,6 +1360,7 @@ namespace Decentraland.Sdk.Ecs6 {
       if (!object.Equals(UiInputText, other.UiInputText)) return false;
       if (!object.Equals(UiImage, other.UiImage)) return false;
       if (!object.Equals(UiScrollRect, other.UiScrollRect)) return false;
+      if (PayloadCase != other.PayloadCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1266,44 +1368,45 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (avatarModifierArea_ != null) hash ^= AvatarModifierArea.GetHashCode();
-      if (transform_ != null) hash ^= Transform.GetHashCode();
-      if (attachToAvatar_ != null) hash ^= AttachToAvatar.GetHashCode();
-      if (billboard_ != null) hash ^= Billboard.GetHashCode();
-      if (boxShape_ != null) hash ^= BoxShape.GetHashCode();
-      if (sphereShape_ != null) hash ^= SphereShape.GetHashCode();
-      if (circleShape_ != null) hash ^= CircleShape.GetHashCode();
-      if (planeShape_ != null) hash ^= PlaneShape.GetHashCode();
-      if (coneShape_ != null) hash ^= ConeShape.GetHashCode();
-      if (cylinderShape_ != null) hash ^= CylinderShape.GetHashCode();
-      if (gltfShape_ != null) hash ^= GltfShape.GetHashCode();
-      if (nftShape_ != null) hash ^= NftShape.GetHashCode();
-      if (texture_ != null) hash ^= Texture.GetHashCode();
-      if (animator_ != null) hash ^= Animator.GetHashCode();
-      if (objShape_ != null) hash ^= ObjShape.GetHashCode();
-      if (font_ != null) hash ^= Font.GetHashCode();
-      if (textShape_ != null) hash ^= TextShape.GetHashCode();
-      if (material_ != null) hash ^= Material.GetHashCode();
-      if (basicMaterial_ != null) hash ^= BasicMaterial.GetHashCode();
-      if (uuidCallback_ != null) hash ^= UuidCallback.GetHashCode();
-      if (smartItem_ != null) hash ^= SmartItem.GetHashCode();
-      if (videoClip_ != null) hash ^= VideoClip.GetHashCode();
-      if (videoTexture_ != null) hash ^= VideoTexture.GetHashCode();
-      if (cameraModeArea_ != null) hash ^= CameraModeArea.GetHashCode();
-      if (avatarTexture_ != null) hash ^= AvatarTexture.GetHashCode();
-      if (audioClip_ != null) hash ^= AudioClip.GetHashCode();
-      if (audioSource_ != null) hash ^= AudioSource.GetHashCode();
-      if (audioStream_ != null) hash ^= AudioStream.GetHashCode();
-      if (avatarShape_ != null) hash ^= AvatarShape.GetHashCode();
-      if (gizmos_ != null) hash ^= Gizmos.GetHashCode();
-      if (uiShape_ != null) hash ^= UiShape.GetHashCode();
-      if (uiContainerRect_ != null) hash ^= UiContainerRect.GetHashCode();
-      if (uiContainerStack_ != null) hash ^= UiContainerStack.GetHashCode();
-      if (uiButton_ != null) hash ^= UiButton.GetHashCode();
-      if (uiText_ != null) hash ^= UiText.GetHashCode();
-      if (uiInputText_ != null) hash ^= UiInputText.GetHashCode();
-      if (uiImage_ != null) hash ^= UiImage.GetHashCode();
-      if (uiScrollRect_ != null) hash ^= UiScrollRect.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.AvatarModifierArea) hash ^= AvatarModifierArea.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Transform) hash ^= Transform.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.AttachToAvatar) hash ^= AttachToAvatar.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Billboard) hash ^= Billboard.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.BoxShape) hash ^= BoxShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.SphereShape) hash ^= SphereShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.CircleShape) hash ^= CircleShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.PlaneShape) hash ^= PlaneShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.ConeShape) hash ^= ConeShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.CylinderShape) hash ^= CylinderShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.GltfShape) hash ^= GltfShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.NftShape) hash ^= NftShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Texture) hash ^= Texture.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Animator) hash ^= Animator.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.ObjShape) hash ^= ObjShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Font) hash ^= Font.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.TextShape) hash ^= TextShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Material) hash ^= Material.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.BasicMaterial) hash ^= BasicMaterial.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UuidCallback) hash ^= UuidCallback.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.SmartItem) hash ^= SmartItem.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.VideoClip) hash ^= VideoClip.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.VideoTexture) hash ^= VideoTexture.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.CameraModeArea) hash ^= CameraModeArea.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.AvatarTexture) hash ^= AvatarTexture.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.AudioClip) hash ^= AudioClip.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.AudioSource) hash ^= AudioSource.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.AudioStream) hash ^= AudioStream.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.AvatarShape) hash ^= AvatarShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Gizmos) hash ^= Gizmos.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UiShape) hash ^= UiShape.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UiContainerRect) hash ^= UiContainerRect.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UiContainerStack) hash ^= UiContainerStack.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UiButton) hash ^= UiButton.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UiText) hash ^= UiText.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UiInputText) hash ^= UiInputText.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UiImage) hash ^= UiImage.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UiScrollRect) hash ^= UiScrollRect.GetHashCode();
+      hash ^= (int) payloadCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1322,155 +1425,155 @@ namespace Decentraland.Sdk.Ecs6 {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (avatarModifierArea_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarModifierArea) {
         output.WriteRawTag(10);
         output.WriteMessage(AvatarModifierArea);
       }
-      if (transform_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Transform) {
         output.WriteRawTag(18);
         output.WriteMessage(Transform);
       }
-      if (attachToAvatar_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AttachToAvatar) {
         output.WriteRawTag(26);
         output.WriteMessage(AttachToAvatar);
       }
-      if (billboard_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Billboard) {
         output.WriteRawTag(34);
         output.WriteMessage(Billboard);
       }
-      if (boxShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.BoxShape) {
         output.WriteRawTag(42);
         output.WriteMessage(BoxShape);
       }
-      if (sphereShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SphereShape) {
         output.WriteRawTag(50);
         output.WriteMessage(SphereShape);
       }
-      if (circleShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CircleShape) {
         output.WriteRawTag(58);
         output.WriteMessage(CircleShape);
       }
-      if (planeShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.PlaneShape) {
         output.WriteRawTag(66);
         output.WriteMessage(PlaneShape);
       }
-      if (coneShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ConeShape) {
         output.WriteRawTag(74);
         output.WriteMessage(ConeShape);
       }
-      if (cylinderShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CylinderShape) {
         output.WriteRawTag(82);
         output.WriteMessage(CylinderShape);
       }
-      if (gltfShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.GltfShape) {
         output.WriteRawTag(90);
         output.WriteMessage(GltfShape);
       }
-      if (nftShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.NftShape) {
         output.WriteRawTag(98);
         output.WriteMessage(NftShape);
       }
-      if (texture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Texture) {
         output.WriteRawTag(106);
         output.WriteMessage(Texture);
       }
-      if (animator_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Animator) {
         output.WriteRawTag(114);
         output.WriteMessage(Animator);
       }
-      if (objShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ObjShape) {
         output.WriteRawTag(122);
         output.WriteMessage(ObjShape);
       }
-      if (font_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Font) {
         output.WriteRawTag(130, 1);
         output.WriteMessage(Font);
       }
-      if (textShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.TextShape) {
         output.WriteRawTag(138, 1);
         output.WriteMessage(TextShape);
       }
-      if (material_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Material) {
         output.WriteRawTag(146, 1);
         output.WriteMessage(Material);
       }
-      if (basicMaterial_ != null) {
+      if (payloadCase_ == PayloadOneofCase.BasicMaterial) {
         output.WriteRawTag(154, 1);
         output.WriteMessage(BasicMaterial);
       }
-      if (uuidCallback_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UuidCallback) {
         output.WriteRawTag(162, 1);
         output.WriteMessage(UuidCallback);
       }
-      if (smartItem_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SmartItem) {
         output.WriteRawTag(170, 1);
         output.WriteMessage(SmartItem);
       }
-      if (videoClip_ != null) {
+      if (payloadCase_ == PayloadOneofCase.VideoClip) {
         output.WriteRawTag(178, 1);
         output.WriteMessage(VideoClip);
       }
-      if (videoTexture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.VideoTexture) {
         output.WriteRawTag(186, 1);
         output.WriteMessage(VideoTexture);
       }
-      if (cameraModeArea_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CameraModeArea) {
         output.WriteRawTag(194, 1);
         output.WriteMessage(CameraModeArea);
       }
-      if (avatarTexture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarTexture) {
         output.WriteRawTag(202, 1);
         output.WriteMessage(AvatarTexture);
       }
-      if (audioClip_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioClip) {
         output.WriteRawTag(210, 1);
         output.WriteMessage(AudioClip);
       }
-      if (audioSource_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioSource) {
         output.WriteRawTag(218, 1);
         output.WriteMessage(AudioSource);
       }
-      if (audioStream_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioStream) {
         output.WriteRawTag(226, 1);
         output.WriteMessage(AudioStream);
       }
-      if (avatarShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarShape) {
         output.WriteRawTag(234, 1);
         output.WriteMessage(AvatarShape);
       }
-      if (gizmos_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Gizmos) {
         output.WriteRawTag(242, 1);
         output.WriteMessage(Gizmos);
       }
-      if (uiShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiShape) {
         output.WriteRawTag(250, 1);
         output.WriteMessage(UiShape);
       }
-      if (uiContainerRect_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiContainerRect) {
         output.WriteRawTag(130, 2);
         output.WriteMessage(UiContainerRect);
       }
-      if (uiContainerStack_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiContainerStack) {
         output.WriteRawTag(138, 2);
         output.WriteMessage(UiContainerStack);
       }
-      if (uiButton_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiButton) {
         output.WriteRawTag(146, 2);
         output.WriteMessage(UiButton);
       }
-      if (uiText_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiText) {
         output.WriteRawTag(154, 2);
         output.WriteMessage(UiText);
       }
-      if (uiInputText_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiInputText) {
         output.WriteRawTag(162, 2);
         output.WriteMessage(UiInputText);
       }
-      if (uiImage_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiImage) {
         output.WriteRawTag(170, 2);
         output.WriteMessage(UiImage);
       }
-      if (uiScrollRect_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiScrollRect) {
         output.WriteRawTag(178, 2);
         output.WriteMessage(UiScrollRect);
       }
@@ -1484,155 +1587,155 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (avatarModifierArea_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarModifierArea) {
         output.WriteRawTag(10);
         output.WriteMessage(AvatarModifierArea);
       }
-      if (transform_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Transform) {
         output.WriteRawTag(18);
         output.WriteMessage(Transform);
       }
-      if (attachToAvatar_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AttachToAvatar) {
         output.WriteRawTag(26);
         output.WriteMessage(AttachToAvatar);
       }
-      if (billboard_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Billboard) {
         output.WriteRawTag(34);
         output.WriteMessage(Billboard);
       }
-      if (boxShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.BoxShape) {
         output.WriteRawTag(42);
         output.WriteMessage(BoxShape);
       }
-      if (sphereShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SphereShape) {
         output.WriteRawTag(50);
         output.WriteMessage(SphereShape);
       }
-      if (circleShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CircleShape) {
         output.WriteRawTag(58);
         output.WriteMessage(CircleShape);
       }
-      if (planeShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.PlaneShape) {
         output.WriteRawTag(66);
         output.WriteMessage(PlaneShape);
       }
-      if (coneShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ConeShape) {
         output.WriteRawTag(74);
         output.WriteMessage(ConeShape);
       }
-      if (cylinderShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CylinderShape) {
         output.WriteRawTag(82);
         output.WriteMessage(CylinderShape);
       }
-      if (gltfShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.GltfShape) {
         output.WriteRawTag(90);
         output.WriteMessage(GltfShape);
       }
-      if (nftShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.NftShape) {
         output.WriteRawTag(98);
         output.WriteMessage(NftShape);
       }
-      if (texture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Texture) {
         output.WriteRawTag(106);
         output.WriteMessage(Texture);
       }
-      if (animator_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Animator) {
         output.WriteRawTag(114);
         output.WriteMessage(Animator);
       }
-      if (objShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ObjShape) {
         output.WriteRawTag(122);
         output.WriteMessage(ObjShape);
       }
-      if (font_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Font) {
         output.WriteRawTag(130, 1);
         output.WriteMessage(Font);
       }
-      if (textShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.TextShape) {
         output.WriteRawTag(138, 1);
         output.WriteMessage(TextShape);
       }
-      if (material_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Material) {
         output.WriteRawTag(146, 1);
         output.WriteMessage(Material);
       }
-      if (basicMaterial_ != null) {
+      if (payloadCase_ == PayloadOneofCase.BasicMaterial) {
         output.WriteRawTag(154, 1);
         output.WriteMessage(BasicMaterial);
       }
-      if (uuidCallback_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UuidCallback) {
         output.WriteRawTag(162, 1);
         output.WriteMessage(UuidCallback);
       }
-      if (smartItem_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SmartItem) {
         output.WriteRawTag(170, 1);
         output.WriteMessage(SmartItem);
       }
-      if (videoClip_ != null) {
+      if (payloadCase_ == PayloadOneofCase.VideoClip) {
         output.WriteRawTag(178, 1);
         output.WriteMessage(VideoClip);
       }
-      if (videoTexture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.VideoTexture) {
         output.WriteRawTag(186, 1);
         output.WriteMessage(VideoTexture);
       }
-      if (cameraModeArea_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CameraModeArea) {
         output.WriteRawTag(194, 1);
         output.WriteMessage(CameraModeArea);
       }
-      if (avatarTexture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarTexture) {
         output.WriteRawTag(202, 1);
         output.WriteMessage(AvatarTexture);
       }
-      if (audioClip_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioClip) {
         output.WriteRawTag(210, 1);
         output.WriteMessage(AudioClip);
       }
-      if (audioSource_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioSource) {
         output.WriteRawTag(218, 1);
         output.WriteMessage(AudioSource);
       }
-      if (audioStream_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioStream) {
         output.WriteRawTag(226, 1);
         output.WriteMessage(AudioStream);
       }
-      if (avatarShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarShape) {
         output.WriteRawTag(234, 1);
         output.WriteMessage(AvatarShape);
       }
-      if (gizmos_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Gizmos) {
         output.WriteRawTag(242, 1);
         output.WriteMessage(Gizmos);
       }
-      if (uiShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiShape) {
         output.WriteRawTag(250, 1);
         output.WriteMessage(UiShape);
       }
-      if (uiContainerRect_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiContainerRect) {
         output.WriteRawTag(130, 2);
         output.WriteMessage(UiContainerRect);
       }
-      if (uiContainerStack_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiContainerStack) {
         output.WriteRawTag(138, 2);
         output.WriteMessage(UiContainerStack);
       }
-      if (uiButton_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiButton) {
         output.WriteRawTag(146, 2);
         output.WriteMessage(UiButton);
       }
-      if (uiText_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiText) {
         output.WriteRawTag(154, 2);
         output.WriteMessage(UiText);
       }
-      if (uiInputText_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiInputText) {
         output.WriteRawTag(162, 2);
         output.WriteMessage(UiInputText);
       }
-      if (uiImage_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiImage) {
         output.WriteRawTag(170, 2);
         output.WriteMessage(UiImage);
       }
-      if (uiScrollRect_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiScrollRect) {
         output.WriteRawTag(178, 2);
         output.WriteMessage(UiScrollRect);
       }
@@ -1646,118 +1749,118 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (avatarModifierArea_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarModifierArea) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AvatarModifierArea);
       }
-      if (transform_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Transform) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Transform);
       }
-      if (attachToAvatar_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AttachToAvatar) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AttachToAvatar);
       }
-      if (billboard_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Billboard) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Billboard);
       }
-      if (boxShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.BoxShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(BoxShape);
       }
-      if (sphereShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SphereShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(SphereShape);
       }
-      if (circleShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CircleShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(CircleShape);
       }
-      if (planeShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.PlaneShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(PlaneShape);
       }
-      if (coneShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ConeShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ConeShape);
       }
-      if (cylinderShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CylinderShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(CylinderShape);
       }
-      if (gltfShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.GltfShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(GltfShape);
       }
-      if (nftShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.NftShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(NftShape);
       }
-      if (texture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Texture) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Texture);
       }
-      if (animator_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Animator) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Animator);
       }
-      if (objShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ObjShape) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ObjShape);
       }
-      if (font_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Font) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Font);
       }
-      if (textShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.TextShape) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(TextShape);
       }
-      if (material_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Material) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Material);
       }
-      if (basicMaterial_ != null) {
+      if (payloadCase_ == PayloadOneofCase.BasicMaterial) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(BasicMaterial);
       }
-      if (uuidCallback_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UuidCallback) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UuidCallback);
       }
-      if (smartItem_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SmartItem) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(SmartItem);
       }
-      if (videoClip_ != null) {
+      if (payloadCase_ == PayloadOneofCase.VideoClip) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(VideoClip);
       }
-      if (videoTexture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.VideoTexture) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(VideoTexture);
       }
-      if (cameraModeArea_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CameraModeArea) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(CameraModeArea);
       }
-      if (avatarTexture_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarTexture) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AvatarTexture);
       }
-      if (audioClip_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioClip) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AudioClip);
       }
-      if (audioSource_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioSource) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AudioSource);
       }
-      if (audioStream_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AudioStream) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AudioStream);
       }
-      if (avatarShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AvatarShape) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AvatarShape);
       }
-      if (gizmos_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Gizmos) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Gizmos);
       }
-      if (uiShape_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiShape) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UiShape);
       }
-      if (uiContainerRect_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiContainerRect) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UiContainerRect);
       }
-      if (uiContainerStack_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiContainerStack) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UiContainerStack);
       }
-      if (uiButton_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiButton) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UiButton);
       }
-      if (uiText_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiText) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UiText);
       }
-      if (uiInputText_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiInputText) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UiInputText);
       }
-      if (uiImage_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiImage) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UiImage);
       }
-      if (uiScrollRect_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UiScrollRect) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UiScrollRect);
       }
       if (_unknownFields != null) {
@@ -1772,234 +1875,237 @@ namespace Decentraland.Sdk.Ecs6 {
       if (other == null) {
         return;
       }
-      if (other.avatarModifierArea_ != null) {
-        if (avatarModifierArea_ == null) {
-          AvatarModifierArea = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea();
-        }
-        AvatarModifierArea.MergeFrom(other.AvatarModifierArea);
+      switch (other.PayloadCase) {
+        case PayloadOneofCase.AvatarModifierArea:
+          if (AvatarModifierArea == null) {
+            AvatarModifierArea = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea();
+          }
+          AvatarModifierArea.MergeFrom(other.AvatarModifierArea);
+          break;
+        case PayloadOneofCase.Transform:
+          if (Transform == null) {
+            Transform = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform();
+          }
+          Transform.MergeFrom(other.Transform);
+          break;
+        case PayloadOneofCase.AttachToAvatar:
+          if (AttachToAvatar == null) {
+            AttachToAvatar = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar();
+          }
+          AttachToAvatar.MergeFrom(other.AttachToAvatar);
+          break;
+        case PayloadOneofCase.Billboard:
+          if (Billboard == null) {
+            Billboard = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard();
+          }
+          Billboard.MergeFrom(other.Billboard);
+          break;
+        case PayloadOneofCase.BoxShape:
+          if (BoxShape == null) {
+            BoxShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape();
+          }
+          BoxShape.MergeFrom(other.BoxShape);
+          break;
+        case PayloadOneofCase.SphereShape:
+          if (SphereShape == null) {
+            SphereShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape();
+          }
+          SphereShape.MergeFrom(other.SphereShape);
+          break;
+        case PayloadOneofCase.CircleShape:
+          if (CircleShape == null) {
+            CircleShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape();
+          }
+          CircleShape.MergeFrom(other.CircleShape);
+          break;
+        case PayloadOneofCase.PlaneShape:
+          if (PlaneShape == null) {
+            PlaneShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape();
+          }
+          PlaneShape.MergeFrom(other.PlaneShape);
+          break;
+        case PayloadOneofCase.ConeShape:
+          if (ConeShape == null) {
+            ConeShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape();
+          }
+          ConeShape.MergeFrom(other.ConeShape);
+          break;
+        case PayloadOneofCase.CylinderShape:
+          if (CylinderShape == null) {
+            CylinderShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape();
+          }
+          CylinderShape.MergeFrom(other.CylinderShape);
+          break;
+        case PayloadOneofCase.GltfShape:
+          if (GltfShape == null) {
+            GltfShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape();
+          }
+          GltfShape.MergeFrom(other.GltfShape);
+          break;
+        case PayloadOneofCase.NftShape:
+          if (NftShape == null) {
+            NftShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape();
+          }
+          NftShape.MergeFrom(other.NftShape);
+          break;
+        case PayloadOneofCase.Texture:
+          if (Texture == null) {
+            Texture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture();
+          }
+          Texture.MergeFrom(other.Texture);
+          break;
+        case PayloadOneofCase.Animator:
+          if (Animator == null) {
+            Animator = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator();
+          }
+          Animator.MergeFrom(other.Animator);
+          break;
+        case PayloadOneofCase.ObjShape:
+          if (ObjShape == null) {
+            ObjShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape();
+          }
+          ObjShape.MergeFrom(other.ObjShape);
+          break;
+        case PayloadOneofCase.Font:
+          if (Font == null) {
+            Font = new global::Decentraland.Sdk.Ecs6.ECS6ComponentFont();
+          }
+          Font.MergeFrom(other.Font);
+          break;
+        case PayloadOneofCase.TextShape:
+          if (TextShape == null) {
+            TextShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape();
+          }
+          TextShape.MergeFrom(other.TextShape);
+          break;
+        case PayloadOneofCase.Material:
+          if (Material == null) {
+            Material = new global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial();
+          }
+          Material.MergeFrom(other.Material);
+          break;
+        case PayloadOneofCase.BasicMaterial:
+          if (BasicMaterial == null) {
+            BasicMaterial = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial();
+          }
+          BasicMaterial.MergeFrom(other.BasicMaterial);
+          break;
+        case PayloadOneofCase.UuidCallback:
+          if (UuidCallback == null) {
+            UuidCallback = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback();
+          }
+          UuidCallback.MergeFrom(other.UuidCallback);
+          break;
+        case PayloadOneofCase.SmartItem:
+          if (SmartItem == null) {
+            SmartItem = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem();
+          }
+          SmartItem.MergeFrom(other.SmartItem);
+          break;
+        case PayloadOneofCase.VideoClip:
+          if (VideoClip == null) {
+            VideoClip = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip();
+          }
+          VideoClip.MergeFrom(other.VideoClip);
+          break;
+        case PayloadOneofCase.VideoTexture:
+          if (VideoTexture == null) {
+            VideoTexture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture();
+          }
+          VideoTexture.MergeFrom(other.VideoTexture);
+          break;
+        case PayloadOneofCase.CameraModeArea:
+          if (CameraModeArea == null) {
+            CameraModeArea = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea();
+          }
+          CameraModeArea.MergeFrom(other.CameraModeArea);
+          break;
+        case PayloadOneofCase.AvatarTexture:
+          if (AvatarTexture == null) {
+            AvatarTexture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture();
+          }
+          AvatarTexture.MergeFrom(other.AvatarTexture);
+          break;
+        case PayloadOneofCase.AudioClip:
+          if (AudioClip == null) {
+            AudioClip = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip();
+          }
+          AudioClip.MergeFrom(other.AudioClip);
+          break;
+        case PayloadOneofCase.AudioSource:
+          if (AudioSource == null) {
+            AudioSource = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource();
+          }
+          AudioSource.MergeFrom(other.AudioSource);
+          break;
+        case PayloadOneofCase.AudioStream:
+          if (AudioStream == null) {
+            AudioStream = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream();
+          }
+          AudioStream.MergeFrom(other.AudioStream);
+          break;
+        case PayloadOneofCase.AvatarShape:
+          if (AvatarShape == null) {
+            AvatarShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape();
+          }
+          AvatarShape.MergeFrom(other.AvatarShape);
+          break;
+        case PayloadOneofCase.Gizmos:
+          if (Gizmos == null) {
+            Gizmos = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos();
+          }
+          Gizmos.MergeFrom(other.Gizmos);
+          break;
+        case PayloadOneofCase.UiShape:
+          if (UiShape == null) {
+            UiShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape();
+          }
+          UiShape.MergeFrom(other.UiShape);
+          break;
+        case PayloadOneofCase.UiContainerRect:
+          if (UiContainerRect == null) {
+            UiContainerRect = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect();
+          }
+          UiContainerRect.MergeFrom(other.UiContainerRect);
+          break;
+        case PayloadOneofCase.UiContainerStack:
+          if (UiContainerStack == null) {
+            UiContainerStack = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack();
+          }
+          UiContainerStack.MergeFrom(other.UiContainerStack);
+          break;
+        case PayloadOneofCase.UiButton:
+          if (UiButton == null) {
+            UiButton = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton();
+          }
+          UiButton.MergeFrom(other.UiButton);
+          break;
+        case PayloadOneofCase.UiText:
+          if (UiText == null) {
+            UiText = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText();
+          }
+          UiText.MergeFrom(other.UiText);
+          break;
+        case PayloadOneofCase.UiInputText:
+          if (UiInputText == null) {
+            UiInputText = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText();
+          }
+          UiInputText.MergeFrom(other.UiInputText);
+          break;
+        case PayloadOneofCase.UiImage:
+          if (UiImage == null) {
+            UiImage = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage();
+          }
+          UiImage.MergeFrom(other.UiImage);
+          break;
+        case PayloadOneofCase.UiScrollRect:
+          if (UiScrollRect == null) {
+            UiScrollRect = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect();
+          }
+          UiScrollRect.MergeFrom(other.UiScrollRect);
+          break;
       }
-      if (other.transform_ != null) {
-        if (transform_ == null) {
-          Transform = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform();
-        }
-        Transform.MergeFrom(other.Transform);
-      }
-      if (other.attachToAvatar_ != null) {
-        if (attachToAvatar_ == null) {
-          AttachToAvatar = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar();
-        }
-        AttachToAvatar.MergeFrom(other.AttachToAvatar);
-      }
-      if (other.billboard_ != null) {
-        if (billboard_ == null) {
-          Billboard = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard();
-        }
-        Billboard.MergeFrom(other.Billboard);
-      }
-      if (other.boxShape_ != null) {
-        if (boxShape_ == null) {
-          BoxShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape();
-        }
-        BoxShape.MergeFrom(other.BoxShape);
-      }
-      if (other.sphereShape_ != null) {
-        if (sphereShape_ == null) {
-          SphereShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape();
-        }
-        SphereShape.MergeFrom(other.SphereShape);
-      }
-      if (other.circleShape_ != null) {
-        if (circleShape_ == null) {
-          CircleShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape();
-        }
-        CircleShape.MergeFrom(other.CircleShape);
-      }
-      if (other.planeShape_ != null) {
-        if (planeShape_ == null) {
-          PlaneShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape();
-        }
-        PlaneShape.MergeFrom(other.PlaneShape);
-      }
-      if (other.coneShape_ != null) {
-        if (coneShape_ == null) {
-          ConeShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape();
-        }
-        ConeShape.MergeFrom(other.ConeShape);
-      }
-      if (other.cylinderShape_ != null) {
-        if (cylinderShape_ == null) {
-          CylinderShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape();
-        }
-        CylinderShape.MergeFrom(other.CylinderShape);
-      }
-      if (other.gltfShape_ != null) {
-        if (gltfShape_ == null) {
-          GltfShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape();
-        }
-        GltfShape.MergeFrom(other.GltfShape);
-      }
-      if (other.nftShape_ != null) {
-        if (nftShape_ == null) {
-          NftShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape();
-        }
-        NftShape.MergeFrom(other.NftShape);
-      }
-      if (other.texture_ != null) {
-        if (texture_ == null) {
-          Texture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture();
-        }
-        Texture.MergeFrom(other.Texture);
-      }
-      if (other.animator_ != null) {
-        if (animator_ == null) {
-          Animator = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator();
-        }
-        Animator.MergeFrom(other.Animator);
-      }
-      if (other.objShape_ != null) {
-        if (objShape_ == null) {
-          ObjShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape();
-        }
-        ObjShape.MergeFrom(other.ObjShape);
-      }
-      if (other.font_ != null) {
-        if (font_ == null) {
-          Font = new global::Decentraland.Sdk.Ecs6.ECS6ComponentFont();
-        }
-        Font.MergeFrom(other.Font);
-      }
-      if (other.textShape_ != null) {
-        if (textShape_ == null) {
-          TextShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape();
-        }
-        TextShape.MergeFrom(other.TextShape);
-      }
-      if (other.material_ != null) {
-        if (material_ == null) {
-          Material = new global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial();
-        }
-        Material.MergeFrom(other.Material);
-      }
-      if (other.basicMaterial_ != null) {
-        if (basicMaterial_ == null) {
-          BasicMaterial = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial();
-        }
-        BasicMaterial.MergeFrom(other.BasicMaterial);
-      }
-      if (other.uuidCallback_ != null) {
-        if (uuidCallback_ == null) {
-          UuidCallback = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback();
-        }
-        UuidCallback.MergeFrom(other.UuidCallback);
-      }
-      if (other.smartItem_ != null) {
-        if (smartItem_ == null) {
-          SmartItem = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem();
-        }
-        SmartItem.MergeFrom(other.SmartItem);
-      }
-      if (other.videoClip_ != null) {
-        if (videoClip_ == null) {
-          VideoClip = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip();
-        }
-        VideoClip.MergeFrom(other.VideoClip);
-      }
-      if (other.videoTexture_ != null) {
-        if (videoTexture_ == null) {
-          VideoTexture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture();
-        }
-        VideoTexture.MergeFrom(other.VideoTexture);
-      }
-      if (other.cameraModeArea_ != null) {
-        if (cameraModeArea_ == null) {
-          CameraModeArea = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea();
-        }
-        CameraModeArea.MergeFrom(other.CameraModeArea);
-      }
-      if (other.avatarTexture_ != null) {
-        if (avatarTexture_ == null) {
-          AvatarTexture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture();
-        }
-        AvatarTexture.MergeFrom(other.AvatarTexture);
-      }
-      if (other.audioClip_ != null) {
-        if (audioClip_ == null) {
-          AudioClip = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip();
-        }
-        AudioClip.MergeFrom(other.AudioClip);
-      }
-      if (other.audioSource_ != null) {
-        if (audioSource_ == null) {
-          AudioSource = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource();
-        }
-        AudioSource.MergeFrom(other.AudioSource);
-      }
-      if (other.audioStream_ != null) {
-        if (audioStream_ == null) {
-          AudioStream = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream();
-        }
-        AudioStream.MergeFrom(other.AudioStream);
-      }
-      if (other.avatarShape_ != null) {
-        if (avatarShape_ == null) {
-          AvatarShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape();
-        }
-        AvatarShape.MergeFrom(other.AvatarShape);
-      }
-      if (other.gizmos_ != null) {
-        if (gizmos_ == null) {
-          Gizmos = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos();
-        }
-        Gizmos.MergeFrom(other.Gizmos);
-      }
-      if (other.uiShape_ != null) {
-        if (uiShape_ == null) {
-          UiShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape();
-        }
-        UiShape.MergeFrom(other.UiShape);
-      }
-      if (other.uiContainerRect_ != null) {
-        if (uiContainerRect_ == null) {
-          UiContainerRect = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect();
-        }
-        UiContainerRect.MergeFrom(other.UiContainerRect);
-      }
-      if (other.uiContainerStack_ != null) {
-        if (uiContainerStack_ == null) {
-          UiContainerStack = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack();
-        }
-        UiContainerStack.MergeFrom(other.UiContainerStack);
-      }
-      if (other.uiButton_ != null) {
-        if (uiButton_ == null) {
-          UiButton = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton();
-        }
-        UiButton.MergeFrom(other.UiButton);
-      }
-      if (other.uiText_ != null) {
-        if (uiText_ == null) {
-          UiText = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText();
-        }
-        UiText.MergeFrom(other.UiText);
-      }
-      if (other.uiInputText_ != null) {
-        if (uiInputText_ == null) {
-          UiInputText = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText();
-        }
-        UiInputText.MergeFrom(other.UiInputText);
-      }
-      if (other.uiImage_ != null) {
-        if (uiImage_ == null) {
-          UiImage = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage();
-        }
-        UiImage.MergeFrom(other.UiImage);
-      }
-      if (other.uiScrollRect_ != null) {
-        if (uiScrollRect_ == null) {
-          UiScrollRect = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect();
-        }
-        UiScrollRect.MergeFrom(other.UiScrollRect);
-      }
+
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -2016,269 +2122,345 @@ namespace Decentraland.Sdk.Ecs6 {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            if (avatarModifierArea_ == null) {
-              AvatarModifierArea = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea();
+            if (payloadCase_ == PayloadOneofCase.AvatarModifierArea) {
+              subBuilder.MergeFrom(AvatarModifierArea);
             }
-            input.ReadMessage(AvatarModifierArea);
+            input.ReadMessage(subBuilder);
+            AvatarModifierArea = subBuilder;
             break;
           }
           case 18: {
-            if (transform_ == null) {
-              Transform = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform();
+            if (payloadCase_ == PayloadOneofCase.Transform) {
+              subBuilder.MergeFrom(Transform);
             }
-            input.ReadMessage(Transform);
+            input.ReadMessage(subBuilder);
+            Transform = subBuilder;
             break;
           }
           case 26: {
-            if (attachToAvatar_ == null) {
-              AttachToAvatar = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar();
+            if (payloadCase_ == PayloadOneofCase.AttachToAvatar) {
+              subBuilder.MergeFrom(AttachToAvatar);
             }
-            input.ReadMessage(AttachToAvatar);
+            input.ReadMessage(subBuilder);
+            AttachToAvatar = subBuilder;
             break;
           }
           case 34: {
-            if (billboard_ == null) {
-              Billboard = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard();
+            if (payloadCase_ == PayloadOneofCase.Billboard) {
+              subBuilder.MergeFrom(Billboard);
             }
-            input.ReadMessage(Billboard);
+            input.ReadMessage(subBuilder);
+            Billboard = subBuilder;
             break;
           }
           case 42: {
-            if (boxShape_ == null) {
-              BoxShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape();
+            if (payloadCase_ == PayloadOneofCase.BoxShape) {
+              subBuilder.MergeFrom(BoxShape);
             }
-            input.ReadMessage(BoxShape);
+            input.ReadMessage(subBuilder);
+            BoxShape = subBuilder;
             break;
           }
           case 50: {
-            if (sphereShape_ == null) {
-              SphereShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape();
+            if (payloadCase_ == PayloadOneofCase.SphereShape) {
+              subBuilder.MergeFrom(SphereShape);
             }
-            input.ReadMessage(SphereShape);
+            input.ReadMessage(subBuilder);
+            SphereShape = subBuilder;
             break;
           }
           case 58: {
-            if (circleShape_ == null) {
-              CircleShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape();
+            if (payloadCase_ == PayloadOneofCase.CircleShape) {
+              subBuilder.MergeFrom(CircleShape);
             }
-            input.ReadMessage(CircleShape);
+            input.ReadMessage(subBuilder);
+            CircleShape = subBuilder;
             break;
           }
           case 66: {
-            if (planeShape_ == null) {
-              PlaneShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape();
+            if (payloadCase_ == PayloadOneofCase.PlaneShape) {
+              subBuilder.MergeFrom(PlaneShape);
             }
-            input.ReadMessage(PlaneShape);
+            input.ReadMessage(subBuilder);
+            PlaneShape = subBuilder;
             break;
           }
           case 74: {
-            if (coneShape_ == null) {
-              ConeShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape();
+            if (payloadCase_ == PayloadOneofCase.ConeShape) {
+              subBuilder.MergeFrom(ConeShape);
             }
-            input.ReadMessage(ConeShape);
+            input.ReadMessage(subBuilder);
+            ConeShape = subBuilder;
             break;
           }
           case 82: {
-            if (cylinderShape_ == null) {
-              CylinderShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape();
+            if (payloadCase_ == PayloadOneofCase.CylinderShape) {
+              subBuilder.MergeFrom(CylinderShape);
             }
-            input.ReadMessage(CylinderShape);
+            input.ReadMessage(subBuilder);
+            CylinderShape = subBuilder;
             break;
           }
           case 90: {
-            if (gltfShape_ == null) {
-              GltfShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape();
+            if (payloadCase_ == PayloadOneofCase.GltfShape) {
+              subBuilder.MergeFrom(GltfShape);
             }
-            input.ReadMessage(GltfShape);
+            input.ReadMessage(subBuilder);
+            GltfShape = subBuilder;
             break;
           }
           case 98: {
-            if (nftShape_ == null) {
-              NftShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape();
+            if (payloadCase_ == PayloadOneofCase.NftShape) {
+              subBuilder.MergeFrom(NftShape);
             }
-            input.ReadMessage(NftShape);
+            input.ReadMessage(subBuilder);
+            NftShape = subBuilder;
             break;
           }
           case 106: {
-            if (texture_ == null) {
-              Texture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture();
+            if (payloadCase_ == PayloadOneofCase.Texture) {
+              subBuilder.MergeFrom(Texture);
             }
-            input.ReadMessage(Texture);
+            input.ReadMessage(subBuilder);
+            Texture = subBuilder;
             break;
           }
           case 114: {
-            if (animator_ == null) {
-              Animator = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator();
+            if (payloadCase_ == PayloadOneofCase.Animator) {
+              subBuilder.MergeFrom(Animator);
             }
-            input.ReadMessage(Animator);
+            input.ReadMessage(subBuilder);
+            Animator = subBuilder;
             break;
           }
           case 122: {
-            if (objShape_ == null) {
-              ObjShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape();
+            if (payloadCase_ == PayloadOneofCase.ObjShape) {
+              subBuilder.MergeFrom(ObjShape);
             }
-            input.ReadMessage(ObjShape);
+            input.ReadMessage(subBuilder);
+            ObjShape = subBuilder;
             break;
           }
           case 130: {
-            if (font_ == null) {
-              Font = new global::Decentraland.Sdk.Ecs6.ECS6ComponentFont();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentFont subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentFont();
+            if (payloadCase_ == PayloadOneofCase.Font) {
+              subBuilder.MergeFrom(Font);
             }
-            input.ReadMessage(Font);
+            input.ReadMessage(subBuilder);
+            Font = subBuilder;
             break;
           }
           case 138: {
-            if (textShape_ == null) {
-              TextShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape();
+            if (payloadCase_ == PayloadOneofCase.TextShape) {
+              subBuilder.MergeFrom(TextShape);
             }
-            input.ReadMessage(TextShape);
+            input.ReadMessage(subBuilder);
+            TextShape = subBuilder;
             break;
           }
           case 146: {
-            if (material_ == null) {
-              Material = new global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial();
+            if (payloadCase_ == PayloadOneofCase.Material) {
+              subBuilder.MergeFrom(Material);
             }
-            input.ReadMessage(Material);
+            input.ReadMessage(subBuilder);
+            Material = subBuilder;
             break;
           }
           case 154: {
-            if (basicMaterial_ == null) {
-              BasicMaterial = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial();
+            if (payloadCase_ == PayloadOneofCase.BasicMaterial) {
+              subBuilder.MergeFrom(BasicMaterial);
             }
-            input.ReadMessage(BasicMaterial);
+            input.ReadMessage(subBuilder);
+            BasicMaterial = subBuilder;
             break;
           }
           case 162: {
-            if (uuidCallback_ == null) {
-              UuidCallback = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback();
+            if (payloadCase_ == PayloadOneofCase.UuidCallback) {
+              subBuilder.MergeFrom(UuidCallback);
             }
-            input.ReadMessage(UuidCallback);
+            input.ReadMessage(subBuilder);
+            UuidCallback = subBuilder;
             break;
           }
           case 170: {
-            if (smartItem_ == null) {
-              SmartItem = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem();
+            if (payloadCase_ == PayloadOneofCase.SmartItem) {
+              subBuilder.MergeFrom(SmartItem);
             }
-            input.ReadMessage(SmartItem);
+            input.ReadMessage(subBuilder);
+            SmartItem = subBuilder;
             break;
           }
           case 178: {
-            if (videoClip_ == null) {
-              VideoClip = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip();
+            if (payloadCase_ == PayloadOneofCase.VideoClip) {
+              subBuilder.MergeFrom(VideoClip);
             }
-            input.ReadMessage(VideoClip);
+            input.ReadMessage(subBuilder);
+            VideoClip = subBuilder;
             break;
           }
           case 186: {
-            if (videoTexture_ == null) {
-              VideoTexture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture();
+            if (payloadCase_ == PayloadOneofCase.VideoTexture) {
+              subBuilder.MergeFrom(VideoTexture);
             }
-            input.ReadMessage(VideoTexture);
+            input.ReadMessage(subBuilder);
+            VideoTexture = subBuilder;
             break;
           }
           case 194: {
-            if (cameraModeArea_ == null) {
-              CameraModeArea = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea();
+            if (payloadCase_ == PayloadOneofCase.CameraModeArea) {
+              subBuilder.MergeFrom(CameraModeArea);
             }
-            input.ReadMessage(CameraModeArea);
+            input.ReadMessage(subBuilder);
+            CameraModeArea = subBuilder;
             break;
           }
           case 202: {
-            if (avatarTexture_ == null) {
-              AvatarTexture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture();
+            if (payloadCase_ == PayloadOneofCase.AvatarTexture) {
+              subBuilder.MergeFrom(AvatarTexture);
             }
-            input.ReadMessage(AvatarTexture);
+            input.ReadMessage(subBuilder);
+            AvatarTexture = subBuilder;
             break;
           }
           case 210: {
-            if (audioClip_ == null) {
-              AudioClip = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip();
+            if (payloadCase_ == PayloadOneofCase.AudioClip) {
+              subBuilder.MergeFrom(AudioClip);
             }
-            input.ReadMessage(AudioClip);
+            input.ReadMessage(subBuilder);
+            AudioClip = subBuilder;
             break;
           }
           case 218: {
-            if (audioSource_ == null) {
-              AudioSource = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource();
+            if (payloadCase_ == PayloadOneofCase.AudioSource) {
+              subBuilder.MergeFrom(AudioSource);
             }
-            input.ReadMessage(AudioSource);
+            input.ReadMessage(subBuilder);
+            AudioSource = subBuilder;
             break;
           }
           case 226: {
-            if (audioStream_ == null) {
-              AudioStream = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream();
+            if (payloadCase_ == PayloadOneofCase.AudioStream) {
+              subBuilder.MergeFrom(AudioStream);
             }
-            input.ReadMessage(AudioStream);
+            input.ReadMessage(subBuilder);
+            AudioStream = subBuilder;
             break;
           }
           case 234: {
-            if (avatarShape_ == null) {
-              AvatarShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape();
+            if (payloadCase_ == PayloadOneofCase.AvatarShape) {
+              subBuilder.MergeFrom(AvatarShape);
             }
-            input.ReadMessage(AvatarShape);
+            input.ReadMessage(subBuilder);
+            AvatarShape = subBuilder;
             break;
           }
           case 242: {
-            if (gizmos_ == null) {
-              Gizmos = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos();
+            if (payloadCase_ == PayloadOneofCase.Gizmos) {
+              subBuilder.MergeFrom(Gizmos);
             }
-            input.ReadMessage(Gizmos);
+            input.ReadMessage(subBuilder);
+            Gizmos = subBuilder;
             break;
           }
           case 250: {
-            if (uiShape_ == null) {
-              UiShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape();
+            if (payloadCase_ == PayloadOneofCase.UiShape) {
+              subBuilder.MergeFrom(UiShape);
             }
-            input.ReadMessage(UiShape);
+            input.ReadMessage(subBuilder);
+            UiShape = subBuilder;
             break;
           }
           case 258: {
-            if (uiContainerRect_ == null) {
-              UiContainerRect = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect();
+            if (payloadCase_ == PayloadOneofCase.UiContainerRect) {
+              subBuilder.MergeFrom(UiContainerRect);
             }
-            input.ReadMessage(UiContainerRect);
+            input.ReadMessage(subBuilder);
+            UiContainerRect = subBuilder;
             break;
           }
           case 266: {
-            if (uiContainerStack_ == null) {
-              UiContainerStack = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack();
+            if (payloadCase_ == PayloadOneofCase.UiContainerStack) {
+              subBuilder.MergeFrom(UiContainerStack);
             }
-            input.ReadMessage(UiContainerStack);
+            input.ReadMessage(subBuilder);
+            UiContainerStack = subBuilder;
             break;
           }
           case 274: {
-            if (uiButton_ == null) {
-              UiButton = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton();
+            if (payloadCase_ == PayloadOneofCase.UiButton) {
+              subBuilder.MergeFrom(UiButton);
             }
-            input.ReadMessage(UiButton);
+            input.ReadMessage(subBuilder);
+            UiButton = subBuilder;
             break;
           }
           case 282: {
-            if (uiText_ == null) {
-              UiText = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText();
+            if (payloadCase_ == PayloadOneofCase.UiText) {
+              subBuilder.MergeFrom(UiText);
             }
-            input.ReadMessage(UiText);
+            input.ReadMessage(subBuilder);
+            UiText = subBuilder;
             break;
           }
           case 290: {
-            if (uiInputText_ == null) {
-              UiInputText = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText();
+            if (payloadCase_ == PayloadOneofCase.UiInputText) {
+              subBuilder.MergeFrom(UiInputText);
             }
-            input.ReadMessage(UiInputText);
+            input.ReadMessage(subBuilder);
+            UiInputText = subBuilder;
             break;
           }
           case 298: {
-            if (uiImage_ == null) {
-              UiImage = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage();
+            if (payloadCase_ == PayloadOneofCase.UiImage) {
+              subBuilder.MergeFrom(UiImage);
             }
-            input.ReadMessage(UiImage);
+            input.ReadMessage(subBuilder);
+            UiImage = subBuilder;
             break;
           }
           case 306: {
-            if (uiScrollRect_ == null) {
-              UiScrollRect = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect();
+            if (payloadCase_ == PayloadOneofCase.UiScrollRect) {
+              subBuilder.MergeFrom(UiScrollRect);
             }
-            input.ReadMessage(UiScrollRect);
+            input.ReadMessage(subBuilder);
+            UiScrollRect = subBuilder;
             break;
           }
         }
@@ -2297,269 +2479,345 @@ namespace Decentraland.Sdk.Ecs6 {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            if (avatarModifierArea_ == null) {
-              AvatarModifierArea = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarModifierArea();
+            if (payloadCase_ == PayloadOneofCase.AvatarModifierArea) {
+              subBuilder.MergeFrom(AvatarModifierArea);
             }
-            input.ReadMessage(AvatarModifierArea);
+            input.ReadMessage(subBuilder);
+            AvatarModifierArea = subBuilder;
             break;
           }
           case 18: {
-            if (transform_ == null) {
-              Transform = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTransform();
+            if (payloadCase_ == PayloadOneofCase.Transform) {
+              subBuilder.MergeFrom(Transform);
             }
-            input.ReadMessage(Transform);
+            input.ReadMessage(subBuilder);
+            Transform = subBuilder;
             break;
           }
           case 26: {
-            if (attachToAvatar_ == null) {
-              AttachToAvatar = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAttachToAvatar();
+            if (payloadCase_ == PayloadOneofCase.AttachToAvatar) {
+              subBuilder.MergeFrom(AttachToAvatar);
             }
-            input.ReadMessage(AttachToAvatar);
+            input.ReadMessage(subBuilder);
+            AttachToAvatar = subBuilder;
             break;
           }
           case 34: {
-            if (billboard_ == null) {
-              Billboard = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBillboard();
+            if (payloadCase_ == PayloadOneofCase.Billboard) {
+              subBuilder.MergeFrom(Billboard);
             }
-            input.ReadMessage(Billboard);
+            input.ReadMessage(subBuilder);
+            Billboard = subBuilder;
             break;
           }
           case 42: {
-            if (boxShape_ == null) {
-              BoxShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBoxShape();
+            if (payloadCase_ == PayloadOneofCase.BoxShape) {
+              subBuilder.MergeFrom(BoxShape);
             }
-            input.ReadMessage(BoxShape);
+            input.ReadMessage(subBuilder);
+            BoxShape = subBuilder;
             break;
           }
           case 50: {
-            if (sphereShape_ == null) {
-              SphereShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSphereShape();
+            if (payloadCase_ == PayloadOneofCase.SphereShape) {
+              subBuilder.MergeFrom(SphereShape);
             }
-            input.ReadMessage(SphereShape);
+            input.ReadMessage(subBuilder);
+            SphereShape = subBuilder;
             break;
           }
           case 58: {
-            if (circleShape_ == null) {
-              CircleShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCircleShape();
+            if (payloadCase_ == PayloadOneofCase.CircleShape) {
+              subBuilder.MergeFrom(CircleShape);
             }
-            input.ReadMessage(CircleShape);
+            input.ReadMessage(subBuilder);
+            CircleShape = subBuilder;
             break;
           }
           case 66: {
-            if (planeShape_ == null) {
-              PlaneShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentPlaneShape();
+            if (payloadCase_ == PayloadOneofCase.PlaneShape) {
+              subBuilder.MergeFrom(PlaneShape);
             }
-            input.ReadMessage(PlaneShape);
+            input.ReadMessage(subBuilder);
+            PlaneShape = subBuilder;
             break;
           }
           case 74: {
-            if (coneShape_ == null) {
-              ConeShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentConeShape();
+            if (payloadCase_ == PayloadOneofCase.ConeShape) {
+              subBuilder.MergeFrom(ConeShape);
             }
-            input.ReadMessage(ConeShape);
+            input.ReadMessage(subBuilder);
+            ConeShape = subBuilder;
             break;
           }
           case 82: {
-            if (cylinderShape_ == null) {
-              CylinderShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCylinderShape();
+            if (payloadCase_ == PayloadOneofCase.CylinderShape) {
+              subBuilder.MergeFrom(CylinderShape);
             }
-            input.ReadMessage(CylinderShape);
+            input.ReadMessage(subBuilder);
+            CylinderShape = subBuilder;
             break;
           }
           case 90: {
-            if (gltfShape_ == null) {
-              GltfShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGltfShape();
+            if (payloadCase_ == PayloadOneofCase.GltfShape) {
+              subBuilder.MergeFrom(GltfShape);
             }
-            input.ReadMessage(GltfShape);
+            input.ReadMessage(subBuilder);
+            GltfShape = subBuilder;
             break;
           }
           case 98: {
-            if (nftShape_ == null) {
-              NftShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentNftShape();
+            if (payloadCase_ == PayloadOneofCase.NftShape) {
+              subBuilder.MergeFrom(NftShape);
             }
-            input.ReadMessage(NftShape);
+            input.ReadMessage(subBuilder);
+            NftShape = subBuilder;
             break;
           }
           case 106: {
-            if (texture_ == null) {
-              Texture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTexture();
+            if (payloadCase_ == PayloadOneofCase.Texture) {
+              subBuilder.MergeFrom(Texture);
             }
-            input.ReadMessage(Texture);
+            input.ReadMessage(subBuilder);
+            Texture = subBuilder;
             break;
           }
           case 114: {
-            if (animator_ == null) {
-              Animator = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAnimator();
+            if (payloadCase_ == PayloadOneofCase.Animator) {
+              subBuilder.MergeFrom(Animator);
             }
-            input.ReadMessage(Animator);
+            input.ReadMessage(subBuilder);
+            Animator = subBuilder;
             break;
           }
           case 122: {
-            if (objShape_ == null) {
-              ObjShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentObjShape();
+            if (payloadCase_ == PayloadOneofCase.ObjShape) {
+              subBuilder.MergeFrom(ObjShape);
             }
-            input.ReadMessage(ObjShape);
+            input.ReadMessage(subBuilder);
+            ObjShape = subBuilder;
             break;
           }
           case 130: {
-            if (font_ == null) {
-              Font = new global::Decentraland.Sdk.Ecs6.ECS6ComponentFont();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentFont subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentFont();
+            if (payloadCase_ == PayloadOneofCase.Font) {
+              subBuilder.MergeFrom(Font);
             }
-            input.ReadMessage(Font);
+            input.ReadMessage(subBuilder);
+            Font = subBuilder;
             break;
           }
           case 138: {
-            if (textShape_ == null) {
-              TextShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentTextShape();
+            if (payloadCase_ == PayloadOneofCase.TextShape) {
+              subBuilder.MergeFrom(TextShape);
             }
-            input.ReadMessage(TextShape);
+            input.ReadMessage(subBuilder);
+            TextShape = subBuilder;
             break;
           }
           case 146: {
-            if (material_ == null) {
-              Material = new global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentMaterial();
+            if (payloadCase_ == PayloadOneofCase.Material) {
+              subBuilder.MergeFrom(Material);
             }
-            input.ReadMessage(Material);
+            input.ReadMessage(subBuilder);
+            Material = subBuilder;
             break;
           }
           case 154: {
-            if (basicMaterial_ == null) {
-              BasicMaterial = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentBasicMaterial();
+            if (payloadCase_ == PayloadOneofCase.BasicMaterial) {
+              subBuilder.MergeFrom(BasicMaterial);
             }
-            input.ReadMessage(BasicMaterial);
+            input.ReadMessage(subBuilder);
+            BasicMaterial = subBuilder;
             break;
           }
           case 162: {
-            if (uuidCallback_ == null) {
-              UuidCallback = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUuidCallback();
+            if (payloadCase_ == PayloadOneofCase.UuidCallback) {
+              subBuilder.MergeFrom(UuidCallback);
             }
-            input.ReadMessage(UuidCallback);
+            input.ReadMessage(subBuilder);
+            UuidCallback = subBuilder;
             break;
           }
           case 170: {
-            if (smartItem_ == null) {
-              SmartItem = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentSmartItem();
+            if (payloadCase_ == PayloadOneofCase.SmartItem) {
+              subBuilder.MergeFrom(SmartItem);
             }
-            input.ReadMessage(SmartItem);
+            input.ReadMessage(subBuilder);
+            SmartItem = subBuilder;
             break;
           }
           case 178: {
-            if (videoClip_ == null) {
-              VideoClip = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoClip();
+            if (payloadCase_ == PayloadOneofCase.VideoClip) {
+              subBuilder.MergeFrom(VideoClip);
             }
-            input.ReadMessage(VideoClip);
+            input.ReadMessage(subBuilder);
+            VideoClip = subBuilder;
             break;
           }
           case 186: {
-            if (videoTexture_ == null) {
-              VideoTexture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentVideoTexture();
+            if (payloadCase_ == PayloadOneofCase.VideoTexture) {
+              subBuilder.MergeFrom(VideoTexture);
             }
-            input.ReadMessage(VideoTexture);
+            input.ReadMessage(subBuilder);
+            VideoTexture = subBuilder;
             break;
           }
           case 194: {
-            if (cameraModeArea_ == null) {
-              CameraModeArea = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentCameraModeArea();
+            if (payloadCase_ == PayloadOneofCase.CameraModeArea) {
+              subBuilder.MergeFrom(CameraModeArea);
             }
-            input.ReadMessage(CameraModeArea);
+            input.ReadMessage(subBuilder);
+            CameraModeArea = subBuilder;
             break;
           }
           case 202: {
-            if (avatarTexture_ == null) {
-              AvatarTexture = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarTexture();
+            if (payloadCase_ == PayloadOneofCase.AvatarTexture) {
+              subBuilder.MergeFrom(AvatarTexture);
             }
-            input.ReadMessage(AvatarTexture);
+            input.ReadMessage(subBuilder);
+            AvatarTexture = subBuilder;
             break;
           }
           case 210: {
-            if (audioClip_ == null) {
-              AudioClip = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioClip();
+            if (payloadCase_ == PayloadOneofCase.AudioClip) {
+              subBuilder.MergeFrom(AudioClip);
             }
-            input.ReadMessage(AudioClip);
+            input.ReadMessage(subBuilder);
+            AudioClip = subBuilder;
             break;
           }
           case 218: {
-            if (audioSource_ == null) {
-              AudioSource = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioSource();
+            if (payloadCase_ == PayloadOneofCase.AudioSource) {
+              subBuilder.MergeFrom(AudioSource);
             }
-            input.ReadMessage(AudioSource);
+            input.ReadMessage(subBuilder);
+            AudioSource = subBuilder;
             break;
           }
           case 226: {
-            if (audioStream_ == null) {
-              AudioStream = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAudioStream();
+            if (payloadCase_ == PayloadOneofCase.AudioStream) {
+              subBuilder.MergeFrom(AudioStream);
             }
-            input.ReadMessage(AudioStream);
+            input.ReadMessage(subBuilder);
+            AudioStream = subBuilder;
             break;
           }
           case 234: {
-            if (avatarShape_ == null) {
-              AvatarShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentAvatarShape();
+            if (payloadCase_ == PayloadOneofCase.AvatarShape) {
+              subBuilder.MergeFrom(AvatarShape);
             }
-            input.ReadMessage(AvatarShape);
+            input.ReadMessage(subBuilder);
+            AvatarShape = subBuilder;
             break;
           }
           case 242: {
-            if (gizmos_ == null) {
-              Gizmos = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentGizmos();
+            if (payloadCase_ == PayloadOneofCase.Gizmos) {
+              subBuilder.MergeFrom(Gizmos);
             }
-            input.ReadMessage(Gizmos);
+            input.ReadMessage(subBuilder);
+            Gizmos = subBuilder;
             break;
           }
           case 250: {
-            if (uiShape_ == null) {
-              UiShape = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiShape();
+            if (payloadCase_ == PayloadOneofCase.UiShape) {
+              subBuilder.MergeFrom(UiShape);
             }
-            input.ReadMessage(UiShape);
+            input.ReadMessage(subBuilder);
+            UiShape = subBuilder;
             break;
           }
           case 258: {
-            if (uiContainerRect_ == null) {
-              UiContainerRect = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerRect();
+            if (payloadCase_ == PayloadOneofCase.UiContainerRect) {
+              subBuilder.MergeFrom(UiContainerRect);
             }
-            input.ReadMessage(UiContainerRect);
+            input.ReadMessage(subBuilder);
+            UiContainerRect = subBuilder;
             break;
           }
           case 266: {
-            if (uiContainerStack_ == null) {
-              UiContainerStack = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack();
+            if (payloadCase_ == PayloadOneofCase.UiContainerStack) {
+              subBuilder.MergeFrom(UiContainerStack);
             }
-            input.ReadMessage(UiContainerStack);
+            input.ReadMessage(subBuilder);
+            UiContainerStack = subBuilder;
             break;
           }
           case 274: {
-            if (uiButton_ == null) {
-              UiButton = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton();
+            if (payloadCase_ == PayloadOneofCase.UiButton) {
+              subBuilder.MergeFrom(UiButton);
             }
-            input.ReadMessage(UiButton);
+            input.ReadMessage(subBuilder);
+            UiButton = subBuilder;
             break;
           }
           case 282: {
-            if (uiText_ == null) {
-              UiText = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText();
+            if (payloadCase_ == PayloadOneofCase.UiText) {
+              subBuilder.MergeFrom(UiText);
             }
-            input.ReadMessage(UiText);
+            input.ReadMessage(subBuilder);
+            UiText = subBuilder;
             break;
           }
           case 290: {
-            if (uiInputText_ == null) {
-              UiInputText = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText();
+            if (payloadCase_ == PayloadOneofCase.UiInputText) {
+              subBuilder.MergeFrom(UiInputText);
             }
-            input.ReadMessage(UiInputText);
+            input.ReadMessage(subBuilder);
+            UiInputText = subBuilder;
             break;
           }
           case 298: {
-            if (uiImage_ == null) {
-              UiImage = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage();
+            if (payloadCase_ == PayloadOneofCase.UiImage) {
+              subBuilder.MergeFrom(UiImage);
             }
-            input.ReadMessage(UiImage);
+            input.ReadMessage(subBuilder);
+            UiImage = subBuilder;
             break;
           }
           case 306: {
-            if (uiScrollRect_ == null) {
-              UiScrollRect = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect();
+            global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect subBuilder = new global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect();
+            if (payloadCase_ == PayloadOneofCase.UiScrollRect) {
+              subBuilder.MergeFrom(UiScrollRect);
             }
-            input.ReadMessage(UiScrollRect);
+            input.ReadMessage(subBuilder);
+            UiScrollRect = subBuilder;
             break;
           }
         }
@@ -5070,19 +5328,48 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public EntityActionPayload(EntityActionPayload other) : this() {
-      openExternalUrl_ = other.openExternalUrl_ != null ? other.openExternalUrl_.Clone() : null;
-      openNftDialog_ = other.openNftDialog_ != null ? other.openNftDialog_.Clone() : null;
-      createEntity_ = other.createEntity_ != null ? other.createEntity_.Clone() : null;
-      removeEntity_ = other.removeEntity_ != null ? other.removeEntity_.Clone() : null;
-      updateEntityComponent_ = other.updateEntityComponent_ != null ? other.updateEntityComponent_.Clone() : null;
-      attachEntityComponent_ = other.attachEntityComponent_ != null ? other.attachEntityComponent_.Clone() : null;
-      componentRemoved_ = other.componentRemoved_ != null ? other.componentRemoved_.Clone() : null;
-      setEntityParent_ = other.setEntityParent_ != null ? other.setEntityParent_.Clone() : null;
-      query_ = other.query_ != null ? other.query_.Clone() : null;
-      componentCreated_ = other.componentCreated_ != null ? other.componentCreated_.Clone() : null;
-      componentDisposed_ = other.componentDisposed_ != null ? other.componentDisposed_.Clone() : null;
-      componentUpdated_ = other.componentUpdated_ != null ? other.componentUpdated_.Clone() : null;
-      initMessagesFinished_ = other.initMessagesFinished_ != null ? other.initMessagesFinished_.Clone() : null;
+      switch (other.PayloadCase) {
+        case PayloadOneofCase.OpenExternalUrl:
+          OpenExternalUrl = other.OpenExternalUrl.Clone();
+          break;
+        case PayloadOneofCase.OpenNftDialog:
+          OpenNftDialog = other.OpenNftDialog.Clone();
+          break;
+        case PayloadOneofCase.CreateEntity:
+          CreateEntity = other.CreateEntity.Clone();
+          break;
+        case PayloadOneofCase.RemoveEntity:
+          RemoveEntity = other.RemoveEntity.Clone();
+          break;
+        case PayloadOneofCase.UpdateEntityComponent:
+          UpdateEntityComponent = other.UpdateEntityComponent.Clone();
+          break;
+        case PayloadOneofCase.AttachEntityComponent:
+          AttachEntityComponent = other.AttachEntityComponent.Clone();
+          break;
+        case PayloadOneofCase.ComponentRemoved:
+          ComponentRemoved = other.ComponentRemoved.Clone();
+          break;
+        case PayloadOneofCase.SetEntityParent:
+          SetEntityParent = other.SetEntityParent.Clone();
+          break;
+        case PayloadOneofCase.Query:
+          Query = other.Query.Clone();
+          break;
+        case PayloadOneofCase.ComponentCreated:
+          ComponentCreated = other.ComponentCreated.Clone();
+          break;
+        case PayloadOneofCase.ComponentDisposed:
+          ComponentDisposed = other.ComponentDisposed.Clone();
+          break;
+        case PayloadOneofCase.ComponentUpdated:
+          ComponentUpdated = other.ComponentUpdated.Clone();
+          break;
+        case PayloadOneofCase.InitMessagesFinished:
+          InitMessagesFinished = other.InitMessagesFinished.Clone();
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -5094,158 +5381,190 @@ namespace Decentraland.Sdk.Ecs6 {
 
     /// <summary>Field number for the "open_external_url" field.</summary>
     public const int OpenExternalUrlFieldNumber = 1;
-    private global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody openExternalUrl_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody OpenExternalUrl {
-      get { return openExternalUrl_; }
+      get { return payloadCase_ == PayloadOneofCase.OpenExternalUrl ? (global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody) payload_ : null; }
       set {
-        openExternalUrl_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.OpenExternalUrl;
       }
     }
 
     /// <summary>Field number for the "open_nft_dialog" field.</summary>
     public const int OpenNftDialogFieldNumber = 2;
-    private global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody openNftDialog_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody OpenNftDialog {
-      get { return openNftDialog_; }
+      get { return payloadCase_ == PayloadOneofCase.OpenNftDialog ? (global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody) payload_ : null; }
       set {
-        openNftDialog_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.OpenNftDialog;
       }
     }
 
     /// <summary>Field number for the "create_entity" field.</summary>
     public const int CreateEntityFieldNumber = 3;
-    private global::Decentraland.Sdk.Ecs6.CreateEntityBody createEntity_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.CreateEntityBody CreateEntity {
-      get { return createEntity_; }
+      get { return payloadCase_ == PayloadOneofCase.CreateEntity ? (global::Decentraland.Sdk.Ecs6.CreateEntityBody) payload_ : null; }
       set {
-        createEntity_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.CreateEntity;
       }
     }
 
     /// <summary>Field number for the "remove_entity" field.</summary>
     public const int RemoveEntityFieldNumber = 4;
-    private global::Decentraland.Sdk.Ecs6.RemoveEntityBody removeEntity_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.RemoveEntityBody RemoveEntity {
-      get { return removeEntity_; }
+      get { return payloadCase_ == PayloadOneofCase.RemoveEntity ? (global::Decentraland.Sdk.Ecs6.RemoveEntityBody) payload_ : null; }
       set {
-        removeEntity_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RemoveEntity;
       }
     }
 
     /// <summary>Field number for the "update_entity_component" field.</summary>
     public const int UpdateEntityComponentFieldNumber = 5;
-    private global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody updateEntityComponent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody UpdateEntityComponent {
-      get { return updateEntityComponent_; }
+      get { return payloadCase_ == PayloadOneofCase.UpdateEntityComponent ? (global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody) payload_ : null; }
       set {
-        updateEntityComponent_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UpdateEntityComponent;
       }
     }
 
     /// <summary>Field number for the "attach_entity_component" field.</summary>
     public const int AttachEntityComponentFieldNumber = 6;
-    private global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody attachEntityComponent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody AttachEntityComponent {
-      get { return attachEntityComponent_; }
+      get { return payloadCase_ == PayloadOneofCase.AttachEntityComponent ? (global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody) payload_ : null; }
       set {
-        attachEntityComponent_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AttachEntityComponent;
       }
     }
 
     /// <summary>Field number for the "component_removed" field.</summary>
     public const int ComponentRemovedFieldNumber = 7;
-    private global::Decentraland.Sdk.Ecs6.ComponentRemovedBody componentRemoved_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ComponentRemovedBody ComponentRemoved {
-      get { return componentRemoved_; }
+      get { return payloadCase_ == PayloadOneofCase.ComponentRemoved ? (global::Decentraland.Sdk.Ecs6.ComponentRemovedBody) payload_ : null; }
       set {
-        componentRemoved_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ComponentRemoved;
       }
     }
 
     /// <summary>Field number for the "set_entity_parent" field.</summary>
     public const int SetEntityParentFieldNumber = 8;
-    private global::Decentraland.Sdk.Ecs6.SetEntityParentBody setEntityParent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.SetEntityParentBody SetEntityParent {
-      get { return setEntityParent_; }
+      get { return payloadCase_ == PayloadOneofCase.SetEntityParent ? (global::Decentraland.Sdk.Ecs6.SetEntityParentBody) payload_ : null; }
       set {
-        setEntityParent_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.SetEntityParent;
       }
     }
 
     /// <summary>Field number for the "query" field.</summary>
     public const int QueryFieldNumber = 9;
-    private global::Decentraland.Sdk.Ecs6.QueryBody query_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.QueryBody Query {
-      get { return query_; }
+      get { return payloadCase_ == PayloadOneofCase.Query ? (global::Decentraland.Sdk.Ecs6.QueryBody) payload_ : null; }
       set {
-        query_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Query;
       }
     }
 
     /// <summary>Field number for the "component_created" field.</summary>
     public const int ComponentCreatedFieldNumber = 10;
-    private global::Decentraland.Sdk.Ecs6.ComponentCreatedBody componentCreated_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ComponentCreatedBody ComponentCreated {
-      get { return componentCreated_; }
+      get { return payloadCase_ == PayloadOneofCase.ComponentCreated ? (global::Decentraland.Sdk.Ecs6.ComponentCreatedBody) payload_ : null; }
       set {
-        componentCreated_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ComponentCreated;
       }
     }
 
     /// <summary>Field number for the "component_disposed" field.</summary>
     public const int ComponentDisposedFieldNumber = 11;
-    private global::Decentraland.Sdk.Ecs6.ComponentDisposedBody componentDisposed_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ComponentDisposedBody ComponentDisposed {
-      get { return componentDisposed_; }
+      get { return payloadCase_ == PayloadOneofCase.ComponentDisposed ? (global::Decentraland.Sdk.Ecs6.ComponentDisposedBody) payload_ : null; }
       set {
-        componentDisposed_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ComponentDisposed;
       }
     }
 
     /// <summary>Field number for the "component_updated" field.</summary>
     public const int ComponentUpdatedFieldNumber = 12;
-    private global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody componentUpdated_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody ComponentUpdated {
-      get { return componentUpdated_; }
+      get { return payloadCase_ == PayloadOneofCase.ComponentUpdated ? (global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody) payload_ : null; }
       set {
-        componentUpdated_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ComponentUpdated;
       }
     }
 
     /// <summary>Field number for the "init_messages_finished" field.</summary>
     public const int InitMessagesFinishedFieldNumber = 13;
-    private global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody initMessagesFinished_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody InitMessagesFinished {
-      get { return initMessagesFinished_; }
+      get { return payloadCase_ == PayloadOneofCase.InitMessagesFinished ? (global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody) payload_ : null; }
       set {
-        initMessagesFinished_ = value;
+        payload_ = value;
+        payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.InitMessagesFinished;
       }
+    }
+
+    private object payload_;
+    /// <summary>Enum of possible cases for the "payload" oneof.</summary>
+    public enum PayloadOneofCase {
+      None = 0,
+      OpenExternalUrl = 1,
+      OpenNftDialog = 2,
+      CreateEntity = 3,
+      RemoveEntity = 4,
+      UpdateEntityComponent = 5,
+      AttachEntityComponent = 6,
+      ComponentRemoved = 7,
+      SetEntityParent = 8,
+      Query = 9,
+      ComponentCreated = 10,
+      ComponentDisposed = 11,
+      ComponentUpdated = 12,
+      InitMessagesFinished = 13,
+    }
+    private PayloadOneofCase payloadCase_ = PayloadOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public PayloadOneofCase PayloadCase {
+      get { return payloadCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPayload() {
+      payloadCase_ = PayloadOneofCase.None;
+      payload_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5276,6 +5595,7 @@ namespace Decentraland.Sdk.Ecs6 {
       if (!object.Equals(ComponentDisposed, other.ComponentDisposed)) return false;
       if (!object.Equals(ComponentUpdated, other.ComponentUpdated)) return false;
       if (!object.Equals(InitMessagesFinished, other.InitMessagesFinished)) return false;
+      if (PayloadCase != other.PayloadCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -5283,19 +5603,20 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (openExternalUrl_ != null) hash ^= OpenExternalUrl.GetHashCode();
-      if (openNftDialog_ != null) hash ^= OpenNftDialog.GetHashCode();
-      if (createEntity_ != null) hash ^= CreateEntity.GetHashCode();
-      if (removeEntity_ != null) hash ^= RemoveEntity.GetHashCode();
-      if (updateEntityComponent_ != null) hash ^= UpdateEntityComponent.GetHashCode();
-      if (attachEntityComponent_ != null) hash ^= AttachEntityComponent.GetHashCode();
-      if (componentRemoved_ != null) hash ^= ComponentRemoved.GetHashCode();
-      if (setEntityParent_ != null) hash ^= SetEntityParent.GetHashCode();
-      if (query_ != null) hash ^= Query.GetHashCode();
-      if (componentCreated_ != null) hash ^= ComponentCreated.GetHashCode();
-      if (componentDisposed_ != null) hash ^= ComponentDisposed.GetHashCode();
-      if (componentUpdated_ != null) hash ^= ComponentUpdated.GetHashCode();
-      if (initMessagesFinished_ != null) hash ^= InitMessagesFinished.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.OpenExternalUrl) hash ^= OpenExternalUrl.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.OpenNftDialog) hash ^= OpenNftDialog.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.CreateEntity) hash ^= CreateEntity.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.RemoveEntity) hash ^= RemoveEntity.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.UpdateEntityComponent) hash ^= UpdateEntityComponent.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.AttachEntityComponent) hash ^= AttachEntityComponent.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.ComponentRemoved) hash ^= ComponentRemoved.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.SetEntityParent) hash ^= SetEntityParent.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.Query) hash ^= Query.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.ComponentCreated) hash ^= ComponentCreated.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.ComponentDisposed) hash ^= ComponentDisposed.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.ComponentUpdated) hash ^= ComponentUpdated.GetHashCode();
+      if (payloadCase_ == PayloadOneofCase.InitMessagesFinished) hash ^= InitMessagesFinished.GetHashCode();
+      hash ^= (int) payloadCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -5314,55 +5635,55 @@ namespace Decentraland.Sdk.Ecs6 {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (openExternalUrl_ != null) {
+      if (payloadCase_ == PayloadOneofCase.OpenExternalUrl) {
         output.WriteRawTag(10);
         output.WriteMessage(OpenExternalUrl);
       }
-      if (openNftDialog_ != null) {
+      if (payloadCase_ == PayloadOneofCase.OpenNftDialog) {
         output.WriteRawTag(18);
         output.WriteMessage(OpenNftDialog);
       }
-      if (createEntity_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CreateEntity) {
         output.WriteRawTag(26);
         output.WriteMessage(CreateEntity);
       }
-      if (removeEntity_ != null) {
+      if (payloadCase_ == PayloadOneofCase.RemoveEntity) {
         output.WriteRawTag(34);
         output.WriteMessage(RemoveEntity);
       }
-      if (updateEntityComponent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UpdateEntityComponent) {
         output.WriteRawTag(42);
         output.WriteMessage(UpdateEntityComponent);
       }
-      if (attachEntityComponent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AttachEntityComponent) {
         output.WriteRawTag(50);
         output.WriteMessage(AttachEntityComponent);
       }
-      if (componentRemoved_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentRemoved) {
         output.WriteRawTag(58);
         output.WriteMessage(ComponentRemoved);
       }
-      if (setEntityParent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SetEntityParent) {
         output.WriteRawTag(66);
         output.WriteMessage(SetEntityParent);
       }
-      if (query_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Query) {
         output.WriteRawTag(74);
         output.WriteMessage(Query);
       }
-      if (componentCreated_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentCreated) {
         output.WriteRawTag(82);
         output.WriteMessage(ComponentCreated);
       }
-      if (componentDisposed_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentDisposed) {
         output.WriteRawTag(90);
         output.WriteMessage(ComponentDisposed);
       }
-      if (componentUpdated_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentUpdated) {
         output.WriteRawTag(98);
         output.WriteMessage(ComponentUpdated);
       }
-      if (initMessagesFinished_ != null) {
+      if (payloadCase_ == PayloadOneofCase.InitMessagesFinished) {
         output.WriteRawTag(106);
         output.WriteMessage(InitMessagesFinished);
       }
@@ -5376,55 +5697,55 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (openExternalUrl_ != null) {
+      if (payloadCase_ == PayloadOneofCase.OpenExternalUrl) {
         output.WriteRawTag(10);
         output.WriteMessage(OpenExternalUrl);
       }
-      if (openNftDialog_ != null) {
+      if (payloadCase_ == PayloadOneofCase.OpenNftDialog) {
         output.WriteRawTag(18);
         output.WriteMessage(OpenNftDialog);
       }
-      if (createEntity_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CreateEntity) {
         output.WriteRawTag(26);
         output.WriteMessage(CreateEntity);
       }
-      if (removeEntity_ != null) {
+      if (payloadCase_ == PayloadOneofCase.RemoveEntity) {
         output.WriteRawTag(34);
         output.WriteMessage(RemoveEntity);
       }
-      if (updateEntityComponent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UpdateEntityComponent) {
         output.WriteRawTag(42);
         output.WriteMessage(UpdateEntityComponent);
       }
-      if (attachEntityComponent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AttachEntityComponent) {
         output.WriteRawTag(50);
         output.WriteMessage(AttachEntityComponent);
       }
-      if (componentRemoved_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentRemoved) {
         output.WriteRawTag(58);
         output.WriteMessage(ComponentRemoved);
       }
-      if (setEntityParent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SetEntityParent) {
         output.WriteRawTag(66);
         output.WriteMessage(SetEntityParent);
       }
-      if (query_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Query) {
         output.WriteRawTag(74);
         output.WriteMessage(Query);
       }
-      if (componentCreated_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentCreated) {
         output.WriteRawTag(82);
         output.WriteMessage(ComponentCreated);
       }
-      if (componentDisposed_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentDisposed) {
         output.WriteRawTag(90);
         output.WriteMessage(ComponentDisposed);
       }
-      if (componentUpdated_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentUpdated) {
         output.WriteRawTag(98);
         output.WriteMessage(ComponentUpdated);
       }
-      if (initMessagesFinished_ != null) {
+      if (payloadCase_ == PayloadOneofCase.InitMessagesFinished) {
         output.WriteRawTag(106);
         output.WriteMessage(InitMessagesFinished);
       }
@@ -5438,43 +5759,43 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (openExternalUrl_ != null) {
+      if (payloadCase_ == PayloadOneofCase.OpenExternalUrl) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(OpenExternalUrl);
       }
-      if (openNftDialog_ != null) {
+      if (payloadCase_ == PayloadOneofCase.OpenNftDialog) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(OpenNftDialog);
       }
-      if (createEntity_ != null) {
+      if (payloadCase_ == PayloadOneofCase.CreateEntity) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(CreateEntity);
       }
-      if (removeEntity_ != null) {
+      if (payloadCase_ == PayloadOneofCase.RemoveEntity) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(RemoveEntity);
       }
-      if (updateEntityComponent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.UpdateEntityComponent) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(UpdateEntityComponent);
       }
-      if (attachEntityComponent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.AttachEntityComponent) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AttachEntityComponent);
       }
-      if (componentRemoved_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentRemoved) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ComponentRemoved);
       }
-      if (setEntityParent_ != null) {
+      if (payloadCase_ == PayloadOneofCase.SetEntityParent) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(SetEntityParent);
       }
-      if (query_ != null) {
+      if (payloadCase_ == PayloadOneofCase.Query) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Query);
       }
-      if (componentCreated_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentCreated) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ComponentCreated);
       }
-      if (componentDisposed_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentDisposed) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ComponentDisposed);
       }
-      if (componentUpdated_ != null) {
+      if (payloadCase_ == PayloadOneofCase.ComponentUpdated) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ComponentUpdated);
       }
-      if (initMessagesFinished_ != null) {
+      if (payloadCase_ == PayloadOneofCase.InitMessagesFinished) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(InitMessagesFinished);
       }
       if (_unknownFields != null) {
@@ -5489,84 +5810,87 @@ namespace Decentraland.Sdk.Ecs6 {
       if (other == null) {
         return;
       }
-      if (other.openExternalUrl_ != null) {
-        if (openExternalUrl_ == null) {
-          OpenExternalUrl = new global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody();
-        }
-        OpenExternalUrl.MergeFrom(other.OpenExternalUrl);
+      switch (other.PayloadCase) {
+        case PayloadOneofCase.OpenExternalUrl:
+          if (OpenExternalUrl == null) {
+            OpenExternalUrl = new global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody();
+          }
+          OpenExternalUrl.MergeFrom(other.OpenExternalUrl);
+          break;
+        case PayloadOneofCase.OpenNftDialog:
+          if (OpenNftDialog == null) {
+            OpenNftDialog = new global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody();
+          }
+          OpenNftDialog.MergeFrom(other.OpenNftDialog);
+          break;
+        case PayloadOneofCase.CreateEntity:
+          if (CreateEntity == null) {
+            CreateEntity = new global::Decentraland.Sdk.Ecs6.CreateEntityBody();
+          }
+          CreateEntity.MergeFrom(other.CreateEntity);
+          break;
+        case PayloadOneofCase.RemoveEntity:
+          if (RemoveEntity == null) {
+            RemoveEntity = new global::Decentraland.Sdk.Ecs6.RemoveEntityBody();
+          }
+          RemoveEntity.MergeFrom(other.RemoveEntity);
+          break;
+        case PayloadOneofCase.UpdateEntityComponent:
+          if (UpdateEntityComponent == null) {
+            UpdateEntityComponent = new global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody();
+          }
+          UpdateEntityComponent.MergeFrom(other.UpdateEntityComponent);
+          break;
+        case PayloadOneofCase.AttachEntityComponent:
+          if (AttachEntityComponent == null) {
+            AttachEntityComponent = new global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody();
+          }
+          AttachEntityComponent.MergeFrom(other.AttachEntityComponent);
+          break;
+        case PayloadOneofCase.ComponentRemoved:
+          if (ComponentRemoved == null) {
+            ComponentRemoved = new global::Decentraland.Sdk.Ecs6.ComponentRemovedBody();
+          }
+          ComponentRemoved.MergeFrom(other.ComponentRemoved);
+          break;
+        case PayloadOneofCase.SetEntityParent:
+          if (SetEntityParent == null) {
+            SetEntityParent = new global::Decentraland.Sdk.Ecs6.SetEntityParentBody();
+          }
+          SetEntityParent.MergeFrom(other.SetEntityParent);
+          break;
+        case PayloadOneofCase.Query:
+          if (Query == null) {
+            Query = new global::Decentraland.Sdk.Ecs6.QueryBody();
+          }
+          Query.MergeFrom(other.Query);
+          break;
+        case PayloadOneofCase.ComponentCreated:
+          if (ComponentCreated == null) {
+            ComponentCreated = new global::Decentraland.Sdk.Ecs6.ComponentCreatedBody();
+          }
+          ComponentCreated.MergeFrom(other.ComponentCreated);
+          break;
+        case PayloadOneofCase.ComponentDisposed:
+          if (ComponentDisposed == null) {
+            ComponentDisposed = new global::Decentraland.Sdk.Ecs6.ComponentDisposedBody();
+          }
+          ComponentDisposed.MergeFrom(other.ComponentDisposed);
+          break;
+        case PayloadOneofCase.ComponentUpdated:
+          if (ComponentUpdated == null) {
+            ComponentUpdated = new global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody();
+          }
+          ComponentUpdated.MergeFrom(other.ComponentUpdated);
+          break;
+        case PayloadOneofCase.InitMessagesFinished:
+          if (InitMessagesFinished == null) {
+            InitMessagesFinished = new global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody();
+          }
+          InitMessagesFinished.MergeFrom(other.InitMessagesFinished);
+          break;
       }
-      if (other.openNftDialog_ != null) {
-        if (openNftDialog_ == null) {
-          OpenNftDialog = new global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody();
-        }
-        OpenNftDialog.MergeFrom(other.OpenNftDialog);
-      }
-      if (other.createEntity_ != null) {
-        if (createEntity_ == null) {
-          CreateEntity = new global::Decentraland.Sdk.Ecs6.CreateEntityBody();
-        }
-        CreateEntity.MergeFrom(other.CreateEntity);
-      }
-      if (other.removeEntity_ != null) {
-        if (removeEntity_ == null) {
-          RemoveEntity = new global::Decentraland.Sdk.Ecs6.RemoveEntityBody();
-        }
-        RemoveEntity.MergeFrom(other.RemoveEntity);
-      }
-      if (other.updateEntityComponent_ != null) {
-        if (updateEntityComponent_ == null) {
-          UpdateEntityComponent = new global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody();
-        }
-        UpdateEntityComponent.MergeFrom(other.UpdateEntityComponent);
-      }
-      if (other.attachEntityComponent_ != null) {
-        if (attachEntityComponent_ == null) {
-          AttachEntityComponent = new global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody();
-        }
-        AttachEntityComponent.MergeFrom(other.AttachEntityComponent);
-      }
-      if (other.componentRemoved_ != null) {
-        if (componentRemoved_ == null) {
-          ComponentRemoved = new global::Decentraland.Sdk.Ecs6.ComponentRemovedBody();
-        }
-        ComponentRemoved.MergeFrom(other.ComponentRemoved);
-      }
-      if (other.setEntityParent_ != null) {
-        if (setEntityParent_ == null) {
-          SetEntityParent = new global::Decentraland.Sdk.Ecs6.SetEntityParentBody();
-        }
-        SetEntityParent.MergeFrom(other.SetEntityParent);
-      }
-      if (other.query_ != null) {
-        if (query_ == null) {
-          Query = new global::Decentraland.Sdk.Ecs6.QueryBody();
-        }
-        Query.MergeFrom(other.Query);
-      }
-      if (other.componentCreated_ != null) {
-        if (componentCreated_ == null) {
-          ComponentCreated = new global::Decentraland.Sdk.Ecs6.ComponentCreatedBody();
-        }
-        ComponentCreated.MergeFrom(other.ComponentCreated);
-      }
-      if (other.componentDisposed_ != null) {
-        if (componentDisposed_ == null) {
-          ComponentDisposed = new global::Decentraland.Sdk.Ecs6.ComponentDisposedBody();
-        }
-        ComponentDisposed.MergeFrom(other.ComponentDisposed);
-      }
-      if (other.componentUpdated_ != null) {
-        if (componentUpdated_ == null) {
-          ComponentUpdated = new global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody();
-        }
-        ComponentUpdated.MergeFrom(other.ComponentUpdated);
-      }
-      if (other.initMessagesFinished_ != null) {
-        if (initMessagesFinished_ == null) {
-          InitMessagesFinished = new global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody();
-        }
-        InitMessagesFinished.MergeFrom(other.InitMessagesFinished);
-      }
+
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -5583,94 +5907,120 @@ namespace Decentraland.Sdk.Ecs6 {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            if (openExternalUrl_ == null) {
-              OpenExternalUrl = new global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody();
+            global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody subBuilder = new global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody();
+            if (payloadCase_ == PayloadOneofCase.OpenExternalUrl) {
+              subBuilder.MergeFrom(OpenExternalUrl);
             }
-            input.ReadMessage(OpenExternalUrl);
+            input.ReadMessage(subBuilder);
+            OpenExternalUrl = subBuilder;
             break;
           }
           case 18: {
-            if (openNftDialog_ == null) {
-              OpenNftDialog = new global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody();
+            global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody subBuilder = new global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody();
+            if (payloadCase_ == PayloadOneofCase.OpenNftDialog) {
+              subBuilder.MergeFrom(OpenNftDialog);
             }
-            input.ReadMessage(OpenNftDialog);
+            input.ReadMessage(subBuilder);
+            OpenNftDialog = subBuilder;
             break;
           }
           case 26: {
-            if (createEntity_ == null) {
-              CreateEntity = new global::Decentraland.Sdk.Ecs6.CreateEntityBody();
+            global::Decentraland.Sdk.Ecs6.CreateEntityBody subBuilder = new global::Decentraland.Sdk.Ecs6.CreateEntityBody();
+            if (payloadCase_ == PayloadOneofCase.CreateEntity) {
+              subBuilder.MergeFrom(CreateEntity);
             }
-            input.ReadMessage(CreateEntity);
+            input.ReadMessage(subBuilder);
+            CreateEntity = subBuilder;
             break;
           }
           case 34: {
-            if (removeEntity_ == null) {
-              RemoveEntity = new global::Decentraland.Sdk.Ecs6.RemoveEntityBody();
+            global::Decentraland.Sdk.Ecs6.RemoveEntityBody subBuilder = new global::Decentraland.Sdk.Ecs6.RemoveEntityBody();
+            if (payloadCase_ == PayloadOneofCase.RemoveEntity) {
+              subBuilder.MergeFrom(RemoveEntity);
             }
-            input.ReadMessage(RemoveEntity);
+            input.ReadMessage(subBuilder);
+            RemoveEntity = subBuilder;
             break;
           }
           case 42: {
-            if (updateEntityComponent_ == null) {
-              UpdateEntityComponent = new global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody();
+            global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody subBuilder = new global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody();
+            if (payloadCase_ == PayloadOneofCase.UpdateEntityComponent) {
+              subBuilder.MergeFrom(UpdateEntityComponent);
             }
-            input.ReadMessage(UpdateEntityComponent);
+            input.ReadMessage(subBuilder);
+            UpdateEntityComponent = subBuilder;
             break;
           }
           case 50: {
-            if (attachEntityComponent_ == null) {
-              AttachEntityComponent = new global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody();
+            global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody subBuilder = new global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody();
+            if (payloadCase_ == PayloadOneofCase.AttachEntityComponent) {
+              subBuilder.MergeFrom(AttachEntityComponent);
             }
-            input.ReadMessage(AttachEntityComponent);
+            input.ReadMessage(subBuilder);
+            AttachEntityComponent = subBuilder;
             break;
           }
           case 58: {
-            if (componentRemoved_ == null) {
-              ComponentRemoved = new global::Decentraland.Sdk.Ecs6.ComponentRemovedBody();
+            global::Decentraland.Sdk.Ecs6.ComponentRemovedBody subBuilder = new global::Decentraland.Sdk.Ecs6.ComponentRemovedBody();
+            if (payloadCase_ == PayloadOneofCase.ComponentRemoved) {
+              subBuilder.MergeFrom(ComponentRemoved);
             }
-            input.ReadMessage(ComponentRemoved);
+            input.ReadMessage(subBuilder);
+            ComponentRemoved = subBuilder;
             break;
           }
           case 66: {
-            if (setEntityParent_ == null) {
-              SetEntityParent = new global::Decentraland.Sdk.Ecs6.SetEntityParentBody();
+            global::Decentraland.Sdk.Ecs6.SetEntityParentBody subBuilder = new global::Decentraland.Sdk.Ecs6.SetEntityParentBody();
+            if (payloadCase_ == PayloadOneofCase.SetEntityParent) {
+              subBuilder.MergeFrom(SetEntityParent);
             }
-            input.ReadMessage(SetEntityParent);
+            input.ReadMessage(subBuilder);
+            SetEntityParent = subBuilder;
             break;
           }
           case 74: {
-            if (query_ == null) {
-              Query = new global::Decentraland.Sdk.Ecs6.QueryBody();
+            global::Decentraland.Sdk.Ecs6.QueryBody subBuilder = new global::Decentraland.Sdk.Ecs6.QueryBody();
+            if (payloadCase_ == PayloadOneofCase.Query) {
+              subBuilder.MergeFrom(Query);
             }
-            input.ReadMessage(Query);
+            input.ReadMessage(subBuilder);
+            Query = subBuilder;
             break;
           }
           case 82: {
-            if (componentCreated_ == null) {
-              ComponentCreated = new global::Decentraland.Sdk.Ecs6.ComponentCreatedBody();
+            global::Decentraland.Sdk.Ecs6.ComponentCreatedBody subBuilder = new global::Decentraland.Sdk.Ecs6.ComponentCreatedBody();
+            if (payloadCase_ == PayloadOneofCase.ComponentCreated) {
+              subBuilder.MergeFrom(ComponentCreated);
             }
-            input.ReadMessage(ComponentCreated);
+            input.ReadMessage(subBuilder);
+            ComponentCreated = subBuilder;
             break;
           }
           case 90: {
-            if (componentDisposed_ == null) {
-              ComponentDisposed = new global::Decentraland.Sdk.Ecs6.ComponentDisposedBody();
+            global::Decentraland.Sdk.Ecs6.ComponentDisposedBody subBuilder = new global::Decentraland.Sdk.Ecs6.ComponentDisposedBody();
+            if (payloadCase_ == PayloadOneofCase.ComponentDisposed) {
+              subBuilder.MergeFrom(ComponentDisposed);
             }
-            input.ReadMessage(ComponentDisposed);
+            input.ReadMessage(subBuilder);
+            ComponentDisposed = subBuilder;
             break;
           }
           case 98: {
-            if (componentUpdated_ == null) {
-              ComponentUpdated = new global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody();
+            global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody subBuilder = new global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody();
+            if (payloadCase_ == PayloadOneofCase.ComponentUpdated) {
+              subBuilder.MergeFrom(ComponentUpdated);
             }
-            input.ReadMessage(ComponentUpdated);
+            input.ReadMessage(subBuilder);
+            ComponentUpdated = subBuilder;
             break;
           }
           case 106: {
-            if (initMessagesFinished_ == null) {
-              InitMessagesFinished = new global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody();
+            global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody subBuilder = new global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody();
+            if (payloadCase_ == PayloadOneofCase.InitMessagesFinished) {
+              subBuilder.MergeFrom(InitMessagesFinished);
             }
-            input.ReadMessage(InitMessagesFinished);
+            input.ReadMessage(subBuilder);
+            InitMessagesFinished = subBuilder;
             break;
           }
         }
@@ -5689,94 +6039,120 @@ namespace Decentraland.Sdk.Ecs6 {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            if (openExternalUrl_ == null) {
-              OpenExternalUrl = new global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody();
+            global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody subBuilder = new global::Decentraland.Sdk.Ecs6.OpenExternalUrlBody();
+            if (payloadCase_ == PayloadOneofCase.OpenExternalUrl) {
+              subBuilder.MergeFrom(OpenExternalUrl);
             }
-            input.ReadMessage(OpenExternalUrl);
+            input.ReadMessage(subBuilder);
+            OpenExternalUrl = subBuilder;
             break;
           }
           case 18: {
-            if (openNftDialog_ == null) {
-              OpenNftDialog = new global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody();
+            global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody subBuilder = new global::Decentraland.Sdk.Ecs6.OpenNFTDialogBody();
+            if (payloadCase_ == PayloadOneofCase.OpenNftDialog) {
+              subBuilder.MergeFrom(OpenNftDialog);
             }
-            input.ReadMessage(OpenNftDialog);
+            input.ReadMessage(subBuilder);
+            OpenNftDialog = subBuilder;
             break;
           }
           case 26: {
-            if (createEntity_ == null) {
-              CreateEntity = new global::Decentraland.Sdk.Ecs6.CreateEntityBody();
+            global::Decentraland.Sdk.Ecs6.CreateEntityBody subBuilder = new global::Decentraland.Sdk.Ecs6.CreateEntityBody();
+            if (payloadCase_ == PayloadOneofCase.CreateEntity) {
+              subBuilder.MergeFrom(CreateEntity);
             }
-            input.ReadMessage(CreateEntity);
+            input.ReadMessage(subBuilder);
+            CreateEntity = subBuilder;
             break;
           }
           case 34: {
-            if (removeEntity_ == null) {
-              RemoveEntity = new global::Decentraland.Sdk.Ecs6.RemoveEntityBody();
+            global::Decentraland.Sdk.Ecs6.RemoveEntityBody subBuilder = new global::Decentraland.Sdk.Ecs6.RemoveEntityBody();
+            if (payloadCase_ == PayloadOneofCase.RemoveEntity) {
+              subBuilder.MergeFrom(RemoveEntity);
             }
-            input.ReadMessage(RemoveEntity);
+            input.ReadMessage(subBuilder);
+            RemoveEntity = subBuilder;
             break;
           }
           case 42: {
-            if (updateEntityComponent_ == null) {
-              UpdateEntityComponent = new global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody();
+            global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody subBuilder = new global::Decentraland.Sdk.Ecs6.UpdateEntityComponentBody();
+            if (payloadCase_ == PayloadOneofCase.UpdateEntityComponent) {
+              subBuilder.MergeFrom(UpdateEntityComponent);
             }
-            input.ReadMessage(UpdateEntityComponent);
+            input.ReadMessage(subBuilder);
+            UpdateEntityComponent = subBuilder;
             break;
           }
           case 50: {
-            if (attachEntityComponent_ == null) {
-              AttachEntityComponent = new global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody();
+            global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody subBuilder = new global::Decentraland.Sdk.Ecs6.AttachEntityComponentBody();
+            if (payloadCase_ == PayloadOneofCase.AttachEntityComponent) {
+              subBuilder.MergeFrom(AttachEntityComponent);
             }
-            input.ReadMessage(AttachEntityComponent);
+            input.ReadMessage(subBuilder);
+            AttachEntityComponent = subBuilder;
             break;
           }
           case 58: {
-            if (componentRemoved_ == null) {
-              ComponentRemoved = new global::Decentraland.Sdk.Ecs6.ComponentRemovedBody();
+            global::Decentraland.Sdk.Ecs6.ComponentRemovedBody subBuilder = new global::Decentraland.Sdk.Ecs6.ComponentRemovedBody();
+            if (payloadCase_ == PayloadOneofCase.ComponentRemoved) {
+              subBuilder.MergeFrom(ComponentRemoved);
             }
-            input.ReadMessage(ComponentRemoved);
+            input.ReadMessage(subBuilder);
+            ComponentRemoved = subBuilder;
             break;
           }
           case 66: {
-            if (setEntityParent_ == null) {
-              SetEntityParent = new global::Decentraland.Sdk.Ecs6.SetEntityParentBody();
+            global::Decentraland.Sdk.Ecs6.SetEntityParentBody subBuilder = new global::Decentraland.Sdk.Ecs6.SetEntityParentBody();
+            if (payloadCase_ == PayloadOneofCase.SetEntityParent) {
+              subBuilder.MergeFrom(SetEntityParent);
             }
-            input.ReadMessage(SetEntityParent);
+            input.ReadMessage(subBuilder);
+            SetEntityParent = subBuilder;
             break;
           }
           case 74: {
-            if (query_ == null) {
-              Query = new global::Decentraland.Sdk.Ecs6.QueryBody();
+            global::Decentraland.Sdk.Ecs6.QueryBody subBuilder = new global::Decentraland.Sdk.Ecs6.QueryBody();
+            if (payloadCase_ == PayloadOneofCase.Query) {
+              subBuilder.MergeFrom(Query);
             }
-            input.ReadMessage(Query);
+            input.ReadMessage(subBuilder);
+            Query = subBuilder;
             break;
           }
           case 82: {
-            if (componentCreated_ == null) {
-              ComponentCreated = new global::Decentraland.Sdk.Ecs6.ComponentCreatedBody();
+            global::Decentraland.Sdk.Ecs6.ComponentCreatedBody subBuilder = new global::Decentraland.Sdk.Ecs6.ComponentCreatedBody();
+            if (payloadCase_ == PayloadOneofCase.ComponentCreated) {
+              subBuilder.MergeFrom(ComponentCreated);
             }
-            input.ReadMessage(ComponentCreated);
+            input.ReadMessage(subBuilder);
+            ComponentCreated = subBuilder;
             break;
           }
           case 90: {
-            if (componentDisposed_ == null) {
-              ComponentDisposed = new global::Decentraland.Sdk.Ecs6.ComponentDisposedBody();
+            global::Decentraland.Sdk.Ecs6.ComponentDisposedBody subBuilder = new global::Decentraland.Sdk.Ecs6.ComponentDisposedBody();
+            if (payloadCase_ == PayloadOneofCase.ComponentDisposed) {
+              subBuilder.MergeFrom(ComponentDisposed);
             }
-            input.ReadMessage(ComponentDisposed);
+            input.ReadMessage(subBuilder);
+            ComponentDisposed = subBuilder;
             break;
           }
           case 98: {
-            if (componentUpdated_ == null) {
-              ComponentUpdated = new global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody();
+            global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody subBuilder = new global::Decentraland.Sdk.Ecs6.ComponentUpdatedBody();
+            if (payloadCase_ == PayloadOneofCase.ComponentUpdated) {
+              subBuilder.MergeFrom(ComponentUpdated);
             }
-            input.ReadMessage(ComponentUpdated);
+            input.ReadMessage(subBuilder);
+            ComponentUpdated = subBuilder;
             break;
           }
           case 106: {
-            if (initMessagesFinished_ == null) {
-              InitMessagesFinished = new global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody();
+            global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody subBuilder = new global::Decentraland.Sdk.Ecs6.InitMessagesFinishedBody();
+            if (payloadCase_ == PayloadOneofCase.InitMessagesFinished) {
+              subBuilder.MergeFrom(InitMessagesFinished);
             }
-            input.ReadMessage(InitMessagesFinished);
+            input.ReadMessage(subBuilder);
+            InitMessagesFinished = subBuilder;
             break;
           }
         }
@@ -5820,7 +6196,6 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public EntityAction(EntityAction other) : this() {
-      type_ = other.type_;
       tag_ = other.tag_;
       payload_ = other.payload_ != null ? other.payload_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -5830,18 +6205,6 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public EntityAction Clone() {
       return new EntityAction(this);
-    }
-
-    /// <summary>Field number for the "type" field.</summary>
-    public const int TypeFieldNumber = 1;
-    private global::Decentraland.Sdk.Ecs6.EntityActionType type_ = global::Decentraland.Sdk.Ecs6.EntityActionType.EatInvalidEaType;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Sdk.Ecs6.EntityActionType Type {
-      get { return type_; }
-      set {
-        type_ = value;
-      }
     }
 
     /// <summary>Field number for the "tag" field.</summary>
@@ -5895,7 +6258,6 @@ namespace Decentraland.Sdk.Ecs6 {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Type != other.Type) return false;
       if (Tag != other.Tag) return false;
       if (!object.Equals(Payload, other.Payload)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -5905,7 +6267,6 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Type != global::Decentraland.Sdk.Ecs6.EntityActionType.EatInvalidEaType) hash ^= Type.GetHashCode();
       if (HasTag) hash ^= Tag.GetHashCode();
       if (payload_ != null) hash ^= Payload.GetHashCode();
       if (_unknownFields != null) {
@@ -5926,10 +6287,6 @@ namespace Decentraland.Sdk.Ecs6 {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Type != global::Decentraland.Sdk.Ecs6.EntityActionType.EatInvalidEaType) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Type);
-      }
       if (HasTag) {
         output.WriteRawTag(18);
         output.WriteString(Tag);
@@ -5948,10 +6305,6 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Type != global::Decentraland.Sdk.Ecs6.EntityActionType.EatInvalidEaType) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Type);
-      }
       if (HasTag) {
         output.WriteRawTag(18);
         output.WriteString(Tag);
@@ -5970,9 +6323,6 @@ namespace Decentraland.Sdk.Ecs6 {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Type != global::Decentraland.Sdk.Ecs6.EntityActionType.EatInvalidEaType) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
-      }
       if (HasTag) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Tag);
       }
@@ -5990,9 +6340,6 @@ namespace Decentraland.Sdk.Ecs6 {
     public void MergeFrom(EntityAction other) {
       if (other == null) {
         return;
-      }
-      if (other.Type != global::Decentraland.Sdk.Ecs6.EntityActionType.EatInvalidEaType) {
-        Type = other.Type;
       }
       if (other.HasTag) {
         Tag = other.Tag;
@@ -6018,10 +6365,6 @@ namespace Decentraland.Sdk.Ecs6 {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            Type = (global::Decentraland.Sdk.Ecs6.EntityActionType) input.ReadEnum();
-            break;
-          }
           case 18: {
             Tag = input.ReadString();
             break;
@@ -6048,10 +6391,6 @@ namespace Decentraland.Sdk.Ecs6 {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 8: {
-            Type = (global::Decentraland.Sdk.Ecs6.EntityActionType) input.ReadEnum();
-            break;
-          }
           case 18: {
             Tag = input.ReadString();
             break;
