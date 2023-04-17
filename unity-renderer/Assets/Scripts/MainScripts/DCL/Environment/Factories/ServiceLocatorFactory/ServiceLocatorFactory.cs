@@ -81,7 +81,7 @@ namespace DCL
             result.Register<IFriendsController>(() =>
             {
                 // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
-                WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.i;
+                WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
 
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                     webInterfaceFriendsApiBridge,
