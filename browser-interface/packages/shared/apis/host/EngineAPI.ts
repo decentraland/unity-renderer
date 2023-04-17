@@ -34,7 +34,7 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           //   ctx.sendBatch(actions)
           // }
 
-          await ctx.rpcSceneControllerService.sendBatch(req as any)
+          await ctx.rpcSceneControllerService.sendBatch({ actions: req.actions })
 
           const events: EventData[] = ctx.events
 
