@@ -15,5 +15,7 @@ namespace DCL.Backpack
         void SetWearablePages(int currentPage, int totalPages);
         void ShowWearables(IEnumerable<WearableGridItemModel> wearables);
         void ClearWearables();
+        void ShowEmotes(IEnumerable<EmoteGridItemModel> emotes);
+        void ClearEmotes();
     }
 }

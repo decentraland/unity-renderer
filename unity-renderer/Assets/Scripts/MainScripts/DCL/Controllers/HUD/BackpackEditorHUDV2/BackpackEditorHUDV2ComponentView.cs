@@ -14,9 +14,10 @@ namespace DCL.Backpack
         [SerializeField] private SectionSelectorComponentView sectionSelector;
         [SerializeField] private GameObject avatarSection;
         [SerializeField] private GameObject emotesSection;
-        [SerializeField] private RectTransform wearablesContainer;
+        [SerializeField] private GridContainerComponentView wearablesGridContainer;
         [SerializeField] private WearableGridItemComponentView wearableGridItemPrefab;
-        [SerializeField] private UIPageSelector pageSelector;
+        [SerializeField] private UIPageSelector wearablePageSelector;
+        [SerializeField] private UIPageSelector emotePageSelector;
 
         public override bool isVisible => gameObject.activeInHierarchy;
 
@@ -41,7 +42,7 @@ namespace DCL.Backpack
                 emotesSection.SetActive(isSelected);
             });
 
-            pageSelector.OnValueChanged += i => OnWearablePageChanged?.Invoke(i);
+            wearablePageSelector.OnValueChanged += i => OnWearablePageChanged?.Invoke(i);
 
             wearableGridItemsPool = PoolManager.i.AddPool(
                 $"GridWearableItems_{GetInstanceID()}",
@@ -103,8 +104,14 @@ namespace DCL.Backpack
 
         public void SetWearablePages(int currentPage, int totalPages)
         {
-            pageSelector.Setup(totalPages);
-            pageSelector.SelectPage(currentPage);
+            if (totalPages <= 1)
+            {
+                wearablePageSelector.gameObject.SetActive(false);
+                return;
+            }
+            wearablePageSelector.gameObject.SetActive(true);
+            wearablePageSelector.Setup(totalPages);
+            wearablePageSelector.SelectPage(currentPage);
         }
 
         public void ShowWearables(IEnumerable<WearableGridItemModel> wearables)
@@ -115,7 +122,7 @@ namespace DCL.Backpack
                 WearableGridItemComponentView wearableGridItem = poolObj.gameObject.GetComponent<WearableGridItemComponentView>();
                 wearablePooledObjects[wearableGridItem] = poolObj;
                 wearableGridItem.SetModel(wearable);
-                wearableGridItem.transform.SetParent(wearablesContainer);
+                wearablesGridContainer.AddItem(wearableGridItem);
             }
         }
 
@@ -125,6 +132,16 @@ namespace DCL.Backpack
                 poolObj.Release();
 
             wearablePooledObjects.Clear();
+        }
+
+        public void ShowEmotes(IEnumerable<EmoteGridItemModel> emotes)
+        {
+            throw new NotImplementedException("Insert emotes into the grid");
+        }
+
+        public void ClearEmotes()
+        {
+            throw new NotImplementedException("Clear emotes from the grid");
         }
     }
 }

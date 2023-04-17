@@ -109,6 +109,7 @@ namespace DCL.Backpack
                 });
 
                 view.SetWearablePages(currentWearablePage, totalAmount / PAGE_SIZE);
+                // TODO: mark the wearables to be disposed if no references left
                 view.ClearWearables();
                 view.ShowWearables(wearableModels);
             }
