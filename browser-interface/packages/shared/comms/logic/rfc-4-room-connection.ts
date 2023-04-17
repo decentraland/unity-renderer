@@ -24,8 +24,8 @@ export class Rfc4RoomConnection implements RoomConnection {
     await this.transport.connect()
   }
 
-  getVoiceHandler(): Promise<VoiceHandler> {
-    return this.transport.getVoiceHandler()
+  createVoiceHandler(): Promise<VoiceHandler> {
+    return this.transport.createVoiceHandler()
   }
 
   sendPositionMessage(p: Omit<proto.Position, 'index'>): Promise<void> {

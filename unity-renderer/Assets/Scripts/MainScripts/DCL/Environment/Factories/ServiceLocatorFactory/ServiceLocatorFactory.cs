@@ -17,6 +17,7 @@ using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using System.Collections.Generic;
 using WorldsFeaturesAnalytics;
 
@@ -29,11 +30,12 @@ namespace DCL
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
 
-            //Addressable Resource Provider
+            // Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
             // Platform
+            result.Register<IProfilerRecordsService>(() => new ProfilerRecordsService());
             result.Register<IMemoryManager>(() => new MemoryManager());
             result.Register<ICullingController>(CullingController.Create);
             result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());

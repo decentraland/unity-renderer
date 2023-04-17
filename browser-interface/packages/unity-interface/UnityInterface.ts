@@ -9,7 +9,7 @@ import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'lib/dece
 import { stringify } from 'lib/javascript/stringify'
 import { uniqBy } from 'lib/javascript/uniqBy'
 import { uuid } from 'lib/javascript/uuid'
-import { createUnityLogger, ILogger } from 'lib/logger'
+import { createUnityLogger, defaultLogger, ILogger } from 'lib/logger'
 import { Observable } from 'mz-observable'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { Emote, WearableV2 } from 'shared/catalogs/types'
@@ -54,6 +54,8 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { isWorldLoaderActive } from '../shared/realm/selectors'
+import { ensureRealmAdapter } from '../shared/realm/ensureRealmAdapter'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -333,11 +335,12 @@ export class UnityInterface implements IUnityInterface {
     this.SendMessageToUnity('HUDController', 'TriggerSelfUserExpression', expressionId)
   }
 
-  public UpdateMinimapSceneInformation(info: MinimapSceneInfo[]) {
-    for (let i = 0; i < info.length; i += MINIMAP_CHUNK_SIZE) {
-      const chunk = info.slice(i, i + MINIMAP_CHUNK_SIZE)
-      this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
-    }
+  public async UpdateMinimapSceneInformation(info: MinimapSceneInfo[]) {
+    const adapter = await ensureRealmAdapter()
+    const isWorld = isWorldLoaderActive(adapter)
+    const payload = isWorld ? '' : JSON.stringify(info)
+
+    this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', payload)
   }
 
   public SetTutorialEnabled(tutorialConfig: TutorialInitializationMessage) {

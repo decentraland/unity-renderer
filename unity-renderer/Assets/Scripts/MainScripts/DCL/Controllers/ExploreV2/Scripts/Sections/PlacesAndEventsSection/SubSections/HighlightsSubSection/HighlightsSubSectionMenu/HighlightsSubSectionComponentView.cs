@@ -65,6 +65,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     }
 
     public int CurrentTilesPerRow { get; }
+    public int CurrentGoingTilesPerRow { get; }
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;

@@ -69,7 +69,8 @@ export async function fetchCatalystStatus(
     result.configurations &&
     result.bff &&
     result.content &&
-    result.lambdas
+    result.lambdas &&
+    result.acceptingUsers
   ) {
     const { comms, configurations, bff } = result
 
@@ -102,7 +103,7 @@ export async function fetchCatalystStatus(
       },
       elapsed: aboutResponse.elapsed!,
       usersCount: bff.userCount || comms.usersCount || 0,
-      acceptingUsers: bff.acceptingUsers,
+      acceptingUsers: result.acceptingUsers,
       maxUsers: 2000,
       usersParcels
     }
