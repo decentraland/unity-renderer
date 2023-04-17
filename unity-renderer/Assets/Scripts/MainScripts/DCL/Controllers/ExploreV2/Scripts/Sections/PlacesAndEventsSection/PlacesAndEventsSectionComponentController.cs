@@ -29,7 +29,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     public PlacesAndEventsSectionComponentController(
         IPlacesAndEventsSectionComponentView view,
         IExploreV2Analytics exploreV2Analytics,
-        DataStore dataStore)
+        DataStore dataStore,
+        IUserProfileBridge userProfileBridge)
     {
         this.view = view;
         this.dataStore = dataStore;
@@ -59,7 +60,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             view.EventsSubSectionView,
             eventsAPI,
             exploreV2Analytics,
-            dataStore);
+            dataStore,
+            userProfileBridge);
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         favoritesSubSectionComponentController = new FavoritesesSubSectionComponentController(
