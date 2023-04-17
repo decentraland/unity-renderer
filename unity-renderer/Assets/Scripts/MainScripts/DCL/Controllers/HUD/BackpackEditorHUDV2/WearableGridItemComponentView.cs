@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UIComponents.Scripts.Components;
@@ -7,6 +8,7 @@ namespace DCL.Backpack
 {
     public class WearableGridItemComponentView : BaseComponentView<WearableGridItemModel>
     {
+        [Serializable]
         internal struct RareBackground
         {
             public NftRarity Rarity;
