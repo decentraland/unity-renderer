@@ -31,5 +31,5 @@ export interface RoomConnection {
   sendChatMessage(message: proto.Chat): Promise<void>
   sendVoiceMessage(message: proto.Voice): Promise<void>
 
-  getVoiceHandler(): Promise<VoiceHandler>
+  createVoiceHandler(): Promise<VoiceHandler>
 }

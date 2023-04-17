@@ -153,19 +153,11 @@ function* updatePlayerVoiceRecordingRenderer(action: VoiceRecordingUpdateAction)
 }
 
 function* updateChangeVoiceChatHandlerProcess() {
-  let prevHandler: VoiceHandler | undefined = undefined
   while (true) {
     // wait for a new VoiceHandler
     yield take(SET_VOICE_CHAT_HANDLER)
 
-    const handler: VoiceHandler | undefined = yield select(getVoiceHandler)
-
-    if (handler !== prevHandler) {
-      if (prevHandler) {
-        yield prevHandler.destroy()
-      }
-      prevHandler = handler
-    }
+    const handler: VoiceHandler | null = yield select(getVoiceHandler)
 
     yield call(waitForRendererInstance)
 

@@ -50,13 +50,13 @@ export class SimulationRoom implements RoomConnection {
       send(_data: Uint8Array, _hints: SendHints): void {},
       async connect(): Promise<void> {},
       async disconnect(_error?: Error): Promise<void> {},
-      async getVoiceHandler() {
+      async createVoiceHandler() {
         throw new Error('not implemented')
       }
     })
   }
 
-  async getVoiceHandler(): Promise<VoiceHandler> {
+  async createVoiceHandler(): Promise<VoiceHandler> {
     return createOpusVoiceHandler()
   }
 
