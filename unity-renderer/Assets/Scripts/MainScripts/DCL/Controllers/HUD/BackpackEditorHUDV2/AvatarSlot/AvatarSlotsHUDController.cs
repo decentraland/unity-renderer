@@ -7,20 +7,20 @@ namespace DCL.Backpack
 {
     public class AvatarSlotsHUDController : IHUD
     {
-        private readonly AvatarSlotsDefinitionSO avatarSlotsDefinition;
-        private readonly IAvatarSlotsView avatarSlotsView;
-        private string lastSelectedSlot;
+        internal AvatarSlotsDefinitionSO avatarSlotsDefinition;
+        internal readonly IAvatarSlotsView avatarSlotsView;
+        internal string lastSelectedSlot;
 
         public AvatarSlotsHUDController(IAvatarSlotsView avatarSlotsView)
         {
             this.avatarSlotsView = avatarSlotsView;
             avatarSlotsView.OnToggleAvatarSlot += ToggleSlot;
             avatarSlotsDefinition = Resources.Load<AvatarSlotsDefinitionSO>("AvatarSlotsDefinition");
-            GenerateSlots();
-            avatarSlotsView.SetSlotsAsHidden(new []{"hat","mask"}, "upper_body");
+            //GenerateSlots();
+            //avatarSlotsView.SetSlotsAsHidden(new []{"hat","mask"}, "upper_body");
         }
 
-        private void GenerateSlots()
+        public void GenerateSlots()
         {
             for (var i = 0; i < avatarSlotsDefinition.slotsDefinition.Length; i++)
             {
@@ -32,7 +32,7 @@ namespace DCL.Backpack
             avatarSlotsView.RebuildLayout();
         }
 
-        private void ToggleSlot(string slotCategory, bool isSelected)
+        public void ToggleSlot(string slotCategory, bool isSelected)
         {
             if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
                 avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);

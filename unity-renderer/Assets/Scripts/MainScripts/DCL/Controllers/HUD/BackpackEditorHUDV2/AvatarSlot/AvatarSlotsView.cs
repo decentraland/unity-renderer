@@ -39,6 +39,7 @@ namespace DCL.Backpack
             IAvatarSlotComponentView avatarSlot = Instantiate(avatarSlotPrefab, avatarSlotSections[sectionName]).GetComponent<IAvatarSlotComponentView>();
             avatarSlot.SetCategory(slotCategory);
             avatarSlots.Add(slotCategory, avatarSlot);
+            avatarSlot.SetNftImage("");
             avatarSlot.OnSelectAvatarSlot += (slotCat, isToggled)=>OnToggleAvatarSlot?.Invoke(slotCat, isToggled);
         }
 

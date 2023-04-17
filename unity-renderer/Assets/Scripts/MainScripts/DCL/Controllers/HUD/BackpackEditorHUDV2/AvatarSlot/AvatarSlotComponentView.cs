@@ -50,8 +50,12 @@ namespace DCL.Backpack
             model.isHidden = isHidden;
             model.hiddenBy = hiddenBy;
             hiddenSlot.SetActive(isHidden);
+
             if (isHidden)
+            {
+                emptySlot.SetActive(false);
                 tooltipText.text = $"{tooltipText.text}\nHidden by: {hiddenBy}";
+            }
         }
 
         public void SetCategory(string category)
