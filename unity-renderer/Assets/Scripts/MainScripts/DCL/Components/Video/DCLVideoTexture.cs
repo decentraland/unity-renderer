@@ -345,8 +345,13 @@ namespace DCL.Components
             component.OnDetach -= SetPlayStateDirty;
             DCLVideoTextureUtils.UnsubscribeToEntityShapeUpdate(component, SetPlayStateDirty);
 
-            RemoveReference(component);
             SetPlayStateDirty();
+
+            if (RemoveReference(component))
+            {
+                if (attachedEntitiesByComponent.Count == 0)
+                    Dispose();
+            }
         }
 
         private void SetPlayStateDirty(IDCLEntity entity = null) =>
@@ -378,6 +383,7 @@ namespace DCL.Components
             }
 
             Utils.SafeDestroy(texture);
+            isInitialized = false;
             base.Dispose();
         }
     }

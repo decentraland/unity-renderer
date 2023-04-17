@@ -380,6 +380,7 @@ namespace Tests
 
             yield return basicMaterial.routine;
 
+            // texture should have being disposed
             Assert.IsFalse(mainTex);
 
             TestUtils.SharedComponentUpdate(basicMaterial, new BasicMaterial.Model()
@@ -389,7 +390,7 @@ namespace Tests
 
             yield return basicMaterial.routine;
 
-            // texture should have being disposed
+            // texture should have being reloaded
             Assert.IsTrue(basicMaterial.material.GetTexture(ShaderUtils.BaseMap));
         }
     }
