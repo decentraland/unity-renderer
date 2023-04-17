@@ -44,15 +44,15 @@ describe('Fetch catalyst server status', () => {
             },
             bff: {
               userCount: EXPECTED.usersCount,
-              version: '1.0.0',
-              acceptingUsers: true
+              version: '1.0.0'
             },
             content: {
               version: '1.0.0'
             },
             lambdas: {
               version: '1.0.0'
-            }
+            },
+            acceptingUsers: true
           }
         }
       } else {

@@ -2,14 +2,16 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_FinalGhost
-  m_Shader: {fileID: 4800000, guid: 48ab4630448d99f40b8df0f1d6076f87, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: -6465566751694194690, guid: fcf992aaa5364b24fb94c71ba0e80e26,
+    type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -43,12 +45,15 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - EdgeThickness: 2.1
     - Vector1_61a7a0ad63c841748fe6f6cfb1a67e1f: 0.05
     - Vector1_7db7aa7f94f5470d935a0ff14989164a: 0.05
     - _EdgeThickness: 2.2
     - _PatternSpeed: 0.5
+    - _QueueControl: 0
+    - _QueueOffset: 0
     - _RefractionIntensity: 0
     - _RefractionScale: 0
     m_Colors:
@@ -60,3 +65,16 @@ Material:
     - _RevealPosition: {r: 0, g: 0, b: 0, a: 0}
     - _SecondColor: {r: 0, g: 3.9999995, b: 3.7699447, a: 0.972549}
   m_BuildTextureStacks: []
+--- !u!114 &2022787918843298062
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5

@@ -13,6 +13,7 @@ using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using UnityEngine.Serialization;
 using LOD = AvatarSystem.LOD;
 
 namespace DCL
@@ -30,12 +31,12 @@ namespace DCL
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
         public StickersController stickersControllers;
-        [SerializeField] private Transform avatarRevealContainer;
-        [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
         [SerializeField] internal GameObject playerNameContainer;
+        [SerializeField] private Transform baseAvatarContainer;
+        [SerializeField] internal BaseAvatarReferences baseAvatarReferencesPrefab;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
@@ -100,11 +101,13 @@ namespace DCL
         {
             Visibility visibility = new Visibility();
 
+            // Due to how we set our pools (and how the objets are cloned in), we might find that the original item already had the baseAvatar when returned to the pool.
+            var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+
             return Environment.i.serviceLocator.Get<IAvatarFactory>()
                               .CreateAvatarWithHologram(
                                    avatarContainer,
-                                   avatarRevealContainer,
-                                   armatureContainer,
+                                   new BaseAvatar(baseAvatarReferences),
                                    GetComponentInChildren<AvatarAnimatorLegacy>(),
                                    new LOD(avatarContainer, visibility, avatarMovementController),
                                    visibility
