@@ -145,8 +145,6 @@ export class ArchipelagoConnection implements IRealmAdapter {
           break
         }
         case 'kicked': {
-          // notifyStatusThroughChat(peerKicked.reason)
-          // await this.disconnect(Error(message.peerKicked.reason))
           const error = new Error(
             'Disconnected from realm as the user id is already taken. Please make sure you are not logged into the world through another tab'
           )
