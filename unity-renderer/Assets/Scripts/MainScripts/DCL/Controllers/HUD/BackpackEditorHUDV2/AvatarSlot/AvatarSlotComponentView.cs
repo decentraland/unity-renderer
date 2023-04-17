@@ -22,7 +22,8 @@ namespace DCL.Backpack
         [SerializeField] private GameObject emptySlot;
         [SerializeField] private GameObject hiddenSlot;
         [SerializeField] internal GameObject tooltipContainer;
-        [SerializeField] internal TMP_Text tooltipText;
+        [SerializeField] internal TMP_Text tooltipCategoryText;
+        [SerializeField] internal TMP_Text tooltipHiddenText;
         [SerializeField] internal Button button;
 
         public event Action<string, bool> OnSelectAvatarSlot;
@@ -54,7 +55,12 @@ namespace DCL.Backpack
             if (isHidden)
             {
                 emptySlot.SetActive(false);
-                tooltipText.text = $"{tooltipText.text}\nHidden by: {hiddenBy}";
+                tooltipHiddenText.gameObject.SetActive(true);
+                tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
+            }
+            else
+            {
+                tooltipHiddenText.gameObject.SetActive(false);
             }
         }
 
@@ -62,7 +68,7 @@ namespace DCL.Backpack
         {
             model.category = category;
             typeImage.sprite = typeIcons.GetTypeImage(category);
-            tooltipText.text = category;
+            tooltipCategoryText.text = category;
         }
 
         public void SetNftImage(string imageUri)

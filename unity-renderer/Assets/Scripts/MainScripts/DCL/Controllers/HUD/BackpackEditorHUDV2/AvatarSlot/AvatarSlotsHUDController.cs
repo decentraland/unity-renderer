@@ -16,8 +16,6 @@ namespace DCL.Backpack
             this.avatarSlotsView = avatarSlotsView;
             avatarSlotsView.OnToggleAvatarSlot += ToggleSlot;
             avatarSlotsDefinition = Resources.Load<AvatarSlotsDefinitionSO>("AvatarSlotsDefinition");
-            //GenerateSlots();
-            //avatarSlotsView.SetSlotsAsHidden(new []{"hat","mask"}, "upper_body");
         }
 
         public void GenerateSlots()
