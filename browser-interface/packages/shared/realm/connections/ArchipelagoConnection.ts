@@ -9,7 +9,7 @@ import { legacyServices } from '../local-services/legacy'
 import { ClientPacket, ServerPacket } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
 import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
-import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
+import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 
 // shared writer to leverage pools
@@ -145,10 +145,9 @@ export class ArchipelagoConnection implements IRealmAdapter {
           break
         }
         case 'kicked': {
-          const error = new Error(
+          const error =
             'Disconnected from realm as the user id is already taken. Please make sure you are not logged into the world through another tab'
-          )
-          BringDownClientAndReportFatalError(error, ErrorContext.COMMS_INIT)
+          BringDownClientAndShowError(error)
           break
         }
       }
