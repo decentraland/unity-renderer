@@ -14,10 +14,9 @@ namespace AvatarEditorHUD_Tests
     {
         public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags,
             IAnalytics analytics,
-            IWearablesCatalogService wearablesCatalogService)
-            : base(featureFlags, analytics, wearablesCatalogService)
-        {
-        }
+            IWearablesCatalogService wearablesCatalogService,
+            IUserProfileBridge userProfileBridge)
+            : base(featureFlags, analytics, wearablesCatalogService, userProfileBridge) { }
 
         public AvatarEditorHUDModel myModel => model;
         public AvatarEditorHUDView myView => view;
@@ -38,6 +37,7 @@ namespace AvatarEditorHUD_Tests
             yield return base.SetUp();
 
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
+
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -52,9 +52,14 @@ namespace AvatarEditorHUD_Tests
 
             analytics = Substitute.For<IAnalytics>();
             wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService);
+            IUserProfileBridge userProfileBridge = Substitute.For<IUserProfileBridge>();
+            userProfileBridge.GetOwn().Returns(userProfile);
+
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService,
+                userProfileBridge);
+
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, wearablesCatalogService.WearablesCatalog);
+            controller.Initialize();
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }
 
@@ -134,7 +139,8 @@ namespace AvatarEditorHUD_Tests
             var bandana = wearablesCatalogService.WearablesCatalog.Get(bandanaId);
 
             bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE)
-                .overrideReplaces = new[] { sunglasses.data.category };
+                   .overrideReplaces = new[] { sunglasses.data.category };
+
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 

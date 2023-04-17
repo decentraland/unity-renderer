@@ -9,6 +9,8 @@ namespace AvatarSystem
     // [ADR 65 - https://github.com/decentraland/adr]
     public class AvatarWithHologram : Avatar
     {
+        private const float AVATAR_REVEAL_COMPLETION_OFFSET = 10;
+
         private readonly IBaseAvatar baseAvatar;
 
         internal AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility,
@@ -20,21 +22,24 @@ namespace AvatarSystem
 
         protected override async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
-            baseAvatar.Initialize();
-            animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
-            List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, baseAvatar.GetMainRenderer(), linkedCt: linkedCt);
-            Prepare(settings, emotes, baseAvatar.GetArmatureContainer());
+            baseAvatar.FadeGhost(linkedCt).Forget(); //Avoid making the ghost fading a blocking part of the avatar
+            animator.Prepare(settings.bodyshapeId, baseAvatar.ArmatureContainer);
+            List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, baseAvatar.SkinnedMeshRenderer, linkedCt: linkedCt);
+            Prepare(settings, emotes, baseAvatar.ArmatureContainer);
             Bind();
 
             MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
             Inform(newCombinedRenderer);
-            await baseAvatar.FadeOut(newCombinedRenderer, visibility.IsMainRenderVisible(), linkedCt);
+            if (visibility.IsMainRenderVisible())
+                await baseAvatar.Reveal(GetMainRenderer(), extents.y, extents.y + AVATAR_REVEAL_COMPLETION_OFFSET, linkedCt);
+            else
+                baseAvatar.RevealInstantly(GetMainRenderer(), extents.y + AVATAR_REVEAL_COMPLETION_OFFSET);
         }
 
         public override void AddVisibilityConstraint(string key)
         {
             base.AddVisibilityConstraint(key);
-            baseAvatar.CancelTransition();
+            baseAvatar.RevealInstantly(GetMainRenderer(), extents.y + AVATAR_REVEAL_COMPLETION_OFFSET);
         }
     }
 }

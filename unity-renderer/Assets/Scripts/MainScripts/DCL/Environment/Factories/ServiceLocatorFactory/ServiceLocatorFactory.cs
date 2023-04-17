@@ -2,7 +2,6 @@ using AvatarSystem;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
-using DCL.Emotes;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
@@ -18,8 +17,8 @@ using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using System.Collections.Generic;
-using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -31,11 +30,12 @@ namespace DCL
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
 
-            //Addressable Resource Provider
+            // Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
             // Platform
+            result.Register<IProfilerRecordsService>(() => new ProfilerRecordsService());
             result.Register<IMemoryManager>(() => new MemoryManager());
             result.Register<ICullingController>(CullingController.Create);
             result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
@@ -48,6 +48,7 @@ namespace DCL
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
+                new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             ));
             result.Register<IServiceProviders>(() => new ServiceProviders());
@@ -117,7 +118,7 @@ namespace DCL
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));
-            result.Register<IHUDController>(() => new HUDController(result.Get<IWearablesCatalogService>(), DataStore.i));
+            result.Register<IHUDController>(() => new HUDController(DataStore.i));
 
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));

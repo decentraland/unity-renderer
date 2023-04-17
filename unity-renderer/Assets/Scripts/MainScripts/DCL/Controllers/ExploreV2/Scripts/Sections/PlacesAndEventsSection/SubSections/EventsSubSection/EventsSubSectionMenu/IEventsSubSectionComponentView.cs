@@ -9,6 +9,11 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     int currentUpcomingEventsPerRow { get; }
 
     /// <summary>
+    /// Number of going to events per row that fit with the current upcoming events grid configuration.
+    /// </summary>
+    int currentGoingEventsPerRow { get; }
+
+    /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>
     event Action OnReady;
@@ -39,6 +44,13 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     event Action OnShowMoreUpcomingEventsClicked;
 
     /// <summary>
+    /// It will be triggered when the "Show More" for going events button is clicked.
+    /// </summary>
+    event Action OnShowMoreGoingEventsClicked;
+
+    event Action OnConnectWallet;
+
+    /// <summary>
     /// It will be triggered each time the view is enabled.
     /// </summary>
     event Action OnEventsSubSectionEnable;
@@ -67,10 +79,22 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     void AddUpcomingEvents(List<EventCardComponentModel> events);
 
     /// <summary>
+    /// Add a list of events in the going events component.
+    /// </summary>
+    /// <param name="places">List of events (model) to be added.</param>
+    void AddGoingEvents(List<EventCardComponentModel> events);
+
+    /// <summary>
     /// Activates/Deactivates the "Show More" button.
     /// </summary>
     /// <param name="isActive">True for activating it.</param>
     void SetShowMoreUpcomingEventsButtonActive(bool isActive);
+
+    /// <summary>
+    /// Activates/Deactivates the "Show More" button for going events section.
+    /// </summary>
+    /// <param name="isActive">True for activating it.</param>
+    void SetShowMoreGoingEventsButtonActive(bool isActive);
 
     /// <summary>
     /// Set the going events component with a list of events.
@@ -100,4 +124,7 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     void SetAllEventGroupsAsLoading();
 
     void SetShowMoreButtonActive(bool isActive);
+    void SetShowMoreGoingButtonActive(bool isActive);
+
+    void SetIsGuestUser(bool isGuestUser);
 }

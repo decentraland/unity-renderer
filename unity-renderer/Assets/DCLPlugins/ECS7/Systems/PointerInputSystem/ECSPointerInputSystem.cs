@@ -12,6 +12,8 @@ namespace ECSSystems.PointerInputSystem
 {
     public static class ECSPointerInputSystem
     {
+        private static readonly InputAction[] INPUT_ACTION_ENUM = (InputAction[])Enum.GetValues(typeof(WebInterface.ACTION_BUTTON));
+
         private class State
         {
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
@@ -51,7 +53,7 @@ namespace ECSSystems.PointerInputSystem
                 interactionHoverCanvas = interactionHoverCanvas,
                 dataStoreEcs7 = dataStoreEcs,
                 lastHoverFeedback = new EntityInput() { hasValue = false },
-                inputActionState = new bool[Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length]
+                inputActionState = new bool[INPUT_ACTION_ENUM.Length],
             };
             return () => Update(state);
         }
@@ -84,7 +86,7 @@ namespace ECSSystems.PointerInputSystem
                 if (curState[i] != prevState[i])
                 {
                     PointerEventType pointerEventType = curState[i] ? PointerEventType.PetDown : PointerEventType.PetUp;
-                    InputAction inputAction = (InputAction)i;
+                    InputAction inputAction = INPUT_ACTION_ENUM[i];
 
                     if (colliderData != null)
                     {
@@ -161,7 +163,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 AddInputResultEvent(
                     state,
-                    InputAction.IaAny,
+                    InputAction.IaPointer,
                     state.lastHoverFeedback.scene,
                     state.lastHoverFeedback.entityId,
                     raycastRay,
@@ -172,7 +174,7 @@ namespace ECSSystems.PointerInputSystem
 
             AddInputResultEvent(
                 state,
-                InputAction.IaAny,
+                InputAction.IaPointer,
                 colliderData.scene,
                 colliderData.entity.entityId,
                 raycastRay,
@@ -196,7 +198,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 AddInputResultEvent(
                     state,
-                    InputAction.IaAny,
+                    InputAction.IaPointer,
                     state.lastHoverFeedback.scene,
                     state.lastHoverFeedback.entityId,
                     raycastRay,
@@ -215,7 +217,7 @@ namespace ECSSystems.PointerInputSystem
 
             AddInputResultEvent(
                 state,
-                InputAction.IaAny,
+                InputAction.IaPointer,
                 colliderData.scene,
                 colliderData.entity.entityId,
                 raycastRay,

@@ -30,8 +30,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   private disposed = false
   private readonly room: Room
 
-  private voiceChatHandlerCache?: Promise<VoiceHandler>
-
   constructor(private config: LivekitConfig) {
     this.room = new Room()
 
@@ -49,6 +47,10 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         this.config.logger.log(this.room.name, 'connection state changed', state)
       })
       .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
+        if (this.disposed) {
+          return
+        }
+
         this.config.logger.log(this.room.name, 'disconnected from room', reason, {
           liveKitParticipantSid: this.room.localParticipant.sid,
           liveKitRoomSid: this.room.sid
@@ -71,11 +73,8 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       })
   }
 
-  async getVoiceHandler(): Promise<VoiceHandler> {
-    if (this.voiceChatHandlerCache) {
-      await (await this.voiceChatHandlerCache).destroy()
-    }
-    return (this.voiceChatHandlerCache = createLiveKitVoiceHandler(this.room))
+  async createVoiceHandler(): Promise<VoiceHandler> {
+    return createLiveKitVoiceHandler(this.room)
   }
 
   async connect(): Promise<void> {
