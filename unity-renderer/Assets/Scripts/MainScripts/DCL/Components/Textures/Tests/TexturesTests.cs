@@ -127,6 +127,7 @@ namespace Tests
             });
 
             yield return basicMaterial.routine;
+            yield return null;
 
             // texture should have being disposed
             Assert.IsFalse(mainTex);
@@ -180,6 +181,7 @@ namespace Tests
             });
 
             yield return pbrMaterial.routine;
+            yield return null;
 
             // texture should have being disposed
             Assert.IsFalse(textureA);
@@ -379,6 +381,7 @@ namespace Tests
             });
 
             yield return basicMaterial.routine;
+            yield return null;
 
             // texture should have being disposed
             Assert.IsFalse(mainTex);
