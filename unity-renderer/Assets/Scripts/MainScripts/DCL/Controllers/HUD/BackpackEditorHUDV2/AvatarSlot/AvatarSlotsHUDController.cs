@@ -40,6 +40,7 @@ namespace DCL.Backpack
 
         public void Dispose()
         {
+            avatarSlotsView.OnToggleAvatarSlot -= ToggleSlot;
         }
 
         public void SetVisibility(bool visible)
