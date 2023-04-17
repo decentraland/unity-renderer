@@ -1,12 +1,11 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace DCL.Components
+namespace UIComponents.Scripts.Components
 {
-    public class UIPageButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class PageSelectorButtonComponentView : BaseComponentView<PageSelectorButtonModel>
     {
         private static readonly int IS_ACTIVE_ANIMATOR_HASH = Animator.StringToHash("IsActive");
         private static readonly int IS_HOVER_ANIMATOR_HASH = Animator.StringToHash("IsHover");
@@ -19,9 +18,22 @@ namespace DCL.Components
 
         public event Action<int> OnPageClicked;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
+            onFocused += focused =>
+            {
+                anim.SetBool(IS_HOVER_ANIMATOR_HASH, focused);
+            };
+
             button.onClick.AddListener(OnButtonDown);
+        }
+
+        public override void RefreshControl()
+        {
+            pageNumber = model.PageNumber;
+            text.text = (model.PageNumber + 1).ToString();
         }
 
         private void OnButtonDown()
@@ -29,25 +41,9 @@ namespace DCL.Components
             OnPageClicked?.Invoke(pageNumber);
         }
 
-        public void Initialize(int i)
-        {
-            pageNumber = i;
-            text.text = (i + 1).ToString();
-        }
-
         public void Toggle(bool b)
         {
             anim.SetBool(IS_ACTIVE_ANIMATOR_HASH, b);
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            anim.SetBool(IS_HOVER_ANIMATOR_HASH, true);
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            anim.SetBool(IS_HOVER_ANIMATOR_HASH, false);
         }
     }
 }

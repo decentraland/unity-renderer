@@ -1,4 +1,3 @@
-using DCL.Components;
 using System;
 using System.Collections.Generic;
 using UIComponents.Scripts.Components;
@@ -16,8 +15,8 @@ namespace DCL.Backpack
         [SerializeField] private GameObject emotesSection;
         [SerializeField] private GridContainerComponentView wearablesGridContainer;
         [SerializeField] private WearableGridItemComponentView wearableGridItemPrefab;
-        [SerializeField] private UIPageSelector wearablePageSelector;
-        [SerializeField] private UIPageSelector emotePageSelector;
+        [SerializeField] private PageSelectorComponentView wearablePageSelector;
+        [SerializeField] private PageSelectorComponentView emotePageSelector;
 
         public override bool isVisible => gameObject.activeInHierarchy;
 
@@ -110,8 +109,11 @@ namespace DCL.Backpack
                 return;
             }
             wearablePageSelector.gameObject.SetActive(true);
-            wearablePageSelector.Setup(totalPages);
-            wearablePageSelector.SelectPage(currentPage);
+            wearablePageSelector.SetModel(new PageSelectorModel
+            {
+                CurrentPage = currentPage,
+                TotalPages = totalPages,
+            });
         }
 
         public void ShowWearables(IEnumerable<WearableGridItemModel> wearables)

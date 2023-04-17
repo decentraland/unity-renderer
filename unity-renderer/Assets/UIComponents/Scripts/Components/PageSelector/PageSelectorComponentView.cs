@@ -3,29 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Components
+namespace UIComponents.Scripts.Components
 {
-    public class UIPageSelector : MonoBehaviour
+    public class PageSelectorComponentView : BaseComponentView<PageSelectorModel>
     {
         [SerializeField] private Button previousButton;
         [SerializeField] private Button nextButton;
-        [SerializeField] private UIPageButton pageButtonPrefab;
+        [SerializeField] private PageSelectorButtonComponentView pageButtonPrefab;
         [SerializeField] private RectTransform pageButtonsParent;
         [SerializeField] private RectTransform rectTransform;
         [SerializeField] private bool limitedPages;
         [SerializeField] private int maxVisiblePages;
 
-        private readonly List<UIPageButton> buttons = new ();
+        private readonly List<PageSelectorButtonComponentView> buttons = new ();
         private int totalPages;
         private int currentPage = -1;
 
         public event Action<int> OnValueChanged;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
             previousButton.onClick.AddListener(OnPreviousButtonDown);
             nextButton.onClick.AddListener(OnNextButtonDown);
             gameObject.SetActive(false);
+        }
+
+        public override void RefreshControl()
+        {
+            SetTotalPages(model.TotalPages);
+            SelectPage(model.CurrentPage);
         }
 
         private void OnNextButtonDown()
@@ -50,9 +58,9 @@ namespace DCL.Components
             UpdateButtonsStatus();
         }
 
-        public void Setup(int maxTotalPages, bool forceRebuild = false)
+        public void SetTotalPages(int maxTotalPages)
         {
-            if (maxTotalPages == this.totalPages && !forceRebuild) { return; }
+            if (maxTotalPages == this.totalPages) return;
 
             this.totalPages = maxTotalPages;
 
@@ -92,7 +100,7 @@ namespace DCL.Components
 
             for (var i = 0; i < buttons.Count; i++)
             {
-                UIPageButton uiPageButton = buttons[i];
+                PageSelectorButtonComponentView uiPageButton = buttons[i];
 
                 if (i >= totalPages)
                 {
@@ -101,7 +109,10 @@ namespace DCL.Components
                     continue;
                 }
 
-                uiPageButton.Initialize(i);
+                uiPageButton.SetModel(new PageSelectorButtonModel
+                {
+                    PageNumber = i,
+                });
                 uiPageButton.gameObject.SetActive(true);
                 uiPageButton.OnPageClicked -= SelectPage;
                 uiPageButton.OnPageClicked += SelectPage;
