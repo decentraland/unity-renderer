@@ -32,14 +32,13 @@ namespace DCL.Backpack
             this.userProfileBridge = userProfileBridge;
             this.emotesCatalogService = emotesCatalogService;
 
-            emotesCustomizationComponentController = new EmotesCustomizationComponentController();
-            IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(
+            emotesCustomizationComponentController = new EmotesCustomizationComponentController(
                 dataStore.emotesCustomization,
                 dataStore.emotes,
                 dataStore.exploreV2,
-                dataStore.HUDs);
+                dataStore.HUDs,
+                emotesSectionTransform);
 
-            emotesSectionView.viewTransform.SetParent(emotesSectionTransform, false);
             emotesCustomizationComponentController.SetEquippedBodyShape(userProfileBridge.GetOwn().avatar.bodyShape);
 
             dataStore.emotesCustomization.currentLoadedEmotes.OnAdded += NewEmoteAdded;
