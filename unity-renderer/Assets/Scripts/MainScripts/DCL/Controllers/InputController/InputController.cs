@@ -148,8 +148,7 @@ public class InputController : MonoBehaviour
 #endif
                     break;
                 case DCLAction_Trigger.ToggleNavMap:
-                    if (!DataStore.i.common.isWorld.Get())
-                        InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleFriends:
                     if (!allUIHidden)

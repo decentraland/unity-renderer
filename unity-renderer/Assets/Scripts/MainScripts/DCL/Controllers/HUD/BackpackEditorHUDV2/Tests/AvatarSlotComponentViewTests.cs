@@ -96,7 +96,9 @@ namespace DCL.Backpack
             };
             avatarSlot.RefreshControl();
 
-            Assert.AreEqual(avatarSlot.tooltipText.text, $"{TEST_CATEGORY}\nHidden by: HidingCategory");
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: HidingCategory");
         }
 
         [Test]
@@ -110,7 +112,8 @@ namespace DCL.Backpack
             };
             avatarSlot.RefreshControl();
 
-            Assert.AreEqual(avatarSlot.tooltipText.text, $"{TEST_CATEGORY}");
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.False(avatarSlot.tooltipHiddenText.gameObject.activeInHierarchy);
         }
     }
 }

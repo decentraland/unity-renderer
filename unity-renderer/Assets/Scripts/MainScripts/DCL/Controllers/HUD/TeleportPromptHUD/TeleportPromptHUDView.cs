@@ -25,6 +25,7 @@ public class TeleportPromptHUDView : MonoBehaviour
     [SerializeField] private GameObject containerCrowd;
     [SerializeField] private GameObject containerScene;
     [SerializeField] private GameObject containerEvent;
+    [SerializeField] private GameObject creatorContainer;
 
     [Header("Scene info")]
     [SerializeField] private TextMeshProUGUI textCoords;
@@ -109,7 +110,8 @@ public class TeleportPromptHUDView : MonoBehaviour
         containerScene.SetActive(true);
 
         textCoords.text = coords;
-        textSceneName.text = sceneName;
+        textSceneName.text = !string.IsNullOrEmpty(sceneName) ? sceneName : "Untitled Scene";
+        creatorContainer.SetActive(!string.IsNullOrEmpty(sceneCreator));
         textSceneOwner.text = sceneCreator;
         SetParcelImage(previewImageUrl);
     }
@@ -123,6 +125,7 @@ public class TeleportPromptHUDView : MonoBehaviour
     }
 
     private AssetPromise_Texture texturePromise;
+
     public void SetParcelImage(string imageUrl)
     {
         containerMagic.SetActive(false);
@@ -151,7 +154,6 @@ public class TeleportPromptHUDView : MonoBehaviour
     private void OnClosePressed()
     {
         OnCloseEvent?.Invoke();
-        AudioScriptableObjects.dialogClose.Play(true);
     }
 
     private void OnTeleportPressed()
@@ -162,6 +164,7 @@ public class TeleportPromptHUDView : MonoBehaviour
     private void OnDestroy()
     {
         hudCanvasCameraModeController?.Dispose();
+
         if (downloadedBanner != null)
         {
             UnityEngine.Object.Destroy(downloadedBanner);
