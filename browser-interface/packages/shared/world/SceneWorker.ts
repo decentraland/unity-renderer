@@ -60,9 +60,9 @@ export enum SceneWorkerReadyState {
 const sdk6RuntimeRaw =
   process.env.NODE_ENV === 'production'
     ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@dcl/scene-runtime/dist/sdk6-webworker.js').default
+    require('@dcl/scene-runtime/dist/sdk6-webworker.js').default
     : // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@dcl/scene-runtime/dist/sdk6-webworker.dev.js').default
+    require('@dcl/scene-runtime/dist/sdk6-webworker.dev.js').default
 
 const sdk6RuntimeBLOB = new Blob([sdk6RuntimeRaw])
 const sdk6RuntimeUrl = URL.createObjectURL(sdk6RuntimeBLOB)
@@ -70,9 +70,9 @@ const sdk6RuntimeUrl = URL.createObjectURL(sdk6RuntimeBLOB)
 const sdk7RuntimeRaw =
   process.env.NODE_ENV === 'production'
     ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@dcl/scene-runtime/dist/sdk7-webworker.js').default
+    require('@dcl/scene-runtime/dist/sdk7-webworker.js').default
     : // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@dcl/scene-runtime/dist/sdk7-webworker.dev.js').default
+    require('@dcl/scene-runtime/dist/sdk7-webworker.dev.js').default
 
 const sdk7RuntimeBLOB = new Blob([sdk7RuntimeRaw])
 const sdk7RuntimeUrl = URL.createObjectURL(sdk7RuntimeBLOB)
@@ -122,16 +122,16 @@ export class SceneWorker {
   private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
   private readonly startLoadingTime = performance.now()
   // this is the transport for the worker
-  public readonly transport: Transport
+  public transport?: Transport
 
   metadata: Scene
   logger: ILogger
 
-  static async createSceneWorker(loadableScene: Readonly<LoadableScene>, rpcClient: RpcClient, _transport?: Transport) {
+  static async createSceneWorker(loadableScene: Readonly<LoadableScene>, rpcClient: RpcClient, transportBuilder: () => (Transport | undefined)) {
     ++globalSceneNumberCounter
     const sceneNumber = globalSceneNumberCounter
     const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
-    const worker = new SceneWorker(loadableScene, sceneNumber, scenePort, _transport)
+    const worker = new SceneWorker(loadableScene, sceneNumber, scenePort, transportBuilder)
     await worker.attachTransport()
     return worker
   }
@@ -140,7 +140,7 @@ export class SceneWorker {
     public readonly loadableScene: Readonly<LoadableScene>,
     sceneNumber: number,
     scenePort: RpcClientPort,
-    _transport?: Transport
+    private transportBuilder: () => (Transport | undefined)
   ) {
     const skipErrors = ['Transport closed while waiting the ACK']
 
@@ -162,8 +162,6 @@ export class SceneWorker {
       loadableScene.entity.metadata.runtimeVersion === '7' ||
       !!loadableScene.entity.metadata.ecs7 ||
       !!loadableScene.entity.metadata.sdk7
-
-    this.transport = _transport || buildWebWorkerTransport(this.loadableScene, IS_SDK7)
 
     const rpcSceneControllerService = codegen.loadService<any>(scenePort, RpcSceneControllerServiceDefinition)
 
@@ -245,7 +243,7 @@ export class SceneWorker {
     if ((this.ready & disposingFlags) === 0) {
       this.ready |= SceneWorkerReadyState.DISPOSING
 
-      this.transport.close()
+      this.transport?.close()
     }
 
     this.ready |= SceneWorkerReadyState.DISPOSED
@@ -322,6 +320,8 @@ export class SceneWorker {
 
     // from now on, the sceneData object is read-only
     Object.freeze(this.rpcContext.sceneData)
+
+    this.transport = this.transportBuilder() || buildWebWorkerTransport(this.loadableScene, this.rpcContext.sdk7)
 
     this.rpcServer.setHandler(registerServices)
     this.rpcServer.attachTransport(this.transport, this.rpcContext)
