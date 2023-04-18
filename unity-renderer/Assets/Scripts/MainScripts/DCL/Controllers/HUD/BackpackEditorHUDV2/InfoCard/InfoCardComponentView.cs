@@ -11,14 +11,14 @@ namespace DCL.Backpack
     {
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
-        [SerializeField] private TMP_Text wearableName;
-        [SerializeField] private TMP_Text wearableDescription;
-        [SerializeField] private Image categoryImage;
-        [SerializeField] private Button equipButton;
-        [SerializeField] private Button viewMore;
-        [SerializeField] private DynamicListComponentView removesList;
-        [SerializeField] private DynamicListComponentView hidesList;
-        [SerializeField] private DynamicListComponentView hiddenBy;
+        [SerializeField] internal TMP_Text wearableName;
+        [SerializeField] internal TMP_Text wearableDescription;
+        [SerializeField] internal Image categoryImage;
+        [SerializeField] internal Button equipButton;
+        [SerializeField] internal Button viewMore;
+        [SerializeField] internal DynamicListComponentView removesList;
+        [SerializeField] internal DynamicListComponentView hidesList;
+        [SerializeField] internal DynamicListComponentView hiddenBy;
 
         public void Start()
         {
@@ -34,6 +34,8 @@ namespace DCL.Backpack
             SetName(model.name);
             SetDescription(model.description);
             SetCategory(model.category);
+            SetRemovesList(model.removeList);
+            SetHidesList(model.hideList);
         }
 
         public void SetName(string nameText)
@@ -56,6 +58,7 @@ namespace DCL.Backpack
 
         public void SetHidesList(List<string> hideList)
         {
+            model.hideList = hideList;
             hidesList.RemoveIcons();
             foreach (string hideCategory in hideList)
                 hidesList.AddIcon(typeIcons.GetTypeImage(hideCategory));
@@ -63,6 +66,7 @@ namespace DCL.Backpack
 
         public void SetRemovesList(List<string> removeList)
         {
+            model.removeList = removeList;
             removesList.RemoveIcons();
             foreach (string removeCategory in removeList)
                 removesList.AddIcon(typeIcons.GetTypeImage(removeCategory));

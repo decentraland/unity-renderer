@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DCL.Backpack
 {
@@ -8,7 +9,7 @@ namespace DCL.Backpack
         public string name;
         public string description;
         public string category;
-        public string[] hideList;
-        public string[] removeList;
+        public List<string> hideList;
+        public List<string> removeList;
     }
 }

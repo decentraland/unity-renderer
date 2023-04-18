@@ -6,7 +6,7 @@ public class DynamicListComponentView : BaseComponentView, IDynamicListComponent
 {
     [SerializeField] private Image iconReference;
 
-    private List<Image> instantiatedIcons;
+    internal List<Image> instantiatedIcons = new ();
     public override void RefreshControl()
     {
     }
@@ -33,6 +33,8 @@ public class DynamicListComponentView : BaseComponentView, IDynamicListComponent
     public void RemoveIcons()
     {
         foreach (var icon in instantiatedIcons)
-            Destroy(icon);
+            DestroyImmediate(icon.gameObject);
+
+        instantiatedIcons = new List<Image>();
     }
 }
