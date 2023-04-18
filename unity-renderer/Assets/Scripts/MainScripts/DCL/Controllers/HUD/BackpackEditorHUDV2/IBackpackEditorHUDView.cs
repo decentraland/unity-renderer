@@ -10,6 +10,7 @@ namespace DCL.Backpack
         event Action<WearableGridItemModel> OnWearableSelected;
         event Action<WearableGridItemModel> OnWearableEquipped;
         event Action<WearableGridItemModel> OnWearableUnequipped;
+        event Action<string> OnFilterWearables;
 
         void Dispose();
         void Show();
@@ -23,5 +24,6 @@ namespace DCL.Backpack
         void SetWearable(WearableGridItemModel model);
         void ClearWearableSelection();
         void SelectWearable(string wearableId);
+        void SetWearableBreadcrumb(NftBreadcrumbModel model);
     }
 }

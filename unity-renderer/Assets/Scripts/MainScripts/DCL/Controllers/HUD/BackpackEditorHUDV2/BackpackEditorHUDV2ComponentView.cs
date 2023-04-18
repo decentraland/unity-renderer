@@ -17,6 +17,7 @@ namespace DCL.Backpack
         [SerializeField] private WearableGridItemComponentView wearableGridItemPrefab;
         [SerializeField] private PageSelectorComponentView wearablePageSelector;
         [SerializeField] private PageSelectorComponentView emotePageSelector;
+        [SerializeField] private NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
 
         public override bool isVisible => gameObject.activeInHierarchy;
 
@@ -30,6 +31,7 @@ namespace DCL.Backpack
         public event Action<WearableGridItemModel> OnWearableSelected;
         public event Action<WearableGridItemModel> OnWearableEquipped;
         public event Action<WearableGridItemModel> OnWearableUnequipped;
+        public event Action<string> OnFilterWearables;
 
         public override void Awake()
         {
@@ -45,6 +47,8 @@ namespace DCL.Backpack
                 maxPrewarmCount: 15,
                 isPersistent: true);
             wearableGridItemsPool.ForcePrewarm();
+
+            wearablesBreadcrumbComponentView.OnNavigate += reference => OnFilterWearables?.Invoke(reference);
         }
 
         private void Start()
@@ -182,6 +186,9 @@ namespace DCL.Backpack
 
         public void SelectWearable(string wearableId) =>
             wearablesById[wearableId].Select();
+
+        public void SetWearableBreadcrumb(NftBreadcrumbModel model) =>
+            wearablesBreadcrumbComponentView.SetModel(model);
 
         private void HandleWearableSelected(WearableGridItemModel model) =>
             OnWearableSelected?.Invoke(model);

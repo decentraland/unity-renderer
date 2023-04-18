@@ -38,6 +38,7 @@ namespace DCL.Backpack
             view.OnWearableEquipped += HandleWearableEquipped;
             view.OnWearableUnequipped += HandleWearableUnequipped;
             view.OnWearableSelected += HandleWearableSelected;
+            view.OnFilterWearables += FilterWearablesFromBreadcrumb;
 
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
 
@@ -61,9 +62,10 @@ namespace DCL.Backpack
             if (visible)
             {
                 view.Show();
+
                 currentWearablePage = 0;
                 requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
-                RequestWearablesAndShowThem(currentWearablePage, requestWearablesCancellationToken.Token).Forget();
+                ShowWearablesAndItsFilteringPath(currentWearablePage, requestWearablesCancellationToken.Token).Forget();
             }
             else
             {
@@ -85,7 +87,29 @@ namespace DCL.Backpack
             RequestWearablesAndShowThem(currentWearablePage, requestWearablesCancellationToken.Token).Forget();
         }
 
-        private async UniTaskVoid RequestWearablesAndShowThem(int page, CancellationToken cancellationToken)
+        private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
+        {
+            var wearableBreadcrumbModel = new NftBreadcrumbModel
+            {
+                Path = new[]
+                {
+                    (Type: "all://", Reference: "all://", Name: "All"),
+
+                    // (Type: "category://shoes", Reference: "category://shoes", Name: "Shoes"),
+                    // (Type: "name://", Reference: "name://my wearable", Name: "my wearable"),
+                },
+                Current = 0,
+                ResultCount = 0,
+            };
+
+            view.SetWearableBreadcrumb(wearableBreadcrumbModel);
+
+            int resultCount = await RequestWearablesAndShowThem(page, cancellationToken);
+
+            view.SetWearableBreadcrumb(wearableBreadcrumbModel with { ResultCount = resultCount });
+        }
+
+        private async UniTask<int> RequestWearablesAndShowThem(int page, CancellationToken cancellationToken)
         {
             UserProfile ownUserProfile = userProfileBridge.GetOwn();
             string ownUserId = ownUserProfile.userId;
@@ -95,6 +119,7 @@ namespace DCL.Backpack
                 // TODO: instead of requesting owned wearables, we should request all the wearables with the current filters & sorting
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
+
                     // page is not zero based
                     page + 1,
                     PAGE_SIZE, true, cancellationToken);
@@ -113,6 +138,7 @@ namespace DCL.Backpack
                         Rarity = rarity,
                         ImageUrl = wearable.ComposeThumbnailUrl(),
                         IsEquipped = ownUserProfile.HasEquipped(wearable.id),
+
                         // TODO: make the new state work
                         IsNew = false,
                         IsSelected = false,
@@ -120,14 +146,16 @@ namespace DCL.Backpack
                 });
 
                 view.SetWearablePages(page, totalAmount / PAGE_SIZE);
+
                 // TODO: mark the wearables to be disposed if no references left
                 view.ClearWearables();
                 view.ShowWearables(wearableModels);
+
+                return totalAmount;
             }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+            catch (Exception e) { Debug.LogException(e); }
+
+            return 0;
         }
 
         private void HandleWearableSelected(WearableGridItemModel wearableGridItem)
@@ -144,6 +172,18 @@ namespace DCL.Backpack
         private void HandleWearableEquipped(WearableGridItemModel wearableGridItem)
         {
             throw new NotImplementedException();
+        }
+
+        private void FilterWearablesFromBreadcrumb(string referencePath)
+        {
+            if (referencePath.StartsWith("all://"))
+            {
+                currentWearablePage = 0;
+                requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
+                ShowWearablesAndItsFilteringPath(currentWearablePage, requestWearablesCancellationToken.Token).Forget();
+            }
+            else if (referencePath.StartsWith("name://")) { throw new NotImplementedException(); }
+            else if (referencePath.StartsWith("category://")) { throw new NotImplementedException(); }
         }
     }
 }
