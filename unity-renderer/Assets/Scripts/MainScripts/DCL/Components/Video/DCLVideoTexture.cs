@@ -350,7 +350,7 @@ namespace DCL.Components
             if (RemoveReference(component))
             {
                 if (attachedEntitiesByComponent.Count == 0)
-                    Dispose();
+                    DisposeTexture();
             }
         }
 
@@ -363,9 +363,17 @@ namespace DCL.Components
         public override void Dispose()
         {
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
-            Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
+            base.Dispose();
+        }
+
+        protected override void DisposeTexture()
+        {
+            isInitialized = false;
+            textureDisposed = true;
+
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneNumber.OnChange -= OnSceneNumberChanged;
+            Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
 
             if (scene != null)
                 scene.OnEntityRemoved -= SetPlayStateDirty;
@@ -383,8 +391,6 @@ namespace DCL.Components
             }
 
             Utils.SafeDestroy(texture);
-            isInitialized = false;
-            base.Dispose();
         }
     }
 }

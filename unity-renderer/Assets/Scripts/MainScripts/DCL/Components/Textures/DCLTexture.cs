@@ -46,6 +46,7 @@ namespace DCL
         public Texture2D texture;
 
         protected bool isDisposed;
+        protected bool textureDisposed;
 
         public float resizingFactor => texturePromise?.asset.resizingFactor ?? 1;
 
@@ -126,6 +127,8 @@ namespace DCL
                     else
                         scene.contentProvider.TryGetContentsUrl(model.src, out contentsUrl);
 
+                    var prevPromise = texturePromise;
+
                     if (!string.IsNullOrEmpty(contentsUrl))
                     {
                         if (texturePromise != null)
@@ -138,6 +141,8 @@ namespace DCL
                         AssetPromiseKeeper_Texture.i.Keep(texturePromise);
                         yield return texturePromise;
                     }
+
+                    AssetPromiseKeeper_Texture.i.Forget(prevPromise);
                 }
             }
         }
@@ -152,7 +157,9 @@ namespace DCL
             if (RemoveReference(component))
             {
                 if (attachedEntitiesByComponent.Count == 0)
-                    Dispose();
+                {
+                    DisposeTexture();
+                }
             }
         }
 
@@ -200,8 +207,10 @@ namespace DCL
             base.Dispose();
         }
 
-        private void DisposeTexture()
+        protected virtual void DisposeTexture()
         {
+            textureDisposed = true;
+
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
@@ -242,9 +251,9 @@ namespace DCL
                 bool textureWasReLoaded = false;
 
                 // If texture was previously disposed we load it again
-                if (textureComponent.isDisposed)
+                if (textureComponent.textureDisposed)
                 {
-                    textureComponent.isDisposed = false;
+                    textureComponent.textureDisposed = false;
 
                     try
                     {
@@ -255,18 +264,16 @@ namespace DCL
                     catch (OperationCanceledException _)
                     {
                         textureComponent.DisposeTexture();
-                        textureComponent.isDisposed = true;
                     }
                 }
 
-                await UniTask.WaitUntil(() => textureComponent.texture != null, PlayerLoopTiming.Update, ct);
+                await UniTask.WaitUntil(() => textureComponent.texture, PlayerLoopTiming.Update, ct);
 
                 // We dispose texture was re-loaded but attachment
                 // was unsuccessful
                 if (!attachCallback(textureComponent) && textureWasReLoaded)
                 {
                     textureComponent.DisposeTexture();
-                    textureComponent.isDisposed = true;
                 }
 
                 cancellationTokenSource.Dispose();
