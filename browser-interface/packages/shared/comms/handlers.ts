@@ -31,7 +31,7 @@ import {
 } from './peers'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
-import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
+import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 
 type PingRequest = {
   alias: number
@@ -96,10 +96,10 @@ function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConn
 
   // when we are kicked, the explorer should re-load, or maybe go to offline~offline realm
   if (data.kicked) {
-    const error = new Error(
-      'Disconnected from realm as the user id is already taken. Please make sure you are not logged into the world through another tab'
+    BringDownClientAndShowError(
+      'Disconnected from realm as the user id is already taken.' +
+      'Please make sure you are not logged into the world through another tab'
     )
-    BringDownClientAndReportFatalError(error, ErrorContext.COMMS_INIT)
   }
 }
 
