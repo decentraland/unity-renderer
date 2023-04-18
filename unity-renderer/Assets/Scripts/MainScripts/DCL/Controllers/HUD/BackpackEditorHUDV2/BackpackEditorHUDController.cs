@@ -211,12 +211,12 @@ namespace DCL.Backpack
                     backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
                     dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
 
-                    WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
+                    userProfileBridge.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, dataStore.common.isSignUpFlow.Get());
                     ownUserProfile.OverrideAvatar(avatarModel, face256Snapshot);
 
-                    if (DataStore.i.common.isSignUpFlow.Get())
+                    if (dataStore.common.isSignUpFlow.Get())
                     {
-                        DataStore.i.HUDs.signupVisible.Set(true);
+                        dataStore.HUDs.signupVisible.Set(true);
                         backpackAnalyticsController.SendAvatarEditSuccessNuxAnalytic();
                     }
 
