@@ -28,7 +28,7 @@ import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
-import {getCurrentIdentity, isLoginCompleted} from 'shared/session/selectors'
+import {getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import { store } from 'shared/store/isolatedStore'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
@@ -452,7 +452,7 @@ function* handleAnnounceProfile() {
     if (!profile) continue
 
     // user is in the avatar creation screen
-    if(!isLoginCompleted(store.getState())) continue
+    if(!(yield select(isLoginCompleted))) continue
 
     if (reason.sendProfileToRenderer && profile.userId !== reason.sendProfileToRenderer.payload.userId) {
       // skip this process when sendProfileToRenderer is called for a different avatar
