@@ -14,6 +14,7 @@ import { RealmConnectionEvents, BffServices, IRealmAdapter } from '../types'
 import mitt from 'mitt'
 import { legacyServices } from '../local-services/legacy'
 import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
+import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
 
 export type TopicData = {
   peerId: string
@@ -38,6 +39,16 @@ async function authenticatePort(port: RpcClientPort, identity: ExplorerIdentity)
 
   const authChainJson = JSON.stringify(Authenticator.signPayload(identity, getChallengeResponse.challengeToSign))
   const authResponse: WelcomePeerInformation = await auth.authenticate({ authChainJson })
+
+  auth
+    .getDisconnectionMessage({})
+    .then(() => {
+      const error = new Error(
+        'Disconnected from realm as the user id is already taken. Please make sure you are not logged into the world through another tab'
+      )
+      BringDownClientAndReportFatalError(error, ErrorContext.COMMS_INIT)
+    })
+    .catch(console.error)
   return authResponse.peerId
 }
 
@@ -90,8 +101,7 @@ export class BffRpcConnection implements IRealmAdapter<any> {
     public port: RpcClientPort,
     public peerId: string
   ) {
-    port.on('close', async () => {
-      this.logger.log('BFF transport closed')
+    port.on('close', () => {
       this.disconnect().catch(this.logger.error)
     })
 
@@ -105,6 +115,7 @@ export class BffRpcConnection implements IRealmAdapter<any> {
     if (this.disposed) {
       return
     }
+    this.logger.log('BFF transport closed')
 
     this.disposed = true
 

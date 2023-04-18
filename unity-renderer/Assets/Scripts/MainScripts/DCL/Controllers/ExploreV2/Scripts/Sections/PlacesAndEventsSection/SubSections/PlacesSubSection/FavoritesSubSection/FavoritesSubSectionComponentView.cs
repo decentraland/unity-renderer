@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSubSectionComponentView
 {
@@ -40,11 +41,12 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
     public void SetAllAsLoading() => SetFavoritesAsLoading(true);
     public void SetShowMoreButtonActive(bool isActive) => SetShowMoreFavoritesButtonActive(isActive);
     public int CurrentTilesPerRow => currentFavoritePlacesPerRow;
+    public int CurrentGoingTilesPerRow { get; }
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
-    public event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
     public event Action<string, bool> OnFavoriteClicked;
+    public event Action<IHotScenesController.HotSceneInfo> OnJumpInClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnFavoriteSubSectionEnable;
     public event Action OnShowMoreFavoritesClicked;
@@ -55,7 +57,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
         favoritesCanvas = favorites.GetComponent<Canvas>();
     }
 
-    public override void Start()
+    public void Start()
     {
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
 

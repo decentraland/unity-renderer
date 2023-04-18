@@ -17,10 +17,10 @@ namespace DCL.Social.Chat
             ChatEntryFactory = chatEntryFactory;
         }
 
-        public override void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
+        public override void SetEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
         {
             AddSeparatorEntryIfNeeded(model);
-            base.AddEntry(model, setScrollPositionToBottom);
+            base.SetEntry(model, setScrollPositionToBottom);
         }
 
         public override void ClearAllEntries()

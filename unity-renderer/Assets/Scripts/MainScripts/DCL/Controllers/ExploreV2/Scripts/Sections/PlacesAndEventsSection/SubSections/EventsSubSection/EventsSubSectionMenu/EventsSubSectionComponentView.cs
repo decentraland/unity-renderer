@@ -42,6 +42,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal TMP_Text goingEventsNoDataText;
     [SerializeField] internal GameObject showMoreUpcomingEventsButtonContainer;
     [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
+    [SerializeField] internal GameObject showMoreGoingEventsButtonContainer;
+    [SerializeField] internal ButtonComponentView showMoreGoingEventsButton;
+    [SerializeField] internal GameObject guestGoingToPanel;
+    [SerializeField] internal ButtonComponentView connectWalletGuest;
 
     [SerializeField] private Canvas canvas;
 
@@ -57,15 +61,20 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private Canvas goingEventsCanvas;
 
     private bool isUpdatingCardsVisual;
+    private bool isGuest;
 
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
-
+    public int currentGoingEventsPerRow => goingEvents.currentItemsPerRow;
 
     public void SetAllAsLoading() => SetAllEventGroupsAsLoading();
 
     public void SetShowMoreButtonActive(bool isActive) => SetShowMoreUpcomingEventsButtonActive(isActive);
 
+    public void SetShowMoreGoingButtonActive(bool isActive) =>
+        SetShowMoreGoingEventsButtonActive(isActive);
+
     public int CurrentTilesPerRow => currentUpcomingEventsPerRow;
+    public int CurrentGoingTilesPerRow => currentGoingEventsPerRow;
 
     public event Action OnReady;
     public event Action<EventCardComponentModel> OnInfoClicked;
@@ -73,6 +82,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public event Action<string> OnSubscribeEventClicked;
     public event Action<string> OnUnsubscribeEventClicked;
     public event Action OnShowMoreUpcomingEventsClicked;
+    public event Action OnShowMoreGoingEventsClicked;
+    public event Action OnConnectWallet;
     public event Action OnEventsSubSectionEnable;
 
     public override void Awake()
@@ -81,9 +92,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         trendingEventsCanvas = trendingEvents.GetComponent<Canvas>();
         upcomingEventsCanvas = upcomingEvents.GetComponent<Canvas>();
         goingEventsCanvas = goingEvents.GetComponent<Canvas>();
+        guestGoingToPanel.SetActive(false);
     }
 
-    public override void Start()
+    public void Start()
     {
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
 
@@ -94,6 +106,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
         showMoreUpcomingEventsButton.onClick.AddListener(() => OnShowMoreUpcomingEventsClicked?.Invoke());
+        showMoreGoingEventsButton.onClick.RemoveAllListeners();
+        showMoreGoingEventsButton.onClick.AddListener(() => OnShowMoreGoingEventsClicked?.Invoke());
+        connectWalletGuest.onClick.RemoveAllListeners();
+        connectWalletGuest.onClick.AddListener(() => OnConnectWallet?.Invoke());
 
         OnReady?.Invoke();
     }
@@ -103,12 +119,18 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         OnEventsSubSectionEnable?.Invoke();
     }
 
+    public void SetIsGuestUser(bool isGuestUser)
+    {
+        isGuest = isGuestUser;
+    }
+
     public override void Dispose()
     {
         base.Dispose();
         cancellationTokenSource.Cancel();
 
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
+        showMoreGoingEventsButton.onClick.RemoveAllListeners();
 
         featuredEvents.Dispose();
         upcomingEvents.Dispose();
@@ -176,6 +198,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void SetShowMoreUpcomingEventsButtonActive(bool isActive) =>
         showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive);
 
+    public void SetShowMoreGoingEventsButtonActive(bool isActive) =>
+        showMoreGoingEventsButtonContainer.gameObject.SetActive(isActive);
+
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
@@ -194,8 +219,21 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void SetTrendingEvents(List<EventCardComponentModel> events) =>
         SetEvents(events, trendingEvents, trendingEventsCanvas, trendingEventCardsPool, trendingEventsLoading, trendingEventsNoDataText);
 
-    public void SetGoingEvents(List<EventCardComponentModel> events) =>
-        SetEvents(events, goingEvents, goingEventsCanvas, goingEventCardsPool, goingEventsLoading, goingEventsNoDataText);
+    public void SetGoingEvents(List<EventCardComponentModel> events)
+    {
+        if (isGuest)
+        {
+            goingEventsCanvas.gameObject.SetActive(false);
+            goingEventsLoading.SetActive(false);
+            guestGoingToPanel.SetActive(true);
+        }
+        else
+        {
+            goingEventsCanvas.gameObject.SetActive(true);
+            guestGoingToPanel.SetActive(false);
+            SetEvents(events, goingEvents, goingEventsCanvas, goingEventCardsPool, goingEventsLoading, goingEventsNoDataText);
+        }
+    }
 
     public void SetUpcomingEvents(List<EventCardComponentModel> events) =>
         SetEvents(events, upcomingEvents, upcomingEventsCanvas, upcomingEventCardsPool, upcomingEventsLoading, upcomingEventsNoDataText);
@@ -217,6 +255,12 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void AddUpcomingEvents(List<EventCardComponentModel> events)
     {
         cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, upcomingEvents, upcomingEventCardsPool, cancellationTokenSource.Token));
+        UpdateCardsVisual();
+    }
+
+    public void AddGoingEvents(List<EventCardComponentModel> events)
+    {
+        cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, goingEvents, goingEventCardsPool, cancellationTokenSource.Token));
         UpdateCardsVisual();
     }
 

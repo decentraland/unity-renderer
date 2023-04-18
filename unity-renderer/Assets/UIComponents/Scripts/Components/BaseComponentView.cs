@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 namespace UIComponents.Scripts.Components
 {
     public abstract class BaseComponentView<TModel> : BaseComponentView, IBaseComponentView<TModel>
-        where TModel : IEquatable<TModel>, new()
+        where TModel: IEquatable<TModel>, new()
     {
         [field: SerializeField]
         protected TModel model { get; private set; } = new ();
@@ -68,7 +68,7 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void OnLoseFocus();
 }
 
-public interface IComponentModelConfig<T> where T : BaseComponentModel
+public interface IComponentModelConfig<T> where T: BaseComponentModel
 {
     /// <summary>
     /// Fill the model and updates the component with this data.
@@ -79,14 +79,23 @@ public interface IComponentModelConfig<T> where T : BaseComponentModel
 
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
-    internal BaseComponentModel baseModel;
     public ShowHideAnimator showHideAnimator;
 
+    internal BaseComponentModel baseModel;
+    private bool isDestroyed;
+
     public virtual bool isVisible { get; private set; }
-    protected bool isDestroyed = false;
+    public bool isFocused { get; private set; }
 
     public event Action<bool> onFocused;
-    public bool isFocused { get; private set; }
+
+    public virtual void Dispose()
+    {
+        DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
+
+        if (!isDestroyed && gameObject)
+            Destroy(gameObject);
+    }
 
     public virtual void Awake()
     {
@@ -94,13 +103,21 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         DataStore.i.screen.size.OnChange += OnScreenSizeModified;
     }
 
-    public virtual void OnEnable() { StartCoroutine(RaiseOnScreenSizeChangedAfterDelay()); }
+    public virtual void OnEnable()
+    {
+        StartCoroutine(RaiseOnScreenSizeChangedAfterDelay());
+    }
 
-    public virtual void OnDisable() { OnLoseFocus(); }
+    public virtual void OnDisable()
+    {
+        OnLoseFocus();
+    }
 
-    public virtual void Start() { }
-
-    public virtual void Update() { }
+    private void OnDestroy()
+    {
+        isDestroyed = true;
+        Dispose();
+    }
 
     public abstract void RefreshControl();
 
@@ -136,25 +153,17 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void OnScreenSizeChanged() { }
 
-    public virtual void Dispose()
+    public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
-
-        if (!isDestroyed && gameObject)
-            Destroy(gameObject);
+        OnFocus();
     }
 
-    public virtual void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
-
-    public virtual void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
-
-    private void OnDestroy()
+    public virtual void OnPointerExit(PointerEventData eventData)
     {
-        isDestroyed = true;
-        Dispose();
+        OnLoseFocus();
     }
 
-    internal void OnScreenSizeModified(Vector2Int current, Vector2Int previous)
+    private void OnScreenSizeModified(Vector2Int current, Vector2Int previous)
     {
         if (!gameObject.activeInHierarchy)
             return;
@@ -162,13 +171,13 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         StartCoroutine(RaiseOnScreenSizeChangedAfterDelay());
     }
 
-    internal IEnumerator RaiseOnScreenSizeChangedAfterDelay()
+    private IEnumerator RaiseOnScreenSizeChangedAfterDelay()
     {
         yield return null;
         OnScreenSizeChanged();
     }
 
-    public static T Create<T>(string resourceName) where T : BaseComponentView
+    public static T Create<T>(string resourceName) where T: BaseComponentView
     {
         T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
         return buttonComponentView;

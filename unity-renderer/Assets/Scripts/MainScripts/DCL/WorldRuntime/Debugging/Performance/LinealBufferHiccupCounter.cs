@@ -2,66 +2,77 @@
 {
     public class LinealBufferHiccupCounter
     {
-        private readonly LinealBufferFPSCounter counter = new LinealBufferFPSCounter();
-        private int hiccupsCountInBuffer = 0;
-        private float hiccupsSum = 0.0f;
-        private float bufferCount = 0.0f;
+        private readonly LinealBufferFPSCounter counter;
 
-        public int HiccupsCountInBuffer
-        {
-            get => hiccupsCountInBuffer;
-            private set => hiccupsCountInBuffer = value;
-        }
+        public int HiccupsCountInBuffer { get; private set; }
+        public float HiccupsSum { get; private set; }
+        public float TotalSeconds { get; private set; }
 
-        public float HiccupsSum
+        public LinealBufferHiccupCounter(int bufferSize)
         {
-            get => hiccupsSum;
-            set => hiccupsSum = value;
-        }
-
-        public float CurrentFPSCount()
-        {
-            return counter.CurrentFPSCount();
-        }
-
-        public float GetTotalSeconds()
-        {
-            return bufferCount;
+            counter = new LinealBufferFPSCounter(bufferSize);
         }
 
         public void AddDeltaTime(float valueInSeconds)
         {
-            if (IsHiccup(counter.values[counter.end]))
+            if (IsHiccup(counter.Values[counter.Tail]))
             {
-                hiccupsCountInBuffer -= 1;
-                hiccupsSum -= counter.values[counter.end];
+                HiccupsCountInBuffer -= 1;
+                HiccupsSum -= counter.Values[counter.Tail];
             }
 
             if (IsHiccup(valueInSeconds))
             {
-                hiccupsCountInBuffer += 1;
-                hiccupsSum += valueInSeconds;
+                HiccupsCountInBuffer += 1;
+                HiccupsSum += valueInSeconds;
             }
 
-            bufferCount -= counter.values[counter.end];
-            bufferCount += valueInSeconds;
+            TotalSeconds -= counter.Values[counter.Tail];
+            TotalSeconds += valueInSeconds;
 
             counter.AddDeltaTime(valueInSeconds);
         }
 
-        public int CurrentHiccupCount()
-        {
-            return hiccupsCountInBuffer;
-        }
+        public static bool IsHiccup(float value) =>
+            value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
 
-        private bool IsHiccup(float value)
+        private class LinealBufferFPSCounter
         {
-            return value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
-        }
+            public readonly float[] Values;
+            private readonly int maxBufferSize;
 
-        public float GetHiccupSum()
-        {
-            return hiccupsSum;
+            private int head;
+            private float secondsBetweenHeadAndTail;
+
+            public int Tail { get; private set; }
+
+            public LinealBufferFPSCounter(int bufferSize)
+            {
+                Values = new float[bufferSize];
+                maxBufferSize = bufferSize;
+            }
+
+            public void AddDeltaTime(float valueInSeconds)
+            {
+                Values[Tail] = valueInSeconds;
+
+                Tail = CircularIncrement(Tail);
+
+                AdjustHeadPosition(valueInSeconds);
+            }
+
+            private void AdjustHeadPosition(float valueInSeconds)
+            {
+                secondsBetweenHeadAndTail += valueInSeconds;
+                while (secondsBetweenHeadAndTail > 1)
+                {
+                    secondsBetweenHeadAndTail -= Values[head];
+                    head = CircularIncrement(head);
+                }
+            }
+
+            private int CircularIncrement(int id) =>
+                id == maxBufferSize - 1 ? 0 : id + 1;
         }
     }
 }

@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using JetBrains.Annotations;
 using System.Threading;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ public class HUDBridge : MonoBehaviour
         public string extraPayload;
     }
 
+    [UsedImplicitly]
     public void ConfigureHUDElement(string payload)
     {
         ConfigureHUDElementMessage message = JsonUtility.FromJson<ConfigureHUDElementMessage>(payload);
@@ -73,11 +75,8 @@ public class HUDBridge : MonoBehaviour
 
     public void ShowAvatarEditorInSignUp()
     {
-        if (HUDController.i.avatarEditorHud != null)
-        {
-            DataStore.i.common.isSignUpFlow.Set(true);
-            HUDController.i.avatarEditorHud?.SetVisibility(true);
-        }
+        DataStore.i.common.isSignUpFlow.Set(true);
+        DataStore.i.HUDs.avatarEditorVisible.Set(true, true);
     }
 
     #endregion

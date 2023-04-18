@@ -1,4 +1,5 @@
 using UnityEngine;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public interface IMapDataView
 {
@@ -6,6 +7,6 @@ public interface IMapDataView
     string name { get; }
     string creator { get; }
     string description { get; }
-    void SetMinimapSceneInfo(HotScenesController.HotSceneInfo sceneInfo);
+    void SetMinimapSceneInfo(IHotScenesController.HotSceneInfo sceneInfo);
     bool ContainCoords(Vector2Int coords);
 }

@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -41,6 +40,21 @@ namespace DCL.Providers
         {
             // This function does nothing if initialization has already occurred
             await Addressables.InitializeAsync().WithCancellation(cancellationToken);
+
+            // T should be an asset type, component is not accepted
+            if (typeof(Component).IsAssignableFrom(typeof(T)))
+            {
+                // load as GameObject instead as it is the root type
+                var goRequest = Addressables.LoadAssetAsync<GameObject>(key);
+                await goRequest.WithCancellation(cancellationToken);
+
+                var component = goRequest.Result.GetComponent<T>();
+
+                if (component == null)
+                    throw new InvalidKeyException($"GameObject {key} does not contain the component of the requested type {typeof(T)}");
+
+                return component;
+            }
 
             AsyncOperationHandle<T> request = Addressables.LoadAssetAsync<T>(key);
             await request.WithCancellation(cancellationToken);

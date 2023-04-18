@@ -1,14 +1,16 @@
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
+using System.Collections.Generic;
 
 namespace DCL.ECSRuntime
 {
     public class ECSComponentsManager
     {
-        private readonly IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders;
         internal readonly KeyValueSet<int, IECSComponent> loadedComponents = new KeyValueSet<int, IECSComponent>();
         internal readonly IList<IECSComponentsGroup> componentsGroups = new List<IECSComponentsGroup>();
+        internal readonly Dictionary<IDCLEntity, List<IECSComponentsGroup>> entitiesGroups =
+            new Dictionary<IDCLEntity, List<IECSComponentsGroup>>();
+        private readonly IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders;
 
         public ECSComponentsManager(IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders)
         {
@@ -55,20 +57,12 @@ namespace DCL.ECSRuntime
         public IECSComponent GetOrCreateComponent(int componentId, IParcelScene scene, IDCLEntity entity)
         {
             IECSComponent component = GetOrCreateComponent(componentId);
+
             if (component == null || component.HasComponent(scene, entity))
                 return component;
 
             component.Create(scene, entity);
-
-            for (int i = 0; i < componentsGroups.Count; i++)
-            {
-                IECSComponentsGroup compGroup = componentsGroups[i];
-                if (compGroup.Match(component) && compGroup.Match(scene, entity))
-                {
-                    compGroup.Add(scene, entity);
-                }
-            }
-
+            SetGroupsOnComponentCreated(component, scene, entity, componentsGroups, entitiesGroups);
             return component;
         }
 
@@ -100,14 +94,7 @@ namespace DCL.ECSRuntime
             if (!component.Remove(scene, entity))
                 return false;
 
-            for (int i = 0; i < componentsGroups.Count; i++)
-            {
-                IECSComponentsGroup compGroup = componentsGroups[i];
-                if (compGroup.Match(component))
-                {
-                    compGroup.Remove(entity);
-                }
-            }
+            SetGroupsOnComponentRemoved(component, scene, entity, componentsGroups, entitiesGroups);
 
             return true;
         }
@@ -120,14 +107,20 @@ namespace DCL.ECSRuntime
         public void RemoveAllComponents(IParcelScene scene, IDCLEntity entity)
         {
             int count = loadedComponents.Count;
+
             for (int i = 0; i < count; i++)
             {
                 loadedComponents.Pairs[i].value.Remove(scene, entity);
             }
 
-            for (int i = 0; i < componentsGroups.Count; i++)
+            if (entitiesGroups.TryGetValue(entity, out List<IECSComponentsGroup> entityInGroups))
             {
-                componentsGroups[i].Remove(entity);
+                for (int i = 0; i < entityInGroups.Count; i++)
+                {
+                    entityInGroups[i].Remove(entity);
+                }
+
+                entitiesGroups.Remove(entity);
             }
         }
 
@@ -140,6 +133,7 @@ namespace DCL.ECSRuntime
         public bool HasAnyComponent(IParcelScene scene, IDCLEntity entity)
         {
             int count = loadedComponents.Count;
+
             for (int i = 0; i < count; i++)
             {
                 if (loadedComponents.Pairs[i].value.HasComponent(scene, entity))
@@ -147,6 +141,7 @@ namespace DCL.ECSRuntime
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -163,6 +158,151 @@ namespace DCL.ECSRuntime
             var compGroup = new ECSComponentsGroup<T1, T2>(GetOrCreateComponent(componentId1), GetOrCreateComponent(componentId2));
             componentsGroups.Add(compGroup);
             return compGroup;
+        }
+
+        /// <summary>
+        /// creates a components group
+        /// </summary>
+        /// <param name="componentId1">id of one of the components</param>
+        /// <param name="componentId2">id of the other component</param>
+        /// <param name="componentId3">id of the other component</param>
+        /// <typeparam name="T1">model type of `componentId1`</typeparam>
+        /// <typeparam name="T2">model type of `componentId2`</typeparam>
+        /// <typeparam name="T3">model type of `componentId3`</typeparam>
+        /// <returns></returns>
+        public IECSReadOnlyComponentsGroup<T1, T2, T3> CreateComponentGroup<T1, T2, T3>(int componentId1, int componentId2, int componentId3)
+        {
+            var compGroup = new ECSComponentsGroup<T1, T2, T3>(
+                GetOrCreateComponent(componentId1),
+                GetOrCreateComponent(componentId2),
+                GetOrCreateComponent(componentId3));
+
+            componentsGroups.Add(compGroup);
+            return compGroup;
+        }
+
+        /// <summary>
+        /// creates a components group of components without `excludeComponentId`
+        /// </summary>
+        /// <param name="componentId">id of component that must be present</param>
+        /// <param name="excludeComponentId">id of component that must not be present</param>
+        /// <typeparam name="T1">type of component that must be present</typeparam>
+        /// <returns></returns>
+        public IECSReadOnlyComponentsGroup<T1> CreateComponentGroupWithoutComponent<T1>(int componentId, int excludeComponentId)
+        {
+            var compGroup = new ECSComponentsGroupWithout<T1>(GetOrCreateComponent(componentId),
+                GetOrCreateComponent(excludeComponentId));
+
+            componentsGroups.Add(compGroup);
+            return compGroup;
+        }
+
+        /// <summary>
+        /// creates a components group of components without `excludeComponentId`
+        /// </summary>
+        /// <param name="componentId1">id of component that must be present</param>
+        /// <param name="componentId2">id of component that must be present</param>
+        /// <param name="excludeComponentId">id of component that must not be present</param>
+        /// <typeparam name="T1">model type of `componentId1`</typeparam>
+        /// <typeparam name="T2">model type of `componentId2`</typeparam>
+        /// <returns></returns>
+        public IECSReadOnlyComponentsGroup<T1, T2> CreateComponentGroupWithoutComponent<T1, T2>(int componentId1, int componentId2, int excludeComponentId)
+        {
+            var compGroup = new ECSComponentsGroupWithout<T1, T2>(
+                GetOrCreateComponent(componentId1),
+                GetOrCreateComponent(componentId2),
+                GetOrCreateComponent(excludeComponentId));
+
+            componentsGroups.Add(compGroup);
+            return compGroup;
+        }
+
+        private static void SetGroupsOnComponentCreated(IECSComponent component, IParcelScene scene, IDCLEntity entity,
+            IList<IECSComponentsGroup> componentsGroups, IDictionary<IDCLEntity, List<IECSComponentsGroup>> entitiesGroups)
+        {
+            List<IECSComponentsGroup> entityInGroups = null;
+
+            if (entitiesGroups.TryGetValue(entity, out entityInGroups))
+            {
+                for (int i = entityInGroups.Count - 1; i >= 0; i--)
+                {
+                    IECSComponentsGroup compGroup = entityInGroups[i];
+
+                    if (compGroup.ShouldRemoveOnComponentAdd(component))
+                    {
+                        compGroup.Remove(entity);
+                        entityInGroups.RemoveAt(i);
+                    }
+                }
+
+                if (entityInGroups.Count == 0)
+                {
+                    entitiesGroups.Remove(entity);
+                    entityInGroups = null;
+                }
+            }
+
+            for (int i = 0; i < componentsGroups.Count; i++)
+            {
+                IECSComponentsGroup compGroup = componentsGroups[i];
+
+                if (compGroup.ShouldAddOnComponentAdd(component) && compGroup.MatchEntity(scene, entity))
+                {
+                    compGroup.Add(scene, entity);
+
+                    if (entityInGroups == null)
+                    {
+                        entityInGroups = new List<IECSComponentsGroup>();
+                        entitiesGroups[entity] = entityInGroups;
+                    }
+
+                    entityInGroups.Add(compGroup);
+                }
+            }
+        }
+
+        private static void SetGroupsOnComponentRemoved(IECSComponent component, IParcelScene scene, IDCLEntity entity,
+            IList<IECSComponentsGroup> componentsGroups, Dictionary<IDCLEntity, List<IECSComponentsGroup>> entitiesGroups)
+        {
+            List<IECSComponentsGroup> entityInGroups = null;
+
+            if (entitiesGroups.TryGetValue(entity, out entityInGroups))
+            {
+                for (int i = entityInGroups.Count - 1; i >= 0; i--)
+                {
+                    IECSComponentsGroup compGroup = entityInGroups[i];
+
+                    if (compGroup.ShouldRemoveOnComponentRemove(component))
+                    {
+                        compGroup.Remove(entity);
+                        entityInGroups.RemoveAt(i);
+                    }
+                }
+
+                if (entityInGroups.Count == 0)
+                {
+                    entitiesGroups.Remove(entity);
+                    entityInGroups = null;
+                }
+            }
+
+            for (int i = 0; i < componentsGroups.Count; i++)
+            {
+                IECSComponentsGroup compGroup = componentsGroups[i];
+
+                if (compGroup.ShouldAddOnComponentRemove(component) && compGroup.MatchEntity(scene, entity))
+                {
+                    compGroup.Add(scene, entity);
+
+                    if (entityInGroups == null)
+                    {
+                        entityInGroups = new List<IECSComponentsGroup>();
+                        entitiesGroups[entity] = entityInGroups;
+                    }
+
+                    entityInGroups.Add(compGroup);
+                }
+            }
         }
     }
 }

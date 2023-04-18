@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
@@ -40,10 +41,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void SetAllAsLoading() => SetPlacesAsLoading(true);
     public void SetShowMoreButtonActive(bool isActive) => SetShowMorePlacesButtonActive(isActive);
     public int CurrentTilesPerRow => currentPlacesPerRow;
+    public int CurrentGoingTilesPerRow { get; }
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
-    public event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
+    public event Action<IHotScenesController.HotSceneInfo> OnJumpInClicked;
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
@@ -55,7 +57,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         placesCanvas = places.GetComponent<Canvas>();
     }
 
-    public override void Start()
+    public void Start()
     {
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
 

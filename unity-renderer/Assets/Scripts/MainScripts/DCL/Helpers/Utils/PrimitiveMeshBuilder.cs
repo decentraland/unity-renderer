@@ -9,16 +9,16 @@ namespace DCL.Helpers
 {
     public class PrimitiveMeshBuilder
     {
-        public static Mesh BuildSphere(float radius)
+        public static Mesh BuildSphere(float radius, int longitude = 24, int latitude = 16)
         {
             Mesh mesh = new Mesh();
             mesh.name = "DCL Sphere";
 
             //float radius = 1f;
             // Longitude |||
-            int nbLong = 24;
+            int nbLong = longitude;
             // Latitude ---
-            int nbLat = 16;
+            int nbLat = latitude;
 
             #region Vertices
 
@@ -206,7 +206,7 @@ namespace DCL.Helpers
             mesh.triangles = tris;
             return mesh;
         }
-        
+
         // Creates a two-sided quad (clockwise)
         public static Mesh BuildPlaneV2(float _size)
         {

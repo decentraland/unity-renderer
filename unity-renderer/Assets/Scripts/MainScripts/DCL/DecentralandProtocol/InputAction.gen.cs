@@ -31,10 +31,12 @@ namespace DCL.ECSComponents {
             "QVJEEAQSDwoLSUFfQkFDS1dBUkQQBRIMCghJQV9SSUdIVBAGEgsKB0lBX0xF",
             "RlQQBxILCgdJQV9KVU1QEAgSCwoHSUFfV0FMSxAJEg8KC0lBX0FDVElPTl8z",
             "EAoSDwoLSUFfQUNUSU9OXzQQCxIPCgtJQV9BQ1RJT05fNRAMEg8KC0lBX0FD",
-            "VElPTl82EA1CFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "VElPTl82EA0qVgoQUG9pbnRlckV2ZW50VHlwZRIKCgZQRVRfVVAQABIMCghQ",
+            "RVRfRE9XThABEhMKD1BFVF9IT1ZFUl9FTlRFUhACEhMKD1BFVF9IT1ZFUl9M",
+            "RUFWRRADQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.InputAction), }, null, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.InputAction), typeof(global::DCL.ECSComponents.PointerEventType), }, null, null));
     }
     #endregion
 
@@ -55,6 +57,16 @@ namespace DCL.ECSComponents {
     [pbr::OriginalName("IA_ACTION_4")] IaAction4 = 11,
     [pbr::OriginalName("IA_ACTION_5")] IaAction5 = 12,
     [pbr::OriginalName("IA_ACTION_6")] IaAction6 = 13,
+  }
+
+  /// <summary>
+  /// PointerEventType is a kind of interaction that can be detected.
+  /// </summary>
+  public enum PointerEventType {
+    [pbr::OriginalName("PET_UP")] PetUp = 0,
+    [pbr::OriginalName("PET_DOWN")] PetDown = 1,
+    [pbr::OriginalName("PET_HOVER_ENTER")] PetHoverEnter = 2,
+    [pbr::OriginalName("PET_HOVER_LEAVE")] PetHoverLeave = 3,
   }
 
   #endregion
