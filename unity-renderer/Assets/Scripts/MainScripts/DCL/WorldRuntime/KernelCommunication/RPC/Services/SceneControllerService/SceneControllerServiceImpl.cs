@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
+using Decentraland.Sdk.Ecs6;
 
 namespace RPC.Services
 {
@@ -276,43 +277,201 @@ namespace RPC.Services
             return result;
         }
 
-        
         public async UniTask<SendBatchResponse> SendBatch(SendBatchRequest request, RPCContext context, CancellationToken ct)
-        {
+        {   
+            CRDTServiceContext crdtContext = context.crdt;
             await UniTask.SwitchToMainThread(ct);
 
-            // switch (request.type) { 
-            //     case EntityActionType.EAT_UPDATE_ENTITY_COMPONENT:
-            //     {
-            //         var delayedComponent;
-            //         switch (request.payload.componentDataCase) {
-            //                 case ComponentData.ComponetDataOneofCase.BoxShape:
-            //                     delayedComponent = request.payload.componentUpdate.componentData.boxShape;
-            //                     // delayedComponent = object {
-            //                     //     withCollisions: false,
-            //                     //     visible: true,
-            //                     //     uvs: []
-            //                     // }
-            //         }
+            try
+            {
+                foreach(var action in request.Actions) {
+                    QueuedSceneMessage_Scene queuedMessage = new QueuedSceneMessage_Scene();
+                    queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
+                    queuedMessage.sceneNumber = sceneNumber;
+                    queuedMessage.tag = action.Tag;
+                    
+                    switch (action.Payload.PayloadCase) {
+                        
+                        case EntityActionPayload.PayloadOneofCase.InitMessagesFinished:
+                            queuedMessage.method = MessagingTypes.INIT_DONE;
+                            queuedMessage.payload = new Protocol.SceneReady();
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
 
-            //         break;
-            //     }
-            //     case EntityActionType.EAT_COMPONENT_UPDATE:
-            //     {
-            //         // we have the COMPONENT id
-            //         var componentId = request.payload.id;
-            //         // at some point we need creating this function getClassIdFromComponentId
-            //         var classId = getClassIdFromComponentId(componentId);
 
-            //         // in this case i don't how tot get .boxSHape property
-            //         var delayedComponent = request.payload.componentUpdate.componentData.boxShape;
-                   
+                        case EntityActionPayload.PayloadOneofCase.OpenExternalUrl:
+                            queuedMessage.method = MessagingTypes.OPEN_EXTERNAL_URL;
+                            queuedMessage.payload = new Protocol.OpenExternalUrl() {url = action.Payload.OpenExternalUrl.Url};
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
 
-            //         break;
-            //     }
-            // }
+                        case EntityActionPayload.PayloadOneofCase.OpenNftDialog:
+                            queuedMessage.method = MessagingTypes.OPEN_NFT_DIALOG;
+                            queuedMessage.payload = new Protocol.OpenNftDialog()
+                                {
+                                    contactAddress = action.Payload.OpenNftDialog.AssetContractAddress, 
+                                    comment = action.Payload.OpenNftDialog.Comment,
+                                    tokenId = action.Payload.OpenNftDialog.TokenId
+                                };
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.CreateEntity:
+                            queuedMessage.method = MessagingTypes.ENTITY_CREATE;
+                            queuedMessage.payload = new Protocol.CreateEntity() {entityId = action.Payload.CreateEntity.Id};
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.RemoveEntity:
+                            queuedMessage.method = MessagingTypes.ENTITY_DESTROY;
+                            queuedMessage.payload = new Protocol.RemoveEntity() {entityId = action.Payload.RemoveEntity.Id};
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.AttachEntityComponent:
+                            queuedMessage.method = MessagingTypes.SHARED_COMPONENT_ATTACH;
+                            queuedMessage.payload = new Protocol.SharedComponentAttach() 
+                                {
+                                    entityId = action.Payload.AttachEntityComponent.EntityId, 
+                                    id = action.Payload.AttachEntityComponent.Id, 
+                                    name = action.Payload.AttachEntityComponent.Name
+                                };
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.ComponentRemoved:
+                            queuedMessage.method = MessagingTypes.ENTITY_COMPONENT_DESTROY;
+                            queuedMessage.payload = new Protocol.EntityComponentDestroy() {entityId = action.Payload.ComponentRemoved.EntityId, name = action.Payload.ComponentRemoved.Name};
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.SetEntityParent:
+                            queuedMessage.method = MessagingTypes.ENTITY_REPARENT;
+                            queuedMessage.payload = new Protocol.SetEntityParent() {entityId = action.Payload.SetEntityParent.EntityId, parentId = action.Payload.SetEntityParent.ParentId};
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.Query:
+                            // queuedMessage.method = MessagingTypes.QUERY;
+                            // queuedMessage.payload = action.Payload.Query;
+                            // crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.ComponentCreated:
+                            queuedMessage.method = MessagingTypes.SHARED_COMPONENT_CREATE;
+                            queuedMessage.payload =  new Protocol.SharedComponentCreate() {
+                                id = action.Payload.ComponentCreated.Id, 
+                                classId = action.Payload.ComponentCreated.ClassId, 
+                                name = action.Payload.ComponentCreated.Name
+                            };
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.ComponentDisposed:
+                            queuedMessage.method = MessagingTypes.SHARED_COMPONENT_DISPOSE;
+                            queuedMessage.payload = new Protocol.SharedComponentDispose() {id = action.Payload.ComponentDisposed.Id};
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        // This has changed!
+                        case EntityActionPayload.PayloadOneofCase.UpdateEntityComponent:
+                            queuedMessage.method = MessagingTypes.PB_ENTITY_COMPONENT_CREATE_OR_UPDATE;
+                            queuedMessage.payload = action.Payload.UpdateEntityComponent;
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+
+                        case EntityActionPayload.PayloadOneofCase.ComponentUpdated:
+                            queuedMessage.method = MessagingTypes.PB_SHARED_COMPONENT_UPDATE;
+                            queuedMessage.payload = action.Payload.ComponentUpdated;
+                            crdtContext.SceneController.EnqueueSceneMessage(queuedMessage);
+                            break;
+                    }
+            
+                }            
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
 
             return defaultSendBatchResult;
         }
+
+        // private static object ComponentModelFromPayload(ComponentBodyPayload payload) {
+        //     switch (payload.PayloadCase) {
+        //         case ComponentBodyPayload.PayloadOneofCase.AvatarModifierArea: return payload.AvatarModifierArea;
+        //         case ComponentBodyPayload.PayloadOneofCase.Transform: return payload.Transform;
+        //         case ComponentBodyPayload.PayloadOneofCase.AttachToAvatar: return payload.AttachToAvatar;
+        //         case ComponentBodyPayload.PayloadOneofCase.Billboard: return payload.Billboard;
+        //         case ComponentBodyPayload.PayloadOneofCase.BoxShape: return payload.BoxShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.SphereShape: return payload.SphereShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.CircleShape: return payload.CircleShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.PlaneShape: return payload.PlaneShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.ConeShape: return payload.ConeShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.CylinderShape: return payload.CylinderShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.GltfShape: return payload.GltfShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.NftShape: return payload.NftShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.Texture: return payload.Texture;
+        //         case ComponentBodyPayload.PayloadOneofCase.Animator: return payload.Animator;
+        //         case ComponentBodyPayload.PayloadOneofCase.ObjShape: return payload.ObjShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.Font: return payload.Font;
+        //         case ComponentBodyPayload.PayloadOneofCase.TextShape: return payload.TextShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.Material: return payload.Material;
+        //         case ComponentBodyPayload.PayloadOneofCase.BasicMaterial: return payload.BasicMaterial;
+        //         case ComponentBodyPayload.PayloadOneofCase.UuidCallback: return payload.UuidCallback;
+        //         case ComponentBodyPayload.PayloadOneofCase.SmartItem: return payload.SmartItem;
+        //         case ComponentBodyPayload.PayloadOneofCase.VideoClip: return payload.VideoClip;
+        //         case ComponentBodyPayload.PayloadOneofCase.VideoTexture: return payload.VideoTexture;
+        //         case ComponentBodyPayload.PayloadOneofCase.CameraModeArea: return payload.CameraModeArea;
+        //         case ComponentBodyPayload.PayloadOneofCase.AvatarTexture: return payload.AvatarTexture;
+        //         case ComponentBodyPayload.PayloadOneofCase.AudioClip: return payload.AudioClip;
+        //         case ComponentBodyPayload.PayloadOneofCase.AudioSource: return payload.AudioSource;
+        //         case ComponentBodyPayload.PayloadOneofCase.AudioStream: return payload.AudioStream;
+        //         case ComponentBodyPayload.PayloadOneofCase.AvatarShape: return payload.AvatarShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.Gizmos: return payload.Gizmos;
+        //         case ComponentBodyPayload.PayloadOneofCase.UiShape: return payload.UiShape;
+        //         case ComponentBodyPayload.PayloadOneofCase.UiContainerRect: return payload.UiContainerRect;
+        //         case ComponentBodyPayload.PayloadOneofCase.UiContainerStack: return payload.UiContainerStack;
+        //         case ComponentBodyPayload.PayloadOneofCase.UiButton: return payload.UiButton;
+        //         case ComponentBodyPayload.PayloadOneofCase.UiText: return payload.UiText;
+        //         case ComponentBodyPayload.PayloadOneofCase.UiInputText: return payload.UiInputText;
+        //         case ComponentBodyPayload.PayloadOneofCase.UiImage: return payload.UiImage;
+        //         case ComponentBodyPayload.PayloadOneofCase.UiScrollRect: return payload.UiScrollRect;
+        //     }
+        //     return null;
+        // }
     }
 }
+
+
+
+// switch (request.type) { 
+//     case EntityActionType.EAT_UPDATE_ENTITY_COMPONENT:
+//     {
+//         var delayedComponent;
+//         switch (request.payload.componentDataCase) {
+//                 case ComponentData.ComponetDataOneofCase.BoxShape:
+//                     delayedComponent = request.payload.componentUpdate.componentData.boxShape;
+//                     // delayedComponent = object {
+//                     //     withCollisions: false,
+//                     //     visible: true,
+//                     //     uvs: []
+//                     // }
+//         }
+
+//         break;
+//     }
+//     case EntityActionType.EAT_COMPONENT_UPDATE:
+//     {
+//         // we have the COMPONENT id
+//         var componentId = request.payload.id;
+//         // at some point we need creating this function getClassIdFromComponentId
+//         var classId = getClassIdFromComponentId(componentId);
+
+//         // in this case i don't how tot get .boxSHape property
+//         var delayedComponent = request.payload.componentUpdate.componentData.boxShape;
+        
+
+//         break;
+//     }
+// }

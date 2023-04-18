@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -17,6 +18,12 @@ namespace DCL.Components
             public Color color = Color.clear;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public override string referencesContainerPrefabName => "UIContainerRect";

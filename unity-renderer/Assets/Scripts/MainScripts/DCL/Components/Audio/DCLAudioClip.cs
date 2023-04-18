@@ -3,6 +3,7 @@ using System.Collections;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -19,6 +20,12 @@ namespace DCL.Components
             public double volume = 1f;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public AudioClip audioClip;

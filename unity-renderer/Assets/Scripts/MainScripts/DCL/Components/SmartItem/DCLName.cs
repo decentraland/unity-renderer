@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 /// <summary>
 /// This component is a descriptive name of the Entity. In the BuilderInWorld you can give an entity a descriptive name through the entity list.
@@ -21,6 +22,12 @@ public class DCLName : BaseDisposable
         public string builderValue;
 
         public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+        
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
     }
 
     public DCLName() { model = new Model(); }

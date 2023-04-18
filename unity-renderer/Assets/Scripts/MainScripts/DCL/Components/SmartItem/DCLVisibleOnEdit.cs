@@ -6,6 +6,7 @@ using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 /// <summary>
 /// This component describes the visibility of the Entity in the builder in world.
@@ -19,6 +20,12 @@ public class DCLVisibleOnEdit : BaseDisposable
         public bool isVisible;
 
         public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+        
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
     }
 
     public DCLVisibleOnEdit() { model = new Model(); }

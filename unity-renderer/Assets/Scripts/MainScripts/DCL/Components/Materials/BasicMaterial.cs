@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -23,6 +24,12 @@ namespace DCL.Components
             public bool castShadows = true;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public Material material;

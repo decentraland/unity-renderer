@@ -5,6 +5,7 @@ using UnityEngine;
 using DCL.Models;
 using DCL.SettingsCommon;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -21,6 +22,12 @@ namespace DCL.Components
             public long playedAtTimestamp = 0;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public float playTime => audioSource.time;

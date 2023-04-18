@@ -6,6 +6,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -27,6 +28,11 @@ namespace DCL.Components
             {
                 return Utils.SafeFromJson<Model>(json);
             }
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         private static CameraModeAreasController areasController { get; } = new CameraModeAreasController();
@@ -49,6 +55,13 @@ namespace DCL.Components
 
         string IComponent.componentName => "CameraModeArea";
 
+
+        
+        public void UpdateFromPb(object payload)
+        {
+            OnModelUpdated(areaModel.GetDataFromPb(payload as ComponentBodyPayload) as Model);
+        }
+        
         void IComponent.UpdateFromJSON(string json)
         {
             OnModelUpdated(areaModel.GetDataFromJSON(json) as Model);

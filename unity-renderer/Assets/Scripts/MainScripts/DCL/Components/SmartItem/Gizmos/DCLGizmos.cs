@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -26,6 +27,12 @@ namespace DCL.Components
             public bool localReference = false;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         private void Awake() { model = new Model(); }

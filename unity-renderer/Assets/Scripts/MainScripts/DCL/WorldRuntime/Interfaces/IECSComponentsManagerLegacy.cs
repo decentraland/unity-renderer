@@ -41,6 +41,7 @@ namespace DCL
         void SceneSharedComponentDispose(string id);
         ISharedComponent SceneSharedComponentUpdate(string id, BaseModel model);
         ISharedComponent SceneSharedComponentUpdate(string id, string json);
+        ISharedComponent SceneSharedComponentUpdate(string id, object payload);
         void EntityComponentRemove(long entityId, string name);
         void DisposeAllSceneComponents();
     }

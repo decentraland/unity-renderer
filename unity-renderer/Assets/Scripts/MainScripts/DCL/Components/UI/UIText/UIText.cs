@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -49,6 +50,12 @@ namespace DCL.Components
 
                 return model;
             }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public override string referencesContainerPrefabName => "UIText";

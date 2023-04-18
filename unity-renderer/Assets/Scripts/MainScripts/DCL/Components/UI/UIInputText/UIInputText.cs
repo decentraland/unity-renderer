@@ -4,6 +4,7 @@ using System.Collections;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -49,6 +50,12 @@ namespace DCL.Components
                 Model model = Utils.SafeFromJson<Model>(json);
                 return model;
             }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public override string referencesContainerPrefabName => "UIInputText";

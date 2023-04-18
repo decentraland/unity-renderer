@@ -3,6 +3,7 @@ using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 [Serializable]
 public class AvatarModel : BaseModel
@@ -112,5 +113,8 @@ public class AvatarModel : BaseModel
     }
 
     public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<AvatarModel>(json); }
+    public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+        return Utils.SafeUnimplemented<AvatarModel>();
+    }
 
 }

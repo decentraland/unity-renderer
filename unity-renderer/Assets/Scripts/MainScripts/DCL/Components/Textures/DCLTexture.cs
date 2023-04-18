@@ -7,6 +7,7 @@ using DCL.Helpers;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL
 {
@@ -21,6 +22,12 @@ namespace DCL
             public bool hasAlpha = false;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public enum BabylonWrapMode

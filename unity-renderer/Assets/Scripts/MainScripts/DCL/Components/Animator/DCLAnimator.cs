@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 using DCL.Controllers;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -33,6 +34,10 @@ namespace DCL.Components
             public DCLAnimationState[] states;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
         }
 
         [System.NonSerialized]

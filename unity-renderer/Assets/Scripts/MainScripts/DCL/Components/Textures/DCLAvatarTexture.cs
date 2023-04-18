@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using DCL;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -44,6 +45,12 @@ namespace DCL.Components
         {
             public string userId;
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<AvatarModel>(json); }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public DCLAvatarTexture() { 

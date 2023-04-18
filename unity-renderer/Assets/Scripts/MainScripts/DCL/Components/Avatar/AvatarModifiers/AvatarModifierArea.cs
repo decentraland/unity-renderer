@@ -7,6 +7,7 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 public class AvatarModifierArea : BaseComponent
 {
@@ -22,6 +23,10 @@ public class AvatarModifierArea : BaseComponent
         {
             return Utils.SafeFromJson<Model>(json);
         }
+        public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+            return Utils.SafeUnimplemented<Model>();
+        }
+
     }
 
     private Model cachedModel = new Model();

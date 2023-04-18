@@ -7,6 +7,7 @@ using DCL.Helpers;
 using DCL.Models;
 using DCL.Rendering;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL
 {
@@ -429,6 +430,8 @@ namespace DCL
 
                     if (data is string json)
                         targetComponent.UpdateFromJSON(json);
+                    else if (data is Decentraland.Sdk.Ecs6.ComponentBodyPayload payload)
+                        targetComponent.UpdateFromPb(payload);
                     else
                         targetComponent.UpdateFromModel(data as BaseModel);
 
@@ -498,6 +501,17 @@ namespace DCL
             if (disposableComponents.TryGetValue(id, out ISharedComponent disposableComponent))
             {
                 disposableComponent.UpdateFromJSON(json);
+                return disposableComponent;
+            }
+
+            return null;
+        }
+
+        public ISharedComponent SceneSharedComponentUpdate(string id, object payload)
+        {
+            if (disposableComponents.TryGetValue(id, out ISharedComponent disposableComponent))
+            {
+                disposableComponent.UpdateFromPb(payload as ComponentBodyPayload);
                 return disposableComponent;
             }
 

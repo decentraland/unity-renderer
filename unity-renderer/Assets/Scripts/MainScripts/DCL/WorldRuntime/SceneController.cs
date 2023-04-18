@@ -249,6 +249,18 @@ namespace DCL
                             break;
                         }
 
+                    case MessagingTypes.PB_ENTITY_COMPONENT_CREATE_OR_UPDATE:
+                        {
+                            if (msgPayload is Decentraland.Sdk.Ecs6.UpdateEntityComponentBody payload)
+                            {
+                                delayedComponent = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
+                                    entityIdHelper.EntityFromLegacyEntityString(payload.EntityId),
+                                    (CLASS_ID_COMPONENT) payload.ClassId, payload.ComponentData) as IDelayedComponent;
+                            }
+
+                            break;
+                        }
+
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                         {
                             if (msgPayload is Protocol.EntityComponentDestroy payload)
@@ -288,12 +300,19 @@ namespace DCL
                             if (msgPayload is Protocol.SharedComponentUpdate payload)
                                 delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.componentId, payload.json) as IDelayedComponent;
 
-                            // delayedComponent = object {
-                            //     withCollisions: 
-                            //     uvs: []
-                            // }
                             break;
                         }
+
+                    case MessagingTypes.PB_SHARED_COMPONENT_UPDATE:
+                        {
+                            if (msgPayload is Decentraland.Sdk.Ecs6.ComponentUpdatedBody payload)
+                            {
+                                delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.Id, payload.ComponentData) as IDelayedComponent;
+                            }
+
+                            break;
+                        }
+
 
                     case MessagingTypes.ENTITY_DESTROY:
                         {

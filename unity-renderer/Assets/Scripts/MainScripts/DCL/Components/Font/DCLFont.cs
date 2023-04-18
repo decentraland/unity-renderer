@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Models;
 using TMPro;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -35,6 +36,12 @@ namespace DCL.Components
             public string src;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public bool loaded { private set; get; } = false;

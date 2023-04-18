@@ -3,6 +3,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -20,6 +21,32 @@ namespace DCL.Components
                 DCLTransformUtils.DecodeTransform(json, ref DCLTransform.model);
                 return DCLTransform.model;
             }
+
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                if (pbModel.PayloadCase == ComponentBodyPayload.PayloadOneofCase.Transform) {
+                    return new Model() {
+                        rotation = new Quaternion() { 
+                            x = pbModel.Transform.Rotation.X,
+                            y = pbModel.Transform.Rotation.Y,
+                            z = pbModel.Transform.Rotation.Z,
+                            w = pbModel.Transform.Rotation.W,
+                        },
+                        scale = new Vector3() { 
+                            x = pbModel.Transform.Scale.X,
+                            y = pbModel.Transform.Scale.Y,
+                            z = pbModel.Transform.Scale.Z
+                        },
+                        position = new Vector3() { 
+                            x = pbModel.Transform.Position.X,
+                            y = pbModel.Transform.Position.Y,
+                            z = pbModel.Transform.Position.Z
+                        }
+                    };
+                }
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
         
         public static Model model = new Model();
@@ -40,6 +67,13 @@ namespace DCL.Components
         public void UpdateFromJSON(string json)
         {
             model.GetDataFromJSON(json);
+            UpdateFromModel(model);
+        }
+
+        
+        public void UpdateFromPb(object payload)
+        {
+            model.GetDataFromPb(payload as ComponentBodyPayload);
             UpdateFromModel(model);
         }
 

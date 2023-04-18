@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -36,6 +37,8 @@ namespace DCL.Components
         }
 
         public virtual void UpdateFromJSON(string json) { UpdateFromModel(model.GetDataFromJSON(json)); }
+
+        public virtual void UpdateFromPb(object payload) { UpdateFromModel(model.GetDataFromPb(payload as Decentraland.Sdk.Ecs6.ComponentBodyPayload)); }
 
         public virtual void UpdateFromModel(BaseModel newModel)
         {

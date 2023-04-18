@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -16,6 +17,11 @@ namespace DCL.Components
             public Dictionary<object, object> values = new Dictionary<object, object>();
 
             public override BaseModel GetDataFromJSON(string json) { return JsonConvert.DeserializeObject<Model>(json); }
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         public override void Initialize(IParcelScene scene, IDCLEntity entity)

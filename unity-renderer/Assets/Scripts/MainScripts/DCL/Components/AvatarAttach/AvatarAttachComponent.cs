@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -19,6 +20,11 @@ namespace DCL.Components
             {
                 return Utils.SafeFromJson<Model>(json);
             }
+            
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                return Utils.SafeUnimplemented<Model>();
+            }
+
         }
 
         IParcelScene IComponent.scene => handler.scene;
@@ -38,6 +44,11 @@ namespace DCL.Components
         BaseModel IComponent.GetModel() => handler.model;
 
         int IComponent.GetClassId() => (int)CLASS_ID_COMPONENT.AVATAR_ATTACH;
+
+        void IComponent.UpdateFromPb(object payload)
+        {
+            handler.OnModelUpdated(handler.model.GetDataFromPb(payload as ComponentBodyPayload) as Model);
+        }
 
         void IComponent.UpdateFromJSON(string json)
         {

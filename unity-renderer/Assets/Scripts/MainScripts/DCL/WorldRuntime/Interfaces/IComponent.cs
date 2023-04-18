@@ -9,6 +9,7 @@ namespace DCL.Components
         string componentName { get; }
         void UpdateFromJSON(string json);
         void UpdateFromModel(BaseModel model);
+        void UpdateFromPb(object model);
         IEnumerator ApplyChanges(BaseModel model);
         void RaiseOnAppliedChanges();
         bool IsValid();
