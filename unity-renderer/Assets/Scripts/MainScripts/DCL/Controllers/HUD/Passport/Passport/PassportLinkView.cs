@@ -11,7 +11,7 @@ public class PassportLinkView : BaseComponentView
     public event Action<string> OnClickLink;
     private string link;
 
-    public override void Start()
+    public void Start()
     {
         clickLinkButton.onClick.RemoveAllListeners();
         clickLinkButton.onClick.AddListener(() => OnClickLink?.Invoke(link));

@@ -1,0 +1,40 @@
+{
+    "name": "MapRendererV2Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:d0d87470ef1844e08586dabeb6d672bd",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:5c01796d064528144a599661eaab93a6",
+        "GUID:b8662e798190944f4b638fbeb48e84f0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:c44f6fd10d3d94432a107d581e0096b5",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:1320d33ea2522ba4e8e60cf9e6a351dd",
+        "GUID:c34e38f41494f834abff029ddf82af43",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:0e967802b778d404eac1ca5ea340e290",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:ca4a649888a64e2e9da36b8fb694230b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

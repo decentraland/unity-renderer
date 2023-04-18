@@ -28,14 +28,13 @@ namespace AvatarSystem
 
         public IAvatar CreateAvatarWithHologram(
             GameObject avatarContainer,
-            Transform avatarRevealContainer,
-            GameObject armatureContainer,
+            IBaseAvatar baseAvatar,
             IAnimator animator,
             ILOD lod,
             IVisibility visibility
         ) =>
             new AvatarWithHologram(
-                new BaseAvatar(avatarRevealContainer, armatureContainer, lod),
+                baseAvatar,
                 CreateAvatarCurator(),
                 CreateLoader(avatarContainer),
                 animator,

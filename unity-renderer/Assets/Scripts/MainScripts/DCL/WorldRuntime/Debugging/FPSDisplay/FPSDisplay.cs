@@ -26,7 +26,7 @@ namespace DCL.FPSDisplay
         private void Awake()
         {
             containerStartAnchoredPosition = container.anchoredPosition;
-            
+
             sceneDebugMetricModule = new SceneDebugMetricModule();
             debugMetricsModules = new List<IDebugMetricModule>
             {
@@ -37,6 +37,7 @@ namespace DCL.FPSDisplay
                 new GeneralDebugMetricModule(),
                 sceneDebugMetricModule
             };
+
             updateValueDictionary = new Dictionary<DebugValueEnum, Func<string>>();
             foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
             {
@@ -57,10 +58,10 @@ namespace DCL.FPSDisplay
             {
                 debugMetricsModule.EnableModule();
             }
-            
+
             StartCoroutine(UpdateLabelLoop());
         }
-        
+
         private void OnDisable()
         {
             foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
@@ -69,14 +70,14 @@ namespace DCL.FPSDisplay
             }
             StopAllCoroutines();
         }
- 
+
         private IEnumerator UpdateLabelLoop()
         {
             while (performanceData.Get().totalSeconds <= 0)
             {
                 yield return null;
             }
-            
+
             while (true)
             {
                 foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
@@ -93,7 +94,7 @@ namespace DCL.FPSDisplay
                 yield return new WaitForSeconds(REFRESH_SECONDS);
             }
         }
-       
+
         private void OnDestroy()
         {
             closeButton.onClick.RemoveAllListeners();

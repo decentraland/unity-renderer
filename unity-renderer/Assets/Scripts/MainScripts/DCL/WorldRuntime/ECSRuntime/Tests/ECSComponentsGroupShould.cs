@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace Tests
 {
@@ -63,6 +63,7 @@ namespace Tests
                             () => Substitute.For<IECSComponentHandler<Comp4>>())
                     },
                 };
+
             componentsManager = new ECSComponentsManager(factory);
         }
 
@@ -151,7 +152,7 @@ namespace Tests
             Assert.AreEqual(entity1Comp3Value, compGroup.group[1].componentData1.model.value);
             Assert.AreEqual(entity1Comp4Value, compGroup.group[1].componentData2.model.value);
         }
-        
+
         [Test]
         public void RemoveEntityFromGroupCorrectly()
         {
@@ -179,15 +180,288 @@ namespace Tests
             componentsManager.RemoveComponent((int)CompId.Comp2, scene0, entity0);
             Assert.AreEqual(1, compGroup.group.Count);
             Assert.AreEqual(entity1, compGroup.group[0].entity);
-            
+
             // re-add component to `entity0`
             componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity0);
             Assert.AreEqual(2, compGroup.group.Count);
-            
+
             // remove all components from `entity1`
             componentsManager.RemoveAllComponents(scene0, entity1);
             Assert.AreEqual(1, compGroup.group.Count);
             Assert.AreEqual(entity0, compGroup.group[0].entity);
-        }        
+        }
+
+        [Test]
+        public void AssignEntityGroupCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup0 = componentsManager.CreateComponentGroupWithoutComponent<Comp1>((int)CompId.Comp1,
+                (int)CompId.Comp4);
+
+            var compGroup1 = componentsManager.CreateComponentGroup<Comp1, Comp4>((int)CompId.Comp1, (int)CompId.Comp4);
+
+            // add components to match `compGroup1`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp4, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp3, scene0, entity0);
+
+            Assert.AreEqual(1, componentsManager.entitiesGroups[entity0].Count);
+            Assert.AreEqual(compGroup1, componentsManager.entitiesGroups[entity0][0]);
+
+            // remove component to match `compGroup0` and unmatch `compGroup1`
+            componentsManager.RemoveComponent((int)CompId.Comp4, scene0, entity0);
+
+            Assert.AreEqual(1, componentsManager.entitiesGroups[entity0].Count);
+            Assert.AreEqual(compGroup0, componentsManager.entitiesGroups[entity0][0]);
+
+            // remove component to unmatch `compGroup0`
+            componentsManager.RemoveComponent((int)CompId.Comp1, scene0, entity0);
+            Assert.IsFalse(componentsManager.entitiesGroups.ContainsKey(entity0));
+
+            // add components to match `compGroup1`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp4, scene0, entity0);
+
+            Assert.AreEqual(1, componentsManager.entitiesGroups[entity0].Count);
+            Assert.AreEqual(compGroup1, componentsManager.entitiesGroups[entity0][0]);
+
+            // remove all components
+            componentsManager.RemoveAllComponents(scene0, entity0);
+            Assert.IsFalse(componentsManager.entitiesGroups.ContainsKey(entity0));
+        }
+
+        [Test]
+        public void AddToComponentGroupTripleCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+            IDCLEntity entity1 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+            entity1.entityId.Returns(1);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroup<Comp1, Comp2, Comp3>((int)CompId.Comp1, (int)CompId.Comp2, (int)CompId.Comp3);
+
+            // add some components for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity0);
+            Assert.AreEqual(0, compGroup.group.Count);
+
+            // add other components for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp3, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+
+            // add components for `entity1`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity1);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity1);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp3, scene0, entity1);
+            Assert.AreEqual(2, compGroup.group.Count);
+        }
+
+        [Test]
+        public void RemoveFormComponentGroupTripleCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+            IDCLEntity entity1 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+            entity1.entityId.Returns(1);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroup<Comp1, Comp2, Comp3>((int)CompId.Comp1, (int)CompId.Comp2, (int)CompId.Comp3);
+
+            // add components for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp3, scene0, entity0);
+
+            // add components for `entity1`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity1);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity1);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp3, scene0, entity1);
+
+            Assert.AreEqual(2, compGroup.group.Count);
+
+            // remove from `entity0`
+            componentsManager.RemoveComponent((int)CompId.Comp2, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+
+            // remove from `entity1`
+            componentsManager.RemoveComponent((int)CompId.Comp3, scene0, entity1);
+            Assert.AreEqual(0, compGroup.group.Count);
+        }
+
+        [Test]
+        public void AddToComponentGroupWithoutSingleOnComponentAddCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroupWithoutComponent<Comp1>((int)CompId.Comp1,
+                (int)CompId.Comp4);
+
+            // component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+        }
+
+        [Test]
+        public void RemoveFromComponentGroupWithoutSingleOnComponentAddCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroupWithoutComponent<Comp1>((int)CompId.Comp1,
+                (int)CompId.Comp4);
+
+            // component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+
+            // excluded component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp4, scene0, entity0);
+            Assert.AreEqual(0, compGroup.group.Count);
+        }
+
+        [Test]
+        public void AddToComponentGroupWithoutSingleOnComponentRemoveCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroupWithoutComponent<Comp1>((int)CompId.Comp1,
+                (int)CompId.Comp4);
+
+            // component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp4, scene0, entity0);
+            Assert.AreEqual(0, compGroup.group.Count);
+
+            // excluded component for `entity0`
+            componentsManager.RemoveComponent((int)CompId.Comp4, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+        }
+
+        [Test]
+        public void RemoveComponentGroupWithoutSingleOnComponentRemoveCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroupWithoutComponent<Comp1>((int)CompId.Comp1,
+                (int)CompId.Comp4);
+
+            // component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+
+            // remove component for `entity0`
+            componentsManager.RemoveComponent((int)CompId.Comp1, scene0, entity0);
+            Assert.AreEqual(0, compGroup.group.Count);
+        }
+
+        [Test]
+        public void AddToComponentGroupWithoutCoupleOnComponentAddCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroupWithoutComponent<Comp1, Comp2>((int)CompId.Comp1,
+                (int)CompId.Comp2, (int)CompId.Comp4);
+
+            // component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+        }
+
+        [Test]
+        public void RemoveFromComponentGroupWithoutCoupleOnComponentAddCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroupWithoutComponent<Comp1, Comp2>((int)CompId.Comp1,
+                (int)CompId.Comp2, (int)CompId.Comp4);
+
+            // component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+
+            // excluded component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp4, scene0, entity0);
+            Assert.AreEqual(0, compGroup.group.Count);
+        }
+
+        [Test]
+        public void AddToComponentGroupWithoutCoupleOnComponentRemoveCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroupWithoutComponent<Comp1, Comp2>((int)CompId.Comp1,
+                (int)CompId.Comp2, (int)CompId.Comp4);
+
+            // component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp4, scene0, entity0);
+            Assert.AreEqual(0, compGroup.group.Count);
+
+            // excluded component for `entity0`
+            componentsManager.RemoveComponent((int)CompId.Comp4, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+        }
+
+        [Test]
+        public void RemoveComponentGroupWithoutCoupleOnComponentRemoveCorrectly()
+        {
+            IParcelScene scene0 = Substitute.For<IParcelScene>();
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+
+            entity0.entityId.Returns(0);
+
+            // create components group
+            var compGroup = componentsManager.CreateComponentGroupWithoutComponent<Comp1, Comp2>((int)CompId.Comp1,
+                (int)CompId.Comp2, (int)CompId.Comp4);
+
+            // component for `entity0`
+            componentsManager.GetOrCreateComponent((int)CompId.Comp1, scene0, entity0);
+            componentsManager.GetOrCreateComponent((int)CompId.Comp2, scene0, entity0);
+            Assert.AreEqual(1, compGroup.group.Count);
+
+            // remove component for `entity0`
+            componentsManager.RemoveComponent((int)CompId.Comp1, scene0, entity0);
+            Assert.AreEqual(0, compGroup.group.Count);
+        }
     }
 }

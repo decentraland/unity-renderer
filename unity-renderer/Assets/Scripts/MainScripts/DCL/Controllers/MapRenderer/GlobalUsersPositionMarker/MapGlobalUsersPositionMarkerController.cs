@@ -1,9 +1,11 @@
-﻿using System;
+﻿using MainScripts.DCL.Controllers.HotScenes;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
 {
+    [Obsolete("MapRenderer")]
     public class MapGlobalUsersPositionMarkerController : IDisposable
     {
         private const float UPDATE_INTERVAL_INITIAL = 10f;
@@ -74,7 +76,7 @@ namespace DCL
             userPositionHandler.Dispose();
         }
 
-        private void OnScenesFetched(List<HotScenesController.HotSceneInfo> sceneList) { markersHandler.SetMarkers(sceneList); }
+        private void OnScenesFetched(List<IHotScenesController.HotSceneInfo> sceneList) { markersHandler.SetMarkers(sceneList); }
 
         private void OnPlayerCoordsChanged(Vector2Int coords) { markersHandler.SetExclusionArea(coords, commsRadius); }
 

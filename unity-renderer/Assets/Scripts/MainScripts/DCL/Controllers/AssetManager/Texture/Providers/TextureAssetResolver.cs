@@ -23,7 +23,8 @@ namespace DCL
             this.providers = providers;
         }
 
-        public async UniTask<TextureResponse> GetTextureAsync(AssetSource permittedSources, string url, int maxTextureSize, CancellationToken cancellationToken = default)
+        public async UniTask<TextureResponse> GetTextureAsync(AssetSource permittedSources, string url, int maxTextureSize, bool linear = false, bool useGPUCopy = true,
+            CancellationToken cancellationToken = default)
         {
             Exception lastException = null;
             Texture2D texture = null;
@@ -74,7 +75,7 @@ namespace DCL
 
             if (texture)
             {
-                var clampedTexture = TextureHelpers.ClampSize(texture, maxTextureSize, useGPUCopy: false);
+                var clampedTexture = TextureHelpers.ClampSize(texture, maxTextureSize, linear: linear, useGPUCopy: useGPUCopy);
 
                 var resizingFactor = Mathf.Min(1,
                     TextureHelpers.GetScalingFactor(texture.width, texture.height, maxTextureSize));

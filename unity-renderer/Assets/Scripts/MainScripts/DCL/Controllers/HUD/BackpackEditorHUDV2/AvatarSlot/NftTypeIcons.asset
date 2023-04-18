@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38bd1e786cdc141fc864382cc7f1ad97, type: 3}
+  m_Name: NftTypeIcons
+  m_EditorClassIdentifier: 
+  nftIcons:
+  - key: eyes
+    value: {fileID: 21300000, guid: b90a97a10e3a7452988bced1ec1aaf84, type: 3}
+  - key: mouth
+    value: {fileID: 21300000, guid: 866efedbbcc38498f9e6136d65695c9c, type: 3}
+  - key: eyebrows
+    value: {fileID: 21300000, guid: 84c790cbe3a484378906dc785b6c5995, type: 3}
+  - key: hair
+    value: {fileID: 21300000, guid: 946f30660ef2f4261b313ca749c4127c, type: 3}
+  - key: upper_body
+    value: {fileID: 21300000, guid: ddce90606ec7d4e5d820390fe246a91b, type: 3}
+  - key: lower_body
+    value: {fileID: 21300000, guid: d4ee93e9eb8464972b0fd5598a452f50, type: 3}
+  - key: feet
+    value: {fileID: 21300000, guid: c1bf499699a424df88aa013bd2f32b68, type: 3}
+  - key: head
+    value: {fileID: 21300000, guid: 30c54e14722864c70a0e8c28edc2f7e6, type: 3}
+  - key: facial_hair
+    value: {fileID: 21300000, guid: 06cdeba19874e4ee38010ed40544559d, type: 3}
+  - key: tiara
+    value: {fileID: 21300000, guid: 4454cae867deb4aea91f4d26c5bc88b1, type: 3}
+  - key: hat
+    value: {fileID: 21300000, guid: 2de957f05cca04e4aac38646afee2263, type: 3}
+  - key: helmet
+    value: {fileID: 21300000, guid: 15c0a1185bb524f0c9d7b118e081501f, type: 3}
+  - key: skin
+    value: {fileID: 21300000, guid: 0bfef183260d34c50b8d971b1400499e, type: 3}
+  - key: mask
+    value: {fileID: 21300000, guid: 90e673ad913664a27b245b61ccdf31bf, type: 3}
+  - key: eyewear
+    value: {fileID: 21300000, guid: 18cc300911ff74c3c922eb3a9b346f3c, type: 3}
+  - key: top_head
+    value: {fileID: 21300000, guid: 17e4c961a88d74262a222ea008152618, type: 3}
+  - key: earring
+    value: {fileID: 21300000, guid: 4a803782af3694d97b17f31e269c04d1, type: 3}
+  - key: emote
+    value: {fileID: 21300000, guid: 05bc7d6b12857fb4b9b7634bf2a4f440, type: 3}
+  - key: bodyshape
+    value: {fileID: 21300000, guid: 7df132fb4eb304d619c7dd33841261a1, type: 3}

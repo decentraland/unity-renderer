@@ -2,7 +2,6 @@ using AvatarSystem;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
-using DCL.Emotes;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
@@ -11,12 +10,15 @@ using DCL.Social.Chat;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using System.Collections.Generic;
-using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -28,11 +30,12 @@ namespace DCL
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
 
-            //Addressable Resource Provider
+            // Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
             // Platform
+            result.Register<IProfilerRecordsService>(() => new ProfilerRecordsService());
             result.Register<IMemoryManager>(() => new MemoryManager());
             result.Register<ICullingController>(CullingController.Create);
             result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
@@ -45,6 +48,7 @@ namespace DCL
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
+                new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             ));
             result.Register<IServiceProviders>(() => new ServiceProviders());
@@ -72,6 +76,7 @@ namespace DCL
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
+
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables, result.Get<ILambdasService>()),
                 WebInterfaceWearablesCatalogService.Instance,
@@ -101,9 +106,19 @@ namespace DCL
                 { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
             }, DataStore.i.featureFlags));
 
+            // Map
+            result.Register<IHotScenesFetcher>(() => new HotScenesFetcher(60f, 60f * 5f));
+
+            const int ATLAS_CHUNK_SIZE = 1020;
+            const int PARCEL_SIZE = 20;
+            // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
+            const float CULLING_BOUNDS_IN_PARCELS = 10;
+
+            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory(PARCEL_SIZE, ATLAS_CHUNK_SIZE, CULLING_BOUNDS_IN_PARCELS)));
+
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));
-            result.Register<IHUDController>(() => new HUDController(result.Get<IWearablesCatalogService>(), DataStore.i));
+            result.Register<IHUDController>(() => new HUDController(DataStore.i));
 
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
