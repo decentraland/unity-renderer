@@ -131,15 +131,14 @@ public class AvatarEditorHUDController : IHUD
     {
         EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.Ref.GetEmbeddedEmotes();
 
-        emotesCustomizationComponentController = CreateEmotesController();
-        IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(
+        emotesCustomizationComponentController = new EmotesCustomizationComponentController(
             DataStore.i.emotesCustomization,
             DataStore.i.emotes,
             DataStore.i.exploreV2,
-            DataStore.i.HUDs);
+            DataStore.i.HUDs,
+            view.emotesSection.transform);
         //Initialize with embedded emotes
         emotesCustomizationComponentController.SetEmotes(embeddedEmotesSo.emotes);
-        emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
 
         emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange += HandleEmotesCostumizationSelection;
@@ -1168,8 +1167,6 @@ public class AvatarEditorHUDController : IHUD
 
         analytics.SendAnalytic(EQUIP_WEARABLE_METRIC, data);
     }
-
-    internal virtual IEmotesCustomizationComponentController CreateEmotesController() => new EmotesCustomizationComponentController();
 
     private bool IsWearableUpdateInCooldown()
     {
