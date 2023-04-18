@@ -21,7 +21,7 @@ public class Bootstrapper : MonoBehaviour
         switch (currentPlatform)
         {
             case Platform.WebGL:
-                rendererData.depthPrimingMode = DepthPrimingMode.Auto;
+                rendererData.depthPrimingMode = DepthPrimingMode.Disabled;
                 Instantiate(webGLPrefab);
                 break;
             case Platform.Desktop:
@@ -35,8 +35,10 @@ public class Bootstrapper : MonoBehaviour
     private void Awake()
     {
 #if UNITY_WEBGL
+        rendererData.depthPrimingMode = DepthPrimingMode.Disabled;
         Instantiate(webGLPrefab);
 #else
+        rendererData.depthPrimingMode = DepthPrimingMode.Auto;
         Instantiate(desktopPrefab);
 #endif
     }
