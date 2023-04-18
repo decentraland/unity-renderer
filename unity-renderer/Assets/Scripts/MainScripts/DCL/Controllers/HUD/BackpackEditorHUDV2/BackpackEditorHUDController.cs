@@ -15,7 +15,7 @@ namespace DCL.Backpack
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly BackpackEmotesSectionController backpackEmotesSectionController;
-        private readonly BackpackAnalytics backpackAnalytics;
+        private readonly BackpackAnalyticsController backpackAnalyticsController;
         private readonly BackpackEditorHUDModel model = new ();
         private bool avatarIsDirty;
 
@@ -26,7 +26,7 @@ namespace DCL.Backpack
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
             BackpackEmotesSectionController backpackEmotesSectionController,
-            BackpackAnalytics backpackAnalytics)
+            BackpackAnalyticsController backpackAnalyticsController)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -34,7 +34,7 @@ namespace DCL.Backpack
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
             this.backpackEmotesSectionController = backpackEmotesSectionController;
-            this.backpackAnalytics = backpackAnalytics;
+            this.backpackAnalyticsController = backpackAnalyticsController;
 
             ownUserProfile.OnUpdate += LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
@@ -208,7 +208,7 @@ namespace DCL.Backpack
 
                     avatarModel.emotes = emoteEntries;
 
-                    backpackAnalytics.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
+                    backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
                     dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
 
                     WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
@@ -217,7 +217,7 @@ namespace DCL.Backpack
                     if (DataStore.i.common.isSignUpFlow.Get())
                     {
                         DataStore.i.HUDs.signupVisible.Set(true);
-                        backpackAnalytics.SendAvatarEditSuccessNuxAnalytics();
+                        backpackAnalyticsController.SendAvatarEditSuccessNuxAnalytic();
                     }
 
                     avatarIsDirty = false;

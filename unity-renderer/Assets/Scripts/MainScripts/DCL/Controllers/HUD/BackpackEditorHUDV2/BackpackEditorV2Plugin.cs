@@ -20,7 +20,7 @@ namespace DCL.Backpack
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
 
-            var backpackAnalytics = new BackpackAnalytics(
+            var backpackAnalyticsController = new BackpackAnalyticsController(
                 Environment.i.platform.serviceProviders.analytics,
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>());
@@ -32,7 +32,7 @@ namespace DCL.Backpack
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 backpackEmotesSectionController,
-                backpackAnalytics);
+                backpackAnalyticsController);
         }
 
         public void Dispose()

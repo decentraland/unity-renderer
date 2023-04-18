@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DCL.Backpack
 {
-    public class BackpackAnalytics
+    public class BackpackAnalyticsController
     {
         private const string EQUIP_WEARABLE_METRIC = "equip_wearable";
 
@@ -11,7 +11,7 @@ namespace DCL.Backpack
         private readonly INewUserExperienceAnalytics newUserExperienceAnalytics;
         private readonly IWearablesCatalogService wearablesCatalogService;
 
-        public BackpackAnalytics(
+        public BackpackAnalyticsController(
             IAnalytics analytics,
             INewUserExperienceAnalytics newUserExperienceAnalytics,
             IWearablesCatalogService wearablesCatalogService)
@@ -23,18 +23,18 @@ namespace DCL.Backpack
 
         public void SendNewEquippedWearablesAnalytics(List<string> oldWearables, List<string> newWearables)
         {
-            foreach (string t in newWearables)
+            foreach (string newWearable in newWearables)
             {
-                if (oldWearables.Contains(t))
+                if (oldWearables.Contains(newWearable))
                     continue;
 
-                wearablesCatalogService.WearablesCatalog.TryGetValue(t, out WearableItem newEquippedEmote);
+                wearablesCatalogService.WearablesCatalog.TryGetValue(newWearable, out WearableItem newEquippedEmote);
                 if (newEquippedEmote != null && !newEquippedEmote.IsEmote())
                     SendEquipWearableAnalytic(newEquippedEmote);
             }
         }
 
-        public void SendAvatarEditSuccessNuxAnalytics() =>
+        public void SendAvatarEditSuccessNuxAnalytic() =>
             newUserExperienceAnalytics.AvatarEditSuccessNux();
 
         private void SendEquipWearableAnalytic(WearableItem equippedWearable)
