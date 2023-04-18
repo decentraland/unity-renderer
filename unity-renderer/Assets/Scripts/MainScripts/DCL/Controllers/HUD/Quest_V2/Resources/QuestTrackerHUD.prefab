@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 8278114066472325544}
   - component: {fileID: 269540385008896160}
   - component: {fileID: 2940456320096999484}
+  - component: {fileID: 5711544432530060729}
   m_Layer: 5
   m_Name: QuestTrackerHUD
   m_TagString: Untagged
@@ -243,6 +244,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5711544432530060729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525154057530514719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb412b97cfe7248a296250e83bbade80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
+  stepsContainer: {fileID: 6954257778057539821}
+  stepPrefab: {fileID: 8907287150945557451, guid: 190afcea4c25a4839abf1d0a44649ef6,
+    type: 3}
 --- !u!1 &8842063447752759835
 GameObject:
   m_ObjectHideFlags: 0
