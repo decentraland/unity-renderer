@@ -60,7 +60,6 @@ MonoBehaviour:
   disableSceneDependencies: 0
   componentFactory: {fileID: 11400000, guid: 6710053fa2d5d5446b6a599e0e003053, type: 2}
   logWs: 1
-  rendererData: {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
 --- !u!1 &3966731394931121075
 GameObject:
   m_ObjectHideFlags: 0

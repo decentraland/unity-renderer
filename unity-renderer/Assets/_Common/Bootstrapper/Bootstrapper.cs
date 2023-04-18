@@ -5,6 +5,8 @@ public class Bootstrapper : MonoBehaviour
 {
     [SerializeField] private GameObject webGLPrefab;
     [SerializeField] private GameObject desktopPrefab;
+    [SerializeField]private UniversalRendererData rendererData = null;
+
 
 #if UNITY_EDITOR
     private enum Platform
@@ -14,7 +16,6 @@ public class Bootstrapper : MonoBehaviour
     }
 
     [SerializeField] private Platform currentPlatform;
-    [SerializeField]private UniversalRendererData rendererData = null;
 
     private void Awake()
     {
