@@ -1,9 +1,11 @@
+using DCL.Interface;
 using DCLServices.WearablesCatalogService;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Backpack
 {
-    public class BackpackEditorHUDController : IHUD
+    public class BackpackEditorHUDController
     {
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
@@ -13,6 +15,7 @@ namespace DCL.Backpack
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly BackpackEmotesSectionController backpackEmotesSectionController;
+        private readonly BackpackAnalytics backpackAnalytics;
         private readonly BackpackEditorHUDModel model = new ();
         private bool avatarIsDirty;
 
@@ -22,7 +25,8 @@ namespace DCL.Backpack
             RendererState rendererState,
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
-            BackpackEmotesSectionController backpackEmotesSectionController)
+            BackpackEmotesSectionController backpackEmotesSectionController,
+            BackpackAnalytics backpackAnalytics)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -30,9 +34,10 @@ namespace DCL.Backpack
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
             this.backpackEmotesSectionController = backpackEmotesSectionController;
+            this.backpackAnalytics = backpackAnalytics;
 
             ownUserProfile.OnUpdate += LoadUserProfile;
-            dataStore.HUDs.avatarEditorVisible.OnChange += SetVisibility;
+            dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
@@ -40,13 +45,13 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
             backpackEmotesSectionController.OnEmoteEquipped += OnEmoteEquipped;
             backpackEmotesSectionController.OnEmoteUnequipped += OnEmoteUnequipped;
-            SetVisibility(dataStore.HUDs.avatarEditorVisible.Get());
+            SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
 
         public void Dispose()
         {
             ownUserProfile.OnUpdate -= LoadUserProfile;
-            dataStore.HUDs.avatarEditorVisible.OnChange -= SetVisibility;
+            dataStore.HUDs.avatarEditorVisible.OnChange -= OnBackpackVisibleChanged;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
 
             backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
@@ -58,7 +63,10 @@ namespace DCL.Backpack
             view.Dispose();
         }
 
-        public void SetVisibility(bool visible)
+        private void OnBackpackVisibleChanged(bool current, bool _) =>
+            SetVisibility(current);
+
+        private void SetVisibility(bool visible, bool saveAvatar = true)
         {
             if (visible)
             {
@@ -70,13 +78,15 @@ namespace DCL.Backpack
             }
             else
             {
-                view.Hide();
-                view.ResetPreviewEmote();
+                if (saveAvatar)
+                    SaveAndClose();
+                else
+                {
+                    view.Hide();
+                    view.ResetPreviewEmote();
+                }
             }
         }
-
-        private void SetVisibility(bool current, bool _) =>
-            SetVisibility(current);
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
@@ -176,5 +186,46 @@ namespace DCL.Backpack
 
         private void EquipEyesColor(Color color) =>
             model.eyesColor = color;
+
+        private void SaveAndClose()
+        {
+            view.TakeSnapshotsAfterStopPreviewAnimation(
+                (face256Snapshot, bodySnapshot) =>
+                {
+                    var avatarModel = model.ToAvatarModel();
+
+                    // Add the equipped emotes to the avatar model
+                    List<AvatarModel.AvatarEmoteEntry> emoteEntries = new List<AvatarModel.AvatarEmoteEntry>();
+                    int equippedEmotesCount = dataStore.emotesCustomization.unsavedEquippedEmotes.Count();
+                    for (var i = 0; i < equippedEmotesCount; i++)
+                    {
+                        var equippedEmote = dataStore.emotesCustomization.unsavedEquippedEmotes[i];
+                        if (equippedEmote == null)
+                            continue;
+
+                        emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
+                    }
+
+                    avatarModel.emotes = emoteEntries;
+
+                    backpackAnalytics.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
+                    dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
+
+                    WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
+                    ownUserProfile.OverrideAvatar(avatarModel, face256Snapshot);
+
+                    if (DataStore.i.common.isSignUpFlow.Get())
+                    {
+                        DataStore.i.HUDs.signupVisible.Set(true);
+                        backpackAnalytics.SendAvatarEditSuccessNuxAnalytics();
+                    }
+
+                    avatarIsDirty = false;
+
+                    view.Hide();
+                    view.ResetPreviewEmote();
+                },
+                () => Debug.LogError("Error taking avatar screenshots."));
+        }
     }
 }

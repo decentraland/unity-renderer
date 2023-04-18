@@ -20,13 +20,19 @@ namespace DCL.Backpack
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
 
+            var backpackAnalytics = new BackpackAnalytics(
+                Environment.i.platform.serviceProviders.analytics,
+                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
+                Environment.i.serviceLocator.Get<IWearablesCatalogService>());
+
             hudController = new BackpackEditorHUDController(
                 view,
                 DataStore.i,
                 CommonScriptableObjects.rendererState,
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
-                backpackEmotesSectionController);
+                backpackEmotesSectionController,
+                backpackAnalytics);
         }
 
         public void Dispose()
