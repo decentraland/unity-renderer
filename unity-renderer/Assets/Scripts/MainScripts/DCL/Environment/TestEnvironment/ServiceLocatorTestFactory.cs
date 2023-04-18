@@ -73,7 +73,7 @@ namespace DCL
                     mockedFactory.CreateAvatar(default(GameObject), default(IAnimator), default(ILOD), default(IVisibility))
                                  .ReturnsForAnyArgs(Substitute.For<IAvatar>());
 
-                    mockedFactory.CreateAvatarWithHologram(default(GameObject), default(Transform), default(GameObject), default(IAnimator),
+                    mockedFactory.CreateAvatarWithHologram(default(GameObject), Substitute.For<IBaseAvatar>(), default(IAnimator),
                                       default(ILOD), default(IVisibility))
                                  .ReturnsForAnyArgs(Substitute.For<IAvatar>());
 

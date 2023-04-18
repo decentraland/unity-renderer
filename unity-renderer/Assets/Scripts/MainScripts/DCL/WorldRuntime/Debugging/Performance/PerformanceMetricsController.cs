@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using Newtonsoft.Json;
-using Unity.Profiling;
 using UnityEngine;
 
 namespace DCL
@@ -16,42 +15,39 @@ namespace DCL
         private const int SAMPLES_SIZE = 1000; // Send performance report every 1000 samples
         private const string PROFILER_METRICS_FEATURE_FLAG = "profiler_metrics";
 
-        private readonly LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
         private readonly char[] encodedSamples = new char[SAMPLES_SIZE];
+        private readonly Dictionary<int, long> scenesMemoryScore = new ();
+
         private readonly PerformanceMetricsDataVariable performanceMetricsDataVariable;
-        private IWorldState worldState => Environment.i.world.state;
+        private readonly LinealBufferHiccupCounter tracker;
+        private readonly IProfilerRecordsService profilerRecordsService;
+
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
+        private IWorldState worldState => Environment.i.world.state;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private GeneralSettings generalSettings => Settings.i.generalSettings.Data;
-        private ProfilerRecorder drawCallsRecorder;
-        private ProfilerRecorder reservedMemoryRecorder;
-        private ProfilerRecorder usedMemoryRecorder;
-        private ProfilerRecorder gcAllocatedInFrameRecorder;
+
         private bool trackProfileRecords;
-        private int currentIndex = 0;
+        private int currentIndex;
         private long totalAllocSample;
-        private bool isTrackingProfileRecords = false;
-        private readonly Dictionary<int, long> scenesMemoryScore = new Dictionary<int, long>();
 
         public PerformanceMetricsController()
         {
             performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
 
+            profilerRecordsService = Environment.i.serviceLocator.Get<IProfilerRecordsService>();
+            tracker = new LinealBufferHiccupCounter(SAMPLES_SIZE);
+
             featureFlags.OnChange += OnFeatureFlagChange;
             OnFeatureFlagChange(featureFlags.Get(), null);
         }
+
         private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
         {
             trackProfileRecords = current.IsFeatureEnabled(PROFILER_METRICS_FEATURE_FLAG);
 
-            if (trackProfileRecords && !isTrackingProfileRecords)
-            {
-                drawCallsRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
-                reservedMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "Total Reserved Memory");
-                usedMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "Total Used Memory");
-                gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
-                isTrackingProfileRecords = true;
-            }
+            if (trackProfileRecords)
+                profilerRecordsService.RecordAdditionalProfilerMetrics();
         }
 
         public void Update()
@@ -63,21 +59,13 @@ namespace DCL
             if (!CommonScriptableObjects.rendererState.Get() && !CommonScriptableObjects.forcePerformanceMeter.Get())
                 return;
 
-            var deltaInMs = Time.deltaTime * 1000;
+            tracker.AddDeltaTime(Time.unscaledDeltaTime);
+            performanceMetricsDataVariable.Set(profilerRecordsService.LastFPS, tracker.HiccupsCountInBuffer, tracker.HiccupsSum, tracker.TotalSeconds);
 
-            tracker.AddDeltaTime(Time.deltaTime);
-
-            performanceMetricsDataVariable.Set(tracker.CurrentFPSCount(),
-                tracker.CurrentHiccupCount(),
-                tracker.HiccupsSum,
-                tracker.GetTotalSeconds());
-
-            encodedSamples[currentIndex++] = (char) deltaInMs;
+            encodedSamples[currentIndex++] = (char)profilerRecordsService.LastFrameTimeInMS;
 
             if (trackProfileRecords)
-            {
-                totalAllocSample += gcAllocatedInFrameRecorder.LastValue;
-            }
+                totalAllocSample +=  profilerRecordsService.GcAllocatedInFrame;
 
             if (currentIndex == SAMPLES_SIZE)
             {
@@ -85,21 +73,20 @@ namespace DCL
                 Report(new string(encodedSamples));
                 totalAllocSample = 0;
             }
-
         }
 
         private void Report(string encodedSamples)
         {
-
             var loadedScenesValues = worldState.GetLoadedScenes();
             scenesMemoryScore.Clear();
+
             foreach (var parcelScene in loadedScenesValues)
             {
                 // we ignore global scene
                 IParcelScene parcelSceneValue = parcelScene.Value;
 
                 if (parcelSceneValue.isPersistent)
-                    continue; 
+                    continue;
 
                 scenesMemoryScore.Add(parcelSceneValue.sceneData.sceneNumber, parcelSceneValue.metricsCounter.currentCount.totalMemoryScore);
             }
@@ -111,9 +98,9 @@ namespace DCL
 
             if (trackProfileRecords)
             {
-                drawCalls = (int)drawCallsRecorder.LastValue;
-                totalMemoryReserved = reservedMemoryRecorder.LastValue;
-                totalMemoryUsage = usedMemoryRecorder.LastValue;
+                drawCalls = (int)profilerRecordsService.DrawCalls;
+                totalMemoryReserved = profilerRecordsService.ReservedMemory;
+                totalMemoryUsage = profilerRecordsService.UsedMemory;
                 totalGCAlloc = totalAllocSample;
             }
 
@@ -130,12 +117,11 @@ namespace DCL
 
             bool usingFPSCap = Settings.i.qualitySettings.Data.fpsCap;
 
-            int hiccupsInThousandFrames = tracker.CurrentHiccupCount();
+            int hiccupsInThousandFrames = tracker.HiccupsCountInBuffer;
+            float hiccupsTime = tracker.HiccupsSum;
 
-            float hiccupsTime = tracker.GetHiccupSum();
+            float totalTime = tracker.TotalSeconds;
 
-            float totalTime = tracker.GetTotalSeconds();
-            
             WebInterface.PerformanceReportPayload performanceReportPayload = new WebInterface.PerformanceReportPayload
             {
                 samples = encodedSamples,
@@ -165,7 +151,7 @@ namespace DCL
                 totalGCAlloc = totalGCAlloc
             };
 
-            var result = JsonConvert.SerializeObject(performanceReportPayload);
+            string result = JsonConvert.SerializeObject(performanceReportPayload);
             WebInterface.SendPerformanceReport(result);
             PerformanceAnalytics.ResetAll();
         }

@@ -7,7 +7,7 @@ export class OfflineAdapter implements MinimumCommunicationsAdapter {
   events = mitt<CommsAdapterEvents>()
 
   constructor() {}
-  async getVoiceHandler(): Promise<VoiceHandler> {
+  async createVoiceHandler(): Promise<VoiceHandler> {
     return createOpusVoiceHandler()
   }
   async disconnect(_error?: Error | undefined): Promise<void> {}

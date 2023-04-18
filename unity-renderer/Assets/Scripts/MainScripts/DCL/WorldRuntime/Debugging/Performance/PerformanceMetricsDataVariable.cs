@@ -16,15 +16,13 @@ namespace DCL
         menuName = "Variables/PerformanceMetricsDataVariable")]
     public class PerformanceMetricsDataVariable : BaseVariableAsset<PerformanceMetricsData>
     {
-        public override bool Equals(PerformanceMetricsData other)
-        {
-            return other == value;
-        }
+        public override bool Equals(PerformanceMetricsData other) =>
+            other == value;
 
-        public void Set(float fpsCount, int hiccuptCount, float hiccupSum, float totalSeconds)
-        {
+        public void Set(float fpsCount, int hiccuptCount, float hiccupSum, float totalSeconds) =>
             Set(new PerformanceMetricsData
-                {fpsCount = fpsCount, hiccupCount = hiccuptCount, hiccupSum = hiccupSum, totalSeconds = totalSeconds});
-        }
+            {
+                fpsCount = fpsCount, hiccupCount = hiccuptCount, hiccupSum = hiccupSum, totalSeconds = totalSeconds
+            });
     }
 }
