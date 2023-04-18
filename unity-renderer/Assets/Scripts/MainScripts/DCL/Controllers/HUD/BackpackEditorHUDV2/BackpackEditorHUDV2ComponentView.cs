@@ -21,25 +21,21 @@ namespace DCL.Backpack
         public override bool isVisible => gameObject.activeInHierarchy;
 
         private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
+        private readonly Dictionary<string, WearableGridItemComponentView> wearablesById = new ();
 
         private Transform thisTransform;
         private Pool wearableGridItemsPool;
 
         public event Action<int> OnWearablePageChanged;
+        public event Action<WearableGridItemModel> OnWearableSelected;
+        public event Action<WearableGridItemModel> OnWearableEquipped;
+        public event Action<WearableGridItemModel> OnWearableUnequipped;
 
         public override void Awake()
         {
             base.Awake();
 
             thisTransform = transform;
-            sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
-            {
-                avatarSection.SetActive(isSelected);
-            });
-            sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
-            {
-                emotesSection.SetActive(isSelected);
-            });
 
             wearablePageSelector.OnValueChanged += i => OnWearablePageChanged?.Invoke(i);
 
@@ -49,6 +45,18 @@ namespace DCL.Backpack
                 maxPrewarmCount: 15,
                 isPersistent: true);
             wearableGridItemsPool.ForcePrewarm();
+        }
+
+        private void Start()
+        {
+            sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+            {
+                avatarSection.SetActive(isSelected);
+            });
+            sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+            {
+                emotesSection.SetActive(isSelected);
+            });
         }
 
         public override void Dispose()
@@ -119,21 +127,22 @@ namespace DCL.Backpack
         public void ShowWearables(IEnumerable<WearableGridItemModel> wearables)
         {
             foreach (WearableGridItemModel wearable in wearables)
-            {
-                PoolableObject poolObj = wearableGridItemsPool.Get();
-                WearableGridItemComponentView wearableGridItem = poolObj.gameObject.GetComponent<WearableGridItemComponentView>();
-                wearablePooledObjects[wearableGridItem] = poolObj;
-                wearableGridItem.SetModel(wearable);
-                wearablesGridContainer.AddItem(wearableGridItem);
-            }
+                SetWearable(wearable);
         }
 
         public void ClearWearables()
         {
-            foreach ((WearableGridItemComponentView _, PoolableObject poolObj) in wearablePooledObjects)
+            foreach ((WearableGridItemComponentView wearableGridItem, PoolableObject poolObj) in wearablePooledObjects)
+            {
+                wearableGridItem.OnSelected -= HandleWearableSelected;
+                wearableGridItem.OnEquipped -= HandleWearableEquipped;
+                wearableGridItem.OnUnequipped -= HandleWearableUnequipped;
+
                 poolObj.Release();
+            }
 
             wearablePooledObjects.Clear();
+            wearablesById.Clear();
         }
 
         public void ShowEmotes(IEnumerable<EmoteGridItemModel> emotes)
@@ -145,5 +154,42 @@ namespace DCL.Backpack
         {
             throw new NotImplementedException("Clear emotes from the grid");
         }
+
+        public void SetWearable(WearableGridItemModel model)
+        {
+            if (wearablesById.TryGetValue(model.WearableId, out var view))
+                view.SetModel(model);
+            else
+            {
+                PoolableObject poolObj = wearableGridItemsPool.Get();
+                WearableGridItemComponentView wearableGridItem = poolObj.gameObject.GetComponent<WearableGridItemComponentView>();
+                wearablePooledObjects[wearableGridItem] = poolObj;
+                wearablesById[model.WearableId] = wearableGridItem;
+                wearableGridItem.SetModel(model);
+                wearablesGridContainer.AddItem(wearableGridItem);
+
+                wearableGridItem.OnSelected += HandleWearableSelected;
+                wearableGridItem.OnEquipped += HandleWearableEquipped;
+                wearableGridItem.OnUnequipped += HandleWearableUnequipped;
+            }
+        }
+
+        public void ClearWearableSelection()
+        {
+            foreach (WearableGridItemComponentView view in wearablePooledObjects.Keys)
+                view.Unselect();
+        }
+
+        public void SelectWearable(string wearableId) =>
+            wearablesById[wearableId].Select();
+
+        private void HandleWearableSelected(WearableGridItemModel model) =>
+            OnWearableSelected?.Invoke(model);
+
+        private void HandleWearableEquipped(WearableGridItemModel model) =>
+            OnWearableEquipped?.Invoke(model);
+
+        private void HandleWearableUnequipped(WearableGridItemModel model) =>
+            OnWearableUnequipped?.Invoke(model);
     }
 }

@@ -7,6 +7,9 @@ namespace DCL.Backpack
     public interface IBackpackEditorHUDView
     {
         event Action<int> OnWearablePageChanged;
+        event Action<WearableGridItemModel> OnWearableSelected;
+        event Action<WearableGridItemModel> OnWearableEquipped;
+        event Action<WearableGridItemModel> OnWearableUnequipped;
 
         void Dispose();
         void Show();
@@ -17,5 +20,8 @@ namespace DCL.Backpack
         void ClearWearables();
         void ShowEmotes(IEnumerable<EmoteGridItemModel> emotes);
         void ClearEmotes();
+        void SetWearable(WearableGridItemModel model);
+        void ClearWearableSelection();
+        void SelectWearable(string wearableId);
     }
 }

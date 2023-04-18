@@ -66,15 +66,6 @@ namespace UIComponents.Scripts.Components
 
             currentPage = Mathf.Clamp(currentPage, 0, maxTotalPages - 1);
 
-            if (maxTotalPages <= 1)
-            {
-                gameObject.SetActive(false);
-                OnValueChanged?.Invoke(0);
-                return;
-            }
-
-            gameObject.SetActive(true);
-
             EnsureButtons();
             UpdateButtonsStatus(false);
 

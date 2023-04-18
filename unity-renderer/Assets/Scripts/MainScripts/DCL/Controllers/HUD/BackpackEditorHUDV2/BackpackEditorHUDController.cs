@@ -35,6 +35,9 @@ namespace DCL.Backpack
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
+            view.OnWearableEquipped += HandleWearableEquipped;
+            view.OnWearableUnequipped += HandleWearableUnequipped;
+            view.OnWearableSelected += HandleWearableSelected;
 
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
 
@@ -46,6 +49,9 @@ namespace DCL.Backpack
             dataStore.HUDs.avatarEditorVisible.OnChange -= SetVisibility;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
             view.OnWearablePageChanged -= HandleNewPageRequested;
+            view.OnWearableEquipped -= HandleWearableEquipped;
+            view.OnWearableUnequipped -= HandleWearableUnequipped;
+            view.OnWearableSelected -= HandleWearableSelected;
             view.Dispose();
             requestWearablesCancellationToken.SafeCancelAndDispose();
         }
@@ -74,6 +80,7 @@ namespace DCL.Backpack
 
         private void HandleNewPageRequested(int page)
         {
+            currentWearablePage = page;
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
             RequestWearablesAndShowThem(currentWearablePage, requestWearablesCancellationToken.Token).Forget();
         }
@@ -87,12 +94,18 @@ namespace DCL.Backpack
             {
                 // TODO: instead of requesting owned wearables, we should request all the wearables with the current filters & sorting
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
-                    ownUserId, page,
+                    ownUserId,
+                    // page is not zero based
+                    page + 1,
                     PAGE_SIZE, true, cancellationToken);
 
                 var wearableModels = wearables.Select(wearable =>
                 {
-                    Enum.TryParse(wearable.rarity, true, out NftRarity rarity);
+                    if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
+                    {
+                        rarity = NftRarity.Uncommon;
+                        Debug.LogError($"Could not parse the rarity of the wearable: {wearable.rarity}. Fallback to uncommon..");
+                    }
 
                     return new WearableGridItemModel
                     {
@@ -100,15 +113,13 @@ namespace DCL.Backpack
                         Rarity = rarity,
                         ImageUrl = wearable.ComposeThumbnailUrl(),
                         IsEquipped = ownUserProfile.HasEquipped(wearable.id),
-                        // TODO: when we should display the loading status?
-                        IsLoading = false,
                         // TODO: make the new state work
                         IsNew = false,
                         IsSelected = false,
                     };
                 });
 
-                view.SetWearablePages(currentWearablePage, totalAmount / PAGE_SIZE);
+                view.SetWearablePages(page, totalAmount / PAGE_SIZE);
                 // TODO: mark the wearables to be disposed if no references left
                 view.ClearWearables();
                 view.ShowWearables(wearableModels);
@@ -117,6 +128,22 @@ namespace DCL.Backpack
             {
                 Debug.LogException(e);
             }
+        }
+
+        private void HandleWearableSelected(WearableGridItemModel wearableGridItem)
+        {
+            view.ClearWearableSelection();
+            view.SelectWearable(wearableGridItem.WearableId);
+        }
+
+        private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleWearableEquipped(WearableGridItemModel wearableGridItem)
+        {
+            throw new NotImplementedException();
         }
     }
 }
