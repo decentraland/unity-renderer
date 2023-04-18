@@ -15,9 +15,10 @@ namespace DCL.Providers
         {
             string localUrl = Application.dataPath + "/../AssetBundles/" + hash;
 
-            return File.Exists(localUrl)
-                ? UniTask.FromResult(AssetBundle.LoadFromFile(localUrl))
-                : UniTask.FromResult<AssetBundle>(null);
+            if (File.Exists(localUrl))
+                return UniTask.FromResult(AssetBundle.LoadFromFile(localUrl));
+
+            return UniTask.FromResult<AssetBundle>(null);
         }
     }
 }

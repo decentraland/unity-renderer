@@ -158,6 +158,7 @@ export interface IUnityInterface {
   TriggerSelfUserExpression(expressionId: string): void
 
   UpdateMinimapSceneInformation(info: MinimapSceneInfo[]): void
+  UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[]): void
   SetTutorialEnabled(tutorialConfig: TutorialInitializationMessage): void
   SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(tutorialConfig: TutorialInitializationMessage): void
   AddMessageToChatWindow(message: ChatMessage): void

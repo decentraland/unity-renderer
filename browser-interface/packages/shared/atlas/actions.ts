@@ -1,6 +1,11 @@
 import { Vector2 } from 'lib/math/Vector2'
 import { action } from 'typesafe-actions'
 
+export const REPORT_SCENES_WORLD_CONTEXT = 'Report scenes in world context'
+export const reportScenesWorldContext = (parcelCoord: { x: number; y: number }, rectSizeAround: number) =>
+  action(REPORT_SCENES_WORLD_CONTEXT, { parcelCoord, scenesAround: rectSizeAround })
+export type ReportScenesWorldContext = ReturnType<typeof reportScenesWorldContext>
+
 export const REPORT_SCENES_AROUND_PARCEL = 'Report scenes around parcel'
 export const reportScenesAroundParcel = (parcelCoord: { x: number; y: number }, rectSizeAround: number) =>
   action(REPORT_SCENES_AROUND_PARCEL, { parcelCoord, scenesAround: rectSizeAround })
