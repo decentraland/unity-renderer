@@ -126,8 +126,6 @@ function* reportScenesWorldContext(action: ReportScenesWorldContext) {
         parcels.push(xy)
       })
 
-      debugger
-
       minimapSceneInfoResult.push({
         name: postProcessSceneName(sceneName),
         owner: getOwnerNameFromJsonData(metadata),
