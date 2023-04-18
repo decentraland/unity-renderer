@@ -11,6 +11,13 @@ public class DynamicListComponentView : BaseComponentView, IDynamicListComponent
     {
     }
 
+    public void AddIcon(Sprite sprite)
+    {
+        Image newImage = Instantiate(iconReference, transform);
+        newImage.sprite = sprite;
+        instantiatedIcons.Add(newImage);
+    }
+
     public void AddIcons(List<Sprite> spriteList)
     {
         RemoveIcons();

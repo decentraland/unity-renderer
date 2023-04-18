@@ -9,6 +9,8 @@ namespace DCL.Backpack
 {
     public class InfoCardComponentView : BaseComponentView<InfoCardComponentModel>, IInfoCardComponentView
     {
+        [SerializeField] internal NftTypeIconSO typeIcons;
+        [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
         [SerializeField] private TMP_Text wearableName;
         [SerializeField] private TMP_Text wearableDescription;
         [SerializeField] private Image categoryImage;
@@ -49,23 +51,21 @@ namespace DCL.Backpack
         public void SetCategory(string category)
         {
             model.category = category;
-            categoryImage.sprite = null;
+            categoryImage.sprite = typeIcons.GetTypeImage(category);
         }
 
         public void SetHidesList(List<string> hideList)
         {
-            foreach (var hideCategory in hideList)
-            {
-                
-            }
+            hidesList.RemoveIcons();
+            foreach (string hideCategory in hideList)
+                hidesList.AddIcon(typeIcons.GetTypeImage(hideCategory));
         }
 
         public void SetRemovesList(List<string> removeList)
         {
-            foreach (var removeCategory in removeList)
-            {
-
-            }
+            removesList.RemoveIcons();
+            foreach (string removeCategory in removeList)
+                removesList.AddIcon(typeIcons.GetTypeImage(removeCategory));
         }
 
         public void SetHiddenBy()

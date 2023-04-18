@@ -218,6 +218,8 @@ MonoBehaviour:
     category: 
     hideList: []
     removeList: []
+  typeIcons: {fileID: 11400000, guid: 9525caf9cd97d4aa1b91f145f3a604e3, type: 2}
+  rarityBackgrounds: {fileID: 11400000, guid: 019afcbe85a6d4f7f82562cd9ca86dc4, type: 2}
   wearableName: {fileID: 2191745615713134909}
   wearableDescription: {fileID: 4287772458974271564}
   categoryImage: {fileID: 8548019969466453558}
