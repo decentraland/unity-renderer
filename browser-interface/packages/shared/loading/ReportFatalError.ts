@@ -23,6 +23,8 @@ export function BringDownClientAndShowError(event: ExecutionLifecycleEvent | str
     event === COMMS_COULD_NOT_BE_ESTABLISHED ? 'comms' : event === NETWORK_MISMATCH ? 'networkmismatch' : 'fatal'
 
   store.dispatch(fatalError(targetError))
+  store.dispatch(setRealmAdapter(undefined))
+  store.dispatch(setRoomConnection(undefined))
 
   globalObservable.emit('error', {
     error: new Error(event),
