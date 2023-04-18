@@ -52,6 +52,7 @@ public class MinimapHUDController : IHUD
         InitializeMapRenderer();
 
         OnPlayerCoordsChange(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
+        SetVisibility(minimapVisible.Get());
 
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
         MinimapMetadata.GetMetadata().OnSceneInfoUpdated += OnSceneInfoUpdated;
@@ -194,7 +195,7 @@ public class MinimapHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        view.SetVisibility(visible);
+        view.SetVisibility(visible && minimapVisible.Get());
     }
 
     /// <summary>
