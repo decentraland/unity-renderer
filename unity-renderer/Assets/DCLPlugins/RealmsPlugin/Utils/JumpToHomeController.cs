@@ -29,6 +29,8 @@ namespace DCLPlugins.RealmPlugin
         {
             rectTransform = jumpButton.GetComponent<RectTransform>();
             jumpButton.onClick.AddListener(GoHome);
+
+            SetVisibility(jumpHomeButtonVisible.Get(), false);
             jumpHomeButtonVisible.OnChange += SetVisibility;
         }
 

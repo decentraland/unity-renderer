@@ -340,6 +340,11 @@ export class UnityInterface implements IUnityInterface {
     }
   }
 
+  public UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[])
+  {
+    this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(info))
+  }
+
   public SetTutorialEnabled(tutorialConfig: TutorialInitializationMessage) {
     this.SendMessageToUnity('TutorialController', 'SetTutorialEnabled', JSON.stringify(tutorialConfig))
   }
