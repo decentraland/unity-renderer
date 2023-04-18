@@ -190,7 +190,6 @@ public class TeleportPromptHUDController : IHUD
 
     private void OnTeleportPressed()
     {
-        CloseView();
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_CROWD:
@@ -203,6 +202,7 @@ public class TeleportPromptHUDController : IHUD
                 DCL.Environment.i.world.teleportController.Teleport(teleportData.GetCoordinates().x, teleportData.GetCoordinates().y);
                 break;
         }
+        CloseView();
     }
 
     [Serializable]
