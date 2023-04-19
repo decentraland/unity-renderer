@@ -1,9 +1,14 @@
+using System;
 using System.Collections.Generic;
 
 namespace DCL.Backpack
 {
     public interface IInfoCardComponentView
     {
+        event Action<string> OnEquipWearable;
+        event Action<string> OnUnEquipWearable;
+        event Action OnViewMore;
+
         void SetName(string name);
 
         void SetDescription(string description);

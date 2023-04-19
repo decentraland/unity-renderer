@@ -9,6 +9,8 @@ namespace DCL.Backpack
         public string name;
         public string description;
         public string category;
+        public string rarity;
+        public string hiddenBy;
         public List<string> hideList;
         public List<string> removeList;
     }

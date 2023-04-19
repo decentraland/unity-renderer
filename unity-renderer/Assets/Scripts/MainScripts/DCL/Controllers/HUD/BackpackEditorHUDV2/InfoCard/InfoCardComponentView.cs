@@ -11,19 +11,29 @@ namespace DCL.Backpack
     {
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
+        [SerializeField] internal NftRarityBackgroundSO rarityNftBackgrounds;
         [SerializeField] internal TMP_Text wearableName;
         [SerializeField] internal TMP_Text wearableDescription;
         [SerializeField] internal Image categoryImage;
         [SerializeField] internal Button equipButton;
+        [SerializeField] internal Button unEquipButton;
         [SerializeField] internal Button viewMore;
+        [SerializeField] internal Image background;
+        [SerializeField] internal Image nftBackground;
         [SerializeField] internal DynamicListComponentView removesList;
         [SerializeField] internal DynamicListComponentView hidesList;
-        [SerializeField] internal DynamicListComponentView hiddenBy;
-
+        [SerializeField] internal DynamicListComponentView hiddenByDynamicList;
+        public event Action<string> OnEquipWearable;
+        public event Action<string> OnUnEquipWearable;
+        public event Action OnViewMore;
         public void Start()
         {
             equipButton.onClick.RemoveAllListeners();
+            equipButton.onClick.AddListener(()=>OnEquipWearable?.Invoke(""));
+            unEquipButton.onClick.RemoveAllListeners();
+            unEquipButton.onClick.AddListener(()=>OnUnEquipWearable?.Invoke(""));
             viewMore.onClick.RemoveAllListeners();
+            viewMore.onClick.AddListener(()=>OnViewMore?.Invoke());
         }
 
         public override void RefreshControl()
@@ -34,8 +44,10 @@ namespace DCL.Backpack
             SetName(model.name);
             SetDescription(model.description);
             SetCategory(model.category);
+            SetRarity(model.rarity);
             SetRemovesList(model.removeList);
             SetHidesList(model.hideList);
+            SetHiddenBy(model.hiddenBy);
         }
 
         public void SetName(string nameText)
@@ -56,6 +68,13 @@ namespace DCL.Backpack
             categoryImage.sprite = typeIcons.GetTypeImage(category);
         }
 
+        public void SetRarity(string rarity)
+        {
+            model.rarity = rarity;
+            background.sprite = rarityBackgrounds.GetRarityImage(rarity);
+            nftBackground.sprite = rarityNftBackgrounds.GetRarityImage(rarity);
+        }
+
         public void SetHidesList(List<string> hideList)
         {
             model.hideList = hideList;
@@ -67,14 +86,25 @@ namespace DCL.Backpack
         public void SetRemovesList(List<string> removeList)
         {
             model.removeList = removeList;
+
             removesList.RemoveIcons();
             foreach (string removeCategory in removeList)
                 removesList.AddIcon(typeIcons.GetTypeImage(removeCategory));
         }
 
-        public void SetHiddenBy()
+        public void SetHiddenBy(string hiddenBy)
         {
+            model.hiddenBy = hiddenBy;
 
+            if (string.IsNullOrEmpty(hiddenBy))
+            {
+                hiddenByDynamicList.gameObject.SetActive(false);
+                return;
+            }
+
+            hiddenByDynamicList.gameObject.SetActive(true);
+            hiddenByDynamicList.RemoveIcons();
+            hiddenByDynamicList.AddIcon(typeIcons.GetTypeImage(hiddenBy));
         }
     }
 }
