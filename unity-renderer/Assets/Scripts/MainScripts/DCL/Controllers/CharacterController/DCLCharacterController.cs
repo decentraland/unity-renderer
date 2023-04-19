@@ -572,7 +572,10 @@ public class DCLCharacterController : MonoBehaviour
 
     public void ResumeGravity() { gravity = originalGravity; }
 
-    void OnRenderingStateChanged(bool isEnable, bool prevState) { SetEnabled(isEnable); }
+    void OnRenderingStateChanged(bool isEnable, bool prevState)
+    {
+        SetEnabled(isEnable && !DataStore.i.common.isSignUpFlow.Get());
+    }
 
     bool IsLastCollisionGround()
     {
