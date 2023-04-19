@@ -881,12 +881,7 @@ MonoBehaviour:
   wearablesSection: {fileID: 8448101185958679783}
   emotesSection: {fileID: 8105447645029322740}
   backpackPreviewPanel: {fileID: 1525771720304835258}
-  wearablesGridContainer: {fileID: 590672885487625280}
-  wearableGridItemPrefab: {fileID: 5451991589991224328, guid: 8e2403ba0995d41e5834c8766a8aec8a,
-    type: 3}
-  wearablePageSelector: {fileID: 1286485633974369151}
-  emotePageSelector: {fileID: 3993873450704993929}
-  wearablesBreadcrumbComponentView: {fileID: 6237354803073864144}
+  wearableGridComponentView: {fileID: 1576087038466160472}
 --- !u!1 &3646189608458600939
 GameObject:
   m_ObjectHideFlags: 0
@@ -1935,6 +1930,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4790794849431556223}
+  - component: {fileID: 1576087038466160472}
   m_Layer: 5
   m_Name: WearablesSection
   m_TagString: Untagged
@@ -1965,6 +1961,23 @@ RectTransform:
   m_AnchoredPosition: {x: 210, y: -30}
   m_SizeDelta: {x: -420, y: -60}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1576087038466160472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8448101185958679783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 036f9ab7337445c7825161e4d11fbfbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wearablesBreadcrumbComponentView: {fileID: 6237354803073864144}
+  wearablesGridContainer: {fileID: 590672885487625280}
+  wearableGridItemPrefab: {fileID: 5451991589991224328, guid: 8e2403ba0995d41e5834c8766a8aec8a,
+    type: 3}
+  wearablePageSelector: {fileID: 1286485633974369151}
 --- !u!1 &8581991486692599835
 GameObject:
   m_ObjectHideFlags: 0
@@ -3628,18 +3641,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7158694105864807866}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3993873450704993929 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: -3155373099325367501, guid: b1041b1cdfe164127ab70f4edaa4366f,
-    type: 3}
-  m_PrefabInstance: {fileID: 7158694105864807866}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20eb301a7af249a0a63df7c203e963ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8524006652554261386
 MonoBehaviour:
   m_ObjectHideFlags: 0
