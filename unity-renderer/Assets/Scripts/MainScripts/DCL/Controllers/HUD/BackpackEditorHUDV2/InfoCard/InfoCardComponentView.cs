@@ -45,6 +45,7 @@ namespace DCL.Backpack
             SetDescription(model.description);
             SetCategory(model.category);
             SetRarity(model.rarity);
+            SetIsEquipped(model.isEquipped);
             SetRemovesList(model.removeList);
             SetHidesList(model.hideList);
             SetHiddenBy(model.hiddenBy);
@@ -90,6 +91,14 @@ namespace DCL.Backpack
             removesList.RemoveIcons();
             foreach (string removeCategory in removeList)
                 removesList.AddIcon(typeIcons.GetTypeImage(removeCategory));
+        }
+
+        public void SetIsEquipped(bool isEquipped)
+        {
+            model.isEquipped = isEquipped;
+
+            equipButton.gameObject.SetActive(!isEquipped);
+            unEquipButton.gameObject.SetActive(isEquipped);
         }
 
         public void SetHiddenBy(string hiddenBy)

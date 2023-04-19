@@ -18,5 +18,7 @@ namespace DCL.Backpack
         void SetHidesList(List<string> hideList);
 
         void SetRemovesList(List<string> removeList);
+
+        void SetIsEquipped(bool isEquipped);
     }
 }
