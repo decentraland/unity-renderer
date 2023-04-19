@@ -1,4 +1,5 @@
 using DCLServices.WearablesCatalogService;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -74,13 +75,26 @@ namespace DCL.Backpack
             else
             {
                 if (saveAvatar)
-                    SaveAndClose();
+                    TakeSnapshots(
+                        onSuccess: (face256Snapshot, bodySnapshot) =>
+                        {
+                            SaveAvatar(face256Snapshot, bodySnapshot);
+                            CloseView();
+                        },
+                        onFailed: () =>
+                        {
+                            Debug.LogError("Error taking avatar screenshots.");
+                            CloseView();
+                        });
                 else
-                {
-                    view.Hide();
-                    view.ResetPreviewEmote();
-                }
+                    CloseView();
             }
+        }
+
+        private void CloseView()
+        {
+            view.Hide();
+            view.ResetPreviewEmote();
         }
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
@@ -166,19 +180,11 @@ namespace DCL.Backpack
         private void EquipEyesColor(Color color) =>
             model.eyesColor = color;
 
-        private void SaveAndClose()
+        private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
         {
             view.TakeSnapshotsAfterStopPreviewAnimation(
-                (face256Snapshot, bodySnapshot) =>
-                {
-                    SaveAvatar(face256Snapshot, bodySnapshot);
-                    SetVisibility(false, false);
-                },
-                () =>
-                {
-                    Debug.LogError("Error taking avatar screenshots.");
-                    SetVisibility(false, false);
-                });
+                onSuccess: (face256Snapshot, bodySnapshot) => onSuccess?.Invoke(face256Snapshot, bodySnapshot),
+                onFailed: () => onFailed?.Invoke());
         }
 
         private void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
@@ -199,8 +205,7 @@ namespace DCL.Backpack
 
             avatarModel.emotes = emoteEntries;
 
-            backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables,
-                avatarModel.wearables);
+            backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
             dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
 
             userProfileBridge.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, dataStore.common.isSignUpFlow.Get());
