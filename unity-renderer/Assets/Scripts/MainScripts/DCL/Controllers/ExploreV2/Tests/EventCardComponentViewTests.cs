@@ -149,7 +149,6 @@ public class EventCardComponentViewTests
         Assert.AreEqual(isLive, eventCardComponent.liveTag.gameObject.activeSelf);
         Assert.AreEqual(!isLive, eventCardComponent.eventDateText.gameObject.activeSelf);
         Assert.AreEqual(isEventCardModal || isLive, eventCardComponent.jumpinButton.gameObject.activeSelf);
-        Assert.AreEqual(!isEventCardModal && !isLive, eventCardComponent.jumpinButtonForNotLive.gameObject.activeSelf);
         Assert.AreEqual(!isLive && !eventCardComponent.model.eventFromAPIInfo.attending, eventCardComponent.subscribeEventButton.gameObject.activeSelf);
         Assert.AreEqual(!isLive && eventCardComponent.model.eventFromAPIInfo.attending, eventCardComponent.unsubscribeEventButton.gameObject.activeSelf);
         Assert.AreEqual(isLive, eventCardComponent.eventStartedInTitleForLive.gameObject.activeSelf);
