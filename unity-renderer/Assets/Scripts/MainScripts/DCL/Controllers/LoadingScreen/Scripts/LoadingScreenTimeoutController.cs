@@ -7,7 +7,7 @@ using System.Threading;
 public class LoadingScreenTimeoutController : IDisposable
 {
 
-    private const int LOAD_SCENE_TIMEOUT = 2000;
+    private const int LOAD_SCENE_TIMEOUT = 100;
     private CancellationTokenSource timeoutCTS;
 
     private LoadingScreenTimeoutView view;

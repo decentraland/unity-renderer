@@ -2411,7 +2411,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 2481086363144932030}
   tipsView: {fileID: 5229806016901196130}
   percentageView: {fileID: 804295394028792594}
-  timeoutView: {fileID: 0}
+  timeoutView: {fileID: 5845767337085515950}
   rawImage: {fileID: 5435335981741838515}
   betaTag: {fileID: 4547891949349147461}
 --- !u!225 &1054737520794358197
