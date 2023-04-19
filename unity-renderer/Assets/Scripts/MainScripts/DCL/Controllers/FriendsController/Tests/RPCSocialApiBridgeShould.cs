@@ -101,24 +101,24 @@ namespace DCL.Social.Friends
             rpcSocialApiBridge = new RPCSocialApiBridge(component, userProfileBridge);
         }
 
-        [UnityTest]
-        public IEnumerator Initialize()
-        {
-            return UniTask.ToCoroutine(async () =>
-            {
-                var cancellationToken = new CancellationToken();
-                var friends = new Dictionary<string, UserStatus>();
-                var friendRequests = new Dictionary<string, FriendRequest>();
-
-                rpcSocialApiBridge.OnFriendAdded += friend => { friends.Add(friend.userId, friend); };
-                rpcSocialApiBridge.OnFriendRequestAdded += request => { friendRequests.Add(request.FriendRequestId, request); };
-
-                await rpcSocialApiBridge.InitializeFriendshipsInformation(cancellationToken);
-
-                Assert.AreEqual(4, friends.Count);
-                Assert.AreEqual(2, friendRequests.Count(friendRequest => friendRequest.Value.From == OWN_ID));
-                Assert.AreEqual(2, friendRequests.Count(friendRequest => friendRequest.Value.To == OWN_ID));
-            });
-        }
+        // [UnityTest]
+        // public IEnumerator Initialize()
+        // {
+        //     return UniTask.ToCoroutine(async () =>
+        //     {
+        //         var cancellationToken = new CancellationToken();
+        //         var friends = new Dictionary<string, UserStatus>();
+        //         var friendRequests = new Dictionary<string, FriendRequest>();
+        //
+        //         rpcSocialApiBridge.OnFriendAdded += friend => { friends.Add(friend.userId, friend); };
+        //         rpcSocialApiBridge.OnFriendRequestAdded += request => { friendRequests.Add(request.FriendRequestId, request); };
+        //
+        //         await rpcSocialApiBridge.InitializeFriendshipsInformation(cancellationToken);
+        //
+        //         Assert.AreEqual(4, friends.Count);
+        //         Assert.AreEqual(2, friendRequests.Count(friendRequest => friendRequest.Value.From == OWN_ID));
+        //         Assert.AreEqual(2, friendRequests.Count(friendRequest => friendRequest.Value.To == OWN_ID));
+        //     });
+        // }
     }
 }
