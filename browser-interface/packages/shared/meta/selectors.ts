@@ -40,7 +40,7 @@ export const getBannedUsers = (store: RootMetaState): BannedUsers =>
   (getFeatureFlagVariantValue(store, 'banned_users') as BannedUsers) ?? {}
 
 export const getPickRealmsAlgorithmConfig = (store: RootMetaState): AlgorithmChainConfig | undefined =>
-  getFeatureFlagVariantValue(store, 'pick_realm_algorithm_config') as AlgorithmChainConfig | undefined
+  getFeatureFlagVariantValue(store, 'test_realm_algorithm_config') as AlgorithmChainConfig | undefined
 
 export const getDisabledCatalystConfig = (store: RootMetaState): string[] => {
   const disabledCatalysts = getFeatureFlagVariantValue<string[]>(store, 'disabled-catalyst') || []

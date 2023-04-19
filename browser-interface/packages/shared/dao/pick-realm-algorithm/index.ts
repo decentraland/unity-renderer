@@ -68,6 +68,7 @@ export function createAlgorithm(config: AlgorithmChainConfig) {
 
   return {
     pickCandidate(candidates: Candidate[], userParcel: Parcel) {
+      console.time('realm-picking')
       if (candidates.length === 0) throw new Error('Cannot pick candidates from an empty list')
 
       let context: AlgorithmContext = { allCandidates: candidates, picked: candidates, userParcel }
@@ -84,6 +85,7 @@ export function createAlgorithm(config: AlgorithmChainConfig) {
             domain: context.selected.domain
           })
 
+          console.timeEnd('realm-picking')
           return context.selected
         }
 
@@ -104,9 +106,11 @@ export function createAlgorithm(config: AlgorithmChainConfig) {
           `Picked candidate by most valued. Last link: ${chain[chain.length - 1]?.name}`,
           context.picked[0]
         )
+        console.timeEnd('realm-picking')
         return context.picked[0]
       }
 
+      console.timeEnd('realm-picking')
       return candidates[0]
     }
   }

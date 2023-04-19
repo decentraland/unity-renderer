@@ -36,6 +36,7 @@ export type FeatureFlagsName =
   | 'explorev2'
   | 'unsafe-request'
   | 'pick_realm_algorithm_config'
+  | 'test_realm_algorithm_config'
   | 'banned_users'
   | 'max_visible_peers'
   | 'initial_portable_experiences'
