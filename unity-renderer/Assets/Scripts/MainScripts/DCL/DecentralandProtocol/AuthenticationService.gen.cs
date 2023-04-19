@@ -25,29 +25,42 @@ namespace Decentraland.Bff {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci1kZWNlbnRyYWxhbmQvYmZmL2F1dGhlbnRpY2F0aW9uX3NlcnZpY2UucHJv",
-            "dG8SEGRlY2VudHJhbGFuZC5iZmYiJgoTR2V0Q2hhbGxlbmdlUmVxdWVzdBIP",
-            "CgdhZGRyZXNzGAEgASgJIkwKFEdldENoYWxsZW5nZVJlc3BvbnNlEhkKEWNo",
-            "YWxsZW5nZV90b19zaWduGAEgASgJEhkKEWFscmVhZHlfY29ubmVjdGVkGAIg",
-            "ASgIIioKD1NpZ25lZENoYWxsZW5nZRIXCg9hdXRoX2NoYWluX2pzb24YASAB",
-            "KAkiRAoWV2VsY29tZVBlZXJJbmZvcm1hdGlvbhIPCgdwZWVyX2lkGAEgASgJ",
-            "EhkKEWF2YWlsYWJsZV9tb2R1bGVzGAIgAygJMtoBChhCZmZBdXRoZW50aWNh",
-            "dGlvblNlcnZpY2USXwoMR2V0Q2hhbGxlbmdlEiUuZGVjZW50cmFsYW5kLmJm",
-            "Zi5HZXRDaGFsbGVuZ2VSZXF1ZXN0GiYuZGVjZW50cmFsYW5kLmJmZi5HZXRD",
-            "aGFsbGVuZ2VSZXNwb25zZSIAEl0KDEF1dGhlbnRpY2F0ZRIhLmRlY2VudHJh",
-            "bGFuZC5iZmYuU2lnbmVkQ2hhbGxlbmdlGiguZGVjZW50cmFsYW5kLmJmZi5X",
-            "ZWxjb21lUGVlckluZm9ybWF0aW9uIgBiBnByb3RvMw=="));
+            "dG8SEGRlY2VudHJhbGFuZC5iZmYaG2dvb2dsZS9wcm90b2J1Zi9lbXB0eS5w",
+            "cm90byImChNHZXRDaGFsbGVuZ2VSZXF1ZXN0Eg8KB2FkZHJlc3MYASABKAki",
+            "TAoUR2V0Q2hhbGxlbmdlUmVzcG9uc2USGQoRY2hhbGxlbmdlX3RvX3NpZ24Y",
+            "ASABKAkSGQoRYWxyZWFkeV9jb25uZWN0ZWQYAiABKAgiKgoPU2lnbmVkQ2hh",
+            "bGxlbmdlEhcKD2F1dGhfY2hhaW5fanNvbhgBIAEoCSJEChZXZWxjb21lUGVl",
+            "ckluZm9ybWF0aW9uEg8KB3BlZXJfaWQYASABKAkSGQoRYXZhaWxhYmxlX21v",
+            "ZHVsZXMYAiADKAkiTQoURGlzY29ubmVjdGlvbk1lc3NhZ2USNQoGcmVhc29u",
+            "GAEgASgOMiUuZGVjZW50cmFsYW5kLmJmZi5EaXNjb25uZWN0aW9uUmVhc29u",
+            "KiQKE0Rpc2Nvbm5lY3Rpb25SZWFzb24SDQoJRFJfS0lDS0VEEAAytwIKGEJm",
+            "ZkF1dGhlbnRpY2F0aW9uU2VydmljZRJfCgxHZXRDaGFsbGVuZ2USJS5kZWNl",
+            "bnRyYWxhbmQuYmZmLkdldENoYWxsZW5nZVJlcXVlc3QaJi5kZWNlbnRyYWxh",
+            "bmQuYmZmLkdldENoYWxsZW5nZVJlc3BvbnNlIgASXQoMQXV0aGVudGljYXRl",
+            "EiEuZGVjZW50cmFsYW5kLmJmZi5TaWduZWRDaGFsbGVuZ2UaKC5kZWNlbnRy",
+            "YWxhbmQuYmZmLldlbGNvbWVQZWVySW5mb3JtYXRpb24iABJbChdHZXREaXNj",
+            "b25uZWN0aW9uTWVzc2FnZRIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRomLmRl",
+            "Y2VudHJhbGFuZC5iZmYuRGlzY29ubmVjdGlvbk1lc3NhZ2UiAGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, },
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Bff.DisconnectionReason), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.GetChallengeRequest), global::Decentraland.Bff.GetChallengeRequest.Parser, new[]{ "Address" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.GetChallengeResponse), global::Decentraland.Bff.GetChallengeResponse.Parser, new[]{ "ChallengeToSign", "AlreadyConnected" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.SignedChallenge), global::Decentraland.Bff.SignedChallenge.Parser, new[]{ "AuthChainJson" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.WelcomePeerInformation), global::Decentraland.Bff.WelcomePeerInformation.Parser, new[]{ "PeerId", "AvailableModules" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.WelcomePeerInformation), global::Decentraland.Bff.WelcomePeerInformation.Parser, new[]{ "PeerId", "AvailableModules" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.DisconnectionMessage), global::Decentraland.Bff.DisconnectionMessage.Parser, new[]{ "Reason" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum DisconnectionReason {
+    [pbr::OriginalName("DR_KICKED")] DrKicked = 0,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class GetChallengeRequest : pb::IMessage<GetChallengeRequest>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -862,6 +875,195 @@ namespace Decentraland.Bff {
           }
           case 18: {
             availableModules_.AddEntriesFrom(ref input, _repeated_availableModules_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class DisconnectionMessage : pb::IMessage<DisconnectionMessage>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<DisconnectionMessage> _parser = new pb::MessageParser<DisconnectionMessage>(() => new DisconnectionMessage());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<DisconnectionMessage> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Bff.AuthenticationServiceReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public DisconnectionMessage() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public DisconnectionMessage(DisconnectionMessage other) : this() {
+      reason_ = other.reason_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public DisconnectionMessage Clone() {
+      return new DisconnectionMessage(this);
+    }
+
+    /// <summary>Field number for the "reason" field.</summary>
+    public const int ReasonFieldNumber = 1;
+    private global::Decentraland.Bff.DisconnectionReason reason_ = global::Decentraland.Bff.DisconnectionReason.DrKicked;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Bff.DisconnectionReason Reason {
+      get { return reason_; }
+      set {
+        reason_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as DisconnectionMessage);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(DisconnectionMessage other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Reason != other.Reason) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Reason != global::Decentraland.Bff.DisconnectionReason.DrKicked) hash ^= Reason.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Reason != global::Decentraland.Bff.DisconnectionReason.DrKicked) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Reason);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Reason != global::Decentraland.Bff.DisconnectionReason.DrKicked) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Reason);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Reason != global::Decentraland.Bff.DisconnectionReason.DrKicked) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Reason);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(DisconnectionMessage other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Reason != global::Decentraland.Bff.DisconnectionReason.DrKicked) {
+        Reason = other.Reason;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            Reason = (global::Decentraland.Bff.DisconnectionReason) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Reason = (global::Decentraland.Bff.DisconnectionReason) input.ReadEnum();
             break;
           }
         }

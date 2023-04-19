@@ -18,10 +18,14 @@ namespace DCL.Social.Friends
         public void Setup()
         {
             // we need to add friends controller because the badge internally uses FriendsController.i
-            // FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
             view = FriendsHUDComponentView.Create();
-            var friendsController = Substitute.For<IFriendsController>();
+
+            var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
+
+            var friendsController = serviceLocator.Get<IFriendsController>();
             friendsController.GetAllocatedFriends().Returns(new Dictionary<string, UserStatus>());
+
             view.Initialize(Substitute.For<IChatController>(),
                 friendsController, Substitute.For<ISocialAnalytics>());
         }
@@ -207,6 +211,7 @@ namespace DCL.Social.Friends
             const string userId = "userId";
 
             GivenFriendListTabFocused();
+
             view.Set(userId, new FriendEntryModel
             {
                 blocked = false,
@@ -216,6 +221,7 @@ namespace DCL.Social.Friends
                 userId = userId,
                 userName = "name"
             });
+
             yield return null;
 
             Assert.IsTrue(view.ContainsFriend(userId));
@@ -251,6 +257,7 @@ namespace DCL.Social.Friends
             const string userId = "userId";
 
             GivenRequestTabFocused();
+
             view.Set(userId, new FriendRequestEntryModel
             {
                 blocked = false,
@@ -261,6 +268,7 @@ namespace DCL.Social.Friends
                 userName = "name",
                 isReceived = false
             });
+
             yield return null;
 
             Assert.IsTrue(view.ContainsFriendRequest(userId));
@@ -278,6 +286,7 @@ namespace DCL.Social.Friends
             const string userId = "userId";
 
             GivenRequestTabFocused();
+
             view.Set(userId, new FriendRequestEntryModel
             {
                 blocked = false,
@@ -288,6 +297,7 @@ namespace DCL.Social.Friends
                 userName = "name",
                 isReceived = true
             });
+
             yield return null;
 
             Assert.IsTrue(view.ContainsFriendRequest(userId));
@@ -421,11 +431,14 @@ namespace DCL.Social.Friends
             });
         }
 
-        private void GivenRequestTabFocused() => view.FocusTab(1);
+        private void GivenRequestTabFocused() =>
+            view.FocusTab(1);
 
-        private void GivenFriendListTabFocused() => view.FocusTab(0);
+        private void GivenFriendListTabFocused() =>
+            view.FocusTab(0);
 
-        private void GivenRemovedFriend(string userId) => view.Remove(userId);
+        private void GivenRemovedFriend(string userId) =>
+            view.Remove(userId);
 
         private void GivenApprovedFriend(string userId)
         {

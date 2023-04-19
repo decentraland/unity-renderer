@@ -95,6 +95,7 @@ export interface IUnityInterface {
   Module: any
   crashPayloadResponseObservable: Observable<string>
   logger: ILogger
+  InitializeMatrix(token: string): void
   SetTargetHeight(height: number): void
   Init(gameInstance: UnityGame): void
   SendGenericMessage(object: string, method: string, payload: string): void

@@ -18,6 +18,7 @@ using Environment = DCL.Environment;
 /// Contextual menu with different options about an user.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
+
 // TODO: refactor into MVC
 public class UserContextMenu : MonoBehaviour
 {
@@ -92,6 +93,18 @@ public class UserContextMenu : MonoBehaviour
     private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private bool isFriendsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
     internal ISocialAnalytics socialAnalytics;
+
+    private IFriendsController _friendsController;
+
+    private IFriendsController friendsController
+    {
+        get
+        {
+            if (_friendsController == null) { _friendsController = Environment.i.serviceLocator.Get<IFriendsController>(); }
+
+            return _friendsController;
+        }
+    }
 
     /// <summary>
     /// Show context menu
@@ -201,7 +214,7 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnDisable()
     {
-        Environment.i.serviceLocator.Get<IFriendsController>().OnUpdateFriendship -= OnFriendActionUpdate;
+        friendsController.OnUpdateFriendship -= OnFriendActionUpdate;
     }
 
     private void OnPassportButtonPressed()
@@ -227,7 +240,7 @@ public class UserContextMenu : MonoBehaviour
             UserProfileController.userProfilesCatalog.Get(userId)?.userName,
             () =>
             {
-                Environment.i.serviceLocator.Get<IFriendsController>().RemoveFriend(userId);
+                friendsController.RemoveFriend(userId);
                 OnUnfriend?.Invoke(userId);
             }), true);
 
@@ -251,7 +264,7 @@ public class UserContextMenu : MonoBehaviour
         }
         else
         {
-            Environment.i.serviceLocator.Get<IFriendsController>().RequestFriendship(userId);
+            friendsController.RequestFriendship(userId);
             GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
         }
     }
@@ -268,7 +281,7 @@ public class UserContextMenu : MonoBehaviour
         {
             try
             {
-                FriendRequest request = await Environment.i.serviceLocator.Get<IFriendsController>().CancelRequestByUserIdAsync(userId, cancellationToken);
+                FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
 
                 GetSocialAnalytics()
                    .SendFriendRequestCancelled(request.From, request.To,
@@ -277,14 +290,14 @@ public class UserContextMenu : MonoBehaviour
             catch (Exception e) when (e is not OperationCanceledException)
             {
                 e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.ProfileContextMenu.ToString(),
-                    Environment.i.serviceLocator.Get<IFriendsController>(), socialAnalytics);
+                    friendsController, socialAnalytics);
 
                 throw;
             }
         }
         else
         {
-            Environment.i.serviceLocator.Get<IFriendsController>().CancelRequestByUserId(userId);
+            friendsController.CancelRequestByUserId(userId);
 
             GetSocialAnalytics()
                .SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId,
@@ -309,14 +322,14 @@ public class UserContextMenu : MonoBehaviour
                 () =>
                 {
                     WebInterface.SendBlockPlayer(userId);
-                    GetSocialAnalytics().SendPlayerBlocked(Environment.i.serviceLocator.Get<IFriendsController>().IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+                    GetSocialAnalytics().SendPlayerBlocked(friendsController.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
                     OnBlock?.Invoke(userId, blockUser);
                 }), true);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
-            GetSocialAnalytics().SendPlayerUnblocked(Environment.i.serviceLocator.Get<IFriendsController>().IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
             OnBlock?.Invoke(userId, blockUser);
         }
 
@@ -395,10 +408,10 @@ public class UserContextMenu : MonoBehaviour
 
         if ((configFlags & usesFriendsApiFlags) != 0)
         {
-            UserStatus status = Environment.i.serviceLocator.Get<IFriendsController>().GetUserStatus(userId);
+            UserStatus status = friendsController.GetUserStatus(userId);
             SetupFriendship(status?.friendshipStatus ?? FriendshipStatus.NOT_FRIEND);
-            Environment.i.serviceLocator.Get<IFriendsController>().OnUpdateFriendship -= OnFriendActionUpdate;
-            Environment.i.serviceLocator.Get<IFriendsController>().OnUpdateFriendship += OnFriendActionUpdate;
+            friendsController.OnUpdateFriendship -= OnFriendActionUpdate;
+            friendsController.OnUpdateFriendship += OnFriendActionUpdate;
         }
 
         return true;

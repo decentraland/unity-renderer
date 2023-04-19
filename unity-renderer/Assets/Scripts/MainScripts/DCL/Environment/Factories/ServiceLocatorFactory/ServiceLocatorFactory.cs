@@ -33,7 +33,8 @@ namespace DCL
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
 
-            // Addressable Resource Provider
+            //Addressable Resource Provider
+            var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
@@ -45,6 +46,7 @@ namespace DCL
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
+
             result.Register<IWebRequestController>(() => new WebRequestController(
                 new GetWebRequestFactory(),
                 new WebRequestAssetBundleFactory(),
@@ -54,6 +56,7 @@ namespace DCL
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             ));
+
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
@@ -78,13 +81,12 @@ namespace DCL
             result.Register<IFriendsController>(() =>
             {
                 // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
-                WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.i;
-                var rpc = Environment.i.serviceLocator.Get<IRPC>();
+                WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
 
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                     webInterfaceFriendsApiBridge,
-                    RPCFriendsApiBridge.CreateSharedInstance(rpc, webInterfaceFriendsApiBridge),
-                    DataStore.i), new RPCSocialApiBridge(rpc));
+                    RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
+                    DataStore.i), new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(), userProfileWebInterfaceBridge));
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
@@ -143,6 +145,7 @@ namespace DCL
 
             const int ATLAS_CHUNK_SIZE = 1020;
             const int PARCEL_SIZE = 20;
+
             // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
             const float CULLING_BOUNDS_IN_PARCELS = 10;
 
@@ -153,7 +156,7 @@ namespace DCL
             result.Register<IHUDController>(() => new HUDController(DataStore.i));
 
             result.Register<IChannelsFeatureFlagService>(() =>
-                new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
+                new ChannelsFeatureFlagService(DataStore.i, userProfileWebInterfaceBridge));
 
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 

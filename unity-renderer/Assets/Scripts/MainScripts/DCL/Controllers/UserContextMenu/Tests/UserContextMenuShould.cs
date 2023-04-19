@@ -4,11 +4,11 @@ using System;
 using System.Collections;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
-using MainScripts.DCL.Controllers.FriendsController;
 using UnityEngine;
 using UnityEngine.TestTools;
 using SocialFeaturesAnalytics;
 using NSubstitute;
+using Environment = DCL.Environment;
 
 public class UserContextMenuShould
 {
@@ -26,7 +26,12 @@ public class UserContextMenuShould
         contextMenu.socialAnalytics = Substitute.For<ISocialAnalytics>();
 
         friendsApiBridge = Substitute.For<IFriendsApiBridge>();
+
+        var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+        Environment.Setup(serviceLocator);
+
         profileController = new GameObject().AddComponent<UserProfileController>();
+
         profileController.AddUserProfileToCatalog(new UserProfileModel()
         {
             name = TEST_USER_ID,
@@ -141,8 +146,10 @@ public class UserContextMenuShould
 
         Assert.IsTrue(contextMenu.friendAddContainer.activeSelf, "friendAddContainer should be active");
         Assert.IsFalse(contextMenu.friendRemoveContainer.activeSelf, "friendRemoveContainer should not be active");
+
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf,
             "friendRequestedContainer should not be active");
+
         Assert.IsFalse(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should not be active");
 
         WhenFriendshipStatusUpdates(new FriendshipUpdateStatusMessage
@@ -164,8 +171,10 @@ public class UserContextMenuShould
 
         Assert.IsFalse(contextMenu.friendAddContainer.activeSelf, "friendAddContainer should not be active");
         Assert.IsTrue(contextMenu.friendRemoveContainer.activeSelf, "friendRemoveContainer should be active");
+
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf,
             "friendRequestedContainer should not be active");
+
         Assert.IsTrue(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should be active");
 
         WhenFriendshipStatusUpdates(new FriendshipUpdateStatusMessage
@@ -176,8 +185,10 @@ public class UserContextMenuShould
 
         Assert.IsTrue(contextMenu.friendAddContainer.activeSelf, "friendAddContainer should be active");
         Assert.IsFalse(contextMenu.friendRemoveContainer.activeSelf, "friendRemoveContainer should not be active");
+
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf,
             "friendRequestedContainer should not be active");
+
         Assert.IsFalse(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should not be active");
     }
 

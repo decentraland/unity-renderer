@@ -22,8 +22,9 @@ namespace DCL.Social.Friends
         public void SetUp()
         {
             apiBridge = Substitute.For<IFriendsApiBridge>();
-            var rpc = Substitute.For<IRPC>();
-            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(rpc));
+            GameObject go = new GameObject();
+            var component = go.AddComponent<MatrixInitializationBridge>();
+            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component,new UserProfileWebInterfaceBridge()));
         }
 
         [Test]
@@ -45,12 +46,14 @@ namespace DCL.Social.Friends
         [Test]
         public void AddFriends()
         {
-            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(
-                new AddFriendsPayload
-                {
-                    totalFriends = 2,
-                    friends = new[] {"woah", "bleh"}
-                }));
+            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(
+                              new AddFriendsPayload
+                              {
+                                  totalFriends = 2,
+                                  friends = new[] { "woah", "bleh" }
+                              }));
+
             controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
 
             Assert.AreEqual(2, controller.TotalFriendCount);
@@ -192,12 +195,14 @@ namespace DCL.Social.Friends
             var updatedFriends = new Dictionary<string, UserStatus>();
             controller.OnUpdateUserStatus += (s, status) => updatedFriends[s] = status;
 
-            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(
-                new AddFriendsPayload
-                {
-                    totalFriends = 7,
-                    friends = new[] {"usr1"}
-                }));
+            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(
+                              new AddFriendsPayload
+                              {
+                                  totalFriends = 7,
+                                  friends = new[] { "usr1" }
+                              }));
+
             controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
 
             apiBridge.OnUserPresenceUpdated += Raise.Event<Action<UserStatus>>(new UserStatus

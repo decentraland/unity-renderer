@@ -3,8 +3,9 @@ using DCL;
 using DCL.Providers;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
-using NSubstitute;
+using MainScripts.DCL.Controllers.FriendsController;
 using NUnit.Framework;
+using NSubstitute;
 using System;
 using System.Collections;
 using UnityEngine.TestTools;
@@ -18,9 +19,9 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-
-            FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
+            var friendController = new FriendsController(Substitute.For<IFriendsApiBridge>(), Substitute.For<IRPCSocialApiBridge>());
             hudController = new HUDController(new DataStore(), new HUDFactory(new AddressableResourceProvider()));
+
             hudController.Initialize();
             yield return null;
         }
