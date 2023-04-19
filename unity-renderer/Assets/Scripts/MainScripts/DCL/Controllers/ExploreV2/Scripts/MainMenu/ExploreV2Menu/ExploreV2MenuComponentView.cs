@@ -100,10 +100,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public void Update() =>
         CheckIfProfileCardShouldBeClosed();
 
-    public void OnDestroy()
-    {
+    public void OnDestroy() =>
         hudCanvasCameraModeController?.Dispose();
-    }
 
     internal static ExploreV2MenuComponentView Create()
     {

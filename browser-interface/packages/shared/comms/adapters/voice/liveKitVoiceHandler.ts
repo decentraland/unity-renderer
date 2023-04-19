@@ -248,17 +248,17 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     .on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
     .on(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed)
     .on(RoomEvent.MediaDevicesError, handleMediaDevicesError)
-  //.on(RoomEvent.ParticipantConnected, addParticipant)
-  //.on(RoomEvent.ParticipantDisconnected, removeParticipant)
-  //.on(RoomEvent.Reconnected, function (..._args) {
-  //  reconnectAllParticipants()
-  //})
+    .on(RoomEvent.ParticipantConnected, addParticipant)
+    .on(RoomEvent.ParticipantDisconnected, removeParticipant)
+    .on(RoomEvent.Reconnected, function (..._args) {
+      reconnectAllParticipants()
+    })
 
   if (audioContext.state !== 'running') await audioContext.resume()
 
   logger.log('initialized')
 
-  //reconnectAllParticipants()
+  reconnectAllParticipants()
 
   return {
     setRecording(recording) {
