@@ -15,7 +15,7 @@ public class JpegPlayer : IVideoPlayer, IDisposable
         currentState = VideoState.LOADING;
         DownloadImage(url);
     }
-    
+
     public async UniTask DownloadImage(string url)
     {
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
@@ -28,21 +28,12 @@ public class JpegPlayer : IVideoPlayer, IDisposable
             }
             else
             {
-                image = new Texture2D(1, 1);
-                try
-                {
-                    image.LoadImage(request.downloadHandler.data);
-                    currentState = VideoState.READY;
-                }
-                catch (Exception e)
-                {
-                    lastError = "Error downloading image " + url;
-                    currentState = VideoState.ERROR;
-                }
+                image = DownloadHandlerTexture.GetContent(request);
+                currentState = VideoState.READY;
             }
         }
     }
-    
+
     public void Dispose() { GameObject.Destroy(image); }
 
     public void UpdateVideoTexture(){ }
@@ -69,7 +60,7 @@ public class JpegPlayer : IVideoPlayer, IDisposable
 
     public void SetVolume(float volume) { }
 
-    public VideoState GetCurrentState() 
+    public VideoState GetCurrentState()
     {
         return currentState;
     }
