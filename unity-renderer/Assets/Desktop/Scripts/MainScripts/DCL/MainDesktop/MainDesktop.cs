@@ -42,10 +42,10 @@ namespace DCL
 
             //TODO: Integrate preloading controller to LoadingScreenPlugin. Currently not visible
             //preloadingController = new PreloadingController(Environment.i.serviceLocator.Get<IAddressableResourceProvider>());
-            loadingFlowController = new LoadingFlowController(
-                loadingScreenRef.Ref.decoupledLoadingHUD.visible,
-                CommonScriptableObjects.rendererState,
-                DataStore.i.wsCommunication.communicationEstablished);
+            //loadingFlowController = new LoadingFlowController(
+            //    loadingScreenRef.Ref.decoupledLoadingHUD.visible,
+            //    CommonScriptableObjects.rendererState,
+            //    DataStore.i.wsCommunication.communicationEstablished);
         }
 
         protected override void InitializeDataStore()

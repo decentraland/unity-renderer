@@ -15,7 +15,6 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
-        private const int LOAD_SCENE_TIMEOUT = 120000;
 
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
@@ -31,9 +30,9 @@ namespace DCL.LoadingScreen
         private bool currentRealmIsWorld;
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
+        private readonly LoadingScreenTimeoutController timeoutController;
         private bool onSignUpFlow;
 
-        private CancellationTokenSource timeoutCTS;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -49,6 +48,7 @@ namespace DCL.LoadingScreen
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
+            timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView());
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
@@ -60,7 +60,7 @@ namespace DCL.LoadingScreen
         {
             view.Dispose();
             percentageController.Dispose();
-            timeoutCTS.SafeCancelAndDispose();
+            timeoutController.Dispose();
 
             playerDataStore.lastTeleportPosition.OnChange -= TeleportRequested;
             commonDataStore.isSignUpFlow.OnChange -= OnSignupFlow;
@@ -115,19 +115,14 @@ namespace DCL.LoadingScreen
                 //Temporarily removing tips until V2
                 //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
+                timeoutController.StartTimeout();
                 view.FadeIn(false, true);
-                timeoutCTS = timeoutCTS.SafeRestart();
-                StartTimeoutCounter(timeoutCTS.Token);
             }else if (IsSceneLoaded(currentDestinationCandidate))
                 HandlePlayerLoading();
         }
 
 
-        private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
-        {
-            if (!await UniTask.Delay(TimeSpan.FromMilliseconds(LOAD_SCENE_TIMEOUT), cancellationToken: ct).SuppressCancellationThrow())
-                DoTimeout();
-        }
+
 
         //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,
         //we wont see the loading screen. Same happens when leaving a world. Thats why we need to keep track of the latest realmName as well as if it is a world.
@@ -172,21 +167,11 @@ namespace DCL.LoadingScreen
 
         private void FadeOutView()
         {
-            timeoutCTS.SafeCancelAndDispose();
+            timeoutController.StopTimeout();
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
         }
 
-        private void DoTimeout()
-        {
-            notificationsController.ShowNotification(new Model
-            {
-                message = "Loading scene timeout",
-                type = Type.GENERIC,
-                timer = 10f,
-                destroyOnFinish = true
-            });
-            FadeOutView();
-        }
+
     }
 }
