@@ -192,40 +192,48 @@ namespace DCL.Backpack
             view.TakeSnapshotsAfterStopPreviewAnimation(
                 (face256Snapshot, bodySnapshot) =>
                 {
-                    var avatarModel = model.ToAvatarModel();
-
-                    // Add the equipped emotes to the avatar model
-                    List<AvatarModel.AvatarEmoteEntry> emoteEntries = new List<AvatarModel.AvatarEmoteEntry>();
-                    int equippedEmotesCount = dataStore.emotesCustomization.unsavedEquippedEmotes.Count();
-                    for (var i = 0; i < equippedEmotesCount; i++)
-                    {
-                        var equippedEmote = dataStore.emotesCustomization.unsavedEquippedEmotes[i];
-                        if (equippedEmote == null)
-                            continue;
-
-                        emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
-                    }
-
-                    avatarModel.emotes = emoteEntries;
-
-                    backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
-                    dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
-
-                    userProfileBridge.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, dataStore.common.isSignUpFlow.Get());
-                    ownUserProfile.OverrideAvatar(avatarModel, face256Snapshot);
-
-                    if (dataStore.common.isSignUpFlow.Get())
-                    {
-                        dataStore.HUDs.signupVisible.Set(true);
-                        backpackAnalyticsController.SendAvatarEditSuccessNuxAnalytic();
-                    }
-
-                    avatarIsDirty = false;
-
-                    view.Hide();
-                    view.ResetPreviewEmote();
+                    SaveAvatar(face256Snapshot, bodySnapshot);
+                    SetVisibility(false, false);
                 },
-                () => Debug.LogError("Error taking avatar screenshots."));
+                () =>
+                {
+                    Debug.LogError("Error taking avatar screenshots.");
+                    SetVisibility(false, false);
+                });
+        }
+
+        private void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
+        {
+            var avatarModel = model.ToAvatarModel();
+
+            // Add the equipped emotes to the avatar model
+            List<AvatarModel.AvatarEmoteEntry> emoteEntries = new List<AvatarModel.AvatarEmoteEntry>();
+            int equippedEmotesCount = dataStore.emotesCustomization.unsavedEquippedEmotes.Count();
+            for (var i = 0; i < equippedEmotesCount; i++)
+            {
+                var equippedEmote = dataStore.emotesCustomization.unsavedEquippedEmotes[i];
+                if (equippedEmote == null)
+                    continue;
+
+                emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
+            }
+
+            avatarModel.emotes = emoteEntries;
+
+            backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables,
+                avatarModel.wearables);
+            dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
+
+            userProfileBridge.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, dataStore.common.isSignUpFlow.Get());
+            ownUserProfile.OverrideAvatar(avatarModel, face256Snapshot);
+
+            if (dataStore.common.isSignUpFlow.Get())
+            {
+                dataStore.HUDs.signupVisible.Set(true);
+                backpackAnalyticsController.SendAvatarEditSuccessNuxAnalytic();
+            }
+
+            avatarIsDirty = false;
         }
     }
 }
