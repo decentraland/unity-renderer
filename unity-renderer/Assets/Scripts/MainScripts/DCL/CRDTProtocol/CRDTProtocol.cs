@@ -74,24 +74,10 @@ namespace DCL.CRDT
             public object data;
         }
 
-        internal class EntityComponentData : IComparable<EntityComponentData>
+        internal class EntityComponentData
         {
             public int timestamp;
             public object data;
-
-            public int CompareTo(EntityComponentData other)
-            {
-                int timestampDiff = this.timestamp - other.timestamp;
-
-                if (timestampDiff == 0)
-                {
-                    return CompareData(this.data, other.data);
-                }
-                else
-                {
-                    return Math.Sign(timestampDiff);
-                }
-            }
         }
 
         internal class CrdtState
