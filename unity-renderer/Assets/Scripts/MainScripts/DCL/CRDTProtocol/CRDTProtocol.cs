@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace DCL.CRDT
@@ -403,12 +404,16 @@ namespace DCL.CRDT
 
             if (a is byte[] bytesA && b is byte[] bytesB)
             {
-                int res;
-                int n = bytesA.Length > bytesB.Length ? bytesB.Length : bytesA.Length;
+                int lengthDifference = bytesA.Length - bytesB.Length;
 
-                for (int i = 0; i < n; i++)
+                if (lengthDifference != 0)
                 {
-                    res = bytesA[i] - bytesB[i];
+                    return lengthDifference > 0 ? 1 : -1;
+                }
+
+                for (int i = 0; i < bytesA.Length; i++)
+                {
+                    int res = bytesA[i] - bytesB[i];
 
                     if (res != 0)
                     {
@@ -416,19 +421,23 @@ namespace DCL.CRDT
                     }
                 }
 
-                res = bytesA.Length - bytesB.Length;
-
-                return res > 0 ? 1 :
-                    res < 0 ? -1 : 0;
+                // the data is exactly the same
+                return 0;
             }
 
             if (a is string strA && b is string strB)
             {
-                return String.Compare(strA, strB, StringComparison.Ordinal);
+                int lengthDifference = strA.Length - strB.Length;
+
+                if (lengthDifference != 0)
+                {
+                    return lengthDifference > 0 ? 1 : -1;
+                }
+
+                return string.Compare(strA, strB, StringComparison.InvariantCulture);
             }
 
-            //
-            return a.Equals(b) ? 0 : -1;
+            return Comparer.Default.Compare(a, b);
         }
     }
 }
