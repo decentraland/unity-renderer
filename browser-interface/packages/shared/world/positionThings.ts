@@ -4,7 +4,7 @@ import { InstancedSpawnPoint } from '../types'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import {DEBUG, playerHeight} from 'config'
+import { DEBUG, playerHeight } from 'config'
 import { isInsideWorldLimits, Scene, SpawnPoint } from '@dcl/schemas'
 import { halfParcelSize } from 'lib/decentraland/parcels/limits'
 
