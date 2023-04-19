@@ -44,11 +44,11 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
         public async UniTaskVoid InitializeClient(CancellationToken cancellationToken = default)
         {
-            var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
-            var client = new RpcClient(transport);
-            var socialPort = await client.CreatePort("social-service-port");
-            var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
-            socialClient = new ClientFriendshipsService(module);
+            // var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
+            // var client = new RpcClient(transport);
+            // var socialPort = await client.CreatePort("social-service-port");
+            // var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
+            // socialClient = new ClientFriendshipsService(module);
 
             InitializeSubscriptions(cancellationToken).Forget();
         }
@@ -57,10 +57,10 @@ namespace MainScripts.DCL.Controllers.FriendsController
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await UniTask.WaitUntil(() =>
-                    socialClient != null,
-                PlayerLoopTiming.Update,
-                cancellationToken);
+            // await UniTask.WaitUntil(() =>
+            //         socialClient != null,
+            //     PlayerLoopTiming.Update,
+            //     cancellationToken);
 
             // start listening to streams
             // await UniTask.WhenAny(this.ListenToFriendEvents(cancellationToken));
@@ -108,6 +108,8 @@ namespace MainScripts.DCL.Controllers.FriendsController
             //     OnOutgoingFriendRequestAdded?.Invoke(new FriendRequest(
             //         GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, ownUserProfile.userId, friendRequest.User.Address, friendRequest.Message));
             // }
+
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             return new FriendshipInitializationMessage()
             {

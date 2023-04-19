@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.03821436, g: 0.02218005, b: 0.05652288, a: 1}
+  m_IndirectSpecularColor: {r: 0.13752504, g: 0.14356056, b: 0.19036336, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -568,7 +568,7 @@ MonoBehaviour:
     ignoreGlobalScenes: 0
     msgStepByStep: 0
     logWs: 0
-  OpenBrowserOnStart: 1
+  OpenBrowserOnStart: 0
   webSocketSSL: 0
   kernelVersion: 
   useCustomContentServer: 0
