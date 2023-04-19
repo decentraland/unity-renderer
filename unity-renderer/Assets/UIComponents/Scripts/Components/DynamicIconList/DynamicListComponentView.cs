@@ -24,9 +24,7 @@ public class DynamicListComponentView : BaseComponentView, IDynamicListComponent
 
         foreach (var sprite in spriteList)
         {
-            Image newImage = Instantiate(iconReference, transform);
-            newImage.sprite = sprite;
-            instantiatedIcons.Add(newImage);
+            AddIcon(sprite);
         }
     }
 
