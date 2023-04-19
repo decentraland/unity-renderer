@@ -86,7 +86,7 @@ public class CrdtExecutorsManager : IDisposable
         return cachedCrdtExecutor;
     }
 
-    private void CrdtMessageReceived(int sceneNumber, CRDTMessage crdtMessage)
+    private void CrdtMessageReceived(int sceneNumber, CrdtMessage crdtMessage)
     {
         ICRDTExecutor executor = GetCachedExecutor(sceneNumber);
 

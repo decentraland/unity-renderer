@@ -27,7 +27,7 @@ namespace Tests
                 ParsedCRDTTestFile.TestFileInstruction instruction = parsedFile.fileInstructions[i];
                 if (instruction.instructionType == ParsedCRDTTestFile.InstructionType.MESSAGE)
                 {
-                    CRDTMessage msg = ParsedCRDTTestFile.InstructionToMessage(instruction);
+                    CrdtMessage msg = ParsedCRDTTestFile.InstructionToMessage(instruction);
                     crdt.ProcessMessage(msg);
                 }
                 else if (instruction.instructionType == ParsedCRDTTestFile.InstructionType.FINAL_STATE)

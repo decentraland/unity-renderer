@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DCL.CRDT
 {
     public class CRDTProtocol
     {
-
         public enum ProcessMessageResultType
         {
             /**
@@ -76,7 +74,7 @@ namespace DCL.CRDT
             public object data;
         }
 
-        public class EntityComponentData: IComparable<EntityComponentData>
+        public class EntityComponentData : IComparable<EntityComponentData>
         {
             public int timestamp;
             public object data;
@@ -105,16 +103,9 @@ namespace DCL.CRDT
 
         private CrdtState state = new CrdtState();
 
-        private bool clearOnUpdated = false;
-
-        public ProcessMessageResultType ProcessMessage(CRDTMessage message)
+        public ProcessMessageResultType ProcessMessage(CrdtMessage message)
         {
-            if (clearOnUpdated)
-            {
-                Clear();
-            }
-
-            int entityId = (int)message.entityId;
+            int entityId = (int)message.EntityId;
             int entityNumber = entityId & 0xffff;
             int entityVersion = (entityId >> 16) & 0xffff;
             bool entityNumberWasDeleted = state.deletedEntitiesSet.TryGetValue(entityNumber, out int deletedVersion);
@@ -127,7 +118,7 @@ namespace DCL.CRDT
                 }
             }
 
-            if (message.type == CrdtMessageType.DELETE_ENTITY)
+            if (message.Type == CrdtMessageType.DELETE_ENTITY)
             {
                 if (entityNumberWasDeleted)
                 {
@@ -153,9 +144,9 @@ namespace DCL.CRDT
                 return ProcessMessageResultType.EntityDeleted;
             }
 
-            if (message.type == CrdtMessageType.APPEND_COMPONENT)
+            if (message.Type == CrdtMessageType.APPEND_COMPONENT)
             {
-                bool elementAdded = TryAddSetComponentState(message.entityId, message.componentId, message.data, message.timestamp);
+                bool elementAdded = TryAddSetComponentState(message.EntityId, message.ComponentId, message.Data, message.Timestamp);
 
                 if (elementAdded)
                 {
@@ -167,22 +158,22 @@ namespace DCL.CRDT
                 }
             }
 
-            TryGetSingleComponentState(message.entityId, message.componentId, out EntityComponentData storedData);
+            TryGetSingleComponentState(message.EntityId, message.ComponentId, out EntityComponentData storedData);
 
             // The received message is > than our current value, update our state.components.
-            if (storedData == null || storedData.timestamp < message.timestamp)
+            if (storedData == null || storedData.timestamp < message.Timestamp)
             {
-                UpdateSingleComponentState(message.entityId, message.componentId, message.data, message.timestamp);
+                UpdateSingleComponentState(message.EntityId, message.ComponentId, message.Data, message.Timestamp);
                 return ProcessMessageResultType.StateUpdatedTimestamp;
             }
 
             // Outdated Message. Resend our state message through the wire.
-            if (storedData.timestamp > message.timestamp)
+            if (storedData.timestamp > message.Timestamp)
             {
                 return ProcessMessageResultType.StateOutdatedTimestamp;
             }
 
-            int currentDataGreater = CompareData(storedData.data, message.data);
+            int currentDataGreater = CompareData(storedData.data, message.Data);
 
             // Same data, same timestamp. Weirdo echo message.
             if (currentDataGreater == 0)
@@ -197,7 +188,7 @@ namespace DCL.CRDT
             }
 
             // Curent data is lower
-            UpdateSingleComponentState(message.entityId, message.componentId, message.data, message.timestamp);
+            UpdateSingleComponentState(message.EntityId, message.ComponentId, message.Data, message.Timestamp);
             return ProcessMessageResultType.StateUpdatedData;
         }
 
@@ -216,10 +207,10 @@ namespace DCL.CRDT
                     return true;
                 }
             }
+
             entityComponentData = null;
             return false;
         }
-
 
         public bool TryGetComponentSetState(long entityId, int componentId, out List<EntityComponentData> entityComponentSet)
         {
@@ -230,35 +221,34 @@ namespace DCL.CRDT
                     return true;
                 }
             }
+
             entityComponentSet = null;
             return false;
         }
-
 
         internal CrdtState GetState()
         {
             return state;
         }
 
-
-        public List<CRDTMessage> GetStateAsMessages()
+        public List<CrdtMessage> GetStateAsMessages()
         {
-            List<CRDTMessage> crdtMessagesList = new List<CRDTMessage>();
+            List<CrdtMessage> crdtMessagesList = new List<CrdtMessage>();
 
             foreach (var component in state.singleComponents)
             {
                 foreach (var entityComponentData in component.Value)
                 {
-                    crdtMessagesList.Add(new CRDTMessage(){
-                        type = entityComponentData.Value.data == null ? CrdtMessageType.DELETE_COMPONENT : CrdtMessageType.PUT_COMPONENT,
-                        entityId = entityComponentData.Key,
-                        componentId = component.Key,
-                        timestamp = entityComponentData.Value.timestamp,
-                        data = entityComponentData.Value.data
-                    });
+                    crdtMessagesList.Add(new CrdtMessage
+                    (
+                        type: entityComponentData.Value.data == null ? CrdtMessageType.DELETE_COMPONENT : CrdtMessageType.PUT_COMPONENT,
+                        entityId: entityComponentData.Key,
+                        componentId: component.Key,
+                        timestamp: entityComponentData.Value.timestamp,
+                        data: entityComponentData.Value.data
+                    ));
                 }
             }
-
 
             foreach (var component in state.setComponents)
             {
@@ -266,14 +256,14 @@ namespace DCL.CRDT
                 {
                     foreach (var entityComponentData in set.Value)
                     {
-                        crdtMessagesList.Add(new CRDTMessage()
-                        {
-                            type = CrdtMessageType.APPEND_COMPONENT,
-                            entityId = set.Key,
-                            componentId = component.Key,
-                            timestamp = entityComponentData.timestamp,
-                            data = entityComponentData.data
-                        });
+                        crdtMessagesList.Add(new CrdtMessage
+                        (
+                            type: CrdtMessageType.APPEND_COMPONENT,
+                            entityId: set.Key,
+                            componentId: component.Key,
+                            timestamp: entityComponentData.timestamp,
+                            data: entityComponentData.data
+                        ));
                     }
                 }
             }
@@ -283,65 +273,61 @@ namespace DCL.CRDT
                 long entityNumber = entity.Key;
                 long entityVersion = entity.Value;
                 long entityId = entityNumber | (entityVersion << 16);
-                crdtMessagesList.Add(new CRDTMessage(){
-                    type = CrdtMessageType.DELETE_ENTITY,
-                    entityId = entityId
-                });
-            }
 
+                crdtMessagesList.Add(new CrdtMessage(
+                    type: CrdtMessageType.DELETE_ENTITY,
+                    entityId: entityId,
+                    componentId: 0,
+                    timestamp: 0,
+                    data: null
+                ));
+            }
 
             return crdtMessagesList;
         }
 
-        public CRDTMessage CreateLwwMessage(int entityId, int componentId, byte[] data)
+        public CrdtMessage CreateLwwMessage(int entityId, int componentId, byte[] data)
         {
-            var result = new CRDTMessage()
+            int timeStamp = 0;
+
+            if (TryGetSingleComponentState(entityId, componentId, out EntityComponentData storedMessage))
             {
-                entityId = entityId,
-                componentId = componentId,
-                data = data,
-                timestamp = 0,
-                type = data == null ? CrdtMessageType.DELETE_COMPONENT : CrdtMessageType.PUT_COMPONENT,
-            };
-            if (TryGetSingleComponentState(result.entityId, result.componentId, out EntityComponentData storedMessage))
-            {
-                result.timestamp = storedMessage.timestamp + 1;
+                timeStamp = storedMessage.timestamp + 1;
             }
-            return result;
+
+            return new CrdtMessage
+            (
+                type: data == null ? CrdtMessageType.DELETE_COMPONENT : CrdtMessageType.PUT_COMPONENT,
+                entityId: entityId,
+                componentId: componentId,
+                timestamp: timeStamp,
+                data: data
+            );
         }
 
-        public CRDTMessage CreateSetMessage(int entityId, int componentId, byte[] data)
+        public CrdtMessage CreateSetMessage(int entityId, int componentId, byte[] data)
         {
-            var result = new CRDTMessage()
+            int timeStamp = 0;
+
+            if (TryGetSingleComponentState(entityId, componentId, out EntityComponentData storedMessage))
             {
-                entityId = entityId,
-                componentId = componentId,
-                data = data,
-                timestamp = 0,
-                type = CrdtMessageType.APPEND_COMPONENT
-            };
-            if (TryGetSingleComponentState(result.entityId, result.componentId, out EntityComponentData storedMessage))
-            {
-                result.timestamp = storedMessage.timestamp + 1;
+                timeStamp = storedMessage.timestamp + 1;
             }
-            return result;
-        }
 
-        public void Clear()
-        {
-            state.singleComponents.Clear();
-            state.deletedEntitiesSet.Clear();
-            clearOnUpdated = false;
-        }
-
-        public void ClearOnUpdated()
-        {
-            clearOnUpdated = true;
+            return new CrdtMessage
+            (
+                type: CrdtMessageType.APPEND_COMPONENT,
+                entityId: entityId,
+                componentId: componentId,
+                timestamp: timeStamp,
+                data: data
+            );
         }
 
         private void UpdateSingleComponentState(long entityId, int componentId, object data, int remoteTimestamp)
         {
             bool stateExists = TryGetSingleComponentState(entityId, componentId, out EntityComponentData currentStateValue);
+
             if (stateExists)
             {
                 currentStateValue.data = data;
@@ -356,6 +342,7 @@ namespace DCL.CRDT
                 };
 
                 state.singleComponents.TryGetValue(componentId, out Dictionary<long, EntityComponentData> componentSet);
+
                 if (componentSet != null)
                 {
                     componentSet.Add(entityId, newState);
@@ -367,7 +354,6 @@ namespace DCL.CRDT
                 }
             }
         }
-
 
         /**
          * @returns true if the element is added or false if it already exists
@@ -438,17 +424,21 @@ namespace DCL.CRDT
             {
                 int res;
                 int n = bytesA.Length > bytesB.Length ? bytesB.Length : bytesA.Length;
+
                 for (int i = 0; i < n; i++)
                 {
                     res = bytesA[i] - bytesB[i];
-                    if(res != 0)
+
+                    if (res != 0)
                     {
                         return res > 0 ? 1 : -1;
                     }
                 }
 
                 res = bytesA.Length - bytesB.Length;
-                return res > 0 ? 1 : res < 0 ? -1 : 0;
+
+                return res > 0 ? 1 :
+                    res < 0 ? -1 : 0;
             }
 
             if (a is string strA && b is string strB)
@@ -459,6 +449,5 @@ namespace DCL.CRDT
             //
             return a.Equals(b) ? 0 : -1;
         }
-
     }
 }
