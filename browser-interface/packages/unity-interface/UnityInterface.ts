@@ -213,7 +213,6 @@ export class UnityInterface implements IUnityInterface {
 
   public InitializeMatrix(token: string) {
     this.SendMessageToUnity('Bridges', 'InitializeMatrix', JSON.stringify({ token }))
-    this.SendMessageToUnity('Main', 'InitializeMatrix', JSON.stringify({ token }))
   }
 
   public UpdateRealmAbout(configurations: AboutResponse) {
