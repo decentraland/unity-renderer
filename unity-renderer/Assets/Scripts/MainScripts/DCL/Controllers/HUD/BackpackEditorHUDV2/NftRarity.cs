@@ -2,6 +2,7 @@ namespace DCL.Backpack
 {
     public enum NftRarity
     {
+        Common,
         Uncommon,
         Rare,
         Epic,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UIComponents.Scripts.Components;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DCL.Backpack
 {
@@ -11,7 +12,7 @@ namespace DCL.Backpack
         [Serializable]
         private struct FilterIconType
         {
-            public string filterType;
+            public string filterPrefix;
             public Sprite icon;
         }
 
@@ -50,13 +51,13 @@ namespace DCL.Backpack
             categoriesByIndex = new NftSubCategoryFilterComponentView[model.Path.Length];
             var i = 0;
 
-            foreach ((string Type, string Filter, string Name) subCategory in model.Path)
+            foreach ((string Filter, string Name) subCategory in model.Path)
             {
                 PoolableObject poolObj = pool.Get();
                 NftSubCategoryFilterComponentView view = poolObj.gameObject.GetComponent<NftSubCategoryFilterComponentView>();
 
                 bool isLastItem = i == model.Path.Length - 1;
-                FilterIconType filterIcon = iconsByFilter.FirstOrDefault(o => o.filterType == subCategory.Type);
+                FilterIconType filterIcon = iconsByFilter.FirstOrDefault(o => subCategory.Filter.StartsWith(o.filterPrefix));
 
                 view.SetModel(new NftSubCategoryFilterModel
                 {

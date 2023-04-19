@@ -221,10 +221,10 @@ namespace DCL.Backpack
             {
                 Path = new[]
                 {
-                    (Type: "all://", Reference: "all://", Name: "All"),
+                    (Reference: "all://", Name: "All"),
 
-                    // (Type: "category://shoes", Reference: "category://shoes", Name: "Shoes"),
-                    // (Type: "name://", Reference: "name://my wearable", Name: "my wearable"),
+                    // (Reference: "category://shoes", Name: "Shoes"),
+                    // (Reference: "name://my wearable", Name: "my wearable"),
                 },
                 Current = 0,
                 ResultCount = 0,
@@ -256,8 +256,8 @@ namespace DCL.Backpack
                 {
                     if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
                     {
-                        rarity = NftRarity.Uncommon;
-                        Debug.LogError($"Could not parse the rarity of the wearable: {wearable.rarity}. Fallback to uncommon..");
+                        rarity = NftRarity.Common;
+                        Debug.LogError($"Could not parse the rarity of the wearable: {wearable.rarity}. Fallback to common..");
                     }
 
                     return new WearableGridItemModel

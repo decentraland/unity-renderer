@@ -1850,15 +1850,15 @@ MonoBehaviour:
   image: {fileID: 134086463821417477}
   interactButton: {fileID: 3560771922875560365}
   backgroundsByRarityConfiguration:
-  - rarity: 1
-    container: {fileID: 1163196900132748591}
   - rarity: 2
-    container: {fileID: 1302286673069823688}
+    container: {fileID: 1163196900132748591}
   - rarity: 3
-    container: {fileID: 5966779069597679108}
+    container: {fileID: 1302286673069823688}
   - rarity: 4
-    container: {fileID: 4827002688980061713}
+    container: {fileID: 5966779069597679108}
   - rarity: 5
+    container: {fileID: 4827002688980061713}
+  - rarity: 6
     container: {fileID: 3080714961203625796}
 --- !u!1 &8157210884129312552
 GameObject:
