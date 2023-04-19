@@ -1,4 +1,3 @@
-import { getAssetBundlesBaseUrl } from 'config'
 import { LoginState } from 'kernel-web-interface'
 import { now } from 'lib/javascript/now'
 import { waitFor } from 'lib/redux'
@@ -6,8 +5,6 @@ import { AnyAction } from 'redux'
 import { call } from 'redux-saga-test-plan/matchers'
 import { fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { getSelectedNetwork } from 'shared/dao/selectors'
-import { getResourcesURL } from 'shared/location'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { PARCEL_LOADING_STARTED, RENDERER_INITIALIZED_CORRECTLY } from 'shared/renderer/types'
 import { POSITION_SETTLED, POSITION_UNSETTLED, SET_SCENE_LOADER } from 'shared/scene-loader/actions'
@@ -21,7 +18,6 @@ import { SceneWorkerReadyState } from 'shared/world/SceneWorker'
 import {
   informPendingScenes,
   PENDING_SCENES,
-  SceneFail,
   SceneLoad,
   SCENE_CHANGED,
   SCENE_FAIL,
@@ -35,24 +31,11 @@ import { experienceStarted, metricsAuthSuccessful, metricsUnityClientLoaded, TEL
 
 export function* loadingSaga() {
   yield takeEvery(SCENE_LOAD, trackLoadTime)
-  yield takeEvery(SCENE_FAIL, reportFailedScene)
 
   yield fork(translateActions)
   yield fork(initialSceneLoading)
 
   yield takeLatest([SCENE_FAIL, SCENE_LOAD, SCENE_START, SCENE_CHANGED], handleReportPendingScenes)
-}
-
-function* reportFailedScene(action: SceneFail) {
-  const { id, baseUrl } = action.payload
-  const fullRootUrl = getResourcesURL('.')
-
-  trackEvent('scene_loading_failed', {
-    sceneId: id,
-    contentServer: baseUrl,
-    contentServerBundles: getAssetBundlesBaseUrl(yield select(getSelectedNetwork)) + '/',
-    rootUrl: fullRootUrl
-  })
 }
 
 function* translateActions() {
