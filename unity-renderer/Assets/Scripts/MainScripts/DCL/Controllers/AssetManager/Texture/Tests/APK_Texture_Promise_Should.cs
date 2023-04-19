@@ -122,11 +122,9 @@ namespace AssetPromiseKeeper_Texture_Tests
         [UnityTest]
         public IEnumerator FailWithBogusTexture()
         {
-            // Note: the alternative commented url is an existent file in the project.
-            // Since currently we curently are creating the texture from a raw byte array, 
-            // this test would fail if supplied with any invalid texture file since it would be converted into a byte[] without checking the file header.
-            // string url = $"file://{Application.dataPath + "/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Resources/SFX/Wearables - Hair 01.wav"}";            
-            string url = $"file://{Application.dataPath + "/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Resources/SFX/Wearables - Hair 999.wav"}";
+            // Note: the alternative commented url is an existent file in the project and would fail the test.
+            // string url = $"file://{Application.dataPath + "/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Resources/SFX/Wearables - Hair 01.wav"}";
+            string url = $"file://{Application.dataPath + "/../TestResources/Audio/Train.wav"}";
             url = Uri.EscapeUriString(url);
 
             Asset_Texture loadedAsset = null;
@@ -155,7 +153,7 @@ namespace AssetPromiseKeeper_Texture_Tests
             };
 
             keeper.Keep(texture);
-            
+
             yield return texture;
 
             Assert.IsTrue(failed);
