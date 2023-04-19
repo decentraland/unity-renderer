@@ -14,9 +14,9 @@ namespace DCL.Backpack
         private readonly RendererState rendererState;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
-        private readonly BackpackEmotesSectionController backpackEmotesSectionController;
+        private readonly IBackpackEmotesSectionController backpackEmotesSectionController;
         private readonly BackpackAnalyticsController backpackAnalyticsController;
-        private readonly BackpackEditorHUDModel model = new ();
+        internal readonly BackpackEditorHUDModel model = new ();
         private bool avatarIsDirty;
 
         public BackpackEditorHUDController(
@@ -25,7 +25,7 @@ namespace DCL.Backpack
             RendererState rendererState,
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
-            BackpackEmotesSectionController backpackEmotesSectionController,
+            IBackpackEmotesSectionController backpackEmotesSectionController,
             BackpackAnalyticsController backpackAnalyticsController)
         {
             this.view = view;
@@ -187,7 +187,7 @@ namespace DCL.Backpack
                 onFailed: () => onFailed?.Invoke());
         }
 
-        private void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
+        internal void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
         {
             var avatarModel = model.ToAvatarModel();
 
