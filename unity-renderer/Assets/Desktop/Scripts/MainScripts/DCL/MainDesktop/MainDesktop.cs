@@ -1,9 +1,6 @@
 using System;
 using DCL.SettingsCommon;
 using DCL.Components;
-using DCL.Providers;
-using MainScripts.DCL.Controllers.HUD.Preloading;
-using MainScripts.DCL.Controllers.LoadingFlow;
 using MainScripts.DCL.Controllers.SettingsDesktop;
 using MainScripts.DCL.Utils;
 using UnityEngine;
@@ -17,7 +14,6 @@ namespace DCL
     public class MainDesktop : Main
     {
         [SerializeField] private bool logWs = false;
-        private LoadingFlowController loadingFlowController;
         //private PreloadingController preloadingController;
         private bool isConnectionLost;
         private readonly DataStoreRef<DataStore_LoadingScreen> loadingScreenRef;
@@ -39,13 +35,6 @@ namespace DCL
             DataStore.i.performance.multithreading.Set(true);
             DataStore.i.performance.maxDownloads.Set(50);
             Texture.allowThreadedTextureCreation = true;
-
-            //TODO: Integrate preloading controller to LoadingScreenPlugin. Currently not visible
-            //preloadingController = new PreloadingController(Environment.i.serviceLocator.Get<IAddressableResourceProvider>());
-            //loadingFlowController = new LoadingFlowController(
-            //    loadingScreenRef.Ref.decoupledLoadingHUD.visible,
-            //    CommonScriptableObjects.rendererState,
-            //    DataStore.i.wsCommunication.communicationEstablished);
         }
 
         protected override void InitializeDataStore()
@@ -106,7 +95,6 @@ namespace DCL
 
         private void DesktopDestroy()
         {
-            loadingFlowController.Dispose();
             //preloadingController.Dispose();
 #if !AV_PRO_PRESENT
             DCLVideoPlayer.StopAllThreads();

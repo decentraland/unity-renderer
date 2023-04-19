@@ -1,11 +1,6 @@
-using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using System;
 using UnityEngine;
-using DCL.NotificationModel;
-using DCL.Tasks;
-using System.Threading;
-using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
 {
@@ -48,12 +43,16 @@ namespace DCL.LoadingScreen
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
-            timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView());
+            timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView(), worldState);
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
+
+            // The initial loading has still a destination to set. We are starting the timeout for the
+            // websocket initialization
+            timeoutController.StartTimeout(new Vector2Int(-1,-1));
         }
 
         public void Dispose()
@@ -115,7 +114,7 @@ namespace DCL.LoadingScreen
                 //Temporarily removing tips until V2
                 //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
-                timeoutController.StartTimeout();
+                timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
             }else if (IsSceneLoaded(currentDestinationCandidate))
                 HandlePlayerLoading();

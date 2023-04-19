@@ -329,35 +329,15 @@ export class SceneWorker {
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
 
-    const WORKER_TIMEOUT = 120_000
+    const WORKER_TIMEOUT = 1_000
     setTimeout(() => this.onLoadTimeout(), WORKER_TIMEOUT)
   }
 
   private onLoadTimeout() {
     if (!this.sceneStarted) {
-      this.ready |= SceneWorkerReadyState.LOADING_FAILED
-
-      const state: string[] = []
-
-      for (const i in SceneWorkerReadyState) {
-        if (!isNaN(i as any)) {
-          if (this.ready & (i as any)) {
-            state.push(SceneWorkerReadyState[i])
-          }
-        }
-      }
-
-      this.logger.warn('SceneTimedOut', state.join('+'))
-
-      this.sceneStarted = true
-      this.rpcContext.sendSceneEvent('sceneStart', {})
-
-      if (!(this.ready & SceneWorkerReadyState.INITIALIZED)) {
-        // this message should be sent upon failure to unlock the loading screen
-        // when a scene is malformed and never emits InitMessagesFinished
-        this.sendBatch([{ payload: {}, type: 'InitMessagesFinished' }])
-      }
-
+      // Previously, when a scene timeout, we made it start.
+      // Now, we are letting the user decide if they want to wait or go back home.
+      // Nonetheless
       sceneEvents.emit(SCENE_FAIL, signalSceneFail(this.loadableScene))
     }
   }
