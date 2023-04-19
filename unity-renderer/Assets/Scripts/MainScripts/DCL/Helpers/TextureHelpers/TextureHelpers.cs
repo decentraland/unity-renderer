@@ -71,19 +71,11 @@ public static class TextureHelpers
 
     public static Texture2D CopyTexture(Texture2D sourceTexture)
     {
-        Texture2D destTexture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
+        Texture2D texture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
 
-        if (sourceTexture.mipmapCount > 1)
-        {
-            // Copy the source texture with mips to the destination texture without mips
-            Graphics.CopyTexture(sourceTexture, 0, 0, 0, 0, sourceTexture.width, sourceTexture.height, destTexture, 0, 0, 0, 0);
-        }
-        else
-        {
-            // Note: Surprisingly this works in WebGL here but it doesn't work in Resize()
-            Graphics.CopyTexture(sourceTexture, destTexture);
-        }
+        // Note: Surprisingly this works in WebGL here but it doesn't work in Resize()
+        Graphics.CopyTexture(sourceTexture, texture);
 
-        return destTexture;
+        return texture;
     }
 }
