@@ -66,7 +66,7 @@ namespace DCL.CRDT
 
         private int MAX_ELEMENT_SET = 100;
 
-        public class CrdtEntityComponentData
+        internal class CrdtEntityComponentData
         {
             public long entityId;
             public int componentId;
@@ -74,7 +74,7 @@ namespace DCL.CRDT
             public object data;
         }
 
-        public class EntityComponentData : IComparable<EntityComponentData>
+        internal class EntityComponentData : IComparable<EntityComponentData>
         {
             public int timestamp;
             public object data;
@@ -94,14 +94,14 @@ namespace DCL.CRDT
             }
         }
 
-        public class CrdtState
+        internal class CrdtState
         {
             public readonly Dictionary<int, Dictionary<long, EntityComponentData>> singleComponents = new Dictionary<int, Dictionary<long, EntityComponentData>>();
             public readonly Dictionary<int, Dictionary<long, List<EntityComponentData>>> setComponents = new Dictionary<int, Dictionary<long, List<EntityComponentData>>>();
             public readonly Dictionary<int, int> deletedEntitiesSet = new Dictionary<int, int>();
         }
 
-        private CrdtState state = new CrdtState();
+        internal CrdtState state = new CrdtState();
 
         public ProcessMessageResultType ProcessMessage(CrdtMessage message)
         {
@@ -190,45 +190,6 @@ namespace DCL.CRDT
             // Curent data is lower
             UpdateSingleComponentState(message.EntityId, message.ComponentId, message.Data, message.Timestamp);
             return ProcessMessageResultType.StateUpdatedData;
-        }
-
-        public EntityComponentData GetState(long entityId, int componentId)
-        {
-            TryGetSingleComponentState(entityId, componentId, out EntityComponentData entityComponentData);
-            return entityComponentData;
-        }
-
-        public bool TryGetSingleComponentState(long entityId, int componentId, out EntityComponentData entityComponentData)
-        {
-            if (state.singleComponents.TryGetValue(componentId, out Dictionary<long, EntityComponentData> innerDictionary))
-            {
-                if (innerDictionary.TryGetValue(entityId, out entityComponentData))
-                {
-                    return true;
-                }
-            }
-
-            entityComponentData = null;
-            return false;
-        }
-
-        public bool TryGetComponentSetState(long entityId, int componentId, out List<EntityComponentData> entityComponentSet)
-        {
-            if (state.setComponents.TryGetValue(componentId, out Dictionary<long, List<EntityComponentData>> innerDictionary))
-            {
-                if (innerDictionary.TryGetValue(entityId, out entityComponentSet))
-                {
-                    return true;
-                }
-            }
-
-            entityComponentSet = null;
-            return false;
-        }
-
-        internal CrdtState GetState()
-        {
-            return state;
         }
 
         public List<CrdtMessage> GetStateAsMessages()
@@ -324,6 +285,12 @@ namespace DCL.CRDT
             );
         }
 
+        internal EntityComponentData GetState(long entityId, int componentId)
+        {
+            TryGetSingleComponentState(entityId, componentId, out EntityComponentData entityComponentData);
+            return entityComponentData;
+        }
+
         private void UpdateSingleComponentState(long entityId, int componentId, object data, int remoteTimestamp)
         {
             bool stateExists = TryGetSingleComponentState(entityId, componentId, out EntityComponentData currentStateValue);
@@ -406,6 +373,34 @@ namespace DCL.CRDT
             }
 
             return true;
+        }
+
+        private bool TryGetSingleComponentState(long entityId, int componentId, out EntityComponentData entityComponentData)
+        {
+            if (state.singleComponents.TryGetValue(componentId, out Dictionary<long, EntityComponentData> innerDictionary))
+            {
+                if (innerDictionary.TryGetValue(entityId, out entityComponentData))
+                {
+                    return true;
+                }
+            }
+
+            entityComponentData = null;
+            return false;
+        }
+
+        private bool TryGetComponentSetState(long entityId, int componentId, out List<EntityComponentData> entityComponentSet)
+        {
+            if (state.setComponents.TryGetValue(componentId, out Dictionary<long, List<EntityComponentData>> innerDictionary))
+            {
+                if (innerDictionary.TryGetValue(entityId, out entityComponentSet))
+                {
+                    return true;
+                }
+            }
+
+            entityComponentSet = null;
+            return false;
         }
 
         /**

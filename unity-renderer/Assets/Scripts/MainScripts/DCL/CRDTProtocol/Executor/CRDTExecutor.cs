@@ -51,7 +51,6 @@ namespace DCL.CRDT
                 Debug.LogWarning("CRDTExecutor::Execute Called while disposed");
 #endif
 
-            CRDTProtocol.EntityComponentData storedMessage = crdtProtocol.GetState(crdtMessage.EntityId, crdtMessage.ComponentId);
             CRDTProtocol.ProcessMessageResultType resultType = crdtProtocol.ProcessMessage(crdtMessage);
 
             // If the message change the state

@@ -33,7 +33,7 @@ namespace Tests
                 else if (instruction.instructionType == ParsedCRDTTestFile.InstructionType.FINAL_STATE)
                 {
                     var finalState = ParsedCRDTTestFile.InstructionToFinalState(instruction);
-                    bool sameState = AreStatesEqual(crdt.GetState(), finalState, out string reason);
+                    bool sameState = AreStatesEqual(crdt.state, finalState, out string reason);
 
                     Assert.IsTrue(sameState, $"Final state mismatch {instruction.testSpect} " +
                                              $"in line:{instruction.lineNumber} for file {instruction.fileName}. Reason: {reason}");

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class CRDTTestsUtils
+    internal class CRDTTestsUtils
     {
         public static string[] GetTestFilesPath()
         {
@@ -78,13 +78,13 @@ namespace Tests
         }
     }
 
-    public class CrdtEntity
+    internal class CrdtEntity
     {
         public int entityNumber;
         public int entityVersion;
     }
 
-    public class CrdtJsonState
+    internal class CrdtJsonState
     {
         public List<CRDTProtocol.CrdtEntityComponentData> components;
         public List<CrdtEntity> deletedEntities;
@@ -153,7 +153,7 @@ namespace Tests
                 msg.data);
         }
 
-        public static CRDTProtocol.CrdtState InstructionToFinalState(TestFileInstruction instruction)
+        internal static CRDTProtocol.CrdtState InstructionToFinalState(TestFileInstruction instruction)
         {
             CrdtJsonState finalState = null;
 
