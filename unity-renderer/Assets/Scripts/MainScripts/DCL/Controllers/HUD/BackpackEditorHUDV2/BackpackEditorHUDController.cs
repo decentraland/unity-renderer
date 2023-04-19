@@ -1,4 +1,3 @@
-using DCL.Interface;
 using DCLServices.WearablesCatalogService;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,8 +42,6 @@ namespace DCL.Backpack
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
             backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
-            backpackEmotesSectionController.OnEmoteEquipped += OnEmoteEquipped;
-            backpackEmotesSectionController.OnEmoteUnequipped += OnEmoteUnequipped;
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
 
@@ -56,8 +53,6 @@ namespace DCL.Backpack
 
             backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
-            backpackEmotesSectionController.OnEmoteEquipped -= OnEmoteEquipped;
-            backpackEmotesSectionController.OnEmoteUnequipped -= OnEmoteUnequipped;
             backpackEmotesSectionController.Dispose();
 
             view.Dispose();
@@ -143,22 +138,6 @@ namespace DCL.Backpack
 
         private void OnNewEmoteAdded(string emoteId) =>
             UpdateAvatarPreview();
-
-        private void OnEmoteEquipped(string emoteId)
-        {
-            wearablesCatalogService.WearablesCatalog.TryGetValue(emoteId, out WearableItem equippedEmote);
-
-            if (equippedEmote != null && equippedEmote.IsEmote())
-                avatarIsDirty = true;
-        }
-
-        private void OnEmoteUnequipped(string emoteId)
-        {
-            wearablesCatalogService.WearablesCatalog.TryGetValue(emoteId, out WearableItem unequippedEmote);
-
-            if (unequippedEmote != null && unequippedEmote.IsEmote())
-                avatarIsDirty = true;
-        }
 
         private void OnEmotePreviewed(string emoteId) =>
             view.PlayPreviewEmote(emoteId);
