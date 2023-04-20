@@ -1,9 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
-using DCl.Social.Friends;
-using DCL.Social.Friends;
-using MainScripts.DCL.Controllers.FriendsController;
 using NUnit.Framework;
 using NSubstitute;
 using System;
