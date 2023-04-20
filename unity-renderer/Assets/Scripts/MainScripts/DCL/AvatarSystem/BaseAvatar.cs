@@ -82,8 +82,10 @@ namespace AvatarSystem
                 baseAvatarReferences.ParticlesContainer.SetActive(true);
                 List<UniTask> tasks = new List<UniTask>();
                 tasks.Add(GetRevealTask(ghostMaterial, avatarHeight, completionHeight));
-
-                for (var index = 0; index < cachedMaterials.Count; index++) { tasks.Add(GetRevealTask(cachedMaterials[index], -avatarHeight, -completionHeight)); }
+                for (var index = 0; index < cachedMaterials.Count; index++)
+                {
+                    tasks.Add(GetRevealTask(cachedMaterials[index], -avatarHeight, -completionHeight));
+                }
 
                 await UniTask.WhenAll(tasks);
             }
