@@ -1,8 +1,4 @@
 using DCL.Interface;
-using MainScripts.DCL.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,8 +47,17 @@ public class LoadingScreenTimeoutView : MonoBehaviour
             goBackHomeButton.onClick.RemoveAllListeners();
     }
 
-    private void OnExit() =>
-        DesktopUtils.Quit();
+    private void OnExit()
+    {
+#if UNITY_EDITOR
+
+        // Application.Quit() does not work in the editor so
+        // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+    }
 
     private void GoBackHome()
     {
