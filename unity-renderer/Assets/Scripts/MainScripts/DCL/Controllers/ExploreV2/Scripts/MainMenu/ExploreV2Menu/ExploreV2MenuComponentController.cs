@@ -315,7 +315,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         //     view.GoToSection(ExploreSection.Explore);
         //     isOpen.Set(false);
         // }
-        //
-        // view.SetSectionActive(ExploreSection.Map, !isWorld);
+
+        view.SetSectionActive(ExploreSection.Map, !isWorld);
     }
 }
