@@ -25,10 +25,9 @@ namespace DCL.Map
         [PublicAPI]
         public void UpdateMinimapSceneInformation(string scenesInfoJson)
         {
-            MinimapMetadata.MinimapSceneInfo[] scenesInfo = new MinimapMetadata.MinimapSceneInfo[] { };
+            if (string.IsNullOrEmpty(scenesInfoJson)) return;
 
-            if(!string.IsNullOrEmpty(scenesInfoJson))
-                scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);
+            var scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);
 
             foreach (var sceneInfo in scenesInfo)
                 minimapMetadata.AddSceneInfo(sceneInfo);
