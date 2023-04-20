@@ -300,10 +300,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         if (isWorld == wasWorld) return;
 
-        if (IsSectionActive(ExploreSection.Map))
+        if (isWorld && IsSectionActive(ExploreSection.Map))
         {
-            GoToSection(ExploreSection.Explore);
-            Hide();
+            placesAndEventsSection.Show();
+            mapSection.Hide();
         }
 
         SetSectionActive(ExploreSection.Map, !isWorld);
