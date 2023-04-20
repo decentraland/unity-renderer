@@ -11,8 +11,8 @@ using UnityEngine;
 public class LoadingScreenTimeoutController : IDisposable
 {
 
-    private const int LOAD_SCENE_TIMEOUT = 1000;
-    private const int WEBSOCKET_TIMEOUT = 1000;
+    private const int LOAD_SCENE_TIMEOUT = 120000;
+    private const int WEBSOCKET_TIMEOUT = 15000;
 
     private int currentEvaluatedTimeout;
 
@@ -26,10 +26,7 @@ public class LoadingScreenTimeoutController : IDisposable
         this.view = loadingScreenTimeoutView;
         this.worldState = worldState;
 
-        if (Application.platform == RuntimePlatform.WebGLPlayer)
-            currentEvaluatedTimeout = LOAD_SCENE_TIMEOUT;
-        else
-            currentEvaluatedTimeout = WEBSOCKET_TIMEOUT;
+        currentEvaluatedTimeout = Application.platform == RuntimePlatform.WebGLPlayer ? LOAD_SCENE_TIMEOUT : WEBSOCKET_TIMEOUT;
     }
 
     private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
