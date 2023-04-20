@@ -29,7 +29,7 @@ internal class PrimitiveMeshFactory
                 }
                 else
                 {
-                    mesh = PrimitiveMeshBuilder.BuildSphere(1f);
+                    mesh = PrimitiveMeshBuilder.BuildSphere(0.5f);
                 }
                 break;
             }
@@ -50,7 +50,7 @@ internal class PrimitiveMeshFactory
                     if (meshModelModel.properties is PropertyCylinder cylinder)
                     {
                         mesh = PrimitiveMeshBuilder.BuildCylinder(50, cylinder.radiusTop, cylinder.radiusBottom,
-                            2f, 0f, true, false);
+                            1f, 0f, true, false);
                     }
                 }
                 break;
