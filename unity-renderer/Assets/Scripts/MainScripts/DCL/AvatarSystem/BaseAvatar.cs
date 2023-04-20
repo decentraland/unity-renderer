@@ -106,7 +106,6 @@ namespace AvatarSystem
                 cachedMaterials[i].SetVector(REVEAL_NORMAL_ID, Vector3.up * -1);
                 SetRevealPosition(cachedMaterials[i], -avatarHeight);
             }
-
             baseAvatarReferences.ParticlesContainer.SetActive(false);
         }
 
