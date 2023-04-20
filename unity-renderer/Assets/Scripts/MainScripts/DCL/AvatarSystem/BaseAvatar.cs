@@ -72,7 +72,7 @@ namespace AvatarSystem
                                .OnComplete(() =>
                                 {
                                     baseAvatarReferences.ParticlesContainer.SetActive(false);
-                                    material.DOFade(0, COLOR_ID, 0);
+                                    FadeOutGhostMaterial();
                                     SetRevealPosition(material, completionPosition);
                                 })
                                .ToUniTaskInstantCancelation(true, cancellationToken: linkedCts.Token);
@@ -110,7 +110,14 @@ namespace AvatarSystem
                 SetRevealPosition(cachedMaterials[i], -avatarHeight);
             }
             baseAvatarReferences.ParticlesContainer.SetActive(false);
-            ghostMaterial.DOFade(0, COLOR_ID, 0);
+            FadeOutGhostMaterial();
+        }
+
+        private void FadeOutGhostMaterial()
+        {
+            Color color = ghostMaterial.GetColor(COLOR_ID);
+            color.a = 0;
+            ghostMaterial.color = color;
         }
 
         internal static void SetRevealPosition(Material material, float height)
