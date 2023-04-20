@@ -33,7 +33,7 @@ namespace UIComponents.Scripts.Components
         public override void RefreshControl()
         {
             pageNumber = model.PageNumber;
-            text.text = (model.PageNumber + 1).ToString();
+            text.text = model.PageNumber.ToString();
         }
 
         private void OnButtonDown()
@@ -41,9 +41,9 @@ namespace UIComponents.Scripts.Components
             OnPageClicked?.Invoke(pageNumber);
         }
 
-        public void Toggle(bool b)
+        public void Toggle(bool isOn)
         {
-            anim.SetBool(IS_ACTIVE_ANIMATOR_HASH, b);
+            anim.SetBool(IS_ACTIVE_ANIMATOR_HASH, isOn);
         }
     }
 }

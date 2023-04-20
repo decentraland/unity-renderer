@@ -17,7 +17,7 @@ namespace UIComponents.Scripts.Components
 
         private readonly List<PageSelectorButtonComponentView> buttons = new ();
         private int totalPages;
-        private int currentPage = -1;
+        private int currentIndex = -1;
 
         public event Action<int> OnValueChanged;
 
@@ -33,28 +33,12 @@ namespace UIComponents.Scripts.Components
         public override void RefreshControl()
         {
             SetTotalPages(model.TotalPages);
-            SelectPage(model.CurrentPage);
+            SelectIndex(model.CurrentPage - 1);
         }
 
-        private void OnNextButtonDown()
+        public void SelectIndex(int index)
         {
-            currentPage = (currentPage + 1) % totalPages;
-            UpdateButtonsStatus();
-        }
-
-        private void OnPreviousButtonDown()
-        {
-            if (currentPage - 1 < 0)
-                currentPage = totalPages - 1;
-            else
-                currentPage = (currentPage - 1) % totalPages;
-
-            UpdateButtonsStatus();
-        }
-
-        public void SelectPage(int pageNumber)
-        {
-            currentPage = pageNumber;
+            currentIndex = index;
             UpdateButtonsStatus();
         }
 
@@ -64,13 +48,29 @@ namespace UIComponents.Scripts.Components
 
             this.totalPages = maxTotalPages;
 
-            currentPage = Mathf.Clamp(currentPage, 0, maxTotalPages - 1);
+            currentIndex = Mathf.Clamp(currentIndex, 0, maxTotalPages - 1);
 
             EnsureButtons();
             UpdateButtonsStatus(false);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(pageButtonsParent);
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+        }
+
+        private void OnNextButtonDown()
+        {
+            currentIndex = (currentIndex + 1) % totalPages;
+            UpdateButtonsStatus();
+        }
+
+        private void OnPreviousButtonDown()
+        {
+            if (currentIndex - 1 < 0)
+                currentIndex = totalPages - 1;
+            else
+                currentIndex = (currentIndex - 1) % totalPages;
+
+            UpdateButtonsStatus();
         }
 
         private void EnsureButtons()
@@ -81,7 +81,7 @@ namespace UIComponents.Scripts.Components
 
                 if (diff > 0)
                 {
-                    for (int i = 0; i < diff; i++)
+                    for (var i = 0; i < diff; i++)
                     {
                         var instance = Instantiate(pageButtonPrefab, pageButtonsParent);
                         buttons.Add(instance);
@@ -102,11 +102,11 @@ namespace UIComponents.Scripts.Components
 
                 uiPageButton.SetModel(new PageSelectorButtonModel
                 {
-                    PageNumber = i,
+                    PageNumber = i + 1,
                 });
                 uiPageButton.gameObject.SetActive(true);
-                uiPageButton.OnPageClicked -= SelectPage;
-                uiPageButton.OnPageClicked += SelectPage;
+                uiPageButton.OnPageClicked -= SelectIndex;
+                uiPageButton.OnPageClicked += SelectIndex;
             }
         }
 
@@ -115,10 +115,10 @@ namespace UIComponents.Scripts.Components
             if (buttonIndex >= totalPages)
                 return false;
 
-            if (currentPage + 1 <= maxVisiblePages / 2)
+            if (currentIndex + 1 <= maxVisiblePages / 2)
                 return buttonIndex < maxVisiblePages;
 
-            return buttonIndex < currentPage + 1 + (maxVisiblePages / 2) && buttonIndex + 1 > currentPage - (maxVisiblePages / 2);
+            return buttonIndex < currentIndex + 1 + (maxVisiblePages / 2) && buttonIndex + 1 > currentIndex - (maxVisiblePages / 2);
         }
 
         private void UpdateButtonsStatus(bool notifyEvent = true)
@@ -126,7 +126,7 @@ namespace UIComponents.Scripts.Components
             UpdateToggleStatus();
 
             if (notifyEvent)
-                OnValueChanged?.Invoke(currentPage);
+                OnValueChanged?.Invoke(currentIndex + 1);
         }
 
         private void UpdateToggleStatus()
@@ -138,7 +138,7 @@ namespace UIComponents.Scripts.Components
                 if (limitedPages)
                     currentButton.gameObject.SetActive(ShouldShowButton(i));
 
-                currentButton.Toggle(i == currentPage);
+                currentButton.Toggle(i == currentIndex);
             }
         }
     }

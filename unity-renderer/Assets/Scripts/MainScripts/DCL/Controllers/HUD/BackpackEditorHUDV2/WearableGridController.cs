@@ -12,6 +12,9 @@ namespace DCL.Backpack
     public class WearableGridController
     {
         private const int PAGE_SIZE = 15;
+        private const string ALL_FILTER_REF = "all";
+        private const string NAME_FILTER_REF = "name=";
+        private const string CATEGORY_FILTER_REF = "category=";
 
         private readonly IWearableGridView view;
         private readonly IUserProfileBridge userProfileBridge;
@@ -49,7 +52,7 @@ namespace DCL.Backpack
         public void LoadWearables()
         {
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
-            ShowWearablesAndItsFilteringPath(0, requestWearablesCancellationToken.Token).Forget();
+            ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
         }
 
         public void CancelWearableLoading() =>
@@ -61,10 +64,9 @@ namespace DCL.Backpack
             {
                 Path = new[]
                 {
-                    (Reference: "all://", Name: "All"),
-
-                    // (Reference: "category://shoes", Name: "Shoes"),
-                    // (Reference: "name://my wearable", Name: "my wearable"),
+                    (Reference: ALL_FILTER_REF, Name: "All"),
+                    // (Reference: $"{CATEGORY_FILTER_REF}shoes", Name: "Shoes"),
+                    // (Reference: $"{NAME_FILTER_REF}my wearable", Name: "my wearable"),
                 },
                 Current = 0,
                 ResultCount = 0,
@@ -93,31 +95,10 @@ namespace DCL.Backpack
                 // TODO: instead of requesting owned wearables, we should request all the wearables with the current filters & sorting
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
-
-                    // page is not zero based
-                    page + 1,
+                    page,
                     PAGE_SIZE, true, cancellationToken);
 
-                var wearableModels = wearables.Select(wearable =>
-                {
-                    if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
-                    {
-                        rarity = NftRarity.Common;
-                        Debug.LogError($"Could not parse the rarity of the wearable: {wearable.rarity}. Fallback to common..");
-                    }
-
-                    return new WearableGridItemModel
-                    {
-                        WearableId = wearable.id,
-                        Rarity = rarity,
-                        ImageUrl = wearable.ComposeThumbnailUrl(),
-                        IsEquipped = ownUserProfile.HasEquipped(wearable.id),
-
-                        // TODO: make the new state work
-                        IsNew = false,
-                        IsSelected = false,
-                    };
-                });
+                var wearableModels = wearables.Select(ToWearableGridModel);
 
                 view.SetWearablePages(page, (totalAmount / PAGE_SIZE) + 1);
 
@@ -130,6 +111,26 @@ namespace DCL.Backpack
             catch (Exception e) { Debug.LogException(e); }
 
             return 0;
+        }
+
+        private WearableGridItemModel ToWearableGridModel(WearableItem wearable)
+        {
+            if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
+            {
+                rarity = NftRarity.Common;
+                Debug.LogError($"Could not parse the rarity of the wearable: {wearable.rarity}. Fallback to common..");
+            }
+
+            return new WearableGridItemModel
+            {
+                WearableId = wearable.id,
+                Rarity = rarity,
+                ImageUrl = wearable.ComposeThumbnailUrl(),
+                IsEquipped = userProfileBridge.GetOwn().HasEquipped(wearable.id),
+                // TODO: make the new state work
+                IsNew = false,
+                IsSelected = false,
+            };
         }
 
         private void HandleWearableSelected(WearableGridItemModel wearableGridItem)
@@ -150,13 +151,13 @@ namespace DCL.Backpack
 
         private void FilterWearablesFromBreadcrumb(string referencePath)
         {
-            if (referencePath.StartsWith("all://"))
+            if (referencePath.StartsWith(ALL_FILTER_REF))
             {
                 requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
-                ShowWearablesAndItsFilteringPath(0, requestWearablesCancellationToken.Token).Forget();
+                ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
             }
-            else if (referencePath.StartsWith("name://")) { throw new NotImplementedException(); }
-            else if (referencePath.StartsWith("category://")) { throw new NotImplementedException(); }
+            else if (referencePath.StartsWith(NAME_FILTER_REF)) { throw new NotImplementedException(); }
+            else if (referencePath.StartsWith(CATEGORY_FILTER_REF)) { throw new NotImplementedException(); }
         }
     }
 }
