@@ -17,11 +17,13 @@ import type { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { commsLogger } from '../logger'
 import type { CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
 import { createLiveKitVoiceHandler } from './voice/liveKitVoiceHandler'
+import { GlobalAudioStream } from './voice/loopback'
 
 export type LivekitConfig = {
   url: string
   token: string
   logger: ILogger
+  globalAudioStream: GlobalAudioStream
 }
 
 export class LivekitAdapter implements MinimumCommunicationsAdapter {
@@ -29,9 +31,12 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
   private disposed = false
   private readonly room: Room
+  private voiceHandler: VoiceHandler
 
   constructor(private config: LivekitConfig) {
     this.room = new Room()
+
+    this.voiceHandler = createLiveKitVoiceHandler(this.room, this.config.globalAudioStream)
 
     this.room
       .on(RoomEvent.ParticipantConnected, (_: RemoteParticipant) => {
@@ -74,7 +79,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   }
 
   async createVoiceHandler(): Promise<VoiceHandler> {
-    return createLiveKitVoiceHandler(this.room)
+    return this.voiceHandler
   }
 
   async connect(): Promise<void> {
