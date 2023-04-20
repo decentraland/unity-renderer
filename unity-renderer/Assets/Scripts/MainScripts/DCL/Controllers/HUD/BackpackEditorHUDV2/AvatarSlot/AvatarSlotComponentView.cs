@@ -2,17 +2,21 @@ using System;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using DG.Tweening;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
     public class AvatarSlotComponentView : BaseComponentView<AvatarSlotComponentModel>, IAvatarSlotComponentView
     {
+        private const float ANIMATION_TIME = 0.2f;
+        private const float SHAKE_ANIMATION_TIME = 0.75f;
+
         [Header("Configuration")]
         [SerializeField] internal AvatarSlotComponentModel model;
 
         [SerializeField] internal NftTypeIconSO typeIcons;
+        [SerializeField] internal Transform nftContainer;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
         [SerializeField] internal Image typeImage;
         [SerializeField] internal ImageComponentView nftImage;
@@ -51,9 +55,9 @@ namespace DCL.Backpack
             model.isHidden = isHidden;
             model.hiddenBy = hiddenBy;
             hiddenSlot.SetActive(isHidden);
-
             if (isHidden)
             {
+                ShakeAnimation(nftContainer);
                 emptySlot.SetActive(false);
                 tooltipHiddenText.gameObject.SetActive(true);
                 tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
@@ -96,6 +100,7 @@ namespace DCL.Backpack
         {
             focusedImage.enabled = true;
             tooltipContainer.SetActive(true);
+            ScaleUpAnimation(focusedImage.transform);
         }
 
         public override void OnLoseFocus()
@@ -107,15 +112,45 @@ namespace DCL.Backpack
         public void OnSlotClick()
         {
             isSelected = !isSelected;
-            selectedImage.enabled = isSelected;
+
+            if (isSelected)
+            {
+                selectedImage.enabled = true;
+                ScaleUpAnimation(selectedImage.transform);
+            }
+            else
+            {
+                ScaleDownAndResetAnimation(selectedImage);
+            }
 
             OnSelectAvatarSlot?.Invoke(model.category, isSelected);
         }
+
 
         public void OnPointerClickOnDifferentSlot()
         {
             isSelected = false;
             selectedImage.enabled = false;
+        }
+
+        private void ScaleUpAnimation(Transform targetTransform)
+        {
+            targetTransform.transform.localScale = new Vector3(0, 0, 0);
+            targetTransform.transform.DOScale(1, ANIMATION_TIME).SetEase(Ease.OutBack);
+        }
+
+        private void ScaleDownAndResetAnimation(Image targetImage)
+        {
+            targetImage.transform.DOScale(0, ANIMATION_TIME).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+                targetImage.enabled = false;
+                targetImage.transform.localScale = new Vector3(1, 1, 1);
+            });
+        }
+
+        private void ShakeAnimation(Transform targetTransform)
+        {
+            targetTransform.DOShakePosition(SHAKE_ANIMATION_TIME, 4);
         }
     }
 }
