@@ -257,14 +257,6 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
     hasInput: () => {
       return validInput
     },
-    async destroy() {
-      await Promise.allSettled([
-        room.localParticipant.unpublishTracks(
-          Array.from(room.localParticipant.audioTracks.values())
-            .map(($) => $.audioTrack!)
-            .filter(Boolean)
-        )
-      ])
-    }
+    async destroy() {}
   }
 }
