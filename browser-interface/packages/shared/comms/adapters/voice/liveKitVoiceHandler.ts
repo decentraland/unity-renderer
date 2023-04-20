@@ -123,9 +123,6 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
       if (trackId === remoteTrack.sid) {
         track.panNode.disconnect()
         track.streamNode.disconnect()
-        // TODO
-        // track.track.stop()
-        // track.track.detach()
         break
       }
     }
@@ -147,7 +144,9 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
       room.localParticipant
         .setMicrophoneEnabled(recording)
         .then(() => {
-          if (recordingListener) recordingListener(recording)
+          if (recordingListener) {
+            recordingListener(recording)
+          }
         })
         .catch((err) => logger.error('Error: ', err, ', recording=', recording))
     },
