@@ -310,12 +310,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     private void OnWorldChange(bool isWorld, bool _)
     {
-        if (view.IsSectionActive(ExploreSection.Map))
-        {
-            view.GoToSection(ExploreSection.Explore);
-            isOpen.Set(false);
-        }
-
-        view.SetSectionActive(ExploreSection.Map, !isWorld);
+        // if (view.IsSectionActive(ExploreSection.Map))
+        // {
+        //     view.GoToSection(ExploreSection.Explore);
+        //     isOpen.Set(false);
+        // }
+        //
+        // view.SetSectionActive(ExploreSection.Map, !isWorld);
     }
 }
