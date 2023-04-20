@@ -77,16 +77,17 @@ namespace AvatarSystem
                                .ToUniTaskInstantCancelation(true, cancellationToken: linkedCts.Token);
             }
 
-            baseAvatarReferences.ParticlesContainer.SetActive(true);
-            List<UniTask> tasks = new List<UniTask>();
-            tasks.Add(GetRevealTask(ghostMaterial, avatarHeight, completionHeight));
-
-            for (var index = 0; index < cachedMaterials.Count; index++)
+            try
             {
-                tasks.Add(GetRevealTask(cachedMaterials[index], -avatarHeight, -completionHeight));
-            }
+                baseAvatarReferences.ParticlesContainer.SetActive(true);
+                List<UniTask> tasks = new List<UniTask>();
+                tasks.Add(GetRevealTask(ghostMaterial, avatarHeight, completionHeight));
 
-            await UniTask.WhenAll(tasks);
+                for (var index = 0; index < cachedMaterials.Count; index++) { tasks.Add(GetRevealTask(cachedMaterials[index], -avatarHeight, -completionHeight)); }
+
+                await UniTask.WhenAll(tasks);
+            }
+            finally { baseAvatarReferences.ParticlesContainer.SetActive(false); }
         }
 
         public void RevealInstantly(Renderer targetRenderer, float avatarHeight)
@@ -105,6 +106,8 @@ namespace AvatarSystem
                 cachedMaterials[i].SetVector(REVEAL_NORMAL_ID, Vector3.up * -1);
                 SetRevealPosition(cachedMaterials[i], -avatarHeight);
             }
+
+            baseAvatarReferences.ParticlesContainer.SetActive(false);
         }
 
         internal static void SetRevealPosition(Material material, float height)
