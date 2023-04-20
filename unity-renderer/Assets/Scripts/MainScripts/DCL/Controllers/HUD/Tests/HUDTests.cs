@@ -19,7 +19,6 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            var friendController = new FriendsController(Substitute.For<IFriendsApiBridge>(), Substitute.For<IRPCSocialApiBridge>());
             hudController = new HUDController(new DataStore(), new HUDFactory(new AddressableResourceProvider()));
 
             hudController.Initialize();

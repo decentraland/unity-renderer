@@ -15,6 +15,8 @@ namespace DCL.Social.Friends
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
         private readonly Dictionary<string, UserStatus> friends = new ();
 
+        private const string USE_SOCIAL_CLIENT_FEATURE_FLAG = "use-social-client";
+
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
 
@@ -36,7 +38,11 @@ namespace DCL.Social.Friends
 
         private CancellationTokenSource controllerCancellationTokenSource;
 
-        public FriendsController(IFriendsApiBridge apiBridge, IRPCSocialApiBridge rpcSocialApiBridge)
+        private DataStore dataStore;
+
+        private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
+
+        public FriendsController(IFriendsApiBridge apiBridge, IRPCSocialApiBridge rpcSocialApiBridge, DataStore dataStore)
         {
             this.apiBridge = apiBridge;
             apiBridge.OnFriendNotFound += FriendNotFound;
@@ -52,14 +58,19 @@ namespace DCL.Social.Friends
             socialApiBridge.OnFriendRemoved += InternalRemoveFriend;
             socialApiBridge.OnFriendRequestAdded += AddFriendRequest;
             socialApiBridge.OnFriendRequestRemoved += RemoveFriendRequest;
+
+            this.dataStore = dataStore;
         }
 
         public void Initialize()
         {
             controllerCancellationTokenSource = new CancellationTokenSource();
 
-            socialApiBridge.InitializeClient(controllerCancellationTokenSource.Token).Forget();
-            socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.InitializeFriendships).Forget();
+            if (useSocialApiBridge)
+            {
+                socialApiBridge.InitializeClient(controllerCancellationTokenSource.Token).Forget();
+                socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.InitializeFriendships).Forget();
+            }
         }
 
         public void Dispose()
