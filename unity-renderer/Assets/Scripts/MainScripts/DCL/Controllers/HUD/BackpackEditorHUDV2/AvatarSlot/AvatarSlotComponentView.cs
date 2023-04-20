@@ -57,7 +57,7 @@ namespace DCL.Backpack
             hiddenSlot.SetActive(isHidden);
             if (isHidden)
             {
-                nftContainer.DOShakePosition(SHAKE_ANIMATION_TIME, 4);
+                ShakeAnimation(nftContainer);
                 emptySlot.SetActive(false);
                 tooltipHiddenText.gameObject.SetActive(true);
                 tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
@@ -100,8 +100,7 @@ namespace DCL.Backpack
         {
             focusedImage.enabled = true;
             tooltipContainer.SetActive(true);
-            focusedImage.transform.localScale = new Vector3(0, 0, 0);
-            focusedImage.transform.DOScale(1, ANIMATION_TIME).SetEase(Ease.OutBack);
+            ScaleUpAnimation(focusedImage.transform);
         }
 
         public override void OnLoseFocus()
@@ -117,25 +116,41 @@ namespace DCL.Backpack
             if (isSelected)
             {
                 selectedImage.enabled = true;
-                selectedImage.transform.localScale = new Vector3(0, 0, 0);
-                selectedImage.transform.DOScale(1, ANIMATION_TIME).SetEase(Ease.OutBack);
+                ScaleUpAnimation(selectedImage.transform);
             }
             else
             {
-                selectedImage.transform.DOScale(0, ANIMATION_TIME).SetEase(Ease.OutBack).OnComplete(() =>
-                {
-                    selectedImage.enabled = false;
-                    selectedImage.transform.localScale = new Vector3(1,1,1);
-                });
+                ScaleDownAndResetAnimation(selectedImage);
             }
 
             OnSelectAvatarSlot?.Invoke(model.category, isSelected);
         }
 
+
         public void OnPointerClickOnDifferentSlot()
         {
             isSelected = false;
             selectedImage.enabled = false;
+        }
+
+        private void ScaleUpAnimation(Transform targetTransform)
+        {
+            targetTransform.transform.localScale = new Vector3(0, 0, 0);
+            targetTransform.transform.DOScale(1, ANIMATION_TIME).SetEase(Ease.OutBack);
+        }
+
+        private void ScaleDownAndResetAnimation(Image targetImage)
+        {
+            targetImage.transform.DOScale(0, ANIMATION_TIME).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+                targetImage.enabled = false;
+                targetImage.transform.localScale = new Vector3(1, 1, 1);
+            });
+        }
+
+        private void ShakeAnimation(Transform targetTransform)
+        {
+            targetTransform.DOShakePosition(SHAKE_ANIMATION_TIME, 4);
         }
     }
 }
