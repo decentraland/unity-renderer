@@ -49,7 +49,7 @@ export async function createAudioStream(): Promise<GlobalAudioStream> {
   }
 
   function getAudioContext() {
-    return destinationStream
+    return audioContext
   }
 
   function play() {
