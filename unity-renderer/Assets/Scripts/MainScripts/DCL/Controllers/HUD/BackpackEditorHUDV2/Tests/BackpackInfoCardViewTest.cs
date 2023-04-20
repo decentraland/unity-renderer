@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -10,7 +11,8 @@ namespace DCL.Backpack
         [SetUp]
         public void SetUp()
         {
-            infoCard = BaseComponentView.Create<InfoCardComponentView>("BackpackInfoCard");
+            infoCard = Object.Instantiate(AssetDatabase.LoadAssetAtPath<InfoCardComponentView>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BackpackEditorHUDV2/Prefabs/BackpackInfoCard.prefab"));
         }
 
         [TearDown]
