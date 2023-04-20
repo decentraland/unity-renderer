@@ -19,16 +19,23 @@ namespace DCL.Backpack
         private readonly IWearableGridView view;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
+        private readonly DataStore_BackpackV2 dataStoreBackpackV2;
 
+        private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
+
+        public event Action<string> OnWearableEquipped;
+        public event Action<string> OnWearableUnequipped;
 
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
-            IWearablesCatalogService wearablesCatalogService)
+            IWearablesCatalogService wearablesCatalogService,
+            DataStore_BackpackV2 dataStoreBackpackV2)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
+            this.dataStoreBackpackV2 = dataStoreBackpackV2;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
@@ -57,6 +64,22 @@ namespace DCL.Backpack
 
         public void CancelWearableLoading() =>
             requestWearablesCancellationToken.SafeCancelAndDispose();
+
+        public void Equip(string wearableId)
+        {
+            if (!currentWearables.TryGetValue(wearableId, out WearableGridItemModel wearableGridModel))
+                return;
+
+            view.SetWearable(wearableGridModel with {IsEquipped = true});
+        }
+
+        public void UnEquip(string wearableId)
+        {
+            if (!currentWearables.TryGetValue(wearableId, out WearableGridItemModel wearableGridModel))
+                return;
+
+            view.SetWearable(wearableGridModel with {IsEquipped = false});
+        }
 
         private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
         {
@@ -92,19 +115,22 @@ namespace DCL.Backpack
 
             try
             {
+                currentWearables.Clear();
+
                 // TODO: instead of requesting owned wearables, we should request all the wearables with the current filters & sorting
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
                     PAGE_SIZE, true, cancellationToken);
 
-                var wearableModels = wearables.Select(ToWearableGridModel);
+                currentWearables = wearables.Select(ToWearableGridModel)
+                                              .ToDictionary(item => item.WearableId, model => model);
 
                 view.SetWearablePages(page, (totalAmount / PAGE_SIZE) + 1);
 
                 // TODO: mark the wearables to be disposed if no references left
                 view.ClearWearables();
-                view.ShowWearables(wearableModels);
+                view.ShowWearables(currentWearables.Values);
 
                 return totalAmount;
             }
@@ -126,7 +152,7 @@ namespace DCL.Backpack
                 WearableId = wearable.id,
                 Rarity = rarity,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
-                IsEquipped = userProfileBridge.GetOwn().HasEquipped(wearable.id),
+                IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
                 // TODO: make the new state work
                 IsNew = false,
                 IsSelected = false,
@@ -139,15 +165,11 @@ namespace DCL.Backpack
             view.SelectWearable(wearableGridItem.WearableId);
         }
 
-        private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem)
-        {
-            throw new NotImplementedException();
-        }
+        private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem) =>
+            OnWearableUnequipped?.Invoke(wearableGridItem.WearableId);
 
-        private void HandleWearableEquipped(WearableGridItemModel wearableGridItem)
-        {
-            throw new NotImplementedException();
-        }
+        private void HandleWearableEquipped(WearableGridItemModel wearableGridItem) =>
+            OnWearableEquipped?.Invoke(wearableGridItem.WearableId);
 
         private void FilterWearablesFromBreadcrumb(string referencePath)
         {
