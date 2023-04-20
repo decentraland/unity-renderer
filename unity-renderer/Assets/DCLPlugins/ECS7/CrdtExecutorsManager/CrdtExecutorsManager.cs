@@ -94,9 +94,11 @@ public class CrdtExecutorsManager : IDisposable
         {
             executor.Execute(crdtMessage);
         }
+#if UNITY_EDITOR
         else
         {
             Debug.LogError($"CrdtExecutor not found for sceneNumber {sceneNumber}");
         }
+#endif
     }
 }
