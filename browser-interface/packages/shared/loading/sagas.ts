@@ -59,8 +59,7 @@ export function* trackLoadTime(action: SceneLoad): any {
   const result = yield race({
     start: take(
       (action: AnyAction) => action.type === SCENE_START && (action.payload as LoadableScene).id === entityId
-    ),
-    fail: take((action: AnyAction) => action.type === SCENE_FAIL && (action.payload as LoadableScene).id === entityId)
+    )
   })
   const userId = yield select(getCurrentUserId)
   const position = lastPlayerPosition
@@ -79,7 +78,6 @@ export const ACTIONS_FOR_LOADING = [
   PARCEL_LOADING_STARTED,
   PENDING_SCENES,
   RENDERER_INITIALIZED_CORRECTLY,
-  SCENE_FAIL,
   SCENE_LOAD,
   SIGNUP_SET_IS_SIGNUP,
   TELEPORT_TRIGGERED,
