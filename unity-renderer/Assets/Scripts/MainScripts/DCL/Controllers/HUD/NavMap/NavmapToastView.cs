@@ -125,7 +125,7 @@ namespace DCL
         {
             if (toastContainer == null || rectTransform == null)
                 return;
-            
+
             toastContainer.position = worldPosition;
 
             bool useBottom = toastContainer.localPosition.y > 0;
