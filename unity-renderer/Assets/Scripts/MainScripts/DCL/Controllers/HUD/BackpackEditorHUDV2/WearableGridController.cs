@@ -70,7 +70,7 @@ namespace DCL.Backpack
             if (!currentWearables.TryGetValue(wearableId, out WearableGridItemModel wearableGridModel))
                 return;
 
-            view.SetWearable(wearableGridModel with {IsEquipped = true});
+            view.SetWearable(wearableGridModel with { IsEquipped = true });
         }
 
         public void UnEquip(string wearableId)
@@ -78,7 +78,7 @@ namespace DCL.Backpack
             if (!currentWearables.TryGetValue(wearableId, out WearableGridItemModel wearableGridModel))
                 return;
 
-            view.SetWearable(wearableGridModel with {IsEquipped = false});
+            view.SetWearable(wearableGridModel with { IsEquipped = false });
         }
 
         private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
@@ -88,6 +88,7 @@ namespace DCL.Backpack
                 Path = new[]
                 {
                     (Reference: ALL_FILTER_REF, Name: "All"),
+
                     // (Reference: $"{CATEGORY_FILTER_REF}shoes", Name: "Shoes"),
                     // (Reference: $"{NAME_FILTER_REF}my wearable", Name: "my wearable"),
                 },
@@ -124,7 +125,7 @@ namespace DCL.Backpack
                     PAGE_SIZE, true, cancellationToken);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
-                                              .ToDictionary(item => item.WearableId, model => model);
+                                            .ToDictionary(item => item.WearableId, model => model);
 
                 view.SetWearablePages(page, (totalAmount / PAGE_SIZE) + 1);
 
@@ -153,6 +154,7 @@ namespace DCL.Backpack
                 Rarity = rarity,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
                 IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
+
                 // TODO: make the new state work
                 IsNew = false,
                 IsSelected = false,
@@ -161,8 +163,29 @@ namespace DCL.Backpack
 
         private void HandleWearableSelected(WearableGridItemModel wearableGridItem)
         {
+            string wearableId = wearableGridItem.WearableId;
+
             view.ClearWearableSelection();
-            view.SelectWearable(wearableGridItem.WearableId);
+            view.SelectWearable(wearableId);
+
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            {
+                Debug.LogError($"Cannot fill the wearable info card, the wearable id does not exist {wearableId}");
+                return;
+            }
+
+            view.FillInfoCard(new InfoCardComponentModel
+            {
+                rarity = wearable.rarity,
+                category = wearable.data.category,
+                description = wearable.description,
+                // TODO: solve hidden by field
+                hiddenBy = null,
+                name = wearable.GetName(),
+                hideList = wearable.data.hides.ToList(),
+                isEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearableId),
+                removeList = wearable.data.replaces.ToList(),
+            });
         }
 
         private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem) =>
