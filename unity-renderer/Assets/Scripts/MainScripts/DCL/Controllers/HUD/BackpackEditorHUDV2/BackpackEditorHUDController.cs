@@ -263,7 +263,7 @@ namespace DCL.Backpack
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
 
-            avatarSlotsHUDController.Equip(wearableId, wearable.ComposeThumbnailUrl());
+            avatarSlotsHUDController.Equip(wearable.data.category, wearable.rarity, wearableId, wearable.ComposeThumbnailUrl());
             wearableGridController.Equip(wearableId);
 
             avatarIsDirty = true;
@@ -273,10 +273,10 @@ namespace DCL.Backpack
 
         private void UnEquipWearable(string wearableId)
         {
+            avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category, wearableId);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
 
-            avatarSlotsHUDController.UnEquip(wearableId);
             wearableGridController.UnEquip(wearableId);
 
             avatarIsDirty = true;

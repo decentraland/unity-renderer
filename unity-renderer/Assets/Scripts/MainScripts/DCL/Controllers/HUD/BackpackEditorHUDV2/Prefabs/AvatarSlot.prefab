@@ -226,7 +226,7 @@ MonoBehaviour:
     hiddenBy: 
   typeIcons: {fileID: 11400000, guid: 9525caf9cd97d4aa1b91f145f3a604e3, type: 2}
   nftContainer: {fileID: 2235824014885110001}
-  rarityBackgrounds: {fileID: 0}
+  rarityBackgrounds: {fileID: 11400000, guid: 3f361f63120234ae8972eac66a946fa0, type: 2}
   typeImage: {fileID: 4329488436158027747}
   nftImage: {fileID: 8486726043931597902}
   backgroundRarityImage: {fileID: 2319109405909261016}
