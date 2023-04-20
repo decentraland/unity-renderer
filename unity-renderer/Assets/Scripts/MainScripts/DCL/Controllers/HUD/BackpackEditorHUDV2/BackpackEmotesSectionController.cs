@@ -9,12 +9,10 @@ using UnityEngine;
 
 namespace DCL.Backpack
 {
-    public class BackpackEmotesSectionController : IDisposable
+    public class BackpackEmotesSectionController : IBackpackEmotesSectionController
     {
         public event Action<string> OnNewEmoteAdded;
         public event Action<string> OnEmotePreviewed;
-        public event Action<string> OnEmoteEquipped;
-        public event Action<string> OnEmoteUnequipped;
 
         private DataStore dataStore;
         private IUserProfileBridge userProfileBridge;
@@ -43,8 +41,6 @@ namespace DCL.Backpack
 
             dataStore.emotesCustomization.currentLoadedEmotes.OnAdded += NewEmoteAdded;
             emotesCustomizationComponentController.onEmotePreviewed += EmotePreviewed;
-            emotesCustomizationComponentController.onEmoteEquipped += EmoteEquipped;
-            emotesCustomizationComponentController.onEmoteUnequipped += EmoteUnequipped;
         }
 
         public void Dispose()
@@ -54,8 +50,6 @@ namespace DCL.Backpack
 
             dataStore.emotesCustomization.currentLoadedEmotes.OnAdded -= NewEmoteAdded;
             emotesCustomizationComponentController.onEmotePreviewed -= EmotePreviewed;
-            emotesCustomizationComponentController.onEmoteEquipped -= EmoteEquipped;
-            emotesCustomizationComponentController.onEmoteUnequipped -= EmoteUnequipped;
         }
 
         public void LoadEmotes()
@@ -94,11 +88,5 @@ namespace DCL.Backpack
 
         private void EmotePreviewed(string emoteId) =>
             OnEmotePreviewed?.Invoke(emoteId);
-
-        private void EmoteEquipped(string emoteId) =>
-            OnEmoteEquipped?.Invoke(emoteId);
-
-        private void EmoteUnequipped(string emoteId) =>
-            OnEmoteUnequipped?.Invoke(emoteId);
     }
 }

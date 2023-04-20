@@ -1,10 +1,13 @@
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System;
 using UnityEngine;
 
 namespace DCL.Backpack
 {
     public interface IBackpackEditorHUDView
     {
+        delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
+
         Transform EmotesSectionTransform { get; }
         bool isVisible { get; }
 
@@ -16,5 +19,6 @@ namespace DCL.Backpack
         void PlayPreviewEmote(string emoteId);
         void ResetPreviewEmote();
         void UpdateAvatarPreview(AvatarModel avatarModel);
+        void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
     }
 }
