@@ -21,6 +21,11 @@ namespace DCL.Backpack
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
 
+            var backpackAnalyticsController = new BackpackAnalyticsController(
+                Environment.i.platform.serviceProviders.analytics,
+                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
+                wearablesCatalogService);
+
             var wearableGridController = new WearableGridController(view.WearableGridComponentView, userProfileBridge, wearablesCatalogService);
 
             hudController = new BackpackEditorHUDController(
@@ -28,8 +33,9 @@ namespace DCL.Backpack
                 DataStore.i,
                 CommonScriptableObjects.rendererState,
                 userProfileBridge,
-                wearablesCatalogService,
+                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 backpackEmotesSectionController,
+                backpackAnalyticsController,
                 wearableGridController);
         }
 

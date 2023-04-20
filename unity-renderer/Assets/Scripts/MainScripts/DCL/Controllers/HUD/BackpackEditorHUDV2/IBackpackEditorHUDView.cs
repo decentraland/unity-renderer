@@ -4,6 +4,8 @@ namespace DCL.Backpack
 {
     public interface IBackpackEditorHUDView
     {
+        delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
+
         bool isVisible { get; }
 
         void Dispose();
@@ -13,5 +15,6 @@ namespace DCL.Backpack
         void PlayPreviewEmote(string emoteId);
         void ResetPreviewEmote();
         void UpdateAvatarPreview(AvatarModel avatarModel);
+        void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
     }
 }
