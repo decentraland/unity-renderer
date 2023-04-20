@@ -23,9 +23,11 @@ namespace DCL.Backpack
         [SerializeField] internal DynamicListComponentView removesList;
         [SerializeField] internal DynamicListComponentView hidesList;
         [SerializeField] internal DynamicListComponentView hiddenByDynamicList;
+
         public event Action<string> OnEquipWearable;
         public event Action<string> OnUnEquipWearable;
         public event Action OnViewMore;
+        
         public void Start()
         {
             equipButton.onClick.RemoveAllListeners();

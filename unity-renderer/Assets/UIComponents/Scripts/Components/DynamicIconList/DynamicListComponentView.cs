@@ -31,7 +31,7 @@ public class DynamicListComponentView : BaseComponentView, IDynamicListComponent
     public void RemoveIcons()
     {
         foreach (var icon in instantiatedIcons)
-            DestroyImmediate(icon.gameObject);
+            Destroy(icon.gameObject);
 
         instantiatedIcons = new List<Image>();
     }

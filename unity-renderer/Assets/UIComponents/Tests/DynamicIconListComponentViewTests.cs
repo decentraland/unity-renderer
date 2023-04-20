@@ -53,6 +53,5 @@ public class DynamicIconListComponentViewTests
         listComponentView.RemoveIcons();
 
         Assert.AreEqual(0, listComponentView.instantiatedIcons.Count);
-        Assert.AreEqual(2, listComponentView.transform.childCount);
     }
 }
