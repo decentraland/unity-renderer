@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,6 +17,8 @@ namespace DCL.Backpack
         [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
         [SerializeField] private RawImage avatarPreviewImage;
         [SerializeField] internal GameObject avatarPreviewLoadingSpinner;
+
+        public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
         private ICharacterPreviewController characterPreviewController;
         private float prevRenderScale = 1.0f;
@@ -63,6 +66,11 @@ namespace DCL.Backpack
 
         public void SetLoadingActive(bool isActive) =>
             avatarPreviewLoadingSpinner.SetActive(false);
+
+        public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed) =>
+            characterPreviewController.TakeSnapshots(
+                (face256, body) => onSuccess?.Invoke(face256, body),
+                () => onFailed?.Invoke());
 
         private void OnPreviewRotation(float angularVelocity) =>
             characterPreviewController.Rotate(angularVelocity);
