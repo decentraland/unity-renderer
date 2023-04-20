@@ -24,15 +24,12 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
 import {
-  SceneFail,
   SceneLoad,
   SceneStart,
   SceneUnload,
-  SCENE_FAIL,
   SCENE_LOAD,
   SCENE_START,
   SCENE_UNLOAD,
-  signalSceneFail,
   signalSceneLoad,
   signalSceneStart,
   signalSceneUnload
@@ -83,7 +80,6 @@ export type SceneLifeCycleStatusReport = { sceneId: string; status: SceneLifeCyc
 export const sceneEvents = mitt<{
   [SCENE_LOAD]: SceneLoad
   [SCENE_START]: SceneStart
-  [SCENE_FAIL]: SceneFail
   [SCENE_UNLOAD]: SceneUnload
 }>()
 
@@ -328,18 +324,6 @@ export class SceneWorker {
     this.ready |= SceneWorkerReadyState.LOADED
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
-
-    const WORKER_TIMEOUT = 1_000
-    setTimeout(() => this.onLoadTimeout(), WORKER_TIMEOUT)
-  }
-
-  private onLoadTimeout() {
-    if (!this.sceneStarted) {
-      // Previously, when a scene timeout, we made it start.
-      // Now, we are letting the user decide if they want to wait or go back home.
-      // Nonetheless
-      sceneEvents.emit(SCENE_FAIL, signalSceneFail(this.loadableScene))
-    }
   }
 
   private sendBatch(actions: EntityAction[]): void {

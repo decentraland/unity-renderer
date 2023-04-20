@@ -35,7 +35,7 @@ export function* loadingSaga() {
   yield fork(translateActions)
   yield fork(initialSceneLoading)
 
-  yield takeLatest([SCENE_FAIL, SCENE_LOAD, SCENE_START, SCENE_CHANGED], handleReportPendingScenes)
+  yield takeLatest([SCENE_LOAD, SCENE_START, SCENE_CHANGED], handleReportPendingScenes)
 }
 
 function* translateActions() {
