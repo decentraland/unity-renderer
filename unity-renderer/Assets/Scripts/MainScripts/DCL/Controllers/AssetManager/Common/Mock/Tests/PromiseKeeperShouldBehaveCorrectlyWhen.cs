@@ -123,7 +123,7 @@ namespace AssetPromiseKeeper_Mock_Tests
             yield return prom2;
             yield return prom3;
 
-            Assert.AreEqual(AssetPromiseState.FINISHED, prom.state);
+            Assert.AreEqual(AssetPromiseState.IDLE_AND_EMPTY, prom.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom2.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom3.state);
 
@@ -131,7 +131,7 @@ namespace AssetPromiseKeeper_Mock_Tests
             Assert.IsTrue(!masterFailCalled, "Fail event called when it shouldn't!");
 
             Assert.IsTrue(asset == null);
-            Assert.IsTrue(prom.GetAsset_Test() != null);
+            Assert.IsNull(prom.GetAsset_Test());
 
             Assert.IsTrue(asset2 != null);
             Assert.IsTrue(asset3 != null);

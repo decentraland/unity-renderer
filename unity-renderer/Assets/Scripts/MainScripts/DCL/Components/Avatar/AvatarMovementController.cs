@@ -1,6 +1,7 @@
 using AvatarSystem;
 using DCL.Components;
 using DCL.Helpers;
+using System;
 using UnityEngine;
 
 namespace DCL
@@ -37,8 +38,8 @@ namespace DCL
 
                 return avatarTransformValue;
             }
-            set 
-            { 
+            set
+            {
                 avatarTransformValue = value;
 
                 if (value == null)
@@ -53,7 +54,7 @@ namespace DCL
             {
                 currentWorldPosition = value;
                 Vector3 newPosition = PositionUtils.WorldToUnityPosition(currentWorldPosition);
-                if (float.IsNaN(newPosition.x) || float.IsInfinity(newPosition.x) || 
+                if (float.IsNaN(newPosition.x) || float.IsInfinity(newPosition.x) ||
                     float.IsNaN(newPosition.z) || float.IsInfinity(newPosition.z) ||
                     float.IsNaN(newPosition.y) || float.IsInfinity(newPosition.y))
                     return;
@@ -62,10 +63,10 @@ namespace DCL
             }
         }
 
-        private Quaternion CurrentRotation 
-        { 
-            get { return AvatarTransform.rotation; } 
-            set { AvatarTransform.rotation = value; } 
+        private Quaternion CurrentRotation
+        {
+            get { return AvatarTransform.rotation; }
+            set { AvatarTransform.rotation = value; }
         }
 
         public void OnPoolGet() { }
@@ -86,8 +87,8 @@ namespace DCL
 
         private void OnDisable() { CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition; }
 
-        private void OnWorldReposition(Vector3 current, Vector3 previous) 
-        { 
+        private void OnWorldReposition(Vector3 current, Vector3 previous)
+        {
             AvatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
         }
 
@@ -96,15 +97,16 @@ namespace DCL
             DCLTransform.Model transformModel = (DCLTransform.Model)model;
             OnTransformChanged(transformModel.position, transformModel.rotation, false);
         }
-        
+
         public void OnTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
-            var offsetPosition = new Vector3(0, DCLCharacterController.i.characterController.height * 0.5f, 0);
+            float characterMinHeight = DCLCharacterController.i.characterController.height * 0.5f;
+
             MoveTo(
-                position - offsetPosition, // To fix the "always flying" avatars issue, We report the chara's centered position but the body hast its pivot at its feet
+                new Vector3(position.x, Math.Max(position.y - characterMinHeight, -characterMinHeight), position.z), // To fix the "always flying" avatars issue, We report the chara's centered position but the body hast its pivot at its feet
                 rotation,
                 inmediate);
-        } 
+        }
 
         public void MoveTo(Vector3 position, Quaternion rotation, bool immediate = false)
         {
@@ -143,8 +145,8 @@ namespace DCL
             UpdateMovement(deltaTime);
         }
 
-        private void UpdateRotation(float deltaTime, Quaternion targetRotation) 
-        { 
+        private void UpdateRotation(float deltaTime, Quaternion targetRotation)
+        {
             CurrentRotation = Quaternion.Slerp(CurrentRotation, targetRotation, ROTATION_SPEED * deltaTime);
         }
 
