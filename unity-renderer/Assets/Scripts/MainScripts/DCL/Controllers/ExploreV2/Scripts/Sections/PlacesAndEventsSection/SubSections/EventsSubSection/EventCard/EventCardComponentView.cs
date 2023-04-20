@@ -450,14 +450,11 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (!isEventCardModal)
         {
-            subscribedUsersText.text = newNumberOfUsers.ToString();
+            subscribedUsersText.text = $"{newNumberOfUsers.ToString()} going";
         }
         else
         {
-            if (newNumberOfUsers > 0)
-                subscribedUsersText.text = string.Format(USERS_CONFIRMED_MESSAGE, newNumberOfUsers);
-            else
-                subscribedUsersText.text = NOBODY_CONFIRMED_MESSAGE;
+            subscribedUsersText.text = newNumberOfUsers > 0 ? string.Format(USERS_CONFIRMED_MESSAGE, newNumberOfUsers) : NOBODY_CONFIRMED_MESSAGE;
         }
     }
 
