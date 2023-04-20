@@ -65,18 +65,19 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             yield return prom2;
             yield return prom3;
 
-            Assert.AreEqual(AssetPromiseState.FINISHED, prom.state);
+            Assert.AreEqual(AssetPromiseState.IDLE_AND_EMPTY, prom.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom2.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom3.state);
 
             Assert.IsFalse(failEventCalled2);
             Assert.IsFalse(failEventCalled3);
 
-            Assert.IsTrue(prom.asset != null);
+            Assert.IsNull(prom.asset);
             Assert.IsTrue(prom2.asset != null);
             Assert.IsTrue(prom3.asset != null);
 
-            Assert.IsTrue(keeper.library.Contains(prom.asset));
+            Assert.IsTrue(keeper.library.Contains(prom2.asset));
+            Assert.IsTrue(keeper.library.Contains(prom3.asset));
             Assert.AreEqual(1, keeper.library.masterAssets.Count);
         }
 
@@ -84,7 +85,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
         public IEnumerator AB_GameObject_FailCorrectlyWhenGivenWrongURL()
         {
             string invalidHash = "Qm_InVaLiD_hAsH";
-            
+
             var prom = CreatePromise(invalidHash);
             Asset_AB_GameObject asset = null;
             bool failEventCalled1 = false;

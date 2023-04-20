@@ -15,7 +15,6 @@ export type PositionReport = {
   quaternion: EcsMathReadOnlyQuaternion
   /** Avatar rotation, euler from quaternion */
   rotation: EcsMathReadOnlyVector3
-  /** Camera height, relative to the feet of the avatar or ground */
   playerHeight: number
   /** Should this position be applied immediately */
   immediate: boolean
@@ -52,11 +51,14 @@ export function receivePositionReport(
   cameraRotation?: ReadOnlyVector4,
   playerHeight?: number
 ) {
-  positionEvent.position.set(position.x, position.y, position.z)
+  var pivotCorrectionOffset = 0.8 // moved it here from renderer to have it send everytime
+  positionEvent.position.set(position.x, position.y + pivotCorrectionOffset, position.z)
 
   if (rotation) positionEvent.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
   positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
-  if (playerHeight) positionEvent.playerHeight = playerHeight
+
+  //Setting it as a fixed value, since we are still not modifying it for different height in renderer
+  if(playerHeight) positionEvent.playerHeight = playerHeight
 
   const cameraQuaternion = cameraRotation ?? rotation
   if (cameraQuaternion)
