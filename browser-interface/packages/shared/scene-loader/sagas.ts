@@ -54,6 +54,8 @@ import {
 } from './selectors'
 import { ISceneLoader, SceneLoaderPositionReport, SetDesiredScenesCommand } from './types'
 import { createWorldLoader } from './world-loader-impl'
+import { Entity } from '@dcl/schemas'
+import { getContentService } from '../dao/selectors'
 
 export function* sceneLoaderSaga() {
   yield takeLatest(SET_REALM_ADAPTER, setSceneLoaderOnSetRealmAction)
@@ -142,7 +144,11 @@ function* teleportHandler(action: TeleportToAction) {
 
       const scene: SceneWorker | undefined = yield call(getSceneWorkerBySceneID, settlerScene)
 
-      const spawnPoint = pickWorldSpawnpoint(scene?.metadata || command.scenes[0].entity.metadata, new Vector3(action.payload.position.x, action.payload.position.y, action.payload.position.z)) || action.payload
+      const spawnPoint =
+        pickWorldSpawnpoint(
+          scene?.metadata || command.scenes[0].entity.metadata,
+          new Vector3(action.payload.position.x, action.payload.position.y, action.payload.position.z)
+        ) || action.payload
       if (scene?.isStarted()) {
         // if the scene is loaded then there is no unsettlement of the position
         // we teleport directly to that scene
@@ -330,4 +336,16 @@ export async function fetchScenesByLocation(positions: string[]): Promise<Loadab
   if (!sceneLoader) return []
   const { scenes } = await sceneLoader.fetchScenesByLocation(positions)
   return scenes
+}
+
+export async function fetchActiveSceneInWorldContext(position: string[]): Promise<Array<Entity>> {
+  const response = await fetch(getContentService(store.getState()) + '/entities/active', {
+    method: 'post',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ pointers: position })
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to fetch active scene: ${response.statusText}`)
+  }
+  return await response.json()
 }

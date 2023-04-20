@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using System.Threading;
+using UnityEngine;
 
 public interface IUserProfileBridge
 {
@@ -11,4 +12,5 @@ public interface IUserProfileBridge
     UserProfile Get(string userId);
     UserProfile GetByName(string userNameOrId);
     void SignUp();
+    void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false);
 }
