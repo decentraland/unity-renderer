@@ -79,10 +79,6 @@ namespace DCL.Skybox
 
         private float cycleTime = 24;
 
-        // SkyboxController Update interval
-        [Range(0.01f, 0.33f), Tooltip("Update interval in seconds. Higher values will increase performance but will make the transition between colors more noticeable.")]
-        public float updateInterval = 0.1f;
-
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)
         {
             float percentage = normalizedDayTime * 100;
