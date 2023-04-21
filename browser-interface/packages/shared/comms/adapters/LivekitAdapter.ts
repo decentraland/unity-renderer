@@ -84,7 +84,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
   async connect(): Promise<void> {
     await this.room.connect(this.config.url, this.config.token, { autoSubscribe: true })
-    await this.room.engine.waitForPCConnected()
+    await this.room.engine.waitForPCInitialConnection()
     this.config.logger.log(this.room.name, `Connected to livekit room ${this.room.name}`)
   }
 
