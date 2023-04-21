@@ -19,5 +19,6 @@ namespace DCL.Backpack
         void ClearWearableSelection();
         void SelectWearable(string wearableId);
         void SetWearableBreadcrumb(NftBreadcrumbModel model);
+        void FillInfoCard(InfoCardComponentModel model);
     }
 }

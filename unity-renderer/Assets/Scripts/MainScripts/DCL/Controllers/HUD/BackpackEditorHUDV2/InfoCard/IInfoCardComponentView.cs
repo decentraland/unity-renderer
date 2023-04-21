@@ -5,8 +5,8 @@ namespace DCL.Backpack
 {
     public interface IInfoCardComponentView
     {
-        event Action<string> OnEquipWearable;
-        event Action<string> OnUnEquipWearable;
+        event Action OnEquipWearable;
+        event Action OnUnEquipWearable;
         event Action OnViewMore;
 
         void SetName(string name);
