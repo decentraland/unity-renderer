@@ -36,7 +36,10 @@ namespace DCL.Skybox
         private bool overrideByEditor = false;
         private SkyboxElements skyboxElements;
         private Camera cameraMainRef = null;
-        private bool cameraMainFound = false;
+
+        // Update timer is set in the SkyboxConfiguration
+        private float timeSinceLastUpdate = 0.0f;
+        private float normalizedDayTime = 0.0f;
 
         // Reflection probe//
         private ReflectionProbe skyboxProbe;
@@ -481,8 +484,15 @@ namespace DCL.Skybox
                 return;
             }
 
-            timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
+            // Compute the rest less times per second
+            timeSinceLastUpdate += Time.deltaTime;
+            if (timeSinceLastUpdate < configuration.updateInterval)
+            {
+                return;
+            }
+            timeSinceLastUpdate = 0.0f;
 
+            timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
             syncCounter++;
 
             if (syncCounter >= syncAfterCount)
@@ -495,7 +505,7 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
             timeReporter.ReportTime(timeOfTheDay);
 
-            float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
+            normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, SkyboxUtils.CYCLE_TIME);
             ApplyAvatarColor(normalizedDayTime);
             skyboxElements.ApplyConfigTo3DElements(configuration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, false);
