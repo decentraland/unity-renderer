@@ -3,6 +3,7 @@ package decentraland.renderer.renderer_services;
 
 message OpenExternalUrlRequest {
   string url = 1;
+  int32 scene_number = 2;
 }
 
 message OpenNftDialogRequest {
