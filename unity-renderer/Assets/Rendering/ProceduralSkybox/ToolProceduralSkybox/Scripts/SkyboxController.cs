@@ -43,7 +43,6 @@ namespace DCL.Skybox
         private bool probeParented = false;
         private float reflectionUpdateTime = 1;                                 // In Mins
         private ReflectionProbeRuntime runtimeReflectionObj;
-        private SkyboxCamera skyboxCam;
 
         // Timer sync
         private int syncCounter = 0;
@@ -78,9 +77,6 @@ namespace DCL.Skybox
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
             }
-
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
-            CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
 
             DoAsyncInitializations();
         }
@@ -133,10 +129,6 @@ namespace DCL.Skybox
             //Ensure current settings
             UseDynamicSkybox_OnChange(DataStore.i.skyboxConfig.mode.Get());
             FixedTime_OnChange(DataStore.i.skyboxConfig.fixedTime.Get());
-
-            // Asyncly search for main camera
-            var cts = new CancellationTokenSource();
-            await AssignCameraMainAsync(cts.Token);
         }
 
         private async UniTask LoadConfigurations(CancellationToken ct)
@@ -152,16 +144,6 @@ namespace DCL.Skybox
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
         {
             skyboxElements.AssignCameraInstance(currentTransform);
-        }
-
-        private void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
-        {
-            if (visibleState == prevVisibleState)
-                return;
-
-            if(skyboxCam == null) return;
-
-            skyboxCam.SetCameraEnabledState(!visibleState && CommonScriptableObjects.rendererState.Get());
         }
 
         private void FixedTime_OnChange(float current, float _ = 0)
@@ -259,15 +241,6 @@ namespace DCL.Skybox
                 runtimeReflectionObj.followTransform = cameraMainRef.transform;
                 probeParented = true;
             }
-        }
-
-        private async UniTask AssignCameraMainAsync(CancellationToken ctx)
-        {
-            await UniTask.WaitUntil(() => Camera.main != null, cancellationToken: ctx);
-
-            cameraMainRef = Camera.main;
-            skyboxCam = new SkyboxCamera(cameraMainRef);
-            AssignCameraReferences(DataStore.i.camera.transform.Get(), null);
         }
 
         private void KernelConfig_OnChange(KernelConfigModel current, KernelConfigModel previous)
@@ -549,9 +522,6 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
             DataStore.i.camera.transform.OnChange -= AssignCameraReferences;
-
-            CommonScriptableObjects.isLoadingHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
 
             timeReporter.Dispose();
             DisposeCT();
