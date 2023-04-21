@@ -10,15 +10,15 @@ namespace DCL.Backpack
     public class NftBreadcrumbComponentView : BaseComponentView<NftBreadcrumbModel>
     {
         [Serializable]
-        private struct FilterIconType
+        internal struct FilterIconType
         {
             public string filterPrefix;
             public Sprite icon;
         }
 
-        [SerializeField] private NftSubCategoryFilterComponentView prefab;
-        [SerializeField] private RectTransform container;
-        [SerializeField] private FilterIconType[] iconsByFilter;
+        [SerializeField] internal NftSubCategoryFilterComponentView prefab;
+        [SerializeField] internal RectTransform container;
+        [SerializeField] internal FilterIconType[] iconsByFilter;
 
         private readonly Dictionary<NftSubCategoryFilterComponentView, PoolableObject> pooledObjects = new ();
         private NftSubCategoryFilterComponentView[] categoriesByIndex = Array.Empty<NftSubCategoryFilterComponentView>();
@@ -49,6 +49,8 @@ namespace DCL.Backpack
                 view.OnNavigate -= Navigate;
                 view.OnExit -= NavigateToPreviousCategory;
             }
+
+            pooledObjects.Clear();
 
             categoriesByIndex = new NftSubCategoryFilterComponentView[model.Path.Length];
             var i = 0;

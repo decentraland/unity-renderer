@@ -26,6 +26,69 @@ namespace DCL.Backpack
         }
 
         [Test]
+        public void TriggerSelectedEvent()
+        {
+            var called = true;
+            view.OnSelected += m => called = true;
+
+            view.SetModel(new WearableGridItemModel
+            {
+                Rarity = NftRarity.Common,
+                ImageUrl = "imageUrl",
+                IsEquipped = false,
+                IsNew = false,
+                IsSelected = false,
+                WearableId = "w1",
+            });
+
+            view.interactButton.onClick.Invoke();
+
+            Assert.IsTrue(called);
+        }
+
+        [Test]
+        public void TriggerEquipEvent()
+        {
+            var called = true;
+            view.OnEquipped += m => called = true;
+
+            view.SetModel(new WearableGridItemModel
+            {
+                Rarity = NftRarity.Common,
+                ImageUrl = "imageUrl",
+                IsEquipped = false,
+                IsNew = false,
+                IsSelected = true,
+                WearableId = "w1",
+            });
+
+            view.interactButton.onClick.Invoke();
+
+            Assert.IsTrue(called);
+        }
+
+        [Test]
+        public void TriggerUnEquipEvent()
+        {
+            var called = true;
+            view.OnUnequipped += m => called = true;
+
+            view.SetModel(new WearableGridItemModel
+            {
+                Rarity = NftRarity.Common,
+                ImageUrl = "imageUrl",
+                IsEquipped = true,
+                IsNew = false,
+                IsSelected = true,
+                WearableId = "w1",
+            });
+
+            view.interactButton.onClick.Invoke();
+
+            Assert.IsTrue(called);
+        }
+
+        [Test]
         public void EnableSelectedContainer()
         {
             view.SetModel(new WearableGridItemModel
