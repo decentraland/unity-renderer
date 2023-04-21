@@ -49,6 +49,6 @@ namespace DCL.Backpack
         }
 
         public void UnEquip(string category, string wearableId) =>
-            avatarSlotsView.SetSlotNftImage(category, "");
+            avatarSlotsView.ResetCategorySlot(category);
     }
 }

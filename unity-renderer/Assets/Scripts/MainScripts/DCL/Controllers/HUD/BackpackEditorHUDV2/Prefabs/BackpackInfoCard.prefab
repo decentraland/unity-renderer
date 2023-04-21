@@ -237,6 +237,7 @@ MonoBehaviour:
   background: {fileID: 98894155411121177}
   nftBackground: {fileID: 4684949081291333523}
   nftImage: {fileID: 5116046241920721068}
+  dynamicSection: {fileID: 8812007133631259939}
   removesList: {fileID: 7517914613695130243}
   hidesList: {fileID: 6766684405401495730}
   hiddenByDynamicList: {fileID: 4371344747863803198}

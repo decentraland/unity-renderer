@@ -11,5 +11,6 @@ namespace DCL.Backpack
         void SetNftImage(string imageUri);
         void SetRarity(string rarity);
         void OnPointerClickOnDifferentSlot();
+        void ResetSlot();
     }
 }

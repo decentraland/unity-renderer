@@ -183,7 +183,7 @@ namespace DCL.Backpack
                 // TODO: solve hidden by field
                 hiddenBy = null,
                 name = wearable.GetName(),
-                hideList = wearable.data.hides.ToList(),
+                hideList = wearable.GetHidesList(userProfileBridge.GetOwn().avatar.bodyShape).ToList(),
                 isEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearableId),
                 removeList = wearable.data.replaces.ToList(),
             });

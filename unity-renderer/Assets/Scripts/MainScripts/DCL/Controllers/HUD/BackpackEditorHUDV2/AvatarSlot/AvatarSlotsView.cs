@@ -53,6 +53,9 @@ namespace DCL.Backpack
         public void DisablePreviousSlot(string category) =>
             avatarSlots[category].OnPointerClickOnDifferentSlot();
 
+        public void ResetCategorySlot(string category) =>
+            avatarSlots[category].ResetSlot();
+
         public void SetSlotsAsHidden(string[] slotsToHide, string hiddenBy)
         {
             foreach (string slotToHide in slotsToHide)

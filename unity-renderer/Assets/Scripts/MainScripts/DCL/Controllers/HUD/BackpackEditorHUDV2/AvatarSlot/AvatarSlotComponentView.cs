@@ -39,6 +39,11 @@ namespace DCL.Backpack
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnSlotClick);
+            ResetSlot();
+        }
+
+        public void ResetSlot()
+        {
             SetRarity(null);
             SetNftImage("");
             RefreshControl();
@@ -83,10 +88,10 @@ namespace DCL.Backpack
         public void SetNftImage(string imageUri)
         {
             model.imageUri = imageUri;
-
             if (string.IsNullOrEmpty(imageUri))
             {
                 nftImage.SetImage(Texture2D.grayTexture);
+                nftImage.SetLoadingIndicatorVisible(false);
                 emptySlot.SetActive(true);
                 return;
             }

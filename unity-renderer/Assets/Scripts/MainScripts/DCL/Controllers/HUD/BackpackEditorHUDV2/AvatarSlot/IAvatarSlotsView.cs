@@ -15,5 +15,6 @@ namespace DCL.Backpack
         void SetSlotRarity(string category, string rarity);
         void DisablePreviousSlot(string category);
         void SetSlotsAsHidden(string[] slotsToHide, string hiddenBy);
+        void ResetCategorySlot(string category);
     }
 }

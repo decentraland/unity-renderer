@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -21,6 +22,7 @@ namespace DCL.Backpack
         [SerializeField] internal Image background;
         [SerializeField] internal Image nftBackground;
         [SerializeField] internal ImageComponentView nftImage;
+        [SerializeField] internal RectTransform dynamicSection;
         [SerializeField] internal DynamicListComponentView removesList;
         [SerializeField] internal DynamicListComponentView hidesList;
         [SerializeField] internal DynamicListComponentView hiddenByDynamicList;
@@ -102,7 +104,7 @@ namespace DCL.Backpack
             foreach (string hideCategory in hideList)
                 hidesList.AddIcon(typeIcons.GetTypeImage(hideCategory));
 
-            hidesList.RebuildLayout();
+            Utils.ForceRebuildLayoutImmediate(dynamicSection);
         }
 
         public void SetRemovesList(List<string> removeList)
@@ -115,7 +117,7 @@ namespace DCL.Backpack
             foreach (string removeCategory in removeList)
                 removesList.AddIcon(typeIcons.GetTypeImage(removeCategory));
 
-            removesList.RebuildLayout();
+            Utils.ForceRebuildLayoutImmediate(dynamicSection);
         }
 
         public void SetIsEquipped(bool isEquipped)
