@@ -55,6 +55,11 @@ namespace AvatarSystem
         {
             revealCts?.Cancel();
             revealCts?.Dispose();
+            revealCts = null;
+            //We are revealed already
+            if (ghostMaterial.GetVector(REVEAL_POSITION_ID) == new Vector4(0, 1, 0, 0) * completionHeight)
+                return;
+
             revealCts = new CancellationTokenSource();
             var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(revealCts.Token, cancellationToken);
 
