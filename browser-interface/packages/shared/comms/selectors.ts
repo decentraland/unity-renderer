@@ -12,7 +12,7 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
 
 export function reconnectionState(state: RootState): {
   commsConnection: RoomConnection | undefined
-  realmAdapter: IRealmAdapter<any> | undefined
+  realmAdapter: IRealmAdapter | undefined
   hasFatalError: string | null
   identity: ExplorerIdentity | undefined
 } {
