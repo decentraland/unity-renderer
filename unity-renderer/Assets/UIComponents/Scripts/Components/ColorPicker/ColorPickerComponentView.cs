@@ -56,10 +56,8 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
         SetIncrementAmount(model.incrementAmount);
     }
 
-    public void SetColorSelector(Color newColor)
-    {
+    public void SetColorSelector(Color newColor) =>
         colorSelector.Select(newColor);
-    }
 
     public void SetColorList(List<Color> colorList)
     {
@@ -94,7 +92,7 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
         }
     }
 
-    private void CheckButtonInteractivity(SliderComponentView sliderComponent)
+    private static void CheckButtonInteractivity(SliderComponentView sliderComponent)
     {
         sliderComponent.incrementButton.interactable = sliderComponent.slider.value < sliderComponent.slider.maxValue;
         sliderComponent.decrementButton.interactable = sliderComponent.slider.value > sliderComponent.slider.minValue;
@@ -148,5 +146,6 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
         toggleButton.onClick.RemoveAllListeners();
     }
 
-    public void SetIncrementAmount(float amount) { model.incrementAmount = amount; }
+    public void SetIncrementAmount(float amount) =>
+        model.incrementAmount = amount;
 }
