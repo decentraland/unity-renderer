@@ -179,6 +179,7 @@ namespace DCL.Backpack
                 rarity = wearable.rarity,
                 category = wearable.data.category,
                 description = wearable.description,
+                imageUri = wearable.ComposeThumbnailUrl(),
                 // TODO: solve hidden by field
                 hiddenBy = null,
                 name = wearable.GetName(),

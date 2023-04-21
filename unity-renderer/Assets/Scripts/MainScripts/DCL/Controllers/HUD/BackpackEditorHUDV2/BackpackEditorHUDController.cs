@@ -46,6 +46,7 @@ namespace DCL.Backpack
             this.wearableGridController = wearableGridController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
 
+            avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
@@ -59,7 +60,6 @@ namespace DCL.Backpack
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
-            avatarSlotsHUDController.GenerateSlots();
 
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
@@ -163,6 +163,7 @@ namespace DCL.Backpack
                 }
 
                 model.wearables.Add(wearable.id, wearable);
+                avatarSlotsHUDController.Equip(wearable.data.category, wearable.rarity, wearable.id, wearable.ComposeThumbnailUrl());
             }
         }
 

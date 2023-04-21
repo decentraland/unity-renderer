@@ -21,6 +21,7 @@ namespace DCL.Backpack
 
         public void CreateAvatarSlotSection(string sectionName, bool addSeparator)
         {
+            Debug.Log("create section");
             avatarSlotSections.Add(sectionName, Instantiate(avatarSlotSectionPrefab, avatarSlotsContainer).transform);
 
             if (addSeparator)
@@ -42,8 +43,10 @@ namespace DCL.Backpack
             avatarSlot.OnSelectAvatarSlot += (slotCat, isToggled)=>OnToggleAvatarSlot?.Invoke(slotCat, isToggled);
         }
 
-        public void SetSlotNftImage(string category, string imageUrl) =>
+        public void SetSlotNftImage(string category, string imageUrl)
+        {
             avatarSlots[category].SetNftImage(imageUrl);
+        }
 
         public void SetSlotRarity(string category, string rarity) =>
             avatarSlots[category].SetRarity(rarity);

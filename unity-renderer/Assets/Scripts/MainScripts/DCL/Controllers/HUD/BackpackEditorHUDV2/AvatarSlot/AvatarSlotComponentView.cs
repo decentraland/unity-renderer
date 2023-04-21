@@ -33,10 +33,15 @@ namespace DCL.Backpack
         public event Action<string, bool> OnSelectAvatarSlot;
         private bool isSelected = false;
 
-        public void Start()
+        public override void Awake()
         {
+            base.Awake();
+
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnSlotClick);
+            SetRarity(null);
+            SetNftImage("");
+            RefreshControl();
         }
 
         public override void RefreshControl()
@@ -87,13 +92,14 @@ namespace DCL.Backpack
             }
 
             emptySlot.SetActive(false);
+            Debug.Log($"Set image uri {emptySlot.activeSelf}");
             nftImage.SetImage(imageUri);
         }
 
         public void SetRarity(string rarity)
         {
             model.rarity = rarity;
-            backgroundRarityImage.sprite = rarityBackgrounds.GetRarityImage(rarity);
+            backgroundRarityImage.sprite = string.IsNullOrEmpty(rarity) ? null : rarityBackgrounds.GetRarityImage(rarity);
         }
 
         public override void OnFocus()

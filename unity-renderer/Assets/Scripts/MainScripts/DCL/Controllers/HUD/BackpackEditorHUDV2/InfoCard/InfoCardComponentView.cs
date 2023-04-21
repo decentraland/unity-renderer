@@ -20,6 +20,7 @@ namespace DCL.Backpack
         [SerializeField] internal Button viewMore;
         [SerializeField] internal Image background;
         [SerializeField] internal Image nftBackground;
+        [SerializeField] internal ImageComponentView nftImage;
         [SerializeField] internal DynamicListComponentView removesList;
         [SerializeField] internal DynamicListComponentView hidesList;
         [SerializeField] internal DynamicListComponentView hiddenByDynamicList;
@@ -51,6 +52,7 @@ namespace DCL.Backpack
             SetRemovesList(model.removeList);
             SetHidesList(model.hideList);
             SetHiddenBy(model.hiddenBy);
+            SetNftImage(model.imageUri);
         }
 
         public void SetName(string nameText)
@@ -69,6 +71,19 @@ namespace DCL.Backpack
         {
             model.category = category;
             categoryImage.sprite = typeIcons.GetTypeImage(category);
+        }
+
+        public void SetNftImage(string imageUri)
+        {
+            model.imageUri = imageUri;
+
+            if (string.IsNullOrEmpty(imageUri))
+            {
+                nftImage.SetImage(Texture2D.grayTexture);
+                return;
+            }
+
+            nftImage.SetImage(imageUri);
         }
 
         public void SetRarity(string rarity)
