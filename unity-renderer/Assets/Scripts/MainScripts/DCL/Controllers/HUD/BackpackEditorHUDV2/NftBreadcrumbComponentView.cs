@@ -24,6 +24,8 @@ namespace DCL.Backpack
         private NftSubCategoryFilterComponentView[] categoriesByIndex = Array.Empty<NftSubCategoryFilterComponentView>();
         private Pool pool;
 
+        internal NftBreadcrumbModel Model => model;
+
         public event Action<string> OnNavigate;
 
         public override void Awake()
