@@ -23,7 +23,7 @@ namespace DCL.Backpack
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
-        internal readonly BackpackEditorHUDModel model = new ();
+        private readonly BackpackEditorHUDModel model = new ();
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -214,7 +214,7 @@ namespace DCL.Backpack
                 onFailed: () => onFailed?.Invoke());
         }
 
-        internal void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
+        private void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
         {
             var avatarModel = model.ToAvatarModel();
 
