@@ -24,18 +24,18 @@ namespace DCL.Backpack
         [SerializeField] internal DynamicListComponentView hidesList;
         [SerializeField] internal DynamicListComponentView hiddenByDynamicList;
 
-        public event Action<string> OnEquipWearable;
-        public event Action<string> OnUnEquipWearable;
+        public event Action OnEquipWearable;
+        public event Action OnUnEquipWearable;
         public event Action OnViewMore;
-        
+
         public void Start()
         {
             equipButton.onClick.RemoveAllListeners();
-            equipButton.onClick.AddListener(()=>OnEquipWearable?.Invoke(""));
+            equipButton.onClick.AddListener(() => OnEquipWearable?.Invoke());
             unEquipButton.onClick.RemoveAllListeners();
-            unEquipButton.onClick.AddListener(()=>OnUnEquipWearable?.Invoke(""));
+            unEquipButton.onClick.AddListener(() => OnUnEquipWearable?.Invoke());
             viewMore.onClick.RemoveAllListeners();
-            viewMore.onClick.AddListener(()=>OnViewMore?.Invoke());
+            viewMore.onClick.AddListener(() => OnViewMore?.Invoke());
         }
 
         public override void RefreshControl()
@@ -82,6 +82,7 @@ namespace DCL.Backpack
         {
             model.hideList = hideList;
             hidesList.RemoveIcons();
+
             foreach (string hideCategory in hideList)
                 hidesList.AddIcon(typeIcons.GetTypeImage(hideCategory));
         }
@@ -91,6 +92,7 @@ namespace DCL.Backpack
             model.removeList = removeList;
 
             removesList.RemoveIcons();
+
             foreach (string removeCategory in removeList)
                 removesList.AddIcon(typeIcons.GetTypeImage(removeCategory));
         }
