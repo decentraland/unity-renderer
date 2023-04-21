@@ -7,17 +7,19 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDController
     {
-        private UserProfile ownUserProfile => userProfileBridge.GetOwn();
-
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
-        private readonly RendererState rendererState;
-        private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IBackpackEmotesSectionController backpackEmotesSectionController;
         private readonly BackpackAnalyticsController backpackAnalyticsController;
-        internal readonly BackpackEditorHUDModel model = new ();
+        private readonly IUserProfileBridge userProfileBridge;
+        private readonly RendererState rendererState;
+        private readonly WearableGridController wearableGridController;
         private bool avatarIsDirty;
+
+        private UserProfile ownUserProfile => userProfileBridge.GetOwn();
+
+        internal readonly BackpackEditorHUDModel model = new ();
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -26,7 +28,8 @@ namespace DCL.Backpack
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
             IBackpackEmotesSectionController backpackEmotesSectionController,
-            BackpackAnalyticsController backpackAnalyticsController)
+            BackpackAnalyticsController backpackAnalyticsController,
+            WearableGridController wearableGridController)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -35,14 +38,18 @@ namespace DCL.Backpack
             this.wearablesCatalogService = wearablesCatalogService;
             this.backpackEmotesSectionController = backpackEmotesSectionController;
             this.backpackAnalyticsController = backpackAnalyticsController;
+            this.wearableGridController = wearableGridController;
 
             ownUserProfile.OnUpdate += LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
+
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
+
             backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
+
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
 
@@ -56,6 +63,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
             backpackEmotesSectionController.Dispose();
 
+            wearableGridController.Dispose();
             view.Dispose();
         }
 
@@ -69,7 +77,9 @@ namespace DCL.Backpack
                 avatarIsDirty = false;
                 backpackEmotesSectionController.RestoreEmoteSlots();
                 backpackEmotesSectionController.LoadEmotes();
+                wearableGridController.LoadWearables();
                 LoadUserProfile(ownUserProfile, true);
+
                 view.Show();
             }
             else
@@ -88,6 +98,8 @@ namespace DCL.Backpack
                         });
                 else
                     CloseView();
+
+                wearableGridController.CancelWearableLoading();
             }
         }
 

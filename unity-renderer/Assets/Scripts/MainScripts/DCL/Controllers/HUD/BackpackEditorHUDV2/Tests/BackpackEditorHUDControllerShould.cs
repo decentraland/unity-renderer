@@ -21,6 +21,7 @@ namespace DCL.Backpack
         private IBackpackEmotesSectionController backpackEmotesSectionController;
         private BackpackAnalyticsController backpackAnalyticsController;
         private BackpackEditorHUDController backpackEditorHUDController;
+        private IWearableGridView wearableGridView;
 
         [SetUp]
         public void SetUp()
@@ -36,6 +37,7 @@ namespace DCL.Backpack
             rendererState = ScriptableObject.CreateInstance<RendererState>();
             dataStore = new DataStore();
             dataStore.HUDs.avatarEditorVisible.Set(false, false);
+            wearableGridView = Substitute.For<IWearableGridView>();
 
             backpackAnalyticsController = new BackpackAnalyticsController(
                 analytics,
@@ -49,7 +51,10 @@ namespace DCL.Backpack
                 userProfileBridge,
                 wearablesCatalogService,
                 backpackEmotesSectionController,
-                backpackAnalyticsController);
+                backpackAnalyticsController,
+                new WearableGridController(wearableGridView,
+                    userProfileBridge,
+                    wearablesCatalogService));
         }
 
         [TearDown]
