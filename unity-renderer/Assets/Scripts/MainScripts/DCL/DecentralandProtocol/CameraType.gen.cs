@@ -26,8 +26,9 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CjRkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvY29tbW9uL2NhbWVyYV90",
             "eXBlLnByb3RvEiJkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9u",
-            "KjYKCkNhbWVyYVR5cGUSEwoPQ1RfRklSU1RfUEVSU09OEAASEwoPQ1RfVEhJ",
-            "UkRfUEVSU09OEAFCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "KkgKCkNhbWVyYVR5cGUSEwoPQ1RfRklSU1RfUEVSU09OEAASEwoPQ1RfVEhJ",
+            "UkRfUEVSU09OEAESEAoMQ1RfQ0lORU1BVElDEAJCFKoCEURDTC5FQ1NDb21w",
+            "b25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.CameraType), }, null, null));
@@ -39,6 +40,10 @@ namespace DCL.ECSComponents {
   public enum CameraType {
     [pbr::OriginalName("CT_FIRST_PERSON")] CtFirstPerson = 0,
     [pbr::OriginalName("CT_THIRD_PERSON")] CtThirdPerson = 1,
+    /// <summary>
+    /// controlled by the scene
+    /// </summary>
+    [pbr::OriginalName("CT_CINEMATIC")] CtCinematic = 2,
   }
 
   #endregion

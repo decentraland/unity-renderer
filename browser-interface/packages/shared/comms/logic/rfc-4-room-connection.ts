@@ -24,8 +24,8 @@ export class Rfc4RoomConnection implements RoomConnection {
     await this.transport.connect()
   }
 
-  getVoiceHandler(): Promise<VoiceHandler> {
-    return this.transport.getVoiceHandler()
+  createVoiceHandler(): Promise<VoiceHandler> {
+    return this.transport.createVoiceHandler()
   }
 
   sendPositionMessage(p: Omit<proto.Position, 'index'>): Promise<void> {
@@ -43,13 +43,13 @@ export class Rfc4RoomConnection implements RoomConnection {
     return this.sendMessage(false, { message: { $case: 'scene', scene } })
   }
   sendProfileMessage(profileVersion: proto.AnnounceProfileVersion): Promise<void> {
-    return this.sendMessage(true, { message: { $case: 'profileVersion', profileVersion } })
+    return this.sendMessage(false, { message: { $case: 'profileVersion', profileVersion } })
   }
   sendProfileRequest(profileRequest: proto.ProfileRequest): Promise<void> {
-    return this.sendMessage(true, { message: { $case: 'profileRequest', profileRequest } })
+    return this.sendMessage(false, { message: { $case: 'profileRequest', profileRequest } })
   }
   sendProfileResponse(profileResponse: proto.ProfileResponse): Promise<void> {
-    return this.sendMessage(true, { message: { $case: 'profileResponse', profileResponse } })
+    return this.sendMessage(false, { message: { $case: 'profileResponse', profileResponse } })
   }
   sendChatMessage(chat: proto.Chat): Promise<void> {
     return this.sendMessage(true, { message: { $case: 'chat', chat } })

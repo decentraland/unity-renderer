@@ -10,6 +10,7 @@ namespace DCL
         MINIMAP = 1,
         PROFILE_HUD = 2,
         NOTIFICATION = 3,
+        [Obsolete("Deprecated. Migrated to plugins. See AvatarEditorHUDPlugin, BackpackEditorV2Plugin")]
         AVATAR_EDITOR = 4,
         SETTINGS_PANEL = 5,
 
@@ -26,6 +27,7 @@ namespace DCL
         OPEN_EXTERNAL_URL_PROMPT = 14,
         PRIVATE_CHAT_WINDOW = 15,
         NFT_INFO_DIALOG = 16,
+        [Obsolete("Deprecated behavior")]
         TELEPORT_DIALOG = 17,
         CONTROLS_HUD = 18,
 

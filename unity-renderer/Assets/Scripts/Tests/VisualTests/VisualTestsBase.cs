@@ -6,6 +6,8 @@ using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCLPlugins.UIRefresherPlugin;
+using DCLServices.MapRendererV2;
+using NSubstitute;
 using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;
 
@@ -26,6 +28,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
         result.Register<IWorldState>( () => new WorldState());
         result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
+        result.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
         return result;
     }
 

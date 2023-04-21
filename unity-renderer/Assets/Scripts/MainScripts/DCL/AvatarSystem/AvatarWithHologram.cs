@@ -1,165 +1,45 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
-using System.Threading;
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading;
 using GPUSkinning;
 using UnityEngine;
 
 namespace AvatarSystem
 {
     // [ADR 65 - https://github.com/decentraland/adr]
-    public class AvatarWithHologram : IAvatar
+    public class AvatarWithHologram : Avatar
     {
-        private const float RESCALING_BOUNDS_FACTOR = 100f;
-        internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
-        private readonly IAvatarCurator avatarCurator;
-        private readonly ILoader loader;
-        private readonly IAnimator animator;
-        private readonly IVisibility visibility;
-        private readonly ILOD lod;
-        private readonly IGPUSkinning gpuSkinning;
-        private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
-        private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
-        private CancellationTokenSource disposeCts = new CancellationTokenSource();
+        private const float AVATAR_REVEAL_COMPLETION_OFFSET = 10;
+
         private readonly IBaseAvatar baseAvatar;
 
-        public event Action<Renderer> OnCombinedRendererUpdate;
-
-        public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
-        public Vector3 extents { get; private set; }
-        public int lodLevel => lod?.lodIndex ?? 0;
-
-        internal AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator,
-            IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService,
-            IEmoteAnimationEquipper emoteAnimationEquipper)
+        internal AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility,
+            ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService, IEmoteAnimationEquipper emoteAnimationEquipper)
+            : base(avatarCurator, loader, animator, visibility, lod, gpuSkinning, gpuSkinningThrottlerService, emoteAnimationEquipper)
         {
             this.baseAvatar = baseAvatar;
-            this.avatarCurator = avatarCurator;
-            this.loader = loader;
-            this.animator = animator;
-            this.visibility = visibility;
-            this.lod = lod;
-            this.gpuSkinning = gpuSkinning;
-            this.gpuSkinningThrottlerService = gpuSkinningThrottlerService;
-            this.emoteAnimationEquipper = emoteAnimationEquipper;
         }
 
-        /// <summary>
-        /// Starts the loading process for the Avatar.
-        /// </summary>
-        /// <param name="wearablesIds"></param>
-        /// <param name="settings"></param>
-        /// <param name="ct"></param>
-        public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
+        protected override async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
-            disposeCts ??= new CancellationTokenSource();
+            baseAvatar.FadeGhost(linkedCt).Forget(); //Avoid making the ghost fading a blocking part of the avatar
+            animator.Prepare(settings.bodyshapeId, baseAvatar.ArmatureContainer);
+            List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, baseAvatar.SkinnedMeshRenderer, linkedCt: linkedCt);
+            Prepare(settings, emotes, baseAvatar.ArmatureContainer);
+            Bind();
 
-            status = IAvatar.Status.Idle;
-            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token;
-
-            linkedCt.ThrowIfCancellationRequested();
-
-            try
-            {
-                WearableItem bodyshape = null;
-                WearableItem eyes = null;
-                WearableItem eyebrows = null;
-                WearableItem mouth = null;
-                List<WearableItem> wearables = null;
-                List<WearableItem> emotes = null;
-
-                baseAvatar.Initialize();
-                animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
-                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
-                if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
-                {
-                    visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
-                }
-                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar.GetMainRenderer(), linkedCt);
-
-                //Scale the bounds due to the giant avatar not being skinned yet
-                extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-
-                emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
-                gpuSkinning.Prepare(loader.combinedRenderer);
-                gpuSkinningThrottlerService.Register(gpuSkinning);
-
-                visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
-                visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
-
-                lod.Bind(gpuSkinning.renderer);
-
-                status = IAvatar.Status.Loaded;
-
-                MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
-                OnCombinedRendererUpdate?.Invoke(newCombinedRenderer);
-                await baseAvatar.FadeOut(newCombinedRenderer, visibility.IsMainRenderVisible(), linkedCt);
-            }
-            catch (OperationCanceledException)
-            {
-                Dispose();
-                throw;
-            }
-            catch (Exception e)
-            {
-                Dispose();
-                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
-                if (e.InnerException != null)
-                    ExceptionDispatchInfo.Capture(e.InnerException).Throw();
-                else
-                    throw;
-            }
-            finally
-            {
-                disposeCts?.Dispose();
-                disposeCts = null;
-            }
+            MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
+            Inform(newCombinedRenderer);
+            if (visibility.IsMainRenderVisible())
+                await baseAvatar.Reveal(GetMainRenderer(), extents.y, extents.y + AVATAR_REVEAL_COMPLETION_OFFSET, linkedCt);
+            else
+                baseAvatar.RevealInstantly(GetMainRenderer(), extents.y + AVATAR_REVEAL_COMPLETION_OFFSET);
         }
 
-        public void AddVisibilityConstraint(string key)
+        public override void AddVisibilityConstraint(string key)
         {
-            visibility.AddGlobalConstrain(key);
-            baseAvatar.CancelTransition();
-        }
-
-        public void RemoveVisibilityConstrain(string key)
-        {
-            visibility.RemoveGlobalConstrain(key);
-        }
-
-        public void PlayEmote(string emoteId, long timestamps)
-        {
-            animator?.PlayEmote(emoteId, timestamps);
-        }
-
-        public void SetLODLevel(int lodIndex) { lod.SetLodIndex(lodIndex); }
-
-        public void SetAnimationThrottling(int framesBetweenUpdate)
-        {
-            gpuSkinningThrottlerService.ModifyThrottling(gpuSkinning, framesBetweenUpdate);
-        }
-
-        public void SetImpostorTexture(Texture2D impostorTexture) { lod.SetImpostorTexture(impostorTexture); }
-
-        public void SetImpostorTint(Color color) { lod.SetImpostorTint(color); }
-
-        public Transform[] GetBones() => loader.GetBones();
-
-        public Renderer GetMainRenderer() =>
-            gpuSkinning.renderer;
-
-        public void Dispose()
-        {
-            status = IAvatar.Status.Idle;
-            disposeCts?.Cancel();
-            disposeCts?.Dispose();
-            disposeCts = null;
-            avatarCurator?.Dispose();
-            loader?.Dispose();
-            visibility?.Dispose();
-            lod?.Dispose();
-            gpuSkinningThrottlerService?.Unregister(gpuSkinning);
+            base.AddVisibilityConstraint(key);
+            baseAvatar.RevealInstantly(GetMainRenderer(), extents.y + AVATAR_REVEAL_COMPLETION_OFFSET);
         }
     }
 }

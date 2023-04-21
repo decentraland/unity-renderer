@@ -6,7 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static HotScenesController;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public class PlacesSubSectionComponentControllerTests
 {
@@ -85,7 +85,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
         placesSubSectionComponentView.Received().SetAllAsLoading();
         placesSubSectionComponentView.Received().SetShowMoreButtonActive(false);
-        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
+        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<IHotScenesController.HotSceneInfo>>>());
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -96,7 +96,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
+        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<IHotScenesController.HotSceneInfo>>>());
     }
 
     [Test]
@@ -131,7 +131,7 @@ public class PlacesSubSectionComponentControllerTests
     {
         // Arrange
         PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel();
-        testPlaceCardModel.hotSceneInfo = new HotSceneInfo();
+        testPlaceCardModel.hotSceneInfo = new IHotScenesController.HotSceneInfo();
 
         // Act
         placesSubSectionComponentController.ShowPlaceDetailedInfo(testPlaceCardModel);
@@ -147,7 +147,7 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         bool exploreClosed = false;
         placesSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
-        HotSceneInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
+        IHotScenesController.HotSceneInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
         placesSubSectionComponentController.OnJumpInToPlace(testPlaceFromAPI);

@@ -1,3 +1,5 @@
+using DCL.AvatarEditor;
+using DCL.Backpack;
 using DCL.Chat.HUD;
 using DCL.Chat.Notifications;
 using DCL.ConfirmationPopup;
@@ -6,10 +8,8 @@ using DCL.Emotes;
 using DCL.EmotesWheel;
 using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
-using DCL.GoToPanel;
 using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
-using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
@@ -37,9 +37,9 @@ namespace DCL
             pluginSystem.Register<TransactionFeature>(() => new TransactionFeature());
             pluginSystem.Register<PreviewMenuPlugin>(() => new PreviewMenuPlugin());
             pluginSystem.Register<SkyboxController>(() => new SkyboxController());
-            pluginSystem.Register<GotoPanelPlugin>(() => new GotoPanelPlugin());
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
+            pluginSystem.Register<TeleportHUDPlugin>(() => new TeleportHUDPlugin());
             pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());
             pluginSystem.Register<EmotesWheelUIPlugin>(() => new EmotesWheelUIPlugin());
             pluginSystem.Register<NFTShapePlugin>(() => new NFTShapePlugin());
@@ -83,6 +83,10 @@ namespace DCL
             pluginSystem.Register<ABDetectorPlugin>(() => new ABDetectorPlugin());
 
             pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin());
+
+            pluginSystem.RegisterWithFlag<BackpackEditorV2Plugin>(() => new BackpackEditorV2Plugin(), "backpack_editor_v2");
+            // TODO: remove the v1 backpack editor when v2 is confirmed to be completely functional
+            pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

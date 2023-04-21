@@ -18,6 +18,7 @@ namespace DCL
         private IWebRequestTextureFactory textureFactory;
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
+        private IDeleteWebRequestFactory deleteWebRequestFactory;
         private readonly IRPCSignRequest rpcSignRequest;
 
         private readonly List<WebRequestAsyncOperation> ongoingWebRequests = new();
@@ -28,6 +29,7 @@ namespace DCL
             IWebRequestTextureFactory textureFactory,
             IWebRequestAudioFactory audioClipWebRequestFactory,
             IPostWebRequestFactory postWebRequestFactory,
+            IDeleteWebRequestFactory deleteWebRequestFactory,
             IRPCSignRequest rpcSignRequest = null
         )
         {
@@ -36,6 +38,7 @@ namespace DCL
             this.textureFactory = textureFactory;
             this.audioClipWebRequestFactory = audioClipWebRequestFactory;
             this.postWebRequestFactory = postWebRequestFactory;
+            this.deleteWebRequestFactory = deleteWebRequestFactory;
             this.rpcSignRequest = rpcSignRequest;
         }
 
@@ -48,7 +51,8 @@ namespace DCL
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
-                new PostWebRequestFactory()
+                new PostWebRequestFactory(),
+                new DeleteWebRequestFactory()
             );
 
             return newWebRequestController;
@@ -98,6 +102,21 @@ namespace DCL
                 timeout, cancellationToken, headers, isSigned);
         }
 
+        public async UniTask<UnityWebRequest> DeleteAsync(
+            string url,
+            DownloadHandler downloadHandler = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            CancellationToken cancellationToken = default,
+            Dictionary<string, string> headers = null,
+            bool isSigned = false)
+        {
+            return await SendWebRequest(deleteWebRequestFactory, url, downloadHandler, onSuccess, onFail, requestAttemps,
+                timeout, cancellationToken, headers, isSigned);
+        }
+
         public async UniTask<UnityWebRequest> GetAssetBundleAsync(
             string url,
             Action<UnityWebRequest> onSuccess = null,
@@ -134,10 +153,8 @@ namespace DCL
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
         {
-            // Note: textureFactory is not used because of the known issue introduced in Unity 2021.3.17f1 using the UnityWebRequestTexture.GetTexture method
-            // textureFactory.isReadable = isReadable;
-            return await SendWebRequest(getWebRequestFactory, url, null, onSuccess, onfail, requestAttemps,
-                timeout, cancellationToken, headers);
+            textureFactory.isReadable = isReadable;
+            return await SendWebRequest(textureFactory, url, null, onSuccess, onfail, requestAttemps, timeout, cancellationToken, headers);
         }
 
         public async UniTask<UnityWebRequest> GetAudioClipAsync(
@@ -176,7 +193,7 @@ namespace DCL
 
                 if (isSigned)
                 {
-                    if (!Enum.TryParse(request.method, out RequestMethod method))
+                    if (!Enum.TryParse(request.method, true, out RequestMethod method))
                         method = RequestMethod.Get;
 
                     int index = url.IndexOf("?", StringComparison.Ordinal);
@@ -298,9 +315,8 @@ namespace DCL
             bool isReadable = true,
             Dictionary<string, string> headers = null)
         {
-            // Note: textureFactory is not used because of the known issue introduced in Unity 2021.3.17f1 using the UnityWebRequestTexture.GetTexture method
-            // textureFactory.isReadable = isReadable;
-            return SendWebRequest(getWebRequestFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
+            textureFactory.isReadable = isReadable;
+            return SendWebRequest(textureFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
 
         [Obsolete]

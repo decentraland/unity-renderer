@@ -42,10 +42,6 @@ namespace AssetPromiseKeeper_Gif_Tests
             keeper.Keep(prom);
             keeper.Keep(prom2);
             keeper.Keep(prom3);
-            
-            LogAssert.Expect(LogType.Exception, new Regex("^.*?GifWebRequestException"));
-            LogAssert.Expect(LogType.Exception, new Regex("^.*?GifWebRequestException"));
-            LogAssert.Expect(LogType.Exception, new Regex("^.*?GifWebRequestException"));
 
             Assert.AreEqual(3, keeper.waitingPromisesCount);
 

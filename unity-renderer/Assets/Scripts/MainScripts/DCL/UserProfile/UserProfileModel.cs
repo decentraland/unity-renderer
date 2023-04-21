@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 [System.Serializable]
 public class UserProfileModel
@@ -93,7 +92,9 @@ public class UserProfileModel
 
         if (model.blocked != null && blocked != null)
         {
-            if (!model.blocked.All(blocked.Contains) || model.blocked.Count != blocked.Count)
+            // We're comparing only the lenght of the 'blocked' list because we found several cases where it is too big and it would cause huge hiccups.
+            // Also, taking into account that this list should be removed from the profile data in the catalysts, we decided to nor compare the content.
+            if (model.blocked.Count != blocked.Count)
                 return false;
         }
         else if (model.blocked != null || blocked != null)
@@ -101,7 +102,9 @@ public class UserProfileModel
 
         if (model.muted != null && muted != null)
         {
-            if (!model.muted.All(muted.Contains) || model.muted.Count != muted.Count)
+            // We're comparing only the lenght of the 'muted' list because we found several cases where it is too big and it would cause huge hiccups.
+            // Also, taking into account that this list should be removed from the profile data in the catalysts, we decided to nor compare the content.
+            if (model.muted.Count != muted.Count)
                 return false;
         }
         else if (model.muted != null || muted != null)

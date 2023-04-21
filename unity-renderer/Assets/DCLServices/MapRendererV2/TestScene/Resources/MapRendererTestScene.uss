@@ -1,0 +1,21 @@
+.functionGroup {
+    border-width: 1px;
+    border-color: gray;
+    padding: 2px 4px 4px;
+    margin-bottom: 3px;
+}
+
+.functionGroup > .groupTitle {
+    font-size: 10px;
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+    border-bottom-width: 2px;
+    border-bottom-color: gray;
+}
+
+.renderTexturePreview {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    max-height: 378px;
+    align-self: center;
+}

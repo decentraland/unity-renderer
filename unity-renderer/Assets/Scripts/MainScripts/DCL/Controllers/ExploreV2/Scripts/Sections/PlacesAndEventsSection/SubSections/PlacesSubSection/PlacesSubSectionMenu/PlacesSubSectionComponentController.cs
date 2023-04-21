@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static HotScenesController;
+using MainScripts.DCL.Controllers.HotScenes;
 using Environment = DCL.Environment;
+using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController, IPlacesAndEventsAPIRequester
 {

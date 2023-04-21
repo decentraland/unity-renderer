@@ -99,6 +99,9 @@ public class InputController : MonoBehaviour
 {
     public static bool ENABLE_THIRD_PERSON_CAMERA = true;
 
+    private readonly KeyCode[] modifierKeyB = { KeyCode.B };
+    private readonly KeyCode[] modifierKeyLeftAlt = { KeyCode.LeftAlt };
+
     [Header("General Input")]
     public InputAction_Trigger[] triggerTimeActions;
     public InputAction_Hold[] holdActions;
@@ -129,6 +132,7 @@ public class InputController : MonoBehaviour
         {
             if (action.isTriggerBlocked != null && action.isTriggerBlocked.Get())
                 continue;
+
 
             switch (action.DCLAction)
             {
@@ -204,34 +208,34 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut0:
-                    InputProcessor.FromKey(action, KeyCode.Alpha0, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha0, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut1:
-                    InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut2:
-                    InputProcessor.FromKey(action, KeyCode.Alpha2, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha2, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut3:
-                    InputProcessor.FromKey(action, KeyCode.Alpha3, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha3, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut4:
-                    InputProcessor.FromKey(action, KeyCode.Alpha4, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha4, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut5:
-                    InputProcessor.FromKey(action, KeyCode.Alpha5, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha5, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut6:
-                    InputProcessor.FromKey(action, KeyCode.Alpha6, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha6, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut7:
-                    InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut8:
-                    InputProcessor.FromKey(action, KeyCode.Alpha8, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha8, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut9:
-                    InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.B });
+                    InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyB);
                     break;
                 case DCLAction_Trigger.ChatNextInHistory:
                     InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
@@ -267,7 +271,7 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.ToggleVoiceChatRecording:
-                    InputProcessor.FromKey(action, KeyCode.T, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new[] { KeyCode.LeftAlt });
+                    InputProcessor.FromKey(action, KeyCode.T, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: modifierKeyLeftAlt);
                     break;
                 case DCLAction_Trigger.ToggleAvatarEditorHud:
                     InputProcessor.FromKey(action, KeyCode.I, modifiers: InputProcessor.Modifier.FocusNotInInput);

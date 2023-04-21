@@ -3,78 +3,137 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace AvatarSystem
 {
     public class BaseAvatar : IBaseAvatar
     {
-        public IBaseAvatarRevealer avatarRevealer { get; set; }
-        private ILOD lod;
-        private Transform avatarRevealerContainer;
-        private CancellationTokenSource transitionCts = new CancellationTokenSource();
+        internal static readonly int REVEAL_POSITION_ID = Shader.PropertyToID("_RevealPosition");
+        internal static readonly int REVEAL_NORMAL_ID = Shader.PropertyToID("_RevealNormal");
+        internal static readonly int COLOR_ID = Shader.PropertyToID("_Color");
 
-        public GameObject armatureContainer;
-        public SkinnedMeshRenderer meshRenderer { get; private set; }
+        internal readonly IBaseAvatarReferences baseAvatarReferences;
+        internal readonly List<Material> cachedMaterials = new ();
+        internal readonly Material ghostMaterial;
 
-        public BaseAvatar(Transform avatarRevealerContainer, GameObject armatureContainer, ILOD lod)
+        public SkinnedMeshRenderer SkinnedMeshRenderer => baseAvatarReferences.SkinnedMeshRenderer;
+        public GameObject ArmatureContainer => baseAvatarReferences.ArmatureContainer.gameObject;
+
+        private CancellationTokenSource revealCts = new ();
+        private CancellationTokenSource fadeInGhostCts = new ();
+
+        public BaseAvatar(IBaseAvatarReferences baseAvatarReferences)
         {
-            this.avatarRevealerContainer = avatarRevealerContainer;
-            this.armatureContainer = armatureContainer;
-            this.lod = lod;
+            Assert.IsNotNull(baseAvatarReferences.SkinnedMeshRenderer);
+
+            this.baseAvatarReferences = baseAvatarReferences;
+            ghostMaterial = baseAvatarReferences.SkinnedMeshRenderer.material;
+            ghostMaterial.SetColor(COLOR_ID, Utils.GetRandomColorInGradient(baseAvatarReferences.GhostMinColor, this.baseAvatarReferences.GhostMaxColor));
         }
 
-        public GameObject GetArmatureContainer()
+        public async UniTask FadeGhost(CancellationToken cancellationToken = default)
         {
-            return armatureContainer;
+            fadeInGhostCts?.Cancel();
+            fadeInGhostCts?.Dispose();
+            fadeInGhostCts = new CancellationTokenSource();
+            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(fadeInGhostCts.Token, cancellationToken);
+
+            //Reset revealing position for ghots material
+            ghostMaterial.SetVector(REVEAL_NORMAL_ID, Vector3.up * -1);
+            ghostMaterial.SetVector(REVEAL_POSITION_ID, Vector3.zero);
+
+            await ghostMaterial
+                 .DOFade(1, COLOR_ID, baseAvatarReferences.FadeGhostSpeed)
+                 .SetSpeedBased(true)
+                 .ToUniTaskInstantCancelation(cancellationToken: linkedCts.Token);
         }
 
-        public SkinnedMeshRenderer GetMainRenderer()
+        public async UniTask Reveal(Renderer targetRenderer, float avatarHeight, float completionHeight, CancellationToken cancellationToken = default)
         {
-            return avatarRevealer.GetMainRenderer();
-        }
+            revealCts?.Cancel();
+            revealCts?.Dispose();
+            revealCts = new CancellationTokenSource();
+            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(revealCts.Token, cancellationToken);
 
-        public void Initialize()
-        {
-            if (avatarRevealer == null)
+            // keep a list to gather materials to avoid allocations
+            cachedMaterials.Clear();
+            targetRenderer?.GetMaterials(cachedMaterials);
+
+            UniTask GetRevealTask(Material material, float revealPosition, float completionPosition)
             {
-                var avatarRevealerObj = Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer)
-                                                   .GetComponent<BaseAvatarReveal>();
-                Utils.SetLayerRecursively(avatarRevealerObj.transform, avatarRevealerContainer.gameObject.layer);
-                avatarRevealer = avatarRevealerObj;
+                material.SetVector(REVEAL_NORMAL_ID, Vector3.up * -1);
+                material.SetVector(REVEAL_POSITION_ID, Vector3.zero);
 
-                avatarRevealer.InjectLodSystem(lod);
+                return material.DOVector(Vector3.up * revealPosition, REVEAL_POSITION_ID, baseAvatarReferences.RevealSpeed)
+                               .SetSpeedBased(true)
+                               .OnComplete(() =>
+                                {
+                                    baseAvatarReferences.ParticlesContainer.SetActive(false);
+                                    SetRevealPosition(material, completionPosition);
+                                })
+                               .ToUniTaskInstantCancelation(true, cancellationToken: linkedCts.Token);
             }
-            else
+
+            try
             {
-                avatarRevealer.Reset();
+                baseAvatarReferences.ParticlesContainer.SetActive(true);
+                List<UniTask> tasks = new List<UniTask>();
+                tasks.Add(GetRevealTask(ghostMaterial, avatarHeight, completionHeight));
+
+                for (var index = 0; index < cachedMaterials.Count; index++) { tasks.Add(GetRevealTask(cachedMaterials[index], -avatarHeight, -completionHeight)); }
+
+                await UniTask.WhenAll(tasks);
             }
-
-            meshRenderer = avatarRevealer.GetMainRenderer();
+            finally
+            {
+                baseAvatarReferences.ParticlesContainer.SetActive(false);
+                FadeOutGhostMaterial();
+            }
         }
 
-        public async UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken)
+        public void RevealInstantly(Renderer targetRenderer, float avatarHeight)
         {
-            if (avatarRevealerContainer == null)
-                return;
+            revealCts?.Cancel();
+            revealCts?.Dispose();
+            revealCts = null;
 
-            transitionCts ??= new CancellationTokenSource();
-            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, transitionCts.Token).Token;
-            linkedCt.ThrowIfCancellationRequested();
+            cachedMaterials.Clear();
+            targetRenderer?.GetMaterials(cachedMaterials);
+            ghostMaterial.SetVector(REVEAL_NORMAL_ID, Vector3.up * -1);
+            SetRevealPosition(ghostMaterial, avatarHeight);
 
-            avatarRevealer.AddTarget(targetRenderer);
-            //If canceled, the final state of the avatar is handle inside StartAvatarRevealAnimation
-            await avatarRevealer.StartAvatarRevealAnimation(withTransition, linkedCt);
-
-            transitionCts?.Dispose();
-            transitionCts = null;
+            for (var i = 0; i < cachedMaterials.Count; i++)
+            {
+                cachedMaterials[i].SetVector(REVEAL_NORMAL_ID, Vector3.up * -1);
+                SetRevealPosition(cachedMaterials[i], -avatarHeight);
+            }
+            baseAvatarReferences.ParticlesContainer.SetActive(false);
+            FadeOutGhostMaterial();
         }
 
-        public void CancelTransition()
+        private void FadeOutGhostMaterial()
         {
-            transitionCts?.Cancel();
-            transitionCts?.Dispose();
-            transitionCts = null;
+            Color color = ghostMaterial.GetColor(COLOR_ID);
+            color.a = 0;
+            ghostMaterial.color = color;
+        }
+
+        internal static void SetRevealPosition(Material material, float height)
+        {
+            material.SetVector(REVEAL_POSITION_ID, Vector3.up * height);
+        }
+
+        public void Dispose()
+        {
+            revealCts?.Cancel();
+            revealCts?.Dispose();
+            revealCts = null;
+            fadeInGhostCts?.Cancel();
+            fadeInGhostCts?.Dispose();
+            revealCts = fadeInGhostCts;
         }
     }
 }
