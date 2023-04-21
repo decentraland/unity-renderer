@@ -27,10 +27,6 @@ internal class PrimitiveMeshFactory
                 {
                     mesh = PrimitiveMeshBuilder.BuildSphere(sphereProps.Radius, sphereProps.Longitude, sphereProps.Latitude);
                 }
-                else
-                {
-                    mesh = PrimitiveMeshBuilder.BuildSphere(0.5f);
-                }
                 break;
             }
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Plane:
