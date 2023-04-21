@@ -9,6 +9,7 @@ namespace DCL.Backpack
 
         public BackpackEditorV2Plugin()
         {
+            IWearablesCatalogService wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
             var view = BackpackEditorHUDV2ComponentView.Create();
@@ -23,7 +24,9 @@ namespace DCL.Backpack
             var backpackAnalyticsController = new BackpackAnalyticsController(
                 Environment.i.platform.serviceProviders.analytics,
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
-                Environment.i.serviceLocator.Get<IWearablesCatalogService>());
+                wearablesCatalogService);
+
+            var wearableGridController = new WearableGridController(view.WearableGridComponentView, userProfileBridge, wearablesCatalogService);
 
             hudController = new BackpackEditorHUDController(
                 view,
@@ -32,7 +35,8 @@ namespace DCL.Backpack
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 backpackEmotesSectionController,
-                backpackAnalyticsController);
+                backpackAnalyticsController,
+                wearableGridController);
         }
 
         public void Dispose()
