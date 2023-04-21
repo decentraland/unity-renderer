@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using DCL.Helpers;
+using RPC.Context;
 using Environment = DCL.Environment;
 
 public class ExternalUrlPromptHUDController : IHUD
@@ -12,6 +13,8 @@ public class ExternalUrlPromptHUDController : IHUD
     internal ExternalUrlPromptView view { get; private set; }
 
     internal Dictionary<int, HashSet<string>> trustedDomains = new Dictionary<int, HashSet<string>>();
+
+    private readonly RestrictedActionsContext restrictedActionsServiceContext;
 
     public ExternalUrlPromptHUDController()
     {
@@ -21,6 +24,9 @@ public class ExternalUrlPromptHUDController : IHUD
 
         if (Environment.i != null)
             Environment.i.world.sceneController.OnOpenExternalUrlRequest += ProcessOpenUrlRequest;
+
+        restrictedActionsServiceContext = DataStore.i.rpc.context.restrictedActions;
+        restrictedActionsServiceContext.OpenExternalUrlPrompt += ProcessOpenUrlRequest;
     }
 
     public void SetVisibility(bool visible)
@@ -51,17 +57,24 @@ public class ExternalUrlPromptHUDController : IHUD
 
         if (view != null)
             UnityEngine.Object.Destroy(view.gameObject);
+
+        restrictedActionsServiceContext.OpenExternalUrlPrompt -= ProcessOpenUrlRequest;
     }
 
     internal void ProcessOpenUrlRequest(IParcelScene scene, string url)
     {
+        ProcessOpenUrlRequest(url, scene.sceneData.sceneNumber);
+    }
+
+    internal bool ProcessOpenUrlRequest(string url, int sceneNumber)
+    {
         Uri uri;
         if (Uri.TryCreate(url, UriKind.Absolute, out uri))
         {
-            if (trustedDomains.ContainsKey(scene.sceneData.sceneNumber) && trustedDomains[scene.sceneData.sceneNumber].Contains(uri.Host))
+            if (trustedDomains.ContainsKey(sceneNumber) && trustedDomains[sceneNumber].Contains(uri.Host))
             {
                 OpenUrl(url);
-                return;
+                return true;
             }
 
             SetVisibility(true);
@@ -71,12 +84,12 @@ public class ExternalUrlPromptHUDController : IHUD
                 switch (result)
                 {
                     case ExternalUrlPromptView.ResultType.APPROVED_TRUSTED:
-                        if (!trustedDomains.ContainsKey(scene.sceneData.sceneNumber))
+                        if (!trustedDomains.ContainsKey(sceneNumber))
                         {
-                            trustedDomains.Add(scene.sceneData.sceneNumber, new HashSet<string>());
+                            trustedDomains.Add(sceneNumber, new HashSet<string>());
                         }
 
-                        trustedDomains[scene.sceneData.sceneNumber].Add(uri.Host);
+                        trustedDomains[sceneNumber].Add(uri.Host);
                         OpenUrl(url);
                         break;
                     case ExternalUrlPromptView.ResultType.APPROVED:
@@ -86,7 +99,11 @@ public class ExternalUrlPromptHUDController : IHUD
 
                 SetVisibility(false);
             });
+
+            return true;
         }
+
+        return false;
     }
 
     private void OpenUrl(string url)
