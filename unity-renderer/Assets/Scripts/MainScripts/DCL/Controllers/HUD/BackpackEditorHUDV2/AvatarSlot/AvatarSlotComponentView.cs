@@ -92,7 +92,6 @@ namespace DCL.Backpack
             }
 
             emptySlot.SetActive(false);
-            Debug.Log($"Set image uri {emptySlot.activeSelf}");
             nftImage.SetImage(imageUri);
         }
 

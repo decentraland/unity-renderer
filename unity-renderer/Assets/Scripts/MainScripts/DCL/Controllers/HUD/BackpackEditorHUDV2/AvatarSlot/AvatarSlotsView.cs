@@ -21,7 +21,6 @@ namespace DCL.Backpack
 
         public void CreateAvatarSlotSection(string sectionName, bool addSeparator)
         {
-            Debug.Log("create section");
             avatarSlotSections.Add(sectionName, Instantiate(avatarSlotSectionPrefab, avatarSlotsContainer).transform);
 
             if (addSeparator)

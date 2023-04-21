@@ -6,4 +6,5 @@ public interface IDynamicListComponentView
     void AddIcon(Sprite sprite);
     void AddIcons(List<Sprite> spriteList);
     void RemoveIcons();
+    void RebuildLayout();
 }

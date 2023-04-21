@@ -98,8 +98,11 @@ namespace DCL.Backpack
             model.hideList = hideList;
             hidesList.RemoveIcons();
 
+            hidesList.gameObject.SetActive(hideList.Count != 0);
             foreach (string hideCategory in hideList)
                 hidesList.AddIcon(typeIcons.GetTypeImage(hideCategory));
+
+            hidesList.RebuildLayout();
         }
 
         public void SetRemovesList(List<string> removeList)
@@ -108,8 +111,11 @@ namespace DCL.Backpack
 
             removesList.RemoveIcons();
 
+            removesList.gameObject.SetActive(removeList.Count != 0);
             foreach (string removeCategory in removeList)
                 removesList.AddIcon(typeIcons.GetTypeImage(removeCategory));
+
+            removesList.RebuildLayout();
         }
 
         public void SetIsEquipped(bool isEquipped)

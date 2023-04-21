@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,6 +6,7 @@ using UnityEngine.UI;
 public class DynamicListComponentView : BaseComponentView, IDynamicListComponentView
 {
     [SerializeField] private Image iconReference;
+    [SerializeField] private RectTransform rectTransform;
 
     internal List<Image> instantiatedIcons = new ();
     public override void RefreshControl()
@@ -34,5 +36,10 @@ public class DynamicListComponentView : BaseComponentView, IDynamicListComponent
             Destroy(icon.gameObject);
 
         instantiatedIcons = new List<Image>();
+    }
+
+    public void RebuildLayout()
+    {
+        Utils.ForceRebuildLayoutImmediate(rectTransform);
     }
 }
