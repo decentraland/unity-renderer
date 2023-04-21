@@ -19,10 +19,12 @@ namespace DCL.Backpack
         [SerializeField] private GameObject emotesSection;
         [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
         [SerializeField] private WearableGridComponentView wearableGridComponentView;
+        [SerializeField] private AvatarSlotsView avatarSlotsView;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
         public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
+        public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
 
         private Transform thisTransform;
         private bool isAvatarDirty;

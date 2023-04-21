@@ -1,7 +1,9 @@
 ﻿using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -21,7 +23,11 @@ namespace DCL.Backpack
         private IBackpackEmotesSectionController backpackEmotesSectionController;
         private BackpackAnalyticsController backpackAnalyticsController;
         private BackpackEditorHUDController backpackEditorHUDController;
+        private WearableGridController wearableGridController;
         private IWearableGridView wearableGridView;
+        private IAvatarSlotsView avatarSlotsView;
+        private Texture2D testFace256Texture = new Texture2D(1, 1);
+        private Texture2D testBodyTexture = new Texture2D(1, 1);
 
         [SetUp]
         public void SetUp()
@@ -38,11 +44,20 @@ namespace DCL.Backpack
             dataStore = new DataStore();
             dataStore.HUDs.avatarEditorVisible.Set(false, false);
             wearableGridView = Substitute.For<IWearableGridView>();
+            testFace256Texture = new Texture2D(1, 1);
+            testBodyTexture = new Texture2D(1, 1);
 
             backpackAnalyticsController = new BackpackAnalyticsController(
                 analytics,
                 newUserExperienceAnalytics,
                 wearablesCatalogService);
+
+            wearableGridController = new WearableGridController(wearableGridView,
+                userProfileBridge,
+                wearablesCatalogService,
+                dataStore.backpackV2);
+
+            avatarSlotsView = Substitute.For<IAvatarSlotsView>();
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
@@ -52,9 +67,8 @@ namespace DCL.Backpack
                 wearablesCatalogService,
                 backpackEmotesSectionController,
                 backpackAnalyticsController,
-                new WearableGridController(wearableGridView,
-                    userProfileBridge,
-                    wearablesCatalogService));
+                wearableGridController,
+                new AvatarSlotsHUDController(avatarSlotsView));
         }
 
         [TearDown]
@@ -62,6 +76,8 @@ namespace DCL.Backpack
         {
             Object.DestroyImmediate(rendererState);
             backpackEditorHUDController.Dispose();
+            Object.Destroy(testFace256Texture);
+            Object.Destroy(testBodyTexture);
         }
 
         [Test]
@@ -87,37 +103,87 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void LoadUserProfileProperly()
+        public void EquipAndSaveCorrectly()
         {
             // Arrange
-            backpackEditorHUDController.model.wearables.Clear();
-            dataStore.common.isPlayerRendererLoaded.Set(true, false);
+            userProfile.avatar.wearables.Clear();
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
+
+            view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
+                Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
+                Arg.Any<Action>());
 
             // Act
-            UpdateUserProfileWithTestData();
+            dataStore.HUDs.avatarEditorVisible.Set(false, true);
 
             // Assert
-            AssertAvatarModelAgainstBackpackModel(userProfile.avatar, backpackEditorHUDController.model);
-
+            Assert.IsTrue(userProfile.avatar.wearables.Count > 0);
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_eyebrows_01"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:bear_slippers"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:bee_t_shirt"));
         }
 
         [Test]
-        public void SaveAvatarProperly()
+        public void UnEquipAndSaveCorrectly()
         {
             // Arrange
-            UpdateUserProfileWithTestData();
+            EquipAndSaveCorrectly();
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
+
+
+            view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
+                Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
+                Arg.Any<Action>());
 
             // Act
-            backpackEditorHUDController.SaveAvatar(Texture2D.whiteTexture, Texture2D.whiteTexture);
+            dataStore.HUDs.avatarEditorVisible.Set(false, true);
 
             // Assert
-            AssertAvatarModelAgainstBackpackModel(userProfile.avatar, backpackEditorHUDController.model);
-
+            Assert.IsTrue(userProfile.avatar.wearables.Count == 0);
         }
 
-        private void UpdateUserProfileWithTestData()
+        [Test]
+        public void UpdateAvatarPreviewCorrectly()
         {
-            userProfile.UpdateData(new UserProfileModel()
+            // Act
+            backpackEmotesSectionController.OnNewEmoteAdded += Raise.Event<Action<string>>("testEmoteId");
+
+            // Assert
+            view.Received(1).UpdateAvatarPreview(Arg.Any<AvatarModel>());
+        }
+
+        [Test]
+        public void PreviewEmoteCorrectly()
+        {
+            // Arrange
+            var testEmoteId = "testEmoteId";
+
+            // Act
+            backpackEmotesSectionController.OnEmotePreviewed += Raise.Event<Action<string>>(testEmoteId);
+
+            // Assert
+            view.Received(1).PlayPreviewEmote(testEmoteId);
+        }
+
+        [Test]
+        public void EquipBodyShapeCorrectly()
+        {
+            // Arrange
+            var testUserProfileModel = GetTestUserProfileModel();
+
+            // Act
+            userProfile.UpdateData(testUserProfileModel);
+
+            // Assert
+            backpackEmotesSectionController.Received(1).SetEquippedBodyShape(testUserProfileModel.avatar.bodyShape);
+        }
+
+        private static UserProfileModel GetTestUserProfileModel() =>
+            new ()
             {
                 name = "name",
                 email = "mail",
@@ -138,18 +204,6 @@ namespace DCL.Backpack
                     hairColor = Color.green,
                     eyeColor = Color.blue,
                 },
-            });
-        }
-
-        private void AssertAvatarModelAgainstBackpackModel(AvatarModel avatarModel, BackpackEditorHUDModel backpackEditorHUDModel)
-        {
-            Assert.AreEqual(avatarModel.bodyShape, backpackEditorHUDModel.bodyShape.id);
-            Assert.AreEqual(avatarModel.wearables.Count, backpackEditorHUDModel.wearables.Count);
-            for (var i = 0; i < avatarModel.wearables.Count; i++)
-                Assert.AreEqual(avatarModel.wearables[i], backpackEditorHUDModel.wearables[i].id);
-            Assert.AreEqual(avatarModel.skinColor, backpackEditorHUDModel.skinColor);
-            Assert.AreEqual(avatarModel.hairColor, backpackEditorHUDModel.hairColor);
-            Assert.AreEqual(avatarModel.eyeColor, backpackEditorHUDModel.eyesColor);
-        }
+            };
     }
 }

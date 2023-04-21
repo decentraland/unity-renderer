@@ -30,6 +30,8 @@ namespace DCL.Backpack
         private Dictionary<NftRarity, GameObject> backgroundsByRarity;
         private string lastThumbnailUrl;
 
+        public WearableGridItemModel Model => model;
+
         public event Action<WearableGridItemModel> OnSelected;
         public event Action<WearableGridItemModel> OnEquipped;
         public event Action<WearableGridItemModel> OnUnequipped;

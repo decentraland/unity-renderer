@@ -1,4 +1,4 @@
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 import { LegacyServices } from '../types'
 
 export function legacyServices(baseUrl: string, about: AboutResponse): LegacyServices {

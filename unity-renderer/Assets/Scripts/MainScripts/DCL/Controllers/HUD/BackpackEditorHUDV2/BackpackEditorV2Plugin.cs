@@ -15,8 +15,10 @@ namespace DCL.Backpack
             var view = BackpackEditorHUDV2ComponentView.Create();
             view.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
 
+            DataStore dataStore = DataStore.i;
+
             var backpackEmotesSectionController = new BackpackEmotesSectionController(
-                DataStore.i,
+                dataStore,
                 view.EmotesSectionTransform,
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
@@ -26,17 +28,22 @@ namespace DCL.Backpack
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
                 wearablesCatalogService);
 
-            var wearableGridController = new WearableGridController(view.WearableGridComponentView, userProfileBridge, wearablesCatalogService);
+            var wearableGridController = new WearableGridController(view.WearableGridComponentView,
+                userProfileBridge, wearablesCatalogService,
+                dataStore.backpackV2);
+
+            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
 
             hudController = new BackpackEditorHUDController(
                 view,
-                DataStore.i,
+                dataStore,
                 CommonScriptableObjects.rendererState,
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 backpackEmotesSectionController,
                 backpackAnalyticsController,
-                wearableGridController);
+                wearableGridController,
+                avatarSlotsHUDController);
         }
 
         public void Dispose()

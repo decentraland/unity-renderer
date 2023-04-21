@@ -1967,8 +1967,8 @@ GameObject:
   - component: {fileID: 2859839270417482854}
   - component: {fileID: 269540385008896160}
   - component: {fileID: 2940456320096999484}
-  - component: {fileID: 5339787396754724817}
   - component: {fileID: 4227713636645781401}
+  - component: {fileID: 7292131858360462501}
   m_Layer: 5
   m_Name: MinimapHUD
   m_TagString: Untagged
@@ -2108,18 +2108,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &5339787396754724817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4525154057530514719}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4227713636645781401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2136,6 +2124,18 @@ MonoBehaviour:
   animSpeedFactor: 1
   disableAfterFadeOut: 0
   canvasGroup: {fileID: 0}
+--- !u!114 &7292131858360462501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525154057530514719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9ddafbc04829b41af264f12ac82a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4663711089530102657
 GameObject:
   m_ObjectHideFlags: 0
@@ -2665,6 +2665,7 @@ GameObject:
   - component: {fileID: 223458749653844719}
   - component: {fileID: 64377760550986365}
   - component: {fileID: 5015472051642357042}
+  - component: {fileID: 8719467018810224531}
   m_Layer: 5
   m_Name: JumpToHomeButton
   m_TagString: Untagged
@@ -2784,9 +2785,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6684377303349115013}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &8345580414719424793
 MonoBehaviour:
@@ -2800,7 +2801,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hideOnEnable: 1
+  hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
   canvasGroup: {fileID: 7179560460713622161}
@@ -2895,6 +2896,18 @@ MonoBehaviour:
   iconToChange: {fileID: 0}
   onFocusColor: {r: 1, g: 1, b: 1, a: 1}
   onLoseFocusColor: {r: 0.027450982, g: 0.7803922, b: 0.7176471, a: 1}
+--- !u!114 &8719467018810224531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6684377303349115013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65e98ed8afc84e40a25ba6348480134, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7015908234902076449
 GameObject:
   m_ObjectHideFlags: 0

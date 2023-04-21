@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
-    public class AvatarSlotsHUDController : IHUD
+    public class AvatarSlotsHUDController
     {
+        private readonly IAvatarSlotsView avatarSlotsView;
+        private string lastSelectedSlot;
         internal AvatarSlotsDefinitionSO avatarSlotsDefinition;
-        internal readonly IAvatarSlotsView avatarSlotsView;
-        internal string lastSelectedSlot;
 
         public AvatarSlotsHUDController(IAvatarSlotsView avatarSlotsView)
         {
@@ -43,7 +42,11 @@ namespace DCL.Backpack
             avatarSlotsView.OnToggleAvatarSlot -= ToggleSlot;
         }
 
-        public void SetVisibility(bool visible)
+        public void Equip(string wearableId, string thumbnailUrl)
+        {
+        }
+
+        public void UnEquip(string wearableId)
         {
         }
     }

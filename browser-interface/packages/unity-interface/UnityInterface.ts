@@ -1,6 +1,5 @@
 import { Vector3 } from '@dcl/ecs-math'
 import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { Avatar, ContentMapping } from '@dcl/schemas'
 import type { UnityGame } from 'unity-interface/loader'
 import { RENDERER_WS, RESET_TUTORIAL, WORLD_EXPLORER, WSS_ENABLED } from 'config'
@@ -54,6 +53,7 @@ import { futures } from './BrowserInterface'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -340,8 +340,7 @@ export class UnityInterface implements IUnityInterface {
     }
   }
 
-  public UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[])
-  {
+  public UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[]) {
     this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(info))
   }
 
