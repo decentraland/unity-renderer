@@ -27,11 +27,11 @@ namespace DCL.EmotesCustomization.Tests
             emotesCustomizationComponentView = Substitute.For<IEmotesCustomizationComponentView>();
             emotesCustomizationComponentController = Substitute.ForPartsOf<EmotesCustomizationComponentController>();
             emotesCustomizationComponentController.Configure().CreateView().Returns(info => emotesCustomizationComponentView);
-            emotesCustomizationComponentController.Initialize(
-                emotesCustomizationDataStore,
+            emotesCustomizationComponentController.Initialize(emotesCustomizationDataStore,
                 emotesDataStore,
                 exploreV2DataStore,
-                hudsDataStore);
+                hudsDataStore,
+                null);
         }
 
         [TearDown]
@@ -100,7 +100,7 @@ namespace DCL.EmotesCustomization.Tests
             // Assert
             emotesCustomizationComponentController.view.Received().SetActive(isVisible);
         }
-        
+
         [Test]
         public void ProcessCatalogCorrectly()
         {
@@ -125,10 +125,10 @@ namespace DCL.EmotesCustomization.Tests
                     i18n = new i18n[] { new i18n { code = "en", text = testId2 } }
                 }
             };
-        
+
             // Act
             emotesCustomizationComponentController.SetEmotes(emotes);
-        
+
             // Assert
             Assert.AreEqual(emotes.Length, emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Count());
             Assert.AreEqual(testId1, emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Get().ToList()[0]);
@@ -145,7 +145,7 @@ namespace DCL.EmotesCustomization.Tests
 
             emotesCustomizationComponentController.emotesDataStore.animations
                 .Add(("bodyShapeId", emoteId), new EmoteClipData(new AnimationClip()));
-            
+
             testEmoteCard.model = new EmoteCardComponentModel { isLoading = true };
             emotesCustomizationComponentController.emotesInLoadingState.Add(emoteId, testEmoteCard);
 
@@ -190,17 +190,17 @@ namespace DCL.EmotesCustomization.Tests
             Assert.AreEqual(true, result.isCollectible);
         }
 
-        
+
         [Test]
         public void UpdateEmoteSlotsCorrectly()
         {
             // Arrange
             string testId1 = "TestId1";
             string testId2 = "TestId2";
-        
+
             WearableItem[] emotes = new []
             {
-            
+
                 new WearableItem
                 {
                     id = testId1,
@@ -216,19 +216,19 @@ namespace DCL.EmotesCustomization.Tests
                     i18n = new i18n[] { new i18n { code = "en", text = testId2 } }
                 }
             };
-        
+
             emotesCustomizationComponentController.ownedEmotes = emotes.ToDictionary(x => x.id, x => x);
             emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Set(new List<string> { testId1, testId2 });
-        
+
             emotesCustomizationDataStore.unsavedEquippedEmotes.Set(new List<EquippedEmoteData>
             {
                 new EquippedEmoteData { id = testId1, cachedThumbnail = null },
                 new EquippedEmoteData { id = testId2, cachedThumbnail = null }
             });
-        
+
             // Act
             emotesCustomizationComponentController.UpdateEmoteSlots();
-        
+
             // Assert
             emotesCustomizationComponentController.view.Received(2).EquipEmote(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), false, false);
         }

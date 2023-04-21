@@ -28,6 +28,10 @@ export const getHotScenesService = (state: RootRealmState) => {
   return urlWithProtocol(state.realm.realmAdapter!.services.legacy.hotScenesService)
 }
 
+export const getContentService = (state: RootRealmState) => {
+  return urlWithProtocol(state.realm.realmAdapter!.services.legacy.fetchContentServer)
+}
+
 export const getExploreRealmsService = (state: RootRealmState) =>
   state.realm.realmAdapter!.services.legacy.exploreRealmsService
 export const getPOIService = (state: RootRealmState) => {
