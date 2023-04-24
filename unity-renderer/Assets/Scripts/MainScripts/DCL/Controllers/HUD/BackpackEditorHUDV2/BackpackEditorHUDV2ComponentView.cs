@@ -18,9 +18,13 @@ namespace DCL.Backpack
         [SerializeField] private GameObject wearablesSection;
         [SerializeField] private GameObject emotesSection;
         [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
+        [SerializeField] private WearableGridComponentView wearableGridComponentView;
+        [SerializeField] private AvatarSlotsView avatarSlotsView;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
+        public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
+        public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
 
         private Transform thisTransform;
         private bool isAvatarDirty;
@@ -60,7 +64,7 @@ namespace DCL.Backpack
             backpackPreviewPanel.Dispose();
         }
 
-        public static IBackpackEditorHUDView Create() =>
+        public static BackpackEditorHUDV2ComponentView Create() =>
             Instantiate(Resources.Load<BackpackEditorHUDV2ComponentView>("BackpackEditorHUDV2"));
 
         public override void Show(bool instant = false)

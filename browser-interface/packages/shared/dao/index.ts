@@ -1,4 +1,3 @@
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { PIN_CATALYST } from 'config'
 import defaultLogger from 'lib/logger'
 import { storeCondition } from 'lib/redux'
@@ -6,6 +5,7 @@ import { fetchCatalystNodesFromContract } from 'lib/web3/fetchCatalystNodesFromC
 import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
 import { commsLogger } from 'shared/comms/logger'
 import { getDisabledCatalystConfig } from 'shared/meta/selectors'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 import { setRealmAdapter } from 'shared/realm/actions'
 import {
   adapterForRealmConfig,
