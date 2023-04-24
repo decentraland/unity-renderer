@@ -20,7 +20,6 @@ namespace UIComponents.Scripts.Components
         private int currentIndex = -1;
 
         public event Action<int> OnValueChanged;
-        public event Action<int> OnTotalPagesChanged;
 
         public override void Awake()
         {
@@ -56,8 +55,6 @@ namespace UIComponents.Scripts.Components
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(pageButtonsParent);
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
-
-            OnTotalPagesChanged?.Invoke(totalPages);
         }
 
         private void OnNextButtonDown()

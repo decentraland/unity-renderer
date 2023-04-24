@@ -7,11 +7,11 @@ namespace DCL.Backpack
 {
     public class WearableGridComponentView : MonoBehaviour, IWearableGridView
     {
-        [SerializeField] internal NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
-        [SerializeField] internal GridContainerComponentView wearablesGridContainer;
-        [SerializeField] internal WearableGridItemComponentView wearableGridItemPrefab;
-        [SerializeField] internal PageSelectorComponentView wearablePageSelector;
-        [SerializeField] internal InfoCardComponentView infoCardComponentView;
+        [SerializeField] private NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
+        [SerializeField] private GridContainerComponentView wearablesGridContainer;
+        [SerializeField] private WearableGridItemComponentView wearableGridItemPrefab;
+        [SerializeField] private PageSelectorComponentView wearablePageSelector;
+        [SerializeField] private InfoCardComponentView infoCardComponentView;
 
         private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
         private readonly Dictionary<string, WearableGridItemComponentView> wearablesById = new ();
