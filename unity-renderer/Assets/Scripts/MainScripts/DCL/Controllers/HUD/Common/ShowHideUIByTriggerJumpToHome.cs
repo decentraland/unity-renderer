@@ -7,6 +7,8 @@ public class ShowHideUIByTriggerJumpToHome : ShowHideUIByTrigger
 
     protected override void SetUIVisibility(bool isVisible)
     {
-        base.SetUIVisibility(isVisible && DataStore.i.HUDs.jumpHomeButtonVisible.Get());
+        if (!DataStore.i.HUDs.jumpHomeButtonVisible.Get())
+            return;
+        base.SetUIVisibility(isVisible);
     }
 }
