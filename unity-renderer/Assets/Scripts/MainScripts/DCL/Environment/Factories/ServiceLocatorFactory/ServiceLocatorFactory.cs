@@ -84,9 +84,10 @@ namespace DCL
                 WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
 
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
-                    webInterfaceFriendsApiBridge,
-                    RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
-                    DataStore.i), new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(), userProfileWebInterfaceBridge));
+                        webInterfaceFriendsApiBridge,
+                        RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
+                        DataStore.i), new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(), userProfileWebInterfaceBridge),
+                    DataStore.i);
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());

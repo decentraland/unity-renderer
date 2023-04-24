@@ -1,9 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
-using DCl.Social.Friends;
-using DCL.Social.Friends;
-using MainScripts.DCL.Controllers.FriendsController;
 using NUnit.Framework;
 using NSubstitute;
 using System;
@@ -19,7 +16,6 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            var friendController = new FriendsController(Substitute.For<IFriendsApiBridge>(), Substitute.For<IRPCSocialApiBridge>());
             hudController = new HUDController(new DataStore(), new HUDFactory(new AddressableResourceProvider()));
 
             hudController.Initialize();
