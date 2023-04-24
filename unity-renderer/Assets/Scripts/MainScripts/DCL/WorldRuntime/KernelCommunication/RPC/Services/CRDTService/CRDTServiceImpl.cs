@@ -47,7 +47,7 @@ namespace RPC.Services
                 {
                     while (iterator.MoveNext())
                     {
-                        if (!(iterator.Current is CRDTMessage crdtMessage))
+                        if (!(iterator.Current is CrdtMessage crdtMessage))
                             continue;
 
                         context.crdt.CrdtMessageReceived?.Invoke(messages.SceneNumber, crdtMessage);
@@ -83,7 +83,7 @@ namespace RPC.Services
         {
             try
             {
-                if (!context.crdt.scenesOutgoingCrdts.TryGetValue(request.SceneNumber, out DualKeyValueSet<int, long, CRDTMessage> sceneCrdtOutgoingMessage))
+                if (!context.crdt.scenesOutgoingCrdts.TryGetValue(request.SceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtOutgoingMessage))
                 {
                     return emptyResponse;
                 }
