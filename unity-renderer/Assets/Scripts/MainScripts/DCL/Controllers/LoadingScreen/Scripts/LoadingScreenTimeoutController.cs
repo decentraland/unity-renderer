@@ -1,73 +1,118 @@
-
 using Cysharp.Threading.Tasks;
-using DCL;
 using DCL.Controllers;
+using DCL.Interface;
+using DCL.NotificationModel;
 using DCL.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Type = System.Type;
 
-public class LoadingScreenTimeoutController : IDisposable
+namespace DCL.LoadingScreen
 {
-
-    private const int LOAD_SCENE_TIMEOUT = 120000;
-    private const int WEBSOCKET_TIMEOUT = 15000;
-
-    private int currentEvaluatedTimeout;
-
-    private CancellationTokenSource timeoutCTS;
-    private LoadingScreenTimeoutView view;
-    private IWorldState worldState;
-    private Vector2Int currentDestination;
-
-    public LoadingScreenTimeoutController(LoadingScreenTimeoutView loadingScreenTimeoutView, IWorldState worldState)
+    public class LoadingScreenTimeoutController : IDisposable
     {
-        this.view = loadingScreenTimeoutView;
-        this.worldState = worldState;
+        internal const int LOAD_SCENE_TIMEOUT = 5000;
+        internal const int WEBSOCKET_TIMEOUT = 5000;
 
-        currentEvaluatedTimeout = Application.platform == RuntimePlatform.WebGLPlayer ? LOAD_SCENE_TIMEOUT : WEBSOCKET_TIMEOUT;
-    }
+        private int currentEvaluatedTimeout;
 
-    private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
-    {
-        if (!await UniTask.Delay(TimeSpan.FromMilliseconds(currentEvaluatedTimeout), cancellationToken: ct).SuppressCancellationThrow())
-            DoTimeout();
-    }
+        private LoadingScreenController loadingScreenController;
+        private CancellationTokenSource timeoutCTS;
+        private ILoadingScreenTimeoutView view;
+        private IWorldState worldState;
+        private Vector2Int currentDestination;
 
-    private void DoTimeout()
-    {
-        view.ShowSceneTimeout();
+        private bool goHomeRequested;
 
-        IParcelScene destinationScene = worldState.GetScene(worldState.GetSceneNumberByCoords(currentDestination));
-        if (destinationScene != null)
+        public LoadingScreenTimeoutController(ILoadingScreenTimeoutView loadingScreenTimeoutView, IWorldState worldState, LoadingScreenController loadingScreenController)
         {
-            Dictionary<string, string> variables = new Dictionary<string, string>
-            {
-                { "sceneID", destinationScene.sceneData.id },
-                { "contentServer", destinationScene.contentProvider.baseUrl },
-                { "contentServerBundlesUrl", destinationScene.contentProvider.assetBundlesBaseUrl },
-            };
-            GenericAnalytics.SendAnalytic("scene_loading_failed", variables);
+            this.view = loadingScreenTimeoutView;
+            this.loadingScreenController = loadingScreenController;
+
+            view.OnExitButtonClicked += ExitClicked;
+            view.OnJumpHomeButtonClicked += GoBackHomeClicked;
+
+            this.worldState = worldState;
+
+            currentEvaluatedTimeout = Application.platform != RuntimePlatform.WebGLPlayer ? LOAD_SCENE_TIMEOUT : WEBSOCKET_TIMEOUT;
         }
-    }
 
-    public void Dispose() =>
-        timeoutCTS?.SafeCancelAndDispose();
+        private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
+        {
+            if (!await UniTask.Delay(TimeSpan.FromMilliseconds(currentEvaluatedTimeout), cancellationToken: ct).SuppressCancellationThrow())
+                DoTimeout();
+        }
 
-    public void StartTimeout(Vector2Int newDestination)
-    {
-        timeoutCTS = timeoutCTS.SafeRestart();
-        currentDestination = newDestination;
-        StartTimeoutCounter(timeoutCTS.Token);
-    }
+        private void DoTimeout()
+        {
+            IParcelScene destinationScene = worldState.GetScene(worldState.GetSceneNumberByCoords(currentDestination));
 
-    public void StopTimeout()
-    {
-        //Once the websocket has connected and the first fadeout has been done, its always LOAD_SCENE_TIMEOUT
-        currentEvaluatedTimeout = LOAD_SCENE_TIMEOUT;
+            if (destinationScene != null)
+            {
+                Dictionary<string, string> variables = new Dictionary<string, string>
+                {
+                    { "sceneID", destinationScene.sceneData.id },
+                    { "contentServer", destinationScene.contentProvider.baseUrl },
+                    { "contentServerBundlesUrl", destinationScene.contentProvider.assetBundlesBaseUrl },
+                };
 
-        view.HideSceneTimeout();
-        timeoutCTS.SafeCancelAndDispose();
+                GenericAnalytics.SendAnalytic("scene_loading_failed", variables);
+            }
+
+            if (goHomeRequested)
+                loadingScreenController.RandomPositionRequested();
+            else
+                view.ShowSceneTimeout();
+
+            goHomeRequested = false;
+        }
+
+        public void StartTimeout(Vector2Int newDestination)
+        {
+            timeoutCTS = timeoutCTS.SafeRestart();
+            currentDestination = newDestination;
+            StartTimeoutCounter(timeoutCTS.Token);
+        }
+
+        public void StopTimeout()
+        {
+            //Once the websocket has connected and the first fadeout has been done, its always LOAD_SCENE_TIMEOUT
+            currentEvaluatedTimeout = LOAD_SCENE_TIMEOUT;
+
+            view.HideSceneTimeout();
+            timeoutCTS.SafeCancelAndDispose();
+        }
+
+        private void ExitClicked()
+        {
+#if UNITY_EDITOR
+
+            // Application.Quit() does not work in the editor so
+            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
+        private void GoBackHomeClicked()
+        {
+            WebInterface.SendChatMessage(new ChatMessage
+            {
+                messageType = ChatMessage.Type.NONE,
+                recipient = string.Empty,
+                body = "/goto home",
+            });
+            goHomeRequested = true;
+            view.HideSceneTimeout();
+        }
+
+        public void Dispose()
+        {
+            timeoutCTS?.SafeCancelAndDispose();
+            view.Dispose();
+        }
     }
 }

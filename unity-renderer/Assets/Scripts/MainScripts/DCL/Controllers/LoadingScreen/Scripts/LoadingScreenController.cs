@@ -1,4 +1,6 @@
 using DCL.Helpers;
+using DCL.Interface;
+using DCL.NotificationModel;
 using System;
 using UnityEngine;
 
@@ -10,7 +12,6 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
-
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
         private readonly DataStore_Player playerDataStore;
@@ -18,16 +19,16 @@ namespace DCL.LoadingScreen
         private readonly DataStore_LoadingScreen loadingScreenDataStore;
         private readonly DataStore_Realm realmDataStore;
         private readonly IWorldState worldState;
-        private readonly NotificationsController notificationsController;
 
         private Vector2Int currentDestination;
         private string currentRealm;
         private bool currentRealmIsWorld;
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
-        private readonly LoadingScreenTimeoutController timeoutController;
+        internal readonly LoadingScreenTimeoutController timeoutController;
+        private readonly NotificationsController notificationsController;
         private bool onSignUpFlow;
-
+        private bool randomPositionRequested;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -43,7 +44,7 @@ namespace DCL.LoadingScreen
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
-            timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView(), worldState);
+            timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView(), worldState, this);
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
@@ -52,7 +53,7 @@ namespace DCL.LoadingScreen
 
             // The initial loading has still a destination to set. We are starting the timeout for the
             // websocket initialization
-            timeoutController.StartTimeout(new Vector2Int(-1,-1));
+            timeoutController.StartTimeout(new Vector2Int(-1, -1));
         }
 
         public void Dispose()
@@ -78,13 +79,17 @@ namespace DCL.LoadingScreen
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
             {
                 HandlePlayerLoading();
+                if (randomPositionRequested)
+                    ShowRandomPositionNotification();
             }
+
+            randomPositionRequested = false;
         }
 
         //We have to add one more check not to show the loadingScreen unless the player is loaded
         private void PlayerLoaded(bool loaded, bool _)
         {
-            if(loaded)
+            if (loaded)
                 FadeOutView();
 
             commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
@@ -93,6 +98,7 @@ namespace DCL.LoadingScreen
         private void OnSignupFlow(bool current, bool previous)
         {
             onSignUpFlow = current;
+
             if (current)
                 FadeOutView();
             else
@@ -116,12 +122,10 @@ namespace DCL.LoadingScreen
                 percentageController.StartLoading(currentDestination);
                 timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
-            }else if (IsSceneLoaded(currentDestinationCandidate))
+            }
+            else if (IsSceneLoaded(currentDestinationCandidate))
                 HandlePlayerLoading();
         }
-
-
-
 
         //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,
         //we wont see the loading screen. Same happens when leaving a world. Thats why we need to keep track of the latest realmName as well as if it is a world.
@@ -146,7 +150,7 @@ namespace DCL.LoadingScreen
         //If the destination scene is not loaded, we show the teleport screen. THis is called in the POSITION_UNSETTLED
         //On the other hand, the POSITION_SETTLED event is called; but since the scene will already be loaded, the loading screen wont be shown
         private bool IsNewScene(Vector2Int currentDestinationCandidate) =>
-             worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
+            worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
 
         private bool IsSceneLoaded(Vector2Int candidate) =>
             worldState.GetScene(worldState.GetSceneNumberByCoords(candidate))?.loadingProgress >= 100;
@@ -161,7 +165,6 @@ namespace DCL.LoadingScreen
                 percentageController.SetAvatarLoadingMessage();
                 commonDataStore.isPlayerRendererLoaded.OnChange += PlayerLoaded;
             }
-
         }
 
         private void FadeOutView()
@@ -171,6 +174,27 @@ namespace DCL.LoadingScreen
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
         }
 
+        private void ShowRandomPositionNotification()
+        {
+            notificationsController.ShowNotification(new Model
+            {
+                message = "There was an error while trying to load your home scene.\nIf the problem persists next time contact support.",
+                type = NotificationModel.Type.ERROR,
+                timer = 10f,
+                destroyOnFinish = true
+            });
+        }
 
+        public void RandomPositionRequested()
+        {
+            WebInterface.SendChatMessage(new ChatMessage
+            {
+                messageType = ChatMessage.Type.NONE,
+                recipient = string.Empty,
+                body = "/goto random",
+            });
+
+            randomPositionRequested = true;
+        }
     }
 }

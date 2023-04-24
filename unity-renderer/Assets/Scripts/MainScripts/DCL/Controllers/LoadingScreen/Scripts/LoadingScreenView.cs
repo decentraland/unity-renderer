@@ -42,7 +42,7 @@ namespace DCL.LoadingScreen
         public LoadingScreenPercentageView GetPercentageView() =>
             percentageView;
 
-        public LoadingScreenTimeoutView GetTimeoutView() =>
+        public ILoadingScreenTimeoutView GetTimeoutView() =>
             timeoutView;
 
         public void FadeIn(bool instant, bool blitTexture)
