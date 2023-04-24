@@ -183,6 +183,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.nuget.mono-cecil": {
+      "version": "1.10.2",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.performance.profile-analyzer": {
       "version": "1.2.2",
       "depth": 0,
@@ -198,6 +205,15 @@
         "com.unity.modules.physics": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "com.unity.project-auditor": {
+      "version": "https://github.com/Unity-Technologies/ProjectAuditor.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.mono-cecil": "1.10.2"
+      },
+      "hash": "eab751bbb1e8841a549bebd0915379e5d0f5ff07"
     },
     "com.unity.render-pipelines.core": {
       "version": "12.1.10",
