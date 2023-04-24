@@ -1,9 +1,7 @@
 using DCL;
 using DCL.Interface;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Variables.RealmsInfo;
 
 namespace DCLPlugins.RealmPlugin
 {
@@ -18,7 +16,6 @@ namespace DCLPlugins.RealmPlugin
         [SerializeField] private RectTransform positionWithMiniMap;
         [SerializeField] private RectTransform positionWithoutMiniMap;
 
-        private BaseCollection<RealmModel> realms => DataStore.i.realm.realmsInfo;
         private BaseVariable<bool> jumpHomeButtonVisible => DataStore.i.HUDs.jumpHomeButtonVisible;
         private BaseVariable<bool> minimapVisible => DataStore.i.HUDs.minimapVisible;
         private BaseVariable<bool> exitedThroughButton => DataStore.i.common.exitedWorldThroughGoBackButton;
@@ -29,6 +26,8 @@ namespace DCLPlugins.RealmPlugin
         {
             rectTransform = jumpButton.GetComponent<RectTransform>();
             jumpButton.onClick.AddListener(GoHome);
+
+            SetVisibility(jumpHomeButtonVisible.Get(), false);
             jumpHomeButtonVisible.OnChange += SetVisibility;
         }
 
@@ -56,15 +55,7 @@ namespace DCLPlugins.RealmPlugin
             });
         }
 
-        private string GetMostPopulatedRealm()
-        {
-            var currentRealms = realms.Get().ToList();
-            return currentRealms.OrderByDescending(e => e.usersCount).FirstOrDefault()?.serverName;
-        }
-
-        private void OnDestroy()
-        {
+        private void OnDestroy() =>
             jumpButton.onClick.RemoveListener(GoHome);
-        }
     }
 }

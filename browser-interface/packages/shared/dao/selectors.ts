@@ -25,16 +25,20 @@ export const getHotScenesService = (state: RootRealmState) => {
   if (HOTSCENES_SERVICE) {
     return HOTSCENES_SERVICE
   }
-  return urlWithProtocol(state.realm.realmAdapter!.services.legacy.hotScenesService)
+  return urlWithProtocol(state.realm.realmAdapter!.services.hotScenesService)
+}
+
+export const getContentService = (state: RootRealmState) => {
+  return urlWithProtocol(state.realm.realmAdapter!.services.fetchContentServer)
 }
 
 export const getExploreRealmsService = (state: RootRealmState) =>
-  state.realm.realmAdapter!.services.legacy.exploreRealmsService
+  state.realm.realmAdapter!.services.exploreRealmsService
 export const getPOIService = (state: RootRealmState) => {
   if (POI_SERVICE) {
     return POI_SERVICE
   }
-  return urlWithProtocol(state.realm.realmAdapter!.services.legacy.poiService)
+  return urlWithProtocol(state.realm.realmAdapter!.services.poiService)
 }
 
 export const getSelectedNetwork = (store: RootDaoState) => {

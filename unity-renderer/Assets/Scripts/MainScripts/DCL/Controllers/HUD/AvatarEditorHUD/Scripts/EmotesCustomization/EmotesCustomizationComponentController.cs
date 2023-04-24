@@ -39,18 +39,31 @@ namespace DCL.EmotesCustomization
         public event Action<string> onEmoteUnequipped;
         public event Action<string> onEmoteSell;
 
-        public IEmotesCustomizationComponentView Initialize(
+        public EmotesCustomizationComponentController() { }
+
+        public EmotesCustomizationComponentController(
             DataStore_EmotesCustomization emotesCustomizationDataStore,
             DataStore_Emotes emotesDataStore,
             DataStore_ExploreV2 exploreV2DataStore,
-            DataStore_HUDs hudsDataStore)
+            DataStore_HUDs hudsDataStore,
+            Transform parent)
+        {
+            Initialize(emotesCustomizationDataStore, emotesDataStore, exploreV2DataStore, hudsDataStore, parent);
+        }
+
+        internal void Initialize(
+            DataStore_EmotesCustomization emotesCustomizationDataStore,
+            DataStore_Emotes emotesDataStore,
+            DataStore_ExploreV2 exploreV2DataStore,
+            DataStore_HUDs hudsDataStore,
+            Transform parent)
         {
             this.emotesCustomizationDataStore = emotesCustomizationDataStore;
             this.emotesDataStore = emotesDataStore;
             this.exploreV2DataStore = exploreV2DataStore;
             this.hudsDataStore = hudsDataStore;
 
-            IEmotesCustomizationComponentView view = ConfigureView();
+            ConfigureView(parent);
             ConfigureShortcuts();
 
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
@@ -58,8 +71,6 @@ namespace DCL.EmotesCustomization
 
             emotesDataStore.animations.OnAdded -= OnAnimationAdded;
             emotesDataStore.animations.OnAdded += OnAnimationAdded;
-
-            return view;
         }
 
         public void SetEmotes(WearableItem[] ownedEmotes)
@@ -135,17 +146,17 @@ namespace DCL.EmotesCustomization
             UpdateEmoteSlots();
         }
 
-        internal IEmotesCustomizationComponentView ConfigureView()
+        private void ConfigureView(Transform parent)
         {
             view = CreateView();
+            if (view.viewTransform != null)
+                view.viewTransform.SetParent(parent, false);
             view.onEmoteEquipped += OnEmoteEquipped;
             view.onEmoteUnequipped += OnEmoteUnequipped;
             view.onSellEmoteClicked += OnSellEmoteClicked;
             view.onSlotSelected += OnSlotSelected;
             exploreV2DataStore.isOpen.OnChange += IsStarMenuOpenChanged;
             hudsDataStore.avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
-
-            return view;
         }
 
         internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen) { view.SetEmoteInfoPanelActive(false); }
@@ -164,7 +175,7 @@ namespace DCL.EmotesCustomization
 
             if (!emote.ShowInBackpack())
                 return;
-            
+
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(emote);
             EmoteCardComponentView newEmote = view.AddEmote(emoteToAdd);
 

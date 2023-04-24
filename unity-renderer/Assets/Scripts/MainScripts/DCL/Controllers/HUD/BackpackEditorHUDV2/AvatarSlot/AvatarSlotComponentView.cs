@@ -2,17 +2,21 @@ using System;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using DG.Tweening;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
-    public class AvatarSlotComponentView : BaseComponentView<AvatarSlotComponentModel>, IPointerClickHandler, IAvatarSlotComponentView
+    public class AvatarSlotComponentView : BaseComponentView<AvatarSlotComponentModel>, IAvatarSlotComponentView
     {
+        private const float ANIMATION_TIME = 0.2f;
+        private const float SHAKE_ANIMATION_TIME = 0.75f;
+
         [Header("Configuration")]
         [SerializeField] internal AvatarSlotComponentModel model;
 
         [SerializeField] internal NftTypeIconSO typeIcons;
+        [SerializeField] internal Transform nftContainer;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
         [SerializeField] internal Image typeImage;
         [SerializeField] internal ImageComponentView nftImage;
@@ -22,9 +26,18 @@ namespace DCL.Backpack
         [SerializeField] private GameObject emptySlot;
         [SerializeField] private GameObject hiddenSlot;
         [SerializeField] internal GameObject tooltipContainer;
-        [SerializeField] internal TMP_Text tooltipText;
+        [SerializeField] internal TMP_Text tooltipCategoryText;
+        [SerializeField] internal TMP_Text tooltipHiddenText;
+        [SerializeField] internal Button button;
 
-        public event Action<string> OnSelectAvatarSlot;
+        public event Action<string, bool> OnSelectAvatarSlot;
+        private bool isSelected = false;
+
+        public void Start()
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnSlotClick);
+        }
 
         public override void RefreshControl()
         {
@@ -43,14 +56,23 @@ namespace DCL.Backpack
             model.hiddenBy = hiddenBy;
             hiddenSlot.SetActive(isHidden);
             if (isHidden)
-                tooltipText.text = $"{tooltipText.text}\nHidden by: {hiddenBy}";
+            {
+                ShakeAnimation(nftContainer);
+                emptySlot.SetActive(false);
+                tooltipHiddenText.gameObject.SetActive(true);
+                tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
+            }
+            else
+            {
+                tooltipHiddenText.gameObject.SetActive(false);
+            }
         }
 
         public void SetCategory(string category)
         {
             model.category = category;
             typeImage.sprite = typeIcons.GetTypeImage(category);
-            tooltipText.text = category;
+            tooltipCategoryText.text = category;
         }
 
         public void SetNftImage(string imageUri)
@@ -78,6 +100,7 @@ namespace DCL.Backpack
         {
             focusedImage.enabled = true;
             tooltipContainer.SetActive(true);
+            ScaleUpAnimation(focusedImage.transform);
         }
 
         public override void OnLoseFocus()
@@ -86,15 +109,48 @@ namespace DCL.Backpack
             tooltipContainer.SetActive(false);
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public void OnSlotClick()
         {
-            OnSelectAvatarSlot?.Invoke(model.category);
-            selectedImage.enabled = true;
+            isSelected = !isSelected;
+
+            if (isSelected)
+            {
+                selectedImage.enabled = true;
+                ScaleUpAnimation(selectedImage.transform);
+            }
+            else
+            {
+                ScaleDownAndResetAnimation(selectedImage);
+            }
+
+            OnSelectAvatarSlot?.Invoke(model.category, isSelected);
         }
+
 
         public void OnPointerClickOnDifferentSlot()
         {
+            isSelected = false;
             selectedImage.enabled = false;
+        }
+
+        private void ScaleUpAnimation(Transform targetTransform)
+        {
+            targetTransform.transform.localScale = new Vector3(0, 0, 0);
+            targetTransform.transform.DOScale(1, ANIMATION_TIME).SetEase(Ease.OutBack);
+        }
+
+        private void ScaleDownAndResetAnimation(Image targetImage)
+        {
+            targetImage.transform.DOScale(0, ANIMATION_TIME).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+                targetImage.enabled = false;
+                targetImage.transform.localScale = new Vector3(1, 1, 1);
+            });
+        }
+
+        private void ShakeAnimation(Transform targetTransform)
+        {
+            targetTransform.DOShakePosition(SHAKE_ANIMATION_TIME, 4);
         }
     }
 }

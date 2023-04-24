@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -38,7 +39,10 @@ namespace DCL.Backpack
                 value = testSprite
             };
 
-            avatarSlot = BaseComponentView.Create<AvatarSlotComponentView>("AvatarSlot");
+            AvatarSlotComponentView prefab = AssetDatabase.LoadAssetAtPath<AvatarSlotComponentView>(
+                                                               "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BackpackEditorHUDV2/Prefabs/AvatarSlot.prefab");
+
+            avatarSlot = Object.Instantiate(prefab);
             avatarSlot.typeIcons = nftTypeIconMapping;
             avatarSlot.rarityBackgrounds = nftRarityBackgroundMapping;
         }
@@ -94,9 +98,12 @@ namespace DCL.Backpack
                 isHidden = true,
                 hiddenBy = "HidingCategory"
             };
+
             avatarSlot.RefreshControl();
 
-            Assert.AreEqual(avatarSlot.tooltipText.text, $"{TEST_CATEGORY}\nHidden by: HidingCategory");
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: HidingCategory");
         }
 
         [Test]
@@ -108,9 +115,11 @@ namespace DCL.Backpack
                 isHidden = false,
                 hiddenBy = ""
             };
+
             avatarSlot.RefreshControl();
 
-            Assert.AreEqual(avatarSlot.tooltipText.text, $"{TEST_CATEGORY}");
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.False(avatarSlot.tooltipHiddenText.gameObject.activeInHierarchy);
         }
     }
 }
