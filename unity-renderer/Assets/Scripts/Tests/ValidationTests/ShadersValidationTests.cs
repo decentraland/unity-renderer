@@ -1,65 +1,44 @@
 ﻿using NUnit.Framework;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static DefaultNamespace.TestsUtils;
 
 namespace Tests.ValidationTests
 {
+    [Category("EditModeCI")]
     public class ShadersValidationTests
     {
-        private static readonly string[] ASSETS_FOLDER_PATHS = { "Assets" };
+        private const string URP_LIT_MATERIAL_PATH = "Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat";
 
-        [Test]
-        public void ValidateShadersInAssets()
+        [TestCaseSource(nameof(AllContainerAssetsInAssetsFolder))]
+        public void ValidateAssetsShouldNotUseURPLitMaterial(string assetPath)
         {
-            Material urpLitShader = AssetDatabase.LoadAssetAtPath<Material>("Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat");
-            string[] guids = AssetDatabase.FindAssets("t:Object", ASSETS_FOLDER_PATHS);
+            string forbiddenMaterialGuid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(
+                    AssetDatabase.LoadAssetAtPath<Material>(URP_LIT_MATERIAL_PATH)));
 
-            // Get the GUID for the given material
-            string materialGuid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(urpLitShader));
+            string[] deps = AssetDatabase.GetDependencies(assetPath, true);
 
-            foreach (string guid in guids)
-            {
-                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
-                Object asset = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
-
-                string[] deps = AssetDatabase.GetDependencies(assetPath, true);
-
-                foreach (var depGuid in deps.Select(AssetDatabase.AssetPathToGUID))
-                {
-                    Material material = AssetDatabase.LoadAssetAtPath<Material>(depGuid);
-
-                    if (material != null)
-                    {
-                        Debug.Log($"{material.name} uses {material.shader.name}", material);
-
-                        // Debug.Log($"Asset '{assetPath}' uses material '{urpLitShader.name}'", asset);
-                        break;
-                    }
-                }
-            }
-
-            Assert.IsTrue(true);
+            Assert.IsFalse(
+                deps.Select(AssetDatabase.AssetPathToGUID)
+                    .Any(depGuid => depGuid == forbiddenMaterialGuid), message: $"Asset has dependencies on forbidden material {URP_LIT_MATERIAL_PATH}. Replace with DCL version of it.");
         }
 
-        [Test]
-        public void ValidateShadersInMaterials()
+        [TestCaseSource(nameof(AllMaterialsInAssetsFolder))]
+        public void ValidateMaterialShouldNotUseURPLitShader(string materialPath)
         {
-            Material urpLitShader = AssetDatabase.LoadAssetAtPath<Material>("Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat");
-            string[] guids = AssetDatabase.FindAssets("t:Material", ASSETS_FOLDER_PATHS);
+            Shader urpLitShader = AssetDatabase.LoadAssetAtPath<Material>(URP_LIT_MATERIAL_PATH).shader;
 
-            foreach (string guid in guids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
 
-                // if(
-                // material.shader == urpLitShader.shader || material.shader.name == urpLitShader.name ||
-                // material.shader.name == "Universal Render Pipeline/Lit")
-                // material.shader.name.Contains("Standard"))
-
-                Debug.Log($"{material.name} uses {material.shader.name}", material);
-            }
+            Assert.That(material.shader, Is.Not.EqualTo(urpLitShader), message: $"Material uses forbidden shader {urpLitShader.name}. Replace with DCL version of it.");
         }
+
+        private static IEnumerable<string> AllMaterialsInAssetsFolder() =>
+            AllAssetsAtPaths(assetTypes: "t:Material", ASSETS_FOLDER_PATH);
+
+        private static IEnumerable<string> AllContainerAssetsInAssetsFolder() =>
+            AllAssetsAtPaths(assetTypes: "t:Model t:Prefab t:Scene", ASSETS_FOLDER_PATH);
     }
 }
