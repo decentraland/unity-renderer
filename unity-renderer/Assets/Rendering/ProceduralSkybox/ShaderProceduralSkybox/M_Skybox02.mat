@@ -15,7 +15,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2998
+  m_CustomRenderQueue: 2445
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -350,7 +350,7 @@ Material:
     - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
     - _horizonPlaneColor: {r: 0.37001857, g: 0.31052035, b: 0.21446349, a: 1}
     - _horizonPlaneValues: {r: 0, g: 0, b: 0, a: 0}
-    - _lightDirection: {r: 20.956886, g: 314.99997, b: 270, a: 0}
+    - _lightDirection: {r: 356.18976, g: 134.99998, b: 90, a: 0}
     - _lightTint: {r: 0.8550151, g: 0.6789328, b: 0.5353418, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
