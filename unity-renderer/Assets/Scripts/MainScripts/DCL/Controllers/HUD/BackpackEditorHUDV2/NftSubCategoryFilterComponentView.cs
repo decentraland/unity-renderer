@@ -8,10 +8,10 @@ namespace DCL.Backpack
 {
     public class NftSubCategoryFilterComponentView : BaseComponentView<NftSubCategoryFilterModel>
     {
-        [SerializeField] private Button navigateButton;
-        [SerializeField] private Button exitButton;
-        [SerializeField] private TMP_Text categoryName;
-        [SerializeField] private Image icon;
+        [SerializeField] internal Button navigateButton;
+        [SerializeField] internal Button exitButton;
+        [SerializeField] internal TMP_Text categoryName;
+        [SerializeField] internal Image icon;
 
         public event Action<NftSubCategoryFilterModel> OnNavigate;
         public event Action<NftSubCategoryFilterModel> OnExit;
