@@ -6,5 +6,7 @@ namespace RPC.Context
     {
         public Func<string, int, bool> OpenExternalUrlPrompt;
         public Action<string, string> OpenNftPrompt;
+        public Func<int> GetCurrentFrameCount;
+        public int LastFrameWithInput;
     }
 }
