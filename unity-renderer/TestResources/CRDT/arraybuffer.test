@@ -20,7 +20,7 @@
 {"type":1,"componentId":7,"entityId":11,"data":"aa","timestamp":1}
 # End of messages
 # Final CRDT State
-{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"b"}],"deletedEntities":[]}
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"aa"}],"deletedEntities":[]}
 #
 # CRDT Uint8Array should return the bigger raw data. a.byteLength === b.byteLength
 # Messages sent over the wire

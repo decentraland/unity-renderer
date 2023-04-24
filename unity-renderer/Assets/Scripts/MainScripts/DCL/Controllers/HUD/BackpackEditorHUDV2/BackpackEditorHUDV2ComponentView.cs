@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System;
 using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -11,19 +12,25 @@ namespace DCL.Backpack
     {
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
+        private const int MS_TO_RESET_PREVIEW_ANIMATION = 200;
 
         [SerializeField] private SectionSelectorComponentView sectionSelector;
         [SerializeField] private GameObject wearablesSection;
         [SerializeField] private GameObject emotesSection;
         [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
+        [SerializeField] private WearableGridComponentView wearableGridComponentView;
+        [SerializeField] private AvatarSlotsView avatarSlotsView;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
+        public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
+        public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
 
         private Transform thisTransform;
         private bool isAvatarDirty;
         private AvatarModel avatarModelToUpdate;
         private CancellationTokenSource updateAvatarCts = new ();
+        private CancellationTokenSource snapshotsCts = new ();
 
         public override void Awake()
         {
@@ -49,12 +56,15 @@ namespace DCL.Backpack
             updateAvatarCts.SafeCancelAndDispose();
             updateAvatarCts = null;
 
+            snapshotsCts.SafeCancelAndDispose();
+            snapshotsCts = null;
+
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
             backpackPreviewPanel.Dispose();
         }
 
-        public static IBackpackEditorHUDView Create() =>
+        public static BackpackEditorHUDV2ComponentView Create() =>
             Instantiate(Resources.Load<BackpackEditorHUDV2ComponentView>("BackpackEditorHUDV2"));
 
         public override void Show(bool instant = false)
@@ -108,6 +118,21 @@ namespace DCL.Backpack
             avatarModelToUpdate = avatarModel;
 
             backpackPreviewPanel.SetLoadingActive(true);
+        }
+
+        public void TakeSnapshotsAfterStopPreviewAnimation(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
+        {
+            async UniTaskVoid TakeSnapshotsAfterStopPreviewAnimationAsync(CancellationToken ct)
+            {
+                ResetPreviewEmote();
+                await UniTask.Delay(MS_TO_RESET_PREVIEW_ANIMATION, cancellationToken: ct);
+                backpackPreviewPanel.TakeSnapshots(
+                    (face256, body) => onSuccess?.Invoke(face256, body),
+                    () => onFailed?.Invoke());
+            }
+
+            snapshotsCts = snapshotsCts.SafeRestart();
+            TakeSnapshotsAfterStopPreviewAnimationAsync(snapshotsCts.Token).Forget();
         }
 
         private void ConfigureSectionSelector()

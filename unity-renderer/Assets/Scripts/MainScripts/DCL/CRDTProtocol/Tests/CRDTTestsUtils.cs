@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using DCL.CRDT;
 using DCL.Helpers;
 using Newtonsoft.Json;
-using System.ComponentModel;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace Tests
 {
-    public class CRDTTestsUtils
+    internal class CRDTTestsUtils
     {
         public static string[] GetTestFilesPath()
         {
@@ -74,16 +73,18 @@ namespace Tests
                     });
                 }
             }
+
             return parsedFile;
         }
     }
 
-    public class CrdtEntity
+    internal class CrdtEntity
     {
         public int entityNumber;
         public int entityVersion;
     }
-    public class CrdtJsonState
+
+    internal class CrdtJsonState
     {
         public List<CRDTProtocol.CrdtEntityComponentData> components;
         public List<CrdtEntity> deletedEntities;
@@ -106,15 +107,25 @@ namespace Tests
             public string testSpect;
         }
 
+        public class CrdtMessageJson
+        {
+            public CrdtMessageType type = CrdtMessageType.NONE;
+            public long entityId;
+            public int componentId;
+            public int timestamp;
+            public object data;
+        }
+
         public string fileName;
         public List<TestFileInstruction> fileInstructions = new List<TestFileInstruction>();
 
-        public static CRDTMessage InstructionToMessage(TestFileInstruction instruction)
+        public static CrdtMessage InstructionToMessage(TestFileInstruction instruction)
         {
-            CRDTMessage msg = null;
+            CrdtMessageJson msg = null;
+
             try
             {
-                msg = JsonConvert.DeserializeObject<CRDTMessage>(instruction.instructionValue);
+                msg = JsonConvert.DeserializeObject<CrdtMessageJson>(instruction.instructionValue);
             }
             catch (Exception e)
             {
@@ -127,18 +138,25 @@ namespace Tests
 
             if (crdtLibType == 1)
             {
-                msg.type = CrdtMessageType.PUT_COMPONENT;
-            } else if (crdtLibType == 2)
+                crdtLibType = (int)CrdtMessageType.PUT_COMPONENT;
+            }
+            else if (crdtLibType == 2)
             {
-                msg.type = CrdtMessageType.DELETE_ENTITY;
+                crdtLibType = (int)CrdtMessageType.DELETE_ENTITY;
             }
 
-            return msg;
+            return new CrdtMessage(
+                (CrdtMessageType)crdtLibType,
+                msg.entityId,
+                msg.componentId,
+                msg.timestamp,
+                msg.data);
         }
 
-        public static CRDTProtocol.CrdtState InstructionToFinalState(TestFileInstruction instruction)
+        internal static CRDTProtocol.CrdtState InstructionToFinalState(TestFileInstruction instruction)
         {
             CrdtJsonState finalState = null;
+
             try
             {
                 finalState = JsonConvert.DeserializeObject<CrdtJsonState>(instruction.instructionValue);
@@ -155,12 +173,12 @@ namespace Tests
             {
                 long entityId = entityComponentData.entityId;
                 int componentId = entityComponentData.componentId;
+
                 CRDTProtocol.EntityComponentData realData = new CRDTProtocol.EntityComponentData
                 {
                     timestamp = entityComponentData.timestamp,
                     data = entityComponentData.data
                 };
-
 
                 if (!state.singleComponents.TryGetValue(componentId, out var componentCollection))
                 {
