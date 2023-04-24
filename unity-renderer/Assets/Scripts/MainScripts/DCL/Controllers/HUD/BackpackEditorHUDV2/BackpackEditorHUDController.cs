@@ -60,6 +60,7 @@ namespace DCL.Backpack
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
+            avatarSlotsHUDController.GenerateSlots();
 
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
