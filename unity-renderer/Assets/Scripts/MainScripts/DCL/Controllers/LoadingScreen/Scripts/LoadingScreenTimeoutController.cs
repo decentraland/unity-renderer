@@ -13,8 +13,8 @@ namespace DCL.LoadingScreen
 {
     public class LoadingScreenTimeoutController : IDisposable
     {
-        internal const int LOAD_SCENE_TIMEOUT = 5000;
-        internal const int WEBSOCKET_TIMEOUT = 5000;
+        internal const int LOAD_SCENE_TIMEOUT = 10000;
+        internal const int WEBSOCKET_TIMEOUT = 10000;
 
         private int currentEvaluatedTimeout;
 
@@ -36,7 +36,7 @@ namespace DCL.LoadingScreen
 
             this.worldState = worldState;
 
-            currentEvaluatedTimeout = Application.platform != RuntimePlatform.WebGLPlayer ? LOAD_SCENE_TIMEOUT : WEBSOCKET_TIMEOUT;
+            currentEvaluatedTimeout = Application.platform == RuntimePlatform.WebGLPlayer ? LOAD_SCENE_TIMEOUT : WEBSOCKET_TIMEOUT;
         }
 
         private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)

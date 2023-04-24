@@ -30,7 +30,7 @@ namespace DCL.LoadingScreen
                 goBackHomeButton.onClick.AddListener(() => OnJumpHomeButtonClicked?.Invoke());
 
             //In desktop, first timeout corresponds to websocket. Thats why we have to define what is the first message we want to show
-            currentSceneTimeoutContainer = Application.platform != RuntimePlatform.WebGLPlayer ? sceneTimeoutWebGL : websocketTimeout;
+            currentSceneTimeoutContainer = Application.platform == RuntimePlatform.WebGLPlayer ? sceneTimeoutWebGL : websocketTimeout;
         }
 
         public void ShowSceneTimeout()
