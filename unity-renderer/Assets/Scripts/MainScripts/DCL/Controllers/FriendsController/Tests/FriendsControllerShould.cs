@@ -25,6 +25,7 @@ namespace DCL.Social.Friends
             GameObject go = new GameObject();
             var component = go.AddComponent<MatrixInitializationBridge>();
             controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component,new UserProfileWebInterfaceBridge()), new DataStore());
+            controller.Initialize();
         }
 
         [Test]
