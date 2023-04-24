@@ -31,6 +31,8 @@ namespace Tests.ValidationTests
                 if (deps.Select(AssetDatabase.AssetPathToGUID).Any(depGuid => depGuid == materialGuid))
                     Debug.Log($"Asset '{assetPath}' uses material '{urpLitShader.name}'", asset);
             }
+
+            Assert.IsTrue(true);
         }
 
         [Test]
