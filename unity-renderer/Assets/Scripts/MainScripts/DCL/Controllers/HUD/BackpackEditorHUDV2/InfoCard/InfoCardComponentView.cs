@@ -142,5 +142,8 @@ namespace DCL.Backpack
             hiddenByDynamicList.RemoveIcons();
             hiddenByDynamicList.AddIcon(typeIcons.GetTypeImage(hiddenBy));
         }
+
+        public void SetVisible(bool visible) =>
+            gameObject.SetActive(visible);
     }
 }
