@@ -78,22 +78,9 @@ ShaderVariantCollection:
         passType: 13
       - keywords: _GPU_SKINNING
         passType: 13
-      - keywords: _GPU_SKINNING _MAIN_LIGHT_SHADOWS_CASCADE
-        passType: 13
-      - keywords: _GPU_SKINNING _MAIN_LIGHT_SHADOWS_CASCADE _SHADOWS_SOFT
-        passType: 13
-      - keywords: _GPU_SKINNING _MAIN_LIGHT_SHADOWS_CASCADE _SHADOWS_SOFT _SSAO_OFF
-        passType: 13
-      - keywords: _GPU_SKINNING _MAIN_LIGHT_SHADOWS_CASCADE _SSAO_OFF
-        passType: 13
       - keywords: _GPU_SKINNING _SSAO_OFF
         passType: 13
   - first: {fileID: 66, guid: 0000000000000000f000000000000000, type: 0}
-    second:
-      variants:
-      - keywords: 
-        passType: 0
-  - first: {fileID: 108, guid: 0000000000000000f000000000000000, type: 0}
     second:
       variants:
       - keywords: 
@@ -133,11 +120,6 @@ ShaderVariantCollection:
       variants:
       - keywords: 
         passType: 0
-  - first: {fileID: 4800000, guid: e6e9a19c3678ded42a3bc431ebef7dbd, type: 3}
-    second:
-      variants:
-      - keywords: 
-        passType: 0
   - first: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
     second:
       variants:
@@ -146,8 +128,6 @@ ShaderVariantCollection:
       - keywords: _RECONSTRUCT_NORMAL_HIGH _SOURCE_DEPTH
         passType: 0
       - keywords: _RECONSTRUCT_NORMAL_HIGH _SOURCE_DEPTH_NORMALS
-        passType: 0
-      - keywords: _RECONSTRUCT_NORMAL_LOW _SOURCE_DEPTH
         passType: 0
       - keywords: _RECONSTRUCT_NORMAL_LOW _SOURCE_DEPTH_NORMALS
         passType: 0
@@ -182,26 +162,18 @@ ShaderVariantCollection:
         passType: 8
       - keywords: 
         passType: 13
+      - keywords: FOG_EXP _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
       - keywords: FOG_LINEAR _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
           _SHADOWS_SOFT _SPECULAR_COLOR
         passType: 13
       - keywords: FOG_LINEAR _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
           _SPECULAR_COLOR
         passType: 13
-      - keywords: FOG_LINEAR _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
-          _SPECULAR_COLOR
-        passType: 13
-      - keywords: FOG_LINEAR _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS _SPECULAR_COLOR
-        passType: 13
       - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS
         passType: 13
       - keywords: _GLOSSINESS_FROM_BASE_ALPHA
-        passType: 13
-      - keywords: _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS_CASCADE
-        passType: 13
-      - keywords: _MAIN_LIGHT_SHADOWS
-        passType: 13
-      - keywords: _MAIN_LIGHT_SHADOWS_CASCADE
         passType: 13
   - first: {fileID: 4800000, guid: 3b75227de96217540aae9be81fbd99f6, type: 3}
     second:
@@ -213,18 +185,10 @@ ShaderVariantCollection:
       - keywords: 
         passType: 13
       - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
-          _NORMALMAP
-        passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
           _NORMALMAP _SCREEN_SPACE_OCCLUSION
         passType: 13
       - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
           _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
-          _NORMALMAP _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
         passType: 13
       - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
           _SCREEN_SPACE_OCCLUSION
@@ -232,45 +196,23 @@ ShaderVariantCollection:
       - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
           _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
         passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
+      - keywords: FOG_LINEAR _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
           _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
         passType: 13
       - keywords: FOG_LINEAR _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
         passType: 13
       - keywords: FOG_LINEAR _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
           _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SHADOWS_SOFT
         passType: 13
       - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS
         passType: 13
       - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _NORMALMAP
         passType: 13
-      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _NORMALMAP _SHADOWS_SOFT
-        passType: 13
       - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
         passType: 13
       - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
         passType: 13
-      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
-        passType: 13
-      - keywords: _ALPHATEST_ON
-        passType: 13
-      - keywords: _ALPHATEST_ON _MAIN_LIGHT_SHADOWS_CASCADE
-        passType: 13
-      - keywords: _ALPHATEST_ON _MAIN_LIGHT_SHADOWS_CASCADE _NORMALMAP
-        passType: 13
       - keywords: _ALPHATEST_ON _NORMALMAP
-        passType: 13
-      - keywords: _MAIN_LIGHT_SHADOWS
-        passType: 13
-      - keywords: _MAIN_LIGHT_SHADOWS _NORMALMAP
-        passType: 13
-      - keywords: _MAIN_LIGHT_SHADOWS_CASCADE
-        passType: 13
-      - keywords: _MAIN_LIGHT_SHADOWS_CASCADE _NORMALMAP
         passType: 13
       - keywords: _NORMALMAP
         passType: 13
@@ -311,8 +253,6 @@ ShaderVariantCollection:
         passType: 0
       - keywords: FOG_LINEAR _SCREEN_SPACE_OCCLUSION _SURFACE_TYPE_TRANSPARENT
         passType: 0
-      - keywords: FOG_LINEAR _SURFACE_TYPE_TRANSPARENT
-        passType: 0
   - first: {fileID: 4800000, guid: d540ea39c5edb8e44b3119aa7ed2d662, type: 3}
     second:
       variants:
@@ -339,10 +279,6 @@ ShaderVariantCollection:
         passType: 0
       - keywords: OUTLINE_ON
         passType: 0
-      - keywords: UNDERLAY_ON
-        passType: 0
-      - keywords: UNITY_UI_CLIP_RECT
-        passType: 0
   - first: {fileID: 4800000, guid: c8f1036d047721a43a74331d59080020, type: 3}
     second:
       variants:
@@ -350,13 +286,6 @@ ShaderVariantCollection:
         passType: 0
   - first: {fileID: -6465566751694194690, guid: bf4000fbd9b31784cab1d27368431336,
       type: 3}
-    second:
-      variants:
-      - keywords: FOG_LINEAR
-        passType: 0
-      - keywords: 
-        passType: 8
-  - first: {fileID: 4800000, guid: 48ab4630448d99f40b8df0f1d6076f87, type: 3}
     second:
       variants:
       - keywords: FOG_LINEAR
@@ -372,19 +301,13 @@ ShaderVariantCollection:
   - first: {fileID: 4800000, guid: 331d3d55d3ac1604f9e758eca2b2932b, type: 3}
     second:
       variants:
-      - keywords: FOG_LINEAR
-        passType: 0
       - keywords: 
         passType: 8
-      - keywords: 
-        passType: 13
   - first: {fileID: 4800000, guid: 7bc4930422bfadd4593b1cbf453a2a2d, type: 3}
     second:
       variants:
       - keywords: 
         passType: 8
-      - keywords: 
-        passType: 13
       - keywords: _MAIN_LIGHT_SHADOWS
         passType: 13
       - keywords: _MAIN_LIGHT_SHADOWS_CASCADE
@@ -399,12 +322,20 @@ ShaderVariantCollection:
       variants:
       - keywords: DUMMY
         passType: 0
-  - first: {fileID: 4800000, guid: da07703fcc09f8d4799221050659bd55, type: 3}
+  - first: {fileID: -6465566751694194690, guid: fcf992aaa5364b24fb94c71ba0e80e26,
+      type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: 
+        passType: 8
+  - first: {fileID: 4800000, guid: d7215c6dfa072d74ba8f86f5606e4cd8, type: 3}
     second:
       variants:
       - keywords: 
         passType: 0
-  - first: {fileID: 4800000, guid: 36e335017ad71d54fbb10842863188ae, type: 3}
+  - first: {fileID: 4800000, guid: 7d0f2d70494277a42b52e83bc500f6ec, type: 3}
     second:
       variants:
       - keywords: 
