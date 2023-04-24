@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -38,7 +39,10 @@ namespace DCL.Backpack
                 value = testSprite
             };
 
-            avatarSlot = BaseComponentView.Create<AvatarSlotComponentView>("AvatarSlot");
+            AvatarSlotComponentView prefab = AssetDatabase.LoadAssetAtPath<AvatarSlotComponentView>(
+                                                               "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BackpackEditorHUDV2/Prefabs/AvatarSlot.prefab");
+
+            avatarSlot = Object.Instantiate(prefab);
             avatarSlot.typeIcons = nftTypeIconMapping;
             avatarSlot.rarityBackgrounds = nftRarityBackgroundMapping;
         }
@@ -94,6 +98,7 @@ namespace DCL.Backpack
                 isHidden = true,
                 hiddenBy = "HidingCategory"
             };
+
             avatarSlot.RefreshControl();
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
@@ -110,6 +115,7 @@ namespace DCL.Backpack
                 isHidden = false,
                 hiddenBy = ""
             };
+
             avatarSlot.RefreshControl();
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");

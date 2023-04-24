@@ -1,14 +1,12 @@
+using KernelCommunication;
 using System;
 using System.Collections.Generic;
-using KernelCommunication;
 
 namespace DCL.CRDT
 {
     // Deserialize CRDT binary messages (BigEndian)
     public static class CRDTDeserializer
     {
-        internal static readonly CRDTMessage tempMessage = new CRDTMessage();
-
         public static IEnumerator<object> DeserializeBatch(ReadOnlyMemory<byte> memory)
         {
             int position = 0;
@@ -31,6 +29,7 @@ namespace DCL.CRDT
 
                 // Do we have the bytes computed in the header?
                 remainingBytesToRead = messageLength - CrdtConstants.MESSAGE_HEADER_LENGTH;
+
                 if (position + remainingBytesToRead > memory.Length)
                 {
                     break;
@@ -61,7 +60,7 @@ namespace DCL.CRDT
             }
         }
 
-        public static CRDTMessage DeserializePutComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
+        public static CrdtMessage? DeserializePutComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
         {
             ReadOnlySpan<byte> memorySpan = memory.Span;
 
@@ -70,11 +69,11 @@ namespace DCL.CRDT
                 return null;
             }
 
-            tempMessage.entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            long entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
-            tempMessage.componentId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            int componentId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
-            tempMessage.timestamp = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            int timestamp = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
             int dataLength = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
@@ -85,6 +84,7 @@ namespace DCL.CRDT
             }
 
             byte[] data = null;
+
             if (dataLength > 0)
             {
                 data = memorySpan.Slice(memoryPosition, dataLength).ToArray();
@@ -93,20 +93,20 @@ namespace DCL.CRDT
             {
                 data = new byte[0];
             }
+
             memoryPosition += dataLength;
 
-            return new CRDTMessage()
-            {
-                type = CrdtMessageType.PUT_COMPONENT,
-                entityId = tempMessage.entityId,
-                componentId= tempMessage.componentId,
-                timestamp = tempMessage.timestamp,
-                data = data
-            };
+            return new CrdtMessage
+            (
+                entityId: entityId,
+                componentId: componentId,
+                timestamp: timestamp,
+                data: data,
+                type: CrdtMessageType.PUT_COMPONENT
+            );
         }
 
-
-        public static CRDTMessage DeserializeAppendComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
+        private static CrdtMessage? DeserializeAppendComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
         {
             ReadOnlySpan<byte> memorySpan = memory.Span;
 
@@ -115,11 +115,11 @@ namespace DCL.CRDT
                 return null;
             }
 
-            tempMessage.entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            long entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
-            tempMessage.componentId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            int componentId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
-            tempMessage.timestamp = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            int timestamp = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
             int dataLength = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
@@ -130,6 +130,7 @@ namespace DCL.CRDT
             }
 
             byte[] data = null;
+
             if (dataLength > 0)
             {
                 data = memorySpan.Slice(memoryPosition, dataLength).ToArray();
@@ -138,19 +139,20 @@ namespace DCL.CRDT
             {
                 data = new byte[0];
             }
+
             memoryPosition += dataLength;
 
-            return new CRDTMessage()
-            {
-                type = CrdtMessageType.APPEND_COMPONENT,
-                entityId = tempMessage.entityId,
-                componentId= tempMessage.componentId,
-                timestamp = tempMessage.timestamp,
-                data = data
-            };
+            return new CrdtMessage
+            (
+                entityId: entityId,
+                componentId: componentId,
+                timestamp: timestamp,
+                data: data,
+                type: CrdtMessageType.APPEND_COMPONENT
+            );
         }
 
-        public static CRDTMessage DeserializeDeleteComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
+        private static CrdtMessage? DeserializeDeleteComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
         {
             ReadOnlySpan<byte> memorySpan = memory.Span;
 
@@ -159,24 +161,24 @@ namespace DCL.CRDT
                 return null;
             }
 
-            tempMessage.entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            long entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
-            tempMessage.componentId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            int componentId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
-            tempMessage.timestamp = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            int timestamp = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
 
-            return new CRDTMessage()
-            {
-                type = CrdtMessageType.DELETE_COMPONENT,
-                entityId = tempMessage.entityId,
-                componentId= tempMessage.componentId,
-                timestamp = tempMessage.timestamp
-            };
+            return new CrdtMessage
+            (
+                entityId: entityId,
+                componentId: componentId,
+                timestamp: timestamp,
+                data: null,
+                type: CrdtMessageType.DELETE_COMPONENT
+            );
         }
 
-
-        public static CRDTMessage DeserializeDeleteEntity(ReadOnlyMemory<byte> memory, ref int memoryPosition)
+        private static CrdtMessage? DeserializeDeleteEntity(ReadOnlyMemory<byte> memory, ref int memoryPosition)
         {
             ReadOnlySpan<byte> memorySpan = memory.Span;
 
@@ -185,14 +187,17 @@ namespace DCL.CRDT
                 return null;
             }
 
-            tempMessage.entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            long entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
             memoryPosition += 4;
 
-            return new CRDTMessage()
-            {
-                type = CrdtMessageType.DELETE_ENTITY,
-                entityId = tempMessage.entityId
-            };
+            return new CrdtMessage
+            (
+                entityId: entityId,
+                componentId: 0,
+                timestamp: 0,
+                data: null,
+                type: CrdtMessageType.DELETE_ENTITY
+            );
         }
     }
 }

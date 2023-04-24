@@ -23,7 +23,7 @@ public class ShowHideUIByTrigger : MonoBehaviour
 
     private void AllUIVisible_OnChange(bool current, bool previous) { SetUIVisibility(!current); }
 
-    private void SetUIVisibility(bool isVisible)
+    protected virtual void SetUIVisibility(bool isVisible)
     {
         if (showHideAnimator != null)
             showHideAnimator.enabled = isVisible;
