@@ -141,7 +141,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.TASKBAR:
                 return new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(), FriendsController.i);
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
-                return new ExternalUrlPromptHUDController();
+                return new ExternalUrlPromptHUDController(DataStore.i.rpc.context.restrictedActions);
             case HUDElementID.NFT_INFO_DIALOG:
                 return new NFTPromptHUDController();
             case HUDElementID.CONTROLS_HUD:

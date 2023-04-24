@@ -16,7 +16,7 @@ public class ExternalUrlPromptHUDController : IHUD
 
     private readonly RestrictedActionsContext restrictedActionsServiceContext;
 
-    public ExternalUrlPromptHUDController()
+    public ExternalUrlPromptHUDController(RestrictedActionsContext restrictedActionsContext)
     {
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("ExternalUrlPromptHUD")).GetComponent<ExternalUrlPromptView>();
         view.name = "_ExternalUrlPromptHUD";
@@ -25,7 +25,7 @@ public class ExternalUrlPromptHUDController : IHUD
         if (Environment.i != null)
             Environment.i.world.sceneController.OnOpenExternalUrlRequest += ProcessOpenUrlRequest;
 
-        restrictedActionsServiceContext = DataStore.i.rpc.context.restrictedActions;
+        restrictedActionsServiceContext = restrictedActionsContext;
         restrictedActionsServiceContext.OpenExternalUrlPrompt += ProcessOpenUrlRequest;
     }
 

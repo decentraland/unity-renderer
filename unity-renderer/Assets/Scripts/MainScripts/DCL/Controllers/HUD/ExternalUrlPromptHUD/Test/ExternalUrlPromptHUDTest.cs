@@ -2,6 +2,7 @@
 using DCL.Controllers;
 using DCL.Helpers;
 using NUnit.Framework;
+using RPC.Context;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -14,7 +15,8 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new ExternalUrlPromptHUDController();
+            RestrictedActionsContext restrictedActionsContext = new RestrictedActionsContext();
+            controller = new ExternalUrlPromptHUDController(restrictedActionsContext);
             scene = TestUtils.CreateTestScene();
         }
 
