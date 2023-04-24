@@ -21,7 +21,6 @@
     "com.unity.memoryprofiler": "0.7.1-preview.1",
     "com.unity.performance.profile-analyzer": "1.2.2",
     "com.unity.postprocessing": "3.2.2",
-    "com.unity.project-auditor": "https://github.com/Unity-Technologies/ProjectAuditor.git",
     "com.unity.render-pipelines.universal": "12.1.10",
     "com.unity.scriptablebuildpipeline": "1.20.1",
     "com.unity.shadergraph": "12.1.10",
