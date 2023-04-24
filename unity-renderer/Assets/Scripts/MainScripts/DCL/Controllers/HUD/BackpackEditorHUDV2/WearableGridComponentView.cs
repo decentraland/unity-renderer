@@ -7,15 +7,17 @@ namespace DCL.Backpack
 {
     public class WearableGridComponentView : MonoBehaviour, IWearableGridView
     {
-        [SerializeField] private NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
-        [SerializeField] private GridContainerComponentView wearablesGridContainer;
-        [SerializeField] private WearableGridItemComponentView wearableGridItemPrefab;
-        [SerializeField] private PageSelectorComponentView wearablePageSelector;
+        [SerializeField] internal NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
+        [SerializeField] internal GridContainerComponentView wearablesGridContainer;
+        [SerializeField] internal WearableGridItemComponentView wearableGridItemPrefab;
+        [SerializeField] internal PageSelectorComponentView wearablePageSelector;
+        [SerializeField] internal InfoCardComponentView infoCardComponentView;
 
         private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
         private readonly Dictionary<string, WearableGridItemComponentView> wearablesById = new ();
 
         private Pool wearableGridItemsPool;
+        private WearableGridItemComponentView selectedWearableItem;
 
         public event Action<int> OnWearablePageChanged;
         public event Action<string> OnFilterWearables;
@@ -35,6 +37,9 @@ namespace DCL.Backpack
             wearableGridItemsPool.ForcePrewarm();
 
             wearablesBreadcrumbComponentView.OnNavigate += reference => OnFilterWearables?.Invoke(reference);
+
+            infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model);
+            infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model);
         }
 
         public void Dispose()
@@ -102,10 +107,18 @@ namespace DCL.Backpack
         {
             foreach (WearableGridItemComponentView view in wearablePooledObjects.Keys)
                 view.Unselect();
+
+            selectedWearableItem = null;
         }
 
-        public void SelectWearable(string wearableId) =>
-            wearablesById[wearableId].Select();
+        public void SelectWearable(string wearableId)
+        {
+            selectedWearableItem = wearablesById[wearableId];
+            selectedWearableItem.Select();
+        }
+
+        public void FillInfoCard(InfoCardComponentModel model) =>
+            infoCardComponentView.SetModel(model);
 
         public void SetWearableBreadcrumb(NftBreadcrumbModel model) =>
             wearablesBreadcrumbComponentView.SetModel(model);
