@@ -1,0 +1,113 @@
+// This is living here during the PoC. After that, this must be downloaded from the protocol repo on Decentraland Github 
+syntax = "proto3";
+package decentraland.quests;
+
+message UserAddress {
+  string user_address = 1;
+}
+
+message StartQuestRequest {
+  string user_address = 1;
+  string quest_id = 2;
+}
+
+message StartQuestResponse {
+  /* There are a few valid reasons to not be accepted:
+  *  - Quest is not found
+  *  - Quest is deactivated (the owner deleted it)
+  *  - User already started the quest
+  *  - Internal errors (DB connection failed or something like that) */
+  bool accepted = 1;
+}
+
+message AbortQuestRequest {
+  string user_address = 1;
+  string quest_instance_id = 2;
+}
+
+message AbortQuestResponse {
+  /* There are a few valid reasons to not be accepted:
+  *  - Quest instance is not found
+  *  - Quest instance is from another user 
+  *  - Quest instance already aborted
+  *  - Internal errors (DB connection failed or something like that) */
+  bool accepted = 1;
+}
+
+message Event {
+  string address = 1;
+  Action action = 2;
+}
+
+message EventResponse {
+  optional fixed32 event_id = 1;
+  bool accepted = 2;
+}
+
+message QuestDefinition {
+  repeated Step steps = 1;
+  /// Connections between steps
+  ///
+  /// First position in the tuple is for `from` and second one `to`
+  repeated Connection connections = 2;
+}
+
+message Connection {
+  string step_from = 1;
+  string step_to = 2;
+}
+
+message Step {
+  string id = 1;
+  string description = 2;
+  repeated Task tasks = 3;
+  /// Allow hooks on every completed step
+  optional string on_complete_hook = 4; // TODO: should we put this here?
+}
+
+message Action {
+  string type = 1;
+  map<string, string> parameters = 2;
+}
+
+message Task {
+  string id = 1;
+  optional string description = 2;
+  repeated Action action_items = 3;
+}
+
+message StepContent {
+  repeated Task to_dos = 1;
+  repeated Task tasks_completed = 2;
+}
+
+message QuestState {
+  map<string, StepContent> current_steps = 2;
+  fixed32 steps_left = 3;
+  repeated string steps_completed = 4;
+  repeated string required_steps = 5;
+}
+
+message QuestStateUpdate {
+  string quest_instance_id = 1;
+  string name = 2;
+  string description = 3;
+  QuestState quest_state = 4;
+}
+
+message UserUpdate {
+  oneof message {
+    QuestStateUpdate quest_state = 1;
+    fixed32 event_ignored = 2;
+  }
+}
+
+service QuestsService {
+  // User actions
+  rpc StartQuest(StartQuestRequest) returns (StartQuestResponse) {}
+  rpc AbortQuest(AbortQuestRequest) returns (AbortQuestResponse) {}
+  rpc SendEvent(Event) returns (EventResponse) {}
+
+  // Listen to changes in quest states and event processing updates
+  rpc Subscribe(UserAddress) returns (stream UserUpdate) {}
+}
