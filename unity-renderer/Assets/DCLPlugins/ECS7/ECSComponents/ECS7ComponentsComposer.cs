@@ -30,6 +30,7 @@ namespace DCL.ECSComponents
         private readonly VisibilityComponentRegister visibilityComponentRegister;
         private readonly PointerEventsRegister pointerEvents;
         private readonly VideoPlayerRegister videoPlayerRegister;
+        private readonly VideoEventRegister videoEventRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -64,6 +65,7 @@ namespace DCL.ECSComponents
             meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter, internalComponents);
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
             videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentsWriter, internalComponents);
+            videoEventRegister = new VideoEventRegister(ComponentID.VIDEO_EVENT, componentsFactory, componentsWriter);
 
             // Multi-purposed components
             pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter, internalComponents.PointerEventsComponent);
