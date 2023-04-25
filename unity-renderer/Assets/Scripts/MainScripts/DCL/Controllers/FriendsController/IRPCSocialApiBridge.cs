@@ -66,7 +66,5 @@ namespace MainScripts.DCL.Controllers.FriendsController
         UniTask<CancelFriendRequestReply> CancelFriendRequest(CancelFriendRequestPayload request, RPCContext context, CancellationToken ct);
 
         UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct);
-
-        FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code);
     }
 }
