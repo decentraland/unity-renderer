@@ -143,7 +143,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 return new ExternalUrlPromptHUDController(DataStore.i.rpc.context.restrictedActions);
             case HUDElementID.NFT_INFO_DIALOG:
-                return new NFTPromptHUDController();
+                return new NFTPromptHUDController(DataStore.i.rpc.context.restrictedActions, DataStore.i.common.onOpenNFTPrompt);
             case HUDElementID.CONTROLS_HUD:
                 return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:

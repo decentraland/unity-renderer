@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NSubstitute;
 using NUnit.Framework;
+using RPC.Context;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -10,11 +11,13 @@ namespace Tests
     {
         private NFTPromptHUDController controller;
         private NFTPromptHUDView view;
+        private RestrictedActionsContext restrictedActionsContext;
 
         [SetUp]
         public void SetUp()
         {
-            controller = new NFTPromptHUDController();
+            restrictedActionsContext = new RestrictedActionsContext();
+            controller = new NFTPromptHUDController(restrictedActionsContext, new BaseVariable<NFTPromptModel>());
             view = (NFTPromptHUDView)controller.view;
         }
 
@@ -88,6 +91,13 @@ namespace Tests
             Assert.IsTrue(popupView.IsActive());
             popupView.Hide(true);
             Assert.IsFalse(popupView.IsActive());
+        }
+
+        [Test]
+        public void PromptWhenNftPromptIsRequestedByRpcService()
+        {
+            restrictedActionsContext.OpenNftPrompt("0x00", "123");
+            Assert.IsTrue(view.content.activeSelf, "NFT dialog should be visible");
         }
     }
 }
