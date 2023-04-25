@@ -187,11 +187,14 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
             await UpdateFriendship(updateFriendshipPayload, cancellationToken);
 
-            return new FriendRequest(GetFriendRequestId(friendUserId, createdAt), createdAt, "GET OWN ADDRESS", friendUserId, messageBody);
+            return new FriendRequest(GetFriendRequestId(friendUserId, createdAt), createdAt, userProfileWebInterfaceBridge.GetOwn().userId, friendUserId, messageBody);
         }
 
-        private static string GetUserIdFromFriendRequestId(string friendRequestId) =>
-            friendRequestId.Split("-")[0];
+        private static string GetUserIdFromFriendRequestId(string friendRequestId)
+        {
+            var firstHyphen = friendRequestId.IndexOf('-');
+            return friendRequestId.Substring(0, firstHyphen);
+        }
 
         private static string GetFriendRequestId(string userId, long createdAt) =>
             $"{userId}-{createdAt}";
@@ -218,7 +221,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
                         throw new FriendshipException(ToErrorCode(error));
                     case UpdateFriendshipResponse.ResponseOneofCase.None:
                     default:
-                        throw new InvalidCastException();
+                        throw new NotSupportedException(response.ResponseCase.ToString());
                 }
 
                 await UniTask.SwitchToMainThread(cancellationToken);
@@ -287,7 +290,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
             throw new NotImplementedException();
 
-        public FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code)
+        FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code)
         {
             switch (code)
             {
