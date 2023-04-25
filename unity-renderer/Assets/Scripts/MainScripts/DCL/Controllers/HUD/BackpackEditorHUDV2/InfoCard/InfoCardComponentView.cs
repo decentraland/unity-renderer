@@ -31,6 +31,8 @@ namespace DCL.Backpack
         public event Action OnUnEquipWearable;
         public event Action OnViewMore;
 
+        internal InfoCardComponentModel Model => model;
+
         public void Start()
         {
             equipButton.onClick.RemoveAllListeners();

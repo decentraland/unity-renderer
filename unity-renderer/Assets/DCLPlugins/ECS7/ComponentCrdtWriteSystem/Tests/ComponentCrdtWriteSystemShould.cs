@@ -46,19 +46,19 @@ namespace Tests
             byte[] componentData = new byte[] { 1, 0, 0, 1 };
             long timeStamp = 0;
 
-            crdtExecutor.WhenForAnyArgs(x => x.Execute(Arg.Any<CRDTMessage>()))
+            crdtExecutor.WhenForAnyArgs(x => x.Execute(Arg.Any<CrdtMessage>()))
                         .Do(info =>
                          {
-                             CRDTMessage crdtMessage = (CRDTMessage)info.Args()[0];
-                             Assert.AreEqual(ENTITY_ID, crdtMessage.entityId);
-                             Assert.AreEqual(COMPONENT_ID, crdtMessage.componentId);
-                             Assert.AreEqual(timeStamp, crdtMessage.timestamp);
-                             Assert.IsTrue(AreEqual(componentData, (byte[])crdtMessage.data));
+                             CrdtMessage crdtMessage = (CrdtMessage)info.Args()[0];
+                             Assert.AreEqual(ENTITY_ID, crdtMessage.EntityId);
+                             Assert.AreEqual(COMPONENT_ID, crdtMessage.ComponentId);
+                             Assert.AreEqual(timeStamp, crdtMessage.Timestamp);
+                             Assert.IsTrue(AreEqual(componentData, (byte[])crdtMessage.Data));
                          });
 
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_LOCAL, CrdtMessageType.PUT_COMPONENT);
             crdtWriteSystem.LateUpdate();
-            crdtExecutor.Received(1).Execute(Arg.Any<CRDTMessage>());
+            crdtExecutor.Received(1).Execute(Arg.Any<CrdtMessage>());
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace Tests
 
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_SCENE, CrdtMessageType.PUT_COMPONENT);
             crdtWriteSystem.LateUpdate();
-            crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
+            crdtExecutor.DidNotReceive().Execute(Arg.Any<CrdtMessage>());
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_SCENE, CrdtMessageType.PUT_COMPONENT);
             crdtWriteSystem.LateUpdate();
 
-            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out DualKeyValueSet<int, long, CRDTMessage> protocol);
+            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out DualKeyValueSet<int, long, CrdtMessage> protocol);
             // not null or empty
             Assert.NotNull(protocol);
 
@@ -106,7 +106,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_LOCAL, CrdtMessageType.PUT_COMPONENT);
             crdtWriteSystem.LateUpdate();
 
-            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out DualKeyValueSet<int, long, CRDTMessage> protocol);
+            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out DualKeyValueSet<int, long, CrdtMessage> protocol);
 
             // null or empty
             Assert.IsNull(protocol);
@@ -124,7 +124,7 @@ namespace Tests
             crdtWriteSystem.LateUpdate();
 
             crdtExecutor.Received(1).ExecuteWithoutStoringState(ENTITY_ID, COMPONENT_ID, Arg.Any<object>());
-            crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
+            crdtExecutor.DidNotReceive().Execute(Arg.Any<CrdtMessage>());
 
             CRDTProtocol.EntityComponentData  message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
             Assert.IsNull(message);
@@ -142,7 +142,7 @@ namespace Tests
             crdtWriteSystem.LateUpdate();
 
             crdtExecutor.DidNotReceive().ExecuteWithoutStoringState(ENTITY_ID, COMPONENT_ID, Arg.Any<object>());
-            crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
+            crdtExecutor.DidNotReceive().Execute(Arg.Any<CrdtMessage>());
 
             CRDTProtocol.EntityComponentData  message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
             Assert.NotNull(message);
