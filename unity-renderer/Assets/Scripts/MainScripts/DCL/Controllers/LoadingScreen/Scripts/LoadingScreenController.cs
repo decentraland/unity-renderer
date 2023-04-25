@@ -28,7 +28,7 @@ namespace DCL.LoadingScreen
         internal readonly LoadingScreenTimeoutController timeoutController;
         private readonly NotificationsController notificationsController;
         private bool onSignUpFlow;
-        private bool randomPositionRequested;
+        internal bool randomPositionRequested;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)

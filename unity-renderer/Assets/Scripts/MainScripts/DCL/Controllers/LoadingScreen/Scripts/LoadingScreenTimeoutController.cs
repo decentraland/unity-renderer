@@ -13,18 +13,18 @@ namespace DCL.LoadingScreen
 {
     public class LoadingScreenTimeoutController : IDisposable
     {
-        internal const int LOAD_SCENE_TIMEOUT = 10000;
-        internal const int WEBSOCKET_TIMEOUT = 10000;
+        private const int LOAD_SCENE_TIMEOUT = 10000;
+        private const int WEBSOCKET_TIMEOUT = 10000;
 
-        private int currentEvaluatedTimeout;
+        internal int currentEvaluatedTimeout;
 
         private LoadingScreenController loadingScreenController;
         private CancellationTokenSource timeoutCTS;
-        private ILoadingScreenTimeoutView view;
+        internal ILoadingScreenTimeoutView view;
         private IWorldState worldState;
         private Vector2Int currentDestination;
 
-        private bool goHomeRequested;
+        internal bool goHomeRequested;
 
         public LoadingScreenTimeoutController(ILoadingScreenTimeoutView loadingScreenTimeoutView, IWorldState worldState, LoadingScreenController loadingScreenController)
         {
@@ -53,9 +53,9 @@ namespace DCL.LoadingScreen
             {
                 Dictionary<string, string> variables = new Dictionary<string, string>
                 {
-                    { "sceneID", destinationScene.sceneData.id },
-                    { "contentServer", destinationScene.contentProvider.baseUrl },
-                    { "contentServerBundlesUrl", destinationScene.contentProvider.assetBundlesBaseUrl },
+                    { "sceneID", destinationScene.sceneData?.id },
+                    { "contentServer", destinationScene.contentProvider?.baseUrl },
+                    { "contentServerBundlesUrl", destinationScene.contentProvider?.assetBundlesBaseUrl },
                 };
 
                 GenericAnalytics.SendAnalytic("scene_loading_failed", variables);
@@ -97,7 +97,7 @@ namespace DCL.LoadingScreen
 #endif
         }
 
-        private void GoBackHomeClicked()
+        internal void GoBackHomeClicked()
         {
             WebInterface.SendChatMessage(new ChatMessage
             {
