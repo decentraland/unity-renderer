@@ -1,11 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCl.Social.Friends;
-using DCL.Social.Friends;
 using Decentraland.Renderer.RendererServices;
 using Decentraland.Social.Friendships;
 using Google.Protobuf.WellKnownTypes;
 using JetBrains.Annotations;
+using MainScripts.DCL.Controllers.FriendsController;
 using RPC;
 using System;
 using System.Threading;
@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Payload = Decentraland.Social.Friendships.Payload;
 
-namespace MainScripts.DCL.Controllers.FriendsController
+namespace DCL.Social.Friends
 {
     public class RPCSocialApiBridge : IRPCSocialApiBridge
     {

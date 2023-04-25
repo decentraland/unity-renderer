@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
+using DCL.Tasks;
 using MainScripts.DCL.Controllers.FriendsController;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace DCL.Social.Friends
         public event Action<FriendRequest> OnFriendRequestReceived;
         public event Action<FriendRequest> OnSentFriendRequestApproved;
 
-        private CancellationTokenSource controllerCancellationTokenSource;
+        private CancellationTokenSource controllerCancellationTokenSource = new CancellationTokenSource();
 
         private DataStore dataStore;
 
@@ -52,7 +53,6 @@ namespace DCL.Social.Friends
             apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
 
-
             this.socialApiBridge = rpcSocialApiBridge;
 
             socialApiBridge.OnFriendAdded += AddFriend;
@@ -65,7 +65,7 @@ namespace DCL.Social.Friends
 
         public void Initialize()
         {
-            controllerCancellationTokenSource = new CancellationTokenSource();
+            controllerCancellationTokenSource = controllerCancellationTokenSource.SafeRestart();
 
             if (useSocialApiBridge)
             {
@@ -82,8 +82,7 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            controllerCancellationTokenSource.Cancel();
-            controllerCancellationTokenSource.Dispose();
+            controllerCancellationTokenSource.SafeCancelAndDispose();
         }
 
         private void RemoveFriendRequest(string userId)
