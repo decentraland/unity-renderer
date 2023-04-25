@@ -22,7 +22,7 @@ namespace Tests.ValidationTests
 
             Assert.IsFalse(
                 deps.Select(AssetDatabase.AssetPathToGUID)
-                    .Any(depGuid => depGuid == forbiddenMaterialGuid), message: $"Asset has dependencies on forbidden material {URP_LIT_MATERIAL_PATH}. Replace with DCL version of it.");
+                    .Any(depGuid => depGuid == forbiddenMaterialGuid), message: $"Asset {assetPath} has dependencies on forbidden material {URP_LIT_MATERIAL_PATH}. Replace with DCL version of it.");
         }
 
         [TestCaseSource(nameof(AllMaterialsInAssetsFolder))]
@@ -32,7 +32,7 @@ namespace Tests.ValidationTests
 
             Material material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
 
-            Assert.That(material.shader, Is.Not.EqualTo(urpLitShader), message: $"Material uses forbidden shader {urpLitShader.name}. Replace with DCL version of it.");
+            Assert.That(material.shader, Is.Not.EqualTo(urpLitShader), message: $"Material {materialPath} uses forbidden shader {urpLitShader.name}. Replace with DCL version of it.");
         }
 
         private static IEnumerable<string> AllMaterialsInAssetsFolder() =>
