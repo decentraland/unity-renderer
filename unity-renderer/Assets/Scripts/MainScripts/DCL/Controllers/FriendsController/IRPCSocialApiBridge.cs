@@ -1,13 +1,12 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
-using DCL.Social.Friends;
 using Decentraland.Renderer.RendererServices;
 using Decentraland.Social.Friendships;
 using RPC;
 using System;
 using System.Threading;
 
-namespace MainScripts.DCL.Controllers.FriendsController
+namespace DCL.Social.Friends
 {
     public interface IRPCSocialApiBridge
     {
