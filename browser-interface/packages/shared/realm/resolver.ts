@@ -1,8 +1,8 @@
 import { Candidate, Realm } from 'shared/dao/types'
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 import { ExplorerIdentity } from 'shared/session/types'
-import { createBffRpcConnection } from './connections/BFFConnection'
-import { localBff } from './connections/BFFLegacy'
+import { createArchipelagoConnection } from './connections/ArchipelagoConnection'
+import { localArchipelago } from './connections/LocalArchipelago'
 import { IRealmAdapter, OFFLINE_REALM } from './types'
 
 function normalizeUrl(url: string) {
@@ -46,11 +46,11 @@ export async function adapterForRealmConfig(
   }
 
   if (about.bff?.healthy) {
-    return createBffRpcConnection(baseUrl, about, identity)
+    return createArchipelagoConnection(baseUrl, about, identity)
   }
 
-  // return a mocked BFF
-  return localBff(baseUrl, about, identity)
+  // return a mocked Archipelago
+  return localArchipelago(baseUrl, about, identity)
 }
 
 export function prettyRealmName(realm: string, candidates: Candidate[]) {

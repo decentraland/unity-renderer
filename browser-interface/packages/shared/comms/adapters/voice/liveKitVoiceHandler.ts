@@ -1,5 +1,4 @@
 import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
-import { isChrome } from 'lib/browser/isChrome'
 import { createLogger } from 'lib/logger'
 import {
   LocalAudioTrack,
@@ -18,8 +17,7 @@ import { store } from 'shared/store/isolatedStore'
 import { shouldPlayVoice } from 'shared/voiceChat/selectors'
 import { getSpatialParamsFor } from 'shared/voiceChat/utils'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
-import Html from './Html'
-import { startLoopback } from './loopback'
+import { GlobalAudioStream } from './loopback'
 import { DEBUG_VOICE_CHAT } from 'config'
 
 type ParticipantInfo = {
@@ -33,34 +31,17 @@ type ParticipantTrack = {
   panNode: PannerNode
 }
 
-export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandler> => {
+export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalAudioStream): VoiceHandler {
   const logger = createLogger('🎙 LiveKitVoiceCommunicator: ')
-
-  const parentElement = Html.loopbackAudioElement()
 
   let recordingListener: ((state: boolean) => void) | undefined
   let errorListener: ((message: string) => void) | undefined
+
   let globalVolume: number = 1.0
-  let globalMuted: boolean = false
   let validInput = false
   let onUserTalkingCallback: (userId: string, talking: boolean) => void = () => {}
 
   const participantsInfo = new Map<string, ParticipantInfo>()
-  const audioContext = new AudioContext()
-  const destination = audioContext.createMediaStreamDestination()
-  const destinationStream = isChrome() ? await startLoopback(destination.stream) : destination.stream
-
-  const gainNode = audioContext.createGain()
-  gainNode.connect(destination)
-  gainNode.gain.value = 1
-
-  if (parentElement) {
-    parentElement.srcObject = destinationStream
-  }
-
-  function getGlobalVolume(): number {
-    return globalMuted ? 0.0 : globalVolume
-  }
 
   function getParticipantInfo(participant: RemoteParticipant): ParticipantInfo {
     let $: ParticipantInfo | undefined = participantsInfo.get(participant.identity)
@@ -86,42 +67,14 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     return $
   }
 
-  // this function sets up the local tracking of the remote participant
-  // and refreshes the audio nodes based on the most up-to-date audio tracks
-  function setupTracksForParticipant(participant: RemoteParticipant) {
-    const info = getParticipantInfo(participant)
-
-    // first remove extra tracks
-    for (const [trackId, track] of info.tracks) {
-      if (!participant.audioTracks.has(trackId)) {
-        disconnectParticipantTrack(track)
-        info.tracks.delete(trackId)
-      }
-    }
-
-    // and subscribe to new ones
-    for (const [, track] of participant.audioTracks) {
-      if (track.audioTrack?.kind === Track.Kind.Audio) {
-        subscribeParticipantTrack(participant, track.audioTrack as any)
-      }
-    }
-  }
-
-  function subscribeParticipantTrack(participant: RemoteParticipant, track: RemoteAudioTrack) {
-    const info = getParticipantInfo(participant)
-    const trackId = track.sid
-    if (trackId && !info.tracks.has(trackId) && track.kind === Track.Kind.Audio && track.mediaStream) {
-      info.tracks.set(trackId, setupAudioTrackForRemoteTrack(track))
-    }
-  }
-
   function setupAudioTrackForRemoteTrack(track: RemoteAudioTrack): ParticipantTrack {
     if (DEBUG_VOICE_CHAT) logger.info('Adding media track', track.sid)
+    const audioContext = globalAudioStream.getAudioContext()
     const streamNode = audioContext.createMediaStreamSource(track.mediaStream!)
     const panNode = audioContext.createPanner()
 
     streamNode.connect(panNode)
-    panNode.connect(gainNode)
+    panNode.connect(globalAudioStream.getGainNode())
 
     panNode.panningModel = 'equalpower'
     panNode.distanceModel = 'inverse'
@@ -139,133 +92,61 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     }
   }
 
-  function disconnectParticipantTrack(participantTrack: ParticipantTrack) {
-    if (DEBUG_VOICE_CHAT) logger.info('Disconnecting media track', participantTrack.track.sid)
-    participantTrack.panNode.disconnect()
-    participantTrack.streamNode.disconnect()
-    participantTrack.track.stop()
-    participantTrack.track.detach()
-  }
-
   function handleTrackSubscribed(
     track: RemoteTrack,
-    publication: RemoteTrackPublication,
+    _publication: RemoteTrackPublication,
     participant: RemoteParticipant
   ) {
-    if (track.kind === Track.Kind.Audio) {
-      subscribeParticipantTrack(participant, track as RemoteAudioTrack)
+    if (track.kind !== Track.Kind.Audio) {
+      return
+    }
+
+    const info = getParticipantInfo(participant)
+    const trackId = track.sid
+    if (trackId && !info.tracks.has(trackId) && track.kind === Track.Kind.Audio && track.mediaStream) {
+      info.tracks.set(trackId, setupAudioTrackForRemoteTrack(track as RemoteAudioTrack))
     }
   }
+
   function handleTrackUnsubscribed(
-    track: RemoteTrack,
-    publication: RemoteTrackPublication,
+    remoteTrack: RemoteTrack,
+    _publication: RemoteTrackPublication,
     participant: RemoteParticipant
   ) {
-    setupTracksForParticipant(participant)
-  }
-
-  async function handleDisconnect() {
-    if (DEBUG_VOICE_CHAT) logger.log('Handler Disconnect')
-
-    room
-      .off(RoomEvent.Disconnected, handleDisconnect)
-      .off(RoomEvent.TrackSubscribed, handleTrackSubscribed)
-      .off(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed)
-      .off(RoomEvent.TrackPublished, handleTrackPublished)
-      .off(RoomEvent.TrackUnpublished, handleTrackUnpublished)
-      .off(RoomEvent.MediaDevicesError, handleMediaDevicesError)
-      .off(RoomEvent.ParticipantConnected, addParticipant)
-      .off(RoomEvent.ParticipantDisconnected, removeParticipant)
-
-    for (const [userId] of participantsInfo) {
-      removeParticipantById(userId)
+    if (remoteTrack.kind !== Track.Kind.Audio) {
+      return
     }
-    participantsInfo.clear()
 
-    gainNode.disconnect()
-    try {
-      await audioContext.close()
-    } catch (err) {}
+    const info = getParticipantInfo(participant)
+
+    for (const [trackId, track] of info.tracks) {
+      if (trackId === remoteTrack.sid) {
+        track.panNode.disconnect()
+        track.streamNode.disconnect()
+        break
+      }
+    }
   }
 
   function handleMediaDevicesError() {
     if (errorListener) errorListener('Media Device Error')
   }
 
-  function addParticipant(participant: RemoteParticipant) {
-    setupTracksForParticipant(participant)
-  }
-
-  function removeParticipantById(userId: string) {
-    // remove tracks from all attached elements
-    const participantInfo = participantsInfo.get(userId)
-    if (participantInfo) {
-      if (DEBUG_VOICE_CHAT) logger.info('Removing participant', userId)
-      for (const [trackId, participantTrack] of participantInfo.tracks) {
-        try {
-          disconnectParticipantTrack(participantTrack)
-          participantInfo.tracks.delete(trackId)
-        } catch (err: any) {
-          logger.error(err)
-        }
-      }
-      participantsInfo.delete(userId)
-    }
-  }
-
-  function removeParticipant(participant: RemoteParticipant) {
-    removeParticipantById(participant.identity)
-  }
-
-  function handleTrackPublished(trackPublication: RemoteTrackPublication, remoteParticipant: RemoteParticipant) {
-    if (trackPublication.audioTrack) {
-      subscribeParticipantTrack(remoteParticipant, trackPublication.audioTrack as RemoteAudioTrack)
-    }
-  }
-
-  function handleTrackUnpublished(trackPublication: RemoteTrackPublication, remoteParticipant: RemoteParticipant) {
-    setupTracksForParticipant(remoteParticipant)
-  }
-
-  function reconnectAllParticipants() {
-    // remove all participants
-    for (const [identity] of participantsInfo) {
-      removeParticipantById(identity)
-    }
-
-    // add existing participants
-    for (const [_, participant] of room.participants) {
-      addParticipant(participant)
-    }
-  }
-
-  function updateParticipantsVolume() {
-    gainNode.gain.value = getGlobalVolume()
-  }
-
   room
-    .on(RoomEvent.Disconnected, handleDisconnect)
     .on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
     .on(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed)
     .on(RoomEvent.MediaDevicesError, handleMediaDevicesError)
-    .on(RoomEvent.ParticipantConnected, addParticipant)
-    .on(RoomEvent.ParticipantDisconnected, removeParticipant)
-    .on(RoomEvent.Reconnected, function (..._args) {
-      reconnectAllParticipants()
-    })
-
-  if (audioContext.state !== 'running') await audioContext.resume()
 
   logger.log('initialized')
-
-  reconnectAllParticipants()
 
   return {
     setRecording(recording) {
       room.localParticipant
         .setMicrophoneEnabled(recording)
         .then(() => {
-          if (recordingListener) recordingListener(recording)
+          if (recordingListener) {
+            recordingListener(recording)
+          }
         })
         .catch((err) => logger.error('Error: ', err, ', recording=', recording))
     },
@@ -276,7 +157,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
           room.startAudio().catch(logger.error)
         }
 
-        parentElement?.play().catch(logger.log)
+        globalAudioStream.play()
       } catch (err: any) {
         logger.error(err)
       }
@@ -289,6 +170,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     },
     reportPosition(position: rfc4.Position) {
       const spatialParams = getSpatialParamsFor(position)
+      const audioContext = globalAudioStream.getAudioContext()
       const listener = audioContext.listener
 
       if (listener.positionX) {
@@ -357,11 +239,10 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     },
     setVolume: function (volume) {
       globalVolume = volume
-      updateParticipantsVolume()
+      globalAudioStream.setGainVolume(volume)
     },
     setMute: (mute) => {
-      globalMuted = mute
-      updateParticipantsVolume()
+      globalAudioStream.setGainVolume(mute ? 0 : globalVolume)
     },
     setInputStream: async (localStream) => {
       try {
@@ -375,15 +256,6 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     hasInput: () => {
       return validInput
     },
-    async destroy() {
-      await Promise.allSettled([
-        room.localParticipant.unpublishTracks(
-          Array.from(room.localParticipant.audioTracks.values())
-            .map(($) => $.audioTrack!)
-            .filter(Boolean)
-        ),
-        handleDisconnect()
-      ])
-    }
+    async destroy() {}
   }
 }
