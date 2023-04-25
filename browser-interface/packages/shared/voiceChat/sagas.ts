@@ -90,6 +90,7 @@ function* handleConnectVoiceChatToRoom() {
         }
       }
     } else if (prevHandler) {
+      // NOTE: since prevHandler may not be destroyed, we mute it
       prevHandler.setMute(true)
     }
 
