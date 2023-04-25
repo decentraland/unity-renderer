@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
+using VideoState = DCL.Components.Video.Plugin.VideoState;
 
 namespace Tests
 {

@@ -1,9 +1,11 @@
 using DCL;
 using DCL.Components.Video.Plugin;
 using DCL.CRDT;
+using DCL.ECS7;
 using System;
 using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Shaders;
 using ECSSystems.VideoPlayerSystem;
@@ -11,6 +13,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using VideoState = DCL.Components.Video.Plugin.VideoState;
 
 namespace Tests
 {
@@ -31,9 +34,9 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
 
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-
             var videoPlayerSystem = new ECSVideoPlayerSystem(internalEcsComponents.videoPlayerComponent,
-                internalEcsComponents.videoMaterialComponent);
+                internalEcsComponents.videoMaterialComponent,
+                (ECSComponent<PBVideoEvent>)componentsManager.GetOrCreateComponent(ComponentID.VIDEO_EVENT));
 
             systemsUpdate = () =>
             {

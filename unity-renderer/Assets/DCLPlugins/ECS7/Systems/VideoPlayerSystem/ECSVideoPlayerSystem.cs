@@ -1,4 +1,6 @@
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using System.Linq;
 using UnityEngine;
 
@@ -8,15 +10,18 @@ namespace ECSSystems.VideoPlayerSystem
     {
         public readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
         public readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
+        public readonly ECSComponent<PBVideoEvent> videoEventComponent;
 
         private static readonly Vector2 VIDEO_TEXTURE_SCALE = new Vector2(1, -1);
 
         public ECSVideoPlayerSystem(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent,
-            IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent)
+            IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent,
+            ECSComponent<PBVideoEvent> videoEventComponent)
         {
             this.videoPlayerComponent = videoPlayerComponent;
             this.videoMaterialComponent = videoMaterialComponent;
+            this.videoEventComponent = videoEventComponent;
         }
 
         public void Update()
@@ -28,7 +33,24 @@ namespace ECSSystems.VideoPlayerSystem
                 var playerComponentData = playerComponents[i].value;
                 var playerModel = playerComponentData.model;
 
+                var previousVideoState = playerModel.videoPlayer.GetState();
                 playerModel.videoPlayer.Update();
+
+                if (videoEventComponent.HasComponent(playerComponentData.scene, playerComponentData.entity))
+                {
+                    var currentVideoState = playerModel.videoPlayer.GetState();
+                    if (previousVideoState != currentVideoState)
+                    {
+                        videoEventComponent.SetModel(playerComponentData.scene,
+                            playerComponentData.entity,
+                            new PBVideoEvent()
+                            {
+                                State = (VideoState)currentVideoState,
+                                CurrentOffset = playerModel.videoPlayer.GetTime(),
+                                VideoLength = playerModel.videoPlayer.GetDuration()
+                            });
+                    }
+                }
             }
 
             var allMaterialComponent = videoMaterialComponent.GetForAll();
