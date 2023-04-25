@@ -13,7 +13,6 @@ using rpc_csharp.transport;
 using RPC.Services;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
@@ -71,23 +70,24 @@ namespace Tests
 
                 int sceneNumber = 666;
 
-                CRDTMessage crdtMessage = new CRDTMessage()
-                {
-                    type = CrdtMessageType.PUT_COMPONENT,
-                    entityId = 7693,
-                    timestamp = 799,
-                    data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
-                };
+                CrdtMessage crdtMessage = new CrdtMessage
+                (
+                    type: CrdtMessageType.PUT_COMPONENT,
+                    entityId: 7693,
+                    componentId: 0,
+                    timestamp: 799,
+                    data: new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
+                );
 
                 bool messageReceived = false;
 
                 // Check if incoming CRDT is dispatched as scene message
-                void OnCrdtMessageReceived(int incommingSceneNumber, CRDTMessage incommingCrdtMessage)
+                void OnCrdtMessageReceived(int incommingSceneNumber, CrdtMessage incommingCrdtMessage)
                 {
                     Assert.AreEqual(sceneNumber, incommingSceneNumber);
-                    Assert.AreEqual(crdtMessage.entityId, incommingCrdtMessage.entityId);
-                    Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
-                    Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
+                    Assert.AreEqual(crdtMessage.EntityId, incommingCrdtMessage.EntityId);
+                    Assert.AreEqual(crdtMessage.Timestamp, incommingCrdtMessage.Timestamp);
+                    Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.Data, (byte[])crdtMessage.Data));
                     messageReceived = true;
                 }
 
@@ -128,17 +128,17 @@ namespace Tests
                 CRDTProtocol sceneState1 = new CRDTProtocol();
                 CRDTProtocol sceneState2 = new CRDTProtocol();
 
-                CRDTMessage messageToScene1 = sceneState1.CreateLwwMessage(1, 34, new byte[] { 1, 0, 2, 45, 67 });
-                CRDTMessage messageToScene2 = sceneState2.CreateLwwMessage(45, 9, new byte[] { 42, 42, 42, 41 });
+                CrdtMessage messageToScene1 = sceneState1.CreateLwwMessage(1, 34, new byte[] { 1, 0, 2, 45, 67 });
+                CrdtMessage messageToScene2 = sceneState2.CreateLwwMessage(45, 9, new byte[] { 42, 42, 42, 41 });
 
                 sceneState1.ProcessMessage(messageToScene1);
                 sceneState2.ProcessMessage(messageToScene2);
 
-                context.crdt.scenesOutgoingCrdts.Add(scene1, new DualKeyValueSet<int, long, CRDTMessage> { });
-                context.crdt.scenesOutgoingCrdts.Add(scene2, new DualKeyValueSet<int, long, CRDTMessage> { });
+                context.crdt.scenesOutgoingCrdts.Add(scene1, new DualKeyValueSet<int, long, CrdtMessage> { });
+                context.crdt.scenesOutgoingCrdts.Add(scene2, new DualKeyValueSet<int, long, CrdtMessage> { });
 
-                context.crdt.scenesOutgoingCrdts[scene1].Add(messageToScene1.componentId, messageToScene1.entityId, messageToScene1);
-                context.crdt.scenesOutgoingCrdts[scene2].Add(messageToScene2.componentId, messageToScene2.entityId, messageToScene2);
+                context.crdt.scenesOutgoingCrdts[scene1].Add(messageToScene1.ComponentId, messageToScene1.EntityId, messageToScene1);
+                context.crdt.scenesOutgoingCrdts[scene2].Add(messageToScene2.ComponentId, messageToScene2.EntityId, messageToScene2);
 
                 // Simulate client requesting scene's crdt
                 try
@@ -150,11 +150,11 @@ namespace Tests
 
                     var deserializer = CRDTDeserializer.DeserializeBatch(response1.Payload.Memory);
                     deserializer.MoveNext();
-                    CRDTMessage message = (CRDTMessage)deserializer.Current;
+                    CrdtMessage message = (CrdtMessage)deserializer.Current;
 
-                    Assert.AreEqual(messageToScene1.entityId, message.entityId);
-                    Assert.AreEqual(messageToScene1.timestamp, message.timestamp);
-                    Assert.IsTrue(AreEqual((byte[])messageToScene1.data, (byte[])message.data));
+                    Assert.AreEqual(messageToScene1.EntityId, message.EntityId);
+                    Assert.AreEqual(messageToScene1.Timestamp, message.Timestamp);
+                    Assert.IsTrue(AreEqual((byte[])messageToScene1.Data, (byte[])message.Data));
                     Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene1));
 
                     // request for `scene2`
@@ -162,11 +162,11 @@ namespace Tests
 
                     deserializer = CRDTDeserializer.DeserializeBatch(response2.Payload.Memory);
                     deserializer.MoveNext();
-                    message = (CRDTMessage)deserializer.Current;
+                    message = (CrdtMessage)deserializer.Current;
 
-                    Assert.AreEqual(messageToScene2.entityId, message.entityId);
-                    Assert.AreEqual(messageToScene2.timestamp, message.timestamp);
-                    Assert.IsTrue(AreEqual((byte[])messageToScene2.data, (byte[])message.data));
+                    Assert.AreEqual(messageToScene2.EntityId, message.EntityId);
+                    Assert.AreEqual(messageToScene2.Timestamp, message.Timestamp);
+                    Assert.IsTrue(AreEqual((byte[])messageToScene2.Data, (byte[])message.Data));
                     Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene2));
                 }
                 catch (Exception e)
@@ -208,13 +208,14 @@ namespace Tests
                                return true;
                            });
 
-                CRDTMessage crdtMessage = new CRDTMessage()
-                {
-                    type = CrdtMessageType.PUT_COMPONENT,
-                    entityId = 7693,
-                    timestamp = 799,
-                    data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
-                };
+                CrdtMessage crdtMessage = new CrdtMessage
+                (
+                    type: CrdtMessageType.PUT_COMPONENT,
+                    entityId: 7693,
+                    componentId: 0,
+                    timestamp: 799,
+                    data: new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
+                );
 
                 context.crdt.MessagingControllersManager = messagingControllersManager;
                 context.crdt.WorldState = worldState;
@@ -229,11 +230,13 @@ namespace Tests
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                     });
 
-                    context.crdt.SceneController.Received(1).EnqueueSceneMessage(Arg.Is<QueuedSceneMessage_Scene>(q =>
-                        q.method == MessagingTypes.INIT_DONE
-                        && q.sceneNumber == sceneNumber
-                        && q.tag == "scene"
-                        && q.type == QueuedSceneMessage.Type.SCENE_MESSAGE));
+                    context.crdt.SceneController.Received(1)
+                           .EnqueueSceneMessage(Arg.Is<QueuedSceneMessage_Scene>(q =>
+                                q.method == MessagingTypes.INIT_DONE
+                                && q.sceneNumber == sceneNumber
+                                && q.tag == "scene"
+                                && q.type == QueuedSceneMessage.Type.SCENE_MESSAGE));
+
                     context.crdt.SceneController.ClearReceivedCalls();
                     isInitDone = true;
 
@@ -252,7 +255,7 @@ namespace Tests
             });
         }
 
-        static byte[] CreateCRDTMessage(CRDTMessage message)
+        static byte[] CreateCRDTMessage(CrdtMessage message)
         {
             using (MemoryStream msgStream = new MemoryStream())
             {

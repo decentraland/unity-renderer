@@ -4,21 +4,21 @@ namespace DCL.CRDT
 {
     public static class CRDTSerializer
     {
-        public static void Serialize(BinaryWriter binaryWriter, CRDTMessage message)
+        public static void Serialize(BinaryWriter binaryWriter, CrdtMessage message)
         {
-            int crdtMessageLength = CRDTMessage.GetMessageDataLength(message);
+            int crdtMessageLength = CrdtMessage.GetMessageDataLength(message);
 
             binaryWriter.WriteInt32(crdtMessageLength);
-            binaryWriter.WriteInt32((int)message.type);
-            binaryWriter.WriteInt32((int)message.entityId);
+            binaryWriter.WriteInt32((int)message.Type);
+            binaryWriter.WriteInt32((int)message.EntityId);
 
-            if (message.type == CrdtMessageType.PUT_COMPONENT ||
-                message.type == CrdtMessageType.APPEND_COMPONENT)
+            if (message.Type == CrdtMessageType.PUT_COMPONENT ||
+                message.Type == CrdtMessageType.APPEND_COMPONENT)
             {
-                binaryWriter.WriteInt32(message.componentId);
-                binaryWriter.WriteInt32(message.timestamp);
+                binaryWriter.WriteInt32(message.ComponentId);
+                binaryWriter.WriteInt32(message.Timestamp);
 
-                byte[] data = (byte[])message.data;
+                byte[] data = (byte[])message.Data;
                 int dataLength = data?.Length ?? 0;
 
                 binaryWriter.WriteInt32(dataLength);
@@ -28,9 +28,9 @@ namespace DCL.CRDT
                 }
             }
 
-            if (message.type == CrdtMessageType.DELETE_COMPONENT) {
-                binaryWriter.WriteInt32(message.componentId);
-                binaryWriter.WriteInt32(message.timestamp);
+            if (message.Type == CrdtMessageType.DELETE_COMPONENT) {
+                binaryWriter.WriteInt32(message.ComponentId);
+                binaryWriter.WriteInt32(message.Timestamp);
             }
         }
     }
