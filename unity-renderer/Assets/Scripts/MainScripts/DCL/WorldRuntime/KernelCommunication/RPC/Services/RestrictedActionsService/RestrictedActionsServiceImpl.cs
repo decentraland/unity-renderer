@@ -10,7 +10,7 @@ namespace RPC.Services
 {
     public class RestrictedActionsServiceImpl : IRestrictedActionsService<RPCContext>
     {
-        public const int MAX_ELAPSED_FRAMES_SINCE_INPUT = 3;
+        public const int MAX_ELAPSED_FRAMES_SINCE_INPUT = 30;
 
         private static readonly SuccessResponse SUCCESS_RESPONSE = new SuccessResponse() { Success = true };
         private static readonly SuccessResponse FAIL_RESPONSE = new SuccessResponse() { Success = false };
