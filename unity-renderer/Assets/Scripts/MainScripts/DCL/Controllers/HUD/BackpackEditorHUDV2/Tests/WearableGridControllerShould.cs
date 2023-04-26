@@ -486,13 +486,52 @@ namespace DCL.Backpack
             view.OnFilterWearables += Raise.Event<Action<string>>("all");
             yield return null;
 
-            view.Received(1).SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
-                n.ResultCount == 50
-                && n.Current == 0
-                && n.Path[0].Filter == "all"
-                && n.Path[0].Name == "All"));
+            view.Received(1)
+                .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
+                     n.ResultCount == 50
+                     && n.Current == 0
+                     && n.Path[0].Filter == "all"
+                     && n.Path[0].Name == "All"));
 
             wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, Arg.Any<CancellationToken>());
+        }
+
+        [UnityTest]
+        public IEnumerator LoadWearablesWithFilters()
+        {
+            const int WEARABLE_TOTAL_AMOUNT = 18;
+            const string CATEGORY = "shoes";
+            const string ON_CHAIN_COLLECTION = "urn:decentraland:on:chain";
+            const string BASE_OFF_CHAIN_COLLECTION = "urn:decentraland:off-chain:base-avatars:male";
+            const string THIRD_PARTY_COLLECTION = "urn:collections-thirdparty:woah";
+            const NftRarity RARITY = NftRarity.Epic;
+            const string NAME = "awesome";
+
+            IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
+
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
+
+            controller.LoadWearables(CATEGORY, RARITY,
+                new[] { ON_CHAIN_COLLECTION, BASE_OFF_CHAIN_COLLECTION, THIRD_PARTY_COLLECTION },
+                NAME,
+                (NftOrderByOperation.Name, false));
+
+            yield return null;
+
+            wearablesCatalogService.Received(1)
+                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        CATEGORY,
+                                        RARITY,
+                                        Arg.Is<IEnumerable<string>>(i =>
+                                            i.ElementAt(0) == ON_CHAIN_COLLECTION
+                                            && i.ElementAt(1) == BASE_OFF_CHAIN_COLLECTION
+                                            && i.ElementAt(2) == THIRD_PARTY_COLLECTION),
+                                        NAME,
+                                        Arg.Is<(NftOrderByOperation type, bool directionAscendent)>(orderBy =>
+                                            orderBy.type == NftOrderByOperation.Name && orderBy.directionAscendent == false));
         }
     }
 }
