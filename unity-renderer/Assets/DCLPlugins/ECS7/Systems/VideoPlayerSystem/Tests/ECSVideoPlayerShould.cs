@@ -9,6 +9,7 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Shaders;
 using ECSSystems.VideoPlayerSystem;
+using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -34,9 +35,11 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
 
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-            var videoPlayerSystem = new ECSVideoPlayerSystem(internalEcsComponents.videoPlayerComponent,
+            var videoPlayerSystem = new ECSVideoPlayerSystem(
+                internalEcsComponents.videoPlayerComponent,
                 internalEcsComponents.videoMaterialComponent,
-                (ECSComponent<PBVideoEvent>)componentsManager.GetOrCreateComponent(ComponentID.VIDEO_EVENT));
+                (ECSComponent<PBVideoEvent>)componentsManager.GetOrCreateComponent(ComponentID.VIDEO_EVENT),
+                Substitute.For<IECSComponentWriter>());
 
             systemsUpdate = () =>
             {

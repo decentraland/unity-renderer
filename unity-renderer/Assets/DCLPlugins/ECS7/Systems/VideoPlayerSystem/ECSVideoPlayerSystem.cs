@@ -1,3 +1,4 @@
+using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -8,20 +9,23 @@ namespace ECSSystems.VideoPlayerSystem
 {
     public class ECSVideoPlayerSystem
     {
-        public readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
-        public readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
-        public readonly ECSComponent<PBVideoEvent> videoEventComponent;
+        private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
+        private readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
+        private readonly ECSComponent<PBVideoEvent> videoEventComponent;
+        private readonly IECSComponentWriter componentWriter;
 
         private static readonly Vector2 VIDEO_TEXTURE_SCALE = new Vector2(1, -1);
 
         public ECSVideoPlayerSystem(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent,
             IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent,
-            ECSComponent<PBVideoEvent> videoEventComponent)
+            ECSComponent<PBVideoEvent> videoEventComponent,
+            IECSComponentWriter componentWriter)
         {
             this.videoPlayerComponent = videoPlayerComponent;
             this.videoMaterialComponent = videoMaterialComponent;
             this.videoEventComponent = videoEventComponent;
+            this.componentWriter = componentWriter;
         }
 
         public void Update()
@@ -33,22 +37,24 @@ namespace ECSSystems.VideoPlayerSystem
                 var playerComponentData = playerComponents[i].value;
                 var playerModel = playerComponentData.model;
 
-                var previousVideoState = playerModel.videoPlayer.GetState();
                 playerModel.videoPlayer.Update();
 
                 if (videoEventComponent.HasComponent(playerComponentData.scene, playerComponentData.entity))
                 {
-                    var currentVideoState = playerModel.videoPlayer.GetState();
+                    int previousVideoState = (int)videoEventComponent.Get(playerComponentData.scene, playerComponentData.entity).model.State;
+                    int currentVideoState = (int)playerModel.videoPlayer.GetState();
                     if (previousVideoState != currentVideoState)
                     {
-                        videoEventComponent.SetModel(playerComponentData.scene,
-                            playerComponentData.entity,
+                        componentWriter.PutComponent(
+                            playerComponentData.scene.sceneData.sceneNumber, playerComponentData.entity.entityId,
+                            ComponentID.VIDEO_EVENT,
                             new PBVideoEvent()
                             {
                                 State = (VideoState)currentVideoState,
                                 CurrentOffset = playerModel.videoPlayer.GetTime(),
                                 VideoLength = playerModel.videoPlayer.GetDuration()
-                            });
+                            }
+                        );
                     }
                 }
             }

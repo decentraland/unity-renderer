@@ -66,7 +66,11 @@ public class ECSSystemsController : IDisposable
             DataStore.i.HUDs.isSceneUIEnabled);
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
-        videoPlayerSystem = new ECSVideoPlayerSystem(context.internalEcsComponents.videoPlayerComponent, context.internalEcsComponents.videoMaterialComponent, context.videoEvents);
+        videoPlayerSystem = new ECSVideoPlayerSystem(
+            context.internalEcsComponents.videoPlayerComponent,
+            context.internalEcsComponents.videoMaterialComponent,
+            context.videoEvents,
+            context.componentWriter);
 
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
             DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
