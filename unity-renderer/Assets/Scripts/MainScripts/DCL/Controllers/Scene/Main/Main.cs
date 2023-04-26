@@ -132,7 +132,6 @@ namespace DCL
                     var collection = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                       .GetAddressable<ShaderVariantCollection>("shadervariants-selected");
                     collection.WarmUp();
-                    Debug.Log("VV:: Prewarmed");
                 }
             }
         }
