@@ -12,6 +12,7 @@ namespace DCL.Backpack
         public string rarity;
         public string hiddenBy;
         public bool isEquipped;
+        public string imageUri;
         public List<string> hideList;
         public List<string> removeList;
     }

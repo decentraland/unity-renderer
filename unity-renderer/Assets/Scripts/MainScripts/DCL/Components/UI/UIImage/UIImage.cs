@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -30,6 +31,8 @@ namespace DCL.Components
         public override string referencesContainerPrefabName => "UIImage";
 
         DCLTexture dclTexture = null;
+        private readonly DCLTexture.Fetcher dclTextureFetcher = new DCLTexture.Fetcher();
+        private bool isDisposed;
 
         public UIImage()
         {
@@ -42,8 +45,6 @@ namespace DCL.Components
 
         public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
-        Coroutine fetchRoutine;
-
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             // Fetch texture
@@ -51,24 +52,22 @@ namespace DCL.Components
             {
                 if (dclTexture == null || (dclTexture != null && dclTexture.id != model.source))
                 {
-                    if (fetchRoutine != null)
-                    {
-                        CoroutineStarter.Stop(fetchRoutine);
-                        fetchRoutine = null;
-                    }
+                    dclTextureFetcher.Fetch(scene, model.source,
+                                          fetchedDCLTexture =>
+                                          {
+                                              if (isDisposed)
+                                                  return false;
 
-                    IEnumerator fetchIEnum = DCLTexture.FetchTextureComponent(scene, model.source, (downloadedTexture) =>
-                    {
-                        referencesContainer.image.texture = downloadedTexture.texture;
-                        fetchRoutine = null;
-                        dclTexture?.DetachFrom(this);
-                        dclTexture = downloadedTexture;
-                        dclTexture.AttachTo(this);
+                                              referencesContainer.image.texture = fetchedDCLTexture.texture;
+                                              dclTexture?.DetachFrom(this);
+                                              dclTexture = fetchedDCLTexture;
+                                              dclTexture.AttachTo(this);
 
-                        ConfigureImage();
-                    });
+                                              ConfigureImage();
+                                              return true;
+                                          })
+                                     .Forget();
 
-                    fetchRoutine = CoroutineStarter.Start(fetchIEnum);
                     return null;
                 }
             }
@@ -127,11 +126,9 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            if (fetchRoutine != null)
-            {
-                CoroutineStarter.Stop(fetchRoutine);
-                fetchRoutine = null;
-            }
+            isDisposed = true;
+
+            dclTextureFetcher.Dispose();
 
             dclTexture?.DetachFrom(this);
 
