@@ -12,9 +12,9 @@ namespace Decentraland.Renderer.RendererServices {
 public interface IRestrictedActionsService<Context>
 {
 
-  UniTask<SuccessResponse> OpenExternalUrl(OpenExternalUrlRequest request, Context context, CancellationToken ct);
+  UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request, Context context, CancellationToken ct);
 
-  UniTask<SuccessResponse> OpenNftDialog(OpenNftDialogRequest request, Context context, CancellationToken ct);
+  UniTask<OpenModalResponse> OpenNftDialog(OpenNftDialogRequest request, Context context, CancellationToken ct);
 
 }
 

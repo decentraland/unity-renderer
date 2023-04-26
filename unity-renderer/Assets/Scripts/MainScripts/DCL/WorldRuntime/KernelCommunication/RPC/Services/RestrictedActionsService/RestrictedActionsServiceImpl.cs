@@ -12,15 +12,15 @@ namespace RPC.Services
     {
         public const int MAX_ELAPSED_FRAMES_SINCE_INPUT = 30;
 
-        private static readonly SuccessResponse SUCCESS_RESPONSE = new SuccessResponse() { Success = true };
-        private static readonly SuccessResponse FAIL_RESPONSE = new SuccessResponse() { Success = false };
+        private static readonly OpenModalResponse SUCCESS_RESPONSE = new OpenModalResponse() { Success = true };
+        private static readonly OpenModalResponse FAIL_RESPONSE = new OpenModalResponse() { Success = false };
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
             RestrictedActionsServiceCodeGen.RegisterService(port, new RestrictedActionsServiceImpl());
         }
 
-        public async UniTask<SuccessResponse> OpenExternalUrl(OpenExternalUrlRequest request, RPCContext context, CancellationToken ct)
+        public async UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request, RPCContext context, CancellationToken ct)
         {
             await UniTask.SwitchToMainThread(ct);
             RestrictedActionsContext restrictedActions = context.restrictedActions;
@@ -48,7 +48,7 @@ namespace RPC.Services
             return success ? SUCCESS_RESPONSE : FAIL_RESPONSE;
         }
 
-        public async UniTask<SuccessResponse> OpenNftDialog(OpenNftDialogRequest request, RPCContext context, CancellationToken ct)
+        public async UniTask<OpenModalResponse> OpenNftDialog(OpenNftDialogRequest request, RPCContext context, CancellationToken ct)
         {
             await UniTask.SwitchToMainThread(ct);
             RestrictedActionsContext restrictedActions = context.restrictedActions;
@@ -80,6 +80,7 @@ namespace RPC.Services
             return success ? SUCCESS_RESPONSE : FAIL_RESPONSE;
         }
 
+        // TODO: use scene tick instead of renderer frame count
         private static int GetCurrentFrameCount()
         {
             return Time.frameCount;

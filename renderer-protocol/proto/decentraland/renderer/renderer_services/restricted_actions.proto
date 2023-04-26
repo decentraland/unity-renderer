@@ -10,14 +10,14 @@ message OpenNftDialogRequest {
   string urn = 1;
 }
 
-message SuccessResponse {
+message OpenModalResponse {
   bool success = 1;
 }
 
 service RestrictedActionsService {
   // OpenExternalUrl prompts the user to open an external link
-  rpc OpenExternalUrl(OpenExternalUrlRequest) returns (SuccessResponse) {}
+  rpc OpenExternalUrl(OpenExternalUrlRequest) returns (OpenModalResponse) {}
 
   // OpenNftDialog opens an NFT dialog.
-  rpc OpenNftDialog(OpenNftDialogRequest) returns (SuccessResponse) {}
+  rpc OpenNftDialog(OpenNftDialogRequest) returns (OpenModalResponse) {}
 }

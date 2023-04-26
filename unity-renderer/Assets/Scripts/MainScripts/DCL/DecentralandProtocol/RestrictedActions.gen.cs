@@ -28,21 +28,21 @@ namespace Decentraland.Renderer.RendererServices {
             "dHJpY3RlZF9hY3Rpb25zLnByb3RvEidkZWNlbnRyYWxhbmQucmVuZGVyZXIu",
             "cmVuZGVyZXJfc2VydmljZXMiOwoWT3BlbkV4dGVybmFsVXJsUmVxdWVzdBIL",
             "CgN1cmwYASABKAkSFAoMc2NlbmVfbnVtYmVyGAIgASgFIiMKFE9wZW5OZnRE",
-            "aWFsb2dSZXF1ZXN0EgsKA3VybhgBIAEoCSIiCg9TdWNjZXNzUmVzcG9uc2US",
-            "DwoHc3VjY2VzcxgBIAEoCDK4AgoYUmVzdHJpY3RlZEFjdGlvbnNTZXJ2aWNl",
-            "Eo4BCg9PcGVuRXh0ZXJuYWxVcmwSPy5kZWNlbnRyYWxhbmQucmVuZGVyZXIu",
-            "cmVuZGVyZXJfc2VydmljZXMuT3BlbkV4dGVybmFsVXJsUmVxdWVzdBo4LmRl",
-            "Y2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5TdWNjZXNz",
-            "UmVzcG9uc2UiABKKAQoNT3Blbk5mdERpYWxvZxI9LmRlY2VudHJhbGFuZC5y",
-            "ZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5PcGVuTmZ0RGlhbG9nUmVxdWVz",
-            "dBo4LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5T",
-            "dWNjZXNzUmVzcG9uc2UiAGIGcHJvdG8z"));
+            "aWFsb2dSZXF1ZXN0EgsKA3VybhgBIAEoCSIkChFPcGVuTW9kYWxSZXNwb25z",
+            "ZRIPCgdzdWNjZXNzGAEgASgIMrwCChhSZXN0cmljdGVkQWN0aW9uc1NlcnZp",
+            "Y2USkAEKD09wZW5FeHRlcm5hbFVybBI/LmRlY2VudHJhbGFuZC5yZW5kZXJl",
+            "ci5yZW5kZXJlcl9zZXJ2aWNlcy5PcGVuRXh0ZXJuYWxVcmxSZXF1ZXN0Gjou",
+            "ZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2VzLk9wZW5N",
+            "b2RhbFJlc3BvbnNlIgASjAEKDU9wZW5OZnREaWFsb2cSPS5kZWNlbnRyYWxh",
+            "bmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMuT3Blbk5mdERpYWxvZ1Jl",
+            "cXVlc3QaOi5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2Vydmlj",
+            "ZXMuT3Blbk1vZGFsUmVzcG9uc2UiAGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenExternalUrlRequest), global::Decentraland.Renderer.RendererServices.OpenExternalUrlRequest.Parser, new[]{ "Url", "SceneNumber" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenNftDialogRequest), global::Decentraland.Renderer.RendererServices.OpenNftDialogRequest.Parser, new[]{ "Urn" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.SuccessResponse), global::Decentraland.Renderer.RendererServices.SuccessResponse.Parser, new[]{ "Success" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenModalResponse), global::Decentraland.Renderer.RendererServices.OpenModalResponse.Parser, new[]{ "Success" }, null, null, null, null)
           }));
     }
     #endregion
@@ -464,16 +464,16 @@ namespace Decentraland.Renderer.RendererServices {
 
   }
 
-  public sealed partial class SuccessResponse : pb::IMessage<SuccessResponse>
+  public sealed partial class OpenModalResponse : pb::IMessage<OpenModalResponse>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<SuccessResponse> _parser = new pb::MessageParser<SuccessResponse>(() => new SuccessResponse());
+    private static readonly pb::MessageParser<OpenModalResponse> _parser = new pb::MessageParser<OpenModalResponse>(() => new OpenModalResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<SuccessResponse> Parser { get { return _parser; } }
+    public static pb::MessageParser<OpenModalResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -489,7 +489,7 @@ namespace Decentraland.Renderer.RendererServices {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SuccessResponse() {
+    public OpenModalResponse() {
       OnConstruction();
     }
 
@@ -497,15 +497,15 @@ namespace Decentraland.Renderer.RendererServices {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SuccessResponse(SuccessResponse other) : this() {
+    public OpenModalResponse(OpenModalResponse other) : this() {
       success_ = other.success_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SuccessResponse Clone() {
-      return new SuccessResponse(this);
+    public OpenModalResponse Clone() {
+      return new OpenModalResponse(this);
     }
 
     /// <summary>Field number for the "success" field.</summary>
@@ -523,12 +523,12 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as SuccessResponse);
+      return Equals(other as OpenModalResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(SuccessResponse other) {
+    public bool Equals(OpenModalResponse other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -601,7 +601,7 @@ namespace Decentraland.Renderer.RendererServices {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(SuccessResponse other) {
+    public void MergeFrom(OpenModalResponse other) {
       if (other == null) {
         return;
       }
