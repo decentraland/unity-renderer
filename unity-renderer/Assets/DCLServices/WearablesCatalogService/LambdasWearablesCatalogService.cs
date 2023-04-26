@@ -81,6 +81,7 @@ namespace DCLServices.WearablesCatalogService
 
             AddCollectionIdsAndCollectionCategoryParams(queryParams, collectionIds?.ToList());
 
+            // TODO: remove the hardcoded url once the lambda is deployed to the catalysts and be part of the protocol
             (WearableWithDefinitionResponse response, bool success) = await lambdasService.Get<WearableWithDefinitionResponse>(
                 $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{userId}/wearables",
                 cancellationToken: cancellationToken,
