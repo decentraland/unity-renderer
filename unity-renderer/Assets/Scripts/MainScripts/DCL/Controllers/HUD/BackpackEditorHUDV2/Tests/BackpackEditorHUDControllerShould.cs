@@ -187,15 +187,25 @@ namespace DCL.Backpack
         }
 
         [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void ToggleSlotCorrectly(bool isSelected)
+        [TestCase("eyes")]
+        [TestCase("hair")]
+        [TestCase("bodyshape")]
+        [TestCase("non_existing_category")]
+        public void ToggleSlotCorrectly(string slotCategory)
         {
             // Act
-            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<Action<string, bool, bool>>("testCategory", isSelected, true);
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<Action<string, bool, bool>>(slotCategory, true, true);
 
             // Assert
-            view.Received(1).SetColorPickerActive(isSelected);
+            view.Received(1).SetColorPickerActive(true);
+
+            if (slotCategory == "non_existing_category")
+            {
+                view.DidNotReceive().SetColorPickerValue(Arg.Any<Color>());
+                return;
+            }
+
+            view.Received(1).SetColorPickerValue(Arg.Any<Color>());
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

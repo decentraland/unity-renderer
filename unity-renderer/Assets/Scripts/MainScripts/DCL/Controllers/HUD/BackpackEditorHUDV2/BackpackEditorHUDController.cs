@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.XR;
 
 namespace DCL.Backpack
 {
@@ -18,8 +17,8 @@ namespace DCL.Backpack
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
-        private bool avatarIsDirty;
         private string currentSlotSelected;
+        private bool avatarIsDirty;
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
@@ -309,18 +308,26 @@ namespace DCL.Backpack
 
         private void OnWearableColorChanged(Color newColor)
         {
+            var colorChanged = false;
+
             switch (currentSlotSelected)
             {
                 case "eyes":
                     model.eyesColor = newColor;
+                    colorChanged = true;
                     break;
                 case "hair" or "eyebrows" or "facial_hair":
                     model.hairColor = newColor;
+                    colorChanged = true;
                     break;
                 case "bodyshape":
                     model.skinColor = newColor;
+                    colorChanged = true;
                     break;
             }
+
+            if (!colorChanged)
+                return;
 
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
