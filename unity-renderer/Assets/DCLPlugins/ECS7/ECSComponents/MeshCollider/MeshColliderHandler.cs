@@ -97,7 +97,7 @@ namespace DCL.ECSComponents
                     collider = meshCollider;
 
                     primitiveMeshPromise = new AssetPromise_PrimitiveMesh(
-                        AssetPromise_PrimitiveMesh_Model.CreateSphere(1, SPHERE_COLLIDER_LONGITUDE, SPHERE_COLLIDER_LATITUDE));
+                        AssetPromise_PrimitiveMesh_Model.CreateSphere(0.5f, SPHERE_COLLIDER_LONGITUDE, SPHERE_COLLIDER_LATITUDE));
 
                     primitiveMeshPromise.OnSuccessEvent += asset => meshCollider.sharedMesh = asset.mesh;
                     primitiveMeshPromise.OnFailEvent += (mesh, exception) => Debug.LogException(exception);
