@@ -1,3 +1,4 @@
+using DCLServices.WearablesCatalogService;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEditor;

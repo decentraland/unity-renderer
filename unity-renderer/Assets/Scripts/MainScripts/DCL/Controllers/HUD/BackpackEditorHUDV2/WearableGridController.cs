@@ -23,6 +23,12 @@ namespace DCL.Backpack
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
+        private string categoryFilter;
+        private NftRarity rarityFilter;
+        private IEnumerable<string> collectionIdsFilter;
+        private IEnumerable<string> wearableIdsFilter;
+        private string nameFilter;
+        private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
 
         public event Action<string> OnWearableEquipped;
         public event Action<string> OnWearableUnequipped;
@@ -56,8 +62,16 @@ namespace DCL.Backpack
             requestWearablesCancellationToken.SafeCancelAndDispose();
         }
 
-        public void LoadWearables()
+        public void LoadWearables(string categoryFilter = null, NftRarity rarityFilter = NftRarity.None,
+            IEnumerable<string> collectionIdsFilter = null, IEnumerable<string> wearableIdsFilter = null,
+            string nameFilter = null, (NftOrderByOperation type, bool directionAscendent)? wearableSorting = null)
         {
+            this.categoryFilter = categoryFilter;
+            this.rarityFilter = rarityFilter;
+            this.collectionIdsFilter = collectionIdsFilter;
+            this.wearableIdsFilter = wearableIdsFilter;
+            this.nameFilter = nameFilter;
+            this.wearableSorting = wearableSorting;
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
             ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
         }
@@ -118,11 +132,12 @@ namespace DCL.Backpack
             {
                 currentWearables.Clear();
 
-                // TODO: instead of requesting owned wearables, we should request all the wearables with the current filters & sorting
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
-                    PAGE_SIZE, true, cancellationToken);
+                    PAGE_SIZE, cancellationToken,
+                    categoryFilter, rarityFilter, collectionIdsFilter, wearableIdsFilter,
+                    nameFilter, wearableSorting);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
                                             .ToDictionary(item => item.WearableId, model => model);

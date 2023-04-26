@@ -53,6 +53,83 @@ namespace DCLServices.WearablesCatalogService
             Clear();
         }
 
+        private record AllWearablesResponse
+        {
+            public int status;
+            public WearableWithDefinitionResponse body;
+        }
+
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
+            string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
+            NftRarity rarity = NftRarity.None, IEnumerable<string> collectionIds = null, IEnumerable<string> ids = null,
+            string name = null, (NftOrderByOperation type, bool directionAscendent)? orderBy = null)
+        {
+            var queryParams = new List<(string name, string value)>
+            {
+                ("pageNumber", pageNumber.ToString()),
+                ("pageSize", pageSize.ToString()),
+            };
+
+            if (rarity != NftRarity.None)
+                queryParams.Add(("rarity", rarity.ToString().ToLower()));
+
+            List<string> collectionCategories = new List<string>();
+
+            if (collectionIds != null)
+            {
+                bool IsThirdParty(string wearableId) =>
+                    wearableId.Contains("collections-thirdparty");
+
+                bool IsBaseWearable(string wearableId) =>
+                    wearableId.StartsWith("urn:decentraland:off-chain:base-avatars:");
+
+                if (collectionIds.Any(IsThirdParty))
+                    collectionCategories.Add("third-party");
+
+                if (collectionIds.Any(IsBaseWearable))
+                    collectionCategories.Add("base-wearable");
+
+                if (collectionIds.Any(s => !IsBaseWearable(s) && !IsThirdParty(s)))
+                    collectionCategories.Add("on-chain");
+
+                queryParams.Add(("collectionIds", string.Join(",", collectionIds)));
+            }
+            else
+            {
+                collectionCategories.Add("third-party");
+                collectionCategories.Add("base-wearable");
+                collectionCategories.Add("on-chain");
+            }
+
+            queryParams.Add(("collectionCategory", string.Join(",", collectionCategories)));
+
+            if (!string.IsNullOrEmpty(category))
+                queryParams.Add(("categories", category));
+
+            if (!string.IsNullOrEmpty(name))
+                queryParams.Add(("name", name));
+
+            if (orderBy != null)
+            {
+                queryParams.Add(("orderBy", orderBy.Value.type.ToString().ToLower()));
+                queryParams.Add(("direction", orderBy.Value.directionAscendent ? "ASC" : "DESC"));
+            }
+
+            (AllWearablesResponse response, bool success) = await lambdasService.Get<AllWearablesResponse>(
+                "/explorer-service/backpack/:address/wearables",
+                $"/explorer-service/backpack/{userId}/wearables", cancellationToken: cancellationToken,
+                urlEncodedParams: queryParams.ToArray());
+
+            if (!success)
+                throw new Exception($"The request of wearables for '{userId}' failed!");
+
+            var wearables = response.body.elements.Select(wd => wd.definition).ToList();
+            MapLambdasDataIntoWearableItem(wearables);
+            AddWearablesToCatalog(wearables);
+
+            return (wearables, response.body.TotalAmount);
+        }
+
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             var createNewPointer = false;

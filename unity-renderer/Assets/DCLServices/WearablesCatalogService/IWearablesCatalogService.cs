@@ -10,6 +10,12 @@ namespace DCLServices.WearablesCatalogService
     {
         BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
+        UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
+            string userId, int pageNumber, int pageSize,
+            CancellationToken cancellationToken,
+            string category = null, NftRarity rarity = NftRarity.None, IEnumerable<string> collectionIds = null,
+            IEnumerable<string> ids = null, string name = null,
+            (NftOrderByOperation type, bool directionAscendent)? orderBy = null);
         UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct);
         UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct);
         UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct);
