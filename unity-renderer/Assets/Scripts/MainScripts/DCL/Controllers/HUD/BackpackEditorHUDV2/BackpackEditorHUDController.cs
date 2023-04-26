@@ -64,7 +64,7 @@ namespace DCL.Backpack
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
 
             ColorPresetsSO colorPresets = Resources.Load<ColorPresetsSO>("BackpackColorPickerPresets");
-            view.SetColorPickerActive(false);
+            view.SetColorPickerVisibility(false);
             view.SetColorPresets(colorPresets.colors);
             view.OnColorChanged += OnWearableColorChanged;
 
@@ -290,7 +290,7 @@ namespace DCL.Backpack
         private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             currentSlotSelected = isSelected ? slotCategory : null;
-            view.SetColorPickerActive(isSelected && supportColor);
+            view.SetColorPickerVisibility(isSelected && supportColor);
 
             switch (slotCategory)
             {

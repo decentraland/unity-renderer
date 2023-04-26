@@ -91,6 +91,7 @@ namespace DCL.Backpack
             view.Received(1).SetAsFullScreenMenuMode(Arg.Any<Transform>());
             view.Received(1).Hide();
             view.Received(1).ResetPreviewEmote();
+            view.Received(1).SetColorPickerVisibility(false);
             view.Received(1).SetColorPresets(Arg.Any<List<Color>>());
         }
 
@@ -197,7 +198,7 @@ namespace DCL.Backpack
             avatarSlotsView.OnToggleAvatarSlot += Raise.Event<Action<string, bool, bool>>(slotCategory, true, true);
 
             // Assert
-            view.Received(1).SetColorPickerActive(true);
+            view.Received(1).SetColorPickerVisibility(true);
 
             if (slotCategory == "non_existing_category")
             {

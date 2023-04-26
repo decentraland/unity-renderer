@@ -85,6 +85,7 @@ namespace DCL.Backpack
         {
             gameObject.SetActive(false);
             backpackPreviewPanel.SetPreviewEnabled(false);
+            SetColorPickerVisibility(false);
         }
 
         public override void RefreshControl() { }
@@ -146,7 +147,7 @@ namespace DCL.Backpack
         public void SetColorPresets(List<Color> colors) =>
             colorPickerComponentView.SetColorList(colors);
 
-        public void SetColorPickerActive(bool isActive) =>
+        public void SetColorPickerVisibility(bool isActive) =>
             colorPickerComponentView.gameObject.SetActive(isActive);
 
         public void SetColorPickerValue(Color color)

@@ -21,7 +21,7 @@ namespace DCL.Backpack
         void UpdateAvatarPreview(AvatarModel avatarModel);
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
         void SetColorPresets(List<Color> colors);
-        void SetColorPickerActive(bool isActive);
+        void SetColorPickerVisibility(bool isActive);
         void SetColorPickerValue(Color color);
     }
 }
