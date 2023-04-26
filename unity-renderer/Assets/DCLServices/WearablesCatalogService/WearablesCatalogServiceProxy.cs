@@ -56,13 +56,13 @@ namespace DCLServices.WearablesCatalogService
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
-            NftRarity rarity = NftRarity.None, IEnumerable<string> collectionIds = null, IEnumerable<string> ids = null, string name = null,
+            NftRarity rarity = NftRarity.None, IEnumerable<string> collectionIds = null, string name = null,
             (NftOrderByOperation type, bool directionAscendent)? orderBy = null)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
 
             return await lambdasWearablesCatalogService.RequestOwnedWearablesAsync(userId, pageNumber, pageSize,
-                cancellationToken, category, rarity, collectionIds, ids, name, orderBy);
+                cancellationToken, category, rarity, collectionIds, name, orderBy);
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)

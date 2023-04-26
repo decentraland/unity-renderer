@@ -136,7 +136,7 @@ namespace DCL.Backpack
                     ownUserId,
                     page,
                     PAGE_SIZE, cancellationToken,
-                    categoryFilter, rarityFilter, collectionIdsFilter, wearableIdsFilter,
+                    categoryFilter, rarityFilter, collectionIdsFilter,
                     nameFilter, wearableSorting);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
