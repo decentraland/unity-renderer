@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -39,7 +40,7 @@ namespace DCL.Backpack
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             userProfileBridge.GetOwn().Returns(ownUserProfile);
 
-            wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
             dataStore = new DataStore_BackpackV2();
 
@@ -62,7 +63,7 @@ namespace DCL.Backpack
 
             IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
@@ -83,7 +84,7 @@ namespace DCL.Backpack
 
             IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
@@ -91,7 +92,7 @@ namespace DCL.Backpack
             yield return null;
 
             wearablesCatalogService.Received(1)
-                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>());
         }
 
@@ -105,7 +106,7 @@ namespace DCL.Backpack
         {
             IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, wearableTotalAmount)));
 
@@ -206,7 +207,7 @@ namespace DCL.Backpack
                 }
             };
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
@@ -262,7 +263,7 @@ namespace DCL.Backpack
                 },
             };
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
@@ -296,7 +297,7 @@ namespace DCL.Backpack
                 },
             };
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
@@ -329,7 +330,7 @@ namespace DCL.Backpack
                 },
             };
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
@@ -357,7 +358,7 @@ namespace DCL.Backpack
                 },
             };
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
@@ -390,7 +391,7 @@ namespace DCL.Backpack
                 },
             };
 
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
@@ -406,7 +407,7 @@ namespace DCL.Backpack
         [Test]
         public void ChangePageWhenViewRequestsIt()
         {
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 3, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 3, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
@@ -414,7 +415,7 @@ namespace DCL.Backpack
 
             wearablesCatalogService.Received(1)
                                    .RequestOwnedWearablesAsync(OWN_USER_ID,
-                                        3, 15, true, Arg.Any<CancellationToken>());
+                                        3, 15, Arg.Any<CancellationToken>());
 
             view.Received(1).SetWearablePages(3, 4);
         }
@@ -478,7 +479,7 @@ namespace DCL.Backpack
         [UnityTest]
         public IEnumerator FilterAllWearablesFromBreadcrumb()
         {
-            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true,
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
@@ -491,7 +492,7 @@ namespace DCL.Backpack
                 && n.Path[0].Filter == "all"
                 && n.Path[0].Name == "All"));
 
-            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true, Arg.Any<CancellationToken>());
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, Arg.Any<CancellationToken>());
         }
     }
 }

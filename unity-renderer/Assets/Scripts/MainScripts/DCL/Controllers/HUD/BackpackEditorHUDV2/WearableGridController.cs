@@ -24,7 +24,7 @@ namespace DCL.Backpack
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
         private string categoryFilter;
-        private NftRarity rarityFilter;
+        private NftRarity rarityFilter = NftRarity.None;
         private IEnumerable<string> collectionIdsFilter;
         private string nameFilter;
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
