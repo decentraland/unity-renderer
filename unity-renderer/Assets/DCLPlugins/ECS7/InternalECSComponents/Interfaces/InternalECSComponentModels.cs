@@ -1,6 +1,6 @@
 using DCL.Components.Video.Plugin;
-using System.Collections.Generic;
 using DCL.ECSComponents;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
@@ -162,5 +162,11 @@ namespace DCL.ECS7.InternalComponents
     public class InternalRaycast : InternalComponent
     {
         public PBRaycast raycastModel;
+    }
+
+    public class InternalGltfContainerLoadingState : InternalComponent
+    {
+        public LoadingState LoadingState;
+        public bool GltfContainerRemoved;
     }
 }
