@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Rendering Assets_ContentUpdateGroupSchema
   m_EditorClassIdentifier: 
   m_Group: {fileID: 11400000, guid: 2b88cf3f2ae77704b885972abdeabe43, type: 2}
-  m_StaticContent: 0
+  m_StaticContent: 1
