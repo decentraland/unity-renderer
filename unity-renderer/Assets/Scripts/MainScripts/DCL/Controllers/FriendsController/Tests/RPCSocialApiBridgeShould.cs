@@ -7,6 +7,7 @@ using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using rpc_csharp.transport;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -93,12 +94,21 @@ namespace DCL.Social.Friends
                              }
                          }));
 
-            UserProfile.GetOwnUserProfile().UpdateData(new UserProfileModel() { userId = OWN_ID });
-
             GameObject go = new GameObject();
             var component = go.AddComponent<MatrixInitializationBridge>();
             var userProfileBridge = Substitute.For<IUserProfileBridge>();
-            rpcSocialApiBridge = new RPCSocialApiBridge(component, userProfileBridge);
+
+            var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
+            ownProfile.UpdateData(new UserProfileModel { userId = OWN_ID });
+            userProfileBridge.GetOwn().Returns(ownProfile);
+
+            ITransport TransportProvider()
+            {
+                (var client, var server) = MemoryTransport.Create();
+                return client;
+            }
+
+            rpcSocialApiBridge = new RPCSocialApiBridge(component, userProfileBridge, TransportProvider);
         }
 
         // [UnityTest]
