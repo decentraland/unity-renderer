@@ -183,28 +183,27 @@ function* selectRealm() {
 
 function* onboardingTutorialRealm() {
   const profile = yield select(getCurrentUserProfile)
-  if (profile) {
-    const needsTutorial = RESET_TUTORIAL || !profile.tutorialStep
-    const onboardingRealmName = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
-    const isNewTutorialDisabled =
-      onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
-    if (needsTutorial && !isNewTutorialDisabled) {
-      try {
-        const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
-        if (realm) {
-          trackEvent('onboarding_started', { onboardingRealm: realm })
-          //We are using the previous tutorial flow. 256 meant complete in the previous tutorial.
-          //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
-          //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
-          //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
-          yield put(setOnboardingState({ isInOnboarding: true, onboardingRealm: realm }))
-          return realm
-        } else {
-          logger.warn('No realm was provided for the onboarding experience.')
-        }
-      } catch (err) {
-        console.error(err)
+  const tutorialStep = profile ? !profile.tutorialStep : true
+  const needsTutorial = RESET_TUTORIAL || tutorialStep
+  const onboardingRealmName = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
+  const isNewTutorialDisabled =
+    onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
+  if (needsTutorial && !isNewTutorialDisabled) {
+    try {
+      const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
+      if (realm) {
+        trackEvent('onboarding_started', { onboardingRealm: realm })
+        //We are using the previous tutorial flow. 256 meant complete in the previous tutorial.
+        //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
+        //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
+        //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
+        yield put(setOnboardingState({ isInOnboarding: true, onboardingRealm: realm }))
+        return realm
+      } else {
+        logger.warn('No realm was provided for the onboarding experience.')
       }
+    } catch (err) {
+      console.error(err)
     }
   }
 }
