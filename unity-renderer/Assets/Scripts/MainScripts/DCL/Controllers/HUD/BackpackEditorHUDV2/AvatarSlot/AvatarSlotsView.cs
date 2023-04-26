@@ -39,14 +39,22 @@ namespace DCL.Backpack
             IAvatarSlotComponentView avatarSlot = Instantiate(avatarSlotPrefab, avatarSlotSections[sectionName]).GetComponent<IAvatarSlotComponentView>();
             avatarSlot.SetCategory(slotCategory);
             avatarSlots.Add(slotCategory, avatarSlot);
-            avatarSlot.SetNftImage("");
             avatarSlot.OnSelectAvatarSlot += (slotCat, isToggled)=>OnToggleAvatarSlot?.Invoke(slotCat, isToggled);
         }
 
-        public void DisablePreviousSlot(string category)
+        public void SetSlotNftImage(string category, string imageUrl)
         {
-            avatarSlots[category].OnPointerClickOnDifferentSlot();
+            avatarSlots[category].SetNftImage(imageUrl);
         }
+
+        public void SetSlotRarity(string category, string rarity) =>
+            avatarSlots[category].SetRarity(rarity);
+
+        public void DisablePreviousSlot(string category) =>
+            avatarSlots[category].OnPointerClickOnDifferentSlot();
+
+        public void ResetCategorySlot(string category) =>
+            avatarSlots[category].ResetSlot();
 
         public void SetSlotsAsHidden(string[] slotsToHide, string hiddenBy)
         {
