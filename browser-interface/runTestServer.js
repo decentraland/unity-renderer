@@ -73,6 +73,7 @@ const server = http.createServer(app)
   server.listen(port, function () {
     console.info('==>     Listening on port %s. Open up http://localhost:%s/test to run tests', port, port)
     console.info('                              Open up http://localhost:%s/ to test the client.', port)
+    console.info('                              Open up http://localhost:%s/?ENABLE_WEB3 to test the client with your wallet.', port)
 
     if (!singleRun) {
       titere

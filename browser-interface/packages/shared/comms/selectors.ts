@@ -6,6 +6,8 @@ import { ExplorerIdentity } from 'shared/session/types'
 import { RootState } from 'shared/store/rootTypes'
 import { RoomConnection } from './interface'
 import { RootCommsState } from './types'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import { Avatar } from '@dcl/schemas'
 
 export const getCommsIsland = (store: RootCommsState): string | undefined => store.comms.island
 export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined => state.comms.context
@@ -15,11 +17,13 @@ export function reconnectionState(state: RootState): {
   realmAdapter: IRealmAdapter | undefined
   hasFatalError: string | null
   identity: ExplorerIdentity | undefined
+  profile: Avatar | null
 } {
   return {
     commsConnection: getCommsRoom(state),
     realmAdapter: getRealmAdapter(state),
     hasFatalError: getFatalError(state),
-    identity: getCurrentIdentity(state)
+    identity: getCurrentIdentity(state),
+    profile: getCurrentUserProfile(state)
   }
 }

@@ -1,11 +1,10 @@
 import defaultLogger from 'lib/logger'
 import type { RemoteProfile } from 'shared/profiles/types'
-import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 
 export async function requestProfile(userId: string, version?: number): Promise<RemoteProfile | null> {
-  const backendConfiguration = await ensureRealmAdapter()
+  const lambdasServer = 'https://peer.decentraland.org/lambdas'
   try {
-    let url = `${backendConfiguration.services.lambdasServer}/profiles/${userId}`
+    let url = `${lambdasServer}/profiles/${userId}`
     if (version) {
       url = url + `?version=${version}`
     } else if (!userId.startsWith('default')) {

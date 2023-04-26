@@ -117,8 +117,8 @@ function* authenticate(action: AuthenticateAction) {
   // 1. authenticate our user
   yield put(userAuthenticated(identity, net, isGuest))
   // 2. then ask for our profile when we selected a catalyst
-  yield call(waitForRealm)
   const avatar = yield call(initialRemoteProfileLoad)
+  yield call(waitForRealm)
 
   // 3. continue with signin/signup (only not in preview)
   const isSignUp = avatar.version <= 0 && !PREVIEW

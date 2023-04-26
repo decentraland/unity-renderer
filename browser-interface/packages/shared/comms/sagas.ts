@@ -416,9 +416,9 @@ function* handleCommsReconnectionInterval() {
     // TODO: Why are we not doing `if (reason === undefined) continue`?
     // The timeout makes no sense, except to avoid a logical error
     // in the saga flow that leads to some race condition.
-    const { commsConnection, realmAdapter, hasFatalError, identity } = yield select(reconnectionState)
+    const { commsConnection, realmAdapter, hasFatalError, identity, profile } = yield select(reconnectionState)
 
-    const shouldReconnect = !commsConnection && !hasFatalError && identity?.address && !realmAdapter
+    const shouldReconnect = !commsConnection && !hasFatalError && identity?.address && !realmAdapter && profile
 
     if (shouldReconnect) {
       // reconnect
