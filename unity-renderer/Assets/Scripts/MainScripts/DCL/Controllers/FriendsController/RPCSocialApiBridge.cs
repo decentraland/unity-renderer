@@ -1,20 +1,13 @@
 using Cysharp.Threading.Tasks;
-using DCL;
 using DCl.Social.Friends;
 using Decentraland.Renderer.RendererServices;
 using Decentraland.Social.Friendships;
-using Google.Protobuf.WellKnownTypes;
-using JetBrains.Annotations;
 using MainScripts.DCL.Controllers.FriendsController;
 using RPC;
-using System;
-using System.Threading;
 using rpc_csharp;
 using rpc_csharp.transport;
-using RPC.Transports;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
+using System;
+using System.Threading;
 using Payload = Decentraland.Social.Friendships.Payload;
 
 namespace DCL.Social.Friends
@@ -23,9 +16,16 @@ namespace DCL.Social.Friends
     {
         private const int REQUEST_TIMEOUT = 30;
 
-        private string accessToken;
-
+        private readonly MatrixInitializationBridge matrixInitializationBridge;
         private readonly IUserProfileBridge userProfileWebInterfaceBridge;
+        private readonly Func<ITransport> clientTransportProvider;
+        private readonly DataStore dataStore;
+
+        private string accessToken;
+        private ClientFriendshipsService socialClient;
+        private UniTaskCompletionSource<FriendshipInitializationMessage> initializationInformationTask;
+
+        private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled("use-social-client");
 
         public event Action<UserStatus> OnFriendAdded;
         public event Action<string> OnFriendRemoved;
@@ -35,29 +35,51 @@ namespace DCL.Social.Friends
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
-        private ClientFriendshipsService socialClient;
-
-        private Func<ITransport> clientTransportProvider;
-
-        public RPCSocialApiBridge(MatrixInitializationBridge matrixInitializationBridge, IUserProfileBridge userProfileWebInterfaceBridge, Func<ITransport> transportProvider)
+        public RPCSocialApiBridge(MatrixInitializationBridge matrixInitializationBridge,
+            IUserProfileBridge userProfileWebInterfaceBridge,
+            Func<ITransport> transportProvider,
+            DataStore dataStore)
         {
-            matrixInitializationBridge.OnReceiveMatrixAccessToken += (token) => { this.accessToken = token; };
+            this.matrixInitializationBridge = matrixInitializationBridge;
             this.userProfileWebInterfaceBridge = userProfileWebInterfaceBridge;
             clientTransportProvider = transportProvider;
+            this.dataStore = dataStore;
         }
 
-        public async UniTaskVoid InitializeClient(CancellationToken cancellationToken = default)
+        public void Dispose()
         {
-            var transport = clientTransportProvider();
-            var client = new RpcClient(transport);
-            var socialPort = await client.CreatePort("social-service-port");
-            var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
-            socialClient = new ClientFriendshipsService(module);
+        }
 
+        public void Initialize()
+        {
+            matrixInitializationBridge.OnReceiveMatrixAccessToken += token => accessToken = token;
+        }
+
+        public async UniTask InitializeAsync(CancellationToken cancellationToken)
+        {
+            if (!useSocialApiBridge) return;
+            await InitializeClient(cancellationToken);
             InitializeSubscriptions(cancellationToken).Forget();
         }
 
-        async UniTaskVoid InitializeSubscriptions(CancellationToken cancellationToken = default)
+        private async UniTask InitializeClient(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var transport = clientTransportProvider();
+            var client = new RpcClient(transport);
+            var socialPort = await client.CreatePort("social-service-port");
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            socialClient = new ClientFriendshipsService(module);
+        }
+
+        private async UniTaskVoid InitializeSubscriptions(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -65,26 +87,45 @@ namespace DCL.Social.Friends
             // await UniTask.WhenAny(this.ListenToFriendEvents(cancellationToken));
         }
 
-        public async UniTask<FriendshipInitializationMessage> InitializeFriendshipsInformation(CancellationToken cancellationToken = default)
+        public async UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            if (initializationInformationTask == null)
+            {
+                // await UniTask.WaitUntil(() =>
+                //         socialClient != null,
+                //     PlayerLoopTiming.Update,
+                //     cancellationToken);
 
-            await UniTask.WaitUntil(() =>
-                    socialClient != null,
-                PlayerLoopTiming.Update,
-                cancellationToken);
+                initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
+                await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
 
+                initializationInformationTask.TrySetResult(new FriendshipInitializationMessage
+                {
+                    // totalReceivedRequests = requestEvents.Incoming.Items.Count,
+                    totalReceivedRequests = 0,
+                });
+
+                await UniTask.SwitchToMainThread(cancellationToken);
+            }
+
+            return await initializationInformationTask.Task.AttachExternalCancellation(cancellationToken);
+        }
+
+        private async UniTask InitializeMatrixTokenThenRetrieveAllFriends(CancellationToken cancellationToken)
+        {
             cancellationToken.ThrowIfCancellationRequested();
 
             await WaitForAccessTokenAsync(cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var friendsStream = socialClient.GetFriends(new Payload() { SynapseToken = accessToken });
+            var friendsStream = socialClient.GetFriends(new Payload
+                { SynapseToken = accessToken });
 
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
-                foreach (var friend in friends.Users_) { OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address }); }
+                foreach (var friend in friends.Users_)
+                    OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address });
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -102,17 +143,9 @@ namespace DCL.Social.Friends
             //     OnOutgoingFriendRequestAdded?.Invoke(new FriendRequest(
             //         GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt), friendRequest.CreatedAt, ownUserProfile.userId, friendRequest.User.Address, friendRequest.Message));
             // }
-
-            await UniTask.SwitchToMainThread(cancellationToken);
-
-            return new FriendshipInitializationMessage()
-            {
-                // totalReceivedRequests = requestEvents.Incoming.Items.Count,
-                totalReceivedRequests = 0
-            };
         }
 
-        async UniTask ListenToFriendEvents(CancellationToken cancellationToken = default)
+        private async UniTask ListenToFriendEvents(CancellationToken cancellationToken = default)
         {
             var ownUserProfile = userProfileWebInterfaceBridge.GetOwn();
 

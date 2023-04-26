@@ -23,7 +23,6 @@ using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using rpc_csharp.transport;
 using RPC.Transports;
-using System;
 using System.Collections.Generic;
 using WorldsFeaturesAnalytics;
 
@@ -81,20 +80,26 @@ namespace DCL
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
             result.Register<IChatController>(() => new ChatController(WebInterfaceChatBridge.GetOrCreate(), DataStore.i));
 
+            result.Register<IRPCSocialApiBridge>(() =>
+            {
+                ITransport TransportProvider() =>
+                    new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
+
+                return new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
+                    userProfileWebInterfaceBridge,
+                    TransportProvider,
+                    DataStore.i);
+            });
+
             result.Register<IFriendsController>(() =>
             {
                 // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
                 WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
 
-                ITransport TransportProvider()
-                {
-                    return new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
-                }
-
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                         webInterfaceFriendsApiBridge,
                         RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
-                        DataStore.i), new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(), userProfileWebInterfaceBridge, TransportProvider),
+                        DataStore.i), result.Get<IRPCSocialApiBridge>(),
                     DataStore.i);
             });
 

@@ -5,6 +5,7 @@ using DCl.Social.Friends;
 using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
 using NUnit.Framework;
+using rpc_csharp.transport;
 using System.Collections;
 using System.Threading;
 using UnityEngine;
@@ -24,7 +25,11 @@ namespace DCL.Social.Friends
             apiBridge = Substitute.For<IFriendsApiBridge>();
             GameObject go = new GameObject();
             var component = go.AddComponent<MatrixInitializationBridge>();
-            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component,new UserProfileWebInterfaceBridge()), new DataStore());
+            var dataStore = new DataStore();
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
+
+            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component,new UserProfileWebInterfaceBridge(),
+                () => Substitute.For<ITransport>(), dataStore), dataStore);
             controller.Initialize();
         }
 

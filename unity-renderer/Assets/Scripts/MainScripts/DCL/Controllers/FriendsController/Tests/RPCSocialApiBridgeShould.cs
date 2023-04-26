@@ -1,17 +1,11 @@
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
-using DCl.Social.Friends;
 using Decentraland.Social.Friendships;
-using Google.Protobuf.WellKnownTypes;
 using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using NUnit.Framework;
 using rpc_csharp.transport;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -25,8 +19,8 @@ namespace DCL.Social.Friends
 
         private const string OWN_ID = "My custom id";
 
-        [SetUp]
-        public void SetUp()
+        [UnitySetUp]
+        public IEnumerator SetUp()
         {
             var usersList = new List<Users>()
             {
@@ -108,7 +102,13 @@ namespace DCL.Social.Friends
                 return client;
             }
 
-            rpcSocialApiBridge = new RPCSocialApiBridge(component, userProfileBridge, TransportProvider);
+            var dataStore = new DataStore();
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+
+            rpcSocialApiBridge = new RPCSocialApiBridge(component, userProfileBridge, TransportProvider,
+                dataStore);
+            rpcSocialApiBridge.Initialize();
+            yield return rpcSocialApiBridge.InitializeAsync(default(CancellationToken)).ToCoroutine();
         }
 
         // [UnityTest]

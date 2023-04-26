@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Tasks;
-using MainScripts.DCL.Controllers.FriendsController;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +10,13 @@ namespace DCL.Social.Friends
 {
     public class FriendsController : IFriendsController
     {
+        private const string USE_SOCIAL_CLIENT_FEATURE_FLAG = "use-social-client";
+
         private readonly IFriendsApiBridge apiBridge;
         private readonly IRPCSocialApiBridge socialApiBridge;
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
         private readonly Dictionary<string, UserStatus> friends = new ();
-
-        private const string USE_SOCIAL_CLIENT_FEATURE_FLAG = "use-social-client";
+        private readonly DataStore dataStore;
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
@@ -37,28 +37,14 @@ namespace DCL.Social.Friends
         public event Action<FriendRequest> OnFriendRequestReceived;
         public event Action<FriendRequest> OnSentFriendRequestApproved;
 
-        private CancellationTokenSource controllerCancellationTokenSource = new CancellationTokenSource();
-
-        private DataStore dataStore;
+        private CancellationTokenSource controllerCancellationTokenSource = new ();
 
         private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
 
         public FriendsController(IFriendsApiBridge apiBridge, IRPCSocialApiBridge rpcSocialApiBridge, DataStore dataStore)
         {
             this.apiBridge = apiBridge;
-            apiBridge.OnFriendNotFound += FriendNotFound;
-            apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
-            apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
-            apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
-            apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
-            apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
-
             this.socialApiBridge = rpcSocialApiBridge;
-
-            socialApiBridge.OnFriendAdded += AddFriend;
-            socialApiBridge.OnFriendRemoved += InternalRemoveFriend;
-            socialApiBridge.OnFriendRequestAdded += AddFriendRequest;
-            socialApiBridge.OnFriendRequestRemoved += RemoveFriendRequest;
 
             this.dataStore = dataStore;
         }
@@ -69,20 +55,54 @@ namespace DCL.Social.Friends
 
             if (useSocialApiBridge)
             {
-                socialApiBridge.InitializeClient(controllerCancellationTokenSource.Token).Forget();
-                socialApiBridge.InitializeFriendshipsInformation(controllerCancellationTokenSource.Token).ContinueWith(this.InitializeFriendships).Forget();
+                socialApiBridge.OnFriendAdded += AddFriend;
+                socialApiBridge.OnFriendRemoved += InternalRemoveFriend;
+                socialApiBridge.OnFriendRequestAdded += AddFriendRequest;
+                socialApiBridge.OnFriendRequestRemoved += RemoveFriendRequest;
             }
             else
             {
                 apiBridge.OnInitialized += InitializeFriendships;
-                apiBridge.OnFriendRequestsAdded += AddFriendRequests; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                apiBridge.OnFriendRequestsAdded += AddFriendRequests;
                 apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
+                apiBridge.OnFriendNotFound += FriendNotFound;
+                apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
+                apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
+                apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
+                apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
+                apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
+            }
+        }
+
+        public async UniTask InitializeAsync(CancellationToken cancellationToken)
+        {
+            if (useSocialApiBridge)
+            {
+                FriendshipInitializationMessage info = await socialApiBridge.GetInitializationInformationAsync(cancellationToken);
+                InitializeFriendships(info);
             }
         }
 
         public void Dispose()
         {
             controllerCancellationTokenSource.SafeCancelAndDispose();
+
+            socialApiBridge.OnFriendAdded -= AddFriend;
+            socialApiBridge.OnFriendRemoved -= InternalRemoveFriend;
+            socialApiBridge.OnFriendRequestAdded -= AddFriendRequest;
+            socialApiBridge.OnFriendRequestRemoved -= RemoveFriendRequest;
+
+            apiBridge.OnInitialized -= InitializeFriendships;
+            // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+            apiBridge.OnFriendRequestsAdded -= AddFriendRequests;
+            apiBridge.OnFriendRequestReceived -= ReceiveFriendRequest;
+            apiBridge.OnFriendNotFound -= FriendNotFound;
+            apiBridge.OnFriendWithDirectMessagesAdded -= AddFriendsWithDirectMessages;
+            apiBridge.OnUserPresenceUpdated -= UpdateUserPresence;
+            apiBridge.OnFriendshipStatusUpdated -= HandleUpdateFriendshipStatus;
+            apiBridge.OnTotalFriendRequestCountUpdated -= UpdateTotalFriendRequests;
+            apiBridge.OnTotalFriendCountUpdated -= UpdateTotalFriends;
         }
 
         private void RemoveFriendRequest(string userId)

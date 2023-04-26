@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCl.Social.Friends;
 using Decentraland.Renderer.RendererServices;
 using Decentraland.Social.Friendships;
@@ -8,7 +9,7 @@ using System.Threading;
 
 namespace DCL.Social.Friends
 {
-    public interface IRPCSocialApiBridge
+    public interface IRPCSocialApiBridge : IService
     {
         event Action<UserStatus> OnFriendAdded;
         event Action<string> OnFriendRemoved;
@@ -18,9 +19,7 @@ namespace DCL.Social.Friends
         event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         event Action<FriendRequestPayload> OnFriendRequestReceived;
 
-        UniTaskVoid InitializeClient(CancellationToken cancellationToken = default);
-
-        UniTask<FriendshipInitializationMessage> InitializeFriendshipsInformation(CancellationToken cancellationToken = default);
+        UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default);
 
         UniTask RejectFriendship(string friendRequestId, CancellationToken cancellationToken = default);
 
