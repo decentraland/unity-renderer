@@ -42,6 +42,11 @@ namespace DCL.Backpack
             infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model);
         }
 
+        private void OnEnable()
+        {
+            ClearWearableSelection();
+        }
+
         public void Dispose()
         {
             if (this && gameObject)
@@ -103,18 +108,21 @@ namespace DCL.Backpack
             }
         }
 
+
         public void ClearWearableSelection()
         {
             foreach (WearableGridItemComponentView view in wearablePooledObjects.Keys)
                 view.Unselect();
 
             selectedWearableItem = null;
+            infoCardComponentView.SetVisible(false);
         }
 
         public void SelectWearable(string wearableId)
         {
             selectedWearableItem = wearablesById[wearableId];
             selectedWearableItem.Select();
+            infoCardComponentView.SetVisible(true);
         }
 
         public void FillInfoCard(InfoCardComponentModel model) =>

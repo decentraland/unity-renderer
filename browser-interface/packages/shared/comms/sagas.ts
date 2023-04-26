@@ -28,7 +28,7 @@ import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
-import {getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
+import { getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import { store } from 'shared/store/isolatedStore'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
@@ -53,6 +53,7 @@ import { getConnectedPeerCount, processAvatarVisibility } from './peers'
 import { getCommsRoom, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
+import { getGlobalAudioStream } from './adapters/voice/loopback'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -301,7 +302,8 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         new LivekitAdapter({
           logger: commsLogger,
           url: theUrl.origin + theUrl.pathname,
-          token
+          token,
+          globalAudioStream: await getGlobalAudioStream()
         })
       )
     }
@@ -452,7 +454,7 @@ function* handleAnnounceProfile() {
     if (!profile) continue
 
     // user is in the avatar creation screen
-    if(!(yield select(isLoginCompleted))) continue
+    if (!(yield select(isLoginCompleted))) continue
 
     if (reason.sendProfileToRenderer && profile.userId !== reason.sendProfileToRenderer.payload.userId) {
       // skip this process when sendProfileToRenderer is called for a different avatar
