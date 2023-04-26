@@ -91,11 +91,6 @@ namespace DCL.Social.Friends
         {
             if (initializationInformationTask == null)
             {
-                // await UniTask.WaitUntil(() =>
-                //         socialClient != null,
-                //     PlayerLoopTiming.Update,
-                //     cancellationToken);
-
                 initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
                 await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
 
