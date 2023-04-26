@@ -348,3 +348,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
   iconReference: {fileID: 3827320269873107515}
+  rectTransform: {fileID: 6940492419704233743}
