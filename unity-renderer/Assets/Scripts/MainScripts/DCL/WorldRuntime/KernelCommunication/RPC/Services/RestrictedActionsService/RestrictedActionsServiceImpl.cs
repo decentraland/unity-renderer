@@ -30,13 +30,19 @@ namespace RPC.Services
 
             try
             {
+                ct.ThrowIfCancellationRequested();
+
                 if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
                 {
                     success = restrictedActions.OpenExternalUrlPrompt?.Invoke(request.Url, request.SceneNumber) ?? false;
                 }
             }
-            catch (Exception _)
+            catch (OperationCanceledException _)
             { // ignored
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
 
             return success ? SUCCESS_RESPONSE : FAIL_RESPONSE;
@@ -52,6 +58,8 @@ namespace RPC.Services
 
             try
             {
+                ct.ThrowIfCancellationRequested();
+
                 if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
                 {
                     if (TryParseUrn(request.Urn, out string contractAddress, out string tokenId))
@@ -61,8 +69,12 @@ namespace RPC.Services
                     }
                 }
             }
-            catch (Exception _)
+            catch (OperationCanceledException _)
             { // ignored
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
 
             return success ? SUCCESS_RESPONSE : FAIL_RESPONSE;
