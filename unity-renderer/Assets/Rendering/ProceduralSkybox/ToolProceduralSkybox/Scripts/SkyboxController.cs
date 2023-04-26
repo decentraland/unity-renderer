@@ -36,7 +36,6 @@ namespace DCL.Skybox
         private bool overrideByEditor = false;
         private SkyboxElements skyboxElements;
         private Camera cameraMainRef = null;
-        private float normalizedDayTime = 0.0f;
 
         // Reflection probe//
         private ReflectionProbe skyboxProbe;
@@ -144,6 +143,10 @@ namespace DCL.Skybox
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
         {
             skyboxElements.AssignCameraInstance(currentTransform);
+            if (cameraMainRef == null)
+            {
+                cameraMainRef = Camera.main;
+            }
         }
 
         private void FixedTime_OnChange(float current, float _ = 0)
@@ -235,6 +238,10 @@ namespace DCL.Skybox
                 return;
             }
 
+            if (cameraMainRef == null)
+            {
+                cameraMainRef = Camera.main;
+            }
             // make probe a child of main camera
             if (cameraMainRef != null)
             {
