@@ -26,7 +26,6 @@ namespace DCL.Backpack
         private string categoryFilter;
         private NftRarity rarityFilter;
         private IEnumerable<string> collectionIdsFilter;
-        private IEnumerable<string> wearableIdsFilter;
         private string nameFilter;
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
 
@@ -63,13 +62,12 @@ namespace DCL.Backpack
         }
 
         public void LoadWearables(string categoryFilter = null, NftRarity rarityFilter = NftRarity.None,
-            IEnumerable<string> collectionIdsFilter = null, IEnumerable<string> wearableIdsFilter = null,
-            string nameFilter = null, (NftOrderByOperation type, bool directionAscendent)? wearableSorting = null)
+            IEnumerable<string> collectionIdsFilter = null, string nameFilter = null,
+            (NftOrderByOperation type, bool directionAscendent)? wearableSorting = null)
         {
             this.categoryFilter = categoryFilter;
             this.rarityFilter = rarityFilter;
             this.collectionIdsFilter = collectionIdsFilter;
-            this.wearableIdsFilter = wearableIdsFilter;
             this.nameFilter = nameFilter;
             this.wearableSorting = wearableSorting;
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
