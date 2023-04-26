@@ -86,7 +86,7 @@ public class CrdtExecutorsManager : IDisposable
         return cachedCrdtExecutor;
     }
 
-    private void CrdtMessageReceived(int sceneNumber, CRDTMessage crdtMessage)
+    private void CrdtMessageReceived(int sceneNumber, CrdtMessage crdtMessage)
     {
         ICRDTExecutor executor = GetCachedExecutor(sceneNumber);
 
@@ -94,9 +94,11 @@ public class CrdtExecutorsManager : IDisposable
         {
             executor.Execute(crdtMessage);
         }
+#if UNITY_EDITOR
         else
         {
             Debug.LogError($"CrdtExecutor not found for sceneNumber {sceneNumber}");
         }
+#endif
     }
 }

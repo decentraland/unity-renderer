@@ -179,6 +179,7 @@ export class ArchipelagoConnection implements IRealmAdapter {
     if (this.disposed) {
       return
     }
+    this.ws.close()
     this.logger.log('Archipelago adapter closed')
     this.disposed = true
     this.events.emit('DISCONNECTION', { error })

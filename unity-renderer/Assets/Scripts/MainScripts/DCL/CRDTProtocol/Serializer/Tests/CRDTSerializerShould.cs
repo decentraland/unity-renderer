@@ -33,14 +33,14 @@ namespace Tests
 
         public byte[] SerializeCorrectlyPutComponent(int entityId, int componentId, int timestamp, byte[] data)
         {
-            var message = new CRDTMessage()
-            {
-                type = CrdtMessageType.PUT_COMPONENT,
-                entityId = entityId,
-                componentId = componentId,
-                timestamp = timestamp,
-                data = data
-            };
+            var message = new CrdtMessage
+            (
+                type: CrdtMessageType.PUT_COMPONENT,
+                entityId: entityId,
+                componentId: componentId,
+                timestamp: timestamp,
+                data: data
+            );
 
             var memoryStream = new MemoryStream();
             var binaryWriter = new BinaryWriter(memoryStream);
@@ -49,12 +49,12 @@ namespace Tests
 
             CrdtMessageType crdtMessageType = CrdtMessageType.PUT_COMPONENT;
             int memoryPosition = 8; // skip the CrdtMessageHeader
-            CRDTMessage result = CRDTDeserializer.DeserializePutComponent(bytes, ref memoryPosition);
-            object expextedData = message.data ?? new byte[0]; // NULL data for a PUT operation will be converted to byte[0]
+            CrdtMessage? result = CRDTDeserializer.DeserializePutComponent(bytes, ref memoryPosition);
+            object expextedData = message.Data ?? new byte[0]; // NULL data for a PUT operation will be converted to byte[0]
 
-            Assert.AreEqual(message.entityId, result.entityId);
-            Assert.AreEqual(message.timestamp, result.timestamp);
-            Assert.IsTrue(AreEqual((byte[])expextedData, (byte[])result.data));
+            Assert.AreEqual(message.EntityId, result.Value.EntityId);
+            Assert.AreEqual(message.Timestamp, result.Value.Timestamp);
+            Assert.IsTrue(AreEqual((byte[])expextedData, (byte[])result.Value.Data));
 
             return bytes;
         }

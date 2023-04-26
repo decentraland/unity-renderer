@@ -7,11 +7,11 @@ namespace DCL.Backpack
 {
     public class WearableGridComponentView : MonoBehaviour, IWearableGridView
     {
-        [SerializeField] private NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
-        [SerializeField] private GridContainerComponentView wearablesGridContainer;
-        [SerializeField] private WearableGridItemComponentView wearableGridItemPrefab;
-        [SerializeField] private PageSelectorComponentView wearablePageSelector;
-        [SerializeField] private InfoCardComponentView infoCardComponentView;
+        [SerializeField] internal NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
+        [SerializeField] internal GridContainerComponentView wearablesGridContainer;
+        [SerializeField] internal WearableGridItemComponentView wearableGridItemPrefab;
+        [SerializeField] internal PageSelectorComponentView wearablePageSelector;
+        [SerializeField] internal InfoCardComponentView infoCardComponentView;
 
         private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
         private readonly Dictionary<string, WearableGridItemComponentView> wearablesById = new ();
@@ -40,6 +40,11 @@ namespace DCL.Backpack
 
             infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model);
             infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model);
+        }
+
+        private void OnEnable()
+        {
+            ClearWearableSelection();
         }
 
         public void Dispose()
@@ -103,18 +108,21 @@ namespace DCL.Backpack
             }
         }
 
+
         public void ClearWearableSelection()
         {
             foreach (WearableGridItemComponentView view in wearablePooledObjects.Keys)
                 view.Unselect();
 
             selectedWearableItem = null;
+            infoCardComponentView.SetVisible(false);
         }
 
         public void SelectWearable(string wearableId)
         {
             selectedWearableItem = wearablesById[wearableId];
             selectedWearableItem.Select();
+            infoCardComponentView.SetVisible(true);
         }
 
         public void FillInfoCard(InfoCardComponentModel model) =>
