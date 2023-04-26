@@ -73,7 +73,7 @@ namespace DCLServices.WearablesCatalogService
                 WearableItem resultantWearable = await service.RequestWearableAsync(VALID_WEARABLE_ID, default(CancellationToken));
 
                 lambdasService.DidNotReceiveWithAnyArgs()
-                              .Get<WearableWithoutDefinitionResponse>(default, default);
+                              .Get<WearableWithoutDefinitionResponse>(endPointTemplate: default, endPoint: default);
 
                 Assert.AreEqual(VALID_WEARABLE_ID, resultantWearable.id);
                 Assert.AreEqual("description", resultantWearable.description);

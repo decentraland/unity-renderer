@@ -53,12 +53,6 @@ namespace DCLServices.WearablesCatalogService
             Clear();
         }
 
-        private record AllWearablesResponse
-        {
-            public int status;
-            public WearableWithDefinitionResponse body;
-        }
-
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
             string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
             NftRarity rarity = NftRarity.None, IEnumerable<string> collectionIds = null, IEnumerable<string> ids = null,
@@ -115,19 +109,19 @@ namespace DCLServices.WearablesCatalogService
                 queryParams.Add(("direction", orderBy.Value.directionAscendent ? "ASC" : "DESC"));
             }
 
-            (AllWearablesResponse response, bool success) = await lambdasService.Get<AllWearablesResponse>(
-                "/explorer-service/backpack/:address/wearables",
-                $"/explorer-service/backpack/{userId}/wearables", cancellationToken: cancellationToken,
+            (WearableWithDefinitionResponse response, bool success) = await lambdasService.Get<WearableWithDefinitionResponse>(
+                $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{userId}/wearables",
+                cancellationToken: cancellationToken,
                 urlEncodedParams: queryParams.ToArray());
 
             if (!success)
                 throw new Exception($"The request of wearables for '{userId}' failed!");
 
-            var wearables = response.body.elements.Select(wd => wd.definition).ToList();
+            var wearables = response.elements.Select(wd => wd.definition).ToList();
             MapLambdasDataIntoWearableItem(wearables);
             AddWearablesToCatalog(wearables);
 
-            return (wearables, response.body.TotalAmount);
+            return (wearables, response.TotalAmount);
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
@@ -452,6 +446,13 @@ namespace DCLServices.WearablesCatalogService
             if (string.IsNullOrEmpty(item.id))
             {
                 Debug.LogError("Wearable is invalid: id is null");
+                invalidItemsIndices.Add(index);
+                return true;
+            }
+
+            if (item.data.representations == null)
+            {
+                Debug.LogError($"Wearable ${item.id} is invalid: data.representation is null");
                 invalidItemsIndices.Add(index);
                 return true;
             }

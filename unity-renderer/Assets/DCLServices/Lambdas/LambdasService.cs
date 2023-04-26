@@ -49,6 +49,18 @@ namespace DCLServices.Lambdas
             return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
         }
 
+        public UniTask<(TResponse response, bool success)> Get<TResponse>(string url,
+            int timeout = ILambdasService.DEFAULT_TIMEOUT,
+            int attemptsNumber = ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
+            CancellationToken cancellationToken = default,
+            params (string paramName, string paramValue)[] urlEncodedParams)
+        {
+            var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, url, finishTransactionOnWebRequestFinish: false);
+
+            return SendRequestAsync<TResponse>(wr, cancellationToken, url, transaction, urlEncodedParams);
+        }
+
         private async UniTask<(TResponse response, bool success)> SendRequestAsync<TResponse>(
             IWebRequestAsyncOperation webRequestAsyncOperation,
             CancellationToken cancellationToken,
