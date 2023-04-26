@@ -162,7 +162,7 @@ namespace DCL.Backpack
                 }
 
                 model.wearables.Add(wearable.id, wearable);
-                avatarSlotsHUDController.Equip(wearable.data.category, wearable.rarity, wearable.id, wearable.ComposeThumbnailUrl());
+                avatarSlotsHUDController.Equip(wearable);
             }
         }
 
@@ -263,7 +263,7 @@ namespace DCL.Backpack
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
 
-            avatarSlotsHUDController.Equip(wearable.data.category, wearable.rarity, wearableId, wearable.ComposeThumbnailUrl());
+            avatarSlotsHUDController.Equip(wearable);
             wearableGridController.Equip(wearableId);
 
             avatarIsDirty = true;
