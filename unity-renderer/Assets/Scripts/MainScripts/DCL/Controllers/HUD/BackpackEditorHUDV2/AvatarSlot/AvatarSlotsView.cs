@@ -18,7 +18,7 @@ namespace DCL.Backpack
         private readonly Dictionary<string, IAvatarSlotComponentView> avatarSlots = new ();
 
         public event Action<string, bool> OnToggleAvatarSlot;
-        public event Action<string, string> OnUnequipFromSlot;
+        public event Action<string> OnUnequipFromSlot;
 
         public void CreateAvatarSlotSection(string sectionName, bool addSeparator)
         {
@@ -41,7 +41,7 @@ namespace DCL.Backpack
             avatarSlot.SetCategory(slotCategory);
             avatarSlots.Add(slotCategory, avatarSlot);
             avatarSlot.OnSelectAvatarSlot += (slotCat, isToggled)=>OnToggleAvatarSlot?.Invoke(slotCat, isToggled);
-            avatarSlot.OnUnEquip += (category, wearableId) => OnUnequipFromSlot?.Invoke(category, wearableId);
+            avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
         }
 
         public void SetSlotNftImage(string category, string imageUrl) =>

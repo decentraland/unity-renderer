@@ -32,7 +32,7 @@ namespace DCL.Backpack
         [SerializeField] internal Button unequipButton;
 
         public event Action<string, bool> OnSelectAvatarSlot;
-        public event Action<string, string> OnUnEquip;
+        public event Action<string> OnUnEquip;
         private bool isSelected = false;
 
         public override void Awake()
@@ -44,7 +44,7 @@ namespace DCL.Backpack
             unequipButton.onClick.RemoveAllListeners();
             unequipButton.onClick.AddListener(()=>
             {
-                OnUnEquip?.Invoke(model.category, model.wearableId);
+                OnUnEquip?.Invoke(model.wearableId);
                 unequipButton.gameObject.SetActive(false);
             });
             ResetSlot();

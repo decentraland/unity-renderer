@@ -8,7 +8,7 @@ namespace DCL.Backpack
     public interface IAvatarSlotsView
     {
         event Action<string, bool> OnToggleAvatarSlot;
-        event Action<string, string> OnUnequipFromSlot;
+        event Action<string> OnUnequipFromSlot;
 
         void CreateAvatarSlotSection(string sectionName, bool addSeparator);
         void RebuildLayout();

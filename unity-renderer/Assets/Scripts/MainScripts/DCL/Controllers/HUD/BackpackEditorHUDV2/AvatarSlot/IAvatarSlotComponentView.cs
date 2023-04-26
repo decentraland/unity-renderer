@@ -5,7 +5,7 @@ namespace DCL.Backpack
     public interface IAvatarSlotComponentView
     {
         event Action<string, bool> OnSelectAvatarSlot;
-        event Action<string, string> OnUnEquip;
+        event Action<string> OnUnEquip;
 
         void SetIsHidden(bool isHidden, string hiddenBy);
         void SetCategory(string category);
