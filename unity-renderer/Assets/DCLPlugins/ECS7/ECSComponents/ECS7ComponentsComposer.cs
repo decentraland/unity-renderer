@@ -1,10 +1,10 @@
-using System;
 using DCL.ECS7;
 using DCL.ECSComponents.UIDropdown;
 using DCL.ECSComponents.UIInput;
 using DCL.ECSComponents.UIText;
 using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents;
+using System;
 
 namespace DCL.ECSComponents
 {
@@ -30,6 +30,7 @@ namespace DCL.ECSComponents
         private readonly VisibilityComponentRegister visibilityComponentRegister;
         private readonly PointerEventsRegister pointerEvents;
         private readonly VideoPlayerRegister videoPlayerRegister;
+        private readonly GltfContainerLoadingStateRegister gltfContainerLoadingStateRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -64,6 +65,7 @@ namespace DCL.ECSComponents
             meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter, internalComponents);
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
             videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentsWriter, internalComponents);
+            gltfContainerLoadingStateRegister = new GltfContainerLoadingStateRegister(ComponentID.GLTF_CONTAINER_LOADING_STATE, componentsWriter);
 
             // Multi-purposed components
             pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter, internalComponents.PointerEventsComponent);
@@ -102,6 +104,7 @@ namespace DCL.ECSComponents
             meshColliderRegister.Dispose();
             visibilityComponentRegister.Dispose();
             videoPlayerRegister.Dispose();
+            gltfContainerLoadingStateRegister.Dispose();
 
             // UI components
             uiTransformRegister.Dispose();
