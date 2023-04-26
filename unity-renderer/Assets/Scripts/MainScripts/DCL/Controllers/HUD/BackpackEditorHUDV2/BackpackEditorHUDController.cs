@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace DCL.Backpack
 {
@@ -18,6 +19,7 @@ namespace DCL.Backpack
         private readonly WearableGridController wearableGridController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
         private bool avatarIsDirty;
+        private string currentSlotSelected;
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
@@ -62,6 +64,11 @@ namespace DCL.Backpack
 
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
 
+            ColorPresetsSO colorPresets = Resources.Load<ColorPresetsSO>("BackpackColorPickerPresets");
+            view.SetColorPickerActive(false);
+            view.SetColorPresets(colorPresets.colors);
+            view.OnColorChanged += OnWearableColorChanged;
+
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
 
@@ -81,6 +88,7 @@ namespace DCL.Backpack
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
 
+            view.OnColorChanged -= OnWearableColorChanged;
             view.Dispose();
         }
 
@@ -148,9 +156,9 @@ namespace DCL.Backpack
             previewEquippedWearables.Set(userProfile.avatar.wearables);
 
             EquipBodyShape(bodyShape);
-            EquipSkinColor(userProfile.avatar.skinColor);
-            EquipHairColor(userProfile.avatar.hairColor);
-            EquipEyesColor(userProfile.avatar.eyeColor);
+            model.skinColor = userProfile.avatar.skinColor;
+            model.hairColor = userProfile.avatar.hairColor;
+            model.eyesColor = userProfile.avatar.eyeColor;
 
             model.wearables.Clear();
 
@@ -202,15 +210,6 @@ namespace DCL.Backpack
             model.bodyShape = bodyShape;
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
         }
-
-        private void EquipSkinColor(Color color) =>
-            model.skinColor = color;
-
-        private void EquipHairColor(Color color) =>
-            model.hairColor = color;
-
-        private void EquipEyesColor(Color color) =>
-            model.eyesColor = color;
 
         private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
         {
@@ -289,7 +288,42 @@ namespace DCL.Backpack
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
-        private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected) =>
+        private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
+        {
+            currentSlotSelected = isSelected ? slotCategory : null;
             view.SetColorPickerActive(isSelected && supportColor);
+
+            switch (slotCategory)
+            {
+                case "eyes":
+                    view.SetColorPickerValue(model.eyesColor);
+                    break;
+                case "hair" or "eyebrows" or "facial_hair":
+                    view.SetColorPickerValue(model.hairColor);
+                    break;
+                case "bodyshape":
+                    view.SetColorPickerValue(model.skinColor);
+                    break;
+            }
+        }
+
+        private void OnWearableColorChanged(Color newColor)
+        {
+            switch (currentSlotSelected)
+            {
+                case "eyes":
+                    model.eyesColor = newColor;
+                    break;
+                case "hair" or "eyebrows" or "facial_hair":
+                    model.hairColor = newColor;
+                    break;
+                case "bodyshape":
+                    model.skinColor = newColor;
+                    break;
+            }
+
+            avatarIsDirty = true;
+            view.UpdateAvatarPreview(model.ToAvatarModel());
+        }
     }
 }
