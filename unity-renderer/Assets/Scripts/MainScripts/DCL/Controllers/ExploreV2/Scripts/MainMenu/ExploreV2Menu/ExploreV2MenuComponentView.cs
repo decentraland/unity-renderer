@@ -68,8 +68,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         if (realmSelectorModal != null)
             realmSelectorModal.Dispose();
-
-        DataStore.i.common.isWorld.OnChange -= OnWorldChange;
     }
 
     public override void Awake()
@@ -89,8 +87,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             { ExploreSection.Quest, questSection },
             { ExploreSection.Settings, settingsSection },
         };
-
-        DataStore.i.common.isWorld.OnChange += OnWorldChange;
     }
 
     public void Start()
@@ -296,16 +292,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         return realmSelectorView;
     }
 
-    private void OnWorldChange(bool isWorld, bool wasWorld)
+    public void HideMapOnEnteringWorld()
     {
-        if (isWorld == wasWorld) return;
-
-        if (isWorld && IsSectionActive(ExploreSection.Map))
-        {
-            placesAndEventsSection.Show();
-            mapSection.Hide();
-        }
-
-        SetSectionActive(ExploreSection.Map, !isWorld);
+        placesAndEventsSection.Show();
+        mapSection.Hide();
     }
 }
