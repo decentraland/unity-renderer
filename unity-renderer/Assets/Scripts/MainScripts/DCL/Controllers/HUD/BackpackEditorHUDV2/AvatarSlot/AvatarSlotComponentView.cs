@@ -29,8 +29,10 @@ namespace DCL.Backpack
         [SerializeField] internal TMP_Text tooltipCategoryText;
         [SerializeField] internal TMP_Text tooltipHiddenText;
         [SerializeField] internal Button button;
+        [SerializeField] internal Button unequipButton;
 
         public event Action<string, bool> OnSelectAvatarSlot;
+        public event Action<string, string> OnUnEquip;
         private bool isSelected = false;
 
         public override void Awake()
@@ -39,6 +41,12 @@ namespace DCL.Backpack
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnSlotClick);
+            unequipButton.onClick.RemoveAllListeners();
+            unequipButton.onClick.AddListener(()=>
+            {
+                OnUnEquip?.Invoke(model.category, model.wearableId);
+                unequipButton.gameObject.SetActive(false);
+            });
             ResetSlot();
         }
 
@@ -47,6 +55,7 @@ namespace DCL.Backpack
             SetRarity(null);
             SetNftImage("");
             RefreshControl();
+            SetWearableId("");
         }
 
         public override void RefreshControl()
@@ -58,6 +67,7 @@ namespace DCL.Backpack
             SetNftImage(model.imageUri);
             SetRarity(model.rarity);
             SetIsHidden(model.isHidden, model.hiddenBy);
+            SetWearableId(model.wearableId);
         }
 
         public void SetIsHidden(bool isHidden, string hiddenBy)
@@ -106,10 +116,18 @@ namespace DCL.Backpack
             backgroundRarityImage.sprite = string.IsNullOrEmpty(rarity) ? null : rarityBackgrounds.GetRarityImage(rarity);
         }
 
+        public void SetWearableId(string wearableId)
+        {
+            model.wearableId = wearableId;
+        }
+
         public override void OnFocus()
         {
             focusedImage.enabled = true;
             tooltipContainer.SetActive(true);
+            if(!emptySlot.activeInHierarchy)
+                unequipButton.gameObject.SetActive(true);
+
             ScaleUpAnimation(focusedImage.transform);
         }
 
@@ -117,6 +135,7 @@ namespace DCL.Backpack
         {
             focusedImage.enabled = false;
             tooltipContainer.SetActive(false);
+            unequipButton.gameObject.SetActive(false);
         }
 
         public void OnSlotClick()
