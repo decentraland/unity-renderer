@@ -11,6 +11,7 @@ namespace ECSSystems.GltfContainerLoadingStateSystem
     {
         private readonly IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent;
         private readonly IECSComponentWriter componentWriter;
+        private int timestamp = 0;
 
         public GltfContainerLoadingStateSystem(IECSComponentWriter componentWriter,
             IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent)
@@ -35,16 +36,29 @@ namespace ECSSystems.GltfContainerLoadingStateSystem
 
                 if (model.GltfContainerRemoved)
                 {
-                    componentWriter.RemoveComponent(scene, entity, ComponentID.GLTF_CONTAINER_LOADING_STATE, ECSComponentWriteType.SEND_TO_SCENE);
+                    componentWriter.RemoveComponent(
+                        scene.sceneData.sceneNumber,
+                        entity.entityId,
+                        ComponentID.GLTF_CONTAINER_LOADING_STATE,
+                        timestamp,
+                        ECSComponentWriteType.SEND_TO_SCENE);
                 }
                 else
                 {
-                    componentWriter.PutComponent(scene, entity, ComponentID.GLTF_CONTAINER_LOADING_STATE, new PBGltfContainerLoadingState()
-                    {
-                        CurrentState = model.LoadingState
-                    }, ECSComponentWriteType.SEND_TO_SCENE);
+                    componentWriter.PutComponent(
+                        scene.sceneData.sceneNumber,
+                        entity.entityId,
+                        ComponentID.GLTF_CONTAINER_LOADING_STATE,
+                        new PBGltfContainerLoadingState()
+                        {
+                            CurrentState = model.LoadingState
+                        },
+                        timestamp,
+                        ECSComponentWriteType.SEND_TO_SCENE);
                 }
             }
+
+            timestamp++;
         }
     }
 }
