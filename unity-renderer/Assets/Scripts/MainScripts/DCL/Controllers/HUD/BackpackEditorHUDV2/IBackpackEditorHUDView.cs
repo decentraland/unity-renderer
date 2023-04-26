@@ -17,5 +17,6 @@ namespace DCL.Backpack
         void ResetPreviewEmote();
         void UpdateAvatarPreview(AvatarModel avatarModel);
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
+        void SetColorPickerActive(bool isActive);
     }
 }

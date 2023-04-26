@@ -6,6 +6,8 @@ namespace DCL.Backpack
 {
     public class AvatarSlotsHUDController
     {
+        public event Action<string, bool, bool> OnToggleSlot;
+
         private readonly IAvatarSlotsView avatarSlotsView;
         private string lastSelectedSlot;
         internal AvatarSlotsDefinitionSO avatarSlotsDefinition;
@@ -29,12 +31,14 @@ namespace DCL.Backpack
             avatarSlotsView.RebuildLayout();
         }
 
-        public void ToggleSlot(string slotCategory, bool isSelected)
+        public void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
                 avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);
 
             lastSelectedSlot = isSelected ? slotCategory : "";
+
+            OnToggleSlot?.Invoke(slotCategory, supportColor, isSelected);
         }
 
         public void Dispose()

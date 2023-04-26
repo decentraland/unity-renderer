@@ -17,7 +17,7 @@ namespace DCL.Backpack
         private readonly Dictionary<string, Transform> avatarSlotSections = new ();
         private readonly Dictionary<string, IAvatarSlotComponentView> avatarSlots = new ();
 
-        public event Action<string, bool> OnToggleAvatarSlot;
+        public event Action<string, bool, bool> OnToggleAvatarSlot;
 
         public void CreateAvatarSlotSection(string sectionName, bool addSeparator)
         {
@@ -39,7 +39,7 @@ namespace DCL.Backpack
             IAvatarSlotComponentView avatarSlot = Instantiate(avatarSlotPrefab, avatarSlotSections[sectionName]).GetComponent<IAvatarSlotComponentView>();
             avatarSlot.SetCategory(slotCategory);
             avatarSlots.Add(slotCategory, avatarSlot);
-            avatarSlot.OnSelectAvatarSlot += (slotCat, isToggled)=>OnToggleAvatarSlot?.Invoke(slotCat, isToggled);
+            avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.supportColor, isToggled);
         }
 
         public void SetSlotNftImage(string category, string imageUrl)

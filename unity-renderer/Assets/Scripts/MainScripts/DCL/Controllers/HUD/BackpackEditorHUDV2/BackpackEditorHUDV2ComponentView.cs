@@ -20,6 +20,7 @@ namespace DCL.Backpack
         [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
         [SerializeField] private WearableGridComponentView wearableGridComponentView;
         [SerializeField] private AvatarSlotsView avatarSlotsView;
+        [SerializeField] private ColorPickerComponentView colorPickerComponentView;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
@@ -134,6 +135,9 @@ namespace DCL.Backpack
             snapshotsCts = snapshotsCts.SafeRestart();
             TakeSnapshotsAfterStopPreviewAnimationAsync(snapshotsCts.Token).Forget();
         }
+
+        public void SetColorPickerActive(bool isActive) =>
+            colorPickerComponentView.gameObject.SetActive(isActive);
 
         private void ConfigureSectionSelector()
         {

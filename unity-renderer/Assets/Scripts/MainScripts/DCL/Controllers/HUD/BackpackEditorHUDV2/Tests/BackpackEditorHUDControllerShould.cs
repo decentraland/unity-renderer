@@ -24,6 +24,7 @@ namespace DCL.Backpack
         private BackpackAnalyticsController backpackAnalyticsController;
         private BackpackEditorHUDController backpackEditorHUDController;
         private WearableGridController wearableGridController;
+        private AvatarSlotsHUDController avatarSlotsHUDController;
         private IWearableGridView wearableGridView;
         private IAvatarSlotsView avatarSlotsView;
         private Texture2D testFace256Texture = new Texture2D(1, 1);
@@ -59,6 +60,8 @@ namespace DCL.Backpack
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
 
+            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
+
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
                 dataStore,
@@ -68,7 +71,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController,
                 backpackAnalyticsController,
                 wearableGridController,
-                new AvatarSlotsHUDController(avatarSlotsView));
+                avatarSlotsHUDController);
         }
 
         [TearDown]
@@ -180,6 +183,18 @@ namespace DCL.Backpack
 
             // Assert
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(testUserProfileModel.avatar.bodyShape);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ToggleSlotCorrectly(bool isSelected)
+        {
+            // Act
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<Action<string, bool, bool>>("testCategory", isSelected, true);
+
+            // Assert
+            view.Received(1).SetColorPickerActive(isSelected);
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

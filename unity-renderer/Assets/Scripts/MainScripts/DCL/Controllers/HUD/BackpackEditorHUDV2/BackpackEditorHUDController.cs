@@ -60,6 +60,8 @@ namespace DCL.Backpack
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
+            avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
+
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
 
@@ -76,6 +78,9 @@ namespace DCL.Backpack
             wearableGridController.OnWearableEquipped -= EquipWearable;
             wearableGridController.OnWearableUnequipped -= UnEquipWearable;
             wearableGridController.Dispose();
+
+            avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
+
             view.Dispose();
         }
 
@@ -283,5 +288,8 @@ namespace DCL.Backpack
 
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
+
+        private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected) =>
+            view.SetColorPickerActive(isSelected && supportColor);
     }
 }
