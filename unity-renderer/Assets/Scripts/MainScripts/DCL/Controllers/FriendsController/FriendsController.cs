@@ -21,8 +21,7 @@ namespace DCL.Social.Friends
         private CancellationTokenSource controllerCancellationTokenSource = new ();
         private UniTaskCompletionSource featureFlagsInitializedTask;
 
-        // private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
-        private bool useSocialApiBridge => true;
+        private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
