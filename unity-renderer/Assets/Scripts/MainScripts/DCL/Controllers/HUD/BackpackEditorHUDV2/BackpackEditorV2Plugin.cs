@@ -34,6 +34,8 @@ namespace DCL.Backpack
 
             var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
 
+            var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView);
+
             hudController = new BackpackEditorHUDController(
                 view,
                 dataStore,
@@ -43,7 +45,8 @@ namespace DCL.Backpack
                 backpackEmotesSectionController,
                 backpackAnalyticsController,
                 wearableGridController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                backpackFiltersController);
         }
 
         public void Dispose()

@@ -25,8 +25,10 @@ namespace DCL.Backpack
         private BackpackEditorHUDController backpackEditorHUDController;
         private WearableGridController wearableGridController;
         private AvatarSlotsHUDController avatarSlotsHUDController;
+        private BackpackFiltersController backpackFiltersController;
         private IWearableGridView wearableGridView;
         private IAvatarSlotsView avatarSlotsView;
+        private IBackpackFiltersComponentView backpackFiltersComponentView;
         private Texture2D testFace256Texture = new Texture2D(1, 1);
         private Texture2D testBodyTexture = new Texture2D(1, 1);
 
@@ -59,8 +61,9 @@ namespace DCL.Backpack
                 dataStore.backpackV2);
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
-
+            backpackFiltersComponentView = Substitute.For<IBackpackFiltersComponentView>();
             avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
+            backpackFiltersController = new BackpackFiltersController(backpackFiltersComponentView);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
@@ -71,7 +74,8 @@ namespace DCL.Backpack
                 backpackEmotesSectionController,
                 backpackAnalyticsController,
                 wearableGridController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                backpackFiltersController);
         }
 
         [TearDown]

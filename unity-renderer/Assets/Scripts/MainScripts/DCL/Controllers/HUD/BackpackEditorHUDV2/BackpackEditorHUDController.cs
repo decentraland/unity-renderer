@@ -23,6 +23,7 @@ namespace DCL.Backpack
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
+        private readonly BackpackFiltersController backpackFiltersController;
         private string currentSlotSelected;
         private bool avatarIsDirty;
 
@@ -41,7 +42,8 @@ namespace DCL.Backpack
             IBackpackEmotesSectionController backpackEmotesSectionController,
             BackpackAnalyticsController backpackAnalyticsController,
             WearableGridController wearableGridController,
-            AvatarSlotsHUDController avatarSlotsHUDController)
+            AvatarSlotsHUDController avatarSlotsHUDController,
+            BackpackFiltersController backpackFiltersController)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -52,6 +54,7 @@ namespace DCL.Backpack
             this.backpackAnalyticsController = backpackAnalyticsController;
             this.wearableGridController = wearableGridController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
+            this.backpackFiltersController = backpackFiltersController;
 
             avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfile;
@@ -91,6 +94,9 @@ namespace DCL.Backpack
             wearableGridController.Dispose();
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
+            avatarSlotsHUDController.Dispose();
+
+            backpackFiltersController.Dispose();
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.Dispose();
