@@ -174,7 +174,7 @@ namespace DCL.LoadingScreen
         {
             notificationsController.ShowNotification(new Model
             {
-                message = "There was an error while trying to load your home scene.\nIf the problem persists next time contact support.",
+                message = "There was an error while trying to load your home scene. If the problem persists contact support.",
                 type = NotificationModel.Type.ERROR,
                 timer = 10f,
                 destroyOnFinish = true
