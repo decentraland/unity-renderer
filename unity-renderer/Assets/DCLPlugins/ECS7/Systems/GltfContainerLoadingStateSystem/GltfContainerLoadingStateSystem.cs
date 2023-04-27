@@ -40,8 +40,7 @@ namespace ECSSystems.GltfContainerLoadingStateSystem
                         scene.sceneData.sceneNumber,
                         entity.entityId,
                         ComponentID.GLTF_CONTAINER_LOADING_STATE,
-                        timestamp,
-                        ECSComponentWriteType.SEND_TO_SCENE);
+                        ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
                 }
                 else
                 {
@@ -53,8 +52,7 @@ namespace ECSSystems.GltfContainerLoadingStateSystem
                         {
                             CurrentState = model.LoadingState
                         },
-                        timestamp,
-                        ECSComponentWriteType.SEND_TO_SCENE);
+                        ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
                 }
             }
 
