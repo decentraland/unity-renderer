@@ -10,7 +10,6 @@ import type { EventData, ManyEntityAction, Payload } from 'shared/protocol/decen
 import type { PortContext } from './context'
 import type { EntityAction, EntityActionType } from 'shared/types'
 import type { RpcServerModule } from '@dcl/rpc/dist/codegen'
-import { joinBuffers } from 'lib/javascript/uint8arrays'
 
 function getPayload(payloadType: EAType, payload: Payload): any {
   switch (payloadType) {
