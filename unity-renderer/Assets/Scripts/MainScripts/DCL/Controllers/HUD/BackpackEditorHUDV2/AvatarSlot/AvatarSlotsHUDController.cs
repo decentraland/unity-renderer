@@ -10,10 +10,13 @@ namespace DCL.Backpack
         private string lastSelectedSlot;
         internal AvatarSlotsDefinitionSO avatarSlotsDefinition;
 
+        public event Action<string> OnUnequipFromSlot;
+
         public AvatarSlotsHUDController(IAvatarSlotsView avatarSlotsView)
         {
             this.avatarSlotsView = avatarSlotsView;
             avatarSlotsView.OnToggleAvatarSlot += ToggleSlot;
+            avatarSlotsView.OnUnequipFromSlot += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
             avatarSlotsDefinition = Resources.Load<AvatarSlotsDefinitionSO>("AvatarSlotsDefinition");
         }
 
@@ -46,9 +49,10 @@ namespace DCL.Backpack
         {
             avatarSlotsView.SetSlotRarity(wearableItem.data.category, wearableItem.rarity);
             avatarSlotsView.SetSlotNftImage(wearableItem.data.category, wearableItem.ComposeThumbnailUrl());
+            avatarSlotsView.SetWearableId(wearableItem.data.category, wearableItem.id);
         }
 
-        public void UnEquip(string category, string wearableId) =>
+        public void UnEquip(string category) =>
             avatarSlotsView.ResetCategorySlot(category);
     }
 }

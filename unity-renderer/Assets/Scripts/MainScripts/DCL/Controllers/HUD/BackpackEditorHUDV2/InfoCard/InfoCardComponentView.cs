@@ -57,6 +57,7 @@ namespace DCL.Backpack
             SetHidesList(model.hideList);
             SetHiddenBy(model.hiddenBy);
             SetNftImage(model.imageUri);
+            SetWearableId(model.wearableId);
         }
 
         public void SetName(string nameText)
@@ -128,6 +129,23 @@ namespace DCL.Backpack
 
             equipButton.gameObject.SetActive(!isEquipped);
             unEquipButton.gameObject.SetActive(isEquipped);
+        }
+
+        public void SetWearableId(string wearableId)
+        {
+            model.wearableId = wearableId;
+        }
+
+        public void Equip(string wearableId)
+        {
+            if(model.wearableId == wearableId)
+                SetIsEquipped(true);
+        }
+
+        public void UnEquip(string wearableId)
+        {
+            if(model.wearableId == wearableId)
+                SetIsEquipped(false);
         }
 
         public void SetHiddenBy(string hiddenBy)
