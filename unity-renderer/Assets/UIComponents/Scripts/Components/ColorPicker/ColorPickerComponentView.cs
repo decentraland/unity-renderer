@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig<ColorPickerComponentModel>
@@ -14,6 +15,8 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
     [SerializeField] private Image containerImage;
     [SerializeField] private GameObject colorSelectorObject;
     [SerializeField] private Image colorPreviewImage;
+    [SerializeField] private GameObject arrowUpMark;
+    [SerializeField] private GameObject arrowDownMark;
 
     [Header("Configuration")]
     [SerializeField] internal ColorPickerComponentModel model;
@@ -138,6 +141,12 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
     {
         container.SetActive(isActive);
         containerImage.enabled = isActive;
+
+        if (arrowUpMark != null)
+            arrowUpMark.SetActive(isActive);
+
+        if (arrowDownMark != null)
+            arrowDownMark.SetActive(!isActive);
     }
 
     public override void Dispose()
