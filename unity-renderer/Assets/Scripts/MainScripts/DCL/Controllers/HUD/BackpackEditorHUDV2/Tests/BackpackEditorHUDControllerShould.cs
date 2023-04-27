@@ -189,6 +189,8 @@ namespace DCL.Backpack
         [Test]
         [TestCase("eyes")]
         [TestCase("hair")]
+        [TestCase("eyebrows")]
+        [TestCase("facial_hair")]
         [TestCase("bodyshape")]
         [TestCase("non_existing_category")]
         public void ToggleSlotCorrectly(string slotCategory)
@@ -205,7 +207,18 @@ namespace DCL.Backpack
                 return;
             }
 
-            view.Received(1).SetColorPickerValue(Arg.Any<Color>());
+            switch (slotCategory)
+            {
+                case "eyes":
+                    view.Received(1).SetColorPickerValue(userProfile.avatar.eyeColor);
+                    break;
+                case "hair" or "eyebrows" or "facial_hair":
+                    view.Received(1).SetColorPickerValue(userProfile.avatar.hairColor);
+                    break;
+                case "bodyshape":
+                    view.Received(1).SetColorPickerValue(userProfile.avatar.skinColor);
+                    break;
+            }
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>
