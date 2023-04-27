@@ -45,11 +45,9 @@ namespace DCL.Backpack
             avatarSlotsView.OnToggleAvatarSlot -= ToggleSlot;
         }
 
-        public void Equip(WearableItem wearableItem)
+        public void Equip(WearableItem wearableItem, string bodyShape)
         {
-            avatarSlotsView.SetSlotRarity(wearableItem.data.category, wearableItem.rarity);
-            avatarSlotsView.SetSlotNftImage(wearableItem.data.category, wearableItem.ComposeThumbnailUrl());
-            avatarSlotsView.SetWearableId(wearableItem.data.category, wearableItem.id);
+            avatarSlotsView.SetSlotContent(wearableItem.data.category, wearableItem, bodyShape);
         }
 
         public void UnEquip(string category) =>

@@ -3,6 +3,8 @@ using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using DG.Tweening;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
@@ -34,6 +36,7 @@ namespace DCL.Backpack
         public event Action<string, bool> OnSelectAvatarSlot;
         public event Action<string> OnUnEquip;
         private bool isSelected = false;
+        private readonly HashSet<string> hiddenByList = new HashSet<string>();
 
         public override void Awake()
         {
@@ -56,7 +59,11 @@ namespace DCL.Backpack
             SetNftImage("");
             RefreshControl();
             SetWearableId("");
+            SetHideList(Array.Empty<string>());
         }
+
+        public string[] GetHideList() =>
+            model.hidesList;
 
         public override void RefreshControl()
         {
@@ -68,23 +75,37 @@ namespace DCL.Backpack
             SetRarity(model.rarity);
             SetIsHidden(model.isHidden, model.hiddenBy);
             SetWearableId(model.wearableId);
+            SetHideList(model.hidesList);
         }
+
+        public void SetHideList(string[] hideList) =>
+            model.hidesList = hideList;
 
         public void SetIsHidden(bool isHidden, string hiddenBy)
         {
             model.isHidden = isHidden;
             model.hiddenBy = hiddenBy;
             hiddenSlot.SetActive(isHidden);
+
             if (isHidden)
             {
                 ShakeAnimation(nftContainer);
                 emptySlot.SetActive(false);
                 tooltipHiddenText.gameObject.SetActive(true);
                 tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
+                hiddenByList.Add(hiddenBy);
             }
             else
             {
+                hiddenByList.Remove(hiddenBy);
                 tooltipHiddenText.gameObject.SetActive(false);
+
+                if (hiddenByList.Count > 0)
+                {
+                    hiddenSlot.SetActive(true);
+                    tooltipHiddenText.gameObject.SetActive(true);
+                    tooltipHiddenText.text = $"Hidden by: {hiddenByList.Last()}";
+                }
             }
         }
 
@@ -179,6 +200,7 @@ namespace DCL.Backpack
 
         private void ShakeAnimation(Transform targetTransform)
         {
+            Debug.Log(targetTransform.position);
             targetTransform.DOShakePosition(SHAKE_ANIMATION_TIME, 4);
         }
     }

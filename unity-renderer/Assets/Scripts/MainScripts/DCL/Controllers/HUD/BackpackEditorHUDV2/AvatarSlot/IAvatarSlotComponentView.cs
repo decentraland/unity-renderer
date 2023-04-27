@@ -14,5 +14,7 @@ namespace DCL.Backpack
         void SetWearableId(string wearableId);
         void OnPointerClickOnDifferentSlot();
         void ResetSlot();
+        void SetHideList(string[] hideList);
+        string[] GetHideList();
     }
 }
