@@ -55,7 +55,7 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
             string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
-            NftRarity rarity = NftRarity.None, IEnumerable<string> collectionIds = null,
+            NftRarity rarity = NftRarity.None, ICollection<string> collectionIds = null,
             string name = null, (NftOrderByOperation type, bool directionAscendent)? orderBy = null)
         {
             var queryParams = new List<(string name, string value)>
@@ -79,7 +79,7 @@ namespace DCLServices.WearablesCatalogService
                 queryParams.Add(("direction", orderBy.Value.directionAscendent ? "ASC" : "DESC"));
             }
 
-            AddCollectionIdsAndCollectionCategoryParams(queryParams, collectionIds?.ToList());
+            AddCollectionIdsAndCollectionCategoryParams(queryParams, collectionIds);
 
             // TODO: remove the hardcoded url once the lambda is deployed to the catalysts and becomes part of the protocol
             (WearableWithDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
@@ -91,7 +91,10 @@ namespace DCLServices.WearablesCatalogService
             if (!success)
                 throw new Exception($"The request of wearables for '{userId}' failed!");
 
-            var wearables = response.elements.Select(wd => wd.definition).ToList();
+            List<WearableItem> wearables = new List<WearableItem>(response.elements.Count);
+            foreach (WearableDefinition definition in response.elements)
+                wearables.Add(definition.definition);
+
             MapLambdasDataIntoWearableItem(wearables);
             AddWearablesToCatalog(wearables);
 
@@ -368,7 +371,7 @@ namespace DCLServices.WearablesCatalogService
             return result.FirstOrDefault(x => x.id == newWearableId);
         }
 
-        private static void MapLambdasDataIntoWearableItem(List<WearableItem> wearablesFromLambdas)
+        private static void MapLambdasDataIntoWearableItem(IList<WearableItem> wearablesFromLambdas)
         {
             var invalidWearablesIndices = ListPool<int>.Get();
 
@@ -450,36 +453,38 @@ namespace DCLServices.WearablesCatalogService
         private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
             wearableIds.Select(id => ("wearableId", id)).ToArray();
 
-        private void AddCollectionIdsAndCollectionCategoryParams(List<(string name, string value)> queryParams,
-            List<string> collectionIds = null)
+        private void AddCollectionIdsAndCollectionCategoryParams(ICollection<(string name, string value)> queryParams,
+            ICollection<string> collectionIds = null)
         {
             HashSet<string> collectionCategories = new HashSet<string>();
+            bool isInvalidCollectionIds = collectionIds == null;
+            bool containsThirdParty = isInvalidCollectionIds;
+            bool containsBase = isInvalidCollectionIds;
+            bool containsOnChain = isInvalidCollectionIds;
 
             if (collectionIds != null)
             {
-                bool IsThirdParty(string wearableId) =>
-                    wearableId.Contains("collections-thirdparty");
-
-                bool IsBaseWearable(string wearableId) =>
-                    wearableId.StartsWith("urn:decentraland:off-chain:base-avatars:");
-
-                if (collectionIds.Any(IsThirdParty))
-                    collectionCategories.Add("third-party");
-
-                if (collectionIds.Any(IsBaseWearable))
-                    collectionCategories.Add("base-wearable");
-
-                if (collectionIds.Any(s => !IsBaseWearable(s) && !IsThirdParty(s)))
-                    collectionCategories.Add("on-chain");
+                foreach (string collectionId in collectionIds)
+                {
+                    if (collectionId.Contains("collections-thirdparty"))
+                        containsThirdParty = true;
+                    else if (collectionId.StartsWith("urn:decentraland:off-chain:base-avatars:"))
+                        containsBase = true;
+                    else
+                        containsOnChain = true;
+                }
 
                 queryParams.Add(("collectionIds", string.Join(",", collectionIds)));
             }
-            else
-            {
+
+            if (containsThirdParty)
                 collectionCategories.Add("third-party");
+
+            if (containsBase)
                 collectionCategories.Add("base-wearable");
+
+            if (containsOnChain)
                 collectionCategories.Add("on-chain");
-            }
 
             queryParams.Add(("collectionCategory", string.Join(",", collectionCategories)));
         }

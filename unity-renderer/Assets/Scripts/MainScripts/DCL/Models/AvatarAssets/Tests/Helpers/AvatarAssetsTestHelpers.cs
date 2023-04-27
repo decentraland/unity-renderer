@@ -63,7 +63,7 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                     Arg.Any<CancellationToken>(),
                     Arg.Any<string>(),
                     Arg.Any<NftRarity>(),
-                    Arg.Any<IEnumerable<string>>(),
+                    Arg.Any<ICollection<string>>(),
                     Arg.Any<string>(),
                     Arg.Any<(NftOrderByOperation type, bool directionAscendent)>())
                .ReturnsForAnyArgs(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));

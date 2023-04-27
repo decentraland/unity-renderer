@@ -525,7 +525,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>(),
                                         CATEGORY,
                                         RARITY,
-                                        Arg.Is<IEnumerable<string>>(i =>
+                                        Arg.Is<ICollection<string>>(i =>
                                             i.ElementAt(0) == ON_CHAIN_COLLECTION
                                             && i.ElementAt(1) == BASE_OFF_CHAIN_COLLECTION
                                             && i.ElementAt(2) == THIRD_PARTY_COLLECTION),

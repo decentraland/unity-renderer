@@ -25,7 +25,7 @@ namespace DCL.Backpack
         private CancellationTokenSource requestWearablesCancellationToken = new ();
         private string categoryFilter;
         private NftRarity rarityFilter = NftRarity.None;
-        private IEnumerable<string> collectionIdsFilter;
+        private ICollection<string> collectionIdsFilter;
         private string nameFilter;
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
 
@@ -62,7 +62,7 @@ namespace DCL.Backpack
         }
 
         public void LoadWearables(string categoryFilter = null, NftRarity rarityFilter = NftRarity.None,
-            IEnumerable<string> collectionIdsFilter = null, string nameFilter = null,
+            ICollection<string> collectionIdsFilter = null, string nameFilter = null,
             (NftOrderByOperation type, bool directionAscendent)? wearableSorting = null)
         {
             this.categoryFilter = categoryFilter;
