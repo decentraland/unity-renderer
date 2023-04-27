@@ -56,7 +56,7 @@ namespace DCL.Map
     [Serializable]
     public class MinimapMetadataPayload
     {
-        public bool isWorld;
+        public bool isWorldScene;
         public MinimapMetadata.MinimapSceneInfo[] scenesInfo;
     }
 }
