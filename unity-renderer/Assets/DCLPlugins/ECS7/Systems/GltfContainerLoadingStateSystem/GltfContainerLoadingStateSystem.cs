@@ -11,7 +11,6 @@ namespace ECSSystems.GltfContainerLoadingStateSystem
     {
         private readonly IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent;
         private readonly IECSComponentWriter componentWriter;
-        private int timestamp = 0;
 
         public GltfContainerLoadingStateSystem(IECSComponentWriter componentWriter,
             IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent)
@@ -55,8 +54,6 @@ namespace ECSSystems.GltfContainerLoadingStateSystem
                         ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
                 }
             }
-
-            timestamp++;
         }
     }
 }
