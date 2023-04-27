@@ -81,8 +81,9 @@ namespace DCLServices.WearablesCatalogService
 
             AddCollectionIdsAndCollectionCategoryParams(queryParams, collectionIds?.ToList());
 
-            // TODO: remove the hardcoded url once the lambda is deployed to the catalysts and be part of the protocol
-            (WearableWithDefinitionResponse response, bool success) = await lambdasService.Get<WearableWithDefinitionResponse>(
+            // TODO: remove the hardcoded url once the lambda is deployed to the catalysts and becomes part of the protocol
+            (WearableWithDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                "https://peer-ue-2.decentraland.zone/explorer-service/backpack/:userId/wearables",
                 $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{userId}/wearables",
                 cancellationToken: cancellationToken,
                 urlEncodedParams: queryParams.ToArray());

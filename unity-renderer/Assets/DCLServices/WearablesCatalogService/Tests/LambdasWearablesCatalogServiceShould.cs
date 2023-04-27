@@ -274,7 +274,8 @@ namespace DCLServices.WearablesCatalogService
                         orderBy: (NftOrderByOperation.Date, true));
 
                 lambdasService.Received(1)
-                              .Get<WearableWithDefinitionResponse>(
+                              .GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                                   "https://peer-ue-2.decentraland.zone/explorer-service/backpack/:userId/wearables",
                                    $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
@@ -323,7 +324,8 @@ namespace DCLServices.WearablesCatalogService
                         collectionIds: collectionIds);
 
                 lambdasService.Received(1)
-                              .Get<WearableWithDefinitionResponse>(
+                              .GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                                   "https://peer-ue-2.decentraland.zone/explorer-service/backpack/:userId/wearables",
                                    $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
@@ -366,7 +368,8 @@ namespace DCLServices.WearablesCatalogService
 
         private void GivenWearableWithSpecificLambdasUrl(WearableItem wearable)
         {
-            lambdasService.Get<WearableWithDefinitionResponse>(
+            lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                               Arg.Any<string>(),
                                Arg.Any<string>(),
                                Arg.Any<int>(),
                                Arg.Any<int>(),

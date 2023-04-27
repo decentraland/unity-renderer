@@ -56,6 +56,7 @@ namespace DCLServices.Lambdas
         /// <summary>
         /// Make a Get request to Lambdas2.
         /// </summary>
+        /// <param name="endPointTemplate">Endpoint without slashes (e.g. "https://peer-ue-2.decentraland.zone/nfts/emotes/:userId")</param>
         /// <param name="url">Composed url including path variables
         ///     (e.g. "https://peer-ue-2.decentraland.zone/nfts/emotes/0xddf1eec586d8f8f0eb8c5a3bf51fb99379a55684")</param>
         /// <param name="timeout">Timeout for each attempt</param>
@@ -69,7 +70,8 @@ namespace DCLServices.Lambdas
         /// Returns (default, false) otherwise<br/>
         /// <exception cref="OperationCanceledException"></exception>
         /// </returns>
-        UniTask<(TResponse response, bool success)> Get<TResponse>(
+        UniTask<(TResponse response, bool success)> GetFromSpecificUrl<TResponse>(
+            string endPointTemplate,
             string url,
             int timeout = DEFAULT_TIMEOUT,
             int attemptsNumber = DEFAULT_ATTEMPTS_NUMBER,
