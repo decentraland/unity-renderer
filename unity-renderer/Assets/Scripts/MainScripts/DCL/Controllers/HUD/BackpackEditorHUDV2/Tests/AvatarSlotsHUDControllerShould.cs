@@ -58,10 +58,10 @@ namespace DCL.Backpack
         [Test]
         public void ToggleSlotCorrectly()
         {
-            avatarSlotsHUDController.ToggleSlot("tiara", true);
+            avatarSlotsHUDController.ToggleSlot("tiara", false, true);
             avatarSlotsView.DidNotReceive().DisablePreviousSlot(Arg.Any<string>());
 
-            avatarSlotsHUDController.ToggleSlot("mask", true);
+            avatarSlotsHUDController.ToggleSlot("mask", false, true);
             avatarSlotsView.Received().DisablePreviousSlot("tiara");
         }
     }
