@@ -99,7 +99,7 @@ namespace DCL.LoadingScreen.Test
                 await UniTask.Delay(simulatedTimeout + 10);
 
                 //Assert
-                Assert.IsTrue(loadingScreenController.randomPositionRequested);
+                Assert.IsTrue(loadingScreenController.showRandomPositionNotification);
             });
 
         [Category("EditModeCI")]

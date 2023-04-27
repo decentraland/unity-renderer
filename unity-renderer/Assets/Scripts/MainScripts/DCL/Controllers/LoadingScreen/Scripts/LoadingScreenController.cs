@@ -28,7 +28,7 @@ namespace DCL.LoadingScreen
         internal readonly LoadingScreenTimeoutController timeoutController;
         private readonly NotificationsController notificationsController;
         private bool onSignUpFlow;
-        internal bool randomPositionRequested;
+        internal bool showRandomPositionNotification;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -77,13 +77,7 @@ namespace DCL.LoadingScreen
         {
             //We have to check that the latest scene loaded is the one from our current destination
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
-            {
                 HandlePlayerLoading();
-                if (randomPositionRequested)
-                    ShowRandomPositionNotification();
-            }
-
-            randomPositionRequested = false;
         }
 
         //We have to add one more check not to show the loadingScreen unless the player is loaded
@@ -172,6 +166,8 @@ namespace DCL.LoadingScreen
             timeoutController.StopTimeout();
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+            if (showRandomPositionNotification)
+                ShowRandomPositionNotification();
         }
 
         private void ShowRandomPositionNotification()
@@ -183,6 +179,7 @@ namespace DCL.LoadingScreen
                 timer = 10f,
                 destroyOnFinish = true
             });
+            showRandomPositionNotification = false;
         }
 
         public void RandomPositionRequested()
@@ -193,8 +190,7 @@ namespace DCL.LoadingScreen
                 recipient = string.Empty,
                 body = "/goto random",
             });
-
-            randomPositionRequested = true;
+            showRandomPositionNotification = true;
         }
     }
 }
