@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,30 +18,54 @@ namespace DCLServices.Lambdas.NamesService
 
         public async UniTask<(IReadOnlyList<NamesResponse.NameEntry> names, int totalAmount)> RequestOwnedNamesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
-            var createNewPointer = false;
-            if (!ownerNamesPagePointers.TryGetValue((userId, pageSize), out var pagePointer))
+            var transaction = SentrySdk.StartTransaction("RequestOwnedNames", "INamesService");
+            // Set the 'userId' tag in the transaction context + other tags
+            transaction.SetExtra("userId", userId);
+            transaction.SetExtra("pageNumber", pageNumber.ToString());
+            transaction.SetExtra("pageSize", pageSize.ToString());
+
+            try
             {
-                createNewPointer = true;
+                var createNewPointer = false;
+                if (!ownerNamesPagePointers.TryGetValue((userId, pageSize), out var pagePointer))
+                {
+                    createNewPointer = true;
+                }
+                else if (cleanCachedPages)
+                {
+                    pagePointer.Dispose();
+                    ownerNamesPagePointers.Remove((userId, pageSize));
+                    createNewPointer = true;
+                }
+
+                if (createNewPointer)
+                {
+                    ownerNamesPagePointers[(userId, pageSize)] = pagePointer = new LambdaResponsePagePointer<NamesResponse>(
+                        $"{END_POINT}{userId}/names", pageSize, ct, this);
+                }
+
+                var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
+
+                if (!pageResponse.success)
+                {
+                    transaction.Status = SpanStatus.InternalError;
+                    throw new Exception($"The request of the owned names for '{userId}' failed!");
+                }
+
+                transaction.Status = SpanStatus.Ok;
+                return (pageResponse.response.Elements, pageResponse.response.TotalAmount);
             }
-            else if (cleanCachedPages)
+            catch (Exception ex)
             {
-                pagePointer.Dispose();
-                ownerNamesPagePointers.Remove((userId, pageSize));
-                createNewPointer = true;
+                // Set transaction status to the appropriate error
+                transaction.Status = SpanStatus.InternalError;
+                SentrySdk.CaptureException(ex);
+                throw;
             }
-
-            if (createNewPointer)
+            finally
             {
-                ownerNamesPagePointers[(userId, pageSize)] = pagePointer = new LambdaResponsePagePointer<NamesResponse>(
-                    $"{END_POINT}{userId}/names", pageSize, ct, this);
+                transaction.Finish();
             }
-
-            var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
-
-            if (!pageResponse.success)
-                throw new Exception($"The request of the owned names for '{userId}' failed!");
-
-            return (pageResponse.response.Elements, pageResponse.response.TotalAmount);
         }
 
         UniTask<(NamesResponse response, bool success)> ILambdaServiceConsumer<NamesResponse>.CreateRequest(string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>

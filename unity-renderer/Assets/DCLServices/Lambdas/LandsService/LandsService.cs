@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,30 +18,54 @@ namespace DCLServices.Lambdas.LandsService
 
         public async UniTask<(IReadOnlyList<LandsResponse.LandEntry> lands, int totalAmount)> RequestOwnedLandsAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
-            var createNewPointer = false;
-            if (!ownerLandsPagePointers.TryGetValue((userId, pageSize), out var pagePointer))
+            // Start a transaction using Sentry SDK
+            var transaction = SentrySdk.StartTransaction("RequestOwnedLandsAsync", "ILandsService");
+            transaction.SetExtra("userId", userId);
+            transaction.SetExtra("pageNumber", pageNumber.ToString());
+            transaction.SetExtra("pageSize", pageSize.ToString());
+
+            try
             {
-                createNewPointer = true;
+                var createNewPointer = false;
+                if (!ownerLandsPagePointers.TryGetValue((userId, pageSize), out var pagePointer))
+                {
+                    createNewPointer = true;
+                }
+                else if (cleanCachedPages)
+                {
+                    pagePointer.Dispose();
+                    ownerLandsPagePointers.Remove((userId, pageSize));
+                    createNewPointer = true;
+                }
+
+                if (createNewPointer)
+                {
+                    ownerLandsPagePointers[(userId, pageSize)] = pagePointer = new LambdaResponsePagePointer<LandsResponse>(
+                        $"{END_POINT}{userId}/lands", pageSize, ct, this);
+                }
+
+                var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
+
+                if (!pageResponse.success)
+                {
+                    transaction.Status = SpanStatus.InternalError;
+                    throw new Exception($"The request of the owned lands for '{userId}' failed!");
+                }
+
+                transaction.Status = SpanStatus.Ok;
+                return (pageResponse.response.Elements, pageResponse.response.TotalAmount);
             }
-            else if (cleanCachedPages)
+            catch (Exception e)
             {
-                pagePointer.Dispose();
-                ownerLandsPagePointers.Remove((userId, pageSize));
-                createNewPointer = true;
+                // Set transaction status to the appropriate error
+                transaction.Status = SpanStatus.InternalError;
+                SentrySdk.CaptureException(e);
+                throw;
             }
-
-            if (createNewPointer)
+            finally
             {
-                ownerLandsPagePointers[(userId, pageSize)] = pagePointer = new LambdaResponsePagePointer<LandsResponse>(
-                    $"{END_POINT}{userId}/lands", pageSize, ct, this);
+                transaction.Finish();
             }
-
-            var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
-
-            if (!pageResponse.success)
-                throw new Exception($"The request of the owned lands for '{userId}' failed!");
-
-            return (pageResponse.response.Elements, pageResponse.response.TotalAmount);
         }
 
         UniTask<(LandsResponse response, bool success)> ILambdaServiceConsumer<LandsResponse>.CreateRequest(string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
