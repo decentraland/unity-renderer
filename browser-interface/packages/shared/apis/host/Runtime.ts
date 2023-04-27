@@ -43,25 +43,7 @@ export function registerRuntimeServiceServerImplementation(port: RpcServerPort<P
       }
     },
     async readFile(req, ctx) {
-      // filenames are lower cased as per https://adr.decentraland.org/adr/ADR-80
-      const normalized = req.fileName.toLowerCase()
-
-      // and we iterate over the entity content mappings to resolve the file hash
-      for (const { file, hash } of ctx.sceneData.entity.content) {
-        if (file.toLowerCase() == normalized) {
-
-          // fetch the actual content
-          const baseUrl = ctx.sceneData.baseUrl.endsWith('/') ? ctx.sceneData.baseUrl : (ctx.sceneData.baseUrl + '/')
-          const url = baseUrl + hash
-          const response = await fetch(url)
-
-          if (!response.ok) throw new Error(`Error fetching file ${file} from ${url}`)
-
-          return { hash, content: new Uint8Array(await response.arrayBuffer()) }
-        }
-      }
-
-      throw new Error(`File ${req.fileName} not found`)
+      return ctx.readFile(req.fileName)
     }
   }))
 }

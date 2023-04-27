@@ -4,7 +4,7 @@ import { AlgorithmLink } from 'shared/dao/pick-realm-algorithm/types'
 import { contextForCandidates } from './test-utils'
 import { Parcel } from 'shared/dao/types'
 
-const ANY_PARCEL: Parcel = [0,0]
+const ANY_PARCEL: Parcel = [0, 0]
 
 describe('Overloaded Catalyst Link', () => {
   let link: AlgorithmLink

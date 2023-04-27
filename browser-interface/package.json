@@ -20,7 +20,7 @@
   "devDependencies": {
     "@dcl/eslint-config": "^1.1.0",
     "@dcl/posix": "^1.0.4",
-    "@protobuf-ts/protoc": "^2.8.2",
+    "@protobuf-ts/protoc": "^2.9.0",
     "@redux-devtools/extension": "^3.2.5",
     "@types/chai": "^4.3.4",
     "@types/events": "^1.2.0",

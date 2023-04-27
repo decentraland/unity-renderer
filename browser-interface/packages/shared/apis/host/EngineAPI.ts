@@ -10,6 +10,7 @@ import type { EventData, ManyEntityAction, Payload } from 'shared/protocol/decen
 import type { PortContext } from './context'
 import type { EntityAction, EntityActionType } from 'shared/types'
 import type { RpcServerModule } from '@dcl/rpc/dist/codegen'
+import { joinBuffers } from 'lib/javascript/uint8arrays'
 
 function getPayload(payloadType: EAType, payload: Payload): any {
   switch (payloadType) {
@@ -127,7 +128,13 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
 
         async crdtGetState(_, ctx) {
           const response = await ctx.rpcSceneControllerService.getCurrentState({})
-          return { hasEntities: response.hasOwnEntities, data: [response.payload] }
+
+          const { initialEntitiesTick0, hasMainCrdt } = ctx
+
+          return {
+            hasEntities: response.hasOwnEntities || hasMainCrdt,
+            data: [joinBuffers(initialEntitiesTick0, response.payload)]
+          }
         }
       }
     }
