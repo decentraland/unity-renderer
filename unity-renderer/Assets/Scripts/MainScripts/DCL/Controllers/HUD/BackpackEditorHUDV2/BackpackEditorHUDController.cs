@@ -68,6 +68,7 @@ namespace DCL.Backpack
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
+            avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearable;
 
             view.SetColorPickerVisibility(false);
             view.OnColorChanged += OnWearableColorChanged;
@@ -280,7 +281,7 @@ namespace DCL.Backpack
 
         private void UnEquipWearable(string wearableId)
         {
-            avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category, wearableId);
+            avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
 
