@@ -63,16 +63,18 @@ namespace DCL.Social.Friends
             else
             {
                 apiBridge.OnInitialized += InitializeFriendships;
+
                 // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
                 apiBridge.OnFriendRequestsAdded += AddFriendRequests;
                 apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
-                apiBridge.OnFriendNotFound += FriendNotFound;
-                apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
-                apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
-                apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
                 apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
                 apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
             }
+
+            apiBridge.OnFriendNotFound += FriendNotFound;
+            apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
+            apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
+            apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
         }
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
@@ -94,6 +96,7 @@ namespace DCL.Social.Friends
             socialApiBridge.OnFriendRequestRemoved -= RemoveFriendRequest;
 
             apiBridge.OnInitialized -= InitializeFriendships;
+
             // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
             apiBridge.OnFriendRequestsAdded -= AddFriendRequests;
             apiBridge.OnFriendRequestReceived -= ReceiveFriendRequest;
