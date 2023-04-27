@@ -19,7 +19,7 @@ export const getProfilesContentServerFromRealmAdapter = (adapter: IRealmAdapter)
   if (UPDATE_CONTENT_SERVICE) {
     return urlWithProtocol(UPDATE_CONTENT_SERVICE)
   }
-  const url = adapter.services.legacy.updateContentServer
+  const url = adapter.services.updateContentServer
   return urlWithProtocol(url)
 }
 
@@ -32,7 +32,7 @@ export const getFetchContentServerFromRealmAdapter = (adapter: IRealmAdapter) =>
   if (FETCH_CONTENT_SERVICE) {
     return urlWithProtocol(FETCH_CONTENT_SERVICE)
   }
-  return adapter.services.legacy.fetchContentServer
+  return adapter.services.fetchContentServer
 }
 
 /**

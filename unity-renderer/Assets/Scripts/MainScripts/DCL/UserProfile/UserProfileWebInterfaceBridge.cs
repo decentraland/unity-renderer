@@ -1,7 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using System;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
 
 public class UserProfileWebInterfaceBridge : IUserProfileBridge
 {
@@ -33,4 +35,7 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
     }
 
     public void SignUp() => WebInterface.RedirectToSignUp();
+
+    public void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false) =>
+        WebInterface.SendSaveAvatar(avatar, face256Snapshot, bodySnapshot, isSignUpFlow);
 }

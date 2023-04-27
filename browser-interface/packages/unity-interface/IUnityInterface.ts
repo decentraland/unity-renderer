@@ -44,7 +44,7 @@ import type {
   NewProfileForRenderer
 } from 'lib/decentraland/profiles/transformations/types'
 import type { Emote } from 'shared/catalogs/types'
-import type { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 
 export type RealmInfo = {
   serverName: string
@@ -158,6 +158,7 @@ export interface IUnityInterface {
   TriggerSelfUserExpression(expressionId: string): void
 
   UpdateMinimapSceneInformation(info: MinimapSceneInfo[]): void
+  UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[]): void
   SetTutorialEnabled(tutorialConfig: TutorialInitializationMessage): void
   SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(tutorialConfig: TutorialInitializationMessage): void
   AddMessageToChatWindow(message: ChatMessage): void

@@ -4,13 +4,13 @@ import * as rfc5 from 'shared/protocol/decentraland/kernel/comms/rfc5/ws_comms.g
 import { Writer } from 'protobufjs/minimal'
 import { ILogger, createLogger } from 'lib/logger'
 import { ExplorerIdentity } from 'shared/session/types'
-import { wsAsAsyncChannel } from '../logic/ws-async-channel'
 import { Authenticator } from '@dcl/crypto'
 import mitt from 'mitt'
 import { CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
 import { createOpusVoiceHandler } from './voice/opusVoiceHandler'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { notifyStatusThroughChat } from 'shared/chat'
+import { wsAsAsyncChannel } from '../logic/ws-async-channel'
 
 // shared writer to leverage pools
 const writer = new Writer()
@@ -57,7 +57,7 @@ export class WebSocketAdapter implements MinimumCommunicationsAdapter {
       connected.reject(new Error('Socket closed'))
     }
 
-    const channel = wsAsAsyncChannel(ws)
+    const channel = wsAsAsyncChannel<rfc5.WsPacket>(ws, rfc5.WsPacket.decode)
     try {
       await connected
 
@@ -131,7 +131,7 @@ export class WebSocketAdapter implements MinimumCommunicationsAdapter {
     }
   }
 
-  async getVoiceHandler(): Promise<VoiceHandler> {
+  async createVoiceHandler(): Promise<VoiceHandler> {
     return createOpusVoiceHandler()
   }
 

@@ -1085,13 +1085,13 @@ MonoBehaviour:
   eventPlaceText: {fileID: 6513293960209937964}
   subscribedUsersTitleForLive: {fileID: 0}
   subscribedUsersTitleForNotLive: {fileID: 0}
+  goingUsersGameObject: {fileID: 0}
   subscribedUsersText: {fileID: 974946582953303008}
   modalBackgroundButton: {fileID: 6326002928928245743}
   closeCardButton: {fileID: 9179686715425177228}
   closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   infoButton: {fileID: 0}
   jumpinButton: {fileID: 1803946320734803440}
-  jumpinButtonForNotLive: {fileID: 0}
   subscribeEventButton: {fileID: 5147457318263248526}
   unsubscribeEventButton: {fileID: 3195959156325516453}
   imageContainer: {fileID: 1969214295826712859}
@@ -1259,8 +1259,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4781038414291623031}
   m_HandleRect: {fileID: 783446947716498125}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.9064559
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

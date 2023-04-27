@@ -8,6 +8,7 @@ import { call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga
 import { createRendererRpcClient } from 'renderer-protocol/rpcClient'
 import { registerEmotesService } from 'renderer-protocol/services/emotesService'
 import { registerFriendRequestRendererService } from 'renderer-protocol/services/friendRequestService'
+import { registerRestrictedActionsService } from 'renderer-protocol/services/restrictedActionsService'
 import { createRpcTransportService } from 'renderer-protocol/services/transportService'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { receivePeerUserData } from 'shared/comms/peers'
@@ -81,7 +82,8 @@ function* handleRegisterRpcPort() {
   if (createRpcTransportService(port)) {
     const modules: RendererModules = {
       emotes: registerEmotesService(port),
-      friendRequest: registerFriendRequestRendererService(port)
+      friendRequest: registerFriendRequestRendererService(port),
+      restrictedActions: registerRestrictedActionsService(port)
     }
 
     yield put(registerRendererModules(modules))
@@ -153,19 +155,11 @@ function* updatePlayerVoiceRecordingRenderer(action: VoiceRecordingUpdateAction)
 }
 
 function* updateChangeVoiceChatHandlerProcess() {
-  let prevHandler: VoiceHandler | undefined = undefined
   while (true) {
     // wait for a new VoiceHandler
     yield take(SET_VOICE_CHAT_HANDLER)
 
-    const handler: VoiceHandler | undefined = yield select(getVoiceHandler)
-
-    if (handler !== prevHandler) {
-      if (prevHandler) {
-        yield prevHandler.destroy()
-      }
-      prevHandler = handler
-    }
+    const handler: VoiceHandler | null = yield select(getVoiceHandler)
 
     yield call(waitForRendererInstance)
 

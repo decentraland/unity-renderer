@@ -163,7 +163,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (placesAndEventsSectionController != null)
             return;
 
-        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i);
+        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i, new UserProfileWebInterfaceBridge());
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }
 

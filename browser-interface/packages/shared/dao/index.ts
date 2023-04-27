@@ -1,4 +1,3 @@
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { PIN_CATALYST } from 'config'
 import defaultLogger from 'lib/logger'
 import { storeCondition } from 'lib/redux'
@@ -6,6 +5,7 @@ import { fetchCatalystNodesFromContract } from 'lib/web3/fetchCatalystNodesFromC
 import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
 import { commsLogger } from 'shared/comms/logger'
 import { getDisabledCatalystConfig } from 'shared/meta/selectors'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 import { setRealmAdapter } from 'shared/realm/actions'
 import {
   adapterForRealmConfig,
@@ -69,7 +69,8 @@ export async function fetchCatalystStatus(
     result.configurations &&
     result.bff &&
     result.content &&
-    result.lambdas
+    result.lambdas &&
+    result.acceptingUsers
   ) {
     const { comms, configurations, bff } = result
 
@@ -94,10 +95,15 @@ export async function fetchCatalystStatus(
       catalystName: configurations.realmName,
       domain: domain,
       status: aboutResponse.status,
-      version: { bff: result.bff.version, content: result.content.version, lambdas: result.lambdas.version, comms: result.comms.protocol },
+      version: {
+        bff: result.bff.version,
+        content: result.content.version,
+        lambdas: result.lambdas.version,
+        comms: result.comms.protocol
+      },
       elapsed: aboutResponse.elapsed!,
       usersCount: bff.userCount || comms.usersCount || 0,
-      acceptingUsers: bff.acceptingUsers,
+      acceptingUsers: result.acceptingUsers,
       maxUsers: 2000,
       usersParcels
     }

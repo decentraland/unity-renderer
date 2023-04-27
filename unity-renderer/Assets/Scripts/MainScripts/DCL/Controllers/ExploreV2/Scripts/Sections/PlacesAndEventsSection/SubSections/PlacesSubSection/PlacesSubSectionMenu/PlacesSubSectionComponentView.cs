@@ -41,6 +41,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void SetAllAsLoading() => SetPlacesAsLoading(true);
     public void SetShowMoreButtonActive(bool isActive) => SetShowMorePlacesButtonActive(isActive);
     public int CurrentTilesPerRow => currentPlacesPerRow;
+    public int CurrentGoingTilesPerRow { get; }
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;

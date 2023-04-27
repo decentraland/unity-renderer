@@ -1,4 +1,3 @@
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { expect } from 'chai'
 import mitt from 'mitt'
 import { expectSaga } from 'redux-saga-test-plan'
@@ -11,8 +10,8 @@ import { disconnectRoom, handleNewCommsContext } from 'shared/comms/sagas'
 import { commsEstablished } from 'shared/loading/types'
 import { saveProfileDelta } from 'shared/profiles/actions'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 import { setRealmAdapter } from 'shared/realm/actions'
-import { localCommsService } from 'shared/realm/local-services/comms'
 import { legacyServices } from 'shared/realm/local-services/legacy'
 import { realmToConnectionString } from 'shared/realm/resolver'
 import { IRealmAdapter } from 'shared/realm/types'
@@ -44,10 +43,8 @@ const realmAdapter: IRealmAdapter = {
   baseUrl: 'https://realm',
   events: mitt(),
   async disconnect() {},
-  services: {
-    legacy: legacyServices('https://realm', about),
-    comms: localCommsService()
-  }
+  sendHeartbeat: (_p) => {},
+  services: legacyServices('https://realm', about)
 }
 
 describe('when the realm change: SET_WORLD_CONTEXT', () => {

@@ -4,6 +4,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Interface;
+using RPC.Context;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace ECSSystems.PointerInputSystem
 {
     public static class ECSPointerInputSystem
     {
+        private static readonly InputAction[] INPUT_ACTION_ENUM = (InputAction[])Enum.GetValues(typeof(WebInterface.ACTION_BUTTON));
+
         private class State
         {
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
@@ -22,6 +25,7 @@ namespace ECSSystems.PointerInputSystem
             public IWorldState worldState;
             public IECSInteractionHoverCanvas interactionHoverCanvas;
             public bool[] inputActionState;
+            public RestrictedActionsContext RestrictedActionsRpcContext;
         }
 
         private class EntityInput
@@ -40,7 +44,8 @@ namespace ECSSystems.PointerInputSystem
             IInternalECSComponent<InternalPointerEvents> pointerEvents,
             IECSInteractionHoverCanvas interactionHoverCanvas,
             IWorldState worldState,
-            DataStore_ECS7 dataStoreEcs)
+            DataStore_ECS7 dataStoreEcs,
+            RestrictedActionsContext restrictedActionsRpcContext)
         {
             var state = new State()
             {
@@ -51,7 +56,8 @@ namespace ECSSystems.PointerInputSystem
                 interactionHoverCanvas = interactionHoverCanvas,
                 dataStoreEcs7 = dataStoreEcs,
                 lastHoverFeedback = new EntityInput() { hasValue = false },
-                inputActionState = new bool[Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length]
+                inputActionState = new bool[INPUT_ACTION_ENUM.Length],
+                RestrictedActionsRpcContext = restrictedActionsRpcContext
             };
             return () => Update(state);
         }
@@ -84,7 +90,7 @@ namespace ECSSystems.PointerInputSystem
                 if (curState[i] != prevState[i])
                 {
                     PointerEventType pointerEventType = curState[i] ? PointerEventType.PetDown : PointerEventType.PetUp;
-                    InputAction inputAction = (InputAction)i;
+                    InputAction inputAction = INPUT_ACTION_ENUM[i];
 
                     if (colliderData != null)
                     {
@@ -111,6 +117,13 @@ namespace ECSSystems.PointerInputSystem
 
                     // update
                     prevState[i] = curState[i];
+
+                    // set current frame count since input is required to prompt modals
+                    // for externalUrl and Nft
+                    if (curState[i] && IsValidInputForUnlockingUiPrompts(inputAction))
+                    {
+                        state.RestrictedActionsRpcContext.LastFrameWithInput = Time.frameCount;
+                    }
                 }
             }
 
@@ -335,6 +348,17 @@ namespace ECSSystems.PointerInputSystem
             {
                 canvas.Hide();
             }
+        }
+
+        private static bool IsValidInputForUnlockingUiPrompts(InputAction inputAction)
+        {
+            return inputAction == InputAction.IaPointer
+                   || inputAction == InputAction.IaPrimary
+                   || inputAction == InputAction.IaSecondary
+                   || inputAction == InputAction.IaAction3
+                   || inputAction == InputAction.IaAction4
+                   || inputAction == InputAction.IaAction5
+                   || inputAction == InputAction.IaAction6;
         }
     }
 }

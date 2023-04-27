@@ -37,7 +37,7 @@ namespace DCL
             return Create(PrimitiveType.Plane, new PropertyUvs(uvs));
         }
 
-        public static AssetPromise_PrimitiveMesh_Model CreateSphere(float radius = 1, int longitude = 24, int latitude = 16)
+        public static AssetPromise_PrimitiveMesh_Model CreateSphere(float radius = 0.5f, int longitude = 24, int latitude = 16)
         {
             return Create(PrimitiveType.Sphere, new PropertySphere(radius, longitude, latitude));
         }
@@ -78,7 +78,7 @@ namespace DCL
         public readonly int Latitude;
         public readonly int Longitude;
 
-        public PropertySphere(float radius = 1, int longitude = 24, int latitude = 16)
+        public PropertySphere(float radius = 0.5f, int longitude = 24, int latitude = 16)
         {
             Radius = radius;
             Longitude = longitude;
