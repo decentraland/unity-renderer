@@ -18,6 +18,7 @@ namespace DCL.Backpack
         private readonly Dictionary<string, IAvatarSlotComponentView> avatarSlots = new ();
 
         public event Action<string, bool> OnToggleAvatarSlot;
+        public event Action<string> OnUnequipFromSlot;
 
         public void CreateAvatarSlotSection(string sectionName, bool addSeparator)
         {
@@ -39,14 +40,24 @@ namespace DCL.Backpack
             IAvatarSlotComponentView avatarSlot = Instantiate(avatarSlotPrefab, avatarSlotSections[sectionName]).GetComponent<IAvatarSlotComponentView>();
             avatarSlot.SetCategory(slotCategory);
             avatarSlots.Add(slotCategory, avatarSlot);
-            avatarSlot.SetNftImage("");
             avatarSlot.OnSelectAvatarSlot += (slotCat, isToggled)=>OnToggleAvatarSlot?.Invoke(slotCat, isToggled);
+            avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
         }
 
-        public void DisablePreviousSlot(string category)
-        {
+        public void SetSlotNftImage(string category, string imageUrl) =>
+            avatarSlots[category].SetNftImage(imageUrl);
+
+        public void SetSlotRarity(string category, string rarity) =>
+            avatarSlots[category].SetRarity(rarity);
+
+        public void DisablePreviousSlot(string category) =>
             avatarSlots[category].OnPointerClickOnDifferentSlot();
-        }
+
+        public void ResetCategorySlot(string category) =>
+            avatarSlots[category].ResetSlot();
+
+        public void SetWearableId(string category, string wearableId) =>
+            avatarSlots[category].SetWearableId(wearableId);
 
         public void SetSlotsAsHidden(string[] slotsToHide, string hiddenBy)
         {

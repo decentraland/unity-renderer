@@ -1,0 +1,23 @@
+syntax = "proto3";
+package decentraland.renderer.renderer_services;
+
+message OpenExternalUrlRequest {
+  string url = 1;
+  int32 scene_number = 2;
+}
+
+message OpenNftDialogRequest {
+  string urn = 1;
+}
+
+message OpenModalResponse {
+  bool success = 1;
+}
+
+service RestrictedActionsService {
+  // OpenExternalUrl prompts the user to open an external link
+  rpc OpenExternalUrl(OpenExternalUrlRequest) returns (OpenModalResponse) {}
+
+  // OpenNftDialog opens an NFT dialog.
+  rpc OpenNftDialog(OpenNftDialogRequest) returns (OpenModalResponse) {}
+}

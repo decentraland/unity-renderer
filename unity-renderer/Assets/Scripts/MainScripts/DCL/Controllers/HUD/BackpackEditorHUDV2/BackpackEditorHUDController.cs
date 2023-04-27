@@ -46,6 +46,7 @@ namespace DCL.Backpack
             this.wearableGridController = wearableGridController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
 
+            avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfile;
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
@@ -59,8 +60,7 @@ namespace DCL.Backpack
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
-            avatarSlotsHUDController.GenerateSlots();
-
+            avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearable;
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
 
@@ -163,6 +163,7 @@ namespace DCL.Backpack
                 }
 
                 model.wearables.Add(wearable.id, wearable);
+                avatarSlotsHUDController.Equip(wearable);
             }
         }
 
@@ -263,7 +264,7 @@ namespace DCL.Backpack
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
 
-            avatarSlotsHUDController.Equip(wearableId, wearable.ComposeThumbnailUrl());
+            avatarSlotsHUDController.Equip(wearable);
             wearableGridController.Equip(wearableId);
 
             avatarIsDirty = true;
@@ -273,10 +274,10 @@ namespace DCL.Backpack
 
         private void UnEquipWearable(string wearableId)
         {
+            avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
 
-            avatarSlotsHUDController.UnEquip(wearableId);
             wearableGridController.UnEquip(wearableId);
 
             avatarIsDirty = true;

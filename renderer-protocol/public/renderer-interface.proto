@@ -6,6 +6,7 @@ import public "decentraland/renderer/renderer_services/transport.proto";
 import public "decentraland/renderer/renderer_services/emotes_renderer.proto";
 import public "decentraland/renderer/renderer_services/scene_controller.proto";
 import public "decentraland/renderer/renderer_services/friend_request_renderer.proto";
+import public "decentraland/renderer/renderer_services/restricted_actions.proto";
 import public "decentraland/renderer/kernel_services/emotes_kernel.proto";
 import public "decentraland/renderer/kernel_services/analytics.proto";
 import public "decentraland/renderer/kernel_services/friend_request_kernel.proto";

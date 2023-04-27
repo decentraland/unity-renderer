@@ -29,14 +29,33 @@ namespace DCL.Backpack
         [SerializeField] internal TMP_Text tooltipCategoryText;
         [SerializeField] internal TMP_Text tooltipHiddenText;
         [SerializeField] internal Button button;
+        [SerializeField] internal Button unequipButton;
 
         public event Action<string, bool> OnSelectAvatarSlot;
+        public event Action<string> OnUnEquip;
         private bool isSelected = false;
 
-        public void Start()
+        public override void Awake()
         {
+            base.Awake();
+
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnSlotClick);
+            unequipButton.onClick.RemoveAllListeners();
+            unequipButton.onClick.AddListener(()=>
+            {
+                OnUnEquip?.Invoke(model.wearableId);
+                unequipButton.gameObject.SetActive(false);
+            });
+            ResetSlot();
+        }
+
+        public void ResetSlot()
+        {
+            SetRarity(null);
+            SetNftImage("");
+            RefreshControl();
+            SetWearableId("");
         }
 
         public override void RefreshControl()
@@ -48,6 +67,7 @@ namespace DCL.Backpack
             SetNftImage(model.imageUri);
             SetRarity(model.rarity);
             SetIsHidden(model.isHidden, model.hiddenBy);
+            SetWearableId(model.wearableId);
         }
 
         public void SetIsHidden(bool isHidden, string hiddenBy)
@@ -78,10 +98,10 @@ namespace DCL.Backpack
         public void SetNftImage(string imageUri)
         {
             model.imageUri = imageUri;
-
             if (string.IsNullOrEmpty(imageUri))
             {
                 nftImage.SetImage(Texture2D.grayTexture);
+                nftImage.SetLoadingIndicatorVisible(false);
                 emptySlot.SetActive(true);
                 return;
             }
@@ -93,13 +113,21 @@ namespace DCL.Backpack
         public void SetRarity(string rarity)
         {
             model.rarity = rarity;
-            backgroundRarityImage.sprite = rarityBackgrounds.GetRarityImage(rarity);
+            backgroundRarityImage.sprite = string.IsNullOrEmpty(rarity) ? null : rarityBackgrounds.GetRarityImage(rarity);
+        }
+
+        public void SetWearableId(string wearableId)
+        {
+            model.wearableId = wearableId;
         }
 
         public override void OnFocus()
         {
             focusedImage.enabled = true;
             tooltipContainer.SetActive(true);
+            if(!emptySlot.activeInHierarchy)
+                unequipButton.gameObject.SetActive(true);
+
             ScaleUpAnimation(focusedImage.transform);
         }
 
@@ -107,6 +135,7 @@ namespace DCL.Backpack
         {
             focusedImage.enabled = false;
             tooltipContainer.SetActive(false);
+            unequipButton.gameObject.SetActive(false);
         }
 
         public void OnSlotClick()
