@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f4d8de900354324879c6341b81b801b, type: 3}
   m_Name: NftTypeColorSupporting
   m_EditorClassIdentifier: 
-  nftTypes:
+  colorSupportingByNftType:
   - key: eyes
     value: 1
   - key: mouth
