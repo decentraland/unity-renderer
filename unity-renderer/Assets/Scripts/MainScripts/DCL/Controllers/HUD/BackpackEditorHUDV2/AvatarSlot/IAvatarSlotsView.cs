@@ -1,13 +1,12 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCL.Backpack
 {
     public interface IAvatarSlotsView
     {
-        event Action<string, bool, bool> OnToggleAvatarSlot;
+        delegate void ToggleAvatarSlotDelegate(string slotCategory, bool supportColor, bool isSelected);
+        event ToggleAvatarSlotDelegate OnToggleAvatarSlot;
+
         event Action<string> OnUnequipFromSlot;
 
         void CreateAvatarSlotSection(string sectionName, bool addSeparator);

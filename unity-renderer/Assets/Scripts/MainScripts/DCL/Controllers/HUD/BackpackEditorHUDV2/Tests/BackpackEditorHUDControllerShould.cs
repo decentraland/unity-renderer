@@ -194,7 +194,7 @@ namespace DCL.Backpack
         public void ToggleSlotCorrectly(string slotCategory)
         {
             // Act
-            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<Action<string, bool, bool>>(slotCategory, true, true);
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, true);
 
             // Assert
             view.Received(1).SetColorPickerVisibility(true);
