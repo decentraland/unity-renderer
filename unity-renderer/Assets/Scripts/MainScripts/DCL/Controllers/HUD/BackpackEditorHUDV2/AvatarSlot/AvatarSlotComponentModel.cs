@@ -10,6 +10,6 @@ namespace DCL.Backpack
         public string category;
         public bool isHidden;
         public string hiddenBy;
-        public bool supportColor;
+        public bool allowsColorChange;
     }
 }

@@ -861,6 +861,7 @@ MonoBehaviour:
   wearableGridComponentView: {fileID: 1576087038466160472}
   avatarSlotsView: {fileID: 6334948493177450258}
   colorPickerComponentView: {fileID: 1641203379701116722}
+  colorPresetsSO: {fileID: 11400000, guid: 781459e41352b1f47a5c30b487bb02d2, type: 2}
 --- !u!1 &3646189608458600939
 GameObject:
   m_ObjectHideFlags: 0

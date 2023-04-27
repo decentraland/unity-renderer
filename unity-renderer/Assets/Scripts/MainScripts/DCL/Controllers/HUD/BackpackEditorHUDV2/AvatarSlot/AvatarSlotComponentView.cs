@@ -82,7 +82,7 @@ namespace DCL.Backpack
         public void SetCategory(string category)
         {
             model.category = category;
-            model.supportColor = typeColorSupporting.GetTypeColorSupporting(category);
+            model.allowsColorChange = typeColorSupporting.GetTypeColorSupporting(category);
             typeImage.sprite = typeIcons.GetTypeImage(category);
             tooltipCategoryText.text = category;
         }

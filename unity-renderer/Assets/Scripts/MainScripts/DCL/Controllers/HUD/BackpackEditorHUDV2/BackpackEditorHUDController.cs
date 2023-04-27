@@ -8,6 +8,12 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDController
     {
+        private const string EYES_CATEGORY = "eyes";
+        private const string HAIR_CATEGORY = "hair";
+        private const string EYEBROWS_CATEGORY = "eyebrows";
+        private const string FACIAL_HAIR_CATEGORY = "facial_hair";
+        private const string BODYSHAPE_CATEGORY = "bodyshape";
+
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
         private readonly IWearablesCatalogService wearablesCatalogService;
@@ -63,9 +69,7 @@ namespace DCL.Backpack
 
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
 
-            ColorPresetsSO colorPresets = Resources.Load<ColorPresetsSO>("BackpackColorPickerPresets");
             view.SetColorPickerVisibility(false);
-            view.SetColorPresets(colorPresets.colors);
             view.OnColorChanged += OnWearableColorChanged;
 
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
@@ -294,13 +298,13 @@ namespace DCL.Backpack
 
             switch (slotCategory)
             {
-                case "eyes":
+                case EYES_CATEGORY:
                     view.SetColorPickerValue(model.eyesColor);
                     break;
-                case "hair" or "eyebrows" or "facial_hair":
+                case HAIR_CATEGORY or EYEBROWS_CATEGORY or FACIAL_HAIR_CATEGORY:
                     view.SetColorPickerValue(model.hairColor);
                     break;
-                case "bodyshape":
+                case BODYSHAPE_CATEGORY:
                     view.SetColorPickerValue(model.skinColor);
                     break;
             }
@@ -312,15 +316,15 @@ namespace DCL.Backpack
 
             switch (currentSlotSelected)
             {
-                case "eyes":
+                case EYES_CATEGORY:
                     model.eyesColor = newColor;
                     colorChanged = true;
                     break;
-                case "hair" or "eyebrows" or "facial_hair":
+                case HAIR_CATEGORY or EYEBROWS_CATEGORY or FACIAL_HAIR_CATEGORY:
                     model.hairColor = newColor;
                     colorChanged = true;
                     break;
-                case "bodyshape":
+                case BODYSHAPE_CATEGORY:
                     model.skinColor = newColor;
                     colorChanged = true;
                     break;

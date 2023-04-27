@@ -25,6 +25,7 @@ namespace DCL.Backpack
         [SerializeField] private WearableGridComponentView wearableGridComponentView;
         [SerializeField] private AvatarSlotsView avatarSlotsView;
         [SerializeField] private ColorPickerComponentView colorPickerComponentView;
+        [SerializeField] private ColorPresetsSO colorPresetsSO;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
@@ -50,6 +51,7 @@ namespace DCL.Backpack
             ConfigureSectionSelector();
             backpackPreviewPanel.Initialize(characterPreviewFactory);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
+            colorPickerComponentView.SetColorList(colorPresetsSO.colors);
         }
 
         private void Update() =>
@@ -85,7 +87,7 @@ namespace DCL.Backpack
         {
             gameObject.SetActive(false);
             backpackPreviewPanel.SetPreviewEnabled(false);
-            SetColorPickerVisibility(false);
+            colorPickerComponentView.SetActive(false);
         }
 
         public override void RefreshControl() { }
@@ -143,9 +145,6 @@ namespace DCL.Backpack
             snapshotsCts = snapshotsCts.SafeRestart();
             TakeSnapshotsAfterStopPreviewAnimationAsync(snapshotsCts.Token).Forget();
         }
-
-        public void SetColorPresets(List<Color> colors) =>
-            colorPickerComponentView.SetColorList(colors);
 
         public void SetColorPickerVisibility(bool isActive) =>
             colorPickerComponentView.gameObject.SetActive(isActive);

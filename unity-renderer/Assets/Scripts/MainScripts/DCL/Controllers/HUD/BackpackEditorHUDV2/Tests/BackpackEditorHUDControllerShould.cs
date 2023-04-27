@@ -92,7 +92,6 @@ namespace DCL.Backpack
             view.Received(1).Hide();
             view.Received(1).ResetPreviewEmote();
             view.Received(1).SetColorPickerVisibility(false);
-            view.Received(1).SetColorPresets(Arg.Any<List<Color>>());
         }
 
         [Test]

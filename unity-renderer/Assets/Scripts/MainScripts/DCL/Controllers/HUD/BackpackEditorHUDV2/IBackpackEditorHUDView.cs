@@ -20,7 +20,6 @@ namespace DCL.Backpack
         void ResetPreviewEmote();
         void UpdateAvatarPreview(AvatarModel avatarModel);
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
-        void SetColorPresets(List<Color> colors);
         void SetColorPickerVisibility(bool isActive);
         void SetColorPickerValue(Color color);
     }
