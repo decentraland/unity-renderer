@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.13752504, g: 0.14356056, b: 0.19036336, a: 1}
+  m_IndirectSpecularColor: {r: 0.02761055, g: 0.01583809, b: 0.071168095, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -574,7 +574,7 @@ MonoBehaviour:
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 3
-  customURL: http://localhost:8080/?ENABLE_WEB3&
+  customURL: http://localhost:8080/?ENABLE_WEB3&ENABLE_use-social-client&
   network: 0
   realm: loki
   startInCoords: {x: 0, y: 0}

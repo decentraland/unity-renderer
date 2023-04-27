@@ -43,6 +43,11 @@ namespace DCL.Social.Friends
         public event Action<FriendRequest> OnFriendRequestReceived;
         public event Action<FriendRequest> OnSentFriendRequestApproved;
 
+        private CancellationTokenSource controllerCancellationTokenSource = new ();
+
+        // private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
+        private bool useSocialApiBridge => true;
+        
         public FriendsController(IFriendsApiBridge apiBridge, ISocialApiBridge socialApiBridge, DataStore dataStore)
         {
             this.apiBridge = apiBridge;
