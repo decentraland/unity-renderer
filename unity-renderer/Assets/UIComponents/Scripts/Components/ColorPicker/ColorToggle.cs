@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
@@ -23,22 +24,17 @@ public class ColorToggle : MonoBehaviour
         }
     }
 
-    public event System.Action<ColorToggle> OnClicked;
+    public event Action<ColorToggle> OnClicked;
 
     private void Awake()
     {
         button = GetComponent<Button>();
-        button.onClick.AddListener(OnClick);
-
-        Application.quitting += () =>
-        {
-            OnClicked = null;
-        };
+        button.onClick.AddListener(() => OnClicked?.Invoke(this));
     }
 
     private void OnDestroy()
     {
-        button.onClick.RemoveListener(OnClick);
+        button.onClick.RemoveAllListeners();
     }
 
     public void Initialize(Color c, bool on)
@@ -47,7 +43,4 @@ public class ColorToggle : MonoBehaviour
         colorPicker.color = Color;
         Selected = on;
     }
-
-    private void OnClick() =>
-        OnClicked?.Invoke(this);
 }
