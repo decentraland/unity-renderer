@@ -16,7 +16,7 @@ namespace DCL.Social.Friends
     public class FriendsControllerShould
     {
         private IFriendsApiBridge apiBridge;
-        private RPCSocialApiBridge socialApiBridge;
+        private RPCSocialApiBridge rpcSocialApiBridge;
         private FriendsController controller;
 
         [SetUp]
@@ -28,8 +28,9 @@ namespace DCL.Social.Friends
             var dataStore = new DataStore();
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
 
-            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component,new UserProfileWebInterfaceBridge(),
-                () => Substitute.For<ITransport>(), dataStore), dataStore);
+            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component, new UserProfileWebInterfaceBridge(),
+                () => Substitute.For<ITransport>()), dataStore);
+
             controller.Initialize();
         }
 

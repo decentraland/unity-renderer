@@ -13,10 +13,16 @@ namespace DCL.Social.Friends
         private const string USE_SOCIAL_CLIENT_FEATURE_FLAG = "use-social-client";
 
         private readonly IFriendsApiBridge apiBridge;
-        private readonly IRPCSocialApiBridge socialApiBridge;
+        private readonly ISocialApiBridge socialApiBridge;
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
         private readonly Dictionary<string, UserStatus> friends = new ();
         private readonly DataStore dataStore;
+
+        private CancellationTokenSource controllerCancellationTokenSource = new ();
+        private UniTaskCompletionSource featureFlagsInitializedTask;
+
+        private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
+        private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
@@ -37,15 +43,10 @@ namespace DCL.Social.Friends
         public event Action<FriendRequest> OnFriendRequestReceived;
         public event Action<FriendRequest> OnSentFriendRequestApproved;
 
-        private CancellationTokenSource controllerCancellationTokenSource = new ();
-
-        private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
-
-        public FriendsController(IFriendsApiBridge apiBridge, IRPCSocialApiBridge rpcSocialApiBridge, DataStore dataStore)
+        public FriendsController(IFriendsApiBridge apiBridge, ISocialApiBridge socialApiBridge, DataStore dataStore)
         {
             this.apiBridge = apiBridge;
-            this.socialApiBridge = rpcSocialApiBridge;
-
+            this.socialApiBridge = socialApiBridge;
             this.dataStore = dataStore;
         }
 
@@ -53,32 +54,46 @@ namespace DCL.Social.Friends
         {
             controllerCancellationTokenSource = controllerCancellationTokenSource.SafeRestart();
 
-            if (useSocialApiBridge)
-            {
-                socialApiBridge.OnFriendAdded += AddFriend;
-                socialApiBridge.OnFriendRemoved += InternalRemoveFriend;
-                socialApiBridge.OnFriendRequestAdded += AddFriendRequest;
-                socialApiBridge.OnFriendRequestRemoved += RemoveFriendRequest;
-            }
-            else
-            {
-                apiBridge.OnInitialized += InitializeFriendships;
-
-                // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                apiBridge.OnFriendRequestsAdded += AddFriendRequests;
-                apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
-                apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
-                apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
-            }
-
+            // TODO: wrap this events into socialApiBridge since it wont be supported by the social service
             apiBridge.OnFriendNotFound += FriendNotFound;
             apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
             apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
+
+            void SubscribeToCorrespondingBridgeEvents()
+            {
+                if (useSocialApiBridge)
+                {
+                    socialApiBridge.OnFriendAdded += AddFriend;
+                    socialApiBridge.OnFriendRemoved += InternalRemoveFriend;
+                    socialApiBridge.OnFriendRequestAdded += AddFriendRequest;
+                    socialApiBridge.OnFriendRequestRemoved += RemoveFriendRequest;
+                }
+                else
+                {
+                    apiBridge.OnInitialized += InitializeFriendships;
+
+                    // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                    apiBridge.OnFriendRequestsAdded += AddFriendRequests;
+                    apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
+                    apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
+                    apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
+                }
+            }
+
+            if (featureFlags.IsInitialized)
+                SubscribeToCorrespondingBridgeEvents();
+            else
+                WaitForFeatureFlagsToBeInitialized(controllerCancellationTokenSource.Token)
+                   .ContinueWith(SubscribeToCorrespondingBridgeEvents)
+                   .Forget();
         }
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
         {
+            if (!featureFlags.IsInitialized)
+                await WaitForFeatureFlagsToBeInitialized(cancellationToken);
+
             if (useSocialApiBridge)
             {
                 FriendshipInitializationMessage info = await socialApiBridge.GetInitializationInformationAsync(cancellationToken);
@@ -164,7 +179,7 @@ namespace DCL.Social.Friends
 
             FriendRequest friendRequest;
 
-            if (useSocialApiBridge) { friendRequest = await socialApiBridge.RequestFriendship(friendUserId, messageBody, cancellationToken); }
+            if (useSocialApiBridge) { friendRequest = await socialApiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken); }
             else
             {
                 RequestFriendshipConfirmationPayload payload = await apiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
@@ -221,7 +236,7 @@ namespace DCL.Social.Friends
             {
                 friendRequest = friendRequests[friendRequestId];
 
-                await socialApiBridge.RejectFriendship(friendRequestId, cancellationToken);
+                await socialApiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
             }
             else
             {
@@ -578,6 +593,24 @@ namespace DCL.Social.Friends
                 case FriendshipStatus.REQUESTED_FROM:
                     return FriendshipAction.REQUESTED_FROM;
             }
+        }
+
+        private async UniTask WaitForFeatureFlagsToBeInitialized(CancellationToken cancellationToken)
+        {
+            if (featureFlagsInitializedTask == null)
+            {
+                featureFlagsInitializedTask = new UniTaskCompletionSource();
+
+                void CompleteTaskAndUnsubscribe(FeatureFlag current, FeatureFlag previous)
+                {
+                    dataStore.featureFlags.flags.OnChange -= CompleteTaskAndUnsubscribe;
+                    featureFlagsInitializedTask.TrySetResult();
+                }
+
+                dataStore.featureFlags.flags.OnChange += CompleteTaskAndUnsubscribe;
+            }
+
+            await featureFlagsInitializedTask.Task.AttachExternalCancellation(cancellationToken);
         }
     }
 }

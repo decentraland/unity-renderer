@@ -102,11 +102,7 @@ namespace DCL.Social.Friends
                 return client;
             }
 
-            var dataStore = new DataStore();
-            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
-
-            rpcSocialApiBridge = new RPCSocialApiBridge(component, userProfileBridge, TransportProvider,
-                dataStore);
+            rpcSocialApiBridge = new RPCSocialApiBridge(component, userProfileBridge, TransportProvider);
             rpcSocialApiBridge.Initialize();
             yield return rpcSocialApiBridge.InitializeAsync(default(CancellationToken)).ToCoroutine();
         }

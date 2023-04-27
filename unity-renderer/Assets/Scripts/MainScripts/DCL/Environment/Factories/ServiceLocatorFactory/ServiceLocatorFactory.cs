@@ -80,15 +80,16 @@ namespace DCL
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
             result.Register<IChatController>(() => new ChatController(WebInterfaceChatBridge.GetOrCreate(), DataStore.i));
 
-            result.Register<IRPCSocialApiBridge>(() =>
+            result.Register<ISocialApiBridge>(() =>
             {
                 ITransport TransportProvider() =>
                     new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
 
-                return new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
+                var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    TransportProvider,
-                    DataStore.i);
+                    TransportProvider);
+
+                return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });
 
             result.Register<IFriendsController>(() =>
@@ -99,7 +100,7 @@ namespace DCL
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                         webInterfaceFriendsApiBridge,
                         RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
-                        DataStore.i), result.Get<IRPCSocialApiBridge>(),
+                        DataStore.i), result.Get<ISocialApiBridge>(),
                     DataStore.i);
             });
 

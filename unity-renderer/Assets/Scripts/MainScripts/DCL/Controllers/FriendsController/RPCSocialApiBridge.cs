@@ -12,20 +12,17 @@ using Payload = Decentraland.Social.Friendships.Payload;
 
 namespace DCL.Social.Friends
 {
-    public class RPCSocialApiBridge : IRPCSocialApiBridge
+    public class RPCSocialApiBridge : ISocialApiBridge
     {
         private const int REQUEST_TIMEOUT = 30;
 
         private readonly MatrixInitializationBridge matrixInitializationBridge;
         private readonly IUserProfileBridge userProfileWebInterfaceBridge;
         private readonly Func<ITransport> clientTransportProvider;
-        private readonly DataStore dataStore;
 
         private string accessToken;
         private ClientFriendshipsService socialClient;
         private UniTaskCompletionSource<FriendshipInitializationMessage> initializationInformationTask;
-
-        private bool useSocialApiBridge => dataStore.featureFlags.flags.Get().IsFeatureEnabled("use-social-client");
 
         public event Action<UserStatus> OnFriendAdded;
         public event Action<string> OnFriendRemoved;
@@ -37,17 +34,16 @@ namespace DCL.Social.Friends
 
         public RPCSocialApiBridge(MatrixInitializationBridge matrixInitializationBridge,
             IUserProfileBridge userProfileWebInterfaceBridge,
-            Func<ITransport> transportProvider,
-            DataStore dataStore)
+            Func<ITransport> transportProvider)
         {
             this.matrixInitializationBridge = matrixInitializationBridge;
             this.userProfileWebInterfaceBridge = userProfileWebInterfaceBridge;
             clientTransportProvider = transportProvider;
-            this.dataStore = dataStore;
         }
 
         public void Dispose()
         {
+            // TODO: dispose the rpc client and all related objects
         }
 
         public void Initialize()
@@ -57,7 +53,6 @@ namespace DCL.Social.Friends
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
         {
-            if (!useSocialApiBridge) return;
             await InitializeClient(cancellationToken);
             InitializeSubscriptions(cancellationToken).Forget();
         }
@@ -178,7 +173,7 @@ namespace DCL.Social.Friends
                 cancellationToken);
         }
 
-        public async UniTask RejectFriendship(string friendRequestId, CancellationToken cancellationToken = default)
+        public async UniTask RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
         {
             string userId = GetUserIdFromFriendRequestId(friendRequestId);
 
@@ -199,7 +194,7 @@ namespace DCL.Social.Friends
             OnFriendRequestRemoved?.Invoke(userId);
         }
 
-        public async UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody, CancellationToken cancellationToken = default)
+        public async UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody, CancellationToken cancellationToken = default)
         {
             long createdAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
@@ -229,7 +224,7 @@ namespace DCL.Social.Friends
         private static string GetFriendRequestId(string userId, long createdAt) =>
             $"{userId}-{createdAt}";
 
-        public async UniTask UpdateFriendship(UpdateFriendshipPayload updateFriendshipPayload, CancellationToken cancellationToken = default)
+        private async UniTask UpdateFriendship(UpdateFriendshipPayload updateFriendshipPayload, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -271,31 +266,16 @@ namespace DCL.Social.Friends
         public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken = default) =>
             throw new NotImplementedException();
 
-        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody, CancellationToken cancellationToken = default) =>
-            throw new NotImplementedException();
-
-        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId, CancellationToken cancellationToken = default) =>
-            throw new NotImplementedException();
-
-        public UniTask CancelRequestByUserIdAsync(string userId, CancellationToken cancellationToken = default) =>
+        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string userId, CancellationToken cancellationToken = default) =>
             throw new NotImplementedException();
 
         public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default) =>
             throw new NotImplementedException();
 
-        public UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken = default) =>
+        public UniTask<FriendshipStatus> GetFriendshipStatusAsync(string userId, CancellationToken cancellationToken = default) =>
             throw new NotImplementedException();
 
-        public UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
-            throw new NotImplementedException();
-
-        public UniTask<RejectFriendRequestReply> RejectFriendRequest(RejectFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
-            throw new NotImplementedException();
-
-        public UniTask<CancelFriendRequestReply> CancelFriendRequest(CancelFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
-            throw new NotImplementedException();
-
-        public UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
+        public UniTask<ApproveFriendRequestReply> ApproveFriendRequestAsync(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
             throw new NotImplementedException();
 
         FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code)
