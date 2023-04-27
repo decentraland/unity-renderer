@@ -20,17 +20,5 @@ namespace DCL.Social.Friends
         UniTask RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
 
         UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody, CancellationToken cancellationToken = default);
-
-        UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default);
-
-        UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default);
-
-        UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken = default);
-
-        UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string userId, CancellationToken cancellationToken = default);
-
-        UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
-
-        UniTask<FriendshipStatus> GetFriendshipStatusAsync(string userId, CancellationToken cancellationToken = default);
     }
 }

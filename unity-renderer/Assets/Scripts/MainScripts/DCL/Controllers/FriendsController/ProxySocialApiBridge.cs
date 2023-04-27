@@ -14,8 +14,7 @@ namespace DCL.Social.Friends
         private CancellationTokenSource lifeCycleCancellationToken = new ();
         private UniTaskCompletionSource featureFlagsInitializedTask;
 
-        private FeatureFlag featureFlags =>
-            dataStore.featureFlags.flags.Get();
+        private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
         private bool useSocialApiBridge => featureFlags.IsFeatureEnabled("use-social-client");
 
@@ -125,54 +124,6 @@ namespace DCL.Social.Friends
                 return socialApiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
 
             return UniTask.Never<FriendRequest>(cancellationToken);
-        }
-
-        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default)
-        {
-            if (useSocialApiBridge)
-                return socialApiBridge.GetFriendsAsync(limit, skip, cancellationToken);
-
-            return UniTask.Never<AddFriendsPayload>(cancellationToken);
-        }
-
-        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default)
-        {
-            if (useSocialApiBridge)
-                return socialApiBridge.GetFriendsAsync(usernameOrId, limit, cancellationToken);
-
-            return UniTask.Never<AddFriendsPayload>(cancellationToken);
-        }
-
-        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken = default)
-        {
-            if (useSocialApiBridge)
-                return socialApiBridge.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip, cancellationToken);
-
-            return UniTask.Never<AddFriendRequestsV2Payload>(cancellationToken);
-        }
-
-        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string userId, CancellationToken cancellationToken = default)
-        {
-            if (useSocialApiBridge)
-                return socialApiBridge.CancelRequestAsync(userId, cancellationToken);
-
-            return UniTask.Never<CancelFriendshipConfirmationPayload>(cancellationToken);
-        }
-
-        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
-        {
-            if (useSocialApiBridge)
-                return socialApiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
-
-            return UniTask.Never<AcceptFriendshipPayload>(cancellationToken);
-        }
-
-        public UniTask<FriendshipStatus> GetFriendshipStatusAsync(string userId, CancellationToken cancellationToken = default)
-        {
-            if (useSocialApiBridge)
-                return socialApiBridge.GetFriendshipStatusAsync(userId, cancellationToken);
-
-            return UniTask.Never<FriendshipStatus>(cancellationToken);
         }
 
         private async UniTask WaitForFeatureFlagsToBeInitialized(CancellationToken cancellationToken)
