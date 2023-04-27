@@ -15,5 +15,6 @@ namespace DCL.Backpack
         public string imageUri;
         public List<string> hideList;
         public List<string> removeList;
+        public string wearableId;
     }
 }

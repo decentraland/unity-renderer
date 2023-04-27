@@ -18,6 +18,7 @@ namespace DCL.Backpack
         private readonly Dictionary<string, IAvatarSlotComponentView> avatarSlots = new ();
 
         public event Action<string, bool> OnToggleAvatarSlot;
+        public event Action<string> OnUnequipFromSlot;
 
         public void CreateAvatarSlotSection(string sectionName, bool addSeparator)
         {
@@ -40,12 +41,11 @@ namespace DCL.Backpack
             avatarSlot.SetCategory(slotCategory);
             avatarSlots.Add(slotCategory, avatarSlot);
             avatarSlot.OnSelectAvatarSlot += (slotCat, isToggled)=>OnToggleAvatarSlot?.Invoke(slotCat, isToggled);
+            avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
         }
 
-        public void SetSlotNftImage(string category, string imageUrl)
-        {
+        public void SetSlotNftImage(string category, string imageUrl) =>
             avatarSlots[category].SetNftImage(imageUrl);
-        }
 
         public void SetSlotRarity(string category, string rarity) =>
             avatarSlots[category].SetRarity(rarity);
@@ -55,6 +55,9 @@ namespace DCL.Backpack
 
         public void ResetCategorySlot(string category) =>
             avatarSlots[category].ResetSlot();
+
+        public void SetWearableId(string category, string wearableId) =>
+            avatarSlots[category].SetWearableId(wearableId);
 
         public void SetSlotsAsHidden(string[] slotsToHide, string hiddenBy)
         {

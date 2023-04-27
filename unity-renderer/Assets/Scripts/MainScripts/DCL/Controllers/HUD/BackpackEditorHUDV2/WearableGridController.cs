@@ -186,6 +186,7 @@ namespace DCL.Backpack
                 hideList = wearable.GetHidesList(userProfileBridge.GetOwn().avatar.bodyShape).ToList(),
                 isEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearableId),
                 removeList = wearable.data.replaces.ToList(),
+                wearableId = wearableId,
             });
         }
 

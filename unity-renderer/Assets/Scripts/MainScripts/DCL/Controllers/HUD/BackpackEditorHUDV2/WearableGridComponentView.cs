@@ -106,6 +106,10 @@ namespace DCL.Backpack
                 wearableGridItem.OnEquipped += HandleWearableEquipped;
                 wearableGridItem.OnUnequipped += HandleWearableUnequipped;
             }
+            if(model.IsEquipped)
+                infoCardComponentView.Equip(model.WearableId);
+            else
+                infoCardComponentView.UnEquip(model.WearableId);
         }
 
 
