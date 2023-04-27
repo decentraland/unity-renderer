@@ -338,8 +338,8 @@ export class UnityInterface implements IUnityInterface {
   public async UpdateMinimapSceneInformation(info: MinimapSceneInfo[])
   {
     const adapter = await ensureRealmAdapter()
-    const isWorld = isWorldLoaderActive(adapter)
-    const payload = JSON.stringify({ isWorld, scenesInfo: info })
+    const isWorldScene = isWorldLoaderActive(adapter)
+    const payload = JSON.stringify({ isWorldScene, scenesInfo: info })
 
     this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', payload)
   }
@@ -347,8 +347,8 @@ export class UnityInterface implements IUnityInterface {
   public UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[])
   {
     this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(info))
-    const isWorld = true
-    const payload = JSON.stringify({ isWorld, scenesInfo: info })
+    const isWorldScene = false
+    const payload = JSON.stringify({ isWorldScene, scenesInfo: info })
 
     this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', payload)
   }
