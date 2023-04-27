@@ -133,7 +133,8 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
 
           return {
             hasEntities: response.hasOwnEntities || hasMainCrdt,
-            data: [joinBuffers(initialEntitiesTick0, response.payload)]
+            // send the initialEntitiesTick0 (main.crdt) and the response.payload
+            data: [initialEntitiesTick0, response.payload]
           }
         }
       }
