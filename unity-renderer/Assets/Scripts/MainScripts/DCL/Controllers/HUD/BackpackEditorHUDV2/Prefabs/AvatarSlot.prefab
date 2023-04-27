@@ -219,12 +219,18 @@ MonoBehaviour:
     category: 
     isHidden: 0
     hiddenBy: 
+    allowsColorChange: 0
+    wearableId: 
   model:
     rarity: 
     imageUri: 
     category: 
     isHidden: 0
     hiddenBy: 
+    allowsColorChange: 0
+    wearableId: 
+  typeColorSupporting: {fileID: 11400000, guid: cabc2888038bd9642b681f41597ffe20,
+    type: 2}
   typeIcons: {fileID: 11400000, guid: 9525caf9cd97d4aa1b91f145f3a604e3, type: 2}
   nftContainer: {fileID: 2235824014885110001}
   rarityBackgrounds: {fileID: 11400000, guid: 3f361f63120234ae8972eac66a946fa0, type: 2}
