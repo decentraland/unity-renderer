@@ -28,7 +28,7 @@ namespace DCL.Map
         {
             MinimapMetadataPayload payload = JsonUtility.FromJson<MinimapMetadataPayload>(scenesInfoJson);
 
-            if(!string.IsNullOrEmpty(scenesInfoJson) && !payload.isWorld)
+            if(!string.IsNullOrEmpty(scenesInfoJson) && !payload.isWorldScene)
                 foreach (var sceneInfo in payload.scenesInfo)
                     minimapMetadata.AddSceneInfo(sceneInfo);
 
