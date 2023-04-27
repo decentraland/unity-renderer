@@ -1,0 +1,29 @@
+{
+  "name": "RPC.Service.RestrictedActions.Tests",
+  "rootNamespace": "",
+  "references": [
+    "GUID:fd239a454d9a4039b164f90867ea3216",
+    "GUID:3c7b57a14671040bd8c549056adc04f5",
+    "GUID:383dfa8312be74b3fb6ebe4539536778",
+    "GUID:32414f40c5c02494097836a15ff47eac",
+    "GUID:f51ebe6a0ceec4240a699833d6309b23",
+    "GUID:28f74c468a54948bfa9f625c5d428f56",
+    "GUID:578ac96be21a4b03a455dab96a4ad583",
+    "GUID:27619889b8ba8c24980f49ee34dbb44a"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "NSubstitute.dll",
+    "nunit.framework.dll",
+    "Google.Protobuf.dll"
+  ],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

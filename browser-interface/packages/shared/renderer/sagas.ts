@@ -8,6 +8,7 @@ import { call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga
 import { createRendererRpcClient } from 'renderer-protocol/rpcClient'
 import { registerEmotesService } from 'renderer-protocol/services/emotesService'
 import { registerFriendRequestRendererService } from 'renderer-protocol/services/friendRequestService'
+import { registerRestrictedActionsService } from 'renderer-protocol/services/restrictedActionsService'
 import { createRpcTransportService } from 'renderer-protocol/services/transportService'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { receivePeerUserData } from 'shared/comms/peers'
@@ -81,7 +82,8 @@ function* handleRegisterRpcPort() {
   if (createRpcTransportService(port)) {
     const modules: RendererModules = {
       emotes: registerEmotesService(port),
-      friendRequest: registerFriendRequestRendererService(port)
+      friendRequest: registerFriendRequestRendererService(port),
+      restrictedActions: registerRestrictedActionsService(port)
     }
 
     yield put(registerRendererModules(modules))

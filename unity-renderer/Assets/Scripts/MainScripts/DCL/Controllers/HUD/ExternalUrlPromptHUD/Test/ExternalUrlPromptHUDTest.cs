@@ -2,6 +2,7 @@
 using DCL.Controllers;
 using DCL.Helpers;
 using NUnit.Framework;
+using RPC.Context;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -10,11 +11,13 @@ namespace Tests
     {
         private ExternalUrlPromptHUDController controller;
         private ParcelScene scene;
+        private RestrictedActionsContext restrictedActionsContext;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new ExternalUrlPromptHUDController();
+            restrictedActionsContext = new RestrictedActionsContext();
+            controller = new ExternalUrlPromptHUDController(restrictedActionsContext);
             scene = TestUtils.CreateTestScene();
         }
 
@@ -38,6 +41,13 @@ namespace Tests
             controller.ProcessOpenUrlRequest(scene, "https://decentraland.org/press");
             Assert.True(controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should be visible");
             yield break;
+        }
+
+        [Test]
+        public void PromptWhenExternalUrlIsRequestedByRpcService()
+        {
+            restrictedActionsContext.OpenExternalUrlPrompt("https://decentraland.org/press", scene.sceneData.sceneNumber);
+            Assert.True(controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should be visible");
         }
 
         [UnityTest]
