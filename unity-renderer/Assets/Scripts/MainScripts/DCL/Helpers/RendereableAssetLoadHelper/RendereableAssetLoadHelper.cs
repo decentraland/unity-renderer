@@ -87,6 +87,7 @@ namespace DCL.Components
 
         float loadStartTime = 0;
         float loadFinishTime = float.MaxValue;
+        private string targetUrl;
 #endif
 
         public RendereableAssetLoadHelper(ContentProvider contentProvider, string bundlesContentUrl, Func<bool> isGltFastEnabled)
@@ -98,6 +99,7 @@ namespace DCL.Components
 
         public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT)
         {
+            this.targetUrl = targetUrl;
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 #if UNITY_EDITOR
             loadStartTime = Time.realtimeSinceStartup;
@@ -355,10 +357,10 @@ namespace DCL.Components
             if (exception != null)
             {
                 if (!hasFallback)
-                    Debug.LogException(exception);
+                    Debug.LogWarning("All fallbacks failed for " + targetUrl);
                 else if (VERBOSE)
                 {
-                    Debug.Log($"Load Fail Detected, trying to use a fallback, " +
+                    Debug.LogWarning($"Load Fail Detected, trying to use a fallback, " +
                               $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
                 }
             }
