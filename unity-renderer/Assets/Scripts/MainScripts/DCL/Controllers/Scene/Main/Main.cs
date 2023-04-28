@@ -174,7 +174,6 @@ namespace DCL
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             hotScenesController = gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<MatrixInitializationBridge>();
-            gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();
             gameObject.AddComponent<AssetCatalogBridge>();
