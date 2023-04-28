@@ -42,6 +42,7 @@ namespace DCL.Backpack
             avatarSlots.Add(slotCategory, avatarSlot);
             avatarSlot.OnSelectAvatarSlot += (slotCat, isToggled)=>OnToggleAvatarSlot?.Invoke(slotCat, isToggled);
             avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
+            avatarSlot.OnFocusHiddenBy += (hiddenBy) => avatarSlots[hiddenBy].ShakeAnimation();
         }
 
         public void DisablePreviousSlot(string category) =>

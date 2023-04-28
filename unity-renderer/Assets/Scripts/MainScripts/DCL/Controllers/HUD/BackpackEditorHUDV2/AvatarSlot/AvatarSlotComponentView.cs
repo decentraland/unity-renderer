@@ -35,10 +35,12 @@ namespace DCL.Backpack
 
         public event Action<string, bool> OnSelectAvatarSlot;
         public event Action<string> OnUnEquip;
+        public event Action<string> OnFocusHiddenBy;
         private bool isSelected = false;
         private readonly HashSet<string> hiddenByList = new HashSet<string>();
         private Vector2 tooltipDefaultPosition;
         private Vector2 tooltipFullPosition;
+        private Vector2 nftContainerDefaultPosition;
 
         public override void Awake()
         {
@@ -58,6 +60,7 @@ namespace DCL.Backpack
             tooltipFullPosition = new Vector2(30, 150);
             tooltipContainer.anchoredPosition = tooltipDefaultPosition;
             tooltipContainer.gameObject.SetActive(false);
+            nftContainerDefaultPosition = nftContainer.anchoredPosition;
         }
 
         public void ResetSlot()
@@ -96,7 +99,6 @@ namespace DCL.Backpack
 
             if (isHidden)
             {
-                ShakeAnimation(nftContainer);
                 emptySlot.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
@@ -108,10 +110,11 @@ namespace DCL.Backpack
                 hiddenByList.Remove(hiddenBy);
                 tooltipHiddenText.gameObject.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipDefaultPosition;
+                emptySlot.SetActive(string.IsNullOrEmpty(model.imageUri));
 
                 if (hiddenByList.Count > 0)
                 {
-                    hiddenSlot.SetActive(true);
+                    emptySlot.SetActive(false);
                     tooltipContainer.anchoredPosition = tooltipFullPosition;
                     tooltipHiddenText.gameObject.SetActive(true);
                     tooltipHiddenText.text = $"Hidden by: {hiddenByList.Last()}";
@@ -158,6 +161,9 @@ namespace DCL.Backpack
             tooltipContainer.gameObject.SetActive(true);
             if(!emptySlot.activeInHierarchy)
                 unequipButton.gameObject.SetActive(true);
+
+            if(model.isHidden)
+                OnFocusHiddenBy?.Invoke(model.hiddenBy);
 
             ScaleUpAnimation(focusedImage.transform);
         }
@@ -208,7 +214,7 @@ namespace DCL.Backpack
             });
         }
 
-        private void ShakeAnimation(Transform targetTransform) =>
-            targetTransform.DOShakePosition(SHAKE_ANIMATION_TIME, 4);
+        public void ShakeAnimation() =>
+            nftContainer.DOShakePosition(SHAKE_ANIMATION_TIME, 4).OnComplete(() => nftContainer.anchoredPosition = nftContainerDefaultPosition);
     }
 }
