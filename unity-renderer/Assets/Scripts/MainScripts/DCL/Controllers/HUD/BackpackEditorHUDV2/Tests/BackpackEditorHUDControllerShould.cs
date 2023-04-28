@@ -24,6 +24,7 @@ namespace DCL.Backpack
         private BackpackAnalyticsController backpackAnalyticsController;
         private BackpackEditorHUDController backpackEditorHUDController;
         private WearableGridController wearableGridController;
+        private AvatarSlotsHUDController avatarSlotsHUDController;
         private IWearableGridView wearableGridView;
         private IAvatarSlotsView avatarSlotsView;
         private Texture2D testFace256Texture = new Texture2D(1, 1);
@@ -59,6 +60,8 @@ namespace DCL.Backpack
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
 
+            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
+
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
                 dataStore,
@@ -68,7 +71,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController,
                 backpackAnalyticsController,
                 wearableGridController,
-                new AvatarSlotsHUDController(avatarSlotsView));
+                avatarSlotsHUDController);
         }
 
         [TearDown]
@@ -88,6 +91,7 @@ namespace DCL.Backpack
             view.Received(1).SetAsFullScreenMenuMode(Arg.Any<Transform>());
             view.Received(1).Hide();
             view.Received(1).ResetPreviewEmote();
+            view.Received(1).SetColorPickerVisibility(false);
         }
 
         [Test]
@@ -180,6 +184,41 @@ namespace DCL.Backpack
 
             // Assert
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(testUserProfileModel.avatar.bodyShape);
+        }
+
+        [Test]
+        [TestCase("eyes")]
+        [TestCase("hair")]
+        [TestCase("eyebrows")]
+        [TestCase("facial_hair")]
+        [TestCase("bodyshape")]
+        [TestCase("non_existing_category")]
+        public void ToggleSlotCorrectly(string slotCategory)
+        {
+            // Act
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, true);
+
+            // Assert
+            view.Received(1).SetColorPickerVisibility(true);
+
+            if (slotCategory == "non_existing_category")
+            {
+                view.DidNotReceive().SetColorPickerValue(Arg.Any<Color>());
+                return;
+            }
+
+            switch (slotCategory)
+            {
+                case "eyes":
+                    view.Received(1).SetColorPickerValue(userProfile.avatar.eyeColor);
+                    break;
+                case "hair" or "eyebrows" or "facial_hair":
+                    view.Received(1).SetColorPickerValue(userProfile.avatar.hairColor);
+                    break;
+                case "bodyshape":
+                    view.Received(1).SetColorPickerValue(userProfile.avatar.skinColor);
+                    break;
+            }
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

@@ -15,6 +15,7 @@ namespace DCL.Backpack
         [Header("Configuration")]
         [SerializeField] internal AvatarSlotComponentModel model;
 
+        [SerializeField] internal NftTypeColorSupportingSO typeColorSupporting;
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal Transform nftContainer;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
@@ -31,7 +32,7 @@ namespace DCL.Backpack
         [SerializeField] internal Button button;
         [SerializeField] internal Button unequipButton;
 
-        public event Action<string, bool> OnSelectAvatarSlot;
+        public event Action<AvatarSlotComponentModel, bool> OnSelectAvatarSlot;
         public event Action<string> OnUnEquip;
         private bool isSelected = false;
 
@@ -91,6 +92,7 @@ namespace DCL.Backpack
         public void SetCategory(string category)
         {
             model.category = category;
+            model.allowsColorChange = typeColorSupporting.IsColorSupportedByType(category);
             typeImage.sprite = typeIcons.GetTypeImage(category);
             tooltipCategoryText.text = category;
         }
@@ -152,7 +154,7 @@ namespace DCL.Backpack
                 ScaleDownAndResetAnimation(selectedImage);
             }
 
-            OnSelectAvatarSlot?.Invoke(model.category, isSelected);
+            OnSelectAvatarSlot?.Invoke(model, isSelected);
         }
 
 
