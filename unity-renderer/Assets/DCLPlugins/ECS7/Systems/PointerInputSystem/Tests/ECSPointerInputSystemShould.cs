@@ -63,7 +63,7 @@ namespace Tests
             restrictedActionsRpcContext = new RestrictedActionsContext();
             restrictedActionsRpcContext.LastFrameWithInput = -1;
 
-            systemUpdate = ECSPointerInputSystem.CreateSystem(
+            ECSPointerInputSystem system = new ECSPointerInputSystem(
                 internalComponents.onPointerColliderComponent,
                 internalComponents.inputEventResultsComponent,
                 internalComponents.PointerEventsComponent,
@@ -71,6 +71,8 @@ namespace Tests
                 worldState,
                 dataStoreEcs7,
                 restrictedActionsRpcContext);
+
+            systemUpdate = system.Update;
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             inputEventResultsComponent = internalComponents.inputEventResultsComponent;
