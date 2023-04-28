@@ -270,7 +270,10 @@ function* logout() {
 }
 
 function* redirectToSignUp() {
-  window.location.search += '&show_wallet=1'
+
+  const q = new URLSearchParams(globalThis.location.search)
+  q.set('show_wallet', '1')
+  globalThis.history.replaceState({ show_wallet: '1' }, 'show_wallet', `?${q.toString()}`)
   window.location.reload()
 }
 
