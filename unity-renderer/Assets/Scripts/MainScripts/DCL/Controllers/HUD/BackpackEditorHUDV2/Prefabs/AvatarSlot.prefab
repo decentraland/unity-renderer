@@ -219,12 +219,16 @@ MonoBehaviour:
     category: 
     isHidden: 0
     hiddenBy: 
+    wearableId: 
+    hidesList: []
   model:
     rarity: 
     imageUri: 
     category: 
     isHidden: 0
     hiddenBy: 
+    wearableId: 
+    hidesList: []
   typeIcons: {fileID: 11400000, guid: 9525caf9cd97d4aa1b91f145f3a604e3, type: 2}
   nftContainer: {fileID: 2235824014885110001}
   rarityBackgrounds: {fileID: 11400000, guid: 3f361f63120234ae8972eac66a946fa0, type: 2}
@@ -235,7 +239,7 @@ MonoBehaviour:
   selectedImage: {fileID: 8601390346333107926}
   emptySlot: {fileID: 778022788925054171}
   hiddenSlot: {fileID: 8624965911923608939}
-  tooltipContainer: {fileID: 2292293713968562708}
+  tooltipContainer: {fileID: 3829402711795061729}
   tooltipCategoryText: {fileID: 3491566857406547017}
   tooltipHiddenText: {fileID: 556676770789666314}
   button: {fileID: 6140505366549626883}
@@ -562,7 +566,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 30.699951, y: 124.7}
-  m_SizeDelta: {x: 200, y: 75.1}
+  m_SizeDelta: {x: 200, y: 65.1}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &6034613973485034670
 CanvasRenderer:
@@ -634,7 +638,7 @@ MonoBehaviour:
     m_Top: 8
     m_Bottom: 5
   m_ChildAlignment: 7
-  m_Spacing: 0
+  m_Spacing: -10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -1489,7 +1493,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -59.199997}
+  m_AnchoredPosition: {x: 100, y: -49.199997}
   m_SizeDelta: {x: 100, y: 21.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4088573659141942
