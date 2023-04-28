@@ -1,4 +1,3 @@
-using DCL.Interface;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,15 +6,13 @@ namespace DCL.LoadingScreen
 {
     public class LoadingScreenTimeoutView : MonoBehaviour, ILoadingScreenTimeoutView
     {
-        [SerializeField] public GameObject websocketTimeout;
-        [SerializeField] public GameObject sceneTimeoutWebGL;
-        [SerializeField] public GameObject sceneTimeoutDesktop;
+        [SerializeField] private GameObject websocketTimeout;
+        [SerializeField] private GameObject sceneTimeoutWebGL;
+        [SerializeField] private GameObject sceneTimeoutDesktop;
+        [SerializeField] private Button[] exitButtons;
+        [SerializeField] private Button[] goBackHomeButtons;
 
         private GameObject currentSceneTimeoutContainer;
-
-        [SerializeField] public Button[] exitButtons;
-        [SerializeField] public Button[] goBackHomeButtons;
-
         private bool goHomeRequested;
 
         public event Action OnExitButtonClicked;
