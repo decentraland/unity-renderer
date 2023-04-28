@@ -2,8 +2,9 @@ using System;
 using DCL.SettingsCommon;
 using DCL.Components;
 using MainScripts.DCL.Controllers.SettingsDesktop;
-using MainScripts.DCL.Utils;
 using UnityEngine;
+using UnityEngine.Diagnostics;
+using DCL.Helpers;
 
 namespace DCL
 {
@@ -110,7 +111,7 @@ namespace DCL
         {
             base.Update();
 
-            if (isConnectionLost) { DesktopUtils.Quit(); }
+            if (isConnectionLost) { Helpers.Utils.QuitApplication(); }
 
             // TODO: Remove this after we refactor InputController to support overrides from desktop or to use the latest Unity Input System
             // This shortcut will help some users to fix the small resolution bugs that may happen if the player prefs are manipulated

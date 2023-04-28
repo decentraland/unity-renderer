@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Interface;
 using DCL.NotificationModel;
 using DCL.Tasks;
@@ -73,7 +74,7 @@ namespace DCL.LoadingScreen
         {
             timeoutCTS = timeoutCTS.SafeRestart();
             currentDestination = newDestination;
-            StartTimeoutCounter(timeoutCTS.Token);
+            StartTimeoutCounter(timeoutCTS.Token).Forget();
         }
 
         public void StopTimeout()
@@ -87,14 +88,7 @@ namespace DCL.LoadingScreen
 
         private void ExitClicked()
         {
-#if UNITY_EDITOR
-
-            // Application.Quit() does not work in the editor so
-            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            Utils.QuitApplication();
         }
 
         internal void GoBackHomeClicked()
