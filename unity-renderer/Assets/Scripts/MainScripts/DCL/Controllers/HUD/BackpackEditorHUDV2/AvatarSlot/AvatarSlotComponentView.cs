@@ -56,6 +56,11 @@ namespace DCL.Backpack
                 unequipButton.gameObject.SetActive(false);
             });
             ResetSlot();
+            InitializeTooltipPositions();
+        }
+
+        private void InitializeTooltipPositions()
+        {
             tooltipContainer.gameObject.SetActive(true);
             tooltipDefaultPosition = new Vector2(30, 120);
             tooltipFullPosition = new Vector2(30, 150);

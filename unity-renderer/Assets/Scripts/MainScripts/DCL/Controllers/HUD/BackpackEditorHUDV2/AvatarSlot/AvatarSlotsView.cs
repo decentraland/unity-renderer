@@ -81,14 +81,13 @@ namespace DCL.Backpack
         {
             foreach (var slot in avatarSlots)
             {
-                if (slot.Value.GetHideList() == null)
+                var hideList = slot.Value.GetHideList();
+                if (hideList == null)
                     continue;
 
-                foreach (string s in slot.Value.GetHideList())
-                {
+                foreach (string s in hideList)
                     if(avatarSlots.ContainsKey(s))
                         avatarSlots[s].SetIsHidden(true, slot.Key);
-                }
             }
         }
 
