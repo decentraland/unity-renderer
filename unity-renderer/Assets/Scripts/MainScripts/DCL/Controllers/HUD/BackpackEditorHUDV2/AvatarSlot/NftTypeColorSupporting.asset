@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f4d8de900354324879c6341b81b801b, type: 3}
+  m_Name: NftTypeColorSupporting
+  m_EditorClassIdentifier: 
+  colorSupportingByNftType:
+  - key: eyes
+    value: 1
+  - key: mouth
+    value: 0
+  - key: eyebrows
+    value: 1
+  - key: hair
+    value: 1
+  - key: upper_body
+    value: 0
+  - key: lower_body
+    value: 0
+  - key: feet
+    value: 0
+  - key: head
+    value: 0
+  - key: facial_hair
+    value: 1
+  - key: tiara
+    value: 0
+  - key: hat
+    value: 0
+  - key: helmet
+    value: 0
+  - key: skin
+    value: 0
+  - key: mask
+    value: 0
+  - key: eyewear
+    value: 0
+  - key: top_head
+    value: 0
+  - key: earring
+    value: 0
+  - key: emote
+    value: 0
+  - key: bodyshape
+    value: 1
