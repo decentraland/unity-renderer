@@ -1161,6 +1161,7 @@ MonoBehaviour:
   cancelFriendButton: {fileID: 3697897552922764556}
   deleteFriendButton: {fileID: 7694302186068571231}
   messageButton: {fileID: 112276539412484646}
+  mentionButton: {fileID: 0}
 --- !u!222 &1477505211059433124
 CanvasRenderer:
   m_ObjectHideFlags: 0

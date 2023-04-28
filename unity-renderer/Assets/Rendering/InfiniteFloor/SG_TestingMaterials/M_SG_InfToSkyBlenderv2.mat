@@ -43,6 +43,8 @@ Material:
     - _Blender: 0.522
     - _Fade: 0.218
     - _MiddlePoint: 30
+    - _QueueControl: 0
+    - _QueueOffset: 0
     - _colorArea: 0.882
     - _fade: 0.878
     - _horizonStartPoint: 0.909

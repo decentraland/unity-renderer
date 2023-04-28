@@ -17,10 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: da0a8a83fb9dec845bb3f1f293c2f05e
   m_SerializeEntries:
-  - m_GUID: d20c4bec5d35645a69ad001b0e73596d
-    m_Address: LoadingHUDDesktop
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 1c880bef015a4f0c99670027a7c6cec7
     m_Address: Preloading
     m_ReadOnly: 0
