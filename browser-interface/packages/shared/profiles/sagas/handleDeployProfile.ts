@@ -73,7 +73,7 @@ export async function deployAvatar(params: {
 
   const newAvatar = { ...avatar }
 
-  const files = new Map<string, Buffer>()
+  const files = new Map<string, Uint8Array>()
 
   const snapshots = avatar.snapshots || (profile as any).snapshots
   const content = new Map()
@@ -85,7 +85,7 @@ export async function deployAvatar(params: {
 
       newSnapshots[selector] = hash
       content.set(name, hash)
-      contentFile && files.set(contentFile.name, Buffer.from(contentFile.content))
+      contentFile && files.set(contentFile.name, contentFile.content)
     }
     newAvatar.snapshots = newSnapshots as Snapshots
   }
@@ -99,7 +99,7 @@ async function deploy(
   url: string,
   identity: ExplorerIdentity,
   metadata: Profile,
-  contentFiles: Map<string, Buffer>,
+  contentFiles: Map<string, Uint8Array>,
   contentHashes: Map<string, string>
 ) {
   // Build the client
@@ -124,12 +124,11 @@ async function deploy(
   return catalyst.deployEntity(deployData)
 }
 
-async function makeContentFile(path: string, content: string | Blob | Buffer): Promise<ContentFile> {
-  if (Buffer.isBuffer(content)) {
+async function makeContentFile(path: string, content: Uint8Array | ArrayBuffer): Promise<ContentFile> {
+  if (content instanceof ArrayBuffer) {
+    return { name: path, content: new Uint8Array(content) }
+  } else if (content instanceof Uint8Array) {
     return { name: path, content }
-  } else if (typeof content === 'string') {
-    const buffer = Buffer.from(content)
-    return { name: path, content: buffer }
   } else {
     throw new Error('Unable to create ContentFile: content must be a string or a Blob')
   }
