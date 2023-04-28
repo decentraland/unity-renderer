@@ -1,6 +1,10 @@
 import { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { SignRequestKernelServiceDefinition, SignBodyResponse, requestMethodToJSON } from 'shared/protocol/decentraland/renderer/kernel_services/sign_request.gen'
+import {
+  SignRequestKernelServiceDefinition,
+  SignBodyResponse,
+  requestMethodToJSON
+} from 'shared/protocol/decentraland/renderer/kernel_services/sign_request.gen'
 import { Authenticator } from '@dcl/crypto/dist/Authenticator'
 import { store } from 'shared/store/isolatedStore'
 import { getCurrentIdentity } from 'shared/session/selectors'
