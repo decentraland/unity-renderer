@@ -58,7 +58,7 @@ public class AddressablesValidationTests
             message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies"));
     }
 
-    [Test][Category("ToFix")]
+    [Test][Category("EditModeCI")]
     public void ValidateScenesToAddressableDuplicateDependencies()
     {
         CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
