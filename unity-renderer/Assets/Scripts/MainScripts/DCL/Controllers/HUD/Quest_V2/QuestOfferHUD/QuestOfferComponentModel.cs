@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DCL.Quest
 {
@@ -8,5 +9,6 @@ namespace DCL.Quest
         public string questId;
         public string title;
         public string description;
+        public List<QuestRewardComponentModel> rewardsList;
     }
 }
