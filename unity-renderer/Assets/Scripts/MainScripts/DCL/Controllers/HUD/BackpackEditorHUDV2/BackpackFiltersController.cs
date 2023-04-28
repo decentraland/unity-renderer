@@ -5,10 +5,10 @@ namespace DCL.Backpack
 {
     public class BackpackFiltersController
     {
-        public event Action<bool> OnOnlyCollectibleChanged;
-        public event Action<HashSet<string>> CollectionChanged;
-        public event Action<string> SortByChanged;
-        public event Action<string> SearchTextChanged;
+        public event Action<bool> OnOnlyCollectiblesChanged;
+        public event Action<HashSet<string>> OnCollectionChanged;
+        public event Action<string> OnSortByChanged;
+        public event Action<string> OnSearchTextChanged;
 
         private readonly IBackpackFiltersComponentView view;
 
@@ -16,32 +16,32 @@ namespace DCL.Backpack
         {
             this.view = view;
 
-            view.OnOnlyCollectiblesChanged += OnlyCollectiblesChanged;
-            view.OnCollectionChanged += OnCollectionChanged;
-            view.OnSortByChanged += OnSortByChanged;
-            view.OnSearchTextChanged += OnSearchTextChanged;
+            view.OnOnlyCollectiblesChanged += ChangeOnlyCollectibles;
+            view.OnCollectionChanged += ChangeOnCollection;
+            view.OnSortByChanged += ChangeSortBy;
+            view.OnSearchTextChanged += ChangeSearchText;
         }
 
         public void Dispose()
         {
-            view.OnOnlyCollectiblesChanged -= OnlyCollectiblesChanged;
-            view.OnCollectionChanged -= OnCollectionChanged;
-            view.OnSortByChanged -= OnSortByChanged;
-            view.OnSearchTextChanged -= OnSearchTextChanged;
+            view.OnOnlyCollectiblesChanged -= ChangeOnlyCollectibles;
+            view.OnCollectionChanged -= ChangeOnCollection;
+            view.OnSortByChanged -= ChangeSortBy;
+            view.OnSearchTextChanged -= ChangeSearchText;
 
             view.Dispose();
         }
 
-        private void OnlyCollectiblesChanged(bool isOn) =>
-            OnOnlyCollectibleChanged?.Invoke(isOn);
+        private void ChangeOnlyCollectibles(bool isOn) =>
+            OnOnlyCollectiblesChanged?.Invoke(isOn);
 
-        private void OnCollectionChanged(HashSet<string> selectedCollections) =>
-            CollectionChanged?.Invoke(selectedCollections);
+        private void ChangeOnCollection(HashSet<string> selectedCollections) =>
+            OnCollectionChanged?.Invoke(selectedCollections);
 
-        private void OnSortByChanged(string newSorting) =>
-            SortByChanged?.Invoke(newSorting);
+        private void ChangeSortBy(string newSorting) =>
+            OnSortByChanged?.Invoke(newSorting);
 
-        private void OnSearchTextChanged(string newText) =>
-            SearchTextChanged?.Invoke(newText);
+        private void ChangeSearchText(string newText) =>
+            OnSearchTextChanged?.Invoke(newText);
     }
 }
