@@ -1,5 +1,7 @@
-﻿using System;
+﻿using DCL.Helpers;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.Backpack
 {
@@ -11,6 +13,7 @@ namespace DCL.Backpack
         public event Action<string> OnSearchTextChanged;
 
         private readonly IBackpackFiltersComponentView view;
+        private bool collectionsAlreadyLoaded;
 
         public BackpackFiltersController(IBackpackFiltersComponentView view)
         {
@@ -30,6 +33,21 @@ namespace DCL.Backpack
             view.OnSearchTextChanged -= ChangeSearchText;
 
             view.Dispose();
+        }
+
+        public void LoadCollections()
+        {
+            if (collectionsAlreadyLoaded)
+                return;
+
+            WearablesFetchingHelper.GetThirdPartyCollections()
+                                   .Then(collections =>
+                                    {
+                                        WearableCollectionsAPIData.Collection defaultCollection = new () { urn = "decentraland", name = "Decentraland",};
+                                        view.LoadCollectionDropdown(collections, defaultCollection);
+                                        collectionsAlreadyLoaded = true;
+                                    })
+                                   .Catch((error) => Debug.LogError(error));
         }
 
         private void ChangeOnlyCollectibles(bool isOn) =>

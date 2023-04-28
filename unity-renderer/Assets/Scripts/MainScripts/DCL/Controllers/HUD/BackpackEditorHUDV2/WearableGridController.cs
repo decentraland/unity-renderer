@@ -95,6 +95,9 @@ namespace DCL.Backpack
             view.SetWearable(wearableGridModel with { IsEquipped = false });
         }
 
+        public void LoadCollections() =>
+            backpackFiltersController.LoadCollections();
+
         private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
         {
             var wearableBreadcrumbModel = new NftBreadcrumbModel

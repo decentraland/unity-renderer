@@ -108,6 +108,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController.RestoreEmoteSlots();
                 backpackEmotesSectionController.LoadEmotes();
                 wearableGridController.LoadWearables();
+                wearableGridController.LoadCollections();
                 LoadUserProfile(ownUserProfile, true);
 
                 view.Show();
