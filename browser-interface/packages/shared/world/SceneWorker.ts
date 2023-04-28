@@ -43,6 +43,7 @@ import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
 import { protobufMsgBridge } from 'unity-interface/protobufMessagesBridge'
 import { PositionReport } from './positionThings'
+import { joinBuffers } from 'lib/javascript/uint8arrays'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -60,9 +61,9 @@ export enum SceneWorkerReadyState {
 const sdk6RuntimeRaw =
   process.env.NODE_ENV === 'production'
     ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('@dcl/scene-runtime/dist/sdk6-webworker.js').default
+      require('@dcl/scene-runtime/dist/sdk6-webworker.js').default
     : // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('@dcl/scene-runtime/dist/sdk6-webworker.dev.js').default
+      require('@dcl/scene-runtime/dist/sdk6-webworker.dev.js').default
 
 const sdk6RuntimeBLOB = new Blob([sdk6RuntimeRaw])
 const sdk6RuntimeUrl = URL.createObjectURL(sdk6RuntimeBLOB)
@@ -70,9 +71,9 @@ const sdk6RuntimeUrl = URL.createObjectURL(sdk6RuntimeBLOB)
 const sdk7RuntimeRaw =
   process.env.NODE_ENV === 'production'
     ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('@dcl/scene-runtime/dist/sdk7-webworker.js').default
+      require('@dcl/scene-runtime/dist/sdk7-webworker.js').default
     : // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('@dcl/scene-runtime/dist/sdk7-webworker.dev.js').default
+      require('@dcl/scene-runtime/dist/sdk7-webworker.dev.js').default
 
 const sdk7RuntimeBLOB = new Blob([sdk7RuntimeRaw])
 const sdk7RuntimeUrl = URL.createObjectURL(sdk7RuntimeBLOB)
@@ -127,7 +128,11 @@ export class SceneWorker {
   metadata: Scene
   logger: ILogger
 
-  static async createSceneWorker(loadableScene: Readonly<LoadableScene>, rpcClient: RpcClient, transportBuilder: () => (Transport | undefined)) {
+  static async createSceneWorker(
+    loadableScene: Readonly<LoadableScene>,
+    rpcClient: RpcClient,
+    transportBuilder: () => Transport | undefined
+  ) {
     ++globalSceneNumberCounter
     const sceneNumber = globalSceneNumberCounter
     const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
@@ -140,7 +145,7 @@ export class SceneWorker {
     public readonly loadableScene: Readonly<LoadableScene>,
     sceneNumber: number,
     scenePort: RpcClientPort,
-    private transportBuilder: () => (Transport | undefined)
+    private transportBuilder: () => Transport | undefined
   ) {
     const skipErrors = ['Transport closed while waiting the ACK']
 
@@ -193,7 +198,10 @@ export class SceneWorker {
       sendProtoSceneEvent: (e) => {
         this.rpcContext.events.push(e)
       },
-      sendBatch: this.sendBatch.bind(this)
+      sendBatch: this.sendBatch.bind(this),
+      readFile: this.readFile.bind(this),
+      initialEntitiesTick0: Uint8Array.of(),
+      hasMainCrdt: false
     }
 
     // if the scene metadata has a base parcel, then we set it as the position
@@ -227,6 +235,29 @@ export class SceneWorker {
         }
       }
     }
+  }
+
+  async readFile(fileName: string) {
+    // filenames are lower cased as per https://adr.decentraland.org/adr/ADR-80
+    const normalized = fileName.toLowerCase()
+
+    // and we iterate over the entity content mappings to resolve the file hash
+    for (const { file, hash } of this.rpcContext.sceneData.entity.content) {
+      if (file.toLowerCase() === normalized) {
+        // fetch the actual content
+        const baseUrl = this.rpcContext.sceneData.baseUrl.endsWith('/')
+          ? this.rpcContext.sceneData.baseUrl
+          : this.rpcContext.sceneData.baseUrl + '/'
+        const url = baseUrl + hash
+        const response = await fetch(url)
+
+        if (!response.ok) throw new Error(`Error fetching file ${file} from ${url}`)
+
+        return { hash, content: new Uint8Array(await response.arrayBuffer()) }
+      }
+    }
+
+    throw new Error(`File ${fileName} not found`)
   }
 
   dispose() {
@@ -317,6 +348,22 @@ export class SceneWorker {
       sceneName: getSceneNameFromJsonData(this.loadableScene.entity.metadata),
       sdk7: this.rpcContext.sdk7
     })
+
+    let mainCrdt = Uint8Array.of()
+
+    try {
+      if (this.rpcContext.sceneData.entity.content.some(($) => $.file.toLowerCase() === 'main.crdt')) {
+        const file = await this.readFile('main.crdt')
+        mainCrdt = file.content
+      }
+    } catch (err: any) {
+      this.logger.error(err)
+    }
+
+    // this is the tick#0 as specified in ADR-133 and ADR-148
+    const result = await this.rpcContext.rpcSceneControllerService.sendCrdt({ payload: mainCrdt })
+    this.rpcContext.initialEntitiesTick0 = joinBuffers(mainCrdt, result.payload)
+    this.rpcContext.hasMainCrdt = mainCrdt.length > 0
 
     // from now on, the sceneData object is read-only
     Object.freeze(this.rpcContext.sceneData)

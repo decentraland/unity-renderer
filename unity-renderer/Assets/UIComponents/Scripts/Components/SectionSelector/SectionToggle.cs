@@ -88,7 +88,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
 
     public GameObject GameObject => gameObject;
     public RectTransform pivot => transform as RectTransform;
-    public ToggleEvent onSelect => toggle?.onValueChanged;
+    public ToggleEvent onSelect => toggle != null ? toggle.onValueChanged : null;
 
     public SectionToggleModel GetInfo()
     {

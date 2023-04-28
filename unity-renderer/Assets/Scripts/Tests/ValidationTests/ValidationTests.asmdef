@@ -1,0 +1,19 @@
+{
+    "name": "ValidationTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:555c1f3c6d18648df910b7a1de75b424",
+        "GUID:bb3eef89092f71f44aa2449a9cf7879c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
