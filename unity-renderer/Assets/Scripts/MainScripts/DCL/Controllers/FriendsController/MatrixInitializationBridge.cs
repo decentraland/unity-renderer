@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.FriendsController
 {
-    public class MatrixInitializationBridge : MonoBehaviour
+
+    public class MatrixInitializationBridge : MonoBehaviour, IMatrixInitializationBridge
     {
         public event Action<string> OnReceiveMatrixAccessToken;
 

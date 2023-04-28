@@ -16,7 +16,7 @@ namespace DCL.Social.Friends
     {
         private const int REQUEST_TIMEOUT = 30;
 
-        private readonly MatrixInitializationBridge matrixInitializationBridge;
+        private readonly IMatrixInitializationBridge matrixInitializationBridge;
         private readonly IUserProfileBridge userProfileWebInterfaceBridge;
         private readonly Func<ITransport> clientTransportProvider;
 
@@ -32,7 +32,7 @@ namespace DCL.Social.Friends
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
-        public RPCSocialApiBridge(MatrixInitializationBridge matrixInitializationBridge,
+        public RPCSocialApiBridge(IMatrixInitializationBridge matrixInitializationBridge,
             IUserProfileBridge userProfileWebInterfaceBridge,
             Func<ITransport> transportProvider)
         {
@@ -153,7 +153,7 @@ namespace DCL.Social.Friends
 
             var updateFriendshipPayload = new UpdateFriendshipPayload()
             {
-                Event =
+                Event = new FriendshipEventPayload()
                 {
                     Request = new RequestPayload()
                     {
