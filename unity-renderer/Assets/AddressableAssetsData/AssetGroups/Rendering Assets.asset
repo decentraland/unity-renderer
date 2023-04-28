@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Rendering Assets
+  m_EditorClassIdentifier: 
+  m_GroupName: Rendering Assets
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 6f75b5204ec5cfe4fa6d5321cd2b2d73
+  m_SerializeEntries:
+  - m_GUID: 8d996c673bb3a10489e844b3bc3141c9
+    m_Address: shadervariants-selected
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d32d7bccfd7609a4c923dcbf9c154a0e
+    m_Address: MapDefault
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9fd4d3757b5f1c148ac6903817ed6c8a
+    m_Address: MapDefaultEstates
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 746661f82ad547e5bbfd5f0930ad7e02
+    m_Address: OutlineRenderers
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2f132b4d8134c6b4bacb101550f37d40, type: 2}
+    - {fileID: 11400000, guid: 83e5bf7a048083c42abdc5cdd6c321ce, type: 2}

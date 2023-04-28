@@ -1,8 +1,10 @@
+using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Map;
+using DCL.Providers;
 using DCL.SettingsCommon;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
@@ -122,9 +124,15 @@ namespace DCL
         {
             if (newVisibleValue)
             {
-                // Prewarm shader variants
-                Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
                 dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+                PrewarmShaderVariants().Forget();
+
+                async UniTask PrewarmShaderVariants()
+                {
+                    var collection = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                      .GetAddressable<ShaderVariantCollection>("shadervariants-selected");
+                    collection.WarmUp();
+                }
             }
         }
 

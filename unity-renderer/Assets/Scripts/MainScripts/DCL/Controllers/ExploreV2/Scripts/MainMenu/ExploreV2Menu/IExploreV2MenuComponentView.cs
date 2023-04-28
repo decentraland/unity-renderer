@@ -114,4 +114,9 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Shows the Realm Selector modal.
     /// </summary>
     void ShowRealmSelectorModal();
+
+    /// <summary>
+    /// Hide Map section in UI when user enter isolated World
+    /// </summary>
+    void HideMapOnEnteringWorld();
 }
