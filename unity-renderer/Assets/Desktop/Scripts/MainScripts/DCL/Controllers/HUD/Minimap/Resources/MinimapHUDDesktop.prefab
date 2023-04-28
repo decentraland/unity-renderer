@@ -114,7 +114,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -7.800049, y: -2.800003}
-  m_SizeDelta: {x: 44, y: 18}
+  m_SizeDelta: {x: 40, y: 16}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &882509842355782264
 CanvasRenderer:
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 2.5
+  m_PixelsPerUnitMultiplier: 3.2
 --- !u!1 &2050336941379533128
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,7 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.39215687}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.6666667}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -599,12 +599,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
+  m_fontSize: 11
   m_fontSizeBase: 6.5
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 10
-  m_fontSizeMax: 12
+  m_fontSizeMax: 11
   m_fontStyle: 16
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1020,6 +1020,16 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2495736092994947693, guid: 4db069904ba9d4fd18704de950b93f7c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961211634326417966, guid: 4db069904ba9d4fd18704de950b93f7c,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
     - target: {fileID: 3094980274358157737, guid: 4db069904ba9d4fd18704de950b93f7c,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1065,10 +1075,20 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4120991257912842633, guid: 4db069904ba9d4fd18704de950b93f7c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4525154057530514719, guid: 4db069904ba9d4fd18704de950b93f7c,
         type: 3}
       propertyPath: m_Name
       value: MinimapHUDDesktop
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525154057530514719, guid: 4db069904ba9d4fd18704de950b93f7c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4555375608536199507, guid: 4db069904ba9d4fd18704de950b93f7c,
         type: 3}
