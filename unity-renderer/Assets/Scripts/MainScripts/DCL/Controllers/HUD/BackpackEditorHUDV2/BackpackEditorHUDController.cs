@@ -23,7 +23,6 @@ namespace DCL.Backpack
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
-        private readonly BackpackFiltersController backpackFiltersController;
         private string currentSlotSelected;
         private bool avatarIsDirty;
 
@@ -42,8 +41,7 @@ namespace DCL.Backpack
             IBackpackEmotesSectionController backpackEmotesSectionController,
             BackpackAnalyticsController backpackAnalyticsController,
             WearableGridController wearableGridController,
-            AvatarSlotsHUDController avatarSlotsHUDController,
-            BackpackFiltersController backpackFiltersController)
+            AvatarSlotsHUDController avatarSlotsHUDController)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -54,7 +52,6 @@ namespace DCL.Backpack
             this.backpackAnalyticsController = backpackAnalyticsController;
             this.wearableGridController = wearableGridController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
-            this.backpackFiltersController = backpackFiltersController;
 
             avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfile;
@@ -72,11 +69,6 @@ namespace DCL.Backpack
 
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
             avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearable;
-
-            backpackFiltersController.OnOnlyCollectiblesChanged += ChangeOnlyCollectiblesFilter;
-            backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
-            backpackFiltersController.OnSortByChanged += ChangeSortingFilter;
-            backpackFiltersController.OnSearchTextChanged += ChangeSearchTextFilter;
 
             view.SetColorPickerVisibility(false);
             view.OnColorChanged += OnWearableColorChanged;
@@ -100,12 +92,6 @@ namespace DCL.Backpack
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
             avatarSlotsHUDController.Dispose();
-
-            backpackFiltersController.OnOnlyCollectiblesChanged += ChangeOnlyCollectiblesFilter;
-            backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
-            backpackFiltersController.OnSortByChanged += ChangeSortingFilter;
-            backpackFiltersController.OnSearchTextChanged += ChangeSearchTextFilter;
-            backpackFiltersController.Dispose();
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.Dispose();
@@ -351,26 +337,6 @@ namespace DCL.Backpack
 
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
-        }
-
-        private void ChangeOnlyCollectiblesFilter(bool isOn)
-        {
-            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | isON: {isOn}");
-        }
-
-        private void ChangeCollectionFilter(HashSet<string> selectedCollections)
-        {
-            Debug.Log($"SANTI TEMP LOG ---> COLLECTION FILTER CHANGED | selectedCollections: [{string.Join(",", selectedCollections)}]");
-        }
-
-        private void ChangeSortingFilter(string newSorting)
-        {
-            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | newSorting: '{newSorting}'");
-        }
-
-        private void ChangeSearchTextFilter(string newText)
-        {
-            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | newText: '{newText}'");
         }
     }
 }

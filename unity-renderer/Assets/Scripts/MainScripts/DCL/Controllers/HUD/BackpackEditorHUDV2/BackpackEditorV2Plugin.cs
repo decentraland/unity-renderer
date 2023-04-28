@@ -28,13 +28,14 @@ namespace DCL.Backpack
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
                 wearablesCatalogService);
 
+            var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView);
+
             var wearableGridController = new WearableGridController(view.WearableGridComponentView,
                 userProfileBridge, wearablesCatalogService,
-                dataStore.backpackV2);
+                dataStore.backpackV2,
+                backpackFiltersController);
 
             var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
-
-            var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView);
 
             hudController = new BackpackEditorHUDController(
                 view,
@@ -45,8 +46,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController,
                 backpackAnalyticsController,
                 wearableGridController,
-                avatarSlotsHUDController,
-                backpackFiltersController);
+                avatarSlotsHUDController);
         }
 
         public void Dispose()

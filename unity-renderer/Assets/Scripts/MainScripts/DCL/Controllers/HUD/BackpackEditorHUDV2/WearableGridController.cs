@@ -20,6 +20,7 @@ namespace DCL.Backpack
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly DataStore_BackpackV2 dataStoreBackpackV2;
+        private readonly BackpackFiltersController backpackFiltersController;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
@@ -30,18 +31,25 @@ namespace DCL.Backpack
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
-            DataStore_BackpackV2 dataStoreBackpackV2)
+            DataStore_BackpackV2 dataStoreBackpackV2,
+            BackpackFiltersController backpackFiltersController)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
             this.dataStoreBackpackV2 = dataStoreBackpackV2;
+            this.backpackFiltersController = backpackFiltersController;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
             view.OnWearableUnequipped += HandleWearableUnequipped;
             view.OnWearableSelected += HandleWearableSelected;
             view.OnFilterWearables += FilterWearablesFromBreadcrumb;
+
+            backpackFiltersController.OnOnlyCollectiblesChanged += ChangeOnlyCollectiblesFilter;
+            backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
+            backpackFiltersController.OnSortByChanged += ChangeSortingFilter;
+            backpackFiltersController.OnSearchTextChanged += ChangeSearchTextFilter;
         }
 
         public void Dispose()
@@ -51,6 +59,12 @@ namespace DCL.Backpack
             view.OnWearableUnequipped -= HandleWearableUnequipped;
             view.OnWearableSelected -= HandleWearableSelected;
             view.OnFilterWearables -= FilterWearablesFromBreadcrumb;
+
+            backpackFiltersController.OnOnlyCollectiblesChanged += ChangeOnlyCollectiblesFilter;
+            backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
+            backpackFiltersController.OnSortByChanged += ChangeSortingFilter;
+            backpackFiltersController.OnSearchTextChanged += ChangeSearchTextFilter;
+            backpackFiltersController.Dispose();
 
             view.Dispose();
             requestWearablesCancellationToken.SafeCancelAndDispose();
@@ -205,6 +219,26 @@ namespace DCL.Backpack
             }
             else if (referencePath.StartsWith(NAME_FILTER_REF)) { throw new NotImplementedException(); }
             else if (referencePath.StartsWith(CATEGORY_FILTER_REF)) { throw new NotImplementedException(); }
+        }
+
+        private void ChangeOnlyCollectiblesFilter(bool isOn)
+        {
+            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | isON: {isOn}");
+        }
+
+        private void ChangeCollectionFilter(HashSet<string> selectedCollections)
+        {
+            Debug.Log($"SANTI TEMP LOG ---> COLLECTION FILTER CHANGED | selectedCollections: [{string.Join(",", selectedCollections)}]");
+        }
+
+        private void ChangeSortingFilter(string newSorting)
+        {
+            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | newSorting: '{newSorting}'");
+        }
+
+        private void ChangeSearchTextFilter(string newText)
+        {
+            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | newText: '{newText}'");
         }
     }
 }

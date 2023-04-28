@@ -21,6 +21,7 @@ namespace DCL.Backpack
         private IUserProfileBridge userProfileBridge;
         private IWearablesCatalogService wearablesCatalogService;
         private DataStore_BackpackV2 dataStore;
+        private BackpackFiltersController backpackFiltersController;
         private UserProfile ownUserProfile;
 
         [SetUp]
@@ -43,10 +44,13 @@ namespace DCL.Backpack
 
             dataStore = new DataStore_BackpackV2();
 
+            backpackFiltersController = new BackpackFiltersController(Substitute.For<IBackpackFiltersComponentView>());
+
             controller = new WearableGridController(view,
                 userProfileBridge,
                 wearablesCatalogService,
-                dataStore);
+                dataStore,
+                backpackFiltersController);
         }
 
         [TearDown]

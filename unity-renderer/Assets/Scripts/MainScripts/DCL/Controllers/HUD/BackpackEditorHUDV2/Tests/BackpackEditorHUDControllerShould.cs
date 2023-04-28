@@ -55,15 +55,16 @@ namespace DCL.Backpack
                 newUserExperienceAnalytics,
                 wearablesCatalogService);
 
+            backpackFiltersController = new BackpackFiltersController(backpackFiltersComponentView);
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
                 wearablesCatalogService,
-                dataStore.backpackV2);
+                dataStore.backpackV2,
+                backpackFiltersController);
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
             backpackFiltersComponentView = Substitute.For<IBackpackFiltersComponentView>();
             avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
-            backpackFiltersController = new BackpackFiltersController(backpackFiltersComponentView);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
@@ -74,8 +75,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController,
                 backpackAnalyticsController,
                 wearableGridController,
-                avatarSlotsHUDController,
-                backpackFiltersController);
+                avatarSlotsHUDController);
         }
 
         [TearDown]
