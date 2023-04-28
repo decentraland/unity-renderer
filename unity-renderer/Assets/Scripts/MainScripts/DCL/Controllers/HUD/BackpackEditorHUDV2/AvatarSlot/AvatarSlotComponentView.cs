@@ -111,6 +111,7 @@ namespace DCL.Backpack
                 hiddenByList.Remove(hiddenBy);
                 tooltipHiddenText.gameObject.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipDefaultPosition;
+                emptySlot.SetActive(string.IsNullOrEmpty(model.imageUri));
 
                 if (hiddenByList.Count > 0)
                 {
@@ -162,7 +163,6 @@ namespace DCL.Backpack
             tooltipContainer.gameObject.SetActive(true);
 
             if (!string.IsNullOrEmpty(model.imageUri))
-
                 unequipButton.gameObject.SetActive(true);
 
             if(model.isHidden)
