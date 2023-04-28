@@ -55,6 +55,7 @@ namespace DCL.Backpack
                 newUserExperienceAnalytics,
                 wearablesCatalogService);
 
+            backpackFiltersComponentView = Substitute.For<IBackpackFiltersComponentView>();
             backpackFiltersController = new BackpackFiltersController(backpackFiltersComponentView);
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
@@ -63,7 +64,6 @@ namespace DCL.Backpack
                 backpackFiltersController);
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
-            backpackFiltersComponentView = Substitute.For<IBackpackFiltersComponentView>();
             avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
