@@ -5,7 +5,7 @@ import { call, select } from 'redux-saga/effects'
 import {
   addProfileToLastSentProfileVersionAndCatalog, ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, profileRequest
 } from 'shared/profiles/actions'
-import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/profiles/sagas/fetchProfile'
+import { fetchProfile, fetchProfileFromStore, getProfileInformationFromStore } from 'shared/profiles/sagas/fetchProfile'
 import type { ProfileUserInfo } from 'shared/profiles/types'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
@@ -67,14 +67,16 @@ describe('fetchProfile behavior', () => {
 
     return expectSaga(fetchProfile, action)
       .provide([
-        [select(getInformationToFetchProfileFromStore, action), {
+        [select(getProfileInformationFromStore, action), {
           roomConnection: undefined,
           loadingCurrentUser: false,
           hasRoomConnection: false,
-          existingProfile: undefined,
           isGuestLogin: false,
+        }],
+        [select(fetchProfileFromStore, action), {
+          existingProfile: undefined,
           existingProfileWithCorrectVersion: false
-        }]
+        }],
       ])
       .run()
       .then((result) => {

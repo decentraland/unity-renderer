@@ -18,18 +18,26 @@ import { fetchCatalystProfile } from '../content'
 
 export function* fetchProfile(action: ProfileRequestAction): any {
   const { userId, minimumVersion } = action.payload
-  const {
-    roomConnection,
-    loadingCurrentUser,
-    hasRoomConnection,
-    existingProfile,
-    isGuestLogin,
-    existingProfileWithCorrectVersion
-  } = yield select(getInformationToFetchProfileFromStore, action)
 
-  if (existingProfileWithCorrectVersion) {
-    yield put(profileSuccess(existingProfile))
-    return existingProfile
+  const {
+    loadingCurrentUser,
+    isGuestLogin,
+    roomConnection,
+    hasRoomConnection,
+  } = yield select(getProfileInformationFromStore, action)
+
+  const useCache = false
+
+  if (useCache) {
+    const {
+      existingProfile,
+      existingProfileWithCorrectVersion
+    } = yield select(fetchProfileFromStore, action)
+
+    if (existingProfileWithCorrectVersion) {
+      yield put(profileSuccess(existingProfile))
+      return existingProfile
+    }
   }
 
   try {
@@ -38,7 +46,7 @@ export function* fetchProfile(action: ProfileRequestAction): any {
     const canFetchFromComms = !loadingCurrentUser && hasRoomConnection
     const canFetchFromCatalyst = !isCurrentUserGuest
 
-    const profile = yield call(fetchWithBestStrategy, userId, {
+    const profile = yield call(fetchProfileWithBestStrategy, userId, {
       canFetchFromComms,
       canFetchFromCatalyst,
       roomConnection,
@@ -65,7 +73,7 @@ export function* fetchProfile(action: ProfileRequestAction): any {
   }
 }
 
-function* fetchWithBestStrategy(
+function* fetchProfileWithBestStrategy(
   userId: string,
   options: {
     canFetchFromComms: boolean
@@ -121,22 +129,30 @@ function* fetchFromCatalyst(userId: string, version: number) {
   return null
 }
 
-export function getInformationToFetchProfileFromStore(state: RootState, action: ProfileRequestAction) {
+export function fetchProfileFromStore(state: RootState, action: ProfileRequestAction) {
   const { userId, minimumVersion } = action.payload
-  const roomConnection: RoomConnection | undefined = getCommsRoom(state)
-  const hasRoomConnection = !!roomConnection
-  const loadingCurrentUser: boolean = isCurrentUserId(state, userId)
-  const isGuestLogin = isGuestLoginSelector(state)
 
   const [_, existingProfile]: [ProfileStatus?, Avatar?] = getProfileStatusAndData(state, userId)
   const existingProfileWithCorrectVersion =
     existingProfile && (!minimumVersion || existingProfile.version >= minimumVersion)
   return {
-    roomConnection,
-    loadingCurrentUser,
-    hasRoomConnection,
     existingProfile,
-    isGuestLogin,
     existingProfileWithCorrectVersion
+  }
+}
+
+export function getProfileInformationFromStore(state: RootState, action: ProfileRequestAction) {
+  const { userId } = action.payload
+
+  const loadingCurrentUser: boolean = isCurrentUserId(state, userId)
+  const isGuestLogin = isGuestLoginSelector(state)
+  const roomConnection: RoomConnection | undefined = getCommsRoom(state)
+  const hasRoomConnection = !!roomConnection
+
+  return {
+    loadingCurrentUser,
+    isGuestLogin,
+    roomConnection,
+    hasRoomConnection
   }
 }
