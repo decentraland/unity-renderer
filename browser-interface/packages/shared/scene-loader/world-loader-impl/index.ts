@@ -8,7 +8,6 @@ export async function createWorldLoader(options: { urns: string[] }): Promise<IS
       return { scenes }
     },
     async reportPosition(_positionReport) {
-      console.log("DEBUG: REPORT POSITION WORLD")
       return { scenes }
     },
     async stop() {}

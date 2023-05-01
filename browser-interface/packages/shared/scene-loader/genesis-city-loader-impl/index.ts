@@ -46,7 +46,6 @@ export function createGenesisCityLoader(options: {
       }
     },
     async reportPosition(positionReport) {
-      console.log("DEBUG: REPORT POSITION GENESIS CITY")
       lastPosition.copyFrom(positionReport.position)
       lastLoadingRadius = positionReport.loadingRadius
 
