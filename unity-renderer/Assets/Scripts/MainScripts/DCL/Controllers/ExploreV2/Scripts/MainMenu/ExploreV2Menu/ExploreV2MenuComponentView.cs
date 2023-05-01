@@ -103,14 +103,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public void OnDestroy() =>
         hudCanvasCameraModeController?.Dispose();
 
-    internal static ExploreV2MenuComponentView Create()
-    {
-        ExploreV2MenuComponentView exploreV2View = Instantiate(Resources.Load<GameObject>("MainMenu/ExploreV2Menu")).GetComponent<ExploreV2MenuComponentView>();
-        exploreV2View.name = "_ExploreV2";
-
-        return exploreV2View;
-    }
-
     private void IsInitialized_OnChange(bool current, bool previous)
     {
         if (!current)

@@ -1,18 +1,16 @@
-using DCL;
-using DCL.Helpers;
-using ExploreV2Analytics;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Variables.RealmsInfo;
+using Cysharp.Threading.Tasks;
+using DCL.Providers;
+using Environment = DCL.Environment;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
 /// </summary>
 public class ExploreV2MenuComponentControllerDesktop : ExploreV2MenuComponentController
 {
-    protected override IExploreV2MenuComponentView CreateView() =>
-        ExploreV2MenuComponentViewDesktop.Create();
+
+    protected override async UniTask<IExploreV2MenuComponentView> CreateView() =>
+        await Environment.i.serviceLocator
+                         .Get<IAddressableResourceProvider>()
+                         .Instantiate<IExploreV2MenuComponentView>("ExploreV2MenuDesktop");
+
 }

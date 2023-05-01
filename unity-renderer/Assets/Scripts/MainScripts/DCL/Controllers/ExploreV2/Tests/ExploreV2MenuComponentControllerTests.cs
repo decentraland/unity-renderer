@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using DCL;
@@ -19,7 +20,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuView = Substitute.For<IExploreV2MenuComponentView>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>();
-        exploreV2MenuController.Configure().CreateView().Returns(info => exploreV2MenuView);
+        exploreV2MenuController.Configure().CreateView().Returns(info => new UniTask<IExploreV2MenuComponentView>());
         exploreV2MenuController.Configure().CreateAnalyticsController().Returns(info => exploreV2Analytics);
         exploreV2MenuController.Initialize();
     }

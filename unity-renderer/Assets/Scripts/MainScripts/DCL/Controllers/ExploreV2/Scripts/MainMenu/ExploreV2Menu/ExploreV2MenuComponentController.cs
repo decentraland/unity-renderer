@@ -1,9 +1,12 @@
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Providers;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
@@ -54,7 +57,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
     private RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
 
-    public void Initialize()
+    public async void Initialize()
     {
         sectionsVariables = new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
         {
@@ -71,7 +74,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         mouseCatcher = SceneReferences.i?.mouseCatcher;
         exploreV2Analytics = CreateAnalyticsController();
 
-        view = CreateView();
+        view = await CreateView();
         SetVisibility(false);
 
         realmController = new ExploreV2ComponentRealmsController(DataStore.i.realm, view);
@@ -156,8 +159,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.common.isWorld.OnChange -= OnWorldChange;
     }
 
-    protected internal virtual IExploreV2MenuComponentView CreateView() =>
-        ExploreV2MenuComponentView.Create();
+    protected internal virtual async UniTask<IExploreV2MenuComponentView> CreateView() =>
+        await Environment.i.serviceLocator
+                         .Get<IAddressableResourceProvider>()
+                         .Instantiate<IExploreV2MenuComponentView>("ExploreV2Menu");
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() =>
         new ExploreV2Analytics.ExploreV2Analytics();
