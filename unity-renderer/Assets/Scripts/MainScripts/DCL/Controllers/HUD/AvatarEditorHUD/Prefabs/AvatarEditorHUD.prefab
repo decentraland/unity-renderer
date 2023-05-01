@@ -3067,7 +3067,7 @@ MonoBehaviour:
   m_LayoutPriority: 1
 --- !u!95 &4292949885884074233
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3084,7 +3084,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2987560495814082926
 GameObject:
   m_ObjectHideFlags: 0
@@ -12933,6 +12934,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 230430281025453070, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 315544297958828154, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_Padding.m_Top
@@ -12981,12 +12987,12 @@ PrefabInstance:
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -12996,7 +13002,7 @@ PrefabInstance:
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -70
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3034530879239878528, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -13221,8 +13227,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7899743641607750033, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
+      propertyPath: m_Size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899743641607750033, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7955388171955735810, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}

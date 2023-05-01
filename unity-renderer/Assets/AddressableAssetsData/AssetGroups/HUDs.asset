@@ -33,6 +33,10 @@ MonoBehaviour:
     m_Address: ExploreV2Menu
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: d67d49f00cfc948ee8f66110e6df3e48
+    m_Address: AvatarEditorHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

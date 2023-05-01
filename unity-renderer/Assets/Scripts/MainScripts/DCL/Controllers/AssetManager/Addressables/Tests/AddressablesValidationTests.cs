@@ -39,7 +39,7 @@ public class AddressablesValidationTests
         string msg = CreateDuplicatesMessage(bundlesByAsset, EXCLUDED_FILE_TYPES);
 
         Assert.That(msg, Is.Empty,
-            message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies in Addressables->Analyze tool")); 
+            message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies in Addressables->Analyze tool"));
     }
 
     [Test][Category("EditModeCI")]
@@ -48,7 +48,7 @@ public class AddressablesValidationTests
         CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
         List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-        if (duplicates[0].resultName.Contains(NO_ISSUES_FOUND)) 
+        if (duplicates[0].resultName.Contains(NO_ISSUES_FOUND))
             return;
 
         Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset = GroupScenesAndBundlesByDuplicatedAsset(duplicates);
@@ -67,7 +67,7 @@ public class AddressablesValidationTests
         if (duplicates.Count == 0 || duplicates[0].resultName == NO_ISSUES_FOUND) return;
 
         var bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
-        var msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, 50);
+        var msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, 75);
 
         Assert.That(msg, Is.Empty,
             message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
@@ -90,7 +90,7 @@ public class AddressablesValidationTests
             {
                 if (!bundlesByAsset[dAsset].bundle.Contains(dBundle))
                     bundlesByAsset[dAsset].bundle.Add(dBundle);
-                
+
                 bundlesByAsset[dAsset] = (bundlesByAsset[dAsset].bundle, bundlesByAsset[dAsset].amount + 1);
             }
         }
@@ -132,12 +132,12 @@ public class AddressablesValidationTests
         foreach (var keyValuePair in bundlesByAsset
                     .Where(keyValuePair => !excludedFileTypesFilter.Contains(keyValuePair.Key.Split('.')[^1])))
         {
-            
+
             if(keyValuePair.Value.Item2 <= minDuplicatesAmount)
                 continue;
-            
+
             message.Append("ASSET: " + keyValuePair.Key);
-            
+
             message.Append(" - AMOUNT: " + keyValuePair.Value.Item2);
 
             message.Append(" - BUNDLES: ");
