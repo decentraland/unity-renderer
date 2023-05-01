@@ -28,6 +28,7 @@ namespace DCL.Backpack
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
+        private CancellationTokenSource filtersCancellationToken = new ();
         private string categoryFilter;
         private NftRarity rarityFilter = NftRarity.None;
         private ICollection<string> thirdPartyCollectionIdsFilter;
@@ -82,6 +83,7 @@ namespace DCL.Backpack
 
             view.Dispose();
             requestWearablesCancellationToken.SafeCancelAndDispose();
+            filtersCancellationToken.SafeCancelAndDispose();
         }
 
         public void LoadWearables()
@@ -264,26 +266,36 @@ namespace DCL.Backpack
 
         private void SetThirdPartCollectionIds(HashSet<string> selectedCollections)
         {
-            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, selectedCollections,
-                nameFilter, wearableSorting);
+            thirdPartyCollectionIdsFilter = selectedCollections;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
         }
 
         private void SetSorting((NftOrderByOperation type, bool directionAscendent) newSorting)
         {
-            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, thirdPartyCollectionIdsFilter,
-                nameFilter, newSorting);
+            wearableSorting = newSorting;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
         }
 
         private void SetTextFilter(string newText)
         {
-            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, thirdPartyCollectionIdsFilter,
-                newText, wearableSorting);
+            nameFilter = newText;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
         }
 
         private void SetCollectionType(NftCollectionType collectionType)
         {
-            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionType, thirdPartyCollectionIdsFilter,
-                nameFilter, wearableSorting);
+            collectionTypeMask = collectionType;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+        }
+
+        private async UniTaskVoid ThrottleLoadWearablesWithCurrentFilters(CancellationToken cancellationToken)
+        {
+            await UniTask.NextFrame(cancellationToken);
+            LoadWearables();
         }
     }
 }

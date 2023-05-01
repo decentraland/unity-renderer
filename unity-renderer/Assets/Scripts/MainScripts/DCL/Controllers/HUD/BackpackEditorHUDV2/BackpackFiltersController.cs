@@ -18,7 +18,7 @@ namespace DCL.Backpack
         private readonly IBackpackFiltersComponentView view;
         private bool collectionsAlreadyLoaded;
         private HashSet<string> selectedCollections = new();
-        private NftCollectionType collectionType = NftCollectionType.OnChain;
+        private NftCollectionType collectionType = NftCollectionType.OnChain | NftCollectionType.Base;
 
         public BackpackFiltersController(IBackpackFiltersComponentView view)
         {

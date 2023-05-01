@@ -1,6 +1,7 @@
 ﻿using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -110,7 +111,8 @@ namespace DCL.Backpack
             else
                 selectedCollections.Remove(optionId);
 
-            OnCollectionChanged?.Invoke(selectedCollections);
+            // need to make a copy of the collection because it may be modified in the event subscription
+            OnCollectionChanged?.Invoke(selectedCollections.ToHashSet());
         }
 
         private void OnSortByDropdownChanged(bool isOn, string optionId, string optionName)
