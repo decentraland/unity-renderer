@@ -17,7 +17,7 @@ namespace DCL.Backpack
 
         private readonly IBackpackFiltersComponentView view;
         private bool collectionsAlreadyLoaded;
-        private HashSet<string> selectedCollections = new();
+        private HashSet<string> selectedCollections = new() { DECENTRALAND_COLLECTION_ID };
         private bool isOnlyCollectiblesOn;
 
         public BackpackFiltersController(IBackpackFiltersComponentView view)

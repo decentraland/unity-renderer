@@ -68,7 +68,7 @@ namespace DCLServices.WearablesCatalogService
                 queryParams.Add(("rarity", rarity.ToString().ToLower()));
 
             if (!string.IsNullOrEmpty(category))
-                queryParams.Add(("categories", category));
+                queryParams.Add(("category", category));
 
             if (!string.IsNullOrEmpty(name))
                 queryParams.Add(("name", name));
@@ -538,7 +538,6 @@ namespace DCLServices.WearablesCatalogService
         private void AddCollectionIdsAndCollectionCategoryParams(ICollection<(string name, string value)> queryParams,
             ICollection<string> collectionIds = null)
         {
-            HashSet<string> collectionTypes = new HashSet<string>();
             bool isInvalidCollectionIds = collectionIds == null;
             bool containsThirdParty = isInvalidCollectionIds;
             bool containsBase = isInvalidCollectionIds;
@@ -549,27 +548,26 @@ namespace DCLServices.WearablesCatalogService
                 foreach (string collectionId in collectionIds)
                 {
                     if (collectionId.Contains("collections-thirdparty"))
+                    {
                         containsThirdParty = true;
+                        queryParams.Add(("thirdPartyCollectionId", collectionId));
+                    }
                     else if (collectionId.Equals("base-wearables")
                              || collectionId.StartsWith("urn:decentraland:off-chain:base-avatars:"))
                         containsBase = true;
                     else if (collectionId.Equals("decentraland"))
                         containsOnChain = true;
                 }
-
-                queryParams.Add(("thirdPartyCollectionId", string.Join(",", collectionIds)));
             }
 
             if (containsThirdParty)
-                collectionTypes.Add("third-party");
+                queryParams.Add(("collectionType", "third-party"));
 
             if (containsBase)
-                collectionTypes.Add("base-wearable");
+                queryParams.Add(("collectionType", "base-wearable"));
 
             if (containsOnChain)
-                collectionTypes.Add("on-chain");
-
-            queryParams.Add(("collectionType", string.Join(",", collectionTypes)));
+                queryParams.Add(("collectionType", "on-chain"));
         }
     }
 }
