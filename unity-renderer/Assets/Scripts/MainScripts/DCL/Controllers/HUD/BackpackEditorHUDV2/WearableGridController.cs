@@ -59,7 +59,6 @@ namespace DCL.Backpack
             view.OnFilterWearables += FilterWearablesFromBreadcrumb;
             view.OnGoToMarketplace += GoToMarketplace;
 
-            backpackFiltersController.OnOnlyCollectiblesChanged += ChangeOnlyCollectiblesFilter;
             backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
             backpackFiltersController.OnSortByChanged += ChangeSortingFilter;
             backpackFiltersController.OnSearchTextChanged += ChangeSearchTextFilter;
@@ -74,7 +73,6 @@ namespace DCL.Backpack
             view.OnFilterWearables -= FilterWearablesFromBreadcrumb;
             view.OnGoToMarketplace -= GoToMarketplace;
 
-            backpackFiltersController.OnOnlyCollectiblesChanged += ChangeOnlyCollectiblesFilter;
             backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
             backpackFiltersController.OnSortByChanged += ChangeSortingFilter;
             backpackFiltersController.OnSearchTextChanged += ChangeSearchTextFilter;
@@ -251,17 +249,6 @@ namespace DCL.Backpack
             browserBridge.OpenUrl(userProfileBridge.GetOwn().hasConnectedWeb3
                 ? URL_MARKET_PLACE
                 : URL_GET_A_WALLET);
-        }
-
-        private void ChangeOnlyCollectiblesFilter(bool isOn)
-        {
-            HashSet<string> selectedCollections = collectionIdsFilter.ToHashSet();
-            if (isOn)
-                selectedCollections.Remove(BASE_WEARABLES_COLLECTION_ID);
-            else
-                selectedCollections.Add(BASE_WEARABLES_COLLECTION_ID);
-
-            LoadWearables(categoryFilter, rarityFilter, selectedCollections, nameFilter, wearableSorting);
         }
 
         private void ChangeCollectionFilter(HashSet<string> selectedCollections)

@@ -8,15 +8,17 @@ namespace DCL.Backpack
 {
     public class BackpackFiltersController
     {
-        public event Action<bool> OnOnlyCollectiblesChanged;
         public event Action<HashSet<string>> OnCollectionChanged;
         public event Action<(NftOrderByOperation type, bool directionAscendent)> OnSortByChanged;
         public event Action<string> OnSearchTextChanged;
 
         private const string DECENTRALAND_COLLECTION_ID = "decentraland";
+        private const string BASE_WEARABLES_COLLECTION_ID = "base-wearables";
 
         private readonly IBackpackFiltersComponentView view;
         private bool collectionsAlreadyLoaded;
+        private HashSet<string> selectedCollections;
+        private bool isOnlyCollectiblesOn;
 
         public BackpackFiltersController(IBackpackFiltersComponentView view)
         {
@@ -53,11 +55,25 @@ namespace DCL.Backpack
                                    .Catch((error) => Debug.LogError(error));
         }
 
-        private void ChangeOnlyCollectibles(bool isOn) =>
-            OnOnlyCollectiblesChanged?.Invoke(isOn);
+        private void ChangeOnlyCollectibles(bool isOn)
+        {
+            isOnlyCollectiblesOn = isOn;
 
-        private void ChangeOnCollection(HashSet<string> selectedCollections) =>
+            selectedCollections.Remove(BASE_WEARABLES_COLLECTION_ID);
+            if (!isOn)
+                selectedCollections.Add(BASE_WEARABLES_COLLECTION_ID);
+
             OnCollectionChanged?.Invoke(selectedCollections);
+        }
+
+        private void ChangeOnCollection(HashSet<string> newSelectedCollections)
+        {
+            selectedCollections = newSelectedCollections;
+            if (!isOnlyCollectiblesOn)
+                selectedCollections.Add(BASE_WEARABLES_COLLECTION_ID);
+
+            OnCollectionChanged?.Invoke(selectedCollections);
+        }
 
         private void ChangeSortBy((NftOrderByOperation type, bool directionAscendent) newSorting) =>
             OnSortByChanged?.Invoke(newSorting);
