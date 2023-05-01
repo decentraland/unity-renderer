@@ -25,6 +25,10 @@ MonoBehaviour:
     m_Address: LoginHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: e36c4c46a2ad3804191b775ad611e679
+    m_Address: ExploreV2MenuDesktop
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
