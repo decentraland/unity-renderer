@@ -89,6 +89,9 @@ function* handleConnectVoiceChatToRoom() {
           yield put(setVoiceChatError(err.toString()))
         }
       }
+    } else if (prevHandler) {
+      // NOTE: since prevHandler may not be destroyed, we mute it
+      prevHandler.setMute(true)
     }
 
     yield put(setVoiceChatHandler(handler))

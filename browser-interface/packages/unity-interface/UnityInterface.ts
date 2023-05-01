@@ -1,6 +1,5 @@
 import { Vector3 } from '@dcl/ecs-math'
 import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
-import { AboutResponse } from 'shared/protocol/decentraland/bff/http_endpoints.gen'
 import { Avatar, ContentMapping } from '@dcl/schemas'
 import type { UnityGame } from 'unity-interface/loader'
 import { RENDERER_WS, RESET_TUTORIAL, WORLD_EXPLORER, WSS_ENABLED } from 'config'
@@ -54,6 +53,9 @@ import { futures } from './BrowserInterface'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { isWorldLoaderActive } from "../shared/realm/selectors"
+import { ensureRealmAdapter } from "../shared/realm/ensureRealmAdapter"
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -337,16 +339,22 @@ export class UnityInterface implements IUnityInterface {
     this.SendMessageToUnity('HUDController', 'TriggerSelfUserExpression', expressionId)
   }
 
-  public UpdateMinimapSceneInformation(info: MinimapSceneInfo[]) {
-    for (let i = 0; i < info.length; i += MINIMAP_CHUNK_SIZE) {
-      const chunk = info.slice(i, i + MINIMAP_CHUNK_SIZE)
-      this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
-    }
+  public async UpdateMinimapSceneInformation(info: MinimapSceneInfo[])
+  {
+    const adapter = await ensureRealmAdapter()
+    const isWorldScene = isWorldLoaderActive(adapter)
+    const payload = JSON.stringify({ isWorldScene, scenesInfo: info })
+
+    this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', payload)
   }
 
   public UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[])
   {
     this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(info))
+    const isWorldScene = false
+    const payload = JSON.stringify({ isWorldScene, scenesInfo: info })
+
+    this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', payload)
   }
 
   public SetTutorialEnabled(tutorialConfig: TutorialInitializationMessage) {

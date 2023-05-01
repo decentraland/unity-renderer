@@ -56,6 +56,19 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                .Returns(_ => UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
 
             wearablesCatalogService
+               .RequestOwnedWearablesAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<int>(),
+                    Arg.Any<int>(),
+                    Arg.Any<CancellationToken>(),
+                    Arg.Any<string>(),
+                    Arg.Any<NftRarity>(),
+                    Arg.Any<ICollection<string>>(),
+                    Arg.Any<string>(),
+                    Arg.Any<(NftOrderByOperation type, bool directionAscendent)>())
+               .ReturnsForAnyArgs(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
+
+            wearablesCatalogService
                .RequestBaseWearablesAsync(Arg.Any<CancellationToken>())
                .Returns(_ => UniTask.FromResult<IReadOnlyList<WearableItem>>(new List<WearableItem>()));
 

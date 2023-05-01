@@ -23,12 +23,13 @@ namespace RPC
         public static RpcServer<RPCContext> BuildDefaultServer(RPCContext context, ITransport transport)
         {
             return BuildServer(context, transport)
-                   .RegisterService(CRDTServiceImpl.RegisterService)
-                   .RegisterService(TransportServiceImpl.RegisterService)
-                   .RegisterService(EmotesRendererServiceImpl.RegisterService)
-                   .RegisterService(RPCFriendsApiBridge.RegisterService)
-                   .RegisterService(SceneControllerServiceImpl.RegisterService)
-                   .Build();
+                  .RegisterService(CRDTServiceImpl.RegisterService)
+                  .RegisterService(TransportServiceImpl.RegisterService)
+                  .RegisterService(EmotesRendererServiceImpl.RegisterService)
+                  .RegisterService(RPCFriendsApiBridge.RegisterService)
+                  .RegisterService(SceneControllerServiceImpl.RegisterService)
+                  .RegisterService(RestrictedActionsServiceImpl.RegisterService)
+                  .Build();
         }
 
         public static RPCServerBuilder<RPCContext> BuildServer(RPCContext context, ITransport transport)

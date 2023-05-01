@@ -10,6 +10,7 @@ using UnityEngine.TestTools;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using DCL.Shaders;
 using Assert = UnityEngine.Assertions.Assert;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
@@ -29,10 +30,9 @@ namespace Tests
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
             CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
-            
-            IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
+
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
-            DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;
+            DCLVideoTexture.videoPluginWrapperBuilder = () => new VideoPluginWrapper_Mock();
         }
 
         protected override IEnumerator TearDown()
@@ -331,7 +331,7 @@ namespace Tests
             var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
 
             yield return component.routine;
-            
+
             Assert.AreApproximatelyEqual(1f, component.texturePlayer.volume, 0.01f);
 
             AudioSettings settings = Settings.i.audioSettings.Data;
@@ -446,6 +446,51 @@ namespace Tests
 
             // Check the volume
             Assert.AreEqual(videoTexture.GetVolume(), videoTexture.texturePlayer.volume);
+        }
+
+        [UnityTest]
+        public IEnumerator VideoTextureIsDisposedAndReloadedCorrectly()
+        {
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
+            DCLVideoTexture texture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
+
+            BasicMaterial basicMaterial = TestUtils.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(
+                scene,
+                DCL.Models.CLASS_ID.BASIC_MATERIAL,
+                new BasicMaterial.Model()
+                {
+                    texture = texture.id
+                });
+
+            TestUtils.SharedComponentAttach(basicMaterial, entity);
+            TestUtils.SharedComponentAttach(texture, entity);
+
+            yield return basicMaterial.routine;
+
+            Texture mainTex = basicMaterial.material.GetTexture(ShaderUtils.BaseMap);
+
+            // texture should be created
+            Assert.IsTrue(mainTex);
+
+            TestUtils.SharedComponentUpdate(basicMaterial, new BasicMaterial.Model()
+            {
+                texture =  CreateDCLVideoTexture(scene, "it-wont-load-during-test2").id
+            });
+
+            yield return basicMaterial.routine;
+
+            // texture should have being disposed
+            Assert.IsFalse(mainTex);
+
+            TestUtils.SharedComponentUpdate(basicMaterial, new BasicMaterial.Model()
+            {
+                texture = texture.id
+            });
+
+            yield return basicMaterial.routine;
+
+            // texture should have being reloaded
+            Assert.IsTrue(basicMaterial.material.GetTexture(ShaderUtils.BaseMap));
         }
 
         static DCLVideoClip CreateDCLVideoClip(ParcelScene scn, string url)

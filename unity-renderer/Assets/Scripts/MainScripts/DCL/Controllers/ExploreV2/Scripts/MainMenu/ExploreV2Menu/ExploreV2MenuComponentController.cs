@@ -119,6 +119,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
+
+        DataStore.i.common.isWorld.OnChange += OnWorldChange;
     }
 
     public void Dispose()
@@ -152,6 +154,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.OnSectionOpen -= OnSectionOpen;
             view.Dispose();
         }
+
+        DataStore.i.common.isWorld.OnChange -= OnWorldChange;
     }
 
     protected internal virtual IExploreV2MenuComponentView CreateView() =>
@@ -307,5 +311,15 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         SetVisibility(false);
         exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+    }
+
+    private void OnWorldChange(bool isWorld, bool wasWorld)
+    {
+        if (isWorld == wasWorld) return;
+
+        if (isWorld && view.IsSectionActive(ExploreSection.Map))
+            view.HideMapOnEnteringWorld();
+
+        view.SetSectionActive(ExploreSection.Map, !isWorld);
     }
 }

@@ -1,29 +1,70 @@
 fileFormatVersion: 2
 guid: 0e4bc46e301b6498180af5ba0d8d9d59
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: Cone.001
-    100002: Cone.002
-    100004: Cylinder
-    100006: //RootNode
-    400000: Cone.001
-    400002: Cone.002
-    400004: Cylinder
-    400006: //RootNode
-    2100000: No Name
-    2300000: Cone.001
-    2300002: Cone.002
-    2300004: Cylinder
-    3300000: Cone.001
-    3300002: Cone.002
-    3300004: Cylinder
-    4300000: Cone.002
-    4300002: Cone.001
-    4300004: Cylinder
-  externalObjects: {}
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Cone.001
+  - first:
+      1: 100002
+    second: Cone.002
+  - first:
+      1: 100004
+    second: Cylinder
+  - first:
+      1: 100006
+    second: //RootNode
+  - first:
+      4: 400000
+    second: Cone.001
+  - first:
+      4: 400002
+    second: Cone.002
+  - first:
+      4: 400004
+    second: Cylinder
+  - first:
+      4: 400006
+    second: //RootNode
+  - first:
+      21: 2100000
+    second: No Name
+  - first:
+      23: 2300000
+    second: Cone.001
+  - first:
+      23: 2300002
+    second: Cone.002
+  - first:
+      23: 2300004
+    second: Cylinder
+  - first:
+      33: 3300000
+    second: Cone.001
+  - first:
+      33: 3300002
+    second: Cone.002
+  - first:
+      33: 3300004
+    second: Cylinder
+  - first:
+      43: 4300000
+    second: Cone.002
+  - first:
+      43: 4300002
+    second: Cone.001
+  - first:
+      43: 4300004
+    second: Cylinder
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: No Name
+    second: {fileID: 2100000, guid: 6d4e0a22854df0f44829f80625837286, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -32,6 +73,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -56,25 +98,34 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -83,10 +134,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -96,13 +147,18 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 0.5
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 0
   humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

@@ -23,7 +23,7 @@ public class ComponentCrdtWriteSystem : IDisposable
     private readonly ISceneController sceneController;
     private readonly IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors;
 
-    private readonly Dictionary<int, DualKeyValueSet<int, long, CRDTMessage>> outgoingCrdt = new Dictionary<int, DualKeyValueSet<int, long, CRDTMessage>>(60);
+    private readonly Dictionary<int, DualKeyValueSet<int, long, CrdtMessage>> outgoingCrdt = new Dictionary<int, DualKeyValueSet<int, long, CrdtMessage>>(60);
     private readonly Queue<MessageData> queuedMessages = new Queue<MessageData>(60);
     private readonly Queue<MessageData> messagesPool = new Queue<MessageData>(60);
 
@@ -74,7 +74,8 @@ public class ComponentCrdtWriteSystem : IDisposable
             if (!crdtExecutors.TryGetValue(message.sceneNumber, out ICRDTExecutor crdtExecutor))
                 continue;
 
-            CRDTMessage crdt;
+            CrdtMessage crdt;
+
             if (message.messageType == CrdtMessageType.APPEND_COMPONENT)
             {
                 crdt = crdtExecutor.crdtProtocol.CreateSetMessage((int)message.entityId, message.componentId, message.data);
@@ -82,12 +83,11 @@ public class ComponentCrdtWriteSystem : IDisposable
             else
             {
                 crdt = crdtExecutor.crdtProtocol.CreateLwwMessage((int)message.entityId, message.componentId, message.data);
-
             }
 
-            if (message.minTimeStamp >= 0 && message.minTimeStamp > crdt.timestamp)
+            if (message.minTimeStamp >= 0 && message.minTimeStamp > crdt.Timestamp)
             {
-                crdt.timestamp = message.minTimeStamp;
+                crdt = new CrdtMessage(crdt.Type, crdt.EntityId, crdt.ComponentId, message.minTimeStamp, crdt.Data);
             }
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_LOCAL))
@@ -100,22 +100,31 @@ public class ComponentCrdtWriteSystem : IDisposable
             }
             else if (message.writeType.HasFlag(ECSComponentWriteType.EXECUTE_LOCALLY))
             {
-                crdtExecutor.ExecuteWithoutStoringState(crdt.entityId, crdt.componentId, crdt.data);
+                crdtExecutor.ExecuteWithoutStoringState(crdt.EntityId, crdt.ComponentId, crdt.Data);
             }
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))
             {
-                if (!outgoingCrdt.TryGetValue(message.sceneNumber, out DualKeyValueSet<int, long, CRDTMessage> sceneCrdtList))
+                if (!outgoingCrdt.TryGetValue(message.sceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtList))
                 {
-                    sceneCrdtList = new DualKeyValueSet<int, long, CRDTMessage>();
+                    sceneCrdtList = new DualKeyValueSet<int, long, CrdtMessage>();
                     outgoingCrdt[message.sceneNumber] = sceneCrdtList;
                 }
 
-                if (!sceneCrdtList.TryGetValue(message.componentId, message.entityId, out CRDTMessage currentMsg))
+                if (!sceneCrdtList.TryGetValue(message.componentId, message.entityId, out CrdtMessage currentMsg))
                 {
                     sceneCrdtList.Add(message.componentId, message.entityId, crdt);
-                } else {
-                    currentMsg.data = currentMsg.data;
+                }
+                else
+                {
+                    sceneCrdtList[message.componentId, message.entityId] = new CrdtMessage
+                    (
+                        currentMsg.Type,
+                        currentMsg.EntityId,
+                        currentMsg.ComponentId,
+                        currentMsg.Timestamp,
+                        message.data
+                    );
                 }
 
                 if (!rpcContext.crdt.scenesOutgoingCrdts.ContainsKey(message.sceneNumber))

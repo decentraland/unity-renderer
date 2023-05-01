@@ -1,20 +1,24 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
-    public class AvatarSlotsHUDController : IHUD
+    public class AvatarSlotsHUDController
     {
+        public event Action<string, bool, bool> OnToggleSlot;
+
+        private readonly IAvatarSlotsView avatarSlotsView;
+        private string lastSelectedSlot;
         internal AvatarSlotsDefinitionSO avatarSlotsDefinition;
-        internal readonly IAvatarSlotsView avatarSlotsView;
-        internal string lastSelectedSlot;
+
+        public event Action<string> OnUnequipFromSlot;
 
         public AvatarSlotsHUDController(IAvatarSlotsView avatarSlotsView)
         {
             this.avatarSlotsView = avatarSlotsView;
             avatarSlotsView.OnToggleAvatarSlot += ToggleSlot;
+            avatarSlotsView.OnUnequipFromSlot += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
             avatarSlotsDefinition = Resources.Load<AvatarSlotsDefinitionSO>("AvatarSlotsDefinition");
         }
 
@@ -30,12 +34,14 @@ namespace DCL.Backpack
             avatarSlotsView.RebuildLayout();
         }
 
-        public void ToggleSlot(string slotCategory, bool isSelected)
+        public void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
                 avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);
 
             lastSelectedSlot = isSelected ? slotCategory : "";
+
+            OnToggleSlot?.Invoke(slotCategory, supportColor, isSelected);
         }
 
         public void Dispose()
@@ -43,8 +49,12 @@ namespace DCL.Backpack
             avatarSlotsView.OnToggleAvatarSlot -= ToggleSlot;
         }
 
-        public void SetVisibility(bool visible)
+        public void Equip(WearableItem wearableItem, string bodyShape)
         {
+            avatarSlotsView.SetSlotContent(wearableItem.data.category, wearableItem, bodyShape);
         }
+
+        public void UnEquip(string category) =>
+            avatarSlotsView.ResetCategorySlot(category);
     }
 }

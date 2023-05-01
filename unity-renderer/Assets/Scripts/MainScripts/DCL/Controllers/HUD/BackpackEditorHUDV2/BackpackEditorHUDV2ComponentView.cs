@@ -1,29 +1,42 @@
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace DCL.Backpack
 {
-    public class BackpackEditorHUDV2ComponentView : BaseComponentView<BackpackEditorHUDModel>, IBackpackEditorHUDView
+    public class BackpackEditorHUDV2ComponentView : BaseComponentView<BackpackEditorHUDModel>, IBackpackEditorHUDView, IPointerDownHandler
     {
+        public event Action<Color> OnColorChanged;
+
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
+        private const int MS_TO_RESET_PREVIEW_ANIMATION = 200;
 
         [SerializeField] private SectionSelectorComponentView sectionSelector;
         [SerializeField] private GameObject wearablesSection;
         [SerializeField] private GameObject emotesSection;
         [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
+        [SerializeField] private WearableGridComponentView wearableGridComponentView;
+        [SerializeField] private AvatarSlotsView avatarSlotsView;
+        [SerializeField] private ColorPickerComponentView colorPickerComponentView;
+        [SerializeField] private ColorPresetsSO colorPresetsSO;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
+        public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
+        public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
 
         private Transform thisTransform;
         private bool isAvatarDirty;
         private AvatarModel avatarModelToUpdate;
         private CancellationTokenSource updateAvatarCts = new ();
+        private CancellationTokenSource snapshotsCts = new ();
 
         public override void Awake()
         {
@@ -37,6 +50,8 @@ namespace DCL.Backpack
         {
             ConfigureSectionSelector();
             backpackPreviewPanel.Initialize(characterPreviewFactory);
+            colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
+            colorPickerComponentView.SetColorList(colorPresetsSO.colors);
         }
 
         private void Update() =>
@@ -49,12 +64,17 @@ namespace DCL.Backpack
             updateAvatarCts.SafeCancelAndDispose();
             updateAvatarCts = null;
 
+            snapshotsCts.SafeCancelAndDispose();
+            snapshotsCts = null;
+
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
             backpackPreviewPanel.Dispose();
+
+            colorPickerComponentView.OnColorChanged -= OnColorPickerColorChanged;
         }
 
-        public static IBackpackEditorHUDView Create() =>
+        public static BackpackEditorHUDV2ComponentView Create() =>
             Instantiate(Resources.Load<BackpackEditorHUDV2ComponentView>("BackpackEditorHUDV2"));
 
         public override void Show(bool instant = false)
@@ -67,6 +87,7 @@ namespace DCL.Backpack
         {
             gameObject.SetActive(false);
             backpackPreviewPanel.SetPreviewEnabled(false);
+            colorPickerComponentView.SetActive(false);
         }
 
         public override void RefreshControl() { }
@@ -110,6 +131,36 @@ namespace DCL.Backpack
             backpackPreviewPanel.SetLoadingActive(true);
         }
 
+        public void TakeSnapshotsAfterStopPreviewAnimation(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
+        {
+            async UniTaskVoid TakeSnapshotsAfterStopPreviewAnimationAsync(CancellationToken ct)
+            {
+                ResetPreviewEmote();
+                await UniTask.Delay(MS_TO_RESET_PREVIEW_ANIMATION, cancellationToken: ct);
+                backpackPreviewPanel.TakeSnapshots(
+                    (face256, body) => onSuccess?.Invoke(face256, body),
+                    () => onFailed?.Invoke());
+            }
+
+            snapshotsCts = snapshotsCts.SafeRestart();
+            TakeSnapshotsAfterStopPreviewAnimationAsync(snapshotsCts.Token).Forget();
+        }
+
+        public void SetColorPickerVisibility(bool isActive) =>
+            colorPickerComponentView.gameObject.SetActive(isActive);
+
+        public void SetColorPickerValue(Color color)
+        {
+            colorPickerComponentView.SetColorSelector(color);
+            colorPickerComponentView.UpdateSliderValues(color);
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (eventData.pointerPressRaycast.gameObject != colorPickerComponentView.gameObject)
+                colorPickerComponentView.SetActive(false);
+        }
+
         private void ConfigureSectionSelector()
         {
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
@@ -145,5 +196,8 @@ namespace DCL.Backpack
             UpdateAvatarAsync(updateAvatarCts.Token).Forget();
             isAvatarDirty = false;
         }
+
+        private void OnColorPickerColorChanged(Color newColor) =>
+            OnColorChanged?.Invoke(newColor);
     }
 }

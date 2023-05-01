@@ -1,6 +1,4 @@
 import { createLogger } from 'lib/logger'
-import { IslandChangedMessage } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
-import { Heartbeat } from 'shared/protocol/decentraland/bff/comms_director_service.gen'
 import { store } from 'shared/store/isolatedStore'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import {
@@ -13,9 +11,7 @@ import {
   SET_REALM_ADAPTER
 } from './actions'
 import { setRoomConnection, SET_COMMS_ISLAND } from '../comms/actions'
-import { listenSystemMessage } from '../comms/logic/subscription-adapter'
 import { IRealmAdapter } from './types'
-import { Reader } from 'protobufjs/minimal'
 import { call, delay, fork, put, race, select, take, takeEvery } from 'redux-saga/effects'
 import { DEPLOY_PROFILE_SUCCESS } from 'shared/profiles/actions'
 import { getRealmAdapter } from './selectors'
@@ -47,40 +43,27 @@ export function* bffSaga() {
  * This function binds the given IBff to the kernel and returns the "unbind"
  * function in charge of disconnecting it from kernel.
  */
-async function bindHandlersToBFF(bff: IRealmAdapter, address: string): Promise<() => Promise<void>> {
-  bff.events.on('DISCONNECTION', () => {
-    store.dispatch(handleRealmDisconnection(bff))
+async function bindHandlersToAdapter(realm: IRealmAdapter, _address: string): Promise<() => Promise<void>> {
+  realm.events.on('DISCONNECTION', () => {
+    store.dispatch(handleRealmDisconnection(realm))
   })
 
-  bff.events.on('setIsland', (message) => {
+  realm.events.on('setIsland', (message) => {
     logger.log('Island message', message)
     store.dispatch(connectToComms(message))
   })
 
-  const realmName = bff.about.configurations?.realmName || realmToConnectionString(bff)
+  hookConnectToFixedAdaptersIfNecessary(realm)
+  const realmName = realm.about.configurations?.realmName || realmToConnectionString(realm)
   notifyStatusThroughChat(`Welcome to realm ${realmName}!`)
 
-  hookConnectToFixedAdaptersIfNecessary(bff)
-
-  const islandListener = listenSystemMessage(bff.services.comms, `${address}.island_changed`, async (message) => {
-    try {
-      const islandChangedMessage = IslandChangedMessage.decode(Reader.create(message.payload))
-      bff.events.emit('setIsland', islandChangedMessage)
-    } catch (e) {
-      logger.error('cannot process island change message', e)
-      return
-    }
-  })
-
   return async function unbind(): Promise<void> {
-    logger.info('Unbinding BFF', bff)
+    logger.info('Unbinding adapter', realm)
 
-    bff.events.off('DISCONNECTION')
-
-    islandListener.close()
+    realm.events.off('DISCONNECTION')
 
     try {
-      await bff.disconnect()
+      await realm.disconnect()
     } catch (err: any) {
       // this only needs to be logged. try {} catch is used because the function needs
       // to wait for the disconnection to continue with the saga.
@@ -90,23 +73,14 @@ async function bindHandlersToBFF(bff: IRealmAdapter, address: string): Promise<(
 }
 
 // this function is called from the handleHeartbeat saga
-async function sendHeartBeat(bff: IRealmAdapter) {
-  const payload = Heartbeat.encode({
-    position: lastPlayerPosition
-  }).finish()
+async function sendHeartBeat(realm: IRealmAdapter) {
   try {
-    await bff.services.comms.publishToTopic({
-      topic: 'heartbeat',
-      payload
-    })
+    realm.sendHeartbeat(lastPlayerPosition)
   } catch (err: any) {
-    await bff.disconnect(err)
+    await realm.disconnect(err)
   }
 }
 
-/**
- * this saga handles the heartbeats of Archipelago via IBff
- */
 function* handleHeartBeat() {
   while (true) {
     yield race({
@@ -141,7 +115,7 @@ function* handleNewBFF() {
     if (action.payload) {
       const identity: ExplorerIdentity = yield select(getCurrentIdentity)
       // bind messages to this comms instance
-      unbind = yield call(bindHandlersToBFF, action.payload, identity?.address)
+      unbind = yield call(bindHandlersToAdapter, action.payload, identity?.address)
     }
   })
 }
