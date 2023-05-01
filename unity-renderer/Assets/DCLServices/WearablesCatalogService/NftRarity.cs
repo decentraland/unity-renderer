@@ -1,4 +1,4 @@
-namespace DCL.Backpack
+namespace DCLServices.WearablesCatalogService
 {
     public enum NftRarity
     {
@@ -9,5 +9,6 @@ namespace DCL.Backpack
         Legendary,
         Mythic,
         Unique,
+        None,
     }
 }
