@@ -17,7 +17,7 @@ namespace DCL.Backpack
 
         private readonly IBackpackFiltersComponentView view;
         private bool collectionsAlreadyLoaded;
-        private HashSet<string> selectedCollections;
+        private HashSet<string> selectedCollections = new();
         private bool isOnlyCollectiblesOn;
 
         public BackpackFiltersController(IBackpackFiltersComponentView view)

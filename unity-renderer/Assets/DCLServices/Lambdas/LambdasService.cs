@@ -57,10 +57,11 @@ namespace DCLServices.Lambdas
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
-            var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
+            string urlWithParams = AppendUrlParamsToUrl(url, urlEncodedParams);
+            var wr = webRequestController.Ref.Get(urlWithParams, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, url, transaction, urlEncodedParams);
+            return SendRequestAsync<TResponse>(wr, cancellationToken, urlWithParams, transaction, urlEncodedParams);
         }
 
         private async UniTask<(TResponse response, bool success)> SendRequestAsync<TResponse>(
@@ -120,6 +121,35 @@ namespace DCLServices.Lambdas
             var url = urlBuilder.ToString();
             GenericPool<StringBuilder>.Release(urlBuilder);
             return url;
+        }
+
+        internal string AppendUrlParamsToUrl(string url, params (string paramName, string paramValue)[] urlEncodedParams)
+        {
+            var urlBuilder = GenericPool<StringBuilder>.Get();
+            urlBuilder.Clear();
+            urlBuilder.Append(url);
+            if (!urlBuilder.ToString().EndsWith('/'))
+                urlBuilder.Append('/');
+
+            if (urlEncodedParams.Length > 0)
+            {
+                urlBuilder.Append(url.Contains('?') ? '&' : '?');
+
+                for (var i = 0; i < urlEncodedParams.Length; i++)
+                {
+                    var param = urlEncodedParams[i];
+                    urlBuilder.Append(param.paramName);
+                    urlBuilder.Append('=');
+                    urlBuilder.Append(param.paramValue);
+
+                    if (i < urlEncodedParams.Length - 1)
+                        urlBuilder.Append('&');
+                }
+            }
+
+            var result = urlBuilder.ToString();
+            GenericPool<StringBuilder>.Release(urlBuilder);
+            return result;
         }
 
         internal static bool TryParseResponse<TResponse>(string endPoint, DisposableTransaction transaction,
