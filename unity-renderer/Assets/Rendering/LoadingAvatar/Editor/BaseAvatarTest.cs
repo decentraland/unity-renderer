@@ -8,7 +8,7 @@ namespace Rendering.LoadingAvatar.Editor
     [Category("EditModeCI")]
     public class BaseAvatarTest
     {
-        private const string assetPath = "Assets/Rendering/LoadingAvatar/CrossSection/Resources/AvatarBase.prefab";
+        private const string assetPath = "Assets/Rendering/LoadingAvatar/CrossSection/AvatarBase.prefab";
 
         [Test]
         public void BaseAvatarIsImportedCorrectly()

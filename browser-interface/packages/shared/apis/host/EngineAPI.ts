@@ -127,7 +127,14 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
 
         async crdtGetState(_, ctx) {
           const response = await ctx.rpcSceneControllerService.getCurrentState({})
-          return { hasEntities: response.hasOwnEntities, data: [response.payload] }
+
+          const { initialEntitiesTick0, hasMainCrdt } = ctx
+
+          return {
+            hasEntities: response.hasOwnEntities || hasMainCrdt,
+            // send the initialEntitiesTick0 (main.crdt) and the response.payload
+            data: [initialEntitiesTick0, response.payload]
+          }
         }
       }
     }
