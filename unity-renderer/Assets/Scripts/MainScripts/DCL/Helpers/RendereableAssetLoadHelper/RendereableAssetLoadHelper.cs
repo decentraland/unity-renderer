@@ -52,6 +52,7 @@ namespace DCL.Components
         private AssetPromise_AB_GameObject abPromise;
         private string currentLoadingSystem;
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
+        private string targetUrl;
 
         public bool isFinished
         {
@@ -88,7 +89,6 @@ namespace DCL.Components
 
         float loadStartTime = 0;
         float loadFinishTime = float.MaxValue;
-        private string targetUrl;
 #endif
 
         public RendereableAssetLoadHelper(ContentProvider contentProvider, string bundlesContentUrl, Func<bool> isGltFastEnabled)
