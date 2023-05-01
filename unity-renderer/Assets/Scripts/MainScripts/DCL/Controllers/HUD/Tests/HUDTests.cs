@@ -35,6 +35,7 @@ namespace Tests
             serviceLocator.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
             serviceLocator.Register<IFriendsController>(() => Substitute.For<IFriendsController>());
             serviceLocator.Register<IFriendsController>(() => Substitute.For<IFriendsController>());
+            serviceLocator.Register<ISocialApiBridge>(() => Substitute.For<ISocialApiBridge>());
             return serviceLocator;
         }
 
