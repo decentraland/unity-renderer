@@ -30,9 +30,10 @@ namespace DCL.Backpack
         private CancellationTokenSource requestWearablesCancellationToken = new ();
         private string categoryFilter;
         private NftRarity rarityFilter = NftRarity.None;
-        private ICollection<string> collectionIdsFilter;
+        private ICollection<string> thirdPartyCollectionIdsFilter;
         private string nameFilter;
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
+        private NftCollectionType collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
 
         public event Action<string> OnWearableEquipped;
         public event Action<string> OnWearableUnequipped;
@@ -58,9 +59,10 @@ namespace DCL.Backpack
             view.OnFilterWearables += FilterWearablesFromBreadcrumb;
             view.OnGoToMarketplace += GoToMarketplace;
 
-            backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
-            backpackFiltersController.OnSortByChanged += ChangeSortingFilter;
-            backpackFiltersController.OnSearchTextChanged += ChangeSearchTextFilter;
+            backpackFiltersController.OnThirdPartyCollectionChanged += SetThirdPartCollectionIds;
+            backpackFiltersController.OnSortByChanged += SetSorting;
+            backpackFiltersController.OnSearchTextChanged += SetTextFilter;
+            backpackFiltersController.OnCollectionTypeChanged += SetCollectionType;
         }
 
         public void Dispose()
@@ -72,22 +74,31 @@ namespace DCL.Backpack
             view.OnFilterWearables -= FilterWearablesFromBreadcrumb;
             view.OnGoToMarketplace -= GoToMarketplace;
 
-            backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
-            backpackFiltersController.OnSortByChanged += ChangeSortingFilter;
-            backpackFiltersController.OnSearchTextChanged += ChangeSearchTextFilter;
+            backpackFiltersController.OnThirdPartyCollectionChanged -= SetThirdPartCollectionIds;
+            backpackFiltersController.OnSortByChanged -= SetSorting;
+            backpackFiltersController.OnSearchTextChanged -= SetTextFilter;
+            backpackFiltersController.OnCollectionTypeChanged -= SetCollectionType;
             backpackFiltersController.Dispose();
 
             view.Dispose();
             requestWearablesCancellationToken.SafeCancelAndDispose();
         }
 
-        public void LoadWearables(string categoryFilter = null, NftRarity rarityFilter = NftRarity.None,
-            ICollection<string> collectionIdsFilter = null, string nameFilter = null,
+        public void LoadWearables()
+        {
+            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, thirdPartyCollectionIdsFilter,
+                nameFilter, wearableSorting);
+        }
+
+        public void LoadWearablesWithFilters(string categoryFilter = null, NftRarity rarityFilter = NftRarity.None,
+            NftCollectionType collectionTypeMask = NftCollectionType.All,
+            ICollection<string> thirdPartyCollectionIdsFilter = null, string nameFilter = null,
             (NftOrderByOperation type, bool directionAscendent)? wearableSorting = null)
         {
             this.categoryFilter = categoryFilter;
             this.rarityFilter = rarityFilter;
-            this.collectionIdsFilter = collectionIdsFilter;
+            this.collectionTypeMask = collectionTypeMask;
+            this.thirdPartyCollectionIdsFilter = thirdPartyCollectionIdsFilter;
             this.nameFilter = nameFilter;
             this.wearableSorting = wearableSorting;
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
@@ -157,7 +168,8 @@ namespace DCL.Backpack
                     ownUserId,
                     page,
                     PAGE_SIZE, cancellationToken,
-                    categoryFilter, rarityFilter, collectionIdsFilter,
+                    categoryFilter, rarityFilter, collectionTypeMask,
+                    thirdPartyCollectionIdsFilter,
                     nameFilter, wearableSorting);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
@@ -250,19 +262,28 @@ namespace DCL.Backpack
                 : URL_GET_A_WALLET);
         }
 
-        private void ChangeCollectionFilter(HashSet<string> selectedCollections)
+        private void SetThirdPartCollectionIds(HashSet<string> selectedCollections)
         {
-            LoadWearables(categoryFilter, rarityFilter, selectedCollections, nameFilter, wearableSorting);
+            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, selectedCollections,
+                nameFilter, wearableSorting);
         }
 
-        private void ChangeSortingFilter((NftOrderByOperation type, bool directionAscendent) newSorting)
+        private void SetSorting((NftOrderByOperation type, bool directionAscendent) newSorting)
         {
-            LoadWearables(categoryFilter, rarityFilter, collectionIdsFilter, nameFilter, newSorting);
+            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, thirdPartyCollectionIdsFilter,
+                nameFilter, newSorting);
         }
 
-        private void ChangeSearchTextFilter(string newText)
+        private void SetTextFilter(string newText)
         {
-            LoadWearables(categoryFilter, rarityFilter, collectionIdsFilter, newText, wearableSorting);
+            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, thirdPartyCollectionIdsFilter,
+                newText, wearableSorting);
+        }
+
+        private void SetCollectionType(NftCollectionType collectionType)
+        {
+            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionType, thirdPartyCollectionIdsFilter,
+                nameFilter, wearableSorting);
         }
     }
 }

@@ -75,7 +75,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             view.Received(1)
@@ -96,7 +96,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             wearablesCatalogService.Received(1)
@@ -118,7 +118,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, wearableTotalAmount)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             view.Received(1).SetWearablePages(1, expectedTotalPages);
@@ -219,7 +219,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             view.Received(1).ClearWearables();
@@ -275,7 +275,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             view.Received(1).ClearWearables();
@@ -309,7 +309,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
             view.ClearReceivedCalls();
 
@@ -342,7 +342,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
             view.ClearReceivedCalls();
 
@@ -370,7 +370,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
             view.ClearReceivedCalls();
 
@@ -403,7 +403,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
             view.ClearReceivedCalls();
 
@@ -521,7 +521,8 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables(CATEGORY, RARITY,
+            controller.LoadWearablesWithFilters(CATEGORY, RARITY,
+                NftCollectionType.Base | NftCollectionType.OnChain | NftCollectionType.ThirdParty,
                 new[] { ON_CHAIN_COLLECTION, BASE_OFF_CHAIN_COLLECTION, THIRD_PARTY_COLLECTION },
                 NAME,
                 (NftOrderByOperation.Name, false));
@@ -533,6 +534,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>(),
                                         CATEGORY,
                                         RARITY,
+                                        NftCollectionType.Base | NftCollectionType.OnChain | NftCollectionType.ThirdParty,
                                         Arg.Is<ICollection<string>>(i =>
                                             i.ElementAt(0) == ON_CHAIN_COLLECTION
                                             && i.ElementAt(1) == BASE_OFF_CHAIN_COLLECTION

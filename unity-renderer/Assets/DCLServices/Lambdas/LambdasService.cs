@@ -57,7 +57,7 @@ namespace DCLServices.Lambdas
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
-            string urlWithParams = AppendUrlParamsToUrl(url, urlEncodedParams);
+            string urlWithParams = AppendQueryParamsToUrl(url, urlEncodedParams);
             var wr = webRequestController.Ref.Get(urlWithParams, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
@@ -123,7 +123,7 @@ namespace DCLServices.Lambdas
             return url;
         }
 
-        internal string AppendUrlParamsToUrl(string url, params (string paramName, string paramValue)[] urlEncodedParams)
+        internal string AppendQueryParamsToUrl(string url, params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();

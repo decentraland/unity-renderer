@@ -55,7 +55,9 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
             string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
-            NftRarity rarity = NftRarity.None, ICollection<string> collectionIds = null,
+            NftRarity rarity = NftRarity.None,
+            NftCollectionType collectionTypeMask = NftCollectionType.All,
+            ICollection<string> thirdPartyCollectionIds = null,
             string name = null, (NftOrderByOperation type, bool directionAscendent)? orderBy = null)
         {
             var queryParams = new List<(string name, string value)>
@@ -79,7 +81,18 @@ namespace DCLServices.WearablesCatalogService
                 queryParams.Add(("direction", orderBy.Value.directionAscendent ? "ASC" : "DESC"));
             }
 
-            AddCollectionIdsAndCollectionCategoryParams(queryParams, collectionIds);
+            if ((collectionTypeMask & NftCollectionType.Base) != 0)
+                queryParams.Add(("collectionType", "base-wearable"));
+
+            if ((collectionTypeMask & NftCollectionType.OnChain) != 0)
+                queryParams.Add(("collectionType", "on-chain"));
+
+            if ((collectionTypeMask & NftCollectionType.ThirdParty) != 0)
+                queryParams.Add(("collectionType", "third-party"));
+
+            if (thirdPartyCollectionIds != null )
+                foreach (string collectionId in thirdPartyCollectionIds)
+                    queryParams.Add(("thirdPartyCollectionId", collectionId));
 
             // TODO: remove the hardcoded url once the lambda is deployed to the catalysts and becomes part of the protocol
             (WearableWithDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
@@ -534,40 +547,5 @@ namespace DCLServices.WearablesCatalogService
 
         private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
             wearableIds.Select(id => ("wearableId", id)).ToArray();
-
-        private void AddCollectionIdsAndCollectionCategoryParams(ICollection<(string name, string value)> queryParams,
-            ICollection<string> collectionIds = null)
-        {
-            bool isInvalidCollectionIds = collectionIds == null;
-            bool containsThirdParty = isInvalidCollectionIds;
-            bool containsBase = isInvalidCollectionIds;
-            bool containsOnChain = isInvalidCollectionIds;
-
-            if (collectionIds != null)
-            {
-                foreach (string collectionId in collectionIds)
-                {
-                    if (collectionId.Contains("collections-thirdparty"))
-                    {
-                        containsThirdParty = true;
-                        queryParams.Add(("thirdPartyCollectionId", collectionId));
-                    }
-                    else if (collectionId.Equals("base-wearables")
-                             || collectionId.StartsWith("urn:decentraland:off-chain:base-avatars:"))
-                        containsBase = true;
-                    else if (collectionId.Equals("decentraland"))
-                        containsOnChain = true;
-                }
-            }
-
-            if (containsThirdParty)
-                queryParams.Add(("collectionType", "third-party"));
-
-            if (containsBase)
-                queryParams.Add(("collectionType", "base-wearable"));
-
-            if (containsOnChain)
-                queryParams.Add(("collectionType", "on-chain"));
-        }
     }
 }

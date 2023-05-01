@@ -321,7 +321,7 @@ namespace DCLServices.WearablesCatalogService
 
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) =
                     await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, default(CancellationToken),
-                        collectionIds: collectionIds);
+                        thirdPartyCollectionIds: collectionIds);
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithDefinitionResponse>(
