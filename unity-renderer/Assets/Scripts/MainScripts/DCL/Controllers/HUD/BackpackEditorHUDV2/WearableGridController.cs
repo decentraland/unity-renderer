@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
 using System;
@@ -15,11 +16,14 @@ namespace DCL.Backpack
         private const string ALL_FILTER_REF = "all";
         private const string NAME_FILTER_REF = "name=";
         private const string CATEGORY_FILTER_REF = "category=";
+        private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
+        private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
 
         private readonly IWearableGridView view;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly DataStore_BackpackV2 dataStoreBackpackV2;
+        private readonly IBrowserBridge browserBridge;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
@@ -30,18 +34,21 @@ namespace DCL.Backpack
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
-            DataStore_BackpackV2 dataStoreBackpackV2)
+            DataStore_BackpackV2 dataStoreBackpackV2,
+            IBrowserBridge browserBridge)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
             this.dataStoreBackpackV2 = dataStoreBackpackV2;
+            this.browserBridge = browserBridge;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
             view.OnWearableUnequipped += HandleWearableUnequipped;
             view.OnWearableSelected += HandleWearableSelected;
             view.OnFilterWearables += FilterWearablesFromBreadcrumb;
+            view.OnGoToMarketplace += GoToMarketplace;
         }
 
         public void Dispose()
@@ -51,6 +58,7 @@ namespace DCL.Backpack
             view.OnWearableUnequipped -= HandleWearableUnequipped;
             view.OnWearableSelected -= HandleWearableSelected;
             view.OnFilterWearables -= FilterWearablesFromBreadcrumb;
+            view.OnGoToMarketplace -= GoToMarketplace;
 
             view.Dispose();
             requestWearablesCancellationToken.SafeCancelAndDispose();
@@ -205,6 +213,13 @@ namespace DCL.Backpack
             }
             else if (referencePath.StartsWith(NAME_FILTER_REF)) { throw new NotImplementedException(); }
             else if (referencePath.StartsWith(CATEGORY_FILTER_REF)) { throw new NotImplementedException(); }
+        }
+
+        private void GoToMarketplace()
+        {
+            browserBridge.OpenUrl(userProfileBridge.GetOwn().hasConnectedWeb3
+                ? URL_MARKET_PLACE
+                : URL_GET_A_WALLET);
         }
     }
 }

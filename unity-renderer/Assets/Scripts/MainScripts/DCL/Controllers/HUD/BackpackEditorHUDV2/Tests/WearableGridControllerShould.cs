@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using NUnit.Framework;
@@ -22,6 +23,7 @@ namespace DCL.Backpack
         private IWearablesCatalogService wearablesCatalogService;
         private DataStore_BackpackV2 dataStore;
         private UserProfile ownUserProfile;
+        private IBrowserBridge browserBridge;
 
         [SetUp]
         public void SetUp()
@@ -43,10 +45,13 @@ namespace DCL.Backpack
 
             dataStore = new DataStore_BackpackV2();
 
+            browserBridge = Substitute.For<IBrowserBridge>();
+
             controller = new WearableGridController(view,
                 userProfileBridge,
                 wearablesCatalogService,
-                dataStore);
+                dataStore,
+                browserBridge);
         }
 
         [TearDown]
@@ -492,6 +497,36 @@ namespace DCL.Backpack
                 && n.Path[0].Name == "All"));
 
             wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, true, Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void OpenWearableMarketplaceWhenRegisteredUser()
+        {
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = "ownUserName",
+                hasConnectedWeb3 = true,
+            });
+
+            view.OnGoToMarketplace += Raise.Event<Action>();
+
+            browserBridge.Received(1).OpenUrl("https://market.decentraland.org/browse?section=wearables");
+        }
+
+        [Test]
+        public void OpenConnectWalletWhenGuestUser()
+        {
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = "ownUserName",
+                hasConnectedWeb3 = false,
+            });
+
+            view.OnGoToMarketplace += Raise.Event<Action>();
+
+            browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/get-a-wallet");
         }
     }
 }
