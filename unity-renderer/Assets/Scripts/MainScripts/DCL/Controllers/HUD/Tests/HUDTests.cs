@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
+using DCL.Social.Friends;
 using NUnit.Framework;
 using NSubstitute;
 using System;
@@ -32,6 +33,8 @@ namespace Tests
         {
             var serviceLocator = base.InitializeServiceLocator();
             serviceLocator.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            serviceLocator.Register<IFriendsController>(() => Substitute.For<IFriendsController>());
+            serviceLocator.Register<IFriendsController>(() => Substitute.For<IFriendsController>());
             return serviceLocator;
         }
 
