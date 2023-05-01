@@ -13,6 +13,7 @@ namespace DCL.Components
     {
         private const string NEW_CDN_FF = "ab-new-cdn";
         private const string FAILED_GLTFAST_LOAD_EVENT = "failed_GLTFast_load";
+        private const string STARTED_GLTFAST_LOAD_EVENT = "started_GLTFast_load";
         private const string SUCESS_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT = "success_GLTF_load_after_GLTFast_fail";
         private const string FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT = "failed_GLTF_load_after_GLTFast_fail";
 
@@ -310,6 +311,7 @@ namespace DCL.Components
 
         private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
+            SendMetric(STARTED_GLTFAST_LOAD_EVENT, targetUrl, "");
             currentLoadingSystem = GLTFAST_GO_NAME_PREFIX;
 
             if (gltfastPromise != null)
