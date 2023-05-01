@@ -1,6 +1,8 @@
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Social.Friends;
 using DCl.Social.Passports;
 using DCL.Social.Passports;
@@ -8,15 +10,26 @@ using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
 using SocialFeaturesAnalytics;
+using System.Threading;
 using UnityEngine;
 
 public class PlayerPassportPlugin : IPlugin
 {
-    private readonly PlayerPassportHUDController passportController;
+    private PlayerPassportHUDController passportController;
+    private CancellationTokenSource cts;
 
     public PlayerPassportPlugin()
     {
-        PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportReferenceContainer>();
+        cts = new CancellationTokenSource();
+        Initialize(cts.Token).Forget();
+    }
+
+    private async UniTaskVoid Initialize(CancellationToken cancellationToken)
+    {
+        PlayerPassportReferenceContainer referenceContainer = await Environment.i.serviceLocator
+                                                                               .Get<IAddressableResourceProvider>()
+                                                                               .Instantiate<PlayerPassportReferenceContainer>("PlayerPassport", cancellationToken: cancellationToken);
+
         var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
 
         passportController = new PlayerPassportHUDController(
@@ -62,10 +75,16 @@ public class PlayerPassportPlugin : IPlugin
                         DataStore.i,
                         SceneReferences.i.mouseCatcher,
                         CommonScriptableObjects.playerInfoCardVisibleState);
+
+        cts.Cancel();
+        cts.Dispose();
     }
 
     public void Dispose()
     {
+        cts?.Cancel();
+        cts?.Dispose();
+
         passportController?.Dispose();
     }
 }
