@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Interface;
+using UnityEngine;
 
 namespace SignupHUD
 {
@@ -30,7 +31,6 @@ namespace SignupHUD
                 return;
 
             signupVisible.OnChange += OnSignupVisibleChanged;
-            signupVisible.Set(false);
 
             view.OnNameScreenNext += OnNameScreenNext;
             view.OnEditAvatar += OnEditAvatar;
@@ -38,6 +38,7 @@ namespace SignupHUD
             view.OnTermsOfServiceBack += OnTermsOfServiceBack;
 
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnLoadingScreenAppear;
+            signupVisible.Set(signupVisible.Get(), true);
         }
         private void OnLoadingScreenAppear(bool current, bool previous)
         {
@@ -45,7 +46,10 @@ namespace SignupHUD
                 signupVisible.Set(false);
         }
 
-        private void OnSignupVisibleChanged(bool current, bool previous) { SetVisibility(current); }
+        private void OnSignupVisibleChanged(bool current, bool previous)
+        {
+            SetVisibility(current);
+        }
 
         internal void StartSignupProcess()
         {

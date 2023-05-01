@@ -75,8 +75,14 @@ public class HUDBridge : MonoBehaviour
 
     public void ShowAvatarEditorInSignUp()
     {
+        Debug.unityLogger.logEnabled = true;
         DataStore.i.common.isSignUpFlow.Set(true);
-        DataStore.i.HUDs.avatarEditorVisible.Set(true, true);
+        Debug.Log($"Alex : \n {DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("seamless_login")}");
+        Debug.Log($"Alex : \n {DataStore.i.featureFlags.flags.Get().ToString()}");
+        if(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("seamless_login"))
+            DataStore.i.HUDs.signupVisible.Set(true, true);
+        else
+            DataStore.i.HUDs.avatarEditorVisible.Set(true, true);
     }
 
     #endregion

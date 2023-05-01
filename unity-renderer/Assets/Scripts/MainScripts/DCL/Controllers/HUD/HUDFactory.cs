@@ -164,17 +164,10 @@ public class HUDFactory : IHUDFactory
                 return new QuestsPanelHUDController();
             case HUDElementID.QUESTS_TRACKER:
                 return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
-            case HUDElementID.SIGNUP:
-                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(cancellationToken),
-                    dataStoreLoadingScreen.Ref,
-                    DataStore.i.HUDs);
         }
 
         return null;
     }
-
-    public async UniTask<ISignupHUDView> CreateSignupHUDView(CancellationToken cancellationToken = default) =>
-        await CreateHUDView<ISignupHUDView>(SIGNUP_HUD, cancellationToken);
 
     protected async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default) where T:IDisposable
     {
