@@ -18,6 +18,7 @@ namespace DCL.Backpack
         private const string CATEGORY_FILTER_REF = "category=";
         private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
         private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
+        private const string BASE_WEARABLES_COLLECTION_ID = "base-wearables";
 
         private readonly IWearableGridView view;
         private readonly IUserProfileBridge userProfileBridge;
@@ -254,22 +255,28 @@ namespace DCL.Backpack
 
         private void ChangeOnlyCollectiblesFilter(bool isOn)
         {
-            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | isON: {isOn}");
+            HashSet<string> selectedCollections = collectionIdsFilter.ToHashSet();
+            if (isOn)
+                selectedCollections.Remove(BASE_WEARABLES_COLLECTION_ID);
+            else
+                selectedCollections.Add(BASE_WEARABLES_COLLECTION_ID);
+
+            LoadWearables(categoryFilter, rarityFilter, selectedCollections, nameFilter, wearableSorting);
         }
 
         private void ChangeCollectionFilter(HashSet<string> selectedCollections)
         {
-            Debug.Log($"SANTI TEMP LOG ---> COLLECTION FILTER CHANGED | selectedCollections: [{string.Join(",", selectedCollections)}]");
+            LoadWearables(categoryFilter, rarityFilter, selectedCollections, nameFilter, wearableSorting);
         }
 
-        private void ChangeSortingFilter(string newSorting)
+        private void ChangeSortingFilter((NftOrderByOperation type, bool directionAscendent) newSorting)
         {
-            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | newSorting: '{newSorting}'");
+            LoadWearables(categoryFilter, rarityFilter, collectionIdsFilter, nameFilter, newSorting);
         }
 
         private void ChangeSearchTextFilter(string newText)
         {
-            Debug.Log($"SANTI TEMP LOG ---> ONLY COLLECTIBLE FILTER CHANGED | newText: '{newText}'");
+            LoadWearables(categoryFilter, rarityFilter, collectionIdsFilter, newText, wearableSorting);
         }
     }
 }

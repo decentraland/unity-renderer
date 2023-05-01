@@ -60,7 +60,7 @@ namespace DCLServices.WearablesCatalogService
         {
             var queryParams = new List<(string name, string value)>
             {
-                ("pageNumber", pageNumber.ToString()),
+                ("pageNum", pageNumber.ToString()),
                 ("pageSize", pageSize.ToString()),
             };
 
@@ -468,9 +468,9 @@ namespace DCLServices.WearablesCatalogService
                 {
                     if (collectionId.Contains("collections-thirdparty"))
                         containsThirdParty = true;
-                    else if (collectionId.StartsWith("urn:decentraland:off-chain:base-avatars:"))
+                    else if (collectionId.Equals("base-wearables"))
                         containsBase = true;
-                    else
+                    else if (collectionId.Equals("decentraland"))
                         containsOnChain = true;
                 }
 

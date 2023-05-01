@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCLServices.WearablesCatalogService;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace DCL.Backpack
     {
         public event Action<bool> OnOnlyCollectiblesChanged;
         public event Action<HashSet<string>> OnCollectionChanged;
-        public event Action<string> OnSortByChanged;
+        public event Action<(NftOrderByOperation type, bool directionAscendent)> OnSortByChanged;
         public event Action<string> OnSearchTextChanged;
 
         [SerializeField] private ToggleComponentView onlyCollectiblesToggle;
@@ -17,6 +18,13 @@ namespace DCL.Backpack
         [SerializeField] private SearchBarComponentView searchBar;
 
         private readonly HashSet<string> selectedCollections = new ();
+
+        private const string NEWEST_FILTER_ID = "newest";
+        private const string OLDEST_FILTER_ID = "oldest";
+        private const string RAREST_FILTER_ID = "rarest";
+        private const string LESS_RARE_FILTER_ID = "less_rare";
+        private const string NAME_AZ_FILTER_ID = "name_az";
+        private const string NAME_ZA_FILTER_ID = "name_za";
 
         private void Awake()
         {
@@ -45,8 +53,8 @@ namespace DCL.Backpack
             {
                 ToggleComponentModel defaultToggle = new ()
                 {
-                    id = "decentraland",
-                    text = "Decentraland",
+                    id = defaultCollection.urn,
+                    text = defaultCollection.name,
                     isOn = true,
                     isTextActive = true,
                 };
@@ -75,12 +83,12 @@ namespace DCL.Backpack
         {
             List<ToggleComponentModel> sortingMethodsToAdd = new List<ToggleComponentModel>
             {
-                new () { id = "newest", text = "Newest", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
-                new () { id = "oldest", text = "Oldest", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
-                new () { id = "rarest", text = "Rarest", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
-                new () { id = "less_rare", text = "Less rare", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
-                new () { id = "name_az", text = "Name A-Z", isOn = true, isTextActive = true, changeTextColorOnSelect = true },
-                new () { id = "name_za", text = "Name Z-A", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+                new () { id = NEWEST_FILTER_ID, text = "Newest", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+                new () { id = OLDEST_FILTER_ID, text = "Oldest", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+                new () { id = RAREST_FILTER_ID, text = "Rarest", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+                new () { id = LESS_RARE_FILTER_ID, text = "Less rare", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+                new () { id = NAME_AZ_FILTER_ID, text = "Name A-Z", isOn = true, isTextActive = true, changeTextColorOnSelect = true },
+                new () { id = NAME_ZA_FILTER_ID, text = "Name Z-A", isOn = false, isTextActive = true, changeTextColorOnSelect = true },
             };
 
             sortByDropdown.SetTitle(sortingMethodsToAdd[4].text);
@@ -111,7 +119,28 @@ namespace DCL.Backpack
                 return;
 
             sortByDropdown.SetTitle(optionName);
-            OnSortByChanged?.Invoke(optionId);
+
+            switch (optionId)
+            {
+                case OLDEST_FILTER_ID:
+                    OnSortByChanged?.Invoke((NftOrderByOperation.Date, true));
+                    break;
+                case NEWEST_FILTER_ID:
+                    OnSortByChanged?.Invoke((NftOrderByOperation.Date, false));
+                    break;
+                case LESS_RARE_FILTER_ID:
+                    OnSortByChanged?.Invoke((NftOrderByOperation.Rarity, true));
+                    break;
+                case RAREST_FILTER_ID:
+                    OnSortByChanged?.Invoke((NftOrderByOperation.Rarity, false));
+                    break;
+                case NAME_AZ_FILTER_ID:
+                    OnSortByChanged?.Invoke((NftOrderByOperation.Name, true));
+                    break;
+                case NAME_ZA_FILTER_ID:
+                    OnSortByChanged?.Invoke((NftOrderByOperation.Name, false));
+                    break;
+            }
         }
 
         private void OnSearchBarChanged(string newText) =>

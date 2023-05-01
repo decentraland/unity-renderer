@@ -1,4 +1,5 @@
 ﻿using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,10 @@ namespace DCL.Backpack
     {
         public event Action<bool> OnOnlyCollectiblesChanged;
         public event Action<HashSet<string>> OnCollectionChanged;
-        public event Action<string> OnSortByChanged;
+        public event Action<(NftOrderByOperation type, bool directionAscendent)> OnSortByChanged;
         public event Action<string> OnSearchTextChanged;
+
+        private const string DECENTRALAND_COLLECTION_ID = "decentraland";
 
         private readonly IBackpackFiltersComponentView view;
         private bool collectionsAlreadyLoaded;
@@ -43,7 +46,7 @@ namespace DCL.Backpack
             WearablesFetchingHelper.GetThirdPartyCollections()
                                    .Then(collections =>
                                     {
-                                        WearableCollectionsAPIData.Collection defaultCollection = new () { urn = "decentraland", name = "Decentraland",};
+                                        WearableCollectionsAPIData.Collection defaultCollection = new () { urn = DECENTRALAND_COLLECTION_ID, name = "Decentraland" };
                                         view.LoadCollectionDropdown(collections, defaultCollection);
                                         collectionsAlreadyLoaded = true;
                                     })
@@ -56,7 +59,7 @@ namespace DCL.Backpack
         private void ChangeOnCollection(HashSet<string> selectedCollections) =>
             OnCollectionChanged?.Invoke(selectedCollections);
 
-        private void ChangeSortBy(string newSorting) =>
+        private void ChangeSortBy((NftOrderByOperation type, bool directionAscendent) newSorting) =>
             OnSortByChanged?.Invoke(newSorting);
 
         private void ChangeSearchText(string newText) =>

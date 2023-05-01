@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCLServices.WearablesCatalogService;
+using System;
 using System.Collections.Generic;
 
 namespace DCL.Backpack
@@ -7,7 +8,7 @@ namespace DCL.Backpack
     {
         event Action<bool> OnOnlyCollectiblesChanged;
         event Action<HashSet<string>> OnCollectionChanged;
-        event Action<string> OnSortByChanged;
+        event Action<(NftOrderByOperation type, bool directionAscendent)> OnSortByChanged;
         event Action<string> OnSearchTextChanged;
 
         void Dispose();
