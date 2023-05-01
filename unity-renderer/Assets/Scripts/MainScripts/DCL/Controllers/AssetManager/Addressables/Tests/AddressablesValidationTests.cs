@@ -39,23 +39,7 @@ public class AddressablesValidationTests
         string msg = CreateDuplicatesMessage(bundlesByAsset, EXCLUDED_FILE_TYPES);
 
         Assert.That(msg, Is.Empty,
-            message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies"));
-    }
-
-    [Test][Category("ToFix")]
-    public void ValidateResourcesToAddressableDuplicateDependencies()
-    {
-        CheckResourcesDupeDependencies rule = new CheckResourcesDupeDependencies();
-        List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
-
-        if (duplicates[0].resultName == NO_ISSUES_FOUND)
-            return;
-
-        Dictionary<string, List<string>> bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
-        string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES);
-
-        Assert.That(msg, Is.Empty,
-            message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies"));
+            message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies in Addressables->Analyze tool")); 
     }
 
     [Test][Category("EditModeCI")]
@@ -64,14 +48,29 @@ public class AddressablesValidationTests
         CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
         List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-        if (duplicates[0].resultName == NO_ISSUES_FOUND)
+        if (duplicates[0].resultName.Contains(NO_ISSUES_FOUND)) 
             return;
 
         Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset = GroupScenesAndBundlesByDuplicatedAsset(duplicates);
         string msg = CreateScenesDuplicatesMessage(scenesAndBundlesByAsset, EXCLUDED_FILE_TYPES);
 
         Assert.That(msg, Is.Empty,
-            message: ComposeAssertMessage(msg, analyzeRule: "Check Scene to Addressable Duplicate Dependencies"));
+            message: ComposeAssertMessage(msg, analyzeRule: "Check Scene to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
+    }
+
+    [Test][Category("ToFix")]
+    public void ValidateResourcesToAddressableDuplicateDependencies()
+    {
+        var rule = new CheckResourcesDupeDependencies();
+        var duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
+
+        if (duplicates.Count == 0 || duplicates[0].resultName == NO_ISSUES_FOUND) return;
+
+        var bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
+        var msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES);
+
+        Assert.That(msg, Is.Empty,
+            message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
     }
 
     private static Dictionary<string, List<string>> GroupBundlesByDuplicatedAssets(List<AnalyzeRule.AnalyzeResult> duplicates, bool isCustomGroupsRule = false)
