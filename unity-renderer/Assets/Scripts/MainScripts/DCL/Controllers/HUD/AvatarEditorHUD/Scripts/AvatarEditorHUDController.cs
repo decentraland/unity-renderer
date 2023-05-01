@@ -5,6 +5,7 @@ using DCL.EmotesCustomization;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.NotificationModel;
+using DCL.Providers;
 using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
 using System;
@@ -96,13 +97,15 @@ public class AvatarEditorHUDController : IHUD
         this.userProfileBridge = userProfileBridge;
     }
 
-    public void Initialize(
-        bool bypassUpdateAvatarPreview = false
-        )
+    public async void Initialize(bool bypassUpdateAvatarPreview = false, CancellationToken cancellationToken = default)
     {
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
-        view = AvatarEditorHUDView.Create(this);
+        view = await Environment.i.serviceLocator
+                                .Get<IAddressableResourceProvider>()
+                                .Instantiate<AvatarEditorHUDView>("AvatarEditorHUD", "_AvatarEditorHUD", cancellationToken);
+
+        view.Initialize(this);
 
         view.skinsFeatureContainer.SetActive(true);
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
