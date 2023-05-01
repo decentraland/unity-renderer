@@ -16,35 +16,11 @@ using UnityEngine.TestTools;
 
 namespace DCL.Social.Friends
 {
-    class MockSocialServerContext
+    public class MockSocialServerContext
     {
         public List<Users> userList = new List<Users>();
 
         public UpdateFriendshipResponse updateFriendshipResponse;
-    }
-
-    class MockSocialServer : IFriendshipsService<MockSocialServerContext>
-    {
-        public IUniTaskAsyncEnumerable<Users> GetFriends(Payload request, MockSocialServerContext context)
-        {
-            return UniTaskAsyncEnumerable.Create<Users>(async (writer, token) =>
-            {
-                foreach (var users in context.userList)
-                {
-                    if (token.IsCancellationRequested) break;
-                    await writer.YieldAsync(users);
-                }
-            });
-        }
-
-        public UniTask<RequestEvents> GetRequestEvents(Payload request, MockSocialServerContext context, CancellationToken ct) =>
-            throw new NotImplementedException();
-
-        public UniTask<UpdateFriendshipResponse> UpdateFriendshipEvent(UpdateFriendshipPayload request, MockSocialServerContext context, CancellationToken ct) =>
-            UniTask.FromResult(context.updateFriendshipResponse);
-
-        public IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdates(Payload request, MockSocialServerContext context) =>
-            throw new NotImplementedException();
     }
 
     public class RPCSocialApiBridgeShould
@@ -66,8 +42,33 @@ namespace DCL.Social.Friends
 
             (var client, var server) = MemoryTransport.Create();
 
+            var friendshipsService = Substitute.For<IFriendshipsService<MockSocialServerContext>>();
+
+            friendshipsService.GetFriends(Arg.Any<Payload>(), Arg.Any<MockSocialServerContext>())
+                              .Returns(callInfo =>
+                               {
+                                   MockSocialServerContext context = (MockSocialServerContext)callInfo[1];
+
+                                   return UniTaskAsyncEnumerable.Create<Users>(async (writer, token) =>
+                                   {
+                                       foreach (var users in context.userList)
+                                       {
+                                           if (token.IsCancellationRequested) break;
+                                           await writer.YieldAsync(users);
+                                       }
+                                   });
+                               });
+
+            friendshipsService.UpdateFriendshipEvent(Arg.Any<UpdateFriendshipPayload>(), Arg.Any<MockSocialServerContext>(),
+                                   Arg.Any<CancellationToken>())
+                              .Returns(callInfo =>
+                               {
+                                   MockSocialServerContext context = (MockSocialServerContext)callInfo[1];
+                                   return UniTask.FromResult(context.updateFriendshipResponse);
+                               });
+
             var rpcServer = new RpcServer<MockSocialServerContext>();
-            rpcServer.SetHandler((port, _, _) => { FriendshipsServiceCodeGen.RegisterService(port, new MockSocialServer()); });
+            rpcServer.SetHandler((port, _, _) => { FriendshipsServiceCodeGen.RegisterService(port, friendshipsService); });
 
             context = new MockSocialServerContext();
             rpcServer.AttachTransport(server, context);
@@ -142,7 +143,6 @@ namespace DCL.Social.Friends
                         }
                     }
                 };
-
 
                 var result = await rpcSocialApiBridge.RequestFriendshipAsync(friendId, message, cancellationToken);
 

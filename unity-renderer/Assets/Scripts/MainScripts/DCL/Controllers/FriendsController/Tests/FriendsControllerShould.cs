@@ -31,7 +31,9 @@ namespace DCL.Social.Friends
             controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component, new UserProfileWebInterfaceBridge(),
                 () => Substitute.For<ITransport>()), dataStore);
 
+            dataStore.featureFlags.flags.Get().SetAsInitialized();
             controller.Initialize();
+
         }
 
         [Test]
