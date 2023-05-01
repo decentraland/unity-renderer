@@ -35,7 +35,7 @@ public class AddressablesValidationTests
         if (duplicates[0].resultName == NO_ISSUES_FOUND)
             return;
 
-        Dictionary<string, List<string>> bundlesByAsset = GroupBundlesByDuplicatedAssets(duplicates, isCustomGroupsRule: true);
+        var bundlesByAsset = GroupBundlesByDuplicatedAssets(duplicates, isCustomGroupsRule: true);
         string msg = CreateDuplicatesMessage(bundlesByAsset, EXCLUDED_FILE_TYPES);
 
         Assert.That(msg, Is.Empty,
@@ -67,15 +67,15 @@ public class AddressablesValidationTests
         if (duplicates.Count == 0 || duplicates[0].resultName == NO_ISSUES_FOUND) return;
 
         var bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
-        var msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES);
+        var msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, 50);
 
         Assert.That(msg, Is.Empty,
             message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
     }
 
-    private static Dictionary<string, List<string>> GroupBundlesByDuplicatedAssets(List<AnalyzeRule.AnalyzeResult> duplicates, bool isCustomGroupsRule = false)
+    private static Dictionary<string, (List<string> , int)> GroupBundlesByDuplicatedAssets(List<AnalyzeRule.AnalyzeResult> duplicates, bool isCustomGroupsRule = false)
     {
-        Dictionary<string, List<string>> bundlesByAsset = new ();
+        Dictionary<string, (List<string> bundle, int amount)> bundlesByAsset = new ();
 
         foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
         {
@@ -85,9 +85,14 @@ public class AddressablesValidationTests
             string dBundle = dSplit[1];
 
             if (!bundlesByAsset.ContainsKey(dAsset))
-                bundlesByAsset.Add(dAsset, new List<string> { dBundle });
-            else if (!bundlesByAsset[dAsset].Contains(dBundle))
-                bundlesByAsset[dAsset].Add(dBundle);
+                bundlesByAsset.Add(dAsset, (new List<string> { dBundle }, 1));
+            else
+            {
+                if (!bundlesByAsset[dAsset].bundle.Contains(dBundle))
+                    bundlesByAsset[dAsset].bundle.Add(dBundle);
+                
+                bundlesByAsset[dAsset] = (bundlesByAsset[dAsset].bundle, bundlesByAsset[dAsset].amount + 1);
+            }
         }
 
         return bundlesByAsset;
@@ -120,18 +125,24 @@ public class AddressablesValidationTests
         return scenesAndBundlesByAsset;
     }
 
-    private static string CreateDuplicatesMessage(Dictionary<string, List<string>> bundlesByAsset, string[] excludedFileTypesFilter)
+    private static string CreateDuplicatesMessage(Dictionary<string, (List<string>, int)> bundlesByAsset, string[] excludedFileTypesFilter, int minDuplicatesAmount = 0)
     {
         StringBuilder message = new StringBuilder();
 
         foreach (var keyValuePair in bundlesByAsset
                     .Where(keyValuePair => !excludedFileTypesFilter.Contains(keyValuePair.Key.Split('.')[^1])))
         {
+            
+            if(keyValuePair.Value.Item2 <= minDuplicatesAmount)
+                continue;
+            
             message.Append("ASSET: " + keyValuePair.Key);
+            
+            message.Append(" - AMOUNT: " + keyValuePair.Value.Item2);
 
             message.Append(" - BUNDLES: ");
 
-            foreach (string bundle in keyValuePair.Value)
+            foreach (string bundle in keyValuePair.Value.Item1)
                 message.Append(bundle.Split('.')[0] + ", ");
 
             message.Remove(message.Length - 2, 2);
