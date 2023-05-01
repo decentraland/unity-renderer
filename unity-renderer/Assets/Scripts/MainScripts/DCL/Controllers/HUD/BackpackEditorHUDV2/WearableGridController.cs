@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
 using System;
@@ -15,15 +16,23 @@ namespace DCL.Backpack
         private const string ALL_FILTER_REF = "all";
         private const string NAME_FILTER_REF = "name=";
         private const string CATEGORY_FILTER_REF = "category=";
+        private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
+        private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
 
         private readonly IWearableGridView view;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly DataStore_BackpackV2 dataStoreBackpackV2;
+        private readonly IBrowserBridge browserBridge;
         private readonly BackpackFiltersController backpackFiltersController;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
+        private string categoryFilter;
+        private NftRarity rarityFilter = NftRarity.None;
+        private ICollection<string> collectionIdsFilter;
+        private string nameFilter;
+        private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
 
         public event Action<string> OnWearableEquipped;
         public event Action<string> OnWearableUnequipped;
@@ -32,12 +41,14 @@ namespace DCL.Backpack
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
             DataStore_BackpackV2 dataStoreBackpackV2,
+            IBrowserBridge browserBridge,
             BackpackFiltersController backpackFiltersController)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
             this.dataStoreBackpackV2 = dataStoreBackpackV2;
+            this.browserBridge = browserBridge;
             this.backpackFiltersController = backpackFiltersController;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
@@ -45,6 +56,7 @@ namespace DCL.Backpack
             view.OnWearableUnequipped += HandleWearableUnequipped;
             view.OnWearableSelected += HandleWearableSelected;
             view.OnFilterWearables += FilterWearablesFromBreadcrumb;
+            view.OnGoToMarketplace += GoToMarketplace;
 
             backpackFiltersController.OnOnlyCollectiblesChanged += ChangeOnlyCollectiblesFilter;
             backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
@@ -59,6 +71,7 @@ namespace DCL.Backpack
             view.OnWearableUnequipped -= HandleWearableUnequipped;
             view.OnWearableSelected -= HandleWearableSelected;
             view.OnFilterWearables -= FilterWearablesFromBreadcrumb;
+            view.OnGoToMarketplace -= GoToMarketplace;
 
             backpackFiltersController.OnOnlyCollectiblesChanged += ChangeOnlyCollectiblesFilter;
             backpackFiltersController.OnCollectionChanged += ChangeCollectionFilter;
@@ -70,8 +83,15 @@ namespace DCL.Backpack
             requestWearablesCancellationToken.SafeCancelAndDispose();
         }
 
-        public void LoadWearables()
+        public void LoadWearables(string categoryFilter = null, NftRarity rarityFilter = NftRarity.None,
+            ICollection<string> collectionIdsFilter = null, string nameFilter = null,
+            (NftOrderByOperation type, bool directionAscendent)? wearableSorting = null)
         {
+            this.categoryFilter = categoryFilter;
+            this.rarityFilter = rarityFilter;
+            this.collectionIdsFilter = collectionIdsFilter;
+            this.nameFilter = nameFilter;
+            this.wearableSorting = wearableSorting;
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
             ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
         }
@@ -135,11 +155,12 @@ namespace DCL.Backpack
             {
                 currentWearables.Clear();
 
-                // TODO: instead of requesting owned wearables, we should request all the wearables with the current filters & sorting
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
-                    PAGE_SIZE, true, cancellationToken);
+                    PAGE_SIZE, cancellationToken,
+                    categoryFilter, rarityFilter, collectionIdsFilter,
+                    nameFilter, wearableSorting);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
                                             .ToDictionary(item => item.WearableId, model => model);
@@ -222,6 +243,13 @@ namespace DCL.Backpack
             }
             else if (referencePath.StartsWith(NAME_FILTER_REF)) { throw new NotImplementedException(); }
             else if (referencePath.StartsWith(CATEGORY_FILTER_REF)) { throw new NotImplementedException(); }
+        }
+
+        private void GoToMarketplace()
+        {
+            browserBridge.OpenUrl(userProfileBridge.GetOwn().hasConnectedWeb3
+                ? URL_MARKET_PLACE
+                : URL_GET_A_WALLET);
         }
 
         private void ChangeOnlyCollectiblesFilter(bool isOn)

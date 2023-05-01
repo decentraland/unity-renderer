@@ -1,3 +1,5 @@
+using DCLServices.WearablesCatalogService;
+
 namespace DCL.Backpack
 {
     public record WearableGridItemModel

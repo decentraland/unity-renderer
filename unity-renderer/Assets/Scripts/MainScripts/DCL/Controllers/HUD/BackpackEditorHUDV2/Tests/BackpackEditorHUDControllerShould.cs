@@ -1,4 +1,5 @@
-﻿using DCLServices.WearablesCatalogService;
+﻿using DCL.Browser;
+using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -62,6 +63,7 @@ namespace DCL.Backpack
                 userProfileBridge,
                 wearablesCatalogService,
                 dataStore.backpackV2,
+                Substitute.For<IBrowserBridge>(),
                 backpackFiltersController);
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
