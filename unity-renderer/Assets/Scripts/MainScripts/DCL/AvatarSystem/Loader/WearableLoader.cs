@@ -121,7 +121,7 @@ namespace AvatarSystem
                 return;
             }
 
-            await retriever.Retrieve(container, wearableToLoad.GetContentProvider(bodyshapeId), wearableToLoad.baseUrlBundles, representation.mainFile, ct);
+            await retriever.Retrieve(container, wearableToLoad.GetContentProvider(bodyshapeId), wearableToLoad.baseUrlBundles, representation.mainFile, ct, wearableToLoad);
         }
 
         public void Dispose() { retriever?.Dispose(); }
