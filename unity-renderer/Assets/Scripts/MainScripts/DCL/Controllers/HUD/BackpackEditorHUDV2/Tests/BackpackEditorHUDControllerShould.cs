@@ -1,4 +1,5 @@
-﻿using DCLServices.WearablesCatalogService;
+﻿using DCL.Browser;
+using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -56,7 +57,8 @@ namespace DCL.Backpack
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
                 wearablesCatalogService,
-                dataStore.backpackV2);
+                dataStore.backpackV2,
+                Substitute.For<IBrowserBridge>());
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
 
