@@ -91,11 +91,12 @@ namespace DCLServices.WearablesCatalogService
             if (!success)
                 throw new Exception($"The request of wearables for '{userId}' failed!");
 
-            List<WearableItem> wearables = new List<WearableItem>(response.elements.Count);
-            foreach (WearableDefinition definition in response.elements)
+            IList<WearableDefinition> validatedWearables = ValidateWearables(response.elements);
+
+            List<WearableItem> wearables = new List<WearableItem>(validatedWearables.Count);
+            foreach (WearableDefinition definition in validatedWearables)
                 wearables.Add(definition.definition);
 
-            MapLambdasDataIntoWearableItem(wearables);
             AddWearablesToCatalog(wearables);
 
             return (wearables, response.TotalAmount);
@@ -371,6 +372,53 @@ namespace DCLServices.WearablesCatalogService
             return result.FirstOrDefault(x => x.id == newWearableId);
         }
 
+        private static IList<WearableDefinition> ValidateWearables(IList<WearableDefinition> wearablesFromLambdas)
+        {
+            var invalidWearablesIndices = ListPool<int>.Get();
+
+            for (var i = 0; i < wearablesFromLambdas.Count; i++)
+            {
+                var item = wearablesFromLambdas[i];
+                var definition = item.definition;
+
+                if (FilterInvalidWearableItem(item, i, invalidWearablesIndices))
+                    continue;
+
+                try
+                {
+                    foreach (var representation in definition.data.representations)
+                    {
+                        foreach (var representationContent in representation.contents)
+                            representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
+                    }
+
+                    string thumbnail = definition.thumbnail ?? "";
+                    int index = thumbnail.LastIndexOf('/');
+                    string newThumbnail = thumbnail[(index + 1)..];
+                    string newBaseUrl = thumbnail[..(index + 1)];
+                    definition.thumbnail = newThumbnail;
+                    definition.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
+                    definition.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
+                    definition.emoteDataV0 = null;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    invalidWearablesIndices.Add(i);
+                }
+            }
+
+            for (var i = 0; i < invalidWearablesIndices.Count; i++)
+            {
+                int invalidWearablesIndex = invalidWearablesIndices[i] - i;
+                wearablesFromLambdas.RemoveAt(invalidWearablesIndex);
+            }
+
+            ListPool<int>.Release(invalidWearablesIndices);
+
+            return wearablesFromLambdas;
+        }
+
         private static void MapLambdasDataIntoWearableItem(IList<WearableItem> wearablesFromLambdas)
         {
             var invalidWearablesIndices = ListPool<int>.Get();
@@ -450,13 +498,47 @@ namespace DCLServices.WearablesCatalogService
             return false;
         }
 
+        private static bool FilterInvalidWearableItem(WearableDefinition item, int index, List<int> invalidItemsIndices)
+        {
+            WearableItem definition = item.definition;
+
+            if (string.IsNullOrEmpty(definition.id))
+            {
+                Debug.LogError($"Wearable is invalid: id is null. Urn: {item.urn}");
+                invalidItemsIndices.Add(index);
+                return true;
+            }
+
+            if (definition.data.representations == null)
+            {
+                Debug.LogError($"Wearable ${definition.id} is invalid: data.representation is null");
+                invalidItemsIndices.Add(index);
+                return true;
+            }
+
+            foreach (var dataRepresentation in definition.data.representations)
+            {
+                foreach (var representationContent in dataRepresentation.contents)
+                {
+                    if (string.IsNullOrEmpty(representationContent.url))
+                    {
+                        Debug.LogError("Wearable is invalid: representation content URL is null");
+                        invalidItemsIndices.Add(index);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
             wearableIds.Select(id => ("wearableId", id)).ToArray();
 
         private void AddCollectionIdsAndCollectionCategoryParams(ICollection<(string name, string value)> queryParams,
             ICollection<string> collectionIds = null)
         {
-            HashSet<string> collectionCategories = new HashSet<string>();
+            HashSet<string> collectionTypes = new HashSet<string>();
             bool isInvalidCollectionIds = collectionIds == null;
             bool containsThirdParty = isInvalidCollectionIds;
             bool containsBase = isInvalidCollectionIds;
@@ -468,25 +550,26 @@ namespace DCLServices.WearablesCatalogService
                 {
                     if (collectionId.Contains("collections-thirdparty"))
                         containsThirdParty = true;
-                    else if (collectionId.Equals("base-wearables"))
+                    else if (collectionId.Equals("base-wearables")
+                             || collectionId.StartsWith("urn:decentraland:off-chain:base-avatars:"))
                         containsBase = true;
                     else if (collectionId.Equals("decentraland"))
                         containsOnChain = true;
                 }
 
-                queryParams.Add(("collectionIds", string.Join(",", collectionIds)));
+                queryParams.Add(("thirdPartyCollectionId", string.Join(",", collectionIds)));
             }
 
             if (containsThirdParty)
-                collectionCategories.Add("third-party");
+                collectionTypes.Add("third-party");
 
             if (containsBase)
-                collectionCategories.Add("base-wearable");
+                collectionTypes.Add("base-wearable");
 
             if (containsOnChain)
-                collectionCategories.Add("on-chain");
+                collectionTypes.Add("on-chain");
 
-            queryParams.Add(("collectionCategory", string.Join(",", collectionCategories)));
+            queryParams.Add(("collectionType", string.Join(",", collectionTypes)));
         }
     }
 }
