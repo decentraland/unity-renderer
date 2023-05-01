@@ -35,8 +35,9 @@ namespace DCL
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
 
-            //Addressable Resource Provider
             var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
+
+            // Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
