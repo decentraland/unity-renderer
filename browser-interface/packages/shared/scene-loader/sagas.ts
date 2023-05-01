@@ -280,12 +280,12 @@ function* onWorldPositionChange() {
   // wait for user authenticated before start loading
   yield call(waitForUserAuthenticated)
 
+  yield delay(1000)
   // start the loop to load scenes
   while (true) {
     const { sceneLoader, position, loadingRadius } = (yield select(getPositionChangeInfo)) as ReturnType<
       typeof getPositionChangeInfo
     >
-
     if (sceneLoader) {
       const report: SceneLoaderPositionReport = {
         loadingRadius,
@@ -294,13 +294,10 @@ function* onWorldPositionChange() {
       }
       try {
         const command: SetDesiredScenesCommand = yield apply(sceneLoader, sceneLoader.reportPosition, [report])
-
         const map = new Map<string, LoadableScene>()
-
         for (const scene of command.scenes) {
           map.set(scene.id, scene)
         }
-
         yield call(setDesiredParcelScenes, map)
       } catch (err: any) {
         trackEvent('error', {
