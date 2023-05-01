@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
 namespace DCL.Backpack
@@ -76,6 +77,19 @@ namespace DCL.Backpack
                 backpackAnalyticsController,
                 wearableGridController,
                 avatarSlotsHUDController);
+
+            var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
+            IWebRequestAsyncOperation webRequestAsyncOperation = Substitute.For<IWebRequestAsyncOperation>();
+            Environment.i.platform.webRequest.Get(
+                Arg.Any<string>(),
+                Arg.Any<DownloadHandler>(),
+                Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
+                Arg.Any<Action<IWebRequestAsyncOperation>>(),
+                Arg.Any<int>(),
+                Arg.Any<int>(),
+                Arg.Any<bool>(),
+                Arg.Any<Dictionary<string, string>>()).ReturnsForAnyArgs(webRequestAsyncOperation);
         }
 
         [TearDown]
