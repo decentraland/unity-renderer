@@ -6,6 +6,8 @@ namespace DCL.Backpack
 {
     public class AvatarSlotsHUDController
     {
+        public event Action<string, bool, bool> OnToggleSlot;
+
         private readonly IAvatarSlotsView avatarSlotsView;
         private string lastSelectedSlot;
         internal AvatarSlotsDefinitionSO avatarSlotsDefinition;
@@ -32,12 +34,14 @@ namespace DCL.Backpack
             avatarSlotsView.RebuildLayout();
         }
 
-        public void ToggleSlot(string slotCategory, bool isSelected)
+        public void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
                 avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);
 
             lastSelectedSlot = isSelected ? slotCategory : "";
+
+            OnToggleSlot?.Invoke(slotCategory, supportColor, isSelected);
         }
 
         public void Dispose()
@@ -45,11 +49,9 @@ namespace DCL.Backpack
             avatarSlotsView.OnToggleAvatarSlot -= ToggleSlot;
         }
 
-        public void Equip(WearableItem wearableItem)
+        public void Equip(WearableItem wearableItem, string bodyShape)
         {
-            avatarSlotsView.SetSlotRarity(wearableItem.data.category, wearableItem.rarity);
-            avatarSlotsView.SetSlotNftImage(wearableItem.data.category, wearableItem.ComposeThumbnailUrl());
-            avatarSlotsView.SetWearableId(wearableItem.data.category, wearableItem.id);
+            avatarSlotsView.SetSlotContent(wearableItem.data.category, wearableItem, bodyShape);
         }
 
         public void UnEquip(string category) =>

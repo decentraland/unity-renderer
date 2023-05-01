@@ -1,17 +1,31 @@
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Providers;
+using System.Threading;
 using UnityEngine;
 
 public class OutlinerPlugin : IPlugin
 {
-    private readonly OutlinerController controller;
+    private readonly CancellationTokenSource cts;
+    private OutlinerController controller;
 
-    public OutlinerPlugin()
+    public OutlinerPlugin(IAddressableResourceProvider resourceProvider)
     {
-        controller = new OutlinerController(DataStore.i.outliner, Resources.Load<OutlineRenderersSO>("OutlineRenderers"));
+        cts = new CancellationTokenSource();
+
+        CreateController(cts.Token).Forget();
+
+        async UniTaskVoid CreateController(CancellationToken ct)
+        {
+            var outlineRenderersSo = await resourceProvider.GetAddressable<OutlineRenderersSO>("OutlineRenderers", ct);
+            controller = new OutlinerController(DataStore.i.outliner, outlineRenderersSo);
+        }
     }
 
     public void Dispose()
     {
+        cts.Cancel();
+        cts.Dispose();
         controller.Dispose();
     }
 }

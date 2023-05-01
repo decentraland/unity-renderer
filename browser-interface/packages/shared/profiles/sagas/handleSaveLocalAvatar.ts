@@ -56,7 +56,7 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
       // Prevent unwanted override of these values
       userId,
       ethAddress: userId,
-      hasConnectedWeb3: identity?.hasConnectedWeb3,
+      hasConnectedWeb3: identity?.hasConnectedWeb3
     } as Avatar
 
     if (deepEqual(savedProfile, profile)) {
