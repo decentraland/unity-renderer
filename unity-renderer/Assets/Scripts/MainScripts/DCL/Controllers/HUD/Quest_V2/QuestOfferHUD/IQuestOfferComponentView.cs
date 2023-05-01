@@ -7,6 +7,7 @@ namespace DCL.Quest
         event Action<string> OnQuestAccepted;
 
         void SetQuestId(string questId);
+        void SetIsGuest(bool isGuest);
         void SetQuestTitle(string title);
         void SetQuestDescription(string description);
     }

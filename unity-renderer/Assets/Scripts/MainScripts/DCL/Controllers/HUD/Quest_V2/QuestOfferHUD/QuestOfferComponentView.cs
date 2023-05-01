@@ -12,6 +12,7 @@ namespace DCL.Quest
     {
 
         [SerializeField] internal GameObject rewardsSection;
+        [SerializeField] internal GameObject guestSection;
         [SerializeField] internal TMP_Text questTitle;
         [SerializeField] internal TMP_Text questDescription;
         [SerializeField] internal Button acceptButton;
@@ -36,6 +37,11 @@ namespace DCL.Quest
             SetRewards(model.rewardsList);
         }
 
+        public void SetIsGuest(bool isGuest)
+        {
+            guestSection.SetActive(isGuest);
+        }
+
         public void SetQuestId(string questId) =>
             model.questId = questId;
 
@@ -54,6 +60,7 @@ namespace DCL.Quest
         public void SetRewards(List<QuestRewardComponentModel> rewardsList)
         {
             model.rewardsList = rewardsList;
+
             for (var i = 0; i < rewardsContainer.childCount; i++)
                 Destroy(rewardsContainer.GetChild(i));
 
