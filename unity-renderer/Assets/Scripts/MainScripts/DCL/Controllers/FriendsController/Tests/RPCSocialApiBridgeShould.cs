@@ -129,18 +129,7 @@ namespace DCL.Social.Friends
 
                 context.updateFriendshipResponse = new UpdateFriendshipResponse()
                 {
-                    Event = new FriendshipEventResponse()
-                    {
-                        Request = new RequestResponse()
-                        {
-                            User = new User()
-                            {
-                                Address = OWN_ID
-                            },
-                            Message = message,
-                            CreatedAt = createdAt
-                        }
-                    }
+                    Event = CreateRequestFriendshipResponse(message, createdAt),
                 };
 
                 var result = await rpcSocialApiBridge.RequestFriendshipAsync(friendId, message, cancellationToken);
@@ -164,16 +153,7 @@ namespace DCL.Social.Friends
 
                 context.updateFriendshipResponse = new UpdateFriendshipResponse()
                 {
-                    Event = new FriendshipEventResponse()
-                    {
-                        Reject = new RejectResponse()
-                        {
-                            User = new User()
-                            {
-                                Address = OWN_ID
-                            }
-                        }
-                    }
+                    Event = CreateRejectFriendshipResponse(),
                 };
 
                 var resultUserId = "";
@@ -228,6 +208,36 @@ namespace DCL.Social.Friends
                     async () => await rpcSocialApiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken)
                 );
             });
+        }
+
+        private static FriendshipEventResponse CreateRejectFriendshipResponse()
+        {
+            return new FriendshipEventResponse()
+            {
+                Reject = new RejectResponse()
+                {
+                    User = new User()
+                    {
+                        Address = OWN_ID
+                    }
+                }
+            };
+        }
+
+        private static FriendshipEventResponse CreateRequestFriendshipResponse(String message, long createdAt)
+        {
+            return new FriendshipEventResponse()
+            {
+                Request = new RequestResponse()
+                {
+                    User = new User()
+                    {
+                        Address = OWN_ID
+                    },
+                    Message = message,
+                    CreatedAt = createdAt
+                }
+            };
         }
     }
 }
