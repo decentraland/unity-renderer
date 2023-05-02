@@ -54,11 +54,11 @@ namespace DCLServices.WearablesCatalogService
             wearablesCatalogServiceInUse?.Dispose();
         }
 
-        public async UniTask<WearableCollectionsAPIData.Collection[]> GetAllThirdPartyCollectionsAsync(CancellationToken cancellationToken)
+        public async UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
 
-            return await lambdasWearablesCatalogService.GetAllThirdPartyCollectionsAsync(cancellationToken);
+            return await lambdasWearablesCatalogService.GetThirdPartyCollectionsAsync(cancellationToken);
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,

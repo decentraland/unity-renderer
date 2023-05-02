@@ -70,7 +70,7 @@ namespace DCLServices.WearablesCatalogService
             Destroy(this);
         }
 
-        public UniTask<WearableCollectionsAPIData.Collection[]> GetAllThirdPartyCollectionsAsync(CancellationToken cancellationToken) =>
+        public UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken) =>
             throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
 
         public UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,

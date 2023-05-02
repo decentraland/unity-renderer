@@ -54,7 +54,7 @@ namespace DCLServices.WearablesCatalogService
             Clear();
         }
 
-        public async UniTask<WearableCollectionsAPIData.Collection[]> GetAllThirdPartyCollectionsAsync(CancellationToken cancellationToken)
+        public async UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken)
         {
             (WearableCollectionsAPIData response, bool success) = await lambdasService.Get<WearableCollectionsAPIData>(THIRD_PARTY_COLLECTIONS_FETCH_URL,
                 THIRD_PARTY_COLLECTIONS_FETCH_URL, cancellationToken: cancellationToken);
