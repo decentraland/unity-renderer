@@ -63,9 +63,13 @@ namespace DCL.Quest
                 },
             };
             questOfferComponentView.SetRewards(rewards);
+            var activeRewards = 0;
 
+            for (var i = 0; i < questOfferComponentView.rewardsContainer.childCount; i++)
+                if (questOfferComponentView.rewardsContainer.GetChild(i).gameObject.activeSelf)
+                    activeRewards++;
 
-            Assert.AreEqual(2, questOfferComponentView.rewardsContainer.childCount, "Quest rewards count do not match");
+            Assert.AreEqual(2, activeRewards, "Quest rewards count do not match");
         }
 
         [Test]

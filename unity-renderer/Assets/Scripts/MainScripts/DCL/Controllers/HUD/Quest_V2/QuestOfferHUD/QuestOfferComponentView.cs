@@ -1,3 +1,4 @@
+using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -10,6 +11,7 @@ namespace DCL.Quest
 {
     public class QuestOfferComponentView : BaseComponentView<QuestOfferComponentModel>, IQuestOfferComponentView
     {
+        private const int MAX_REWARDS_COUNT = 3;
 
         [SerializeField] internal GameObject rewardsSection;
         [SerializeField] internal GameObject guestSection;
@@ -19,14 +21,27 @@ namespace DCL.Quest
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Transform rewardsContainer;
 
-        [SerializeField] internal GameObject rewardPrefab;
-
+        [SerializeField] internal QuestRewardComponentView rewardPrefab;
         public event Action<string> OnQuestAccepted;
+
+        private UnityObjectPool<QuestRewardComponentView> rewardsPool;
+        private List<QuestRewardComponentView> usedRewards = new ();
 
         public override void Awake()
         {
             acceptButton.onClick.RemoveAllListeners();
             acceptButton.onClick.AddListener(()=>OnQuestAccepted?.Invoke(model.questId));
+            rewardsPool = new UnityObjectPool<QuestRewardComponentView>(rewardPrefab, rewardsContainer);
+            rewardsPool.Prewarm(MAX_REWARDS_COUNT);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            foreach (var pooledReward in usedRewards)
+                rewardsPool.Release(pooledReward);
+            rewardsPool.Clear();
         }
 
         public override void RefreshControl()
@@ -71,8 +86,16 @@ namespace DCL.Quest
             }
 
             rewardsSection.SetActive(true);
+
+            foreach (var pooledReward in usedRewards)
+                rewardsPool.Release(pooledReward);
+
             foreach (var rewardModel in rewardsList)
-                Instantiate(rewardPrefab, rewardsContainer).GetComponent<QuestRewardComponentView>().SetModel(rewardModel);
+            {
+                QuestRewardComponentView pooledReward = rewardsPool.Get();
+                pooledReward.SetModel(rewardModel);
+                usedRewards.Add(pooledReward);
+            }
         }
     }
 }
