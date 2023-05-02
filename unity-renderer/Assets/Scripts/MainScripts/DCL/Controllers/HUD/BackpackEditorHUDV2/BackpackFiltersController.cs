@@ -73,12 +73,9 @@ namespace DCL.Backpack
         private void SetOnlyCollectibles(bool isOn)
         {
             if (isOn)
-            {
-                collectionType |= NftCollectionType.OnChain;
                 collectionType &= ~NftCollectionType.Base;
-            }
             else
-                collectionType |= NftCollectionType.OnChain | NftCollectionType.Base;
+                collectionType |= NftCollectionType.Base;
 
             OnCollectionTypeChanged?.Invoke(collectionType);
         }
