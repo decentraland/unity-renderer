@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GLTFast.Loading;
-using MainScripts.DCL.Controllers.AssetManager;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -20,6 +19,7 @@ namespace DCL.GLTFast.Wrappers
 
         private List<IDisposable> disposables = new ();
         private string baseUrl;
+        private bool isDisposed;
 
         public GltFastDownloadProvider(string baseUrl, IWebRequestController webRequestController, AssetIdConverter fileToUrl, AssetPromiseKeeper_Texture texturePromiseKeeper)
         {
@@ -31,7 +31,10 @@ namespace DCL.GLTFast.Wrappers
 
         public async Task<IDownload> Request(Uri uri)
         {
-            string finalUrl = GetFinalUrl(uri);
+            if (isDisposed)
+                return null;
+
+            string finalUrl = GetFinalUrl(uri, false);
 
             WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
                 url: finalUrl,
@@ -50,18 +53,27 @@ namespace DCL.GLTFast.Wrappers
             return wrapper;
         }
 
-        private string GetFinalUrl(Uri uri)
+        private string GetFinalUrl(Uri uri, bool isTexture)
         {
-            var finalUrl = uri.OriginalString;
+            var originalString = uri.OriginalString;
+            var fileName = originalString.Replace(baseUrl, "");
 
-            finalUrl = finalUrl.Replace(baseUrl, "");
+            // this can return false and the url is valid, only happens with asset with hash as a name ( mostly gltf )
+            if (fileToUrl(fileName, out string finalUrl))
+                return finalUrl;
 
-            return fileToUrl(finalUrl, out string url) ? url : uri.OriginalString;
+            if (isTexture)
+                throw new Exception($"File not found in scene {finalUrl}");
+
+            return originalString;
         }
 
         public async Task<ITextureDownload> RequestTexture(Uri uri, bool nonReadable, bool forceLinear)
         {
-            string finalUrl = GetFinalUrl(uri);
+            if (isDisposed)
+                return null;
+
+            string finalUrl = GetFinalUrl(uri, true);
 
             var promise = new AssetPromise_Texture(
                 finalUrl,
@@ -79,10 +91,17 @@ namespace DCL.GLTFast.Wrappers
             var wrapper = new GLTFastTexturePromiseWrapper(texturePromiseKeeper, promise);
             disposables.Add(wrapper);
 
+            Exception promiseException = null;
+            promise.OnFailEvent += (_,e) => promiseException = e;
+
             texturePromiseKeeper.Keep(promise);
             await promise;
 
-            if (!wrapper.Success) Debug.LogError("[GLTFast Texture WebRequest Failed] " + finalUrl);
+            if (!wrapper.Success)
+            {
+                string errorMessage = promiseException != null ? promiseException.Message : wrapper.Error;
+                Debug.LogError($"[GLTFast Texture WebRequest Failed] Error: {errorMessage}" + finalUrl);
+            }
 
             return wrapper;
         }
@@ -91,6 +110,7 @@ namespace DCL.GLTFast.Wrappers
         {
             foreach (IDisposable disposable in disposables) { disposable.Dispose(); }
 
+            isDisposed = true;
             disposables = null;
         }
     }
