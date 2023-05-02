@@ -15,7 +15,7 @@ public class MapTexturePlugin : IPlugin
     private const string MAIN_TEXTURE_URL = "https://api.decentraland.org/v1/minimap.png";
     private const string ESTATES_TEXTURE_URL = "https://api.decentraland.org/v1/estatemap.png";
 
-    private readonly CancellationTokenSource cts;
+    private CancellationTokenSource cts;
 
     public MapTexturePlugin(IAddressableResourceProvider resourceProvider)
     {
@@ -23,11 +23,11 @@ public class MapTexturePlugin : IPlugin
 
         this.resourceProvider = resourceProvider;
 
-        DownloadTexture(MAIN_TEXTURE_URL, "MapDefault", DataStore.i.HUDs.mapMainTexture, cts.Token).Forget();
-        DownloadTexture(ESTATES_TEXTURE_URL, "MapDefaultEstates", DataStore.i.HUDs.mapEstatesTexture, cts.Token).Forget();
+        DownloadTexture(MAIN_TEXTURE_URL, DataStore.i.HUDs.mapMainTexture, cts.Token, "MapDefault").Forget();
+        DownloadTexture(ESTATES_TEXTURE_URL, DataStore.i.HUDs.mapEstatesTexture, cts.Token, "MapDefaultEstates").Forget();
     }
 
-    private async UniTaskVoid DownloadTexture(string url, string textureName, IBaseVariable<Texture> textureVariable, CancellationToken ct)
+    private async UniTaskVoid DownloadTexture(string url, IBaseVariable<Texture> textureVariable, CancellationToken ct, string textureName)
     {
         var texture = await resourceProvider.GetAddressable<Texture2D>(textureName, ct);
         textureVariable.Set(texture);
