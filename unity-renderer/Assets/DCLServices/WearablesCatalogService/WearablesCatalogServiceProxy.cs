@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -53,6 +52,13 @@ namespace DCLServices.WearablesCatalogService
         public void Dispose()
         {
             wearablesCatalogServiceInUse?.Dispose();
+        }
+
+        public async UniTask<WearableCollectionsAPIData.Collection[]> GetAllThirdPartyCollectionsAsync(CancellationToken cancellationToken)
+        {
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+
+            return await lambdasWearablesCatalogService.GetAllThirdPartyCollectionsAsync(cancellationToken);
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,

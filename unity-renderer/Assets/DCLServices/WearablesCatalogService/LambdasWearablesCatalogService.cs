@@ -23,6 +23,7 @@ namespace DCLServices.WearablesCatalogService
         private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
+        private const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
         private const int MAX_WEARABLES_PER_REQUEST = 200;
 
@@ -51,6 +52,17 @@ namespace DCLServices.WearablesCatalogService
             serviceCts.SafeCancelAndDispose();
             serviceCts = null;
             Clear();
+        }
+
+        public async UniTask<WearableCollectionsAPIData.Collection[]> GetAllThirdPartyCollectionsAsync(CancellationToken cancellationToken)
+        {
+            (WearableCollectionsAPIData response, bool success) = await lambdasService.Get<WearableCollectionsAPIData>(THIRD_PARTY_COLLECTIONS_FETCH_URL,
+                THIRD_PARTY_COLLECTIONS_FETCH_URL, cancellationToken: cancellationToken);
+
+            if (!success)
+                throw new Exception("Request error! third party collections couldn't be fetched!");
+
+            return response.data;
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(

@@ -49,7 +49,8 @@ namespace DCL.Backpack
             dataStore = new DataStore_BackpackV2();
 
             browserBridge = Substitute.For<IBrowserBridge>();
-            backpackFiltersController = new BackpackFiltersController(Substitute.For<IBackpackFiltersComponentView>());
+            backpackFiltersController = new BackpackFiltersController(Substitute.For<IBackpackFiltersComponentView>(),
+                Substitute.For<IWearablesCatalogService>());
 
             avatarSlotsHUDController = new AvatarSlotsHUDController(Substitute.For<IAvatarSlotsView>());
 

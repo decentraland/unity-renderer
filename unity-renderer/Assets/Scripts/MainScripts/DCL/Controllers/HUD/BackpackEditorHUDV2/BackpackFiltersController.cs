@@ -1,7 +1,9 @@
-﻿using DCL.Helpers;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -16,13 +18,17 @@ namespace DCL.Backpack
         public event Action<NftCollectionType> OnCollectionTypeChanged;
 
         private readonly IBackpackFiltersComponentView view;
+        private readonly IWearablesCatalogService wearablesCatalogService;
         private bool collectionsAlreadyLoaded;
         private HashSet<string> selectedCollections = new();
         private NftCollectionType collectionType = NftCollectionType.OnChain | NftCollectionType.Base;
+        private CancellationTokenSource loadThirdPartyCollectionsCancellationToken = new ();
 
-        public BackpackFiltersController(IBackpackFiltersComponentView view)
+        public BackpackFiltersController(IBackpackFiltersComponentView view,
+            IWearablesCatalogService wearablesCatalogService)
         {
             this.view = view;
+            this.wearablesCatalogService = wearablesCatalogService;
 
             view.OnOnlyCollectiblesChanged += SetOnlyCollectibles;
             view.OnCollectionChanged += SetCollections;
@@ -45,14 +51,23 @@ namespace DCL.Backpack
             if (collectionsAlreadyLoaded)
                 return;
 
-            WearablesFetchingHelper.GetThirdPartyCollections()
-                                   .Then(collections =>
-                                    {
-                                        WearableCollectionsAPIData.Collection defaultCollection = new () { urn = DECENTRALAND_COLLECTION_ID, name = "Decentraland" };
-                                        view.LoadCollectionDropdown(collections, defaultCollection);
-                                        collectionsAlreadyLoaded = true;
-                                    })
-                                   .Catch((error) => Debug.LogError(error));
+            async UniTaskVoid FetchTPWAndLoadDropdown(CancellationToken cancellationToken)
+            {
+                try
+                {
+                    WearableCollectionsAPIData.Collection[] collections = await wearablesCatalogService.GetAllThirdPartyCollectionsAsync(cancellationToken);
+                    WearableCollectionsAPIData.Collection defaultCollection = new () { urn = DECENTRALAND_COLLECTION_ID, name = "Decentraland" };
+                    view.LoadCollectionDropdown(collections, defaultCollection);
+                    collectionsAlreadyLoaded = true;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
+
+            loadThirdPartyCollectionsCancellationToken = loadThirdPartyCollectionsCancellationToken.SafeRestart();
+            FetchTPWAndLoadDropdown(loadThirdPartyCollectionsCancellationToken.Token).Forget();
         }
 
         private void SetOnlyCollectibles(bool isOn)

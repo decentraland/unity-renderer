@@ -10,6 +10,7 @@ namespace DCLServices.WearablesCatalogService
     {
         BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
+        UniTask<WearableCollectionsAPIData.Collection[]> GetAllThirdPartyCollectionsAsync(CancellationToken cancellationToken);
         UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
             string userId, int pageNumber, int pageSize,
             CancellationToken cancellationToken,

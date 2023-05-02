@@ -29,7 +29,7 @@ namespace DCL.Backpack
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
                 wearablesCatalogService);
 
-            var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView);
+            var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 
             var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
 
