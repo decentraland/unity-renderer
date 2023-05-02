@@ -203,7 +203,7 @@ namespace DCL.Backpack
             if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
             {
                 rarity = NftRarity.Common;
-                Debug.LogError($"Could not parse the rarity of the wearable: {wearable.rarity}. Fallback to common..");
+                Debug.LogWarning($"Could not parse the rarity of the wearable '{wearable.id}'. Fallback to common.");
             }
 
             return new WearableGridItemModel
@@ -232,6 +232,8 @@ namespace DCL.Backpack
                 return;
             }
 
+            string[] hidesList = wearable.GetHidesList(userProfileBridge.GetOwn().avatar.bodyShape);
+
             view.FillInfoCard(new InfoCardComponentModel
             {
                 rarity = wearable.rarity,
@@ -241,9 +243,9 @@ namespace DCL.Backpack
                 // TODO: solve hidden by field
                 hiddenBy = null,
                 name = wearable.GetName(),
-                hideList = wearable.GetHidesList(userProfileBridge.GetOwn().avatar.bodyShape).ToList(),
+                hideList = hidesList != null ? hidesList.ToList() : new List<string>(),
                 isEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearableId),
-                removeList = wearable.data.replaces.ToList(),
+                removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
             });
         }
