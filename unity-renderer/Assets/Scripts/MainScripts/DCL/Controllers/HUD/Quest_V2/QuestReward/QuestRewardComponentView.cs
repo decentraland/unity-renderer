@@ -1,5 +1,6 @@
 using DCL.Quest;
 using System;
+using System.Text;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -7,6 +8,8 @@ using UnityEngine.UI;
 
 public class QuestRewardComponentView : BaseComponentView<QuestRewardComponentModel>, IQuestRewardComponentView
 {
+    private const string MESSAGE = "{0} remaining";
+
     [SerializeField] internal TMP_Text rewardName;
     [SerializeField] internal TMP_Text rewardQuantity;
     [SerializeField] internal Image typeImage;
@@ -14,6 +17,8 @@ public class QuestRewardComponentView : BaseComponentView<QuestRewardComponentMo
     [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
     [SerializeField] private Image backgroundImage;
     [SerializeField] private Image rarityBackgroundImage;
+
+    private readonly StringBuilder sb = new StringBuilder();
 
     public override void RefreshControl()
     {
@@ -30,8 +35,6 @@ public class QuestRewardComponentView : BaseComponentView<QuestRewardComponentMo
         rewardName.text = name;
     }
 
-    string MESSAGE = "{0} remaining";
-    StringBuilder sb = new StringBuilder();    
     public void SetQuantity(int quantity)
     {
         model.quantity = quantity;
