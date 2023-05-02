@@ -101,7 +101,7 @@ namespace DCL
                     NodeNameMethod = NameImportMethod.OriginalUnique
                 };
 
-                bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken).AsUniTask().AttachExternalCancellation(cancellationSourceToken);
+                bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken);
 
                 if (cancellationSourceToken.IsCancellationRequested)
                 {
@@ -110,7 +110,7 @@ namespace DCL
                 }
 
                 if (!success)
-                    onFail?.Invoke(new Exception($"[GLTFast] Failed to load asset {url}"));
+                    onFail?.Invoke(new GltFastLoadException($"[GLTFast] Load failed: {consoleLogger.LastErrorCode}"));
                 else
                 {
                     asset.Setup(gltfImport);
@@ -122,12 +122,17 @@ namespace DCL
                 if (e is OperationCanceledException)
                     return;
 
-                Debug.LogException(e);
+                Debug.LogError("[GltFast] Failed to load: " + e);
                 onFail?.Invoke(e);
             }
         }
 
         private bool FileToUrl(string fileName, out string fileHash) =>
             contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out fileHash);
+    }
+
+    public class GltFastLoadException : Exception
+    {
+        public GltFastLoadException(string message) : base(message) { }
     }
 }
