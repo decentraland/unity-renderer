@@ -30,10 +30,14 @@ public class QuestRewardComponentView : BaseComponentView<QuestRewardComponentMo
         rewardName.text = name;
     }
 
+    string MESSAGE = "{0} remaining";
+    StringBuilder sb = new StringBuilder();    
     public void SetQuantity(int quantity)
     {
         model.quantity = quantity;
-        rewardQuantity.text = quantity <= 999 ? $"{quantity} remaining" : ">999 remaining";
+        sb.Clear();
+        sb.AppendFormat(MESSAGE, quantity);
+        rewardQuantity.text = quantity <= 999 ? sb.ToString() : ">999 remaining";
     }
 
     public void SetType(string type)
