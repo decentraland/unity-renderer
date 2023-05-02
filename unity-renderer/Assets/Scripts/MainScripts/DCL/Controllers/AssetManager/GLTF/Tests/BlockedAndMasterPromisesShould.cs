@@ -69,7 +69,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Assert.IsTrue(keeper.library.Contains(asset));
             Assert.AreEqual(1, keeper.library.masterAssets.Count);
         }
-        
+
         [UnityTest]
         public IEnumerator SucceedWhenMastersParentIsDeactivated()
         {
@@ -91,11 +91,11 @@ namespace AssetPromiseKeeper_GLTF_Tests
             prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
 
             keeper.Keep(prom);
-            
+
             // This is what happens when a scene is unloaded while a master promise is loading from that scene
             // (blocking other promises).
             parent.SetActive(false);
-            
+
             keeper.Keep(prom2);
             keeper.Keep(prom3);
 
@@ -130,11 +130,9 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var keeper = new AssetPromiseKeeper_GLTF();
             keeper.throttlingCounter.enabled = false;
 
-            //NOTE(Brian): Expect the 404 error
-            LogAssert.Expect(LogType.Log, new Regex("^.*?404"));
-            LogAssert.Expect(LogType.Exception, new Regex("^.*?Failed to Load Json Stream"));
-
             string url = TestAssetsUtils.GetPath() + "/non_existing_url.glb";
+
+            LogAssert.Expect(LogType.Error, new Regex("^.*?404"));
 
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF asset = null;
@@ -178,7 +176,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             Assert.IsFalse(keeper.library.Contains(asset));
             Assert.AreNotEqual(1, keeper.library.masterAssets.Count);
-            
         }
     }
 }
