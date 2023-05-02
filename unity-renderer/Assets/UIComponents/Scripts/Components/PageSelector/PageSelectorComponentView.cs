@@ -34,7 +34,8 @@ namespace UIComponents.Scripts.Components
         public override void RefreshControl()
         {
             SetTotalPages(model.TotalPages);
-            SelectIndex(model.CurrentPage - 1);
+            currentIndex = model.CurrentPage - 1;
+            UpdateButtonsStatus(false);
         }
 
         public void SelectIndex(int index)
