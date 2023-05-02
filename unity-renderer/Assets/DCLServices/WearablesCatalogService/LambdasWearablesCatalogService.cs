@@ -53,6 +53,54 @@ namespace DCLServices.WearablesCatalogService
             Clear();
         }
 
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
+            string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
+            NftRarity rarity = NftRarity.None, ICollection<string> collectionIds = null,
+            string name = null, (NftOrderByOperation type, bool directionAscendent)? orderBy = null)
+        {
+            var queryParams = new List<(string name, string value)>
+            {
+                ("pageNumber", pageNumber.ToString()),
+                ("pageSize", pageSize.ToString()),
+            };
+
+            if (rarity != NftRarity.None)
+                queryParams.Add(("rarity", rarity.ToString().ToLower()));
+
+            if (!string.IsNullOrEmpty(category))
+                queryParams.Add(("categories", category));
+
+            if (!string.IsNullOrEmpty(name))
+                queryParams.Add(("name", name));
+
+            if (orderBy != null)
+            {
+                queryParams.Add(("orderBy", orderBy.Value.type.ToString().ToLower()));
+                queryParams.Add(("direction", orderBy.Value.directionAscendent ? "ASC" : "DESC"));
+            }
+
+            AddCollectionIdsAndCollectionCategoryParams(queryParams, collectionIds);
+
+            // TODO: remove the hardcoded url once the lambda is deployed to the catalysts and becomes part of the protocol
+            (WearableWithDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                "https://peer-ue-2.decentraland.zone/explorer-service/backpack/:userId/wearables",
+                $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{userId}/wearables",
+                cancellationToken: cancellationToken,
+                urlEncodedParams: queryParams.ToArray());
+
+            if (!success)
+                throw new Exception($"The request of wearables for '{userId}' failed!");
+
+            List<WearableItem> wearables = new List<WearableItem>(response.elements.Count);
+            foreach (WearableDefinition definition in response.elements)
+                wearables.Add(definition.definition);
+
+            MapLambdasDataIntoWearableItem(wearables);
+            AddWearablesToCatalog(wearables);
+
+            return (wearables, response.TotalAmount);
+        }
+
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             var createNewPointer = false;
@@ -323,7 +371,7 @@ namespace DCLServices.WearablesCatalogService
             return result.FirstOrDefault(x => x.id == newWearableId);
         }
 
-        private static void MapLambdasDataIntoWearableItem(List<WearableItem> wearablesFromLambdas)
+        private static void MapLambdasDataIntoWearableItem(IList<WearableItem> wearablesFromLambdas)
         {
             var invalidWearablesIndices = ListPool<int>.Get();
 
@@ -379,6 +427,13 @@ namespace DCLServices.WearablesCatalogService
                 return true;
             }
 
+            if (item.data.representations == null)
+            {
+                Debug.LogError($"Wearable ${item.id} is invalid: data.representation is null");
+                invalidItemsIndices.Add(index);
+                return true;
+            }
+
             foreach (var dataRepresentation in item.data.representations)
             {
                 foreach (var representationContent in dataRepresentation.contents)
@@ -397,5 +452,41 @@ namespace DCLServices.WearablesCatalogService
 
         private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
             wearableIds.Select(id => ("wearableId", id)).ToArray();
+
+        private void AddCollectionIdsAndCollectionCategoryParams(ICollection<(string name, string value)> queryParams,
+            ICollection<string> collectionIds = null)
+        {
+            HashSet<string> collectionCategories = new HashSet<string>();
+            bool isInvalidCollectionIds = collectionIds == null;
+            bool containsThirdParty = isInvalidCollectionIds;
+            bool containsBase = isInvalidCollectionIds;
+            bool containsOnChain = isInvalidCollectionIds;
+
+            if (collectionIds != null)
+            {
+                foreach (string collectionId in collectionIds)
+                {
+                    if (collectionId.Contains("collections-thirdparty"))
+                        containsThirdParty = true;
+                    else if (collectionId.StartsWith("urn:decentraland:off-chain:base-avatars:"))
+                        containsBase = true;
+                    else
+                        containsOnChain = true;
+                }
+
+                queryParams.Add(("collectionIds", string.Join(",", collectionIds)));
+            }
+
+            if (containsThirdParty)
+                collectionCategories.Add("third-party");
+
+            if (containsBase)
+                collectionCategories.Add("base-wearable");
+
+            if (containsOnChain)
+                collectionCategories.Add("on-chain");
+
+            queryParams.Add(("collectionCategory", string.Join(",", collectionCategories)));
+        }
     }
 }

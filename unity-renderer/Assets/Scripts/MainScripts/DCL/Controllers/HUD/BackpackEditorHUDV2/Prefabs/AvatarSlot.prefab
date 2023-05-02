@@ -221,6 +221,7 @@ MonoBehaviour:
     hiddenBy: 
     allowsColorChange: 0
     wearableId: 
+    hidesList: []
   model:
     rarity: 
     imageUri: 
@@ -229,6 +230,7 @@ MonoBehaviour:
     hiddenBy: 
     allowsColorChange: 0
     wearableId: 
+    hidesList: []
   typeColorSupporting: {fileID: 11400000, guid: cabc2888038bd9642b681f41597ffe20,
     type: 2}
   typeIcons: {fileID: 11400000, guid: 9525caf9cd97d4aa1b91f145f3a604e3, type: 2}
@@ -241,7 +243,7 @@ MonoBehaviour:
   selectedImage: {fileID: 8601390346333107926}
   emptySlot: {fileID: 778022788925054171}
   hiddenSlot: {fileID: 8624965911923608939}
-  tooltipContainer: {fileID: 2292293713968562708}
+  tooltipContainer: {fileID: 3829402711795061729}
   tooltipCategoryText: {fileID: 3491566857406547017}
   tooltipHiddenText: {fileID: 556676770789666314}
   button: {fileID: 6140505366549626883}

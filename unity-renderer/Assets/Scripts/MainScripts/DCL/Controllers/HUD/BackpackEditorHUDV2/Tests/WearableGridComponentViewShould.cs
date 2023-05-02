@@ -1,7 +1,9 @@
+using DCLServices.WearablesCatalogService;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Backpack
 {
@@ -224,6 +226,34 @@ namespace DCL.Backpack
             view.SetWearableBreadcrumb(model);
 
             Assert.AreEqual(view.wearablesBreadcrumbComponentView.Model, model);
+        }
+
+        [Test]
+        public void EnableEmptyStateWhenNoWearables()
+        {
+            view.ClearWearables();
+            view.ShowWearables(Array.Empty<WearableGridItemModel>());
+
+            Assert.IsTrue(view.emptyStateContainer.activeSelf);
+            Assert.IsFalse(view.wearablesGridContainer.gameObject.activeSelf);
+        }
+
+        [Test]
+        public void DisableEmptyStateWhenShowingWearables()
+        {
+            view.ClearWearables();
+            view.SetWearable(new WearableGridItemModel
+            {
+                Rarity = NftRarity.Common,
+                ImageUrl = "url",
+                IsEquipped = false,
+                IsNew = false,
+                IsSelected = true,
+                WearableId = "w1",
+            });
+
+            Assert.IsFalse(view.emptyStateContainer.activeSelf);
+            Assert.IsTrue(view.wearablesGridContainer.gameObject.activeSelf);
         }
     }
 }

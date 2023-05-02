@@ -8,7 +8,10 @@ export function registerRestrictedActionsService<Context extends {}>(
   clientPort: RpcClientPort
 ): codegen.RpcClientModule<RestrictedActionsServiceDefinition, Context> | undefined {
   try {
-    return codegen.loadService<Context, RestrictedActionsServiceDefinition>(clientPort, RestrictedActionsServiceDefinition)
+    return codegen.loadService<Context, RestrictedActionsServiceDefinition>(
+      clientPort,
+      RestrictedActionsServiceDefinition
+    )
   } catch (e) {
     defaultLogger.error('EmotesService could not be loaded')
     return undefined
