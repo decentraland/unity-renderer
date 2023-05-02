@@ -25,6 +25,7 @@ namespace DCL.Backpack
         private readonly DataStore_BackpackV2 dataStoreBackpackV2;
         private readonly IBrowserBridge browserBridge;
         private readonly BackpackFiltersController backpackFiltersController;
+        private readonly AvatarSlotsHUDController avatarSlotsHUDController;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
@@ -44,7 +45,8 @@ namespace DCL.Backpack
             IWearablesCatalogService wearablesCatalogService,
             DataStore_BackpackV2 dataStoreBackpackV2,
             IBrowserBridge browserBridge,
-            BackpackFiltersController backpackFiltersController)
+            BackpackFiltersController backpackFiltersController,
+            AvatarSlotsHUDController avatarSlotsHUDController)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
@@ -52,6 +54,7 @@ namespace DCL.Backpack
             this.dataStoreBackpackV2 = dataStoreBackpackV2;
             this.browserBridge = browserBridge;
             this.backpackFiltersController = backpackFiltersController;
+            this.avatarSlotsHUDController = avatarSlotsHUDController;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
@@ -64,6 +67,8 @@ namespace DCL.Backpack
             backpackFiltersController.OnSortByChanged += SetSorting;
             backpackFiltersController.OnSearchTextChanged += SetTextFilter;
             backpackFiltersController.OnCollectionTypeChanged += SetCollectionType;
+
+            avatarSlotsHUDController.OnToggleSlot += SetCategory;
         }
 
         public void Dispose()
@@ -80,6 +85,9 @@ namespace DCL.Backpack
             backpackFiltersController.OnSearchTextChanged -= SetTextFilter;
             backpackFiltersController.OnCollectionTypeChanged -= SetCollectionType;
             backpackFiltersController.Dispose();
+
+            avatarSlotsHUDController.OnToggleSlot -= SetCategory;
+            avatarSlotsHUDController.Dispose();
 
             view.Dispose();
             requestWearablesCancellationToken.SafeCancelAndDispose();
@@ -288,6 +296,13 @@ namespace DCL.Backpack
         private void SetCollectionType(NftCollectionType collectionType)
         {
             collectionTypeMask = collectionType;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+        }
+
+        private void SetCategory(string category, bool supportColor, bool isSelected)
+        {
+            categoryFilter = isSelected ? category : null;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
         }

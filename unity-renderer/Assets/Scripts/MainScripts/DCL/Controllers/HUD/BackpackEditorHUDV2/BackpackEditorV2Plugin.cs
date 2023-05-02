@@ -31,13 +31,14 @@ namespace DCL.Backpack
 
             var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView);
 
+            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
+
             var wearableGridController = new WearableGridController(view.WearableGridComponentView,
                 userProfileBridge, wearablesCatalogService,
                 dataStore.backpackV2,
                 new WebInterfaceBrowserBridge(),
-                backpackFiltersController);
-
-            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
+                backpackFiltersController,
+                avatarSlotsHUDController);
 
             hudController = new BackpackEditorHUDController(
                 view,

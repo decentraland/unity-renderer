@@ -26,6 +26,7 @@ namespace DCL.Backpack
         private BackpackFiltersController backpackFiltersController;
         private UserProfile ownUserProfile;
         private IBrowserBridge browserBridge;
+        private AvatarSlotsHUDController avatarSlotsHUDController;
 
         [SetUp]
         public void SetUp()
@@ -50,12 +51,15 @@ namespace DCL.Backpack
             browserBridge = Substitute.For<IBrowserBridge>();
             backpackFiltersController = new BackpackFiltersController(Substitute.For<IBackpackFiltersComponentView>());
 
+            avatarSlotsHUDController = new AvatarSlotsHUDController(Substitute.For<IAvatarSlotsView>());
+
             controller = new WearableGridController(view,
                 userProfileBridge,
                 wearablesCatalogService,
                 dataStore,
                 browserBridge,
-                backpackFiltersController);
+                backpackFiltersController,
+                avatarSlotsHUDController);
         }
 
         [TearDown]
