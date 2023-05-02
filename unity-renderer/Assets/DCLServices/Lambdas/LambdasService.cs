@@ -12,6 +12,8 @@ namespace DCLServices.Lambdas
 {
     public class LambdasService : ILambdasService
     {
+        private const string DEFAULT_LAMBDAS_URL = "https://interconnected.online/lambdas/";
+
         private ICatalyst catalyst;
 
         private Service<IWebRequestController> webRequestController;
@@ -126,7 +128,7 @@ namespace DCLServices.Lambdas
         }
 
         internal string GetLambdasUrl() =>
-            catalyst.lambdasUrl;
+            string.IsNullOrEmpty(catalyst.lambdasUrl) ? DEFAULT_LAMBDAS_URL : catalyst.lambdasUrl;
 
         private static void PrintError<TResponse>(string endPoint, string message)
         {
