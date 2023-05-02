@@ -18,1355 +18,1355 @@ MonoBehaviour:
   m_GUID: 1ad15e5051cb127459c86068669850ea
   m_SerializeEntries:
   - m_GUID: 24bad1613b3e14b969cf6086aa095ffc
-    m_Address: Assets/Textures/UI/Common/DecentralandIsologotipo68.png
+    m_Address: DecentralandIsologotipo68
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 540ccf231c7f68848b71c262e2a8c1f7
-    m_Address: Assets/Textures/UI/Common/ButtonFlatWhite.png
+    m_Address: ButtonFlatWhite
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8512d2a614988894b967cb17ea417d0b
-    m_Address: Assets/Textures/UI/Common/InputGray.png
+    m_Address: InputGray
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 100172170ea424b1f94f8c64e2d48da1
-    m_Address: Assets/Textures/UI/Common/BackgroundPattern.png
+    m_Address: BackgroundPattern
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f02af068e11cb4902a1a4faad10b890a
-    m_Address: Assets/Textures/UI/Common/Container12.png
+    m_Address: Container12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e36f3569fbdef4c609c33f7a1cebace5
-    m_Address: Assets/Textures/UI/Common/Ellipse128.png
+    m_Address: Ellipse128
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d7095b4a66a3b4aec97db439447fa78c
-    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/SignupHUD/Textures/Background.jpeg
+    m_Address: Background
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b3dde05c995029e4c8e4a4acd0f99337
-    m_Address: Assets/Textures/UI/Common/InputRed.png
+    m_Address: InputRed
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ffdb9ddd1a2d940e5a6daf599ae1c755
-    m_Address: Assets/Textures/UI/Common/Container24Shadow4.png
+    m_Address: Container24Shadow4
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9cd4312f23f74b04e9ca0aac7a34d46c
-    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/SignupHUD/Textures/SignUpAvatars.png
+    m_Address: SignUpAvatars
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 80e8a7bf545776a4da55bccd80ec6fc0
-    m_Address: Assets/Textures/UI/Common/InputNormal.png
+    m_Address: InputNormal
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 72427466f3c68415d99034487e991a75
-    m_Address: Assets/Textures/UI/Common/TexturesUI.spriteatlas
+    m_Address: TexturesUI
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 72818d20470f74645a54d6986b4288ef
-    m_Address: Assets/Textures/UI/Common/VoiceChatMutePlayer.png
+    m_Address: VoiceChatMutePlayer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a3858430b23c149488cbba79c79b511f
-    m_Address: Assets/Textures/UI/Common/ContainerRadius16Shadow.png
+    m_Address: ContainerRadius16Shadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 09da6730b26434c19973555545d3eb24
-    m_Address: Assets/Textures/UI/Common/SearchFriendsImage.png
+    m_Address: SearchFriendsImage
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9f3a5a306950048dd9c594fcf95c8fcc
-    m_Address: Assets/Textures/UI/Common/SliderHandle.png
+    m_Address: SliderHandle
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 219eab3075e6f47e38920b886ba74eee
-    m_Address: Assets/Textures/UI/Common/BuilderOn.png
+    m_Address: BuilderOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 06109c30f10aa46efa2a63d176c8e94d
-    m_Address: Assets/Textures/UI/Common/Outline3Radius12Gradient.png
+    m_Address: Outline3Radius12Gradient
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0187ad300d0014cd6a1aa5f9b694497d
-    m_Address: Assets/Textures/UI/Common/Publish.png
+    m_Address: Publish
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9d8a1240643c848f38c614260af68c76
-    m_Address: Assets/Textures/UI/Common/RadialGradient.png
+    m_Address: RadialGradient
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 88dde3500b2da42c89518050e5250b21
-    m_Address: Assets/Textures/UI/Common/CellBright.png
+    m_Address: CellBright
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 91681e50568d84e93b76b1767abc283f
-    m_Address: Assets/Textures/UI/Common/Mic off.png
+    m_Address: Mic off
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9ee0d9605c0e04a57946e54a0b997c90
-    m_Address: Assets/Textures/UI/Common/Spinner.png
+    m_Address: Spinner
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 881fad601c25545beaf8ff83632e9ce2
-    m_Address: Assets/Textures/UI/Common/NoFavoritesImage.png
+    m_Address: NoFavoritesImage
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b6b6bf6065bcc4d26939c4f9986de3da
-    m_Address: Assets/Textures/UI/Common/RectRadius8.png
+    m_Address: RectRadius8
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0d72ee801259541e5a5a33c86e6efdb9
-    m_Address: Assets/Textures/UI/Common/EllipseOutline2.png
+    m_Address: EllipseOutline2
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 009e5e907d373454a87134a1d7009adf
-    m_Address: Assets/Textures/UI/Common/Shadow10.png
+    m_Address: Shadow10
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 12f3d2a007b6b49f6a274df5427d424a
-    m_Address: Assets/Textures/UI/Common/CollapseStroke.png
+    m_Address: CollapseStroke
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4c7c27a0c63aa439a88614596bc1edeb
-    m_Address: Assets/Textures/UI/Common/DeleteIconOutline.png
+    m_Address: DeleteIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f5aa2ca039b5f4fc0ab1f49ecc6b2926
-    m_Address: Assets/Textures/UI/Common/SearchIcon.png
+    m_Address: SearchIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 01c3f0c094f1a4006ab7e13ecd3ddfee
-    m_Address: Assets/Textures/UI/Common/PlusIcon.png
+    m_Address: PlusIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 61dc3ec0be076473f85d0d5a9baa17cc
-    m_Address: Assets/Textures/UI/Common/SliderHighlight.png
+    m_Address: SliderHighlight
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a0fc61d060820459290cbde64b85e7ff
-    m_Address: Assets/Textures/UI/Common/MapStroke.png
+    m_Address: MapStroke
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4c253fd08e34648f8a509d98c99fba7f
-    m_Address: Assets/Textures/UI/Common/ContainerRow.png
+    m_Address: ContainerRow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 436a77f04f3514b10b2d7054b7c7eb2e
-    m_Address: Assets/Textures/UI/Common/MenuContainer.png
+    m_Address: MenuContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 87c2ea01f3aa94b648d225daa8b22214
-    m_Address: Assets/Textures/UI/Common/Rarity.png
+    m_Address: Rarity
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 44dd7b11a83bf4605916ad96f6ce3881
-    m_Address: Assets/Textures/UI/Common/MenuButton.png
+    m_Address: MenuButton
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 3354932168610498ebc347e78ae840d7
-    m_Address: Assets/Textures/UI/Common/DownloadIconOutline.png
+    m_Address: DownloadIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: bab56821543b14cd099d751c74e5c0f0
-    m_Address: Assets/Textures/UI/Common/GuestImg.png
+    m_Address: GuestImg
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 38dc6a210cae34a439bd286f6c382165
-    m_Address: Assets/Textures/UI/Common/ContainerShadowRadiusFour.png
+    m_Address: ContainerShadowRadiusFour
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e8a30441514b5499ea02a9e5a4617028
-    m_Address: Assets/Textures/UI/Common/NFTStarContainer.png
+    m_Address: NFTStarContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 5fc25d41256974b138a7c25b1c0b30de
-    m_Address: Assets/Textures/UI/Common/SpeakerOn.png
+    m_Address: SpeakerOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4b1c9751d9ed642a190d2431fa02b5f8
-    m_Address: Assets/Textures/UI/Common/ContainerRadius6.png
+    m_Address: ContainerRadius6
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 35d9dd519b2dd8a47a6f251b25fded0f
-    m_Address: Assets/Textures/UI/Common/VoiceChatCross.png
+    m_Address: VoiceChatCross
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8ba9b271a894b4f8695979cdfe864b48
-    m_Address: Assets/Textures/UI/Common/TopRect12.png
+    m_Address: TopRect12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 511aa971d8654400498da53ce8f013b7
-    m_Address: Assets/Textures/UI/Common/SceneInfoContainer.png
+    m_Address: SceneInfoContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0d4bfb71b11af4dc0967886c03434d5b
-    m_Address: Assets/Textures/UI/Common/Button16.png
+    m_Address: Button16
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a26c049177d1b423cbf29f2f44dd73c2
-    m_Address: Assets/Textures/UI/Common/BlockedUser.png
+    m_Address: BlockedUser
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 04162ca1b011c47e7a21c573dc2c8a14
-    m_Address: Assets/Textures/UI/Common/Checkmark.png
+    m_Address: Checkmark
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: db7198b10e7b549a68d088ccdf7377cf
-    m_Address: Assets/Textures/UI/Common/ManaIcon.png
+    m_Address: ManaIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a6b6c8b1877c9c7498c971402965bdc0
-    m_Address: Assets/Textures/UI/Common/RectangleGreen.png
+    m_Address: RectangleGreen
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 094ba0d1e5a654e69b2896b2e8b7393e
-    m_Address: Assets/Textures/UI/Common/NFTUniqueFrame.png
+    m_Address: NFTUniqueFrame
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e5f450e18a0554063b4f01e5da2e1885
-    m_Address: Assets/Textures/UI/Common/CancelButton.png
+    m_Address: CancelButton
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0699c2e18ea2d4e91819b548fbe61f1a
-    m_Address: Assets/Textures/UI/Common/EllipseOutline2Gradient.png
+    m_Address: EllipseOutline2Gradient
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: dc0c26e188c324c3eba16bff00bcebe0
-    m_Address: Assets/Textures/UI/Common/MessageSent.png
+    m_Address: MessageSent
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cf1014f15559747c1918c2345d4e259a
-    m_Address: Assets/Textures/UI/Common/BackgroundHUE.png
+    m_Address: BackgroundHUE
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 07a444f1dbb6d49ddb7e51b246961033
-    m_Address: Assets/Textures/UI/Common/ArrowRight.png
+    m_Address: ArrowRight
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 2f8d6212d390e424ba86746c7be53eba
-    m_Address: Assets/Textures/UI/Common/Ellipse64.png
+    m_Address: Ellipse64
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 400fa122300374d5c9492754b211336f
-    m_Address: Assets/Textures/UI/Common/ContainerRadius4.png
+    m_Address: ContainerRadius4
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 39177232480c9442b9c785ef3c94a093
-    m_Address: Assets/Textures/UI/Common/HideBarIcon.png
+    m_Address: HideBarIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 903e82323051c41339d97e1f52c7c984
-    m_Address: Assets/Textures/UI/Common/Container12Shadow10.png
+    m_Address: Container12Shadow10
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6d6f6142025570c4c8c8705c19f66da4
-    m_Address: Assets/Textures/UI/Common/InputFieldBuilderFocus.png
+    m_Address: InputFieldBuilderFocus
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 16a5648277f4daa4d9c15a5365076da6
-    m_Address: Assets/Textures/UI/Common/SmartItemIcon.png
+    m_Address: SmartItemIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 72e0a7824370a4a86a33ecdaf1bdc198
-    m_Address: Assets/Textures/UI/Common/Key.png
+    m_Address: Key
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: dd2c2092a9ae16c49a268766674e5b2b
-    m_Address: Assets/Textures/UI/Common/NamesIcon.png
+    m_Address: NamesIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e0b16592248644670b24222cef732ed0
-    m_Address: Assets/Textures/UI/Common/NFTUniqueContainer.png
+    m_Address: NFTUniqueContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b3a558a257e4f4f988f0f1b57a559485
-    m_Address: Assets/Textures/UI/Common/RoundedSquare20x20.png
+    m_Address: RoundedSquare20x20
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: aa3440b27b8b9423f9821f663863c0c0
-    m_Address: Assets/Textures/UI/Common/ExpandIcon.png
+    m_Address: ExpandIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f0a40db225b774307b56e6cfbc73889a
-    m_Address: Assets/Textures/UI/Common/DialogBubble.png
+    m_Address: DialogBubble
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 03b222c2450ce4c57ba7e9d6268b0c92
-    m_Address: Assets/Textures/UI/Common/WifiIcon.png
+    m_Address: WifiIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 147d94c24838a2647bbaf2fb16ac913c
-    m_Address: Assets/Textures/UI/Common/PolygonManaIcon.png
+    m_Address: PolygonManaIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 166eccd2b230b3a45b65e30f02348cd6
-    m_Address: Assets/Textures/UI/Common/MicrophoneVoiceChatOn.png
+    m_Address: MicrophoneVoiceChatOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 37cde3e27276a4d81864268dd0573014
-    m_Address: Assets/Textures/UI/Common/HomeIconOutline.png
+    m_Address: HomeIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a628efe28360b426c8ca23b43ad06c2b
-    m_Address: Assets/Textures/UI/Common/DisclaimerBackground.png
+    m_Address: DisclaimerBackground
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 04c3edf2ef4a747ffbe6f20a72aac0d9
-    m_Address: Assets/Textures/UI/Common/NFTContainer.png
+    m_Address: NFTContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 007d970352cbc4cadadc4cb99da58e7d
-    m_Address: Assets/Textures/UI/Common/BackgroundSaturation.png
+    m_Address: BackgroundSaturation
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 42402c03014144e64b56b0f83f883e5e
-    m_Address: Assets/Textures/UI/Common/ContainerRectLeft20.png
+    m_Address: ContainerRectLeft20
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ad6eb51354c9f4bd4af55d70ae175139
-    m_Address: Assets/Textures/UI/Common/ContainerRadius10@2x.png
+    m_Address: ContainerRadius10@2x
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: af3ceb136e126477f809677ea5eb67e2
-    m_Address: Assets/Textures/UI/Common/DCLLogoColor.png
+    m_Address: DCLLogoColor
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 37894a231569347e8b89612f29611b85
-    m_Address: Assets/Textures/UI/Common/Outline1Radius12.png
+    m_Address: Outline1Radius12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: edb831335c79c4bc9977a312db827955
-    m_Address: Assets/Textures/UI/Common/ExitFullScreenIcon.png
+    m_Address: ExitFullScreenIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: bdbc7733c51e44718b2794d9b74dd50c
-    m_Address: Assets/Textures/UI/Common/RoundedLine.png
+    m_Address: RoundedLine
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 446caa43f3cad4f7d8abc800a474534b
-    m_Address: Assets/Textures/UI/Common/Pin.png
+    m_Address: Pin
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 94352b53817657c429ced2d35262394c
-    m_Address: Assets/Textures/UI/Common/Frame24.png
+    m_Address: Frame24
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: db1616631e9344b4aa7ce7fdb5218656
-    m_Address: Assets/Textures/UI/Common/AcceptButton.png
+    m_Address: AcceptButton
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 09d7c763693b246d7bdb6df137a6f0cc
-    m_Address: Assets/Textures/UI/Common/CopyIconOutline.png
+    m_Address: CopyIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 257bf8731440e4fa392f389916143102
-    m_Address: Assets/Textures/UI/Common/QuestOn.png
+    m_Address: QuestOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 1aac5e83391d74318b6be345b5ca43aa
-    m_Address: Assets/Textures/UI/Common/SelectedParcel.png
+    m_Address: SelectedParcel
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c553839314f3e4d218eed6729f828916
-    m_Address: Assets/Textures/UI/Common/IconBellActive.png
+    m_Address: IconBellActive
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 3f0f9693166cb48a9b43e5e4bbd00332
-    m_Address: Assets/Textures/UI/Common/OkIcon.png
+    m_Address: OkIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d254a3a3b9d5642e1ad6432c441d7f43
-    m_Address: Assets/Textures/UI/Common/ContainerRadius20.png
+    m_Address: ContainerRadius20
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f9ac9ba35ccb34e818a1cdcdd0af3643
-    m_Address: Assets/Textures/UI/Common/ExploreIcon.png
+    m_Address: ExploreIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8b2eb5b3c1c0744819946a4f9fc05828
-    m_Address: Assets/Textures/UI/Common/FullScreenIcon.png
+    m_Address: FullScreenIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 73eb02c3697d74008aff9a4139d43c55
-    m_Address: Assets/Textures/UI/Common/ContainerPassport.png
+    m_Address: ContainerPassport
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cb768af398af844a585c615342f68492
-    m_Address: Assets/Textures/UI/Common/ContainerShadowRadiusEight.png
+    m_Address: ContainerShadowRadiusEight
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f5a8ac1491c276a4c9b7f3d606f0a1fd
-    m_Address: Assets/Textures/UI/Common/TooltipPeak.png
+    m_Address: TooltipPeak
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f7c61f14e511e4444929b9c47611edac
-    m_Address: Assets/Textures/UI/Common/KeyOutline.png
+    m_Address: KeyOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0822ae34e463d49f49b978299714fd21
-    m_Address: Assets/Textures/UI/Common/DialogCornerRight.png
+    m_Address: DialogCornerRight
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 65d50244ec48c4d31b169fe48412f711
-    m_Address: Assets/Textures/UI/Common/ConnectionStatus.png
+    m_Address: ConnectionStatus
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b85ea444031cf415f95fa3022c2305dc
-    m_Address: Assets/Textures/UI/Common/Container12Shadow20.png
+    m_Address: Container12Shadow20
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 06ec3644c3f104203b897e53615acd2c
-    m_Address: Assets/Textures/UI/Common/SpeakerOff.png
+    m_Address: SpeakerOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 14d01e642387749e482a6f14133c57b8
-    m_Address: Assets/Textures/UI/Common/Container12Shadow4.png
+    m_Address: Container12Shadow4
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 19ab9974b241b40c6904521d492b8328
-    m_Address: Assets/Textures/UI/Common/ChatNotiIcon.png
+    m_Address: ChatNotiIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d47fff849b289a945b7f71738eb53815
-    m_Address: Assets/Textures/UI/Common/DMIEmpty.png
+    m_Address: DMIEmpty
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d077f9943309847eb8bb9c36ecff7a44
-    m_Address: Assets/Textures/UI/Common/LockIcon.png
+    m_Address: LockIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c983eea4ebd9d43579acbb2e5c500480
-    m_Address: Assets/Textures/UI/Common/Camera.png
+    m_Address: Camera
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a13564b4fa74e4061bafd65fb9bfdc46
-    m_Address: Assets/Textures/UI/Common/NFTEmpty.png
+    m_Address: NFTEmpty
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 198562c4af29e18439f1360875165550
-    m_Address: Assets/Textures/UI/Common/Outline2Bottom12.png
+    m_Address: Outline2Bottom12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a97a0ec41c10cdf4991c0112c64b2e84
-    m_Address: Assets/Textures/UI/Common/CheckmarkGreen.png
+    m_Address: CheckmarkGreen
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: acc672d4bfa668c40b5d8b96e9b94a7a
-    m_Address: Assets/Textures/UI/Common/Ellipse38Stroke.png
+    m_Address: Ellipse38Stroke
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4b77b6d41574d45f5bee5a18bcb3ef7e
-    m_Address: Assets/Textures/UI/Common/BackpackOff.png
+    m_Address: BackpackOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 3652c7d4f41204ccbacf529de58ec612
-    m_Address: Assets/Textures/UI/Common/MessageReceived.png
+    m_Address: MessageReceived
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b5c699d454d344addad40a2576c0349f
-    m_Address: Assets/Textures/UI/Common/ScenesContainer.png
+    m_Address: ScenesContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 40f78cd4a097349a68457a6b56dc3bf1
-    m_Address: Assets/Textures/UI/Common/TopGradientPopUp.png
+    m_Address: TopGradientPopUp
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ffe80fd49c01b408d81e154b74ea74bd
-    m_Address: Assets/Textures/UI/Common/ClaimIcon.png
+    m_Address: ClaimIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f7cb20f4d2c0d4811b36bbc75a766342
-    m_Address: Assets/Textures/UI/Common/JumpInArrowPink.png
+    m_Address: JumpInArrowPink
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: deb764059d1d1411bbe77fc7a862d919
-    m_Address: Assets/Textures/UI/Common/VoiceChatMute.png
+    m_Address: VoiceChatMute
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: baeafb15684bb4604bd26954c2fc9240
-    m_Address: Assets/Textures/UI/Common/DiscordIconHD.png
+    m_Address: DiscordIconHD
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c6bfc325bda1f44ba9affb7ecdf26a11
-    m_Address: Assets/Textures/UI/Common/Button14.png
+    m_Address: Button14
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6fbdd825c58334612a3d1645eba6da25
-    m_Address: Assets/Textures/UI/Common/ContainerShadowRadiusSix.png
+    m_Address: ContainerShadowRadiusSix
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4e9a4135cdf6d42afb73b12a76bf53f2
-    m_Address: Assets/Textures/UI/Common/JumpInSquare.png
+    m_Address: JumpInSquare
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 47acd065431664e80a9a8cdedf8acb31
-    m_Address: Assets/Textures/UI/Common/BubblePeak.png
+    m_Address: BubblePeak
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7ec9c5651d0c04c2db1086ffdad1a3d0
-    m_Address: Assets/Textures/UI/Common/Frame5.png
+    m_Address: Frame5
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e0a2bc75af20840e79cb10bba9987431
-    m_Address: Assets/Textures/UI/Common/ArrowUp.png
+    m_Address: ArrowUp
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7f27d0851d5e842b299578e8e042207a
-    m_Address: Assets/Textures/UI/Common/BugIcon 1.png
+    m_Address: BugIcon 1
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 1a32f285ef84d8e44856f0e495cffd4d
-    m_Address: Assets/Textures/UI/Common/RectRadius12Shadow.png
+    m_Address: RectRadius12Shadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 5c569e851fe024c7e8e4b57c07575226
-    m_Address: Assets/Textures/UI/Common/RectRadius12Bottom.png
+    m_Address: RectRadius12Bottom
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4308be85a340e4a2b9b19adedb9593f8
-    m_Address: Assets/Textures/UI/Common/Label26.png
+    m_Address: Label26
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 5e9852a564f64410f8029a89c63e85c1
-    m_Address: Assets/Textures/UI/Common/VoiceChatOff.png
+    m_Address: VoiceChatOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 54679ca5073f143a6b562c4f5c5f81ef
-    m_Address: Assets/Textures/UI/Common/BugIcon.png
+    m_Address: BugIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 520d44b5687394783ae96976dbb73c7c
-    m_Address: Assets/Textures/UI/Common/GraphicsIcon.png
+    m_Address: GraphicsIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 643485b56259a47ff8f14e9b10fd47bb
-    m_Address: Assets/Textures/UI/Common/ArrowLeft.png
+    m_Address: ArrowLeft
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: aafb5ac5e24714df99ac5bc757bbbecb
-    m_Address: Assets/Textures/UI/Common/ProfileStrokeShadow.png
+    m_Address: ProfileStrokeShadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ac30fbc52a4ec41fc9257ec446b347c7
-    m_Address: Assets/Textures/UI/Common/GradientMulticolor.png
+    m_Address: GradientMulticolor
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e2754ed5e27ef44bfaacd0c451d88263
-    m_Address: Assets/Textures/UI/Common/CodeIcon.png
+    m_Address: CodeIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8ee9aed5af74d4e399555cda5681978e
-    m_Address: Assets/Textures/UI/Common/BackgroundValue.png
+    m_Address: BackgroundValue
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 5082f4f53f951407fadf55de7e770f50
-    m_Address: Assets/Textures/UI/Common/SearchBarBuilder.png
+    m_Address: SearchBarBuilder
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f8e385f5fbb5940f09971392899eb6ff
-    m_Address: Assets/Textures/UI/Common/VoiceChatOn.png
+    m_Address: VoiceChatOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b16568f5e2de64c8dbc491d9ac2830e9
-    m_Address: Assets/Textures/UI/Common/PoiIcon.png
+    m_Address: PoiIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 91e559f524592ad4a94afd8829f86e75
-    m_Address: Assets/Textures/UI/Common/ImageIcon.png
+    m_Address: ImageIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b7f3fdf5bf2a24afdaeef1c2d7edb8ea
-    m_Address: Assets/Textures/UI/Common/ExploreOff.png
+    m_Address: ExploreOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 686758069f8a14776994a397af7581cd
-    m_Address: Assets/Textures/UI/Common/NameBackground.png
+    m_Address: NameBackground
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: fb175f167b0cc447c8f2fd84c9671a68
-    m_Address: Assets/Textures/UI/Common/FAQsIcon.png
+    m_Address: FAQsIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d1530a26cd1484393bd6f29419fe7ad3
-    m_Address: Assets/Textures/UI/Common/PlayersIcon.png
+    m_Address: PlayersIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d857d876066d545688aeec28176a1751
-    m_Address: Assets/Textures/UI/Common/MapOff.png
+    m_Address: MapOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 17536e862909d4b64b9f50455a6e17b7
-    m_Address: Assets/Textures/UI/Common/QuestOff.png
+    m_Address: QuestOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a55ecfa6bafe1486da42b025ec8edbd8
-    m_Address: Assets/Textures/UI/Common/CatalogIcon.png
+    m_Address: CatalogIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 51bee6e6d6f314363a939973c91dff7a
-    m_Address: Assets/Textures/UI/Common/Frame10.png
+    m_Address: Frame10
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 518e3be6157b64d5a9fabd3e9c35622d
-    m_Address: Assets/Textures/UI/Common/BlockPlayerIcon.png
+    m_Address: BlockPlayerIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e4194917179d34ea897e31a5b487a894
-    m_Address: Assets/Textures/UI/Common/CheckmarkContainer.png
+    m_Address: CheckmarkContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 71bec2279cc084440b3820533c062b92
-    m_Address: Assets/Textures/UI/Common/ContainerRadius20Shadow.png
+    m_Address: ContainerRadius20Shadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e42d263701088429292b3462f9d1d21c
-    m_Address: Assets/Textures/UI/Common/PlacesIcon.png
+    m_Address: PlacesIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0771864752bc141ab96ff9dcc751419d
-    m_Address: Assets/Textures/UI/Common/ProfileHudTopContainer.png
+    m_Address: ProfileHudTopContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6b35c647bc47eb94486089adcb53c8b9
-    m_Address: Assets/Textures/UI/Common/no-image-icon-32.png
+    m_Address: no-image-icon-32
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a6be5747f33e34c91922c7512b0f445a
-    m_Address: Assets/Textures/UI/Common/ChatOn.png
+    m_Address: ChatOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f00094572a9874a0e92b4d347ce91bba
-    m_Address: Assets/Textures/UI/Common/QuestIcon.png
+    m_Address: QuestIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: afd325574219143ac872ad347827c300
-    m_Address: Assets/Textures/UI/Common/FriendsOn.png
+    m_Address: FriendsOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 243dd557f2b614bc5ba2599f40d20448
-    m_Address: Assets/Textures/UI/Common/Switch32.png
+    m_Address: Switch32
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7b4468575e3ab49e1aec3edd88298137
-    m_Address: Assets/Textures/UI/Common/ContainerRadius11Shadow.png
+    m_Address: ContainerRadius11Shadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 5f5d6367f6d5ebc4ab5480df6fb70c5f
-    m_Address: Assets/Textures/UI/Common/WalletConnectLogo.png
+    m_Address: WalletConnectLogo
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 87a25a674771b42209ef0ae9b6b6bce7
-    m_Address: Assets/Textures/UI/Common/CameraIconSmall.png
+    m_Address: CameraIconSmall
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b22119773231a487caa76e1b94ae9af5
-    m_Address: Assets/Textures/UI/Common/SliderHightlightWhite.png
+    m_Address: SliderHightlightWhite
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f5f102872b9fb41c6a606b3f038538aa
-    m_Address: Assets/Textures/UI/Common/BuilderIcon.png
+    m_Address: BuilderIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 058e0097872914023991446b014562ef
-    m_Address: Assets/Textures/UI/Common/VoiceChatDisable.png
+    m_Address: VoiceChatDisable
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b2755fa77563aad42bfdaa03c0e54746
-    m_Address: Assets/Textures/UI/Common/RoundedContainer23.png
+    m_Address: RoundedContainer23
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 451b9fa7c6c084bb2967830f3d587b3a
-    m_Address: Assets/Textures/UI/Common/FriendsIconHD.png
+    m_Address: FriendsIconHD
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6002f0b7deb60405bb7fa168d2a8ce06
-    m_Address: Assets/Textures/UI/Common/HomePin.png
+    m_Address: HomePin
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7404b1b7d6b0f40929ae536f5b39be50
-    m_Address: Assets/Textures/UI/Common/MouseLocked.png
+    m_Address: MouseLocked
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9af081c7b27544b809eda744a31a2889
-    m_Address: Assets/Textures/UI/Common/FriendsListImage.png
+    m_Address: FriendsListImage
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8505c1c76f9ee7d468915e55ec484086
-    m_Address: Assets/Textures/UI/Common/Tooltip.png
+    m_Address: Tooltip
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b0b580e7bcb4e4d1fb4fc635fd057a89
-    m_Address: Assets/Textures/UI/Common/DayModeIcon.png
+    m_Address: DayModeIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9e9156e761f2c4570a5f469435d77a16
-    m_Address: Assets/Textures/UI/Common/IconClock.png
+    m_Address: IconClock
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9ef211f7dbe2c4e13911b4054a18334b
-    m_Address: Assets/Textures/UI/Common/AudioIcon.png
+    m_Address: AudioIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e0fcedf7c3fa64d24b85a27aa8bb93a9
-    m_Address: Assets/Textures/UI/Common/MapIcon.png
+    m_Address: MapIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: dcbf4a1870c524ae5a2d1bad9d1bf3ea
-    m_Address: Assets/Textures/UI/Common/JoinVoiceChat.png
+    m_Address: JoinVoiceChat
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7fa4c0281629e43abbcb190d00fe187a
-    m_Address: Assets/Textures/UI/Common/GeneralIcon.png
+    m_Address: GeneralIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 08d52e28c31ca4d049008be051e8b8a1
-    m_Address: Assets/Textures/UI/Common/NFTFrame.png
+    m_Address: NFTFrame
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8cb10138a6a0d47bf9e2eef30242fc29
-    m_Address: Assets/Textures/UI/Common/NightModeIcon.png
+    m_Address: NightModeIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b4c6624872b52463cae29738d52966a1
-    m_Address: Assets/Textures/UI/Common/RightRect12.png
+    m_Address: RightRect12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d6af1b4802f064d6fadd765950b0b2b8
-    m_Address: Assets/Textures/UI/Common/NFTStarUniqueContainer.png
+    m_Address: NFTStarUniqueContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: be6cfe489bf6c49f8b192e4043cca7eb
-    m_Address: Assets/Textures/UI/Common/ContainerRadius20@2x.png
+    m_Address: ContainerRadius20@2x
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6dc5f06896a6f4ae58484cab7811e13d
-    m_Address: Assets/Textures/UI/Common/HighlightsIcon.png
+    m_Address: HighlightsIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 88d20368893eb44b4ae7754f29a476c1
-    m_Address: Assets/Textures/UI/Common/UIicon.png
+    m_Address: UIicon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 2d7d3368512701f4080fd09e4057e1f8
-    m_Address: Assets/Textures/UI/Common/PromoteChannelsToastBackground.png
+    m_Address: PromoteChannelsToastBackground
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: fc55de685e0bf440298f2ef454cb99bc
-    m_Address: Assets/Textures/UI/Common/AcceptButtonHover.png
+    m_Address: AcceptButtonHover
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: def84f78307ef4b6c9864416f7d1f3df
-    m_Address: Assets/Textures/UI/Common/TaskBarSeparator.png
+    m_Address: TaskBarSeparator
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 2a66b5981a49248269c199e2e9333434
-    m_Address: Assets/Textures/UI/Common/PlayIcon.png
+    m_Address: PlayIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: fd507e98e14c344e3aec24b937e8af75
-    m_Address: Assets/Textures/UI/Common/ArrowBlack.png
+    m_Address: ArrowBlack
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6dca2ab88567048dea54964cd8fee779
-    m_Address: Assets/Textures/UI/Common/RejectButton.png
+    m_Address: RejectButton
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: dd9591c87b7254d418d968179d9de74a
-    m_Address: Assets/Textures/UI/Common/Container24Shadow10.png
+    m_Address: Container24Shadow10
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cd958ac803911481ea50edce80f46f1c
-    m_Address: Assets/Textures/UI/Common/ContainerRadius10.png
+    m_Address: ContainerRadius10
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 194fcbd882d15453b90e80d668ab4bad
-    m_Address: Assets/Textures/UI/Common/TutorialIcon.png
+    m_Address: TutorialIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 874182f8d364145bd9836b8e817019eb
-    m_Address: Assets/Textures/UI/Common/BackButton.png
+    m_Address: BackButton
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9ed344f88537e43a6b35556d00b77b39
-    m_Address: Assets/Textures/UI/Common/ContainerShadow.png
+    m_Address: ContainerShadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b44b6109984974ac6bb84146469cbc7a
-    m_Address: Assets/Textures/UI/Common/Mic on.png
+    m_Address: Mic on
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 87bf14092660947eb9909d5772886279
-    m_Address: Assets/Textures/UI/Common/DecentralandLogo.png
+    m_Address: DecentralandLogo
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 314ecf09e6e7447d9aa0421d996754cc
-    m_Address: Assets/Textures/UI/Common/RejectButtonHover.png
+    m_Address: RejectButtonHover
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f28ec019b47e944689f27d8e149db2d5
-    m_Address: Assets/Textures/UI/Common/BackpackOn.png
+    m_Address: BackpackOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e09bda197f4a342e9b7aa7b157de94ac
-    m_Address: Assets/Textures/UI/Common/IconBellUnactive.png
+    m_Address: IconBellUnactive
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 1c63e329c16184c1bb493ada5f85c91b
-    m_Address: Assets/Textures/UI/Common/Frame12.png
+    m_Address: Frame12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 13bc1439c14df4c03a3bfc3c087d017f
-    m_Address: Assets/Textures/UI/Common/RoundedButtonShadow.png
+    m_Address: RoundedButtonShadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f9934449af9e15443befe12f639d5979
-    m_Address: Assets/Textures/UI/Common/ContainerRadius24Shadow.png
+    m_Address: ContainerRadius24Shadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c4b955690452948efa830562d3ca8ed4
-    m_Address: Assets/Textures/UI/Common/SearchChannelIcon.png
+    m_Address: SearchChannelIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ad6a5c692d0a34fbe8f1e4dd9bee0c2b
-    m_Address: Assets/Textures/UI/Common/FriendsOff.png
+    m_Address: FriendsOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 46524689a799e4be9941af9ef6f45a89
-    m_Address: Assets/Textures/UI/Common/FloorLight.png
+    m_Address: FloorLight
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 247c07994d33848d5be25ccac8f0538d
-    m_Address: Assets/Textures/UI/Common/MessageIcon.png
+    m_Address: MessageIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 604176a988cdc416ca612d5e95156254
-    m_Address: Assets/Textures/UI/Common/FriendsIcon.png
+    m_Address: FriendsIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 3beb4cb91f8cace439eb66e3a487008c
-    m_Address: Assets/Textures/UI/Common/PromoteChannelsToastContainer.png
+    m_Address: PromoteChannelsToastContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 35746db90808fac4aa31ef672b070378
-    m_Address: Assets/Textures/UI/Common/ContainerRadius100.png
+    m_Address: ContainerRadius100
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: dfa96dc92a2fe43f0a599dc990c5b013
-    m_Address: Assets/Textures/UI/Common/Star.png
+    m_Address: Star
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cb309bd943c8e4c98bde37e97061b6aa
-    m_Address: Assets/Textures/UI/Common/ExploreOn.png
+    m_Address: ExploreOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 30d1d8e90eaef49418c0797533d97acf
-    m_Address: Assets/Textures/UI/Common/ContainerCornerRaidus12@2x.png
+    m_Address: ContainerCornerRaidus12@2x
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 24c3c5f961cc64b788832e6bcb64ff7a
-    m_Address: Assets/Textures/UI/Common/TaskbarCheckmark.png
+    m_Address: TaskbarCheckmark
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8631f81a1b5cb4bfea4f8cd0fcfd6d76
-    m_Address: Assets/Textures/UI/Common/Shadow.png
+    m_Address: Shadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a1317b1aff4d943b9b7361cc061816bf
-    m_Address: Assets/Textures/UI/Common/OngoingEventIcon.png
+    m_Address: OngoingEventIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7b9d8b2a13149489fac02d8d802c41b6
-    m_Address: Assets/Textures/UI/Common/Handle.png
+    m_Address: Handle
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4716bd3a235374a27bd75705f5b7a1af
-    m_Address: Assets/Textures/UI/Common/MicrophoneIcon.png
+    m_Address: MicrophoneIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0b63c85aaf7c44493a7613587a1a8a4f
-    m_Address: Assets/Textures/UI/Common/ContainerRadius16.png
+    m_Address: ContainerRadius16
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: df21406aac3b94b18b9edcf3e6ae36c4
-    m_Address: Assets/Textures/UI/Common/CardCollectiblesIcon.png
+    m_Address: CardCollectiblesIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cda51e8a359aa4105bbb5f2b2e27dd10
-    m_Address: Assets/Textures/UI/Common/RectRadius16.png
+    m_Address: RectRadius16
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8db90f8afd6a349dea8d959b88ddae43
-    m_Address: Assets/Textures/UI/Common/ContainerRectLeft14.png
+    m_Address: ContainerRectLeft14
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ad45379ab95744ed290d6c7808b89084
-    m_Address: Assets/Textures/UI/Common/CardPassportIcon.png
+    m_Address: CardPassportIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 877d19aa5b7d74c25862a30311503ed4
-    m_Address: Assets/Textures/UI/Common/JumpInIcon.png
+    m_Address: JumpInIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 63cedfaa776dc4d69a9f4848cd966364
-    m_Address: Assets/Textures/UI/Common/RoundedContainer34.png
+    m_Address: RoundedContainer34
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 96af52ba6c86845beb91f068f1cabe94
-    m_Address: Assets/Textures/UI/Common/MarketIcon.png
+    m_Address: MarketIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6c9da2cade77947d3bc10b1ad5c4f532
-    m_Address: Assets/Textures/UI/Common/PassportIcon.png
+    m_Address: PassportIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 65e7f4ca46dbf46a1804d5c1509f3482
-    m_Address: Assets/Textures/UI/Common/LANDsIcon.png
+    m_Address: LANDsIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0b8573ead118a4e798b4fa5d8c93fe8c
-    m_Address: Assets/Textures/UI/Common/ContainerRadius6Shadow.png
+    m_Address: ContainerRadius6Shadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 25fc93ea61d7241618036a9a4bb5adfa
-    m_Address: Assets/Textures/UI/Common/RectRadius16Bottom.png
+    m_Address: RectRadius16Bottom
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 216900fa018f342a69776d45c54fd4cb
-    m_Address: Assets/Textures/UI/Common/PlusIcon2.png
+    m_Address: PlusIcon2
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f48850fa5be164fc68819a7c8586432c
-    m_Address: Assets/Textures/UI/Common/ContainerRowHover.png
+    m_Address: ContainerRowHover
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 1091aafa2a48b46ccb5333146781bd24
-    m_Address: Assets/Textures/UI/Common/ShareIconOutline.png
+    m_Address: ShareIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e39b821b0e52e46968aea7b28016651b
-    m_Address: Assets/Textures/UI/Common/TabBarBackground.png
+    m_Address: TabBarBackground
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7539fa1b890384b749ef64eec52331bb
-    m_Address: Assets/Textures/UI/Common/MenuIcon.png
+    m_Address: MenuIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e1473c1b9bf9741e8a3d47d7806bf9d4
-    m_Address: Assets/Textures/UI/Common/HideUIIcon.png
+    m_Address: HideUIIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7c0afe1bfb8e1429380b5fbb15925982
-    m_Address: Assets/Textures/UI/Common/MenuContainerHover.png
+    m_Address: MenuContainerHover
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6067442b4b5ee49e68ff2720d1aedddd
-    m_Address: Assets/Textures/UI/Common/ContainerRadius12.png
+    m_Address: ContainerRadius12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f7aac23b0ac7b4490b5de5d61400e10d
-    m_Address: Assets/Textures/UI/Common/ReportIcon.png
+    m_Address: ReportIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 61971e3b2b11044eca7dcd6f96952405
-    m_Address: Assets/Textures/UI/Common/Arrow.png
+    m_Address: Arrow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 5663d84ba229e4a789e97731d8c240e0
-    m_Address: Assets/Textures/UI/Common/EllipticalSwitchHanddle.png
+    m_Address: EllipticalSwitchHanddle
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7d77b05b7f7d84c2c88c79a6ca8a65c6
-    m_Address: Assets/Textures/UI/Common/RoundedContainer.png
+    m_Address: RoundedContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b0472b5b1a0a24bc2a913887dad2e9aa
-    m_Address: Assets/Textures/UI/Common/ContainerTabsPassport.png
+    m_Address: ContainerTabsPassport
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 183e966b1d9c74a449af218cb0eb9e8e
-    m_Address: Assets/Textures/UI/Common/SettingsOutlineIcon.png
+    m_Address: SettingsOutlineIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 05bc7d6b12857fb4b9b7634bf2a4f440
-    m_Address: Assets/Textures/UI/Common/EmotesIcon.png
+    m_Address: EmotesIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 911a877bf7e9744ca83cbffbf9a38267
-    m_Address: Assets/Textures/UI/Common/AddFriendIcon.png
+    m_Address: AddFriendIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d9a7687b1aa87bd4bb70e1ded762a687
-    m_Address: Assets/Textures/UI/Common/InputFieldBuilderError.png
+    m_Address: InputFieldBuilderError
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 1271588be6ba2490198ab2f9e23b291b
-    m_Address: Assets/Textures/UI/Common/InteractiveIcon.png
+    m_Address: InteractiveIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0829529b4cd624727a16edcc165c4a97
-    m_Address: Assets/Textures/UI/Common/Button8.png
+    m_Address: Button8
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 01894c9b0e4cc4d15a7f0fe26505e2c9
-    m_Address: Assets/Textures/UI/Common/RectRadius12.png
+    m_Address: RectRadius12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 92c63d9bef9d643b1995bc2e5f0b83c8
-    m_Address: Assets/Textures/UI/Common/SettingsFlatIcon.png
+    m_Address: SettingsFlatIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 386f9e9b4e4fcc34299a279fe4eddeb3
-    m_Address: Assets/Textures/UI/Common/ContainerQuestEntryLoading.png
+    m_Address: ContainerQuestEntryLoading
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f3e766ab5571e436ebb74c06db87db7b
-    m_Address: Assets/Textures/UI/Common/ToggleCheckOff.png
+    m_Address: ToggleCheckOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0b8e37abbf8094c8ca57608874b1a905
-    m_Address: Assets/Textures/UI/Common/MapOn.png
+    m_Address: MapOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b23d5fabe4435364292b363710d399aa
-    m_Address: Assets/Textures/UI/Common/SoundIcon.png
+    m_Address: SoundIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7bfca4cb270a343c682028817c0d5bf4
-    m_Address: Assets/Textures/UI/Common/SettingsVolumetricIcon.png
+    m_Address: SettingsVolumetricIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: fe4a00db663ed4d3abe06167ea5b3317
-    m_Address: Assets/Textures/UI/Common/Compass.png
+    m_Address: Compass
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c7f8f6db5623d8f4c935edeff9912df8
-    m_Address: Assets/Textures/UI/Common/rectangle_gray_corner_radius_8.png
+    m_Address: rectangle_gray_corner_radius_8
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c7140bdb251224b66aba206fd5ff73ee
-    m_Address: Assets/Textures/UI/Common/EmotesOn.png
+    m_Address: EmotesOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 07a400eb205264a4f9e2aad5d599b4a3
-    m_Address: Assets/Textures/UI/Common/BackpackIconNew.png
+    m_Address: BackpackIconNew
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 42eb1ceb0cb414d60b49ce912a143517
-    m_Address: Assets/Textures/UI/Common/Ellipse32.png
+    m_Address: Ellipse32
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 64b96cebc797f4e75ad10e05ff68466f
-    m_Address: Assets/Textures/UI/Common/ChatIcon.png
+    m_Address: ChatIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 51bc4deb7ea0e8e408dc994774054af8
-    m_Address: Assets/Textures/UI/Common/ConnectWalletLogo.png
+    m_Address: ConnectWalletLogo
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b1fdbdeb128d64657bb427b7c93fbab4
-    m_Address: Assets/Textures/UI/Common/RectRadiusStroke16.png
+    m_Address: RectRadiusStroke16
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f40bf6fb414054290a754636595da223
-    m_Address: Assets/Textures/UI/Common/Outline2Top12.png
+    m_Address: Outline2Top12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a3a66afb0cf6d49da8b0b2b18f7b20d0
-    m_Address: Assets/Textures/UI/Common/ContainerRadius8.png
+    m_Address: ContainerRadius8
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cea1ac0c0c969478ea2054b9a06f7c86
-    m_Address: Assets/Textures/UI/Common/OutlineRedButton.png
+    m_Address: OutlineRedButton
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 90be4f1cf715b4378954ea0510aeb9ba
-    m_Address: Assets/Textures/UI/Common/ManaContainer.png
+    m_Address: ManaContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9879272c733ec44189c11c901f5b3500
-    m_Address: Assets/Textures/UI/Common/ArrowDown.png
+    m_Address: ArrowDown
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 794d4e3c645a24df9a6a20eeb079a67d
-    m_Address: Assets/Textures/UI/Common/InfoIcon.png
+    m_Address: InfoIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 76f0904c525d34fb19418122b6e13768
-    m_Address: Assets/Textures/UI/Common/MarketplaceOff.png
+    m_Address: MarketplaceOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 850b544ce13ea4b4cba1f449693f1f07
-    m_Address: Assets/Textures/UI/Common/Shadow4.png
+    m_Address: Shadow4
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f89f754c892ba4e8faa6b3390ff07e16
-    m_Address: Assets/Textures/UI/Common/CursorInteractive.png
+    m_Address: CursorInteractive
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9440a54c9ef22324ebdbd9239d2e6021
-    m_Address: Assets/Textures/UI/Common/RarityCornerEmotes.png
+    m_Address: RarityCornerEmotes
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 2dcab87c551ac42a3b30debae889baad
-    m_Address: Assets/Textures/UI/Common/CrowdIcon.png
+    m_Address: CrowdIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f0bcc87cbbf78438ebfb049f6c1aa203
-    m_Address: Assets/Textures/UI/Common/OutlineGradient.png
+    m_Address: OutlineGradient
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6017049c5a0dc43f6a4a68f1b4e28664
-    m_Address: Assets/Textures/UI/Common/EndVoiceChat.png
+    m_Address: EndVoiceChat
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 31a98abcdcc4e4022b74038cdc7154be
-    m_Address: Assets/Textures/UI/Common/HelpIcon.png
+    m_Address: HelpIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 21fb0bbc6fe494c8789ea7221ac96c59
-    m_Address: Assets/Textures/UI/Common/SettingsOff.png
+    m_Address: SettingsOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ce0e66cca3918473693726f3bf7da082
-    m_Address: Assets/Textures/UI/Common/VoiceChatPlayer.png
+    m_Address: VoiceChatPlayer
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 62e36ecc446144b6ba635e3b52b54f33
-    m_Address: Assets/Textures/UI/Common/FavoritesIcon.png
+    m_Address: FavoritesIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a6f0d6dcdab344ad88af35e7ed9071b5
-    m_Address: Assets/Textures/UI/Common/HideNameIcon.png
+    m_Address: HideNameIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cfa089dc4012b4f59964c220fbf31fba
-    m_Address: Assets/Textures/UI/Common/ChatOff.png
+    m_Address: ChatOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 3576a9dcb9ec94ac1b908b89c3571e75
-    m_Address: Assets/Textures/UI/Common/LinearGradientNFTs.png
+    m_Address: LinearGradientNFTs
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6d5f6edc2bfb441e1969ee1e10c3c572
-    m_Address: Assets/Textures/UI/Common/ArrowGradient.png
+    m_Address: ArrowGradient
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 45e823eca8727410d947ff8af56eb13a
-    m_Address: Assets/Textures/UI/Common/NotFavoriteIcon.png
+    m_Address: NotFavoriteIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 2f88b1fc7390f42f881f72ccfcde00db
-    m_Address: Assets/Textures/UI/Common/ContainerOutline100.png
+    m_Address: ContainerOutline100
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 654b9c0dd7f12442687bd4d4b034ece7
-    m_Address: Assets/Textures/UI/Common/MarketplaceOn.png
+    m_Address: MarketplaceOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 1867831d4dbb1354a9769cb39efca036
-    m_Address: Assets/Textures/UI/Common/MicrophoneVoiceChat.png
+    m_Address: MicrophoneVoiceChat
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 3402f92d870a74b2ba2d6446400ba3c6
-    m_Address: Assets/Textures/UI/Common/BottomRect24.png
+    m_Address: BottomRect24
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 017eca2d81e3343959735e87d3b06c02
-    m_Address: Assets/Textures/UI/Common/ContainerStroke10.png
+    m_Address: ContainerStroke10
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ccff713df52bf45b5b10c8fcfb44fee7
-    m_Address: Assets/Textures/UI/Common/LeftClick.png
+    m_Address: LeftClick
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 24ba163d4c6cc45fe84707cd8b17b6ac
-    m_Address: Assets/Textures/UI/Common/Home.png
+    m_Address: Home
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8191374d830c647edb5ed715100f2b48
-    m_Address: Assets/Textures/UI/Common/EventsIcon.png
+    m_Address: EventsIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a0422c4d3e4fd483f98f3bbd16e5ae2e
-    m_Address: Assets/Textures/UI/Common/Div.png
+    m_Address: Div
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cf43c05d20914491481a6f7736f2eec6
-    m_Address: Assets/Textures/UI/Common/EllipticalShadow.png
+    m_Address: EllipticalShadow
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 59758d5dbedcd0746be3439895558d6a
-    m_Address: Assets/Textures/UI/Common/rectangle_100.png
+    m_Address: rectangle_100
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c6cb56bd6fdab4d49879218fffcfc7f7
-    m_Address: Assets/Textures/UI/Common/EmotesOff.png
+    m_Address: EmotesOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: afc72abd3262c43798a1167db98081d9
-    m_Address: Assets/Textures/UI/Common/OutlineRightRect12.png
+    m_Address: OutlineRightRect12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 463541cd13ac34ce992618e04bc5dc9f
-    m_Address: Assets/Textures/UI/Common/Cursor.png
+    m_Address: Cursor
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 44bac0edc4fa04134a635701947adb48
-    m_Address: Assets/Textures/UI/Common/FavoriteIcon.png
+    m_Address: FavoriteIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 3c2f4bed18ef84d5baeb2774df7d08df
-    m_Address: Assets/Textures/UI/Common/ToggleCheckOn.png
+    m_Address: ToggleCheckOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: dff1090eb86d94584ba9bc5032f4433d
-    m_Address: Assets/Textures/UI/Common/UnpublishIconOutline.png
+    m_Address: UnpublishIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d91ddf0ee209e48899e1610c6636eb8a
-    m_Address: Assets/Textures/UI/Common/Button12.png
+    m_Address: Button12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4fec551e960ee4ccca8b3390ea2d3071
-    m_Address: Assets/Textures/UI/Common/UnfriendIcon.png
+    m_Address: UnfriendIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ee23632e4a71040eea4378f310a5eaef
-    m_Address: Assets/Textures/UI/Common/QuitIconOutline.png
+    m_Address: QuitIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 24dc203e4e3c4422c92496e4ea5fb524
-    m_Address: Assets/Textures/UI/Common/ContainerRectBottom.png
+    m_Address: ContainerRectBottom
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: ffc3be3e8ae37400bb01f74051bbc912
-    m_Address: Assets/Textures/UI/Common/CardBlockIcon.png
+    m_Address: CardBlockIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8141c84e8680a488d8dd05453596b0cc
-    m_Address: Assets/Textures/UI/Common/Button10.png
+    m_Address: Button10
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 590e1b5ec5d7e45379b7d1f4f3f4e1af
-    m_Address: Assets/Textures/UI/Common/BottomRect12.png
+    m_Address: BottomRect12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9542616ed37ec4213b07f1127bd8d938
-    m_Address: Assets/Textures/UI/Common/ContainerRectTop.png
+    m_Address: ContainerRectTop
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 444dfe6ea294f4c22b1620698d4ce011
-    m_Address: Assets/Textures/UI/Common/StarIcon.png
+    m_Address: StarIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b01bb67eac45b4ce4b289efdfb7c1847
-    m_Address: Assets/Textures/UI/Common/Button6.png
+    m_Address: Button6
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 6e8b3a7ec6a0949b4a3ba5a6c983c30f
-    m_Address: Assets/Textures/UI/Common/EditIcon.png
+    m_Address: EditIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: fb6df28e83ce34e9aa23cdc3683244a7
-    m_Address: Assets/Textures/UI/Common/GradientPlaces.png
+    m_Address: GradientPlaces
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c45d4d8e8fcf6424b8e469d188bf4db7
-    m_Address: Assets/Textures/UI/Common/Spinner30.png
+    m_Address: Spinner30
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7645aeaef9d16443fb2c511d64aef9ab
-    m_Address: Assets/Textures/UI/Common/SettingsOn.png
+    m_Address: SettingsOn
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 48839cbe5b4274e8699c1d592a48d375
-    m_Address: Assets/Textures/UI/Common/BuilderOff.png
+    m_Address: BuilderOff
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: cdfa22ce5f6194faa94218aa69dc20f1
-    m_Address: Assets/Textures/UI/Common/Outline1Radius24.png
+    m_Address: Outline1Radius24
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a76b94def1e7d4365aefc6bf53f6f81f
-    m_Address: Assets/Textures/UI/Common/Bell.png
+    m_Address: Bell
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: aa5bccfe420b24d5c89f0e8b12b4f537
-    m_Address: Assets/Textures/UI/Common/Outline3Radius14.png
+    m_Address: Outline3Radius14
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c22ef80fbf1174314befe1d0347230d2
-    m_Address: Assets/Textures/UI/Common/PatternPC.png
+    m_Address: PatternPC
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f71c3c0f8620a4fc1bed259da2aa2be0
-    m_Address: Assets/Textures/UI/Common/HomeIcon.png
+    m_Address: HomeIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b529921fedbcd44e4ba4d0ad88690b3e
-    m_Address: Assets/Textures/UI/Common/DialogCornerLeft.png
+    m_Address: DialogCornerLeft
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4848194f7bc4d4e509d067d3160eadac
-    m_Address: Assets/Textures/UI/Common/Outline3Radius12.png
+    m_Address: Outline3Radius12
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7566cf5f3986d4c32a672de8279ced32
-    m_Address: Assets/Textures/UI/Common/LogOutIcon.png
+    m_Address: LogOutIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d40ff76fa8b254a8c9ed7c57ce1c9e21
-    m_Address: Assets/Textures/UI/Common/RoundedContainer44.png
+    m_Address: RoundedContainer44
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: d6993c6f413d843cd86f9221b1f98736
-    m_Address: Assets/Textures/UI/Common/CloseButton.png
+    m_Address: CloseButton
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9760167f5e769f346901fb593d8ea864
-    m_Address: Assets/Textures/UI/Common/JumpIcon.png
+    m_Address: JumpIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4c6087aff340cef47b3f706424261aaf
-    m_Address: Assets/Textures/UI/Common/InputFieldBuilder.png
+    m_Address: InputFieldBuilder
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 60e92aaf3c91f4bc18ec574bed72f832
-    m_Address: Assets/Textures/UI/Common/ControlsIcon.png
+    m_Address: ControlsIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 774f1dafe0ff34d158a77a6aafef1a49
-    m_Address: Assets/Textures/UI/Common/WarningIcon.png
+    m_Address: WarningIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8fc782bf29b80d446a6d58b11d54e48b
-    m_Address: Assets/Textures/UI/Common/CameraIcon.png
+    m_Address: CameraIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 54cbe9bf5928342d490167f954f07710
-    m_Address: Assets/Textures/UI/Common/Container24.png
+    m_Address: Container24
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e917afbf829204e53b97fce8b275dafd
-    m_Address: Assets/Textures/UI/Common/MinusIcon.png
+    m_Address: MinusIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 394362cf579a347f0b72a304db178ccb
-    m_Address: Assets/Textures/UI/Common/CheckmarkRed.png
+    m_Address: CheckmarkRed
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 95180acf19d8343baabfcdd0c10079d1
-    m_Address: Assets/Textures/UI/Common/ArrowOutline.png
+    m_Address: ArrowOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 780ed9eff07384ade9aaa318dbbe63b7
-    m_Address: Assets/Textures/UI/Common/OutlineGreyButton.png
+    m_Address: OutlineGreyButton
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 270c3bffb7809438bbdcb901239beff2
-    m_Address: Assets/Textures/UI/Common/MoreIcon.png
+    m_Address: MoreIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

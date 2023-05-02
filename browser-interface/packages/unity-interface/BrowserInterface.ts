@@ -54,7 +54,7 @@ import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions
 import { retrieveProfile } from 'shared/profiles/retrieveProfile'
 import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
-import {getFetchContentUrlPrefixFromRealmAdapter, isWorldLoaderActive} from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
 import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
@@ -664,11 +664,8 @@ export class BrowserInterface {
     store.dispatch(unblockPlayers([data.userId]))
   }
 
-  public RequestScenesInfoInArea(data: {
-    parcel: { x: number; y: number }
-    scenesAround: number
-  }) {
-    async function requestMapInfo(){
+  public RequestScenesInfoInArea(data: { parcel: { x: number; y: number }; scenesAround: number }) {
+    async function requestMapInfo() {
       const adapter = await ensureRealmAdapter()
       const isWorld = isWorldLoaderActive(adapter)
       if (isWorld) {

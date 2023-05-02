@@ -2,31 +2,36 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Providers;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Networking;
 
 public class MapTexturePlugin : IPlugin
 {
+    private readonly IAddressableResourceProvider resourceProvider;
+
     private const int RETRY_TIME = 10;
     private const string MAIN_TEXTURE_URL = "https://api.decentraland.org/v1/minimap.png";
     private const string ESTATES_TEXTURE_URL = "https://api.decentraland.org/v1/estatemap.png";
 
-    private CancellationTokenSource cts;
+    private readonly CancellationTokenSource cts;
 
-    public MapTexturePlugin()
+    public MapTexturePlugin(IAddressableResourceProvider resourceProvider)
     {
         cts = new CancellationTokenSource();
 
-        DataStore.i.HUDs.mapMainTexture.Set(Resources.Load<Texture2D>("MapDefault"));
-        DataStore.i.HUDs.mapEstatesTexture.Set(Resources.Load<Texture2D>("MapDefaultEstates"));
+        this.resourceProvider = resourceProvider;
 
-        DownloadTexture(MAIN_TEXTURE_URL, DataStore.i.HUDs.mapMainTexture, cts.Token);
-        DownloadTexture(ESTATES_TEXTURE_URL, DataStore.i.HUDs.mapEstatesTexture, cts.Token);
+        DownloadTexture(MAIN_TEXTURE_URL, "MapDefault", DataStore.i.HUDs.mapMainTexture, cts.Token).Forget();
+        DownloadTexture(ESTATES_TEXTURE_URL, "MapDefaultEstates", DataStore.i.HUDs.mapEstatesTexture, cts.Token).Forget();
     }
 
-    private static async UniTaskVoid DownloadTexture(string url, BaseVariable<Texture> textureVariable, CancellationToken ct)
+    private async UniTaskVoid DownloadTexture(string url, string textureName, IBaseVariable<Texture> textureVariable, CancellationToken ct)
     {
+        var texture = await resourceProvider.GetAddressable<Texture2D>(textureName, ct);
+        textureVariable.Set(texture);
+
         while (true)
         {
             using (UnityWebRequest www = UnityWebRequest.Get(url))
@@ -38,9 +43,12 @@ public class MapTexturePlugin : IPlugin
                 }
                 else
                 {
-                    Texture2D tex = new Texture2D(0, 0, GraphicsFormatUtility.GetGraphicsFormat(TextureFormat.RGBA32, false), TextureCreationFlags.None);
-                    tex.filterMode = FilterMode.Point;
-                    tex.wrapMode = TextureWrapMode.Clamp;
+                    Texture2D tex = new Texture2D(0, 0, GraphicsFormatUtility.GetGraphicsFormat(TextureFormat.RGBA32, false), TextureCreationFlags.None)
+                        {
+                            filterMode = FilterMode.Point,
+                            wrapMode = TextureWrapMode.Clamp,
+                        };
+
                     tex.LoadImage(www.downloadHandler.data);
                     tex.Apply(false, false);
                     textureVariable.Set(tex);
@@ -57,6 +65,5 @@ public class MapTexturePlugin : IPlugin
     {
         cts?.Cancel();
         cts?.Dispose();
-        cts = null;
     }
 }

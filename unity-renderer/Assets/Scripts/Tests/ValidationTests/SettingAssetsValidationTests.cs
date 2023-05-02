@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Tests.ValidationTests
 {
+    [Category("EditModeCI")]
     public class SettingAssetsValidationTests
     {
         [Test]
