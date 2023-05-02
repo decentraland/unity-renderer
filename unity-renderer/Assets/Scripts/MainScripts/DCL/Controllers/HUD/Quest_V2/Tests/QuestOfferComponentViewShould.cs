@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL.Quest
 {
-    public class QuestOfferComponentViewTests
+    public class QuestOfferComponentViewShould
     {
         private QuestOfferComponentView questOfferComponentView;
 
