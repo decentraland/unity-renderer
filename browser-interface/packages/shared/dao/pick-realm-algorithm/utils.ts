@@ -102,7 +102,7 @@ export function selectFirstBy(
 }
 
 export function isValidSemver(semver: string): boolean {
-  const semverPattern = /^\d+\.\d+\.\d+$/;
+  const semverPattern = /^\d+\.\d+\.\d+$/
   return !!semver && semverPattern.test(semver)
 }
 
