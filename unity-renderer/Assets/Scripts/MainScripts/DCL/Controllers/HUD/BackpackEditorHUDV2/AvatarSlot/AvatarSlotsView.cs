@@ -15,7 +15,7 @@ namespace DCL.Backpack
         [SerializeField] private GameObject sectionSeparator;
 
         private readonly Dictionary<string, Transform> avatarSlotSections = new ();
-        private readonly Dictionary<string, IAvatarSlotComponentView> avatarSlots = new ();
+        internal readonly Dictionary<string, IAvatarSlotComponentView> avatarSlots = new ();
 
         public event IAvatarSlotsView.ToggleAvatarSlotDelegate OnToggleAvatarSlot;
         public event Action<string> OnUnequipFromSlot;
