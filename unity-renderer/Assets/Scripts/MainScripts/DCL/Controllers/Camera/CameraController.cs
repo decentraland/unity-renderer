@@ -79,6 +79,13 @@ namespace DCL.Camera
                 }
             }
 
+            // Note: we force a selective culling distance for the skybox and the infinite floor
+            // This array represents the culling distance, where distances[0] is the farthest distance
+            // Skybox and infinite floor are in layer 25, so we set the culling distance for that layer
+            float[] distances = new float[32];
+            distances[0] = 25;
+            camera.layerCullDistances = distances;
+
             cameraChangeAction.OnTriggered += OnCameraChangeAction;
             mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
             worldOffset.OnChange += OnWorldReposition;
