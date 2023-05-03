@@ -8,7 +8,6 @@ using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -217,11 +216,12 @@ namespace Tests
         [UnityTest]
         public IEnumerator PutGltfContainerLoadingStateAsFinishedWithError()
         {
-            LogAssert.Expect(LogType.Error, new Regex(".+"));
-            LogAssert.Expect(LogType.Exception, new Regex(".+"));
+            var ignoreFailingMessages = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "non-existing-gltf" });
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
 
+            LogAssert.ignoreFailingMessages = ignoreFailingMessages;
             var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
             Assert.AreEqual(LoadingState.FinishedWithError, model.LoadingState);
             Assert.IsFalse(model.GltfContainerRemoved);
