@@ -69,7 +69,8 @@ namespace DCL.Backpack
                 dataStore.backpackV2,
                 Substitute.For<IBrowserBridge>(),
                 backpackFiltersController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                backpackAnalyticsController);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
