@@ -43,7 +43,7 @@ export function* bffSaga() {
  * This function binds the given IBff to the kernel and returns the "unbind"
  * function in charge of disconnecting it from kernel.
  */
-async function bindHandlersToAdapter(realm: IRealmAdapter, address: string): Promise<() => Promise<void>> {
+async function bindHandlersToAdapter(realm: IRealmAdapter, _address: string): Promise<() => Promise<void>> {
   realm.events.on('DISCONNECTION', () => {
     store.dispatch(handleRealmDisconnection(realm))
   })

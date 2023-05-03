@@ -10,6 +10,7 @@ using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
 using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
+using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
@@ -82,7 +83,7 @@ namespace DCL
 
             pluginSystem.Register<ABDetectorPlugin>(() => new ABDetectorPlugin());
 
-            pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin());
+            pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()));
 
             pluginSystem.RegisterWithFlag<BackpackEditorV2Plugin>(() => new BackpackEditorV2Plugin(), "backpack_editor_v2");
             // TODO: remove the v1 backpack editor when v2 is confirmed to be completely functional

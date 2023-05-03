@@ -76,7 +76,7 @@ namespace Tests
         public void IgnoreCrdtMessageWhenSceneNotLoaded()
         {
             const int sceneNumber = 666;
-            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, new CRDTMessage());
+            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, new CrdtMessage());
             LogAssert.Expect(LogType.Error, $"CrdtExecutor not found for sceneNumber {sceneNumber}");
         }
 
@@ -87,16 +87,17 @@ namespace Tests
             ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
             crdtExecutors[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
-            CRDTMessage crdtMessage = new CRDTMessage()
-            {
-                timestamp = 1,
-                data = new byte[0],
-                entityId = 1,
-                componentId = 2
-            };
+            CrdtMessage crdtMessage = new CrdtMessage
+            (
+                timestamp: 1,
+                data: new byte[0],
+                entityId: 1,
+                componentId: 2,
+                type: CrdtMessageType.PUT_COMPONENT
+            );
 
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage);
-            CRDTProtocol.EntityComponentData crtState = crdtExecutors[sceneNumber].crdtProtocol.GetState(crdtMessage.entityId, crdtMessage.componentId);
+            CRDTProtocol.EntityComponentData crtState = crdtExecutors[sceneNumber].crdtProtocol.GetState(crdtMessage.EntityId, crdtMessage.ComponentId);
             AssertCrdtMessageEqual(crdtMessage, crtState);
         }
 
@@ -107,21 +108,23 @@ namespace Tests
             ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
             crdtExecutors[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
-            CRDTMessage crdtMessage1 = new CRDTMessage()
-            {
-                timestamp = 1,
-                data = new byte[0],
-                entityId = 1,
-                componentId = 2
-            };
+            CrdtMessage crdtMessage1 = new CrdtMessage
+            (
+                timestamp: 1,
+                data: new byte[0],
+                entityId: 1,
+                componentId: 2,
+                type: CrdtMessageType.PUT_COMPONENT
+            );
 
-            CRDTMessage crdtMessage2 = new CRDTMessage()
-            {
-                timestamp = 1,
-                data = new byte[0],
-                entityId = 2,
-                componentId = 2
-            };
+            CrdtMessage crdtMessage2 = new CrdtMessage
+            (
+                timestamp: 1,
+                data: new byte[0],
+                entityId: 2,
+                componentId: 2,
+                type: CrdtMessageType.PUT_COMPONENT
+            );
 
             // Send first message
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage1);
@@ -133,17 +136,17 @@ namespace Tests
             // Send second message for same scene
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage2);
 
-            CRDTProtocol.EntityComponentData crtStateMsg1 = sceneExecutor.crdtProtocol.GetState(crdtMessage1.entityId, crdtMessage1.componentId);
-            CRDTProtocol.EntityComponentData crtStateMsg2 = sceneExecutor.crdtProtocol.GetState(crdtMessage2.entityId, crdtMessage2.componentId);
+            CRDTProtocol.EntityComponentData crtStateMsg1 = sceneExecutor.crdtProtocol.GetState(crdtMessage1.EntityId, crdtMessage1.ComponentId);
+            CRDTProtocol.EntityComponentData crtStateMsg2 = sceneExecutor.crdtProtocol.GetState(crdtMessage2.EntityId, crdtMessage2.ComponentId);
 
             AssertCrdtMessageEqual(crdtMessage1, crtStateMsg1);
             AssertCrdtMessageEqual(crdtMessage2, crtStateMsg2);
         }
 
-        static void AssertCrdtMessageEqual(CRDTMessage crdt1, CRDTProtocol.EntityComponentData componentData)
+        static void AssertCrdtMessageEqual(CrdtMessage crdt1, CRDTProtocol.EntityComponentData componentData)
         {
-            Assert.AreEqual(crdt1.timestamp, componentData.timestamp);
-            Assert.IsTrue(AreEqual((byte[])crdt1.data, (byte[])componentData.data));
+            Assert.AreEqual(crdt1.Timestamp, componentData.timestamp);
+            Assert.IsTrue(AreEqual((byte[])crdt1.Data, (byte[])componentData.data));
         }
 
         static bool AreEqual(byte[] a, byte[] b)

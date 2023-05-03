@@ -66,5 +66,13 @@ function reduceUpdateUserData(state: State, action: UpdateUserData) {
 }
 
 function socialDeepEquals(a: SocialData, b: SocialData) {
-  return a && b && a.userId && b.userId && a.userId === b.userId && a.socialId === b.socialId && a.conversationId === b.conversationId
+  return (
+    a &&
+    b &&
+    a.userId &&
+    b.userId &&
+    a.userId === b.userId &&
+    a.socialId === b.socialId &&
+    a.conversationId === b.conversationId
+  )
 }

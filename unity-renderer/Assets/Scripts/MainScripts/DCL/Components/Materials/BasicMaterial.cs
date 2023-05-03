@@ -1,9 +1,11 @@
+using Cysharp.Threading.Tasks;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -33,6 +35,9 @@ namespace DCL.Components
         private static readonly int _AlphaClip = Shader.PropertyToID("_AlphaClip");
         private static readonly int _Cutoff = Shader.PropertyToID("_Cutoff");
         private static readonly int _ZWrite = Shader.PropertyToID("_ZWrite");
+
+        private readonly DCLTexture.Fetcher dclTextureFetcher = new DCLTexture.Fetcher();
+        private bool isDisposed;
 
         public BasicMaterial()
         {
@@ -78,19 +83,25 @@ namespace DCL.Components
             {
                 if (dclTexture == null || dclTexture.id != model.texture)
                 {
-                    yield return DCLTexture.FetchTextureComponent(scene, model.texture,
-                        (downloadedTexture) =>
+                    yield return dclTextureFetcher.Fetch(
+                        scene,
+                        model.texture,
+                        texture =>
                         {
-                            if ( dclTexture != null )
+                            if (isDisposed)
+                                return false;
+
+                            if (dclTexture != null)
                             {
                                 dclTexture.DetachFrom(this);
                             }
 
-                            material.SetTexture(_BaseMap, downloadedTexture.texture);
-                            dclTexture = downloadedTexture;
+                            material.SetTexture(_BaseMap, texture.texture);
+                            dclTexture = texture;
                             dclTexture.AttachTo(this);
-                        }
-                    );
+                            return true;
+                        }).ToCoroutine();
+                    // using `ToCoroutine()` since using Task directly arise some component lifecycle issues
                 }
             }
             else
@@ -181,6 +192,8 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            isDisposed = true;
+
             dclTexture?.DetachFrom(this);
 
             while (attachedEntities != null && attachedEntities.Count > 0 )
@@ -189,6 +202,8 @@ namespace DCL.Components
             }
 
             Object.Destroy(material);
+
+            dclTextureFetcher.Dispose();
             base.Dispose();
         }
     }

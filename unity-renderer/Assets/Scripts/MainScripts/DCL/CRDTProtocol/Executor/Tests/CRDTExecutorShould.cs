@@ -37,6 +37,7 @@ namespace Tests
             intCompHandler = Substitute.For<IECSComponentHandler<ComponentInt>>();
 
             ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
+
             componentsFactory.AddOrReplaceComponent(
                 (int)ComponentIds.COMPONENT_STRING,
                 data => new ComponentString() { value = (string)data },
@@ -64,21 +65,25 @@ namespace Tests
             const int ENTITY_ID = 42;
             ECS7TestScene scene = testUtils.CreateScene(666);
             CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
-            CRDTMessage addComponentMessage = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_STRING,
-                data = "tigre"
-            };
+
+            CrdtMessage addComponentMessage = new CrdtMessage
+            (
+                type: CrdtMessageType.PUT_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_STRING,
+                timestamp: 0,
+                data: "tigre"
+            );
 
             executor.Execute(addComponentMessage);
 
             scene.entities.TryGetValue(ENTITY_ID, out IDCLEntity createdEntity);
             Assert.NotNull(createdEntity);
             stringCompHandler.Received(1).OnComponentCreated(scene, createdEntity);
+
             stringCompHandler.Received(1)
                              .OnComponentModelUpdated(scene, createdEntity,
-                                 Arg.Do<ComponentString>(m => Assert.AreEqual("tigre", m.value)));
+                                  Arg.Do<ComponentString>(m => Assert.AreEqual("tigre", m.value)));
         }
 
         [Test]
@@ -88,20 +93,23 @@ namespace Tests
             ECS7TestScene scene = testUtils.CreateScene(666);
             CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
-            CRDTMessage addComponentMessage = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_STRING,
-                data = "",
-                timestamp = 0
-            };
-            CRDTMessage removeComponentMessage = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_STRING,
-                data = null,
-                timestamp = 1
-            };
+            CrdtMessage addComponentMessage = new CrdtMessage
+            (
+                type: CrdtMessageType.PUT_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_STRING,
+                timestamp: 0,
+                data: ""
+            );
+
+            CrdtMessage removeComponentMessage = new CrdtMessage
+            (
+                type: CrdtMessageType.DELETE_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_STRING,
+                timestamp: 1,
+                data: null
+            );
 
             executor.Execute(addComponentMessage);
 
@@ -123,20 +131,23 @@ namespace Tests
             ECS7TestScene scene = testUtils.CreateScene(666);
             CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
-            CRDTMessage addComponentString = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_STRING,
-                data = "",
-                timestamp = 0
-            };
-            CRDTMessage addComponentInt = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_INT,
-                data = 1,
-                timestamp = 0
-            };
+            CrdtMessage addComponentString = new CrdtMessage
+            (
+                type: CrdtMessageType.PUT_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_STRING,
+                timestamp: 0,
+                data: ""
+            );
+
+            CrdtMessage addComponentInt = new CrdtMessage
+            (
+                type: CrdtMessageType.PUT_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_INT,
+                timestamp: 0,
+                data: 1
+            );
 
             executor.Execute(addComponentString);
             executor.Execute(addComponentInt);
@@ -146,20 +157,23 @@ namespace Tests
             var removeSubscriber = Substitute.For<IDummyEventSubscriber<IDCLEntity>>();
             createdEntity.OnRemoved += removeSubscriber.React;
 
-            CRDTMessage removeComponentString = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_STRING,
-                data = null,
-                timestamp = 1
-            };
-            CRDTMessage removeComponentInt = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_INT,
-                data = null,
-                timestamp = 1
-            };
+            CrdtMessage removeComponentString = new CrdtMessage
+            (
+                type: CrdtMessageType.DELETE_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_STRING,
+                timestamp: 1,
+                data: null
+            );
+
+            CrdtMessage removeComponentInt = new CrdtMessage
+            (
+                type: CrdtMessageType.DELETE_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_INT,
+                timestamp: 1,
+                data: null
+            );
 
             executor.Execute(removeComponentInt);
 
@@ -180,20 +194,23 @@ namespace Tests
             ECS7TestScene scene = testUtils.CreateScene(666);
             CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
-            CRDTMessage addComponentString = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_STRING,
-                data = "",
-                timestamp = 0
-            };
-            CRDTMessage addComponentInt = new CRDTMessage()
-            {
-                entityId = ENTITY_ID,
-                componentId = (int)ComponentIds.COMPONENT_INT,
-                data = 1,
-                timestamp = 0
-            };
+            CrdtMessage addComponentString = new CrdtMessage
+            (
+                type: CrdtMessageType.PUT_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_STRING,
+                timestamp: 0,
+                data: ""
+            );
+
+            CrdtMessage addComponentInt = new CrdtMessage
+            (
+                type: CrdtMessageType.PUT_COMPONENT,
+                entityId: ENTITY_ID,
+                componentId: (int)ComponentIds.COMPONENT_INT,
+                timestamp: 0,
+                data: 1
+            );
 
             executor.Execute(addComponentString);
             executor.Execute(addComponentInt);

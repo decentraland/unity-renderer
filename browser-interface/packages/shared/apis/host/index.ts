@@ -12,6 +12,7 @@ import { registerUserActionModuleServiceServerImplementation } from './UserActio
 import { registerSocialControllerServiceServerImplementation } from './SocialController'
 import { registerRestrictedActionsServiceServerImplementation } from './RestrictedActions'
 import { registerRuntimeServiceServerImplementation } from './Runtime'
+import { registerTestingServiceServerImplementation } from './Testing'
 import { registerCommunicationsControllerServiceServerImplementation } from './CommunicationsController'
 import { registerPlayersServiceServerImplementation } from './Players'
 import { registerPortableExperiencesServiceServerImplementation } from './PortableExperiences'
@@ -30,6 +31,7 @@ export async function registerServices(serverPort: RpcServerPort<PortContext>) {
   registerSocialControllerServiceServerImplementation(serverPort)
   registerRestrictedActionsServiceServerImplementation(serverPort)
   registerRuntimeServiceServerImplementation(serverPort)
+  registerTestingServiceServerImplementation(serverPort)
   registerCommunicationsControllerServiceServerImplementation(serverPort)
   registerPlayersServiceServerImplementation(serverPort)
   registerPortableExperiencesServiceServerImplementation(serverPort)

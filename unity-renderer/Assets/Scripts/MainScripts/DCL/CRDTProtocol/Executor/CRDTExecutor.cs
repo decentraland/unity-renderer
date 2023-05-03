@@ -44,14 +44,13 @@ namespace DCL.CRDT
             }
         }
 
-        public void Execute(CRDTMessage crdtMessage)
+        public void Execute(CrdtMessage crdtMessage)
         {
 #if UNITY_EDITOR
             if (disposed)
                 Debug.LogWarning("CRDTExecutor::Execute Called while disposed");
 #endif
 
-            CRDTProtocol.EntityComponentData storedMessage = crdtProtocol.GetState(crdtMessage.entityId, crdtMessage.componentId);
             CRDTProtocol.ProcessMessageResultType resultType = crdtProtocol.ProcessMessage(crdtMessage);
 
             // If the message change the state
@@ -59,7 +58,7 @@ namespace DCL.CRDT
                 resultType == CRDTProtocol.ProcessMessageResultType.StateUpdatedTimestamp ||
                 resultType == CRDTProtocol.ProcessMessageResultType.EntityWasDeleted)
             {
-                ExecuteWithoutStoringState(crdtMessage.entityId, crdtMessage.componentId, crdtMessage.data);
+                ExecuteWithoutStoringState(crdtMessage.EntityId, crdtMessage.ComponentId, crdtMessage.Data);
             }
         }
 
