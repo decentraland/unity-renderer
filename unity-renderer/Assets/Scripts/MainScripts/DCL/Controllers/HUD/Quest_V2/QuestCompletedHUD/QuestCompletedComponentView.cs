@@ -1,8 +1,10 @@
 using MainScripts.DCL.Helpers.Utils;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.Quest
 {
@@ -13,8 +15,11 @@ namespace DCL.Quest
         [SerializeField] internal GameObject rewardsSection;
         [SerializeField] private TMP_Text questTitle;
         [SerializeField] internal Transform rewardsContainer;
+        [SerializeField] private Button confirmButton;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
+
+        public event Action OnConfirmed;
 
         private UnityObjectPool<QuestRewardComponentView> rewardsPool;
         private List<QuestRewardComponentView> usedRewards = new ();
@@ -23,6 +28,8 @@ namespace DCL.Quest
         {
             rewardsPool = new UnityObjectPool<QuestRewardComponentView>(rewardPrefab, rewardsContainer);
             rewardsPool.Prewarm(MAX_REWARDS_COUNT);
+            confirmButton.onClick.RemoveAllListeners();
+            confirmButton.onClick.AddListener(()=>OnConfirmed?.Invoke());
         }
 
         public override void RefreshControl()
