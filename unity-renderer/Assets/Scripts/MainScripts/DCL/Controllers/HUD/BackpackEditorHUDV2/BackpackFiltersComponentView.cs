@@ -13,10 +13,12 @@ namespace DCL.Backpack
         public event Action<(NftOrderByOperation type, bool directionAscendent)> OnSortByChanged;
         public event Action<string> OnSearchTextChanged;
 
-        [SerializeField] private ToggleComponentView onlyCollectiblesToggle;
-        [SerializeField] private DropdownComponentView collectionDropdown;
-        [SerializeField] private DropdownComponentView sortByDropdown;
-        [SerializeField] private SearchBarComponentView searchBar;
+        public List<ToggleComponentModel> loadedFilters;
+
+        [SerializeField] internal ToggleComponentView onlyCollectiblesToggle;
+        [SerializeField] internal DropdownComponentView collectionDropdown;
+        [SerializeField] internal DropdownComponentView sortByDropdown;
+        [SerializeField] internal SearchBarComponentView searchBar;
 
         private readonly HashSet<string> selectedCollections = new ();
 
@@ -42,6 +44,7 @@ namespace DCL.Backpack
             onlyCollectiblesToggle.OnSelectedChanged -= OnOnlyCollectiblesToggleChanged;
             collectionDropdown.OnOptionSelectionChanged -= OnCollectionDropdownChanged;
             sortByDropdown.OnOptionSelectionChanged -= OnSortByDropdownChanged;
+            searchBar.OnSearchText -= OnSearchBarChanged;
         }
 
         public void LoadCollectionDropdown(
@@ -78,6 +81,7 @@ namespace DCL.Backpack
             }
 
             collectionDropdown.SetOptions(collectionsToAdd);
+            loadedFilters = collectionsToAdd;
         }
 
         private void LoadSortByDropdown()
