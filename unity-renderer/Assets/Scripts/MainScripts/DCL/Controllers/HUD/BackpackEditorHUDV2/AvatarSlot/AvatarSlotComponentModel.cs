@@ -10,5 +10,8 @@ namespace DCL.Backpack
         public string category;
         public bool isHidden;
         public string hiddenBy;
+        public bool allowsColorChange;
+        public string wearableId;
+        public string[] hidesList;
     }
 }

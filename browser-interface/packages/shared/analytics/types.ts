@@ -85,5 +85,5 @@ export type TrackEvents = PositionTrackEvents & {
   ['invalid_denied_catalyst_url']: { url: string }
   ['invalid_comms_message_too_big']: { message: string }
   ['onboarding_started']: { onboardingRealm: string }
-  ['disconnection_cause']: { context: string; message: string; liveKitRoomSid: string ; liveKitParticipantSid: string }
+  ['disconnection_cause']: { context: string; message: string; liveKitRoomSid: string; liveKitParticipantSid: string }
 }

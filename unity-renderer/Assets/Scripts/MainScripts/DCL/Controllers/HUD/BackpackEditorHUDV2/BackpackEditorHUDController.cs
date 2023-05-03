@@ -8,6 +8,12 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDController
     {
+        private const string EYES_CATEGORY = "eyes";
+        private const string HAIR_CATEGORY = "hair";
+        private const string EYEBROWS_CATEGORY = "eyebrows";
+        private const string FACIAL_HAIR_CATEGORY = "facial_hair";
+        private const string BODYSHAPE_CATEGORY = "bodyshape";
+
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
         private readonly IWearablesCatalogService wearablesCatalogService;
@@ -17,6 +23,7 @@ namespace DCL.Backpack
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
+        private string currentSlotSelected;
         private bool avatarIsDirty;
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
@@ -60,6 +67,12 @@ namespace DCL.Backpack
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
+            avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
+            avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearable;
+
+            view.SetColorPickerVisibility(false);
+            view.OnColorChanged += OnWearableColorChanged;
+
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
         }
 
@@ -76,6 +89,10 @@ namespace DCL.Backpack
             wearableGridController.OnWearableEquipped -= EquipWearable;
             wearableGridController.OnWearableUnequipped -= UnEquipWearable;
             wearableGridController.Dispose();
+
+            avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
+
+            view.OnColorChanged -= OnWearableColorChanged;
             view.Dispose();
         }
 
@@ -143,9 +160,9 @@ namespace DCL.Backpack
             previewEquippedWearables.Set(userProfile.avatar.wearables);
 
             EquipBodyShape(bodyShape);
-            EquipSkinColor(userProfile.avatar.skinColor);
-            EquipHairColor(userProfile.avatar.hairColor);
-            EquipEyesColor(userProfile.avatar.eyeColor);
+            model.skinColor = userProfile.avatar.skinColor;
+            model.hairColor = userProfile.avatar.hairColor;
+            model.eyesColor = userProfile.avatar.eyeColor;
 
             model.wearables.Clear();
 
@@ -162,7 +179,7 @@ namespace DCL.Backpack
                 }
 
                 model.wearables.Add(wearable.id, wearable);
-                avatarSlotsHUDController.Equip(wearable);
+                avatarSlotsHUDController.Equip(wearable, userProfile.avatar.bodyShape);
             }
         }
 
@@ -197,15 +214,6 @@ namespace DCL.Backpack
             model.bodyShape = bodyShape;
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
         }
-
-        private void EquipSkinColor(Color color) =>
-            model.skinColor = color;
-
-        private void EquipHairColor(Color color) =>
-            model.hairColor = color;
-
-        private void EquipEyesColor(Color color) =>
-            model.eyesColor = color;
 
         private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
         {
@@ -263,7 +271,7 @@ namespace DCL.Backpack
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
 
-            avatarSlotsHUDController.Equip(wearable);
+            avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape);
             wearableGridController.Equip(wearableId);
 
             avatarIsDirty = true;
@@ -273,7 +281,7 @@ namespace DCL.Backpack
 
         private void UnEquipWearable(string wearableId)
         {
-            avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category, wearableId);
+            avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
 
@@ -281,6 +289,52 @@ namespace DCL.Backpack
 
             avatarIsDirty = true;
 
+            view.UpdateAvatarPreview(model.ToAvatarModel());
+        }
+
+        private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
+        {
+            currentSlotSelected = isSelected ? slotCategory : null;
+            view.SetColorPickerVisibility(isSelected && supportColor);
+
+            switch (slotCategory)
+            {
+                case EYES_CATEGORY:
+                    view.SetColorPickerValue(model.eyesColor);
+                    break;
+                case HAIR_CATEGORY or EYEBROWS_CATEGORY or FACIAL_HAIR_CATEGORY:
+                    view.SetColorPickerValue(model.hairColor);
+                    break;
+                case BODYSHAPE_CATEGORY:
+                    view.SetColorPickerValue(model.skinColor);
+                    break;
+            }
+        }
+
+        private void OnWearableColorChanged(Color newColor)
+        {
+            var colorChanged = false;
+
+            switch (currentSlotSelected)
+            {
+                case EYES_CATEGORY:
+                    model.eyesColor = newColor;
+                    colorChanged = true;
+                    break;
+                case HAIR_CATEGORY or EYEBROWS_CATEGORY or FACIAL_HAIR_CATEGORY:
+                    model.hairColor = newColor;
+                    colorChanged = true;
+                    break;
+                case BODYSHAPE_CATEGORY:
+                    model.skinColor = newColor;
+                    colorChanged = true;
+                    break;
+            }
+
+            if (!colorChanged)
+                return;
+
+            avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
     }
