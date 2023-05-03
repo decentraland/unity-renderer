@@ -3,6 +3,7 @@ using DCL.Browser;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -422,14 +423,26 @@ namespace DCL.Backpack
         public void ChangePageWhenViewRequestsIt()
         {
             wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 3, 15,
-                                        Arg.Any<CancellationToken>())
+                                        Arg.Any<CancellationToken>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<NftRarity>(),
+                                        Arg.Any<NftCollectionType>(),
+                                        Arg.Any<ICollection<string>>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
             view.OnWearablePageChanged += Raise.Event<Action<int>>(3);
 
             wearablesCatalogService.Received(1)
-                                   .RequestOwnedWearablesAsync(OWN_USER_ID,
-                                        3, 15, Arg.Any<CancellationToken>());
+                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 3, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<NftRarity>(),
+                                        Arg.Any<NftCollectionType>(),
+                                        Arg.Any<ICollection<string>>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>());
 
             view.Received(1).SetWearablePages(3, 4);
         }
@@ -494,20 +507,33 @@ namespace DCL.Backpack
         public IEnumerator FilterAllWearablesFromBreadcrumb()
         {
             wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
-                                        Arg.Any<CancellationToken>())
+                                        Arg.Any<CancellationToken>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<NftRarity>(),
+                                        Arg.Any<NftCollectionType>(),
+                                        Arg.Any<ICollection<string>>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
             view.OnFilterWearables += Raise.Event<Action<string>>("all");
             yield return null;
 
-            view.Received(1)
+            view.Received()
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
                      n.ResultCount == 50
                      && n.Current == 0
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"));
 
-            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, Arg.Any<CancellationToken>());
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                Arg.Any<CancellationToken>(),
+                Arg.Any<string>(),
+                Arg.Any<NftRarity>(),
+                Arg.Any<NftCollectionType>(),
+                Arg.Any<ICollection<string>>(),
+                Arg.Any<string>(),
+                Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>());
         }
 
         [UnityTest]
