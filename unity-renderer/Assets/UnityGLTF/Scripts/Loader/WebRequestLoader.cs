@@ -73,7 +73,7 @@ namespace UnityGLTF.Loader
             {
                 finalUrl = Path.Combine(rootUri, httpRequestPath);
             }
-            
+
             token.ThrowIfCancellationRequested();
 
             WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
@@ -84,33 +84,32 @@ namespace UnityGLTF.Loader
                 requestAttemps: 3);
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
-            
+
             token.ThrowIfCancellationRequested();
-            
+
             await UniTask.WaitUntil( () => asyncOp.isDone || asyncOp.isDisposed || asyncOp.isSucceeded, cancellationToken: token);
 
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            
+
             token.ThrowIfCancellationRequested();
-            
+
             bool error = false;
             string errorMessage = null;
 
             if (!asyncOp.isSucceeded)
             {
-                Debug.Log($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
-                errorMessage = $"{asyncOp.webRequest.error} {asyncOp.webRequest.downloadHandler.text}";
-                error = true;
+                errorMessage = $"{asyncOp.webRequest.error} {asyncOp.webRequest.downloadHandler.text} {finalUrl}";
+                throw new Exception(errorMessage);
             }
 
             if (!error && asyncOp.webRequest.downloadedBytes > int.MaxValue)
             {
                 Debug.Log("Stream is too big for a byte array");
                 errorMessage = "Stream is too big for a byte array";
-                error = true;
+                throw new Exception(errorMessage);
             }
 
             if (!error)

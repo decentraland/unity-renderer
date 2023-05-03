@@ -196,10 +196,7 @@ namespace DCL
                 cancellationToken.ThrowIfCancellationRequested();
                 CleanPromise(promise);
 
-                if (promise.isForgotten)
-                {
-                    promise.Unload();
-                }
+                if (promise.isForgotten) { promise.Unload(); }
 
                 await SkipFrameIfOverBudgetAsync();
             }
@@ -268,10 +265,7 @@ namespace DCL
 
                     blockedPromises.Remove(blockedPromise);
 
-                    if (blockedPromise != null && !blockedPromise.isForgotten)
-                    {
-                        blockedPromisesToLoadAux.Add(blockedPromise);
-                    }
+                    if (blockedPromise != null && !blockedPromise.isForgotten) { blockedPromisesToLoadAux.Add(blockedPromise); }
                 }
             }
 
@@ -289,7 +283,7 @@ namespace DCL
                 if (promise.isForgotten)
                     continue;
 
-                promise.ForceFail(new Exception("Promise is forgotten"));
+                promise.ForceFail(new PromiseForgottenException("Promise is forgotten"));
                 Forget(promise);
                 CleanPromise(promise);
 
@@ -329,16 +323,10 @@ namespace DCL
 
             if (masterToBlockedPromises.ContainsKey(id))
             {
-                if (masterToBlockedPromises[id].Contains(finalPromise))
-                {
-                    masterToBlockedPromises[id].Remove(finalPromise);
-                }
+                if (masterToBlockedPromises[id].Contains(finalPromise)) { masterToBlockedPromises[id].Remove(finalPromise); }
             }
 
-            if (masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise)
-            {
-                masterPromiseById.Remove(id);
-            }
+            if (masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise) { masterPromiseById.Remove(id); }
 
             if (blockedPromises.Contains(finalPromise))
                 blockedPromises.Remove(finalPromise);
@@ -365,10 +353,7 @@ namespace DCL
                     e.Current?.Cleanup();
             }
 
-            foreach (var kvp in masterPromiseById)
-            {
-                kvp.Value.Cleanup();
-            }
+            foreach (var kvp in masterPromiseById) { kvp.Value.Cleanup(); }
 
             masterPromiseById = new Dictionary<object, AssetPromiseType>();
             waitingPromises = new HashSet<AssetPromiseType>();
@@ -376,5 +361,10 @@ namespace DCL
         }
 
         protected virtual void OnSilentForget(AssetPromiseType promise) { }
+    }
+
+    public class PromiseForgottenException : Exception
+    {
+        public PromiseForgottenException(string message) : base(message) { }
     }
 }

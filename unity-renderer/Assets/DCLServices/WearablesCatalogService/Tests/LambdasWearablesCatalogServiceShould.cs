@@ -42,7 +42,7 @@ namespace DCLServices.WearablesCatalogService
             GivenPaginatedCollectionInLambdas(TPW_COLLECTION_ID,
                 new List<WearableDefinition>
                 {
-                    new () { definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"),},
+                    new () { definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"), },
                     new () { definition = GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) },
                 });
 
@@ -73,7 +73,7 @@ namespace DCLServices.WearablesCatalogService
                 WearableItem resultantWearable = await service.RequestWearableAsync(VALID_WEARABLE_ID, default(CancellationToken));
 
                 lambdasService.DidNotReceiveWithAnyArgs()
-                              .Get<WearableWithoutDefinitionResponse>(default, default);
+                              .Get<WearableWithoutDefinitionResponse>(endPointTemplate: default, endPoint: default);
 
                 Assert.AreEqual(VALID_WEARABLE_ID, resultantWearable.id);
                 Assert.AreEqual("description", resultantWearable.description);
@@ -260,6 +260,86 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);
             });
 
+        [UnityTest]
+        public IEnumerator ValidateParamsWhenRequestingOwnedWearablesWithFilters() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                GivenWearableWithSpecificLambdasUrl(GivenValidWearableItem(VALID_WEARABLE_ID, ""));
+
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) =
+                    await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, default(CancellationToken),
+                        category: "upper_body",
+                        rarity: NftRarity.Epic,
+                        name: "woah",
+                        orderBy: (NftOrderByOperation.Date, true));
+
+                lambdasService.Received(1)
+                              .GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                                   "https://peer-ue-2.decentraland.zone/explorer-service/backpack/:userId/wearables",
+                                   $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{USER_ID}/wearables",
+                                   30, 3,
+                                   Arg.Any<CancellationToken>(),
+                                   Arg.Is<(string paramName, string paramValue)[]>(args =>
+                                       args[0].paramName == "pageNumber"
+                                       && args[0].paramValue == "0"
+                                       && args[1].paramName == "pageSize"
+                                       && args[1].paramValue == "10"
+                                       && args[2].paramName == "rarity"
+                                       && args[2].paramValue == "epic"
+                                       && args[3].paramName == "categories"
+                                       && args[3].paramValue == "upper_body"
+                                       && args[4].paramName == "name"
+                                       && args[4].paramValue == "woah"
+                                       && args[5].paramName == "orderBy"
+                                       && args[5].paramValue == "date"
+                                       && args[6].paramName == "direction"
+                                       && args[6].paramValue == "ASC"
+                                       && args[7].paramName == "collectionCategory"
+                                       && args[7].paramValue == "third-party,base-wearable,on-chain"));
+            });
+
+        [UnityTest]
+        [TestCase("urn:decentraland:off-chain:base-avatars:male",
+            "base-wearable",
+            new[] {"urn:decentraland:off-chain:base-avatars:male"},
+            ExpectedResult = null)]
+        [TestCase("urn:collections-thirdparty:woah,urn:decentraland:off-chain:base-avatars:male",
+            "third-party,base-wearable",
+            new[] {"urn:collections-thirdparty:woah", "urn:decentraland:off-chain:base-avatars:male"},
+            ExpectedResult = null)]
+        [TestCase("urn:decentraland:custom:wearables,urn:decentraland:custom2:wearables,urn:collections-thirdparty:woah,urn:decentraland:off-chain:base-avatars:male",
+            "third-party,base-wearable,on-chain",
+            new[] {"urn:decentraland:custom:wearables", "urn:decentraland:custom2:wearables", "urn:collections-thirdparty:woah", "urn:decentraland:off-chain:base-avatars:male"},
+            ExpectedResult = null)]
+        public IEnumerator ValidateCollectionIdParamsWhenRequestingOwnedWearablesWithFilters(
+            string expectedCollectionIdsParamValue,
+            string expectedCollectionCategoryParamValue,
+            string[] collectionIds) =>
+            UniTask.ToCoroutine(async () =>
+            {
+                GivenWearableWithSpecificLambdasUrl(GivenValidWearableItem(VALID_WEARABLE_ID, ""));
+
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) =
+                    await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, default(CancellationToken),
+                        collectionIds: collectionIds);
+
+                lambdasService.Received(1)
+                              .GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                                   "https://peer-ue-2.decentraland.zone/explorer-service/backpack/:userId/wearables",
+                                   $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{USER_ID}/wearables",
+                                   30, 3,
+                                   Arg.Any<CancellationToken>(),
+                                   Arg.Is<(string paramName, string paramValue)[]>(args =>
+                                       args[0].paramName == "pageNumber"
+                                       && args[0].paramValue == "0"
+                                       && args[1].paramName == "pageSize"
+                                       && args[1].paramValue == "10"
+                                       && args[2].paramName == "collectionIds"
+                                       && args[2].paramValue == expectedCollectionIdsParamValue
+                                       && args[3].paramName == "collectionCategory"
+                                       && args[3].paramValue == expectedCollectionCategoryParamValue));
+            });
+
         [Test]
         public void RemoveWearables()
         {
@@ -275,7 +355,7 @@ namespace DCLServices.WearablesCatalogService
         [Test]
         public void RemoveWearablesInUse()
         {
-            service.EmbedWearables(new [] {GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail")});
+            service.EmbedWearables(new[] { GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail") });
             service.AddWearablesToCatalog(new[] { GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) });
 
             service.RemoveWearablesInUse(new[] { VALID_WEARABLE_ID, WEARABLE_WITHOUT_THUMBNAIL });
@@ -284,6 +364,25 @@ namespace DCLServices.WearablesCatalogService
             Assert.IsTrue(service.IsValidWearable(VALID_WEARABLE_ID));
             Assert.IsFalse(service.WearablesCatalog.ContainsKey(WEARABLE_WITHOUT_THUMBNAIL));
             Assert.IsFalse(service.IsValidWearable(WEARABLE_WITHOUT_THUMBNAIL));
+        }
+
+        private void GivenWearableWithSpecificLambdasUrl(WearableItem wearable)
+        {
+            lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                               Arg.Any<string>(),
+                               Arg.Any<string>(),
+                               Arg.Any<int>(),
+                               Arg.Any<int>(),
+                               Arg.Any<CancellationToken>(),
+                               Arg.Any<(string paramName, string paramValue)[]>())
+                          .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
+                               (new WearableWithDefinitionResponse(new List<WearableDefinition>
+                               {
+                                   new ()
+                                   {
+                                       definition = wearable
+                                   },
+                               }, 0, 10, 1), true)));
         }
 
         private void GivenWearableInLambdas(string wearableID, WearableItem wearable)

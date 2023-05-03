@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Quest
 {
-    public class QuestStepComponentViewTest
+    public class QuestStepComponentViewShould
     {
         private QuestStepComponentView questStepComponentView;
 
