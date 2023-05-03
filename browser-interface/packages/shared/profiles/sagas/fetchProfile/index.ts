@@ -1,6 +1,6 @@
 import type { Avatar } from '@dcl/schemas'
 import { FETCH_REMOTE_PROFILE_RETRIES } from 'config'
-import { generateRandomUserProfile } from 'shared/profiles/sagas'
+import { generateRandomUserProfile } from 'lib/decentraland/profiles/generateRandomUserProfile'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import defaultLogger from 'lib/logger'
 import { call, CallEffect, put, race, select } from 'redux-saga/effects'
@@ -95,7 +95,7 @@ function* fetchWithBestStrategy(
   }
 
   // If no other choice is available, generate a random user profile
-  return generateRandomUserProfile(userId, 'guest flow')
+  return generateRandomUserProfile(userId)
 }
 
 function* fetchFromComms(roomConnection: RoomConnection, userId: string, version: number) {
