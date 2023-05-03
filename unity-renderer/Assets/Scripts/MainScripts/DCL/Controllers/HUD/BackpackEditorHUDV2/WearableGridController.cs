@@ -140,13 +140,21 @@ namespace DCL.Backpack
         private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
         {
             List<(string reference, string name)> path = new List<(string reference, string name)>();
-            path.Add((reference: ALL_FILTER_REF, name: "All"));
+
+            var additiveReferencePath = $"{ALL_FILTER_REF}";
+            path.Add((reference: additiveReferencePath, name: "All"));
 
             if (!string.IsNullOrEmpty(categoryFilter))
-                path.Add((reference: $"{CATEGORY_FILTER_REF}{categoryFilter}", name: categoryFilter));
+            {
+                additiveReferencePath += $"&{CATEGORY_FILTER_REF}{categoryFilter}";
+                path.Add((reference: additiveReferencePath, name: categoryFilter));
+            }
 
             if (!string.IsNullOrEmpty(nameFilter))
-                path.Add((reference: $"{NAME_FILTER_REF}{nameFilter}", name: nameFilter));
+            {
+                additiveReferencePath += $"&{NAME_FILTER_REF}{nameFilter}";
+                path.Add((reference: additiveReferencePath, name: nameFilter));
+            }
 
             var wearableBreadcrumbModel = new NftBreadcrumbModel
             {
@@ -259,13 +267,21 @@ namespace DCL.Backpack
 
         private void FilterWearablesFromBreadcrumb(string referencePath)
         {
-            if (referencePath.StartsWith(ALL_FILTER_REF))
+            string[] filters = referencePath.Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+            nameFilter = null;
+            categoryFilter = null;
+
+            foreach (string filter in filters)
             {
-                requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
-                ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
+                if (filter.StartsWith(NAME_FILTER_REF))
+                    nameFilter = filter[5..];
+                else if (filter.StartsWith(CATEGORY_FILTER_REF))
+                    categoryFilter = filter[9..];
             }
-            else if (referencePath.StartsWith(NAME_FILTER_REF)) { throw new NotImplementedException(); }
-            else if (referencePath.StartsWith(CATEGORY_FILTER_REF)) { throw new NotImplementedException(); }
+
+            requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
+            ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
         }
 
         private void GoToMarketplace()
