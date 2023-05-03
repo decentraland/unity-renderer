@@ -135,7 +135,7 @@ function* authenticate(action: AuthenticateAction) {
   }
 
   if (avatar.tutorialStep === 0 || RESET_TUTORIAL) {
-    yield SetupTutorial()
+    yield call(SetupTutorial)
   }
 
   // 4. finish sign in
@@ -161,6 +161,7 @@ function* SetupTutorial() {
         //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
         yield put(setOnboardingState({ isInOnboarding: true, onboardingRealm: realm }))
         yield call(changeRealm, realm, true)
+        //The scene loader change is not instant, so we wait for it to be done using a take of the SET_SCENE_LOADER action
         yield take(SET_SCENE_LOADER)
       } else {
         logger.warn('No realm was provided for the onboarding experience.')
