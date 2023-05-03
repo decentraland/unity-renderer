@@ -26,6 +26,7 @@ namespace DCL.Backpack
         private readonly IBrowserBridge browserBridge;
         private readonly BackpackFiltersController backpackFiltersController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
+        private readonly BackpackAnalyticsController analyticsController;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
@@ -46,7 +47,8 @@ namespace DCL.Backpack
             DataStore_BackpackV2 dataStoreBackpackV2,
             IBrowserBridge browserBridge,
             BackpackFiltersController backpackFiltersController,
-            AvatarSlotsHUDController avatarSlotsHUDController)
+            AvatarSlotsHUDController avatarSlotsHUDController,
+            BackpackAnalyticsController analyticsController)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
@@ -55,6 +57,7 @@ namespace DCL.Backpack
             this.browserBridge = browserBridge;
             this.backpackFiltersController = backpackFiltersController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
+            this.analyticsController = analyticsController;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
@@ -286,6 +289,7 @@ namespace DCL.Backpack
             wearableSorting = newSorting;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+            analyticsController.SendWearableSortedBy(wearableSorting.Value.type.ToString());
         }
 
         private void SetTextFilter(string newText)
@@ -293,6 +297,7 @@ namespace DCL.Backpack
             nameFilter = newText;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+            analyticsController.SendWearableSearch(newText);
         }
 
         private void SetCollectionType(NftCollectionType collectionType)
@@ -300,6 +305,7 @@ namespace DCL.Backpack
             collectionTypeMask = collectionType;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+            analyticsController.SendWearableFilter(collectionType != NftCollectionType.Base);
         }
 
         private void SetCategory(string category, bool supportColor, bool isSelected)

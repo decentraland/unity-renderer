@@ -336,6 +336,7 @@ namespace DCL.Backpack
             if (!colorChanged)
                 return;
 
+            backpackAnalyticsController.SendAvatarColorPick();
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
