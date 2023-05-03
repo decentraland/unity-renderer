@@ -22,6 +22,7 @@ namespace DCL.Social.Friends
 
         private CancellationTokenSource controllerCancellationTokenSource = new ();
         private UniTaskCompletionSource featureFlagsInitializedTask;
+        private int totalFriendCount;
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
@@ -32,7 +33,12 @@ namespace DCL.Social.Friends
         public bool IsInitialized { get; private set; }
 
         public int ReceivedRequestCount => friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
-        public int TotalFriendCount { get; private set; }
+
+        public int TotalFriendCount
+        {
+            get => useSocialApiBridge ? friends.Count : totalFriendCount;
+            private set => totalFriendCount = value;
+        }
         public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
         public int TotalReceivedFriendRequestCount { get; private set; }
         public int TotalSentFriendRequestCount { get; private set; }
@@ -143,8 +149,6 @@ namespace DCL.Social.Friends
         {
             this.friends[friend.userId] = friend;
             this.friendsSortedByName[friend.userName] = friend;
-
-            // callEnsureFriendProfile
         }
 
         private void InternalRemoveFriend(string userId)
