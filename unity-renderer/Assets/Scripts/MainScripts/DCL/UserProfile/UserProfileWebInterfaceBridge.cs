@@ -7,16 +7,20 @@ using UnityEngine;
 
 public class UserProfileWebInterfaceBridge : IUserProfileBridge
 {
-    public void SaveUnverifiedName(string name) => WebInterface.SendSaveUserUnverifiedName(name);
+    public void SaveUnverifiedName(string name) =>
+        WebInterface.SendSaveUserUnverifiedName(name);
 
-    public void SaveDescription(string description) => WebInterface.SendSaveUserDescription(description);
+    public void SaveDescription(string description) =>
+        WebInterface.SendSaveUserDescription(description);
 
-    public void RequestFullUserProfile(string userId) => WebInterface.SendRequestUserProfile(userId);
+    public void RequestFullUserProfile(string userId) =>
+        WebInterface.SendRequestUserProfile(userId);
 
     public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken) =>
         UserProfileController.i.RequestFullUserProfileAsync(userId, cancellationToken);
 
-    public UserProfile GetOwn() => UserProfile.GetOwnUserProfile();
+    public UserProfile GetOwn() =>
+        UserProfile.GetOwnUserProfile();
 
     public void AddUserProfileToCatalog(UserProfileModel userProfileModel)
     {
@@ -34,7 +38,8 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
         return UserProfileController.userProfilesCatalog.GetValues().FirstOrDefault(p => p.userName == userNameOrId);
     }
 
-    public void SignUp() => WebInterface.RedirectToSignUp();
+    public void SignUp() =>
+        WebInterface.RedirectToSignUp();
 
     public void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false) =>
         WebInterface.SendSaveAvatar(avatar, face256Snapshot, bodySnapshot, isSignUpFlow);

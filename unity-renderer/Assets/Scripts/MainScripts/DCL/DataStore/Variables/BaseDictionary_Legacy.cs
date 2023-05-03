@@ -11,9 +11,17 @@ public class BaseDictionary_Legacy<TKey, TValue> : ScriptableObject
 
     private event Removed OnRemovedElementValue;
 
-    public virtual event Added OnAdded { add => OnAddedElementValue += value; remove => OnAddedElementValue -= value; }
+    public virtual event Added OnAdded
+    {
+        add => OnAddedElementValue += value;
+        remove => OnAddedElementValue -= value;
+    }
 
-    public virtual event Removed OnRemoved { add => OnRemovedElementValue += value; remove => OnRemovedElementValue -= value; }
+    public virtual event Removed OnRemoved
+    {
+        add => OnRemovedElementValue += value;
+        remove => OnRemovedElementValue -= value;
+    }
 
     private Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
 
@@ -29,10 +37,8 @@ public class BaseDictionary_Legacy<TKey, TValue> : ScriptableObject
     public void Add(KeyValuePair<TKey, TValue>[] newValues)
     {
         int count = newValues.Length;
-        for (int i = 0; i < count; ++i)
-        {
-            Add(newValues[i].Key, newValues[i].Value);
-        }
+
+        for (int i = 0; i < count; ++i) { Add(newValues[i].Key, newValues[i].Value); }
     }
 
     public void Remove(TKey key)
@@ -49,17 +55,24 @@ public class BaseDictionary_Legacy<TKey, TValue> : ScriptableObject
     public void Remove(TKey[] keys)
     {
         int count = keys.Length;
-        for (int i = 0; i < count; ++i)
-        {
-            Remove(keys[i]);
-        }
+
+        for (int i = 0; i < count; ++i) { Remove(keys[i]); }
     }
 
-    public TValue Get(TKey key) { return dictionary.ContainsKey(key) ? dictionary[key] : default(TValue); }
+    public TValue Get(TKey key)
+    {
+        return dictionary.ContainsKey(key) ? dictionary[key] : default(TValue);
+    }
 
-    public bool ContainsKey(TKey key) { return dictionary.ContainsKey(key); }
+    public bool ContainsKey(TKey key)
+    {
+        return dictionary.ContainsKey(key);
+    }
 
-    public bool TryGetValue(TKey key, out TValue value) { return dictionary.TryGetValue(key, out value); }
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+        return dictionary.TryGetValue(key, out value);
+    }
 
     public TValue GetOrDefault(TKey key)
     {
@@ -69,20 +82,23 @@ public class BaseDictionary_Legacy<TKey, TValue> : ScriptableObject
         return dictionary[key];
     }
 
-    public Dictionary<TKey, TValue>.Enumerator GetEnumerator() { return dictionary.GetEnumerator(); }
+    public Dictionary<TKey, TValue>.Enumerator GetEnumerator()
+    {
+        return dictionary.GetEnumerator();
+    }
 
     public int Count => dictionary.Count;
 
-    public IEnumerable<TValue> GetValues() { return dictionary.Values; }
+    public IEnumerable<TValue> GetValues()
+    {
+        return dictionary.Values;
+    }
 
     public void Clear()
     {
         using (Dictionary<TKey, TValue>.Enumerator iterator = dictionary.GetEnumerator())
         {
-            while (iterator.MoveNext())
-            {
-                OnRemovedElementValue?.Invoke(iterator.Current.Key, iterator.Current.Value);
-            }
+            while (iterator.MoveNext()) { OnRemovedElementValue?.Invoke(iterator.Current.Key, iterator.Current.Value); }
         }
 
         dictionary.Clear();

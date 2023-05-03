@@ -63,7 +63,7 @@ public class FriendsController_Mock : IFriendsController
     public UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default) =>
         UniTask.FromResult(new string[0]);
 
-    public UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default) =>
+    public UniTask<string[]> GetFriendsAsync(string userNameOrId, int limit, CancellationToken cancellationToken = default) =>
         UniTask.FromResult(new string[0]);
 
     public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) { }

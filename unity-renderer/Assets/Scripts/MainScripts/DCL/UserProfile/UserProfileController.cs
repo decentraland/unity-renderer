@@ -4,6 +4,7 @@ using DCLServices.WearablesCatalogService;
 using System;
 using JetBrains.Annotations;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -24,10 +25,7 @@ public class UserProfileController : MonoBehaviour
     {
         get
         {
-            if (userProfilesCatalogValue == null)
-            {
-                userProfilesCatalogValue = Resources.Load<UserProfileDictionary>("UserProfilesCatalog");
-            }
+            if (userProfilesCatalogValue == null) { userProfilesCatalogValue = Resources.Load<UserProfileDictionary>("UserProfilesCatalog"); }
 
             return userProfilesCatalogValue;
         }
@@ -48,10 +46,7 @@ public class UserProfileController : MonoBehaviour
     {
         async UniTaskVoid RequestBaseWearablesAsync(CancellationToken ct)
         {
-            try
-            {
-                await DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RequestBaseWearablesAsync(ct);
-            }
+            try { await DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RequestBaseWearablesAsync(ct); }
             catch (Exception e)
             {
                 OnBaseWereablesFail?.Invoke();
@@ -74,7 +69,10 @@ public class UserProfileController : MonoBehaviour
         userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
 
-    public void AddUserProfileToCatalog(string payload) { AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModel>(payload)); }
+    public void AddUserProfileToCatalog(string payload)
+    {
+        AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModel>(payload));
+    }
 
     public void AddUserProfilesToCatalog(string payload)
     {
@@ -116,15 +114,16 @@ public class UserProfileController : MonoBehaviour
         return null;
     }
 
-    public static UserProfile GetProfileByUserId(string targetUserId) { return userProfilesCatalog.Get(targetUserId); }
+    public static UserProfile GetProfileByUserId(string targetUserId)
+    {
+        return userProfilesCatalog.Get(targetUserId);
+    }
 
     public void RemoveUserProfilesFromCatalog(string payload)
     {
         string[] usernames = JsonUtility.FromJson<string[]>(payload);
-        for (int index = 0; index < usernames.Length; index++)
-        {
-            RemoveUserProfileFromCatalog(userProfilesCatalog.Get(usernames[index]));
-        }
+
+        for (int index = 0; index < usernames.Length; index++) { RemoveUserProfileFromCatalog(userProfilesCatalog.Get(usernames[index])); }
     }
 
     public void RemoveUserProfileFromCatalog(UserProfile userProfile)
@@ -136,7 +135,10 @@ public class UserProfileController : MonoBehaviour
         Destroy(userProfile);
     }
 
-    public void ClearProfilesCatalog() { userProfilesCatalog?.Clear(); }
+    public void ClearProfilesCatalog()
+    {
+        userProfilesCatalog?.Clear();
+    }
 
     public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default)
     {

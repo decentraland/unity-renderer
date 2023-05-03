@@ -24,6 +24,7 @@ public class UserStatus
     public Realm realm;
     public Vector2 position;
     public string userId;
+    public string userName;
     public FriendshipStatus friendshipStatus;
     public PresenceStatus presence;
 
