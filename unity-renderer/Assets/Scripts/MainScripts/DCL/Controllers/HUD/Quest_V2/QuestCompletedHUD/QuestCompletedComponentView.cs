@@ -13,9 +13,10 @@ namespace DCL.Quest
         private const int MAX_REWARDS_COUNT = 3;
 
         [SerializeField] internal GameObject rewardsSection;
-        [SerializeField] private TMP_Text questTitle;
+        [SerializeField] internal TMP_Text questTitle;
         [SerializeField] internal Transform rewardsContainer;
         [SerializeField] private Button confirmButton;
+        [SerializeField] internal GameObject guestSection;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
 
@@ -42,6 +43,11 @@ namespace DCL.Quest
         {
             model.title = title;
             questTitle.text = title;
+        }
+
+        public void SetIsGuest(bool isGuest)
+        {
+            guestSection.SetActive(isGuest);
         }
 
         public void SetRewards(List<QuestRewardComponentModel> rewardsList)

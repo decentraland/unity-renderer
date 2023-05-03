@@ -8,6 +8,7 @@ namespace DCL.Quest
         event Action OnConfirmed;
 
         void SetTitle(string title);
+        void SetIsGuest(bool isGuest);
         void SetRewards(List<QuestRewardComponentModel> rewards);
     }
 }

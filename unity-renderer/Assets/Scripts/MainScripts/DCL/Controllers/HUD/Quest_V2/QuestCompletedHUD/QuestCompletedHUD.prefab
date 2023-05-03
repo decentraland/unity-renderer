@@ -821,6 +821,8 @@ MonoBehaviour:
   rewardsSection: {fileID: 2111371425988300921}
   questTitle: {fileID: 2534285897921027154}
   rewardsContainer: {fileID: 1798156650007868679}
+  confirmButton: {fileID: 1018855186851495725}
+  guestSection: {fileID: 5884143121228627897}
   rewardPrefab: {fileID: 5656798287975932091, guid: abaa562bf9c674359b69b21f405fe692,
     type: 3}
 --- !u!1 &3947200786942160820
@@ -2365,6 +2367,18 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 1727543226122190079, guid: fb037d81b9c10ad439a13e356a17bab6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: fb037d81b9c10ad439a13e356a17bab6, type: 3}
+--- !u!114 &1018855186851495725 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5109399184885072362, guid: fb037d81b9c10ad439a13e356a17bab6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5245435828056243911}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5190828361767331818 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
