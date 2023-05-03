@@ -212,9 +212,7 @@ namespace DCL.Backpack
                 Rarity = rarity,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
                 IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
-
-                // TODO: make the new state work
-                IsNew = false,
+                IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
                 IsSelected = false,
             };
         }

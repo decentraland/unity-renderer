@@ -33,6 +33,7 @@ namespace DCLServices.WearablesCatalogService
     public class WearableDefinition
     {
         public string urn;
+        public long maxTransferredAt;
         public WearableItem definition;
     }
 }

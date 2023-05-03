@@ -49,6 +49,7 @@ namespace DCL.Backpack
             dataStore = new DataStore_BackpackV2();
 
             browserBridge = Substitute.For<IBrowserBridge>();
+
             backpackFiltersController = new BackpackFiltersController(Substitute.For<IBackpackFiltersComponentView>(),
                 Substitute.For<IWearablesCatalogService>());
 
@@ -577,6 +578,54 @@ namespace DCL.Backpack
             view.OnGoToMarketplace += Raise.Event<Action>();
 
             browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/get-a-wallet");
+        }
+
+        [UnityTest]
+        public IEnumerator ShowWearableAsNewWhenHasBeenTransferredBetweenOneDay()
+        {
+            IReadOnlyList<WearableItem> wearableList = new[]
+            {
+                new WearableItem
+                {
+                    id = "w1",
+                    rarity = "common",
+                    description = "super wearable",
+                    thumbnail = "w1thumbnail",
+                    baseUrl = "http://localimages",
+                    i18n = new[]
+                    {
+                        new i18n
+                        {
+                            text = "idk",
+                            code = "wtf",
+                        }
+                    },
+                    data = new WearableItem.Data
+                    {
+                        replaces = new[] { "category1", "category2", "category3" },
+                        representations = new[]
+                        {
+                            new WearableItem.Representation
+                            {
+                                bodyShapes = new[] { "bodyShape1" },
+                                overrideReplaces = new[] { "override1", "override2", "override3" },
+                            }
+                        }
+                    },
+                    MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+                }
+            };
+
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
+
+            controller.LoadWearablesWithFilters();
+            yield return null;
+
+            view.Received(1)
+                .ShowWearables(Arg.Is<IEnumerable<WearableGridItemModel>>(i =>
+                     i.ElementAt(0).IsNew == true));
         }
     }
 }

@@ -425,6 +425,7 @@ namespace DCLServices.WearablesCatalogService
                     definition.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
                     definition.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
                     definition.emoteDataV0 = null;
+                    definition.MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(item.maxTransferredAt).DateTime;
                 }
                 catch (Exception e)
                 {
