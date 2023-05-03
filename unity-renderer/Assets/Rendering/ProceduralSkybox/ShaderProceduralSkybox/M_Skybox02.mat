@@ -15,7 +15,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2998
+  m_CustomRenderQueue: 2445
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -43,6 +43,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SGHorizonLayer_9dcdf3fddc1845bc807a77201c0bdfe3_Texture2Da24ed8a2f1904f70bac443eee594d114_2197795060:
         m_Texture: {fileID: 2800000, guid: 48fea5cb8b115de4088a6d237efc7d13, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SGLayerParticles_1c423f4cd0624eca9ef3b77eef2eb8d3_Texture2D696c52219a64421abfac24088c8c2d3e_3259457213:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SGLayerParticles_1c423f4cd0624eca9ef3b77eef2eb8d3_Texture2Dfc450b2db7f54977a54b88410e0e641d_756302754:
