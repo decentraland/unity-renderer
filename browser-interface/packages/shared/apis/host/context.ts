@@ -28,4 +28,9 @@ export type PortContext = {
   // port used for this specific scene in the renderer
   scenePort: RpcClientPort
   rpcSceneControllerService: RpcClientModule<RpcSceneControllerServiceDefinition, unknown>
+
+  initialEntitiesTick0: Uint8Array
+  hasMainCrdt: boolean
+
+  readFile(path: string): Promise<{ content: Uint8Array; hash: string }>
 }
