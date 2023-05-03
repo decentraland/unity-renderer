@@ -139,15 +139,18 @@ namespace DCL.Backpack
 
         private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
         {
+            List<(string reference, string name)> path = new List<(string reference, string name)>();
+            path.Add((reference: ALL_FILTER_REF, name: "All"));
+
+            if (!string.IsNullOrEmpty(categoryFilter))
+                path.Add((reference: $"{CATEGORY_FILTER_REF}{categoryFilter}", name: categoryFilter));
+
+            if (!string.IsNullOrEmpty(nameFilter))
+                path.Add((reference: $"{NAME_FILTER_REF}{nameFilter}", name: nameFilter));
+
             var wearableBreadcrumbModel = new NftBreadcrumbModel
             {
-                Path = new[]
-                {
-                    (Reference: ALL_FILTER_REF, Name: "All"),
-
-                    // (Reference: $"{CATEGORY_FILTER_REF}shoes", Name: "Shoes"),
-                    // (Reference: $"{NAME_FILTER_REF}my wearable", Name: "my wearable"),
-                },
+                Path = path.ToArray(),
                 Current = 0,
                 ResultCount = 0,
             };
