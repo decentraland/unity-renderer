@@ -25,18 +25,18 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci1kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdmlkZW9fZXZlbnQucHJv",
-            "dG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyJ0CgxQQlZpZGVvRXZl",
-            "bnQSFgoOY3VycmVudF9vZmZzZXQYASABKAISFAoMdmlkZW9fbGVuZ3RoGAIg",
-            "ASgCEjYKBXN0YXRlGAMgASgOMicuZGVjZW50cmFsYW5kLnNkay5jb21wb25l",
-            "bnRzLlZpZGVvU3RhdGUqhgEKClZpZGVvU3RhdGUSCwoHVlNfTk9ORRAAEgwK",
-            "CFZTX0VSUk9SEAESDgoKVlNfTE9BRElORxACEgwKCFZTX1JFQURZEAMSDgoK",
-            "VlNfUExBWUlORxAEEhAKDFZTX0JVRkZFUklORxAFEg4KClZTX1NFRUtJTkcQ",
-            "BhINCglWU19QQVVTRUQQB0IUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3Rv",
-            "Mw=="));
+            "dG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyKHAQoMUEJWaWRlb0V2",
+            "ZW50EhEKCXRpbWVzdGFtcBgBIAEoDRIWCg5jdXJyZW50X29mZnNldBgCIAEo",
+            "AhIUCgx2aWRlb19sZW5ndGgYAyABKAISNgoFc3RhdGUYBCABKA4yJy5kZWNl",
+            "bnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuVmlkZW9TdGF0ZSqGAQoKVmlkZW9T",
+            "dGF0ZRILCgdWU19OT05FEAASDAoIVlNfRVJST1IQARIOCgpWU19MT0FESU5H",
+            "EAISDAoIVlNfUkVBRFkQAxIOCgpWU19QTEFZSU5HEAQSEAoMVlNfQlVGRkVS",
+            "SU5HEAUSDgoKVlNfU0VFS0lORxAGEg0KCVZTX1BBVVNFRBAHQhSqAhFEQ0wu",
+            "RUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.VideoState), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBVideoEvent), global::DCL.ECSComponents.PBVideoEvent.Parser, new[]{ "CurrentOffset", "VideoLength", "State" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBVideoEvent), global::DCL.ECSComponents.PBVideoEvent.Parser, new[]{ "Timestamp", "CurrentOffset", "VideoLength", "State" }, null, null, null, null)
           }));
     }
     #endregion
@@ -91,6 +91,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBVideoEvent(PBVideoEvent other) : this() {
+      timestamp_ = other.timestamp_;
       currentOffset_ = other.currentOffset_;
       videoLength_ = other.videoLength_;
       state_ = other.state_;
@@ -103,8 +104,23 @@ namespace DCL.ECSComponents {
       return new PBVideoEvent(this);
     }
 
+    /// <summary>Field number for the "timestamp" field.</summary>
+    public const int TimestampFieldNumber = 1;
+    private uint timestamp_;
+    /// <summary>
+    /// monotonic counter
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public uint Timestamp {
+      get { return timestamp_; }
+      set {
+        timestamp_ = value;
+      }
+    }
+
     /// <summary>Field number for the "current_offset" field.</summary>
-    public const int CurrentOffsetFieldNumber = 1;
+    public const int CurrentOffsetFieldNumber = 2;
     private float currentOffset_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -116,7 +132,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "video_length" field.</summary>
-    public const int VideoLengthFieldNumber = 2;
+    public const int VideoLengthFieldNumber = 3;
     private float videoLength_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -128,7 +144,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "state" field.</summary>
-    public const int StateFieldNumber = 3;
+    public const int StateFieldNumber = 4;
     private global::DCL.ECSComponents.VideoState state_ = global::DCL.ECSComponents.VideoState.VsNone;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -154,6 +170,7 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (Timestamp != other.Timestamp) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentOffset, other.CurrentOffset)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(VideoLength, other.VideoLength)) return false;
       if (State != other.State) return false;
@@ -164,6 +181,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
+      if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
       if (CurrentOffset != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentOffset);
       if (VideoLength != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(VideoLength);
       if (State != global::DCL.ECSComponents.VideoState.VsNone) hash ^= State.GetHashCode();
@@ -185,16 +203,20 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
+      if (Timestamp != 0) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(Timestamp);
+      }
       if (CurrentOffset != 0F) {
-        output.WriteRawTag(13);
+        output.WriteRawTag(21);
         output.WriteFloat(CurrentOffset);
       }
       if (VideoLength != 0F) {
-        output.WriteRawTag(21);
+        output.WriteRawTag(29);
         output.WriteFloat(VideoLength);
       }
       if (State != global::DCL.ECSComponents.VideoState.VsNone) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteEnum((int) State);
       }
       if (_unknownFields != null) {
@@ -207,16 +229,20 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Timestamp != 0) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(Timestamp);
+      }
       if (CurrentOffset != 0F) {
-        output.WriteRawTag(13);
+        output.WriteRawTag(21);
         output.WriteFloat(CurrentOffset);
       }
       if (VideoLength != 0F) {
-        output.WriteRawTag(21);
+        output.WriteRawTag(29);
         output.WriteFloat(VideoLength);
       }
       if (State != global::DCL.ECSComponents.VideoState.VsNone) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteEnum((int) State);
       }
       if (_unknownFields != null) {
@@ -229,6 +255,9 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
+      if (Timestamp != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Timestamp);
+      }
       if (CurrentOffset != 0F) {
         size += 1 + 4;
       }
@@ -249,6 +278,9 @@ namespace DCL.ECSComponents {
     public void MergeFrom(PBVideoEvent other) {
       if (other == null) {
         return;
+      }
+      if (other.Timestamp != 0) {
+        Timestamp = other.Timestamp;
       }
       if (other.CurrentOffset != 0F) {
         CurrentOffset = other.CurrentOffset;
@@ -274,15 +306,19 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 13: {
-            CurrentOffset = input.ReadFloat();
+          case 8: {
+            Timestamp = input.ReadUInt32();
             break;
           }
           case 21: {
+            CurrentOffset = input.ReadFloat();
+            break;
+          }
+          case 29: {
             VideoLength = input.ReadFloat();
             break;
           }
-          case 24: {
+          case 32: {
             State = (global::DCL.ECSComponents.VideoState) input.ReadEnum();
             break;
           }
@@ -301,15 +337,19 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 13: {
-            CurrentOffset = input.ReadFloat();
+          case 8: {
+            Timestamp = input.ReadUInt32();
             break;
           }
           case 21: {
+            CurrentOffset = input.ReadFloat();
+            break;
+          }
+          case 29: {
             VideoLength = input.ReadFloat();
             break;
           }
-          case 24: {
+          case 32: {
             State = (global::DCL.ECSComponents.VideoState) input.ReadEnum();
             break;
           }
