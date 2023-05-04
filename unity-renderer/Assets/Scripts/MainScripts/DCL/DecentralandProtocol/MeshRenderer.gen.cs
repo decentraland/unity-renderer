@@ -695,7 +695,7 @@ namespace DCL.ECSComponents {
         public const int RadiusTopFieldNumber = 1;
         private float radiusTop_;
         /// <summary>
-        /// (default 1.0)
+        /// (default 0.5)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -723,7 +723,7 @@ namespace DCL.ECSComponents {
         public const int RadiusBottomFieldNumber = 2;
         private float radiusBottom_;
         /// <summary>
-        /// (default 1.0)
+        /// (default 0.5)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

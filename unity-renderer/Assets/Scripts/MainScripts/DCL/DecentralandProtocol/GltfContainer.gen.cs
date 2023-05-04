@@ -25,13 +25,16 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvZ2x0Zl9jb250YWluZXIu",
-            "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyIeCg9QQkdsdGZD",
-            "b250YWluZXISCwoDc3JjGAEgASgJQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IG",
-            "cHJvdG8z"));
+            "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyKoAQoPUEJHbHRm",
+            "Q29udGFpbmVyEgsKA3NyYxgBIAEoCRImChlkaXNhYmxlX3BoeXNpY3NfY29s",
+            "bGlkZXJzGAIgASgISACIAQESJQoYY3JlYXRlX3BvaW50ZXJfY29sbGlkZXJz",
+            "GAMgASgISAGIAQFCHAoaX2Rpc2FibGVfcGh5c2ljc19jb2xsaWRlcnNCGwoZ",
+            "X2NyZWF0ZV9wb2ludGVyX2NvbGxpZGVyc0IUqgIRRENMLkVDU0NvbXBvbmVu",
+            "dHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBGltfContainer), global::DCL.ECSComponents.PBGltfContainer.Parser, new[]{ "Src" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBGltfContainer), global::DCL.ECSComponents.PBGltfContainer.Parser, new[]{ "Src", "DisablePhysicsColliders", "CreatePointerColliders" }, new[]{ "DisablePhysicsColliders", "CreatePointerColliders" }, null, null, null)
           }));
     }
     #endregion
@@ -51,6 +54,7 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBGltfContainer> _parser = new pb::MessageParser<PBGltfContainer>(() => new PBGltfContainer());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBGltfContainer> Parser { get { return _parser; } }
@@ -78,7 +82,10 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBGltfContainer(PBGltfContainer other) : this() {
+      _hasBits0 = other._hasBits0;
       src_ = other.src_;
+      disablePhysicsColliders_ = other.disablePhysicsColliders_;
+      createPointerColliders_ = other.createPointerColliders_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -103,6 +110,62 @@ namespace DCL.ECSComponents {
       }
     }
 
+    /// <summary>Field number for the "disable_physics_colliders" field.</summary>
+    public const int DisablePhysicsCollidersFieldNumber = 2;
+    private bool disablePhysicsColliders_;
+    /// <summary>
+    /// disable automatic physics collider creation (default: false)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool DisablePhysicsColliders {
+      get { if ((_hasBits0 & 1) != 0) { return disablePhysicsColliders_; } else { return false; } }
+      set {
+        _hasBits0 |= 1;
+        disablePhysicsColliders_ = value;
+      }
+    }
+    /// <summary>Gets whether the "disable_physics_colliders" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasDisablePhysicsColliders {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "disable_physics_colliders" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearDisablePhysicsColliders() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "create_pointer_colliders" field.</summary>
+    public const int CreatePointerCollidersFieldNumber = 3;
+    private bool createPointerColliders_;
+    /// <summary>
+    /// copies the visible meshes into a virtual MeshCollider with CL_POINTER collider_mask (default: false)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool CreatePointerColliders {
+      get { if ((_hasBits0 & 2) != 0) { return createPointerColliders_; } else { return false; } }
+      set {
+        _hasBits0 |= 2;
+        createPointerColliders_ = value;
+      }
+    }
+    /// <summary>Gets whether the "create_pointer_colliders" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasCreatePointerColliders {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "create_pointer_colliders" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearCreatePointerColliders() {
+      _hasBits0 &= ~2;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -119,6 +182,8 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Src != other.Src) return false;
+      if (DisablePhysicsColliders != other.DisablePhysicsColliders) return false;
+      if (CreatePointerColliders != other.CreatePointerColliders) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -127,6 +192,8 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (Src.Length != 0) hash ^= Src.GetHashCode();
+      if (HasDisablePhysicsColliders) hash ^= DisablePhysicsColliders.GetHashCode();
+      if (HasCreatePointerColliders) hash ^= CreatePointerColliders.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -149,6 +216,14 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Src);
       }
+      if (HasDisablePhysicsColliders) {
+        output.WriteRawTag(16);
+        output.WriteBool(DisablePhysicsColliders);
+      }
+      if (HasCreatePointerColliders) {
+        output.WriteRawTag(24);
+        output.WriteBool(CreatePointerColliders);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -163,6 +238,14 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Src);
       }
+      if (HasDisablePhysicsColliders) {
+        output.WriteRawTag(16);
+        output.WriteBool(DisablePhysicsColliders);
+      }
+      if (HasCreatePointerColliders) {
+        output.WriteRawTag(24);
+        output.WriteBool(CreatePointerColliders);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -175,6 +258,12 @@ namespace DCL.ECSComponents {
       int size = 0;
       if (Src.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Src);
+      }
+      if (HasDisablePhysicsColliders) {
+        size += 1 + 1;
+      }
+      if (HasCreatePointerColliders) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -190,6 +279,12 @@ namespace DCL.ECSComponents {
       }
       if (other.Src.Length != 0) {
         Src = other.Src;
+      }
+      if (other.HasDisablePhysicsColliders) {
+        DisablePhysicsColliders = other.DisablePhysicsColliders;
+      }
+      if (other.HasCreatePointerColliders) {
+        CreatePointerColliders = other.CreatePointerColliders;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -210,6 +305,14 @@ namespace DCL.ECSComponents {
             Src = input.ReadString();
             break;
           }
+          case 16: {
+            DisablePhysicsColliders = input.ReadBool();
+            break;
+          }
+          case 24: {
+            CreatePointerColliders = input.ReadBool();
+            break;
+          }
         }
       }
     #endif
@@ -227,6 +330,14 @@ namespace DCL.ECSComponents {
             break;
           case 10: {
             Src = input.ReadString();
+            break;
+          }
+          case 16: {
+            DisablePhysicsColliders = input.ReadBool();
+            break;
+          }
+          case 24: {
+            CreatePointerColliders = input.ReadBool();
             break;
           }
         }
