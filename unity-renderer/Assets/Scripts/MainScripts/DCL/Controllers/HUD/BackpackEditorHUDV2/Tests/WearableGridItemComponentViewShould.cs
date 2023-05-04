@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using Object = UnityEngine.Object;
-using RareBackground = DCL.Backpack.WearableGridItemComponentView.RareBackground;
 
 namespace DCL.Backpack
 {
@@ -274,23 +273,6 @@ namespace DCL.Backpack
             view.OnPointerEnter(null);
 
             Assert.IsTrue(view.hoverSelectedEquippedContainer.activeSelf);
-        }
-
-        [TestCaseSource(nameof(GetAllRarities))]
-        public void EnableRarityBackground(NftRarity nftRarity)
-        {
-            view.SetModel(new WearableGridItemModel
-            {
-                Rarity = nftRarity,
-                ImageUrl = "imageUrl",
-                IsEquipped = false,
-                IsNew = false,
-                IsSelected = false,
-                WearableId = "w1",
-            });
-
-            foreach (RareBackground background in view.backgroundsByRarityConfiguration)
-                Assert.AreEqual(background.rarity == nftRarity, background.container.activeSelf);
         }
 
         private static IEnumerable<NftRarity> GetAllRarities() =>

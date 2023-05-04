@@ -10,13 +10,9 @@ namespace DCL.Backpack
 {
     public class WearableGridItemComponentView : BaseComponentView<WearableGridItemModel>
     {
-        [Serializable]
-        internal struct RareBackground
-        {
-            public NftRarity rarity;
-            public GameObject container;
-        }
 
+        [SerializeField] internal NftRarityBackgroundSO rarityNftBackgrounds;
+        [SerializeField] internal Image nftBackground;
         [SerializeField] internal GameObject selectedContainer;
         [SerializeField] internal GameObject equippedContainer;
         [SerializeField] internal GameObject hoverUnequippedContainer;
@@ -26,9 +22,7 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject isNewContainer;
         [SerializeField] internal ImageComponentView image;
         [SerializeField] internal Button interactButton;
-        [SerializeField] internal RareBackground[] backgroundsByRarityConfiguration;
 
-        private Dictionary<NftRarity, GameObject> backgroundsByRarity;
         private string lastThumbnailUrl;
 
         public WearableGridItemModel Model => model;
@@ -40,9 +34,6 @@ namespace DCL.Backpack
         public override void Awake()
         {
             base.Awake();
-
-            backgroundsByRarity = backgroundsByRarityConfiguration
-               .ToDictionary(background => background.rarity, background => background.container);
 
             interactButton.onClick.AddListener(() =>
             {
@@ -87,11 +78,7 @@ namespace DCL.Backpack
                 lastThumbnailUrl = model.ImageUrl;
             }
 
-            foreach ((NftRarity _, GameObject container) in backgroundsByRarity)
-                container.SetActive(false);
-
-            if (backgroundsByRarity.TryGetValue(model.Rarity, out var go))
-                go.SetActive(true);
+            nftBackground.sprite = rarityNftBackgrounds.GetRarityImage(model.Rarity.ToString().ToLower());
         }
 
         public void Unselect()
