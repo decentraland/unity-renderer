@@ -508,18 +508,13 @@ namespace DCL.Backpack
         {
             wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
-                                        Arg.Any<string>(),
-                                        Arg.Any<NftRarity>(),
-                                        Arg.Any<NftCollectionType>(),
-                                        Arg.Any<ICollection<string>>(),
-                                        Arg.Any<string>(),
-                                        Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>())
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
             view.OnFilterWearables += Raise.Event<Action<string>>("all");
             yield return null;
 
-            view.Received()
+            view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
                      n.ResultCount == 50
                      && n.Current == 0
@@ -528,12 +523,38 @@ namespace DCL.Backpack
 
             wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                 Arg.Any<CancellationToken>(),
-                Arg.Any<string>(),
-                Arg.Any<NftRarity>(),
-                Arg.Any<NftCollectionType>(),
-                Arg.Any<ICollection<string>>(),
-                Arg.Any<string>(),
-                Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>());
+                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain);
+        }
+
+        [UnityTest]
+        public IEnumerator FilterWearablesByCategoryAndNameFromBreadcrumb()
+        {
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        category: "upper_body",
+                                        name: "festival",
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
+
+            view.OnFilterWearables += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
+            yield return null;
+
+            view.Received(1)
+                .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
+                     n.ResultCount == 50
+                     && n.Current == 0
+                     && n.Path[0].Filter == "all"
+                     && n.Path[0].Name == "All"
+                     && n.Path[1].Filter == "all&category=upper_body"
+                     && n.Path[1].Name == "upper_body"
+                     && n.Path[2].Filter == "all&category=upper_body&name=festival"
+                     && n.Path[2].Name == "festival"));
+
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                Arg.Any<CancellationToken>(),
+                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                category: "upper_body",
+                name: "festival");
         }
 
         [UnityTest]
