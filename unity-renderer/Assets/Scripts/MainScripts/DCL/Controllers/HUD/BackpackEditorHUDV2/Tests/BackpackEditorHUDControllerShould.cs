@@ -26,8 +26,10 @@ namespace DCL.Backpack
         private BackpackEditorHUDController backpackEditorHUDController;
         private WearableGridController wearableGridController;
         private AvatarSlotsHUDController avatarSlotsHUDController;
+        private BackpackFiltersController backpackFiltersController;
         private IWearableGridView wearableGridView;
         private IAvatarSlotsView avatarSlotsView;
+        private IBackpackFiltersComponentView backpackFiltersComponentView;
         private Texture2D testFace256Texture = new Texture2D(1, 1);
         private Texture2D testBodyTexture = new Texture2D(1, 1);
 
@@ -54,15 +56,19 @@ namespace DCL.Backpack
                 newUserExperienceAnalytics,
                 wearablesCatalogService);
 
+            backpackFiltersComponentView = Substitute.For<IBackpackFiltersComponentView>();
+            backpackFiltersController = new BackpackFiltersController(backpackFiltersComponentView, wearablesCatalogService);
+
+            avatarSlotsView = Substitute.For<IAvatarSlotsView>();
+            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
+
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
                 wearablesCatalogService,
                 dataStore.backpackV2,
-                Substitute.For<IBrowserBridge>());
-
-            avatarSlotsView = Substitute.For<IAvatarSlotsView>();
-
-            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
+                Substitute.For<IBrowserBridge>(),
+                backpackFiltersController,
+                avatarSlotsHUDController);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
