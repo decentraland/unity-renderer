@@ -117,6 +117,7 @@ namespace DCL.ECSComponents
             cameraModeRegister.Dispose();
             pointerLockRegister.Dispose();
             pointerEvents.Dispose();
+            videoEventRegister.Dispose();
         }
     }
 }

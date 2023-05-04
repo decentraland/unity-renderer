@@ -115,13 +115,6 @@ namespace Tests
         }
 
         /*[UnityTest]
-        public IEnumerator AttachVideoStateComponent()
-        {
-
-
-        }*/
-
-        /*[UnityTest]
         public IEnumerator UpdateVideoEventComponentWithVideoState()
         {
 

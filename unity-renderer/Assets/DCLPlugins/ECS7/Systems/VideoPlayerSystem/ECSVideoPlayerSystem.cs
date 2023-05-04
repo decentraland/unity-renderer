@@ -39,7 +39,8 @@ namespace ECSSystems.VideoPlayerSystem
 
                 playerModel.videoPlayer.Update();
 
-                int previousVideoState = (int)videoEventComponent.Get(playerComponentData.scene, playerComponentData.entity).model.State;
+                var videoEventModel = videoEventComponent.Get(playerComponentData.scene, playerComponentData.entity).model;
+                int previousVideoState = (int)videoEventModel.State;
                 int currentVideoState = (int)playerModel.videoPlayer.GetState();
                 if (previousVideoState != currentVideoState)
                 {
@@ -51,7 +52,8 @@ namespace ECSSystems.VideoPlayerSystem
                         {
                             State = (VideoState)currentVideoState,
                             CurrentOffset = playerModel.videoPlayer.GetTime(),
-                            VideoLength = playerModel.videoPlayer.GetDuration()
+                            VideoLength = playerModel.videoPlayer.GetDuration(),
+                            Timestamp = videoEventModel.Timestamp + 1
                         },
                         ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
                     );
