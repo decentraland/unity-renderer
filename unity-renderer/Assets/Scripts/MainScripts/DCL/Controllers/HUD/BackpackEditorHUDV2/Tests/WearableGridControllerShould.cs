@@ -113,7 +113,7 @@ namespace DCL.Backpack
 
         [UnityTest]
         [TestCase(14, 1, ExpectedResult = null)]
-        [TestCase(0, 1, ExpectedResult = null)]
+        [TestCase(0, 0, ExpectedResult = null)]
         [TestCase(16, 2, ExpectedResult = null)]
         [TestCase(87, 6, ExpectedResult = null)]
         [TestCase(1356, 91, ExpectedResult = null)]
@@ -128,7 +128,7 @@ namespace DCL.Backpack
             controller.LoadWearablesWithFilters();
             yield return null;
 
-            view.Received(1).SetWearablePages(1, expectedTotalPages);
+            view.Received(1).SetWearablePages(expectedTotalPages);
         }
 
         [UnityTest]
@@ -444,7 +444,7 @@ namespace DCL.Backpack
                                         Arg.Any<string>(),
                                         Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>());
 
-            view.Received(1).SetWearablePages(3, 4);
+            view.Received(1).SetWearablePages(4);
         }
 
         [Test]
