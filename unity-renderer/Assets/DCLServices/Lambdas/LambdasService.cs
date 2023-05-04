@@ -17,7 +17,7 @@ namespace DCLServices.Lambdas
         private Service<IWebRequestController> webRequestController;
         private Service<IWebRequestMonitor> urlTransactionMonitor;
 
-        public UniTask<(TResponse response, bool success)> Post<TResponse, TBody>(
+        public async UniTask<(TResponse response, bool success)> Post<TResponse, TBody>(
             string endPointTemplate,
             string endPoint,
             TBody postData,
@@ -27,14 +27,15 @@ namespace DCLServices.Lambdas
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var postDataJson = JsonUtility.ToJson(postData);
+            await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
+            return await SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
         }
 
-        public UniTask<(TResponse response, bool success)> Get<TResponse>(
+        public async UniTask<(TResponse response, bool success)> Get<TResponse>(
             string endPointTemplate,
             string endPoint,
             int timeout = ILambdasService.DEFAULT_TIMEOUT,
@@ -42,11 +43,26 @@ namespace DCLServices.Lambdas
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
+            await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
+            return await SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
+        }
+
+        public UniTask<(TResponse response, bool success)> GetFromSpecificUrl<TResponse>(
+            string endPointTemplate,
+            string url,
+            int timeout = ILambdasService.DEFAULT_TIMEOUT,
+            int attemptsNumber = ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
+            CancellationToken cancellationToken = default,
+            params (string paramName, string paramValue)[] urlEncodedParams)
+        {
+            var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
+
+            return SendRequestAsync<TResponse>(wr, cancellationToken, url, transaction, urlEncodedParams);
         }
 
         private async UniTask<(TResponse response, bool success)> SendRequestAsync<TResponse>(

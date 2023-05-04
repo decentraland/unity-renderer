@@ -12,11 +12,8 @@ namespace DCL.Backpack
         void CreateAvatarSlotSection(string sectionName, bool addSeparator);
         void RebuildLayout();
         void AddSlotToSection(string sectionName, string slotCategory);
-        void SetSlotNftImage(string category, string imageUrl);
-        void SetWearableId(string category, string wearableId);
-        void SetSlotRarity(string category, string rarity);
         void DisablePreviousSlot(string category);
-        void SetSlotsAsHidden(string[] slotsToHide, string hiddenBy);
+        void SetSlotContent(string category, WearableItem wearableItem, string bodyShape);
         void ResetCategorySlot(string category);
     }
 }

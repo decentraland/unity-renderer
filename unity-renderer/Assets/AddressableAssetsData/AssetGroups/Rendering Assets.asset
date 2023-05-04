@@ -29,10 +29,6 @@ MonoBehaviour:
     m_Address: MapDefaultEstates
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 746661f82ad547e5bbfd5f0930ad7e02
-    m_Address: OutlineRenderers
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

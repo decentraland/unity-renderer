@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.Quest
 {
-    public class QuestTrackerComponentViewTests
+    public class QuestTrackerComponentViewShould
     {
         private QuestTrackerComponentView questTrackerComponentView;
 
