@@ -24,15 +24,12 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
 import {
-  SceneFail,
   SceneLoad,
   SceneStart,
   SceneUnload,
-  SCENE_FAIL,
   SCENE_LOAD,
   SCENE_START,
   SCENE_UNLOAD,
-  signalSceneFail,
   signalSceneLoad,
   signalSceneStart,
   signalSceneUnload
@@ -84,7 +81,6 @@ export type SceneLifeCycleStatusReport = { sceneId: string; status: SceneLifeCyc
 export const sceneEvents = mitt<{
   [SCENE_LOAD]: SceneLoad
   [SCENE_START]: SceneStart
-  [SCENE_FAIL]: SceneFail
   [SCENE_UNLOAD]: SceneUnload
 }>()
 
@@ -375,38 +371,6 @@ export class SceneWorker {
     this.ready |= SceneWorkerReadyState.LOADED
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
-
-    const WORKER_TIMEOUT = 120_000
-    setTimeout(() => this.onLoadTimeout(), WORKER_TIMEOUT)
-  }
-
-  private onLoadTimeout() {
-    if (!this.sceneStarted) {
-      this.ready |= SceneWorkerReadyState.LOADING_FAILED
-
-      const state: string[] = []
-
-      for (const i in SceneWorkerReadyState) {
-        if (!isNaN(i as any)) {
-          if (this.ready & (i as any)) {
-            state.push(SceneWorkerReadyState[i])
-          }
-        }
-      }
-
-      this.logger.warn('SceneTimedOut', state.join('+'))
-
-      this.sceneStarted = true
-      this.rpcContext.sendSceneEvent('sceneStart', {})
-
-      if (!(this.ready & SceneWorkerReadyState.INITIALIZED)) {
-        // this message should be sent upon failure to unlock the loading screen
-        // when a scene is malformed and never emits InitMessagesFinished
-        this.sendBatch([{ payload: {}, type: 'InitMessagesFinished' }])
-      }
-
-      sceneEvents.emit(SCENE_FAIL, signalSceneFail(this.loadableScene))
-    }
   }
 
   private sendBatch(actions: EntityAction[]): void {
