@@ -12,7 +12,10 @@ namespace DCL.Backpack
     {
 
         [SerializeField] internal NftRarityBackgroundSO rarityNftBackgrounds;
+        [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
         [SerializeField] internal Image nftBackground;
+        [SerializeField] internal Image categoryImage;
+        [SerializeField] internal Image categoryBackground;
         [SerializeField] internal GameObject selectedContainer;
         [SerializeField] internal GameObject equippedContainer;
         [SerializeField] internal GameObject hoverUnequippedContainer;
@@ -78,7 +81,10 @@ namespace DCL.Backpack
                 lastThumbnailUrl = model.ImageUrl;
             }
 
-            nftBackground.sprite = rarityNftBackgrounds.GetRarityImage(model.Rarity.ToString().ToLower());
+            string nftRarity = model.Rarity.ToString().ToLower();
+            nftBackground.sprite = rarityNftBackgrounds.GetRarityImage(nftRarity);
+            categoryBackground.color = nftTypesIcons.GetColor(nftRarity);
+            categoryImage.sprite = nftTypesIcons.GetTypeImage(model.Category);
         }
 
         public void Unselect()

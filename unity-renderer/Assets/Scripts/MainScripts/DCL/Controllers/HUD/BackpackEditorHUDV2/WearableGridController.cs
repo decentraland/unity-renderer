@@ -210,6 +210,7 @@ namespace DCL.Backpack
             {
                 WearableId = wearable.id,
                 Rarity = rarity,
+                Category = wearable.data.category,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
                 IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
                 IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
