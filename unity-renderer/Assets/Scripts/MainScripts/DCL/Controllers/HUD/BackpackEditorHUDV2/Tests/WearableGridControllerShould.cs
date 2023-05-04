@@ -3,7 +3,6 @@ using DCL.Browser;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
-using NSubstitute.Extensions;
 using NUnit.Framework;
 using System;
 using System.Collections;
