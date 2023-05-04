@@ -10,6 +10,7 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalMaterial> materialComponent { get; }
     IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent { get; }
     IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent { get; }
+    IInternalECSComponent<InternalVideoEvent> videoEventComponent { get; }
     IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
     IInternalECSComponent<InternalColliders> customLayerColliderComponent { get; }

@@ -43,8 +43,7 @@ namespace DCL.ECS7
             SystemsContext systemsContext = new SystemsContext(componentWriter,
                 internalEcsComponents,
                 new ComponentGroups(componentsManager),
-                (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD),
-                (ECSComponent<PBVideoEvent>)componentsManager.GetOrCreateComponent(ComponentID.VIDEO_EVENT));
+                (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD));
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
 

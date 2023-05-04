@@ -18,6 +18,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
     public IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent { get; }
     public IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent { get; }
+    public IInternalECSComponent<InternalVideoEvent> videoEventComponent { get; }
     public IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     public IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
     public IInternalECSComponent<InternalColliders> customLayerColliderComponent { get; }
@@ -125,6 +126,14 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 
         videoPlayerComponent = new InternalECSComponent<InternalVideoPlayer>(
             InternalECSComponentsId.VIDEO_PLAYER,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors);
+
+        videoEventComponent = new InternalECSComponent<InternalVideoEvent>(
+            InternalECSComponentsId.VIDEO_EVENTS,
             componentsManager,
             componentsFactory,
             null,

@@ -26,14 +26,17 @@ namespace DCL.ECSComponents
         internal bool isValidUrl = false;
 
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
+        private readonly IInternalECSComponent<InternalVideoEvent> videoEventInternalComponent;
         private bool canVideoBePlayed => isRendererActive && hadUserInteraction && isValidUrl;
 
         public VideoPlayerHandler(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
+            IInternalECSComponent<InternalVideoEvent> videoEventInternalComponent,
             DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen,
             IECSComponentWriter componentWriter)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
+            this.videoEventInternalComponent = videoEventInternalComponent;
             this.loadingScreen = loadingScreen;
             this.componentWriter = componentWriter;
         }
@@ -57,6 +60,7 @@ namespace DCL.ECSComponents
             loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
 
             componentWriter.RemoveComponent(scene, entity, ComponentID.VIDEO_EVENT);
+            videoEventInternalComponent.RemoveFor(scene, entity);
             videoPlayerInternalComponent.RemoveFor(scene, entity);
             videoPlayer?.Dispose();
         }
@@ -94,19 +98,25 @@ namespace DCL.ECSComponents
 
             lastModel = model;
 
-            // Add GrowOnlyValueSet VideoEvent component
+            // Add GrowOnlyValueSet VideoEvent component + its internalComponent counterpart
+            var currentVideoState = (VideoState)videoPlayer.GetState();
             componentWriter.AppendComponent(
                 scene.sceneData.sceneNumber,
                 entity.entityId,
                 ComponentID.VIDEO_EVENT,
                 new PBVideoEvent()
                 {
-                    State = (VideoState)videoPlayer.GetState(),
+                    State = currentVideoState,
                     CurrentOffset = videoPlayer.GetTime(),
                     VideoLength = videoPlayer.GetDuration()
                 },
                 ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
             );
+            videoEventInternalComponent.PutFor(scene, entity, new InternalVideoEvent()
+            {
+                timeStamp = 1,
+                videoState = currentVideoState
+            });
 
             ConditionsToPlayVideoChanged();
         }

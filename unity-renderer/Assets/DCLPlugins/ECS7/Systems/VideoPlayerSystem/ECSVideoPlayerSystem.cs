@@ -11,7 +11,7 @@ namespace ECSSystems.VideoPlayerSystem
     {
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
         private readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
-        private readonly ECSComponent<PBVideoEvent> videoEventComponent;
+        private readonly IInternalECSComponent<InternalVideoEvent> videoEventComponent;
         private readonly IECSComponentWriter componentWriter;
 
         private static readonly Vector2 VIDEO_TEXTURE_SCALE = new Vector2(1, -1);
@@ -19,7 +19,7 @@ namespace ECSSystems.VideoPlayerSystem
         public ECSVideoPlayerSystem(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent,
             IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent,
-            ECSComponent<PBVideoEvent> videoEventComponent,
+            IInternalECSComponent<InternalVideoEvent> videoEventComponent,
             IECSComponentWriter componentWriter)
         {
             this.videoPlayerComponent = videoPlayerComponent;
@@ -39,21 +39,33 @@ namespace ECSSystems.VideoPlayerSystem
 
                 playerModel.videoPlayer.Update();
 
-                var videoEventModel = videoEventComponent.Get(playerComponentData.scene, playerComponentData.entity).model;
-                int previousVideoState = (int)videoEventModel.State;
+                var videoEventModel = videoEventComponent.GetFor(playerComponentData.scene, playerComponentData.entity).model;
+                int previousVideoState = (int)videoEventModel.videoState;
                 int currentVideoState = (int)playerModel.videoPlayer.GetState();
+
                 if (previousVideoState != currentVideoState)
                 {
+                    uint updatedTimestamp = videoEventModel.timeStamp + 1;
+                    VideoState updatedVideoState = (VideoState)currentVideoState;
+
+                    // Update internal component for future checks
+                    videoEventComponent.PutFor(playerComponentData.scene, playerComponentData.entity,
+                    new InternalVideoEvent(){
+                        videoState = updatedVideoState,
+                        timeStamp = updatedTimestamp
+                    });
+
+                    // Update GrowOnlyValueSet VideoEvent component for the video player entity
                     componentWriter.AppendComponent(
                         playerComponentData.scene.sceneData.sceneNumber,
                         playerComponentData.entity.entityId,
                         ComponentID.VIDEO_EVENT,
                         new PBVideoEvent()
                         {
-                            State = (VideoState)currentVideoState,
+                            State = updatedVideoState,
                             CurrentOffset = playerModel.videoPlayer.GetTime(),
                             VideoLength = playerModel.videoPlayer.GetDuration(),
-                            Timestamp = videoEventModel.Timestamp + 1
+                            Timestamp = updatedTimestamp
                         },
                         ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
                     );

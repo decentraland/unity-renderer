@@ -4,6 +4,7 @@ using DCL.ECSComponents;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
+using VideoState = DCL.ECSComponents.VideoState;
 
 namespace DCL.ECS7.InternalComponents
 {
@@ -58,6 +59,12 @@ namespace DCL.ECS7.InternalComponents
 
         public WebVideoPlayer videoPlayer = null;
         public IList<MaterialAssigned> assignedMaterials;
+    }
+
+    public class InternalVideoEvent : InternalComponent
+    {
+        public VideoState videoState;
+        public uint timeStamp = 0;
     }
 
     public class InternalColliders : InternalComponent
