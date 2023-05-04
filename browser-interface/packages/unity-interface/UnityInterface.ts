@@ -54,8 +54,8 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
-import { isWorldLoaderActive } from "../shared/realm/selectors"
-import { ensureRealmAdapter } from "../shared/realm/ensureRealmAdapter"
+import { isWorldLoaderActive } from '../shared/realm/selectors'
+import { ensureRealmAdapter } from '../shared/realm/ensureRealmAdapter'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -335,8 +335,7 @@ export class UnityInterface implements IUnityInterface {
     this.SendMessageToUnity('HUDController', 'TriggerSelfUserExpression', expressionId)
   }
 
-  public async UpdateMinimapSceneInformation(info: MinimapSceneInfo[])
-  {
+  public async UpdateMinimapSceneInformation(info: MinimapSceneInfo[]) {
     const adapter = await ensureRealmAdapter()
     const isWorldScene = isWorldLoaderActive(adapter)
     const payload = JSON.stringify({ isWorldScene, scenesInfo: info })
@@ -344,8 +343,7 @@ export class UnityInterface implements IUnityInterface {
     this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', payload)
   }
 
-  public UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[])
-  {
+  public UpdateMinimapSceneInformationFromAWorld(info: MinimapSceneInfo[]) {
     this.SendMessageToUnity('Main', 'UpdateMinimapSceneInformation', JSON.stringify(info))
     const isWorldScene = false
     const payload = JSON.stringify({ isWorldScene, scenesInfo: info })
