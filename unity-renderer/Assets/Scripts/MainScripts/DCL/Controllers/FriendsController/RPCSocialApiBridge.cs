@@ -1,10 +1,7 @@
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using Decentraland.Renderer.Common;
-using Decentraland.Renderer.RendererServices;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
-using RPC;
 using rpc_csharp;
 using rpc_csharp.transport;
 using System;
@@ -194,26 +191,6 @@ namespace DCL.Social.Friends
                 await UniTask.SwitchToMainThread(cancellationToken);
             }
             finally { await UniTask.SwitchToMainThread(); }
-        }
-
-        FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code)
-        {
-            switch (code)
-            {
-                default:
-                case FriendshipErrorCode.FecUnknown:
-                    return FriendRequestErrorCodes.Unknown;
-                case FriendshipErrorCode.FecBlockedUser:
-                    return FriendRequestErrorCodes.BlockedUser;
-                case FriendshipErrorCode.FecInvalidRequest:
-                    return FriendRequestErrorCodes.InvalidRequest;
-                case FriendshipErrorCode.FecNonExistingUser:
-                    return FriendRequestErrorCodes.NonExistingUser;
-                case FriendshipErrorCode.FecNotEnoughTimePassed:
-                    return FriendRequestErrorCodes.NotEnoughTimePassed;
-                case FriendshipErrorCode.FecTooManyRequestsSent:
-                    return FriendRequestErrorCodes.TooManyRequestsSent;
-            }
         }
     }
 }
