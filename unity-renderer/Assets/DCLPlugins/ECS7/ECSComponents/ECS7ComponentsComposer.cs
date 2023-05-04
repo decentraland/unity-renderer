@@ -1,10 +1,10 @@
-using System;
 using DCL.ECS7;
 using DCL.ECSComponents.UIDropdown;
 using DCL.ECSComponents.UIInput;
 using DCL.ECSComponents.UIText;
 using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents;
+using System;
 
 namespace DCL.ECSComponents
 {
@@ -30,6 +30,7 @@ namespace DCL.ECSComponents
         private readonly VisibilityComponentRegister visibilityComponentRegister;
         private readonly PointerEventsRegister pointerEvents;
         private readonly VideoPlayerRegister videoPlayerRegister;
+        private readonly GltfContainerLoadingStateRegister gltfContainerLoadingStateRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -79,6 +80,7 @@ namespace DCL.ECSComponents
             pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
+            gltfContainerLoadingStateRegister = new GltfContainerLoadingStateRegister(ComponentID.GLTF_CONTAINER_LOADING_STATE, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -115,6 +117,7 @@ namespace DCL.ECSComponents
             cameraModeRegister.Dispose();
             pointerLockRegister.Dispose();
             pointerEvents.Dispose();
+            gltfContainerLoadingStateRegister.Dispose();
         }
     }
 }
