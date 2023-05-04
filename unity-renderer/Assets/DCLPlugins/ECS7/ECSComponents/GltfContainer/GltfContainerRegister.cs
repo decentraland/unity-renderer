@@ -1,5 +1,5 @@
-using System;
 using DCL.ECSRuntime;
+using System;
 
 namespace DCL.ECSComponents
 {
@@ -14,13 +14,16 @@ namespace DCL.ECSComponents
         {
             var dataStoreEcs7 = DataStore.i.ecs7;
             var featureFlags = DataStore.i.featureFlags;
+
             factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBGltfContainer>,
                 () => new GltfContainerHandler(
                     internalComponents.onPointerColliderComponent,
                     internalComponents.physicColliderComponent,
                     internalComponents.renderersComponent,
+                    internalComponents.GltfContainerLoadingStateComponent,
                     dataStoreEcs7,
                     featureFlags));
+
             componentWriter.AddOrReplaceComponentSerializer<PBGltfContainer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

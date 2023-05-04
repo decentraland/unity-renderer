@@ -31,6 +31,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalPointerEvents> PointerEventsComponent { get; }
     public IInternalECSComponent<InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsComponent { get; }
     public IInternalECSComponent<InternalRaycast> raycastComponent { get; }
+    public IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -183,6 +184,15 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             markAsDirtyComponents,
             crdtExecutors
         );
+
+        GltfContainerLoadingStateComponent = new InternalECSComponent<InternalGltfContainerLoadingState>(
+            InternalECSComponentsId.GLTF_CONTAINER_LOADING_STATE,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors
+        );
     }
 
     public void Dispose()
@@ -205,6 +215,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         audioSourceComponent.Dispose();
         PointerEventsComponent.Dispose();
         RegisteredUiPointerEventsComponent.Dispose();
+        GltfContainerLoadingStateComponent.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()

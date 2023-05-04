@@ -29,18 +29,23 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalColliders> pointerColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> physicColliderComponent;
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
+        private readonly IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent;
+
         private readonly DataStore_ECS7 dataStoreEcs7;
-        private DataStore_FeatureFlag featureFlags;
+        private readonly DataStore_FeatureFlag featureFlags;
 
         public GltfContainerHandler(IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicColliderComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
-            DataStore_ECS7 dataStoreEcs7, DataStore_FeatureFlag featureFlags)
+            IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent,
+            DataStore_ECS7 dataStoreEcs7,
+            DataStore_FeatureFlag featureFlags)
         {
             this.featureFlags = featureFlags;
             this.pointerColliderComponent = pointerColliderComponent;
             this.physicColliderComponent = physicColliderComponent;
             this.renderersComponent = renderersComponent;
+            this.gltfContainerLoadingStateComponent = gltfContainerLoadingStateComponent;
             this.dataStoreEcs7 = dataStoreEcs7;
         }
 
@@ -62,6 +67,7 @@ namespace DCL.ECSComponents
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             CleanUp(scene, entity);
+            gltfContainerLoadingStateComponent.RemoveFor(scene, entity, new InternalGltfContainerLoadingState() { GltfContainerRemoved = true });
             Object.Destroy(gameObject);
         }
 
@@ -74,8 +80,10 @@ namespace DCL.ECSComponents
 
             CleanUp(scene, entity);
 
+            gltfContainerLoadingStateComponent.PutFor(scene, entity, new InternalGltfContainerLoadingState() { LoadingState = LoadingState.Loading });
+
             gltfLoader.OnSuccessEvent += rendereable => OnLoadSuccess(scene, entity, rendereable);
-            gltfLoader.OnFailEvent += exception => OnLoadFail(scene, exception);
+            gltfLoader.OnFailEvent += exception => OnLoadFail(scene, entity, exception);
 
             dataStoreEcs7.AddPendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
             gltfLoader.Load(model.Src);
@@ -95,13 +103,16 @@ namespace DCL.ECSComponents
             physicColliderComponent.AddColliders(scene, entity, physicColliders, (int)ColliderLayer.ClPhysics);
             renderersComponent.AddRenderers(scene, entity, renderers);
 
+            gltfContainerLoadingStateComponent.PutFor(scene, entity, new InternalGltfContainerLoadingState() { LoadingState = LoadingState.Finished });
+
             // TODO: modify Animator component to remove `AddShapeReady` usage
             dataStoreEcs7.AddShapeReady(entity.entityId, gameObject);
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
         }
 
-        private void OnLoadFail(IParcelScene scene, Exception exception)
+        private void OnLoadFail(IParcelScene scene, IDCLEntity entity, Exception exception)
         {
+            gltfContainerLoadingStateComponent.PutFor(scene, entity, new InternalGltfContainerLoadingState() { LoadingState = LoadingState.FinishedWithError });
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
         }
 

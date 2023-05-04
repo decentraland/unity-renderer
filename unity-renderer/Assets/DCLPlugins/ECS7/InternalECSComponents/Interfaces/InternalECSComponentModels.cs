@@ -1,6 +1,6 @@
 using DCL.Components.Video.Plugin;
-using System.Collections.Generic;
 using DCL.ECSComponents;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
@@ -62,7 +62,7 @@ namespace DCL.ECS7.InternalComponents
 
     public class InternalColliders : InternalComponent
     {
-        public KeyValueSet<Collider, int> colliders = new KeyValueSet<Collider, int>();
+        public KeyValueSet<Collider, uint> colliders = new KeyValueSet<Collider, uint>();
     }
 
     public class InternalRenderers : InternalComponent
@@ -81,8 +81,8 @@ namespace DCL.ECS7.InternalComponents
         public Bounds entityLocalMeshBounds = new Bounds();
         public bool meshesDirty = false;
         public IList<Renderer> renderers;
-        public KeyValueSet<Collider, int> physicsColliders;
-        public KeyValueSet<Collider, int> pointerColliders;
+        public KeyValueSet<Collider, uint> physicsColliders;
+        public KeyValueSet<Collider, uint> pointerColliders;
         public AudioSource audioSource;
     }
 
@@ -162,5 +162,11 @@ namespace DCL.ECS7.InternalComponents
     public class InternalRaycast : InternalComponent
     {
         public PBRaycast raycastModel;
+    }
+
+    public class InternalGltfContainerLoadingState : InternalComponent
+    {
+        public LoadingState LoadingState;
+        public bool GltfContainerRemoved;
     }
 }
