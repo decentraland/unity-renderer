@@ -3,12 +3,14 @@ using Cysharp.Threading.Tasks.Linq;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using rpc_csharp;
 using rpc_csharp.transport;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -26,6 +28,7 @@ namespace DCL.Social.Friends
     {
         private RPCSocialApiBridge rpcSocialApiBridge;
         private MockSocialServerContext context;
+        private IUserProfileBridge userProfileBridge;
 
         private const string OWN_ID = "My custom id";
         private const string ACCESS_TOKEN = "Token";
@@ -33,7 +36,7 @@ namespace DCL.Social.Friends
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            var userProfileBridge = Substitute.For<IUserProfileBridge>();
+            userProfileBridge = Substitute.For<IUserProfileBridge>();
 
             var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
             ownProfile.UpdateData(new UserProfileModel { userId = OWN_ID });
@@ -109,7 +112,22 @@ namespace DCL.Social.Friends
                     }
                 };
 
-                rpcSocialApiBridge.OnFriendAdded += friend => { friends.Add(friend.userId, friend); };
+                var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+
+                userProfile.UpdateData(new UserProfileModel()
+                {
+                    name = "Random name",
+                });
+
+                userProfileBridge.RequestFullUserProfileAsync(Arg.Any<string>())
+                                 .Returns(new UniTask<UserProfile>(userProfile));
+
+                rpcSocialApiBridge.OnFriendAdded += friend =>
+                {
+                    if (string.IsNullOrEmpty(friend.userName)) { throw new InvalidCastException("Friend doesn't have a name"); }
+
+                    friends.Add(friend.userId, friend);
+                };
 
                 await rpcSocialApiBridge.GetInitializationInformationAsync(cancellationToken);
 
