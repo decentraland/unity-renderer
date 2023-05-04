@@ -71,33 +71,31 @@ namespace Decentraland.Social.Friendships {
             "KAsyNy5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLkZyaWVuZHNo",
             "aXBFdmVudFBheWxvYWQSQQoKYXV0aF90b2tlbhgCIAEoCzIoLmRlY2VudHJh",
             "bGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUGF5bG9hZEgAiAEBQg0KC19hdXRo",
-            "X3Rva2VuIrgBChhVcGRhdGVGcmllbmRzaGlwUmVzcG9uc2USRQoFZXJyb3IY",
-            "ASABKA4yNC5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLkZyaWVu",
-            "ZHNoaXBFcnJvckNvZGVIABJJCgVldmVudBgCIAEoCzI4LmRlY2VudHJhbGFu",
-            "ZC5zb2NpYWwuZnJpZW5kc2hpcHMuRnJpZW5kc2hpcEV2ZW50UmVzcG9uc2VI",
-            "AEIKCghyZXNwb25zZSJ0CihTdWJzY3JpYmVGcmllbmRzaGlwRXZlbnRzVXBk",
-            "YXRlc1Jlc3BvbnNlEkgKBmV2ZW50cxgBIAMoCzI4LmRlY2VudHJhbGFuZC5z",
-            "b2NpYWwuZnJpZW5kc2hpcHMuRnJpZW5kc2hpcEV2ZW50UmVzcG9uc2UiNwoH",
-            "UGF5bG9hZBIaCg1zeW5hcHNlX3Rva2VuGAEgASgJSACIAQFCEAoOX3N5bmFw",
-            "c2VfdG9rZW4qmAEKE0ZyaWVuZHNoaXBFcnJvckNvZGUSGgoWVE9PX01BTllf",
-            "UkVRVUVTVFNfU0VOVBAAEhoKFk5PVF9FTk9VR0hfVElNRV9QQVNTRUQQARIQ",
-            "CgxCTE9DS0VEX1VTRVIQAhIVChFOT05fRVhJU1RJTkdfVVNFUhADEhMKD0lO",
-            "VkFMSURfUkVRVUVTVBAEEgsKB1VOS05PV04QBTKXBAoSRnJpZW5kc2hpcHNT",
-            "ZXJ2aWNlEmIKCkdldEZyaWVuZHMSKC5kZWNlbnRyYWxhbmQuc29jaWFsLmZy",
-            "aWVuZHNoaXBzLlBheWxvYWQaJi5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVu",
-            "ZHNoaXBzLlVzZXJzIgAwARJuChBHZXRSZXF1ZXN0RXZlbnRzEiguZGVjZW50",
-            "cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5QYXlsb2FkGi4uZGVjZW50cmFs",
-            "YW5kLnNvY2lhbC5mcmllbmRzaGlwcy5SZXF1ZXN0RXZlbnRzIgASjgEKFVVw",
-            "ZGF0ZUZyaWVuZHNoaXBFdmVudBI4LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJp",
-            "ZW5kc2hpcHMuVXBkYXRlRnJpZW5kc2hpcFBheWxvYWQaOS5kZWNlbnRyYWxh",
-            "bmQuc29jaWFsLmZyaWVuZHNoaXBzLlVwZGF0ZUZyaWVuZHNoaXBSZXNwb25z",
-            "ZSIAEpsBCiBTdWJzY3JpYmVGcmllbmRzaGlwRXZlbnRzVXBkYXRlcxIoLmRl",
-            "Y2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUGF5bG9hZBpJLmRlY2Vu",
-            "dHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuU3Vic2NyaWJlRnJpZW5kc2hp",
-            "cEV2ZW50c1VwZGF0ZXNSZXNwb25zZSIAMAFiBnByb3RvMw=="));
+            "X3Rva2VuImMKGFVwZGF0ZUZyaWVuZHNoaXBSZXNwb25zZRJHCgVldmVudBgB",
+            "IAEoCzI4LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuRnJpZW5k",
+            "c2hpcEV2ZW50UmVzcG9uc2UidAooU3Vic2NyaWJlRnJpZW5kc2hpcEV2ZW50",
+            "c1VwZGF0ZXNSZXNwb25zZRJICgZldmVudHMYASADKAsyOC5kZWNlbnRyYWxh",
+            "bmQuc29jaWFsLmZyaWVuZHNoaXBzLkZyaWVuZHNoaXBFdmVudFJlc3BvbnNl",
+            "IjcKB1BheWxvYWQSGgoNc3luYXBzZV90b2tlbhgBIAEoCUgAiAEBQhAKDl9z",
+            "eW5hcHNlX3Rva2VuKpUBCg1TZXJ2aWNlRXJyb3JzEgsKB1VOS05PV04QABIQ",
+            "CgtCQURfUkVRVUVTVBCQAxIRCgxVTkFVVEhPUklaRUQQkQMSDgoJRk9SQklE",
+            "REVOEJMDEg4KCU5PVF9GT1VORBCUAxIWChFUT09fTUFOWV9SRVFVRVNUUxCt",
+            "AxIaChVJTlRFUk5BTF9TRVJWRVJfRVJST1IQ9AMylwQKEkZyaWVuZHNoaXBz",
+            "U2VydmljZRJiCgpHZXRGcmllbmRzEiguZGVjZW50cmFsYW5kLnNvY2lhbC5m",
+            "cmllbmRzaGlwcy5QYXlsb2FkGiYuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmll",
+            "bmRzaGlwcy5Vc2VycyIAMAESbgoQR2V0UmVxdWVzdEV2ZW50cxIoLmRlY2Vu",
+            "dHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUGF5bG9hZBouLmRlY2VudHJh",
+            "bGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUmVxdWVzdEV2ZW50cyIAEo4BChVV",
+            "cGRhdGVGcmllbmRzaGlwRXZlbnQSOC5kZWNlbnRyYWxhbmQuc29jaWFsLmZy",
+            "aWVuZHNoaXBzLlVwZGF0ZUZyaWVuZHNoaXBQYXlsb2FkGjkuZGVjZW50cmFs",
+            "YW5kLnNvY2lhbC5mcmllbmRzaGlwcy5VcGRhdGVGcmllbmRzaGlwUmVzcG9u",
+            "c2UiABKbAQogU3Vic2NyaWJlRnJpZW5kc2hpcEV2ZW50c1VwZGF0ZXMSKC5k",
+            "ZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlBheWxvYWQaSS5kZWNl",
+            "bnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlN1YnNjcmliZUZyaWVuZHNo",
+            "aXBFdmVudHNVcGRhdGVzUmVzcG9uc2UiADABYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Social.Friendships.FriendshipErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Social.Friendships.ServiceErrors), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.FriendshipEventResponse), global::Decentraland.Social.Friendships.FriendshipEventResponse.Parser, new[]{ "Request", "Accept", "Reject", "Delete", "Cancel" }, new[]{ "Body" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.FriendshipEventPayload), global::Decentraland.Social.Friendships.FriendshipEventPayload.Parser, new[]{ "Request", "Accept", "Reject", "Delete", "Cancel" }, new[]{ "Body" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.User), global::Decentraland.Social.Friendships.User.Parser, new[]{ "Address" }, null, null, null, null),
@@ -115,7 +113,7 @@ namespace Decentraland.Social.Friendships {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.CancelResponse), global::Decentraland.Social.Friendships.CancelResponse.Parser, new[]{ "User" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.CancelPayload), global::Decentraland.Social.Friendships.CancelPayload.Parser, new[]{ "User" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UpdateFriendshipPayload), global::Decentraland.Social.Friendships.UpdateFriendshipPayload.Parser, new[]{ "Event", "AuthToken" }, new[]{ "AuthToken" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UpdateFriendshipResponse), global::Decentraland.Social.Friendships.UpdateFriendshipResponse.Parser, new[]{ "Error", "Event" }, new[]{ "Response" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UpdateFriendshipResponse), global::Decentraland.Social.Friendships.UpdateFriendshipResponse.Parser, new[]{ "Event" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.SubscribeFriendshipEventsUpdatesResponse), global::Decentraland.Social.Friendships.SubscribeFriendshipEventsUpdatesResponse.Parser, new[]{ "Events" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Payload), global::Decentraland.Social.Friendships.Payload.Parser, new[]{ "SynapseToken" }, new[]{ "SynapseToken" }, null, null, null)
           }));
@@ -124,16 +122,17 @@ namespace Decentraland.Social.Friendships {
 
   }
   #region Enums
-  /// <summary>
-  /// Validation and anti-spam errors
-  /// </summary>
-  public enum FriendshipErrorCode {
-    [pbr::OriginalName("TOO_MANY_REQUESTS_SENT")] TooManyRequestsSent = 0,
-    [pbr::OriginalName("NOT_ENOUGH_TIME_PASSED")] NotEnoughTimePassed = 1,
-    [pbr::OriginalName("BLOCKED_USER")] BlockedUser = 2,
-    [pbr::OriginalName("NON_EXISTING_USER")] NonExistingUser = 3,
-    [pbr::OriginalName("INVALID_REQUEST")] InvalidRequest = 4,
-    [pbr::OriginalName("UNKNOWN")] Unknown = 5,
+  public enum ServiceErrors {
+    /// <summary>
+    /// proto3 requires that first value in enum have numeric value of 0
+    /// </summary>
+    [pbr::OriginalName("UNKNOWN")] Unknown = 0,
+    [pbr::OriginalName("BAD_REQUEST")] BadRequest = 400,
+    [pbr::OriginalName("UNAUTHORIZED")] Unauthorized = 401,
+    [pbr::OriginalName("FORBIDDEN")] Forbidden = 403,
+    [pbr::OriginalName("NOT_FOUND")] NotFound = 404,
+    [pbr::OriginalName("TOO_MANY_REQUESTS")] TooManyRequests = 429,
+    [pbr::OriginalName("INTERNAL_SERVER_ERROR")] InternalServerError = 500,
   }
 
   #endregion
@@ -4261,15 +4260,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public UpdateFriendshipResponse(UpdateFriendshipResponse other) : this() {
-      switch (other.ResponseCase) {
-        case ResponseOneofCase.Error:
-          Error = other.Error;
-          break;
-        case ResponseOneofCase.Event:
-          Event = other.Event.Clone();
-          break;
-      }
-
+      event_ = other.event_ != null ? other.event_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -4279,49 +4270,16 @@ namespace Decentraland.Social.Friendships {
       return new UpdateFriendshipResponse(this);
     }
 
-    /// <summary>Field number for the "error" field.</summary>
-    public const int ErrorFieldNumber = 1;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Social.Friendships.FriendshipErrorCode Error {
-      get { return responseCase_ == ResponseOneofCase.Error ? (global::Decentraland.Social.Friendships.FriendshipErrorCode) response_ : global::Decentraland.Social.Friendships.FriendshipErrorCode.TooManyRequestsSent; }
-      set {
-        response_ = value;
-        responseCase_ = ResponseOneofCase.Error;
-      }
-    }
-
     /// <summary>Field number for the "event" field.</summary>
-    public const int EventFieldNumber = 2;
+    public const int EventFieldNumber = 1;
+    private global::Decentraland.Social.Friendships.FriendshipEventResponse event_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Decentraland.Social.Friendships.FriendshipEventResponse Event {
-      get { return responseCase_ == ResponseOneofCase.Event ? (global::Decentraland.Social.Friendships.FriendshipEventResponse) response_ : null; }
+      get { return event_; }
       set {
-        response_ = value;
-        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.Event;
+        event_ = value;
       }
-    }
-
-    private object response_;
-    /// <summary>Enum of possible cases for the "response" oneof.</summary>
-    public enum ResponseOneofCase {
-      None = 0,
-      Error = 1,
-      Event = 2,
-    }
-    private ResponseOneofCase responseCase_ = ResponseOneofCase.None;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ResponseOneofCase ResponseCase {
-      get { return responseCase_; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearResponse() {
-      responseCase_ = ResponseOneofCase.None;
-      response_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4339,9 +4297,7 @@ namespace Decentraland.Social.Friendships {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Error != other.Error) return false;
       if (!object.Equals(Event, other.Event)) return false;
-      if (ResponseCase != other.ResponseCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -4349,9 +4305,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (responseCase_ == ResponseOneofCase.Error) hash ^= Error.GetHashCode();
-      if (responseCase_ == ResponseOneofCase.Event) hash ^= Event.GetHashCode();
-      hash ^= (int) responseCase_;
+      if (event_ != null) hash ^= Event.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -4370,12 +4324,8 @@ namespace Decentraland.Social.Friendships {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (responseCase_ == ResponseOneofCase.Error) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Error);
-      }
-      if (responseCase_ == ResponseOneofCase.Event) {
-        output.WriteRawTag(18);
+      if (event_ != null) {
+        output.WriteRawTag(10);
         output.WriteMessage(Event);
       }
       if (_unknownFields != null) {
@@ -4388,12 +4338,8 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (responseCase_ == ResponseOneofCase.Error) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Error);
-      }
-      if (responseCase_ == ResponseOneofCase.Event) {
-        output.WriteRawTag(18);
+      if (event_ != null) {
+        output.WriteRawTag(10);
         output.WriteMessage(Event);
       }
       if (_unknownFields != null) {
@@ -4406,10 +4352,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (responseCase_ == ResponseOneofCase.Error) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Error);
-      }
-      if (responseCase_ == ResponseOneofCase.Event) {
+      if (event_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
       }
       if (_unknownFields != null) {
@@ -4424,18 +4367,12 @@ namespace Decentraland.Social.Friendships {
       if (other == null) {
         return;
       }
-      switch (other.ResponseCase) {
-        case ResponseOneofCase.Error:
-          Error = other.Error;
-          break;
-        case ResponseOneofCase.Event:
-          if (Event == null) {
-            Event = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
-          }
-          Event.MergeFrom(other.Event);
-          break;
+      if (other.event_ != null) {
+        if (event_ == null) {
+          Event = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
+        }
+        Event.MergeFrom(other.Event);
       }
-
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -4451,18 +4388,11 @@ namespace Decentraland.Social.Friendships {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            response_ = input.ReadEnum();
-            responseCase_ = ResponseOneofCase.Error;
-            break;
-          }
-          case 18: {
-            global::Decentraland.Social.Friendships.FriendshipEventResponse subBuilder = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
-            if (responseCase_ == ResponseOneofCase.Event) {
-              subBuilder.MergeFrom(Event);
+          case 10: {
+            if (event_ == null) {
+              Event = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
             }
-            input.ReadMessage(subBuilder);
-            Event = subBuilder;
+            input.ReadMessage(Event);
             break;
           }
         }
@@ -4480,18 +4410,11 @@ namespace Decentraland.Social.Friendships {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 8: {
-            response_ = input.ReadEnum();
-            responseCase_ = ResponseOneofCase.Error;
-            break;
-          }
-          case 18: {
-            global::Decentraland.Social.Friendships.FriendshipEventResponse subBuilder = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
-            if (responseCase_ == ResponseOneofCase.Event) {
-              subBuilder.MergeFrom(Event);
+          case 10: {
+            if (event_ == null) {
+              Event = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
             }
-            input.ReadMessage(subBuilder);
-            Event = subBuilder;
+            input.ReadMessage(Event);
             break;
           }
         }

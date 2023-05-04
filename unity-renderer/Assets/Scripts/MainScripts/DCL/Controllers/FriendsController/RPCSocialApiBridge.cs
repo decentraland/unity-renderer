@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
+using Decentraland.Renderer.Common;
 using Decentraland.Renderer.RendererServices;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
@@ -190,18 +191,6 @@ namespace DCL.Social.Friends
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                switch (response.ResponseCase)
-                {
-                    case UpdateFriendshipResponse.ResponseOneofCase.Event:
-                        break;
-                    case UpdateFriendshipResponse.ResponseOneofCase.Error:
-                        var error = response.Error;
-                        throw new FriendshipException(ToErrorCode(error));
-                    case UpdateFriendshipResponse.ResponseOneofCase.None:
-                    default:
-                        throw new NotSupportedException(response.ResponseCase.ToString());
-                }
-
                 await UniTask.SwitchToMainThread(cancellationToken);
             }
             finally { await UniTask.SwitchToMainThread(); }
@@ -212,17 +201,17 @@ namespace DCL.Social.Friends
             switch (code)
             {
                 default:
-                case FriendshipErrorCode.Unknown:
+                case FriendshipErrorCode.FecUnknown:
                     return FriendRequestErrorCodes.Unknown;
-                case FriendshipErrorCode.BlockedUser:
+                case FriendshipErrorCode.FecBlockedUser:
                     return FriendRequestErrorCodes.BlockedUser;
-                case FriendshipErrorCode.InvalidRequest:
+                case FriendshipErrorCode.FecInvalidRequest:
                     return FriendRequestErrorCodes.InvalidRequest;
-                case FriendshipErrorCode.NonExistingUser:
+                case FriendshipErrorCode.FecNonExistingUser:
                     return FriendRequestErrorCodes.NonExistingUser;
-                case FriendshipErrorCode.NotEnoughTimePassed:
+                case FriendshipErrorCode.FecNotEnoughTimePassed:
                     return FriendRequestErrorCodes.NotEnoughTimePassed;
-                case FriendshipErrorCode.TooManyRequestsSent:
+                case FriendshipErrorCode.FecTooManyRequestsSent:
                     return FriendRequestErrorCodes.TooManyRequestsSent;
             }
         }

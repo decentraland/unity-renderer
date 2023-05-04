@@ -166,50 +166,6 @@ namespace DCL.Social.Friends
             });
         }
 
-        [UnityTest]
-        public IEnumerator RejectFriendshipAsyncKnownErrorResponse()
-        {
-            return UniTask.ToCoroutine(async () =>
-            {
-                var cancellationToken = new CancellationToken();
-                var friendId = "Friend ID";
-                var createdAt = 123;
-                var friendRequestId = $"{friendId}-{createdAt}";
-
-                context.updateFriendshipResponse = new UpdateFriendshipResponse()
-                {
-                    Error = FriendshipErrorCode.BlockedUser
-                };
-
-                var resultUserId = "";
-
-                rpcSocialApiBridge.OnFriendRequestRemoved += userId => { resultUserId = userId; };
-
-                Assert.ThrowsAsync<FriendshipException>(
-                    async () => await rpcSocialApiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken)
-                );
-            });
-        }
-
-        [UnityTest]
-        public IEnumerator RejectFriendshipAsyncNoneResponse()
-        {
-            return UniTask.ToCoroutine(async () =>
-            {
-                var cancellationToken = new CancellationToken();
-                var friendId = "Friend ID2";
-                var createdAt = 1234;
-                var friendRequestId = $"{friendId}-{createdAt}";
-
-                context.updateFriendshipResponse = new UpdateFriendshipResponse()
-                    { };
-
-                Assert.ThrowsAsync<NotSupportedException>(
-                    async () => await rpcSocialApiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken)
-                );
-            });
-        }
-
         private static FriendshipEventResponse CreateRejectFriendshipResponse()
         {
             return new FriendshipEventResponse()
