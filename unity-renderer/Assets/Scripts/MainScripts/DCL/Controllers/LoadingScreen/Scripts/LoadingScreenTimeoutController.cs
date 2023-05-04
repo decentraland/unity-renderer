@@ -14,8 +14,8 @@ namespace DCL.LoadingScreen
 {
     public class LoadingScreenTimeoutController : IDisposable
     {
-        private const int LOAD_SCENE_TIMEOUT = 10000;
-        private const int WEBSOCKET_TIMEOUT = 10000;
+        private const int LOAD_SCENE_TIMEOUT = 120000;
+        private const int WEBSOCKET_TIMEOUT = 15000;
 
         internal int currentEvaluatedTimeout;
 
