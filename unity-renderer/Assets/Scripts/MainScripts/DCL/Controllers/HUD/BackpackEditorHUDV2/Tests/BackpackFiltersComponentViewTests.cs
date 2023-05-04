@@ -93,56 +93,105 @@ namespace DCL.Backpack
         }
 
         [Test]
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(4)]
-        [TestCase(5)]
-        public void ChangeSortByDropdownCorrectly(int optionIndex)
+        public void ChangeSortByNewestCorrectly()
         {
             // Arrange
-            (NftOrderByOperation type, bool directionAscendent) resultSorting = (NftOrderByOperation.Date, true);
+            (NftOrderByOperation type, bool directionAscendent) resultSorting = (NftOrderByOperation.Name, true);
             backpackFiltersComponentView.OnSortByChanged += newSorting => resultSorting = newSorting;
+            var optionIndex = 0;
 
             // Act
             backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = false;
             backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = true;
 
             // Assert
-            switch (optionIndex)
-            {
-                case 0:
-                    // Newest
-                    Assert.AreEqual(NftOrderByOperation.Date, resultSorting.type);
-                    Assert.AreEqual(false, resultSorting.directionAscendent);
-                    break;
-                case 1:
-                    // Oldest
-                    Assert.AreEqual(NftOrderByOperation.Date, resultSorting.type);
-                    Assert.AreEqual(true, resultSorting.directionAscendent);
-                    break;
-                case 2:
-                    // Rarest
-                    Assert.AreEqual(NftOrderByOperation.Rarity, resultSorting.type);
-                    Assert.AreEqual(false, resultSorting.directionAscendent);
-                    break;
-                case 3:
-                    // Less rare
-                    Assert.AreEqual(NftOrderByOperation.Rarity, resultSorting.type);
-                    Assert.AreEqual(true, resultSorting.directionAscendent);
-                    break;
-                case 4:
-                    // Name A-Z
-                    Assert.AreEqual(NftOrderByOperation.Name, resultSorting.type);
-                    Assert.AreEqual(true, resultSorting.directionAscendent);
-                    break;
-                case 5:
-                    // Name Z-A
-                    Assert.AreEqual(NftOrderByOperation.Name, resultSorting.type);
-                    Assert.AreEqual(false, resultSorting.directionAscendent);
-                    break;
-            }
+            Assert.AreEqual(NftOrderByOperation.Date, resultSorting.type);
+            Assert.AreEqual(false, resultSorting.directionAscendent);
+        }
+
+        [Test]
+        public void ChangeSortByOldestCorrectly()
+        {
+            // Arrange
+            (NftOrderByOperation type, bool directionAscendent) resultSorting = (NftOrderByOperation.Name, true);
+            backpackFiltersComponentView.OnSortByChanged += newSorting => resultSorting = newSorting;
+            var optionIndex = 1;
+
+            // Act
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = false;
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = true;
+
+            // Assert
+            Assert.AreEqual(NftOrderByOperation.Date, resultSorting.type);
+            Assert.AreEqual(true, resultSorting.directionAscendent);
+        }
+
+        [Test]
+        public void ChangeSortByRarestCorrectly()
+        {
+            // Arrange
+            (NftOrderByOperation type, bool directionAscendent) resultSorting = (NftOrderByOperation.Name, true);
+            backpackFiltersComponentView.OnSortByChanged += newSorting => resultSorting = newSorting;
+            var optionIndex = 2;
+
+            // Act
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = false;
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = true;
+
+            // Assert
+            Assert.AreEqual(NftOrderByOperation.Rarity, resultSorting.type);
+            Assert.AreEqual(false, resultSorting.directionAscendent);
+        }
+
+        [Test]
+        public void ChangeSortByLessRareCorrectly()
+        {
+            // Arrange
+            (NftOrderByOperation type, bool directionAscendent) resultSorting = (NftOrderByOperation.Name, true);
+            backpackFiltersComponentView.OnSortByChanged += newSorting => resultSorting = newSorting;
+            var optionIndex = 3;
+
+            // Act
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = false;
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = true;
+
+            // Assert
+            Assert.AreEqual(NftOrderByOperation.Rarity, resultSorting.type);
+            Assert.AreEqual(true, resultSorting.directionAscendent);
+        }
+
+        [Test]
+        public void ChangeSortByNameA_ZCorrectly()
+        {
+            // Arrange
+            (NftOrderByOperation type, bool directionAscendent) resultSorting = (NftOrderByOperation.Name, true);
+            backpackFiltersComponentView.OnSortByChanged += newSorting => resultSorting = newSorting;
+            var optionIndex = 4;
+
+            // Act
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = false;
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = true;
+
+            // Assert
+            Assert.AreEqual(NftOrderByOperation.Name, resultSorting.type);
+            Assert.AreEqual(true, resultSorting.directionAscendent);
+        }
+
+        [Test]
+        public void ChangeSortByNameZ_ACorrectly()
+        {
+            // Arrange
+            (NftOrderByOperation type, bool directionAscendent) resultSorting = (NftOrderByOperation.Name, true);
+            backpackFiltersComponentView.OnSortByChanged += newSorting => resultSorting = newSorting;
+            var optionIndex = 5;
+
+            // Act
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = false;
+            backpackFiltersComponentView.sortByDropdown.GetOption(optionIndex).isOn = true;
+
+            // Assert
+            Assert.AreEqual(NftOrderByOperation.Name, resultSorting.type);
+            Assert.AreEqual(false, resultSorting.directionAscendent);
         }
 
         [Test]

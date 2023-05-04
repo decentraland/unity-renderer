@@ -47,32 +47,30 @@ namespace DCL.Backpack
             // Assert
             backpackFiltersComponentView.Received(1).LoadCollectionDropdown(
                 testCollections,
-                Arg.Any<WearableCollectionsAPIData.Collection>());
+                Arg.Is<WearableCollectionsAPIData.Collection>(x => x.urn == "decentraland" && x.name == "Decentraland"));
         }
 
         [Test]
         [TestCase(true)]
         [TestCase(false)]
-        public void SetOnlyCollectiblesCorrectly(bool isOn)
+        public void TriggerOnlyCollectiblesFilterFromViewCorrectly(bool onlyOnChainWearables)
         {
             // Arrange
             NftCollectionType testCollectionType = NftCollectionType.None;
             backpackFiltersController.OnCollectionTypeChanged += (collectionType) => testCollectionType = collectionType;
 
             // Act
-            backpackFiltersComponentView.OnOnlyCollectiblesChanged += Raise.Event<Action<bool>>(isOn);
+            backpackFiltersComponentView.OnOnlyCollectiblesChanged += Raise.Event<Action<bool>>(onlyOnChainWearables);
 
             // Assert
-            if (isOn)
-                Assert.IsFalse((testCollectionType & NftCollectionType.Base) == NftCollectionType.Base);
-            else
-                Assert.IsTrue((testCollectionType & NftCollectionType.Base) == NftCollectionType.Base);
+            bool containsBaseWearables = (testCollectionType & NftCollectionType.Base) != 0;
+            Assert.AreNotEqual(onlyOnChainWearables, containsBaseWearables);
         }
 
         [Test]
         [TestCase(true)]
         [TestCase(false)]
-        public void SetCollectionsCorrectly(bool containsDecentralandCollection)
+        public void TriggerCollectionsFilterFromViewCorrectly(bool containsDecentralandCollection)
         {
             // Arrange
             NftCollectionType testCollectionType = NftCollectionType.None;
@@ -86,13 +84,8 @@ namespace DCL.Backpack
                 new HashSet<string> { containsDecentralandCollection ? "decentraland" : "testCollection1", "testCollection2", "testCollection3" });
 
             // Assert
-            if (containsDecentralandCollection)
-                Assert.IsTrue((testCollectionType & NftCollectionType.OnChain) == NftCollectionType.OnChain);
-            else
-                Assert.IsFalse((testCollectionType & NftCollectionType.OnChain) == NftCollectionType.OnChain);
-
+            Assert.AreEqual(containsDecentralandCollection, (testCollectionType & NftCollectionType.OnChain) != 0);
             Assert.IsTrue((testCollectionType & NftCollectionType.ThirdParty) == NftCollectionType.ThirdParty);
-
             Assert.IsNotNull(testThirdPartyColections);
             Assert.AreEqual(!containsDecentralandCollection, testThirdPartyColections.Contains("testCollection1"));
             Assert.AreEqual(true, testThirdPartyColections.Contains("testCollection2"));
@@ -106,7 +99,7 @@ namespace DCL.Backpack
         [TestCase(NftOrderByOperation.Date, false)]
         [TestCase(NftOrderByOperation.Name, true)]
         [TestCase(NftOrderByOperation.Name, false)]
-        public void SetSortingCorrectly(NftOrderByOperation type, bool directionAscendent)
+        public void TriggerSortByFilterFromViewCorrectly(NftOrderByOperation type, bool directionAscendent)
         {
             // Arrange
             (NftOrderByOperation type, bool directionAscendent) testSorting = (NftOrderByOperation.Rarity, true);
@@ -121,7 +114,7 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void SetSearchTextCorrectly()
+        public void TriggerSearchFilterFromViewCorrectly()
         {
             // Arrange
             var testSearch = "";

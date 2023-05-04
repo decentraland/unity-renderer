@@ -125,7 +125,7 @@ namespace DCLServices.Lambdas
             return url;
         }
 
-        internal string AppendQueryParamsToUrl(string url, params (string paramName, string paramValue)[] urlEncodedParams)
+        private string AppendQueryParamsToUrl(string url, params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
