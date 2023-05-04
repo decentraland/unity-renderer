@@ -291,4 +291,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         return realmSelectorView;
     }
+
+    public void HideMapOnEnteringWorld()
+    {
+        placesAndEventsSection.Show();
+        mapSection.Hide();
+    }
 }

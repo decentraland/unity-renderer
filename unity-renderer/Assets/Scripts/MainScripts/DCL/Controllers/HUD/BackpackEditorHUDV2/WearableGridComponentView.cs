@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UIComponents.Scripts.Components;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
@@ -12,6 +13,8 @@ namespace DCL.Backpack
         [SerializeField] internal WearableGridItemComponentView wearableGridItemPrefab;
         [SerializeField] internal PageSelectorComponentView wearablePageSelector;
         [SerializeField] internal InfoCardComponentView infoCardComponentView;
+        [SerializeField] internal GameObject emptyStateContainer;
+        [SerializeField] internal Button goToMarketplaceButton;
 
         private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
         private readonly Dictionary<string, WearableGridItemComponentView> wearablesById = new ();
@@ -21,6 +24,7 @@ namespace DCL.Backpack
 
         public event Action<int> OnWearablePageChanged;
         public event Action<string> OnFilterWearables;
+        public event Action OnGoToMarketplace;
         public event Action<WearableGridItemModel> OnWearableSelected;
         public event Action<WearableGridItemModel> OnWearableEquipped;
         public event Action<WearableGridItemModel> OnWearableUnequipped;
@@ -34,12 +38,15 @@ namespace DCL.Backpack
                 Instantiate(wearableGridItemPrefab).gameObject,
                 maxPrewarmCount: 15,
                 isPersistent: true);
+
             wearableGridItemsPool.ForcePrewarm();
 
             wearablesBreadcrumbComponentView.OnNavigate += reference => OnFilterWearables?.Invoke(reference);
 
             infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model);
             infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model);
+
+            goToMarketplaceButton.onClick.AddListener(() => OnGoToMarketplace?.Invoke());
         }
 
         private void OnEnable()
@@ -60,7 +67,9 @@ namespace DCL.Backpack
                 wearablePageSelector.gameObject.SetActive(false);
                 return;
             }
+
             wearablePageSelector.gameObject.SetActive(true);
+
             wearablePageSelector.SetModel(new PageSelectorModel
             {
                 CurrentPage = currentPage,
@@ -72,6 +81,8 @@ namespace DCL.Backpack
         {
             foreach (WearableGridItemModel wearable in wearables)
                 SetWearable(wearable);
+
+            UpdateEmptyState();
         }
 
         public void ClearWearables()
@@ -87,6 +98,8 @@ namespace DCL.Backpack
 
             wearablePooledObjects.Clear();
             wearablesById.Clear();
+
+            UpdateEmptyState();
         }
 
         public void SetWearable(WearableGridItemModel model)
@@ -106,8 +119,14 @@ namespace DCL.Backpack
                 wearableGridItem.OnEquipped += HandleWearableEquipped;
                 wearableGridItem.OnUnequipped += HandleWearableUnequipped;
             }
-        }
 
+            if (model.IsEquipped)
+                infoCardComponentView.Equip(model.WearableId);
+            else
+                infoCardComponentView.UnEquip(model.WearableId);
+
+            UpdateEmptyState();
+        }
 
         public void ClearWearableSelection()
         {
@@ -139,5 +158,17 @@ namespace DCL.Backpack
 
         private void HandleWearableUnequipped(WearableGridItemModel model) =>
             OnWearableUnequipped?.Invoke(model);
+
+        private void UpdateEmptyState()
+        {
+            bool isEmpty = wearablesById.Count == 0;
+
+            if (isEmpty)
+                wearablesGridContainer.Hide(true);
+            else
+                wearablesGridContainer.Show(true);
+
+            emptyStateContainer.SetActive(isEmpty);
+        }
     }
 }

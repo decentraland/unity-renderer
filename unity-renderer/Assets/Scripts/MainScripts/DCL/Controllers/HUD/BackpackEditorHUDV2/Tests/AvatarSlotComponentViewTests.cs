@@ -78,7 +78,7 @@ namespace DCL.Backpack
             Assert.IsFalse(avatarSlot.focusedImage.enabled, "Outline should be disabled by default");
             avatarSlot.OnFocus();
             Assert.IsTrue(avatarSlot.focusedImage.enabled, "After the On Focus the focused outline is not correctly enabled");
-            Assert.IsTrue(avatarSlot.tooltipContainer.activeInHierarchy, "Tooltip container was not enabled on the avatar slot focus");
+            Assert.IsTrue(avatarSlot.tooltipContainer.gameObject.activeInHierarchy, "Tooltip container was not enabled on the avatar slot focus");
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace DCL.Backpack
         {
             avatarSlot.OnLoseFocus();
             Assert.IsFalse(avatarSlot.focusedImage.enabled, "After the On Lose Focus the focused outline is not disabled");
-            Assert.IsFalse(avatarSlot.tooltipContainer.activeInHierarchy, "Tooltip container was not disabled on the avatar slot un-focus");
+            Assert.IsFalse(avatarSlot.tooltipContainer.gameObject.activeInHierarchy, "Tooltip container was not disabled on the avatar slot un-focus");
         }
 
         [Test]

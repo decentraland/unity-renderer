@@ -98,7 +98,7 @@ function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConn
   if (data.kicked) {
     BringDownClientAndShowError(
       'Disconnected from realm as the user id is already taken.' +
-      'Please make sure you are not logged into the world through another tab'
+        'Please make sure you are not logged into the world through another tab'
     )
   }
 }
