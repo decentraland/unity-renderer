@@ -639,7 +639,6 @@ namespace DCL.Backpack
             const string ON_CHAIN_COLLECTION = "urn:decentraland:on:chain";
             const string BASE_OFF_CHAIN_COLLECTION = "urn:decentraland:off-chain:base-avatars:male";
             const string THIRD_PARTY_COLLECTION = "urn:collections-thirdparty:woah";
-            const NftRarity RARITY = NftRarity.Epic;
             const string NAME = "awesome";
 
             IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
@@ -648,7 +647,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearablesWithFilters(CATEGORY, RARITY,
+            controller.LoadWearablesWithFilters(CATEGORY,
                 NftCollectionType.Base | NftCollectionType.OnChain | NftCollectionType.ThirdParty,
                 new[] { ON_CHAIN_COLLECTION, BASE_OFF_CHAIN_COLLECTION, THIRD_PARTY_COLLECTION },
                 NAME,
@@ -660,7 +659,7 @@ namespace DCL.Backpack
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
                                         CATEGORY,
-                                        RARITY,
+                                        NftRarity.None,
                                         NftCollectionType.Base | NftCollectionType.OnChain | NftCollectionType.ThirdParty,
                                         Arg.Is<ICollection<string>>(i =>
                                             i.ElementAt(0) == ON_CHAIN_COLLECTION

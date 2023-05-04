@@ -31,7 +31,6 @@ namespace DCL.Backpack
         private CancellationTokenSource requestWearablesCancellationToken = new ();
         private CancellationTokenSource filtersCancellationToken = new ();
         private string categoryFilter;
-        private NftRarity rarityFilter = NftRarity.None;
         private ICollection<string> thirdPartyCollectionIdsFilter;
         private string nameFilter;
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
@@ -98,17 +97,16 @@ namespace DCL.Backpack
 
         public void LoadWearables()
         {
-            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, thirdPartyCollectionIdsFilter,
+            LoadWearablesWithFilters(categoryFilter, collectionTypeMask, thirdPartyCollectionIdsFilter,
                 nameFilter, wearableSorting);
         }
 
-        public void LoadWearablesWithFilters(string categoryFilter = null, NftRarity rarityFilter = NftRarity.None,
+        public void LoadWearablesWithFilters(string categoryFilter = null,
             NftCollectionType collectionTypeMask = NftCollectionType.All,
             ICollection<string> thirdPartyCollectionIdsFilter = null, string nameFilter = null,
             (NftOrderByOperation type, bool directionAscendent)? wearableSorting = null)
         {
             this.categoryFilter = categoryFilter;
-            this.rarityFilter = rarityFilter;
             this.collectionTypeMask = collectionTypeMask;
             this.thirdPartyCollectionIdsFilter = thirdPartyCollectionIdsFilter;
             this.nameFilter = nameFilter;
@@ -192,7 +190,7 @@ namespace DCL.Backpack
                     ownUserId,
                     page,
                     PAGE_SIZE, cancellationToken,
-                    categoryFilter, rarityFilter, collectionTypeMask,
+                    categoryFilter, NftRarity.None, collectionTypeMask,
                     thirdPartyCollectionIdsFilter,
                     nameFilter, wearableSorting);
 
