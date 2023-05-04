@@ -92,14 +92,12 @@ namespace DCL.Backpack
         [Test]
         public void SetTooltipText1()
         {
-            avatarSlot.model = new AvatarSlotComponentModel()
+            avatarSlot.SetModel( new AvatarSlotComponentModel()
             {
                 category = TEST_CATEGORY,
                 isHidden = true,
                 hiddenBy = "HidingCategory"
-            };
-
-            avatarSlot.RefreshControl();
+            });
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
@@ -109,14 +107,12 @@ namespace DCL.Backpack
         [Test]
         public void SetTooltipText2()
         {
-            avatarSlot.model = new AvatarSlotComponentModel()
+            avatarSlot.SetModel(new AvatarSlotComponentModel()
             {
                 category = TEST_CATEGORY,
                 isHidden = false,
                 hiddenBy = ""
-            };
-
-            avatarSlot.RefreshControl();
+            });
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
             Assert.False(avatarSlot.tooltipHiddenText.gameObject.activeInHierarchy);
@@ -125,12 +121,10 @@ namespace DCL.Backpack
         [Test]
         public void SetHiddenBy()
         {
-            avatarSlot.model = new AvatarSlotComponentModel()
+            avatarSlot.SetModel(new AvatarSlotComponentModel()
             {
                 category = TEST_CATEGORY
-            };
-
-            avatarSlot.RefreshControl();
+            });
             avatarSlot.SetIsHidden(true, "hiding category1");
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
@@ -143,12 +137,10 @@ namespace DCL.Backpack
         [Test]
         public void SetHiddenByMultipleCategories()
         {
-            avatarSlot.model = new AvatarSlotComponentModel()
+            avatarSlot.SetModel(new AvatarSlotComponentModel()
             {
                 category = TEST_CATEGORY
-            };
-
-            avatarSlot.RefreshControl();
+            });
 
             //Set first hiding category
             avatarSlot.SetIsHidden(true, "hiding category1");

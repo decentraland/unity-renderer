@@ -14,9 +14,6 @@ namespace DCL.Backpack
         private const float ANIMATION_TIME = 0.2f;
         private const float SHAKE_ANIMATION_TIME = 0.75f;
 
-        [Header("Configuration")]
-        [SerializeField] internal AvatarSlotComponentModel model;
-
         [SerializeField] internal NftTypeColorSupportingSO typeColorSupporting;
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal RectTransform nftContainer;
