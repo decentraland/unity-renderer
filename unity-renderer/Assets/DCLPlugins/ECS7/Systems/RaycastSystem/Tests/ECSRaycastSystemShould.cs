@@ -824,10 +824,10 @@ namespace Tests
             var collider =  entityCollider.gameObject.AddComponent<BoxCollider>();
             IInternalECSComponent<InternalColliders> internalCollidersComponent = internalComponents.physicColliderComponent;
 
-            int mergedLayers = 0;
+            uint mergedLayers = 0;
             for (var i = 0; i < layers.Length; i++)
             {
-                mergedLayers |= (int)layers[i];
+                mergedLayers |= (uint)layers[i];
             }
 
             for (var i = 0; i < layers.Length; i++)
@@ -853,7 +853,7 @@ namespace Tests
                 }
 
                 internalCollidersComponent.PutFor(scene, entityCollider,
-                    new InternalColliders() { colliders = new KeyValueSet<Collider, int>() {{ collider, mergedLayers }}});
+                    new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() {{ collider, mergedLayers }}});
             }
 
             return entityCollider;

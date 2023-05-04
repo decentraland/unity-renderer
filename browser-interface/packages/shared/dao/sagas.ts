@@ -1,9 +1,7 @@
 import {
   ETHEREUM_NETWORK,
-  HAS_INITIAL_POSITION_MARK,
   PIN_CATALYST,
   PREVIEW,
-  RESET_TUTORIAL,
   rootURLPreviewMode
 } from 'config'
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
@@ -17,8 +15,6 @@ import {
   getAddedServers,
   getCatalystNodesEndpoint,
   getDisabledCatalystConfig,
-  getFeatureFlagVariantName,
-  getFeatureFlagVariantValue,
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
 import { SET_REALM_ADAPTER, setOnboardingState } from 'shared/realm/actions'
@@ -48,9 +44,6 @@ import { createAlgorithm } from './pick-realm-algorithm/index'
 import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
 import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
 import { ask, ping } from './utils/ping'
-import { trackEvent } from '../analytics/trackEvent'
-import { logger } from '../../entryPoints/logger'
-import { getCurrentUserProfile } from '../profiles/selectors'
 import { saveProfileDelta } from '../profiles/actions'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
@@ -165,8 +158,6 @@ function* selectRealm() {
     (PREVIEW ? rootURLPreviewMode() : null) ||
     // CATALYST from url parameter
     PIN_CATALYST ||
-    //Check if we are in onbaording
-    (yield call(onboardingTutorialRealm)) ||
     // fetch catalysts and select one using the load balancing
     (yield call(pickCatalystRealm)) ||
     // cached in local storage
@@ -182,34 +173,6 @@ function* selectRealm() {
   console.log(`Trying to connect to realm `, realm)
 
   return realm
-}
-
-function* onboardingTutorialRealm() {
-  const profile = yield select(getCurrentUserProfile)
-  if (profile) {
-    const needsTutorial = RESET_TUTORIAL || !profile.tutorialStep
-    const onboardingRealmName = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
-    const isNewTutorialDisabled =
-      onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
-    if (needsTutorial && !isNewTutorialDisabled) {
-      try {
-        const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
-        if (realm) {
-          trackEvent('onboarding_started', { onboardingRealm: realm })
-          //We are using the previous tutorial flow. 256 meant complete in the previous tutorial.
-          //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
-          //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
-          //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
-          yield put(setOnboardingState({ isInOnboarding: true, onboardingRealm: realm }))
-          return realm
-        } else {
-          logger.warn('No realm was provided for the onboarding experience.')
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    }
-  }
 }
 
 // load realm from local storage
