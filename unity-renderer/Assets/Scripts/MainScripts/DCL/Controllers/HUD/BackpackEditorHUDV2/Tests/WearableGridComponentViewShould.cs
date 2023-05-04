@@ -215,9 +215,9 @@ namespace DCL.Backpack
             {
                 Current = 0,
                 ResultCount = 64,
-                Path = new (string Filter, string Name)[1]
+                Path = new (string Filter, string Name, string Type)[1]
                 {
-                    (Filter: "all", Name: "All"),
+                    (Filter: "all", Name: "All", "all"),
                 },
             };
 

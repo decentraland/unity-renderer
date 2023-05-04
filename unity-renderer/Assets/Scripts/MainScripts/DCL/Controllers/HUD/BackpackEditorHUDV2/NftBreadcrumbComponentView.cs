@@ -3,22 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DCL.Backpack
 {
     public class NftBreadcrumbComponentView : BaseComponentView<NftBreadcrumbModel>
     {
-        [Serializable]
-        internal struct FilterIconType
-        {
-            public string filterPrefix;
-            public Sprite icon;
-        }
-
         [SerializeField] internal NftSubCategoryFilterComponentView prefab;
         [SerializeField] internal RectTransform container;
-        [SerializeField] internal FilterIconType[] iconsByFilter;
+        [SerializeField] internal NFTTypeIconsAndColors iconsByCategory;
 
         private readonly Dictionary<NftSubCategoryFilterComponentView, PoolableObject> pooledObjects = new ();
         private NftSubCategoryFilterComponentView[] categoriesByIndex = Array.Empty<NftSubCategoryFilterComponentView>();
@@ -55,13 +47,13 @@ namespace DCL.Backpack
             categoriesByIndex = new NftSubCategoryFilterComponentView[model.Path.Length];
             var i = 0;
 
-            foreach ((string Filter, string Name) subCategory in model.Path)
+            foreach ((string Filter, string Name, string Type) subCategory in model.Path)
             {
                 PoolableObject poolObj = pool.Get();
                 NftSubCategoryFilterComponentView view = poolObj.gameObject.GetComponent<NftSubCategoryFilterComponentView>();
 
                 bool isLastItem = i == model.Path.Length - 1;
-                FilterIconType filterIcon = iconsByFilter.FirstOrDefault(o => subCategory.Filter.StartsWith(o.filterPrefix));
+                Sprite icon = iconsByCategory.GetTypeImage(subCategory.Type);
 
                 view.SetModel(new NftSubCategoryFilterModel
                 {
@@ -69,7 +61,7 @@ namespace DCL.Backpack
                     Filter = subCategory.Filter,
                     ResultCount = model.ResultCount,
                     ShowResultCount = isLastItem,
-                    Icon = filterIcon.icon,
+                    Icon = icon,
                     IsSelected = model.Current == i,
                 });
 

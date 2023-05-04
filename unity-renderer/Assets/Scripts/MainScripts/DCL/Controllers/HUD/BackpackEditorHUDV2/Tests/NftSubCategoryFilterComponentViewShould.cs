@@ -74,6 +74,23 @@ namespace DCL.Backpack
             });
 
             Assert.AreEqual(view.icon.sprite, sprite);
+            Assert.IsTrue(view.icon.gameObject.activeSelf);
+        }
+
+        [Test]
+        public void DisableIcon()
+        {
+            view.SetModel(new NftSubCategoryFilterModel
+            {
+                Filter = "all",
+                Icon = null,
+                IsSelected = false,
+                Name = "All",
+                ResultCount = 15,
+                ShowResultCount = true,
+            });
+
+            Assert.IsFalse(view.icon.gameObject.activeSelf);
         }
     }
 }

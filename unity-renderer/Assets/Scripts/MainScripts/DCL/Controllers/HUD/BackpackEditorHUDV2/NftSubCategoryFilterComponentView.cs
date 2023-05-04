@@ -34,6 +34,7 @@ namespace DCL.Backpack
                 categoryName.text += $" ({model.ResultCount})";
 
             icon.sprite = model.Icon;
+            icon.gameObject.SetActive(model.Icon != null);
         }
     }
 }
