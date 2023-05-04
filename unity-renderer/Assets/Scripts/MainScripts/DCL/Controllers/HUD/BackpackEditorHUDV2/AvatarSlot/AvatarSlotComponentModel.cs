@@ -12,6 +12,6 @@ namespace DCL.Backpack
         public string hiddenBy;
         public bool allowsColorChange;
         public string wearableId;
-        public string[] hidesList;
+        public string[] hidesList = new string[]{};
     }
 }
