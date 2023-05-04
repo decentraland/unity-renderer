@@ -39,36 +39,38 @@ namespace ECSSystems.VideoPlayerSystem
 
                 playerModel.videoPlayer.Update();
 
-                var videoEventModel = videoEventComponent.GetFor(playerComponentData.scene, playerComponentData.entity).model;
-                int previousVideoState = (int)videoEventModel.videoState;
-                int currentVideoState = (int)playerModel.videoPlayer.GetState();
-
-                if (previousVideoState != currentVideoState)
+                var videoEventModel = videoEventComponent.GetFor(playerComponentData.scene, playerComponentData.entity)?.model;
+                if (videoEventModel != null)
                 {
-                    uint updatedTimestamp = videoEventModel.timeStamp + 1;
-                    VideoState updatedVideoState = (VideoState)currentVideoState;
+                    int previousVideoState = (int)videoEventModel.videoState;
+                    int currentVideoState = (int)playerModel.videoPlayer.GetState();
+                    if (previousVideoState != currentVideoState)
+                    {
+                        uint updatedTimestamp = videoEventModel.timeStamp + 1;
+                        VideoState updatedVideoState = (VideoState)currentVideoState;
 
-                    // Update internal component for future checks
-                    videoEventComponent.PutFor(playerComponentData.scene, playerComponentData.entity,
-                    new InternalVideoEvent(){
-                        videoState = updatedVideoState,
-                        timeStamp = updatedTimestamp
-                    });
+                        // Update internal component for future checks
+                        videoEventComponent.PutFor(playerComponentData.scene, playerComponentData.entity,
+                        new InternalVideoEvent(){
+                            videoState = updatedVideoState,
+                            timeStamp = updatedTimestamp
+                        });
 
-                    // Update GrowOnlyValueSet VideoEvent component for the video player entity
-                    componentWriter.AppendComponent(
-                        playerComponentData.scene.sceneData.sceneNumber,
-                        playerComponentData.entity.entityId,
-                        ComponentID.VIDEO_EVENT,
-                        new PBVideoEvent()
-                        {
-                            State = updatedVideoState,
-                            CurrentOffset = playerModel.videoPlayer.GetTime(),
-                            VideoLength = playerModel.videoPlayer.GetDuration(),
-                            Timestamp = updatedTimestamp
-                        },
-                        ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
-                    );
+                        // Update GrowOnlyValueSet VideoEvent component for the video player entity
+                        componentWriter.AppendComponent(
+                            playerComponentData.scene.sceneData.sceneNumber,
+                            playerComponentData.entity.entityId,
+                            ComponentID.VIDEO_EVENT,
+                            new PBVideoEvent()
+                            {
+                                State = updatedVideoState,
+                                CurrentOffset = playerModel.videoPlayer.GetTime(),
+                                VideoLength = playerModel.videoPlayer.GetDuration(),
+                                Timestamp = updatedTimestamp
+                            },
+                            ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
+                        );
+                    }
                 }
             }
 

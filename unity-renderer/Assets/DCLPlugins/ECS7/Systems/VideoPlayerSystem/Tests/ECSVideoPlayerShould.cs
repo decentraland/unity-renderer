@@ -1,11 +1,9 @@
 using DCL;
 using DCL.Components.Video.Plugin;
 using DCL.CRDT;
-using DCL.ECS7;
 using System;
 using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
-using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Shaders;
 using ECSSystems.VideoPlayerSystem;
