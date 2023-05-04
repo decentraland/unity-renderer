@@ -2,13 +2,7 @@ import type { KernelOptions } from 'kernel-web-interface'
 import { realmInitialized } from 'shared/dao'
 import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
-import {
-  getFeatureFlagEnabled,
-  getFeatureFlags,
-  getFeatureFlagVariantName,
-  getWorldConfig
-} from 'shared/meta/selectors'
-import type { WorldConfig } from 'shared/meta/types'
+import { getFeatureFlagEnabled, getFeatureFlags } from 'shared/meta/selectors'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { getRendererInterface } from 'shared/renderer/getRendererInterface'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'
@@ -16,7 +10,6 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { HUDElementID } from 'shared/types'
 import { foregroundChangeObservable, isForeground } from 'shared/world/worldState'
-import { HAS_INITIAL_POSITION_MARK, RESET_TUTORIAL } from 'config'
 import { renderingInBackground, renderingInForeground } from 'shared/loadingScreen/types'
 import { kernelConfigForRenderer } from 'unity-interface/kernelConfigForRenderer'
 import { startPreview } from './startPreview'
@@ -37,7 +30,6 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
   renderer.SetFeatureFlagsConfiguration(getFeatureFlags(store.getState()))
 
   const questEnabled = getFeatureFlagEnabled(store.getState(), 'quests')
-  const worldConfig: WorldConfig | undefined = getWorldConfig(store.getState())
 
   // killswitch, disable asset bundles
   if (!getFeatureFlagEnabled(store.getState(), 'asset_bundles')) {
@@ -87,26 +79,6 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
   if (!profile) {
     BringDownClientAndReportFatalError(new Error('Profile missing during unity initialization'), 'kernel#init')
     return
-  }
-
-  const NEEDS_TUTORIAL = RESET_TUTORIAL || !profile.tutorialStep
-
-  // only enable the old tutorial if the feature flag new_tutorial is off
-  // this code should be removed once the "hardcoded" tutorial is removed
-  // from the renderer
-  if (NEEDS_TUTORIAL) {
-    const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
-    const IS_NEW_TUTORIAL_DISABLED =
-      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
-    if (IS_NEW_TUTORIAL_DISABLED) {
-      const enableNewTutorialCamera = worldConfig ? worldConfig.enableNewTutorialCamera ?? false : false
-      const tutorialConfig = {
-        fromDeepLink: HAS_INITIAL_POSITION_MARK,
-        enableNewTutorialCamera: enableNewTutorialCamera
-      }
-
-      renderer.ConfigureTutorial(profile.tutorialStep, tutorialConfig)
-    }
   }
 
   const isGuest = !identity.hasConnectedWeb3
