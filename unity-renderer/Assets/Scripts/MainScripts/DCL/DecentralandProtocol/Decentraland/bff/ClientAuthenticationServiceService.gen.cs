@@ -5,6 +5,7 @@
 // file: decentraland/bff/authentication_service.proto
 using Cysharp.Threading.Tasks;
 using rpc_csharp;
+using Google.Protobuf.WellKnownTypes;
 
 namespace Decentraland.Bff {
 public interface IClientBffAuthenticationService
@@ -12,6 +13,8 @@ public interface IClientBffAuthenticationService
   UniTask<GetChallengeResponse> GetChallenge(GetChallengeRequest request);
 
   UniTask<WelcomePeerInformation> Authenticate(SignedChallenge request);
+
+  UniTask<DisconnectionMessage> GetDisconnectionMessage(Empty request);
 }
 
 public class ClientBffAuthenticationService : IClientBffAuthenticationService
@@ -32,6 +35,11 @@ public class ClientBffAuthenticationService : IClientBffAuthenticationService
   public UniTask<WelcomePeerInformation> Authenticate(SignedChallenge request)
   {
       return module.CallUnaryProcedure<WelcomePeerInformation>("Authenticate", request);
+  }
+
+  public UniTask<DisconnectionMessage> GetDisconnectionMessage(Empty request)
+  {
+      return module.CallUnaryProcedure<DisconnectionMessage>("GetDisconnectionMessage", request);
   }
 
 }

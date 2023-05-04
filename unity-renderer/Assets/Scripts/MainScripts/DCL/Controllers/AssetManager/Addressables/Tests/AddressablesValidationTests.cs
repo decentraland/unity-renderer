@@ -12,7 +12,7 @@ public class AddressablesValidationTests
     private static readonly string[] EXCLUDED_FILE_TYPES = { }; // "shader", "png", "jpg"
     private const string NO_ISSUES_FOUND = "No issues found";
 
-    [TestCase("Rendering")][Category("EditModeCI")]
+    [TestCase("Rendering")]
     public void ValidateFolderDoesNotHaveResourcesFolderInside(string folderName)
     {
         string folderPath = Application.dataPath + $"/{folderName}";

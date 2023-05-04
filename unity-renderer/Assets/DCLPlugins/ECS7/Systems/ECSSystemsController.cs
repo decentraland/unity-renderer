@@ -5,6 +5,7 @@ using ECSSystems.CameraSystem;
 using ECSSystems.ECSRaycastSystem;
 using ECSSystems.ECSSceneBoundsCheckerSystem;
 using ECSSystems.ECSUiPointerEventsSystem;
+using ECSSystems.GltfContainerLoadingStateSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
@@ -101,6 +102,10 @@ public class ECSSystemsController : IDisposable
             context.componentGroups.RegisteredUiPointerEventsWithUiRemoved,
             context.componentGroups.RegisteredUiPointerEventsWithPointerEventsRemoved);
 
+        GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
+            context.componentWriter,
+            context.internalEcsComponents.GltfContainerLoadingStateComponent);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -131,6 +136,7 @@ public class ECSSystemsController : IDisposable
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
+            gltfContainerLoadingStateSystem.Update,
             raycastSystem.Update, // should always be after player/entity transformations update
             sceneBoundsCheckerSystem.Update // Should always be the last system
         };

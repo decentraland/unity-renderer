@@ -1,7 +1,8 @@
 using DCL;
-using MainScripts.DCL.Utils;
 using SocialFeaturesAnalytics;
 using UnityEngine;
+using DCL.Helpers;
+
 
 namespace MainScripts.DCL.Controllers.HUD.Profile
 {
@@ -19,7 +20,7 @@ namespace MainScripts.DCL.Controllers.HUD.Profile
 
         private void OnExitButtonClick()
         {
-            DesktopUtils.Quit();
+            Utils.QuitApplication();
         }
 
         public new void Dispose()
@@ -35,3 +36,4 @@ namespace MainScripts.DCL.Controllers.HUD.Profile
         }
     }
 }
+
