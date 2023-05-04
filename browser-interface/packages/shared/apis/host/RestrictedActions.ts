@@ -129,9 +129,11 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
         return { success: false }
       }
-      const response = await getRendererModules(store.getState())?.restrictedActions?.
-                                        openExternalUrl({url: req.url, sceneNumber: ctx.sceneData.sceneNumber})
-      return { success: response?.success?? false }
+      const response = await getRendererModules(store.getState())?.restrictedActions?.openExternalUrl({
+        url: req.url,
+        sceneNumber: ctx.sceneData.sceneNumber
+      })
+      return { success: response?.success ?? false }
     },
     async openNftDialog(req: OpenNftDialogRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')
@@ -140,8 +142,8 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
         return { success: false }
       }
 
-      const response = await getRendererModules(store.getState())?.restrictedActions?.openNftDialog({urn: req.urn})
-      return { success: response?.success?? false }
+      const response = await getRendererModules(store.getState())?.restrictedActions?.openNftDialog({ urn: req.urn })
+      return { success: response?.success ?? false }
     },
     async setCommunicationsAdapter(req: CommsAdapterRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')

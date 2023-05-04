@@ -42,7 +42,7 @@ namespace DCLServices.WearablesCatalogService
             GivenPaginatedCollectionInLambdas(TPW_COLLECTION_ID,
                 new List<WearableDefinition>
                 {
-                    new () { definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"),},
+                    new () { definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"), },
                     new () { definition = GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) },
                 });
 
@@ -73,7 +73,7 @@ namespace DCLServices.WearablesCatalogService
                 WearableItem resultantWearable = await service.RequestWearableAsync(VALID_WEARABLE_ID, default(CancellationToken));
 
                 lambdasService.DidNotReceiveWithAnyArgs()
-                              .Get<WearableWithoutDefinitionResponse>(default, default);
+                              .Get<WearableWithoutDefinitionResponse>(endPointTemplate: default, endPoint: default);
 
                 Assert.AreEqual(VALID_WEARABLE_ID, resultantWearable.id);
                 Assert.AreEqual("description", resultantWearable.description);
@@ -260,6 +260,106 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);
             });
 
+        [UnityTest]
+        public IEnumerator ValidateParamsWhenRequestingOwnedWearablesWithFilters() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                GivenWearableWithSpecificLambdasUrl(GivenValidWearableItem(VALID_WEARABLE_ID, ""));
+
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) =
+                    await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, default(CancellationToken),
+                        category: "upper_body",
+                        rarity: NftRarity.Epic,
+                        name: "woah",
+                        orderBy: (NftOrderByOperation.Date, true));
+
+                lambdasService.Received(1)
+                              .GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                                   "https://peer-testing.decentraland.org/explorer-service/backpack/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer-service/backpack/{USER_ID}/wearables",
+                                   30, 3,
+                                   Arg.Any<CancellationToken>(),
+                                   Arg.Is<(string paramName, string paramValue)[]>(args =>
+                                       args[0].paramName == "pageNum"
+                                       && args[0].paramValue == "0"
+                                       && args[1].paramName == "pageSize"
+                                       && args[1].paramValue == "10"
+                                       && args[2].paramName == "rarity"
+                                       && args[2].paramValue == "epic"
+                                       && args[3].paramName == "category"
+                                       && args[3].paramValue == "upper_body"
+                                       && args[4].paramName == "name"
+                                       && args[4].paramValue == "woah"
+                                       && args[5].paramName == "orderBy"
+                                       && args[5].paramValue == "date"
+                                       && args[6].paramName == "direction"
+                                       && args[6].paramValue == "ASC"
+                                       && args[7].paramName == "collectionType"
+                                       && args[7].paramValue == "base-wearable"
+                                       && args[8].paramName == "collectionType"
+                                       && args[8].paramValue == "on-chain"
+                                       && args[9].paramName == "collectionType"
+                                       && args[9].paramValue == "third-party"));
+            });
+
+        [UnityTest]
+        [TestCase(NftCollectionType.Base, ExpectedResult = null)]
+        [TestCase(NftCollectionType.OnChain, ExpectedResult = null)]
+        public IEnumerator ValidateCollectionIdParamsWhenRequestingOwnedWearablesWithoutThirdPartyFilters(NftCollectionType collectionType) =>
+            UniTask.ToCoroutine(async () =>
+            {
+                GivenWearableWithSpecificLambdasUrl(GivenValidWearableItem(VALID_WEARABLE_ID, ""));
+
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) =
+                    await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, default(CancellationToken),
+                        collectionTypeMask: collectionType);
+
+                lambdasService.Received(1)
+                              .GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                                   "https://peer-testing.decentraland.org/explorer-service/backpack/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer-service/backpack/{USER_ID}/wearables",
+                                   30, 3,
+                                   Arg.Any<CancellationToken>(),
+                                   Arg.Is<(string paramName, string paramValue)[]>(args =>
+                                       args[0].paramName == "pageNum"
+                                       && args[0].paramValue == "0"
+                                       && args[1].paramName == "pageSize"
+                                       && args[1].paramValue == "10"
+                                       && args[2].paramName == "collectionType"
+                                       && args[2].paramValue == (collectionType == NftCollectionType.Base ? "base-wearable" : "on-chain")));
+            });
+
+        [UnityTest]
+        public IEnumerator ValidateCollectionIdParamsWhenRequestingOwnedWearablesWithThirdPartyFilters() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                NftCollectionType collectionType = NftCollectionType.ThirdParty;
+                var thirdPartyCollectionId = "testThirdPartyCollectionId";
+
+                GivenWearableWithSpecificLambdasUrl(GivenValidWearableItem(VALID_WEARABLE_ID, ""));
+
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) =
+                    await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, default(CancellationToken),
+                        thirdPartyCollectionIds: thirdPartyCollectionId != null ? new List<string> { thirdPartyCollectionId } : null,
+                        collectionTypeMask: collectionType);
+
+                lambdasService.Received(1)
+                              .GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                                   "https://peer-testing.decentraland.org/explorer-service/backpack/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer-service/backpack/{USER_ID}/wearables",
+                                   30, 3,
+                                   Arg.Any<CancellationToken>(),
+                                   Arg.Is<(string paramName, string paramValue)[]>(args =>
+                                       args[0].paramName == "pageNum"
+                                       && args[0].paramValue == "0"
+                                       && args[1].paramName == "pageSize"
+                                       && args[1].paramValue == "10"
+                                       && args[2].paramName == "collectionType"
+                                       && args[2].paramValue == "third-party"
+                                       && args[3].paramName == "thirdPartyCollectionId"
+                                       && args[3].paramValue == thirdPartyCollectionId));
+            });
+
         [Test]
         public void RemoveWearables()
         {
@@ -275,7 +375,7 @@ namespace DCLServices.WearablesCatalogService
         [Test]
         public void RemoveWearablesInUse()
         {
-            service.EmbedWearables(new [] {GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail")});
+            service.EmbedWearables(new[] { GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail") });
             service.AddWearablesToCatalog(new[] { GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) });
 
             service.RemoveWearablesInUse(new[] { VALID_WEARABLE_ID, WEARABLE_WITHOUT_THUMBNAIL });
@@ -284,6 +384,25 @@ namespace DCLServices.WearablesCatalogService
             Assert.IsTrue(service.IsValidWearable(VALID_WEARABLE_ID));
             Assert.IsFalse(service.WearablesCatalog.ContainsKey(WEARABLE_WITHOUT_THUMBNAIL));
             Assert.IsFalse(service.IsValidWearable(WEARABLE_WITHOUT_THUMBNAIL));
+        }
+
+        private void GivenWearableWithSpecificLambdasUrl(WearableItem wearable)
+        {
+            lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                               Arg.Any<string>(),
+                               Arg.Any<string>(),
+                               Arg.Any<int>(),
+                               Arg.Any<int>(),
+                               Arg.Any<CancellationToken>(),
+                               Arg.Any<(string paramName, string paramValue)[]>())
+                          .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
+                               (new WearableWithDefinitionResponse(new List<WearableDefinition>
+                               {
+                                   new ()
+                                   {
+                                       definition = wearable
+                                   },
+                               }, 0, 10, 1), true)));
         }
 
         private void GivenWearableInLambdas(string wearableID, WearableItem wearable)

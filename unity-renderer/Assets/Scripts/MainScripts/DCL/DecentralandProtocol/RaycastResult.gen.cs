@@ -27,17 +27,17 @@ namespace DCL.ECSComponents {
             "CjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcmF5Y2FzdF9yZXN1bHQu",
             "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxohZGVjZW50cmFs",
             "YW5kL2NvbW1vbi92ZWN0b3JzLnByb3RvGjRkZWNlbnRyYWxhbmQvc2RrL2Nv",
-            "bXBvbmVudHMvY29tbW9uL3JheWNhc3RfaGl0LnByb3RvItsBCg9QQlJheWNh",
+            "bXBvbmVudHMvY29tbW9uL3JheWNhc3RfaGl0LnByb3RvIvABCg9QQlJheWNh",
             "c3RSZXN1bHQSFgoJdGltZXN0YW1wGAEgASgNSACIAQESMwoNZ2xvYmFsX29y",
             "aWdpbhgCIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMxIvCglk",
             "aXJlY3Rpb24YAyABKAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlZlY3RvcjMS",
             "PAoEaGl0cxgEIAMoCzIuLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5j",
-            "b21tb24uUmF5Y2FzdEhpdEIMCgpfdGltZXN0YW1wQhSqAhFEQ0wuRUNTQ29t",
-            "cG9uZW50c2IGcHJvdG8z"));
+            "b21tb24uUmF5Y2FzdEhpdBITCgt0aWNrX251bWJlchgFIAEoDUIMCgpfdGlt",
+            "ZXN0YW1wQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, global::DCL.ECSComponents.RaycastHitReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBRaycastResult), global::DCL.ECSComponents.PBRaycastResult.Parser, new[]{ "Timestamp", "GlobalOrigin", "Direction", "Hits" }, new[]{ "Timestamp" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBRaycastResult), global::DCL.ECSComponents.PBRaycastResult.Parser, new[]{ "Timestamp", "GlobalOrigin", "Direction", "Hits", "TickNumber" }, new[]{ "Timestamp" }, null, null, null)
           }));
     }
     #endregion
@@ -91,6 +91,7 @@ namespace DCL.ECSComponents {
       globalOrigin_ = other.globalOrigin_ != null ? other.globalOrigin_.Clone() : null;
       direction_ = other.direction_ != null ? other.direction_.Clone() : null;
       hits_ = other.hits_.Clone();
+      tickNumber_ = other.tickNumber_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -172,6 +173,21 @@ namespace DCL.ECSComponents {
       get { return hits_; }
     }
 
+    /// <summary>Field number for the "tick_number" field.</summary>
+    public const int TickNumberFieldNumber = 5;
+    private uint tickNumber_;
+    /// <summary>
+    /// number of tick in which the event was produced, equals to EngineInfo.tick_number
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public uint TickNumber {
+      get { return tickNumber_; }
+      set {
+        tickNumber_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -191,6 +207,7 @@ namespace DCL.ECSComponents {
       if (!object.Equals(GlobalOrigin, other.GlobalOrigin)) return false;
       if (!object.Equals(Direction, other.Direction)) return false;
       if(!hits_.Equals(other.hits_)) return false;
+      if (TickNumber != other.TickNumber) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -202,6 +219,7 @@ namespace DCL.ECSComponents {
       if (globalOrigin_ != null) hash ^= GlobalOrigin.GetHashCode();
       if (direction_ != null) hash ^= Direction.GetHashCode();
       hash ^= hits_.GetHashCode();
+      if (TickNumber != 0) hash ^= TickNumber.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -233,6 +251,10 @@ namespace DCL.ECSComponents {
         output.WriteMessage(Direction);
       }
       hits_.WriteTo(output, _repeated_hits_codec);
+      if (TickNumber != 0) {
+        output.WriteRawTag(40);
+        output.WriteUInt32(TickNumber);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -256,6 +278,10 @@ namespace DCL.ECSComponents {
         output.WriteMessage(Direction);
       }
       hits_.WriteTo(ref output, _repeated_hits_codec);
+      if (TickNumber != 0) {
+        output.WriteRawTag(40);
+        output.WriteUInt32(TickNumber);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -276,6 +302,9 @@ namespace DCL.ECSComponents {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Direction);
       }
       size += hits_.CalculateSize(_repeated_hits_codec);
+      if (TickNumber != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(TickNumber);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -304,6 +333,9 @@ namespace DCL.ECSComponents {
         Direction.MergeFrom(other.Direction);
       }
       hits_.Add(other.hits_);
+      if (other.TickNumber != 0) {
+        TickNumber = other.TickNumber;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -341,6 +373,10 @@ namespace DCL.ECSComponents {
             hits_.AddEntriesFrom(input, _repeated_hits_codec);
             break;
           }
+          case 40: {
+            TickNumber = input.ReadUInt32();
+            break;
+          }
         }
       }
     #endif
@@ -376,6 +412,10 @@ namespace DCL.ECSComponents {
           }
           case 34: {
             hits_.AddEntriesFrom(ref input, _repeated_hits_codec);
+            break;
+          }
+          case 40: {
+            TickNumber = input.ReadUInt32();
             break;
           }
         }

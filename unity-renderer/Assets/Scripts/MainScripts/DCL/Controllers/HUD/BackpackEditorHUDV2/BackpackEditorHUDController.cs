@@ -91,6 +91,7 @@ namespace DCL.Backpack
             wearableGridController.Dispose();
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
+            avatarSlotsHUDController.Dispose();
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.Dispose();
@@ -107,6 +108,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController.RestoreEmoteSlots();
                 backpackEmotesSectionController.LoadEmotes();
                 wearableGridController.LoadWearables();
+                wearableGridController.LoadCollections();
                 LoadUserProfile(ownUserProfile, true);
 
                 view.Show();
@@ -179,7 +181,7 @@ namespace DCL.Backpack
                 }
 
                 model.wearables.Add(wearable.id, wearable);
-                avatarSlotsHUDController.Equip(wearable);
+                avatarSlotsHUDController.Equip(wearable, userProfile.avatar.bodyShape);
             }
         }
 
@@ -271,7 +273,7 @@ namespace DCL.Backpack
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
 
-            avatarSlotsHUDController.Equip(wearable);
+            avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape);
             wearableGridController.Equip(wearableId);
 
             avatarIsDirty = true;

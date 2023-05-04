@@ -226,6 +226,7 @@ namespace Tests
             // so we just try to guess the number of frames to skip
             yield return null;
             yield return null;
+            yield return null;
 
             // texture should have being disposed
             Assert.IsFalse(imageTexture);

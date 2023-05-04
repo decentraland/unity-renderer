@@ -1,7 +1,9 @@
+using DCLServices.WearablesCatalogService;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Backpack
 {
@@ -27,15 +29,13 @@ namespace DCL.Backpack
         [TestCase(9, 26)]
         public void SetPages(int currentPage, int totalPages)
         {
-            int calledPage = -1;
             int calledTotalPages = -1;
-            view.wearablePageSelector.OnValueChanged += i => calledPage = i;
             view.wearablePageSelector.OnTotalPagesChanged += i => calledTotalPages = i;
 
             view.SetWearablePages(currentPage, totalPages);
 
             Assert.IsTrue(view.wearablePageSelector.gameObject.activeSelf);
-            Assert.AreEqual(currentPage, calledPage);
+            Assert.AreEqual(currentPage - 1, view.wearablePageSelector.CurrentIndex);
             Assert.AreEqual(calledTotalPages, totalPages);
         }
 
@@ -224,6 +224,34 @@ namespace DCL.Backpack
             view.SetWearableBreadcrumb(model);
 
             Assert.AreEqual(view.wearablesBreadcrumbComponentView.Model, model);
+        }
+
+        [Test]
+        public void EnableEmptyStateWhenNoWearables()
+        {
+            view.ClearWearables();
+            view.ShowWearables(Array.Empty<WearableGridItemModel>());
+
+            Assert.IsTrue(view.emptyStateContainer.activeSelf);
+            Assert.IsFalse(view.wearablesGridContainer.gameObject.activeSelf);
+        }
+
+        [Test]
+        public void DisableEmptyStateWhenShowingWearables()
+        {
+            view.ClearWearables();
+            view.SetWearable(new WearableGridItemModel
+            {
+                Rarity = NftRarity.Common,
+                ImageUrl = "url",
+                IsEquipped = false,
+                IsNew = false,
+                IsSelected = true,
+                WearableId = "w1",
+            });
+
+            Assert.IsFalse(view.emptyStateContainer.activeSelf);
+            Assert.IsTrue(view.wearablesGridContainer.gameObject.activeSelf);
         }
     }
 }

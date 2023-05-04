@@ -25,10 +25,6 @@ MonoBehaviour:
     m_Address: QuestsTrackerHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 3739fac0af4ce70458207aef9bd6c7c8
-    m_Address: AirdroppingHUD
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 8eeaa25ae02fb784e9b14ed71aae12f5
     m_Address: HelpAndSupportHUD
     m_ReadOnly: 0

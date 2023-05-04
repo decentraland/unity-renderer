@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
 using System;
@@ -15,14 +16,26 @@ namespace DCL.Backpack
         private const string ALL_FILTER_REF = "all";
         private const string NAME_FILTER_REF = "name=";
         private const string CATEGORY_FILTER_REF = "category=";
+        private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
+        private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
 
         private readonly IWearableGridView view;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly DataStore_BackpackV2 dataStoreBackpackV2;
+        private readonly IBrowserBridge browserBridge;
+        private readonly BackpackFiltersController backpackFiltersController;
+        private readonly AvatarSlotsHUDController avatarSlotsHUDController;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
+        private CancellationTokenSource filtersCancellationToken = new ();
+        private string categoryFilter;
+        private NftRarity rarityFilter = NftRarity.None;
+        private ICollection<string> thirdPartyCollectionIdsFilter;
+        private string nameFilter;
+        private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
+        private NftCollectionType collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
 
         public event Action<string> OnWearableEquipped;
         public event Action<string> OnWearableUnequipped;
@@ -30,18 +43,32 @@ namespace DCL.Backpack
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
-            DataStore_BackpackV2 dataStoreBackpackV2)
+            DataStore_BackpackV2 dataStoreBackpackV2,
+            IBrowserBridge browserBridge,
+            BackpackFiltersController backpackFiltersController,
+            AvatarSlotsHUDController avatarSlotsHUDController)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
             this.dataStoreBackpackV2 = dataStoreBackpackV2;
+            this.browserBridge = browserBridge;
+            this.backpackFiltersController = backpackFiltersController;
+            this.avatarSlotsHUDController = avatarSlotsHUDController;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
             view.OnWearableUnequipped += HandleWearableUnequipped;
             view.OnWearableSelected += HandleWearableSelected;
             view.OnFilterWearables += FilterWearablesFromBreadcrumb;
+            view.OnGoToMarketplace += GoToMarketplace;
+
+            backpackFiltersController.OnThirdPartyCollectionChanged += SetThirdPartCollectionIds;
+            backpackFiltersController.OnSortByChanged += SetSorting;
+            backpackFiltersController.OnSearchTextChanged += SetTextFilter;
+            backpackFiltersController.OnCollectionTypeChanged += SetCollectionType;
+
+            avatarSlotsHUDController.OnToggleSlot += SetCategory;
         }
 
         public void Dispose()
@@ -51,13 +78,39 @@ namespace DCL.Backpack
             view.OnWearableUnequipped -= HandleWearableUnequipped;
             view.OnWearableSelected -= HandleWearableSelected;
             view.OnFilterWearables -= FilterWearablesFromBreadcrumb;
+            view.OnGoToMarketplace -= GoToMarketplace;
+
+            backpackFiltersController.OnThirdPartyCollectionChanged -= SetThirdPartCollectionIds;
+            backpackFiltersController.OnSortByChanged -= SetSorting;
+            backpackFiltersController.OnSearchTextChanged -= SetTextFilter;
+            backpackFiltersController.OnCollectionTypeChanged -= SetCollectionType;
+            backpackFiltersController.Dispose();
+
+            avatarSlotsHUDController.OnToggleSlot -= SetCategory;
+            avatarSlotsHUDController.Dispose();
 
             view.Dispose();
             requestWearablesCancellationToken.SafeCancelAndDispose();
+            filtersCancellationToken.SafeCancelAndDispose();
         }
 
         public void LoadWearables()
         {
+            LoadWearablesWithFilters(categoryFilter, rarityFilter, collectionTypeMask, thirdPartyCollectionIdsFilter,
+                nameFilter, wearableSorting);
+        }
+
+        public void LoadWearablesWithFilters(string categoryFilter = null, NftRarity rarityFilter = NftRarity.None,
+            NftCollectionType collectionTypeMask = NftCollectionType.All,
+            ICollection<string> thirdPartyCollectionIdsFilter = null, string nameFilter = null,
+            (NftOrderByOperation type, bool directionAscendent)? wearableSorting = null)
+        {
+            this.categoryFilter = categoryFilter;
+            this.rarityFilter = rarityFilter;
+            this.collectionTypeMask = collectionTypeMask;
+            this.thirdPartyCollectionIdsFilter = thirdPartyCollectionIdsFilter;
+            this.nameFilter = nameFilter;
+            this.wearableSorting = wearableSorting;
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
             ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
         }
@@ -80,6 +133,9 @@ namespace DCL.Backpack
 
             view.SetWearable(wearableGridModel with { IsEquipped = false });
         }
+
+        public void LoadCollections() =>
+            backpackFiltersController.LoadCollections();
 
         private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
         {
@@ -118,11 +174,13 @@ namespace DCL.Backpack
             {
                 currentWearables.Clear();
 
-                // TODO: instead of requesting owned wearables, we should request all the wearables with the current filters & sorting
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
-                    PAGE_SIZE, true, cancellationToken);
+                    PAGE_SIZE, cancellationToken,
+                    categoryFilter, rarityFilter, collectionTypeMask,
+                    thirdPartyCollectionIdsFilter,
+                    nameFilter, wearableSorting);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
                                             .ToDictionary(item => item.WearableId, model => model);
@@ -145,7 +203,7 @@ namespace DCL.Backpack
             if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
             {
                 rarity = NftRarity.Common;
-                Debug.LogError($"Could not parse the rarity of the wearable: {wearable.rarity}. Fallback to common..");
+                Debug.LogWarning($"Could not parse the rarity of the wearable '{wearable.id}'. Fallback to common.");
             }
 
             return new WearableGridItemModel
@@ -154,9 +212,7 @@ namespace DCL.Backpack
                 Rarity = rarity,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
                 IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
-
-                // TODO: make the new state work
-                IsNew = false,
+                IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
                 IsSelected = false,
             };
         }
@@ -174,6 +230,8 @@ namespace DCL.Backpack
                 return;
             }
 
+            string[] hidesList = wearable.GetHidesList(userProfileBridge.GetOwn().avatar.bodyShape);
+
             view.FillInfoCard(new InfoCardComponentModel
             {
                 rarity = wearable.rarity,
@@ -183,9 +241,9 @@ namespace DCL.Backpack
                 // TODO: solve hidden by field
                 hiddenBy = null,
                 name = wearable.GetName(),
-                hideList = wearable.GetHidesList(userProfileBridge.GetOwn().avatar.bodyShape).ToList(),
+                hideList = hidesList != null ? hidesList.ToList() : new List<string>(),
                 isEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearableId),
-                removeList = wearable.data.replaces.ToList(),
+                removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
             });
         }
@@ -205,6 +263,54 @@ namespace DCL.Backpack
             }
             else if (referencePath.StartsWith(NAME_FILTER_REF)) { throw new NotImplementedException(); }
             else if (referencePath.StartsWith(CATEGORY_FILTER_REF)) { throw new NotImplementedException(); }
+        }
+
+        private void GoToMarketplace()
+        {
+            browserBridge.OpenUrl(userProfileBridge.GetOwn().hasConnectedWeb3
+                ? URL_MARKET_PLACE
+                : URL_GET_A_WALLET);
+        }
+
+        private void SetThirdPartCollectionIds(HashSet<string> selectedCollections)
+        {
+            thirdPartyCollectionIdsFilter = selectedCollections;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+        }
+
+        private void SetSorting((NftOrderByOperation type, bool directionAscendent) newSorting)
+        {
+            wearableSorting = newSorting;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+        }
+
+        private void SetTextFilter(string newText)
+        {
+            nameFilter = newText;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+        }
+
+        private void SetCollectionType(NftCollectionType collectionType)
+        {
+            collectionTypeMask = collectionType;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+        }
+
+        private void SetCategory(string category, bool supportColor, bool isSelected)
+        {
+            categoryFilter = isSelected ? category : null;
+            filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+        }
+
+        private async UniTaskVoid ThrottleLoadWearablesWithCurrentFilters(CancellationToken cancellationToken)
+        {
+            await UniTask.NextFrame(cancellationToken);
+            LoadWearables();
         }
     }
 }
