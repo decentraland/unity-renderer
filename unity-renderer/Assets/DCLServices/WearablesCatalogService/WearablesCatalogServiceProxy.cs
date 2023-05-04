@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -55,14 +54,23 @@ namespace DCLServices.WearablesCatalogService
             wearablesCatalogServiceInUse?.Dispose();
         }
 
+        public async UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken)
+        {
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+
+            return await lambdasWearablesCatalogService.GetThirdPartyCollectionsAsync(cancellationToken);
+        }
+
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
-            NftRarity rarity = NftRarity.None, ICollection<string> collectionIds = null, string name = null,
+            NftRarity rarity = NftRarity.None,
+            NftCollectionType collectionTypeMask = NftCollectionType.All,
+            ICollection<string> thirdPartyCollectionIds = null, string name = null,
             (NftOrderByOperation type, bool directionAscendent)? orderBy = null)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
 
             return await lambdasWearablesCatalogService.RequestOwnedWearablesAsync(userId, pageNumber, pageSize,
-                cancellationToken, category, rarity, collectionIds, name, orderBy);
+                cancellationToken, category, rarity, collectionTypeMask, thirdPartyCollectionIds, name, orderBy);
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)

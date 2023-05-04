@@ -692,6 +692,7 @@ namespace DCL
             if (!worldState.TryGetScene(sceneNumber, out ParcelScene scene))
                 return;
 
+            CommonScriptableObjects.rendererState.RemoveLock(scene);
             worldState.RemoveScene(sceneNumber);
 
             DataStore.i.world.portableExperienceIds.Remove(scene.sceneData.id);

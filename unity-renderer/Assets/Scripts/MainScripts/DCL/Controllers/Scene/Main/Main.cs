@@ -125,6 +125,8 @@ namespace DCL
                 {
                     var collection = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                       .GetAddressable<ShaderVariantCollection>("shadervariants-selected");
+
+                    await UniTask.DelayFrame(1);
                     collection.WarmUp();
                 }
             }
