@@ -11,12 +11,16 @@ namespace DCL.Backpack
     public class WearableGridItemComponentViewShould
     {
         private WearableGridItemComponentView view;
+        private NftRarityBackgroundSO backgrounds;
 
         [SetUp]
         public void SetUp()
         {
             view = Object.Instantiate(AssetDatabase.LoadAssetAtPath<WearableGridItemComponentView>(
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BackpackEditorHUDV2/Prefabs/WearableGridItemView.prefab"));
+
+            backgrounds = AssetDatabase.LoadAssetAtPath<NftRarityBackgroundSO>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BackpackEditorHUDV2/AvatarSlot/NftWearableRarityBackground.asset");
         }
 
         [TearDown]
@@ -275,7 +279,24 @@ namespace DCL.Backpack
             Assert.IsTrue(view.hoverSelectedEquippedContainer.activeSelf);
         }
 
+        [TestCaseSource(nameof(GetAllRarities))]
+        public void SetCorrectBackgroundForRarity(NftRarity nftRarity)
+        {
+            view.SetModel(new WearableGridItemModel
+            {
+                Rarity = nftRarity,
+                ImageUrl = "imageUrl",
+                IsEquipped = false,
+                IsNew = false,
+                IsSelected = false,
+                WearableId = "w1",
+            });
+
+            Assert.AreEqual(view.nftBackground.sprite, backgrounds.GetRarityImage(nftRarity.ToString().ToLower()));
+        }
+
         private static IEnumerable<NftRarity> GetAllRarities() =>
             Enum.GetValues(typeof(NftRarity)).Cast<NftRarity>();
     }
 }
+
