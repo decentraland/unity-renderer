@@ -59,7 +59,7 @@ namespace DCL.Backpack
                 Destroy(gameObject);
         }
 
-        public void SetWearablePages(int totalPages)
+        public void SetWearablePages(int pageNumber, int totalPages)
         {
             if (totalPages <= 1)
             {
@@ -69,10 +69,8 @@ namespace DCL.Backpack
 
             wearablePageSelector.gameObject.SetActive(true);
             wearablePageSelector.Setup(totalPages, true);
+            wearablePageSelector.SelectPage(pageNumber - 1, false);
         }
-
-        public void GoToPage(int pageNumber, bool notifyEvent = true) =>
-            wearablePageSelector.SelectPage(pageNumber - 1, notifyEvent);
 
         public void ShowWearables(IEnumerable<WearableGridItemModel> wearables)
         {

@@ -24,36 +24,24 @@ namespace DCL.Backpack
             view.Dispose();
         }
 
-        [TestCase(4)]
-        [TestCase(5)]
-        [TestCase(26)]
-        public void SetPages(int totalPages)
+        [TestCase(1, 4)]
+        [TestCase(3, 5)]
+        [TestCase(9, 26)]
+        public void SetPages(int currentPage, int totalPages)
         {
-            view.SetWearablePages(totalPages);
+            view.SetWearablePages(currentPage, totalPages);
 
             Assert.IsTrue(view.wearablePageSelector.gameObject.activeSelf);
+            Assert.AreEqual(currentPage - 1, view.wearablePageSelector.CurrentPage);
             Assert.AreEqual(totalPages, view.wearablePageSelector.TotalPages);
         }
 
         [Test]
         public void HidePagesWhenOnlyOnePage()
         {
-            view.SetWearablePages(1);
+            view.SetWearablePages(1, 1);
 
             Assert.IsFalse(view.wearablePageSelector.gameObject.activeSelf);
-        }
-
-        [Test]
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        public void GoToPage(int pageNumber)
-        {
-            view.SetWearablePages(3);
-
-            view.GoToPage(pageNumber, false);
-
-            Assert.AreEqual(pageNumber - 1, view.wearablePageSelector.CurrentPage);
         }
 
         [Test]

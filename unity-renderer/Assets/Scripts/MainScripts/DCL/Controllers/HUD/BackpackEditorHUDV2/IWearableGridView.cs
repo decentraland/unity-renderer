@@ -13,8 +13,7 @@ namespace DCL.Backpack
         event Action OnGoToMarketplace;
 
         void Dispose();
-        void SetWearablePages(int totalPages);
-        void GoToPage(int pageNumber, bool notifyEvent = true);
+        void SetWearablePages(int pageNumber, int totalPages);
         void ShowWearables(IEnumerable<WearableGridItemModel> wearables);
         void ClearWearables();
         void SetWearable(WearableGridItemModel model);

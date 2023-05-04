@@ -128,7 +128,7 @@ namespace DCL.Backpack
             controller.LoadWearablesWithFilters();
             yield return null;
 
-            view.Received(1).SetWearablePages(expectedTotalPages);
+            view.Received(1).SetWearablePages(1, expectedTotalPages);
         }
 
         [UnityTest]
@@ -444,7 +444,7 @@ namespace DCL.Backpack
                                         Arg.Any<string>(),
                                         Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>());
 
-            view.Received(1).SetWearablePages(4);
+            view.Received(1).SetWearablePages(3, 4);
         }
 
         [Test]
