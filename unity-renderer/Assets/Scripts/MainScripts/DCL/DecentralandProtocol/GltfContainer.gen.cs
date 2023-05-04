@@ -25,16 +25,16 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvZ2x0Zl9jb250YWluZXIu",
-            "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyLKAQoPUEJHbHRm",
-            "Q29udGFpbmVyEgsKA3NyYxgBIAEoCRIqCh12aXNpYmxlX21lc2hlc19jb2xs",
-            "aXNpb25fbWFzaxgEIAEoDUgAiAEBEiwKH2ludmlzaWJsZV9tZXNoZXNfY29s",
-            "bGlzaW9uX21hc2sYBSABKA1IAYgBAUIgCh5fdmlzaWJsZV9tZXNoZXNfY29s",
-            "bGlzaW9uX21hc2tCIgogX2ludmlzaWJsZV9tZXNoZXNfY29sbGlzaW9uX21h",
-            "c2tKBAgCEANKBAgDEARCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyKoAQoPUEJHbHRm",
+            "Q29udGFpbmVyEgsKA3NyYxgBIAEoCRImChlkaXNhYmxlX3BoeXNpY3NfY29s",
+            "bGlkZXJzGAIgASgISACIAQESJQoYY3JlYXRlX3BvaW50ZXJfY29sbGlkZXJz",
+            "GAMgASgISAGIAQFCHAoaX2Rpc2FibGVfcGh5c2ljc19jb2xsaWRlcnNCGwoZ",
+            "X2NyZWF0ZV9wb2ludGVyX2NvbGxpZGVyc0IUqgIRRENMLkVDU0NvbXBvbmVu",
+            "dHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBGltfContainer), global::DCL.ECSComponents.PBGltfContainer.Parser, new[]{ "Src", "VisibleMeshesCollisionMask", "InvisibleMeshesCollisionMask" }, new[]{ "VisibleMeshesCollisionMask", "InvisibleMeshesCollisionMask" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBGltfContainer), global::DCL.ECSComponents.PBGltfContainer.Parser, new[]{ "Src", "DisablePhysicsColliders", "CreatePointerColliders" }, new[]{ "DisablePhysicsColliders", "CreatePointerColliders" }, null, null, null)
           }));
     }
     #endregion
@@ -84,8 +84,8 @@ namespace DCL.ECSComponents {
     public PBGltfContainer(PBGltfContainer other) : this() {
       _hasBits0 = other._hasBits0;
       src_ = other.src_;
-      visibleMeshesCollisionMask_ = other.visibleMeshesCollisionMask_;
-      invisibleMeshesCollisionMask_ = other.invisibleMeshesCollisionMask_;
+      disablePhysicsColliders_ = other.disablePhysicsColliders_;
+      createPointerColliders_ = other.createPointerColliders_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -110,59 +110,59 @@ namespace DCL.ECSComponents {
       }
     }
 
-    /// <summary>Field number for the "visible_meshes_collision_mask" field.</summary>
-    public const int VisibleMeshesCollisionMaskFieldNumber = 4;
-    private uint visibleMeshesCollisionMask_;
+    /// <summary>Field number for the "disable_physics_colliders" field.</summary>
+    public const int DisablePhysicsCollidersFieldNumber = 2;
+    private bool disablePhysicsColliders_;
     /// <summary>
-    /// default: 0
+    /// disable automatic physics collider creation (default: false)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public uint VisibleMeshesCollisionMask {
-      get { if ((_hasBits0 & 1) != 0) { return visibleMeshesCollisionMask_; } else { return 0; } }
+    public bool DisablePhysicsColliders {
+      get { if ((_hasBits0 & 1) != 0) { return disablePhysicsColliders_; } else { return false; } }
       set {
         _hasBits0 |= 1;
-        visibleMeshesCollisionMask_ = value;
+        disablePhysicsColliders_ = value;
       }
     }
-    /// <summary>Gets whether the "visible_meshes_collision_mask" field is set</summary>
+    /// <summary>Gets whether the "disable_physics_colliders" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasVisibleMeshesCollisionMask {
+    public bool HasDisablePhysicsColliders {
       get { return (_hasBits0 & 1) != 0; }
     }
-    /// <summary>Clears the value of the "visible_meshes_collision_mask" field</summary>
+    /// <summary>Clears the value of the "disable_physics_colliders" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearVisibleMeshesCollisionMask() {
+    public void ClearDisablePhysicsColliders() {
       _hasBits0 &= ~1;
     }
 
-    /// <summary>Field number for the "invisible_meshes_collision_mask" field.</summary>
-    public const int InvisibleMeshesCollisionMaskFieldNumber = 5;
-    private uint invisibleMeshesCollisionMask_;
+    /// <summary>Field number for the "create_pointer_colliders" field.</summary>
+    public const int CreatePointerCollidersFieldNumber = 3;
+    private bool createPointerColliders_;
     /// <summary>
-    /// default: CL_POINTER | CL_PHYSICS
+    /// copies the visible meshes into a virtual MeshCollider with CL_POINTER collider_mask (default: false)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public uint InvisibleMeshesCollisionMask {
-      get { if ((_hasBits0 & 2) != 0) { return invisibleMeshesCollisionMask_; } else { return 0; } }
+    public bool CreatePointerColliders {
+      get { if ((_hasBits0 & 2) != 0) { return createPointerColliders_; } else { return false; } }
       set {
         _hasBits0 |= 2;
-        invisibleMeshesCollisionMask_ = value;
+        createPointerColliders_ = value;
       }
     }
-    /// <summary>Gets whether the "invisible_meshes_collision_mask" field is set</summary>
+    /// <summary>Gets whether the "create_pointer_colliders" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasInvisibleMeshesCollisionMask {
+    public bool HasCreatePointerColliders {
       get { return (_hasBits0 & 2) != 0; }
     }
-    /// <summary>Clears the value of the "invisible_meshes_collision_mask" field</summary>
+    /// <summary>Clears the value of the "create_pointer_colliders" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearInvisibleMeshesCollisionMask() {
+    public void ClearCreatePointerColliders() {
       _hasBits0 &= ~2;
     }
 
@@ -182,8 +182,8 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Src != other.Src) return false;
-      if (VisibleMeshesCollisionMask != other.VisibleMeshesCollisionMask) return false;
-      if (InvisibleMeshesCollisionMask != other.InvisibleMeshesCollisionMask) return false;
+      if (DisablePhysicsColliders != other.DisablePhysicsColliders) return false;
+      if (CreatePointerColliders != other.CreatePointerColliders) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -192,8 +192,8 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (Src.Length != 0) hash ^= Src.GetHashCode();
-      if (HasVisibleMeshesCollisionMask) hash ^= VisibleMeshesCollisionMask.GetHashCode();
-      if (HasInvisibleMeshesCollisionMask) hash ^= InvisibleMeshesCollisionMask.GetHashCode();
+      if (HasDisablePhysicsColliders) hash ^= DisablePhysicsColliders.GetHashCode();
+      if (HasCreatePointerColliders) hash ^= CreatePointerColliders.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -216,13 +216,13 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Src);
       }
-      if (HasVisibleMeshesCollisionMask) {
-        output.WriteRawTag(32);
-        output.WriteUInt32(VisibleMeshesCollisionMask);
+      if (HasDisablePhysicsColliders) {
+        output.WriteRawTag(16);
+        output.WriteBool(DisablePhysicsColliders);
       }
-      if (HasInvisibleMeshesCollisionMask) {
-        output.WriteRawTag(40);
-        output.WriteUInt32(InvisibleMeshesCollisionMask);
+      if (HasCreatePointerColliders) {
+        output.WriteRawTag(24);
+        output.WriteBool(CreatePointerColliders);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -238,13 +238,13 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Src);
       }
-      if (HasVisibleMeshesCollisionMask) {
-        output.WriteRawTag(32);
-        output.WriteUInt32(VisibleMeshesCollisionMask);
+      if (HasDisablePhysicsColliders) {
+        output.WriteRawTag(16);
+        output.WriteBool(DisablePhysicsColliders);
       }
-      if (HasInvisibleMeshesCollisionMask) {
-        output.WriteRawTag(40);
-        output.WriteUInt32(InvisibleMeshesCollisionMask);
+      if (HasCreatePointerColliders) {
+        output.WriteRawTag(24);
+        output.WriteBool(CreatePointerColliders);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -259,11 +259,11 @@ namespace DCL.ECSComponents {
       if (Src.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Src);
       }
-      if (HasVisibleMeshesCollisionMask) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(VisibleMeshesCollisionMask);
+      if (HasDisablePhysicsColliders) {
+        size += 1 + 1;
       }
-      if (HasInvisibleMeshesCollisionMask) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(InvisibleMeshesCollisionMask);
+      if (HasCreatePointerColliders) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -280,11 +280,11 @@ namespace DCL.ECSComponents {
       if (other.Src.Length != 0) {
         Src = other.Src;
       }
-      if (other.HasVisibleMeshesCollisionMask) {
-        VisibleMeshesCollisionMask = other.VisibleMeshesCollisionMask;
+      if (other.HasDisablePhysicsColliders) {
+        DisablePhysicsColliders = other.DisablePhysicsColliders;
       }
-      if (other.HasInvisibleMeshesCollisionMask) {
-        InvisibleMeshesCollisionMask = other.InvisibleMeshesCollisionMask;
+      if (other.HasCreatePointerColliders) {
+        CreatePointerColliders = other.CreatePointerColliders;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -305,12 +305,12 @@ namespace DCL.ECSComponents {
             Src = input.ReadString();
             break;
           }
-          case 32: {
-            VisibleMeshesCollisionMask = input.ReadUInt32();
+          case 16: {
+            DisablePhysicsColliders = input.ReadBool();
             break;
           }
-          case 40: {
-            InvisibleMeshesCollisionMask = input.ReadUInt32();
+          case 24: {
+            CreatePointerColliders = input.ReadBool();
             break;
           }
         }
@@ -332,12 +332,12 @@ namespace DCL.ECSComponents {
             Src = input.ReadString();
             break;
           }
-          case 32: {
-            VisibleMeshesCollisionMask = input.ReadUInt32();
+          case 16: {
+            DisablePhysicsColliders = input.ReadBool();
             break;
           }
-          case 40: {
-            InvisibleMeshesCollisionMask = input.ReadUInt32();
+          case 24: {
+            CreatePointerColliders = input.ReadBool();
             break;
           }
         }

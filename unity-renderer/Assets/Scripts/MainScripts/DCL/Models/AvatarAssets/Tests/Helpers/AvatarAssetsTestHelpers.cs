@@ -3,7 +3,6 @@ using DCL.Helpers;
 using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using UnityEditor;
@@ -63,6 +62,7 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                     Arg.Any<CancellationToken>(),
                     Arg.Any<string>(),
                     Arg.Any<NftRarity>(),
+                    Arg.Any<NftCollectionType>(),
                     Arg.Any<ICollection<string>>(),
                     Arg.Any<string>(),
                     Arg.Any<(NftOrderByOperation type, bool directionAscendent)>())
