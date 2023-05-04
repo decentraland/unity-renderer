@@ -511,7 +511,7 @@ namespace DCL.Backpack
                                         collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
-            view.OnFilterWearables += Raise.Event<Action<string>>("all");
+            view.OnFilterSelected += Raise.Event<Action<string>>("all");
             yield return null;
 
             view.Received(1)
@@ -536,7 +536,7 @@ namespace DCL.Backpack
                                         collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
-            view.OnFilterWearables += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
+            view.OnFilterSelected += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
             yield return null;
 
             view.Received(1)

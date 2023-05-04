@@ -23,7 +23,8 @@ namespace DCL.Backpack
         private WearableGridItemComponentView selectedWearableItem;
 
         public event Action<int> OnWearablePageChanged;
-        public event Action<string> OnFilterWearables;
+        public event Action<string> OnFilterSelected;
+        public event Action<string> OnFilterRemoved;
         public event Action OnGoToMarketplace;
         public event Action<WearableGridItemModel> OnWearableSelected;
         public event Action<WearableGridItemModel> OnWearableEquipped;
@@ -41,7 +42,8 @@ namespace DCL.Backpack
 
             wearableGridItemsPool.ForcePrewarm();
 
-            wearablesBreadcrumbComponentView.OnNavigate += reference => OnFilterWearables?.Invoke(reference);
+            wearablesBreadcrumbComponentView.OnFilterSelected += reference => OnFilterSelected?.Invoke(reference);
+            wearablesBreadcrumbComponentView.OnFilterRemoved += reference => OnFilterRemoved?.Invoke(reference);
 
             infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model);
             infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model);

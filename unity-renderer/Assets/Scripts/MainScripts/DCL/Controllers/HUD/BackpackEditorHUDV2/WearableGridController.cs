@@ -60,7 +60,8 @@ namespace DCL.Backpack
             view.OnWearableEquipped += HandleWearableEquipped;
             view.OnWearableUnequipped += HandleWearableUnequipped;
             view.OnWearableSelected += HandleWearableSelected;
-            view.OnFilterWearables += FilterWearablesFromBreadcrumb;
+            view.OnFilterSelected += FilterWearablesFromReferencePath;
+            view.OnFilterRemoved += RemoveFiltersFromReferencePath;
             view.OnGoToMarketplace += GoToMarketplace;
 
             backpackFiltersController.OnThirdPartyCollectionChanged += SetThirdPartCollectionIds;
@@ -77,7 +78,8 @@ namespace DCL.Backpack
             view.OnWearableEquipped -= HandleWearableEquipped;
             view.OnWearableUnequipped -= HandleWearableUnequipped;
             view.OnWearableSelected -= HandleWearableSelected;
-            view.OnFilterWearables -= FilterWearablesFromBreadcrumb;
+            view.OnFilterRemoved -= RemoveFiltersFromReferencePath;
+            view.OnFilterSelected -= FilterWearablesFromReferencePath;
             view.OnGoToMarketplace -= GoToMarketplace;
 
             backpackFiltersController.OnThirdPartyCollectionChanged -= SetThirdPartCollectionIds;
@@ -139,22 +141,22 @@ namespace DCL.Backpack
 
         private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
         {
-            List<(string reference, string name, string type)> path = new List<(string reference, string name, string type)>();
+            List<(string reference, string name, string type, bool removable)> path = new ();
 
             var additiveReferencePath = $"{ALL_FILTER_REF}";
-            path.Add((reference: additiveReferencePath, name: "All", type: "all"));
+            path.Add((reference: additiveReferencePath, name: "All", type: "all", removable: false));
 
             if (!string.IsNullOrEmpty(categoryFilter))
             {
                 additiveReferencePath += $"&{CATEGORY_FILTER_REF}{categoryFilter}";
                 // TODO: translate category id into names (??)
-                path.Add((reference: additiveReferencePath, name: categoryFilter, type: categoryFilter));
+                path.Add((reference: additiveReferencePath, name: categoryFilter, type: categoryFilter, removable: true));
             }
 
             if (!string.IsNullOrEmpty(nameFilter))
             {
                 additiveReferencePath += $"&{NAME_FILTER_REF}{nameFilter}";
-                path.Add((reference: additiveReferencePath, name: nameFilter, type: "nft-name"));
+                path.Add((reference: additiveReferencePath, name: nameFilter, type: "nft-name", removable: true));
             }
 
             var wearableBreadcrumbModel = new NftBreadcrumbModel
@@ -266,7 +268,7 @@ namespace DCL.Backpack
         private void HandleWearableEquipped(WearableGridItemModel wearableGridItem) =>
             OnWearableEquipped?.Invoke(wearableGridItem.WearableId);
 
-        private void FilterWearablesFromBreadcrumb(string referencePath)
+        private void FilterWearablesFromReferencePath(string referencePath)
         {
             string[] filters = referencePath.Split('&', StringSplitOptions.RemoveEmptyEntries);
 
@@ -280,6 +282,20 @@ namespace DCL.Backpack
                 else if (filter.StartsWith(CATEGORY_FILTER_REF))
                     categoryFilter = filter[9..];
             }
+
+            requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
+            ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
+        }
+
+        private void RemoveFiltersFromReferencePath(string referencePath)
+        {
+            string[] filters = referencePath.Split('&', StringSplitOptions.RemoveEmptyEntries);
+            string filter = filters[^1];
+
+            if (filter.StartsWith(NAME_FILTER_REF))
+                nameFilter = null;
+            else if (filter.StartsWith(CATEGORY_FILTER_REF))
+                categoryFilter = null;
 
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
             ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();

@@ -17,7 +17,8 @@ namespace DCL.Backpack
 
         internal NftBreadcrumbModel Model => model;
 
-        public event Action<string> OnNavigate;
+        public event Action<string> OnFilterSelected;
+        public event Action<string> OnFilterRemoved;
 
         public override void Awake()
         {
@@ -37,8 +38,8 @@ namespace DCL.Backpack
             foreach ((NftSubCategoryFilterComponentView view, PoolableObject poolObj) in pooledObjects)
             {
                 poolObj.Release();
-                view.OnNavigate -= Navigate;
-                view.OnExit -= NavigateToPreviousCategory;
+                view.OnNavigate -= ApplyFilter;
+                view.OnExit -= RemoveFilter;
             }
 
             pooledObjects.Clear();
@@ -46,7 +47,7 @@ namespace DCL.Backpack
             categoriesByIndex = new NftSubCategoryFilterComponentView[model.Path.Length];
             var i = 0;
 
-            foreach ((string Filter, string Name, string Type) subCategory in model.Path)
+            foreach ((string Filter, string Name, string Type, bool Removable) subCategory in model.Path)
             {
                 PoolableObject poolObj = pool.Get();
                 NftSubCategoryFilterComponentView view = poolObj.gameObject.GetComponent<NftSubCategoryFilterComponentView>();
@@ -62,10 +63,11 @@ namespace DCL.Backpack
                     ShowResultCount = isLastItem,
                     Icon = icon,
                     IsSelected = model.Current == i,
+                    ShowRemoveButton = subCategory.Removable,
                 });
 
-                view.OnNavigate += Navigate;
-                view.OnExit += NavigateToPreviousCategory;
+                view.OnNavigate += ApplyFilter;
+                view.OnExit += RemoveFilter;
                 view.transform.SetParent(container, false);
 
                 pooledObjects[view] = poolObj;
@@ -73,13 +75,10 @@ namespace DCL.Backpack
             }
         }
 
-        private void NavigateToPreviousCategory(NftSubCategoryFilterModel model)
-        {
-            int index = Array.FindIndex(this.model.Path, tuple => tuple.Filter == model.Filter);
-            Navigate(categoriesByIndex[index].Model);
-        }
+        private void RemoveFilter(NftSubCategoryFilterModel model) =>
+            OnFilterRemoved?.Invoke(model.Filter);
 
-        private void Navigate(NftSubCategoryFilterModel model) =>
-            OnNavigate?.Invoke(model.Filter);
+        private void ApplyFilter(NftSubCategoryFilterModel model) =>
+            OnFilterSelected?.Invoke(model.Filter);
     }
 }

@@ -33,6 +33,8 @@ namespace DCL.Backpack
             if (model.ShowResultCount)
                 categoryName.text += $" ({model.ResultCount})";
 
+            exitButton.gameObject.SetActive(model.ShowRemoveButton);
+
             icon.sprite = model.Icon;
             icon.gameObject.SetActive(model.Icon != null);
         }
