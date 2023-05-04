@@ -114,11 +114,35 @@ namespace Tests
             Assert.False(ReferenceEquals(videoMaterial10.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
         }
 
-        /*[UnityTest]
+        [UnityTest]
         public IEnumerator UpdateVideoEventComponentWithVideoState()
         {
+            var playerComponent = internalEcsComponents.videoPlayerComponent;
+            var videoEventComponent = internalEcsComponents.videoEventComponent;
 
+            ECS7TestEntity entity = scene0.CreateEntity(100);
 
-        }*/
+            // These 2 internal components normally get automatically added by the VideoPlayerHandler
+            playerComponent.PutFor(scene0, entity, new InternalVideoPlayer()
+            {
+                videoPlayer = videoPlayer,
+                assignedMaterials = new List<InternalVideoPlayer.MaterialAssigned>(),
+            });
+            videoEventComponent.PutFor(scene0, entity, new InternalVideoEvent()
+            {
+                videoState = DCL.ECSComponents.VideoState.VsLoading,
+                timeStamp = 1
+            });
+            systemsUpdate();
+
+            var videoEvent = videoEventComponent.GetFor(scene0, entity);
+            Assert.IsNotNull(videoEvent);
+            Assert.AreEqual((int)VideoState.LOADING, (int)videoEvent.model.videoState);
+
+            yield return new WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
+            systemsUpdate();
+
+            Assert.AreEqual((int)VideoState.READY, (int)videoEvent.model.videoState);
+        }
     }
 }

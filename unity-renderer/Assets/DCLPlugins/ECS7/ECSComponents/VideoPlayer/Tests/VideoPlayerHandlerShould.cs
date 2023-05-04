@@ -266,18 +266,24 @@ namespace Tests
             videoPlayerHandler.OnComponentRemoved(scene, entity);
         }
 
-        /*[UnityTest]
-        public IEnumerator AttachVideoStateComponent()
+        [Test]
+        public void AttachAndRemoveVideoEventComponent()
         {
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = true;
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
+            {
+                Src = "other-video.mp4",
+                Playing = true,
+                Volume = 0.5f,
+            });
 
+            Assert.NotNull(internalVideoEventComponent.GetFor(scene, entity));
 
-        }*/
+            // remove component, internal component should be removed too
+            videoPlayerHandler.OnComponentRemoved(scene, entity);
 
-        /*[UnityTest]
-        public IEnumerator RemoveVideoStateComponent()
-        {
-
-
-        }*/
+            Assert.IsNull(internalVideoEventComponent.GetFor(scene, entity));
+        }
     }
 }
