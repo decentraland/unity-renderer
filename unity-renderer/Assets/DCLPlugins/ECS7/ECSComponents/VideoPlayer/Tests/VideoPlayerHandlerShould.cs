@@ -6,6 +6,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -41,7 +42,10 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
-            videoPlayerHandler = new VideoPlayerHandler(internalVideoPlayerComponent, loadingScreenDataStore.decoupledLoadingHUD);
+            videoPlayerHandler = new VideoPlayerHandler(
+                internalVideoPlayerComponent,
+                loadingScreenDataStore.decoupledLoadingHUD,
+                Substitute.For<IECSComponentWriter>());
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
@@ -258,5 +262,19 @@ namespace Tests
 
             videoPlayerHandler.OnComponentRemoved(scene, entity);
         }
+
+        /*[UnityTest]
+        public IEnumerator AttachVideoStateComponent()
+        {
+
+
+        }*/
+
+        /*[UnityTest]
+        public IEnumerator RemoveVideoStateComponent()
+        {
+
+
+        }*/
     }
 }

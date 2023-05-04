@@ -1,6 +1,7 @@
 using DCL.Components;
 using DCL.Components.Video.Plugin;
 using DCL.Controllers;
+using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -16,6 +17,7 @@ namespace DCL.ECSComponents
 
         internal DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen;
         internal PBVideoPlayer lastModel = null;
+        internal IECSComponentWriter componentWriter;
         internal WebVideoPlayer videoPlayer;
 
         // Flags to check if we can activate the video
@@ -26,10 +28,14 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
         private bool canVideoBePlayed => isRendererActive && hadUserInteraction && isValidUrl;
 
-        public VideoPlayerHandler(IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent, DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen)
+        public VideoPlayerHandler(
+            IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
+            DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen,
+            IECSComponentWriter componentWriter)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
             this.loadingScreen = loadingScreen;
+            this.componentWriter = componentWriter;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -50,6 +56,7 @@ namespace DCL.ECSComponents
             Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
             loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
 
+            componentWriter.RemoveComponent(scene, entity, ComponentID.VIDEO_EVENT);
             videoPlayerInternalComponent.RemoveFor(scene, entity);
             videoPlayer?.Dispose();
         }
@@ -86,6 +93,20 @@ namespace DCL.ECSComponents
             videoPlayer.SetLoop(model.GetLoop());
 
             lastModel = model;
+
+            // Add GrowOnlyValueSet VideoEvent component
+            componentWriter.AppendComponent(
+                scene.sceneData.sceneNumber,
+                entity.entityId,
+                ComponentID.VIDEO_EVENT,
+                new PBVideoEvent()
+                {
+                    State = (VideoState)videoPlayer.GetState(),
+                    CurrentOffset = videoPlayer.GetTime(),
+                    VideoLength = videoPlayer.GetDuration()
+                },
+                ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
+            );
 
             ConditionsToPlayVideoChanged();
         }

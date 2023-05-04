@@ -113,5 +113,19 @@ namespace Tests
             Assert.True(ReferenceEquals(videoMaterial01.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
             Assert.False(ReferenceEquals(videoMaterial10.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
         }
+
+        /*[UnityTest]
+        public IEnumerator AttachVideoStateComponent()
+        {
+
+
+        }*/
+
+        /*[UnityTest]
+        public IEnumerator UpdateVideoEventComponentWithVideoState()
+        {
+
+
+        }*/
     }
 }

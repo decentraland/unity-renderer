@@ -39,23 +39,22 @@ namespace ECSSystems.VideoPlayerSystem
 
                 playerModel.videoPlayer.Update();
 
-                if (videoEventComponent.HasComponent(playerComponentData.scene, playerComponentData.entity))
+                int previousVideoState = (int)videoEventComponent.Get(playerComponentData.scene, playerComponentData.entity).model.State;
+                int currentVideoState = (int)playerModel.videoPlayer.GetState();
+                if (previousVideoState != currentVideoState)
                 {
-                    int previousVideoState = (int)videoEventComponent.Get(playerComponentData.scene, playerComponentData.entity).model.State;
-                    int currentVideoState = (int)playerModel.videoPlayer.GetState();
-                    if (previousVideoState != currentVideoState)
-                    {
-                        componentWriter.PutComponent(
-                            playerComponentData.scene.sceneData.sceneNumber, playerComponentData.entity.entityId,
-                            ComponentID.VIDEO_EVENT,
-                            new PBVideoEvent()
-                            {
-                                State = (VideoState)currentVideoState,
-                                CurrentOffset = playerModel.videoPlayer.GetTime(),
-                                VideoLength = playerModel.videoPlayer.GetDuration()
-                            }
-                        );
-                    }
+                    componentWriter.AppendComponent(
+                        playerComponentData.scene.sceneData.sceneNumber,
+                        playerComponentData.entity.entityId,
+                        ComponentID.VIDEO_EVENT,
+                        new PBVideoEvent()
+                        {
+                            State = (VideoState)currentVideoState,
+                            CurrentOffset = playerModel.videoPlayer.GetTime(),
+                            VideoLength = playerModel.videoPlayer.GetDuration()
+                        },
+                        ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
+                    );
                 }
             }
 
