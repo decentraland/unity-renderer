@@ -545,15 +545,90 @@ namespace DCL.Backpack
                      && n.Current == 0
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"
+                     && n.Path[0].Removable == false
                      && n.Path[1].Filter == "all&category=upper_body"
                      && n.Path[1].Name == "upper_body"
+                     && n.Path[1].Removable == true
                      && n.Path[2].Filter == "all&category=upper_body&name=festival"
-                     && n.Path[2].Name == "festival"));
+                     && n.Path[2].Name == "festival"
+                     && n.Path[2].Removable == true));
 
             wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                 Arg.Any<CancellationToken>(),
                 collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
                 category: "upper_body",
+                name: "festival");
+        }
+
+        [UnityTest]
+        public IEnumerator RemoveNameFilterFromBreadcrumb()
+        {
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        category: "upper_body",
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
+
+            view.OnFilterSelected += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
+            yield return null;
+
+            view.ClearReceivedCalls();
+            wearablesCatalogService.ClearReceivedCalls();
+
+            view.OnFilterRemoved += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
+            yield return null;
+
+            view.Received(1)
+                .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
+                     n.ResultCount == 50
+                     && n.Current == 0
+                     && n.Path[0].Filter == "all"
+                     && n.Path[0].Name == "All"
+                     && n.Path[0].Removable == false
+                     && n.Path[1].Filter == "all&category=upper_body"
+                     && n.Path[1].Name == "upper_body"
+                     && n.Path[1].Removable == true
+                     && n.Path.Length == 2));
+
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                Arg.Any<CancellationToken>(),
+                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                category: "upper_body");
+        }
+
+        [UnityTest]
+        public IEnumerator RemoveCategoryFilterFromBreadcrumb()
+        {
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        name: "festival",
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
+
+            view.OnFilterSelected += Raise.Event<Action<string>>("all&name=festival&category=upper_body");
+            yield return null;
+
+            view.ClearReceivedCalls();
+            wearablesCatalogService.ClearReceivedCalls();
+
+            view.OnFilterRemoved += Raise.Event<Action<string>>("all&name=festival&category=upper_body");
+            yield return null;
+
+            view.Received(1)
+                .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
+                     n.ResultCount == 50
+                     && n.Current == 0
+                     && n.Path[0].Filter == "all"
+                     && n.Path[0].Name == "All"
+                     && n.Path[0].Removable == false
+                     && n.Path[1].Filter == "all&name=festival"
+                     && n.Path[1].Name == "festival"
+                     && n.Path[1].Removable == true
+                     && n.Path.Length == 2));
+
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                Arg.Any<CancellationToken>(),
+                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
                 name: "festival");
         }
 

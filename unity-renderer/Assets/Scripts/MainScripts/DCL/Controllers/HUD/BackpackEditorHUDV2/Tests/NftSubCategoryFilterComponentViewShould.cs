@@ -92,5 +92,23 @@ namespace DCL.Backpack
 
             Assert.IsFalse(view.icon.gameObject.activeSelf);
         }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetRemovable(bool isRemovable)
+        {
+            view.SetModel(new NftSubCategoryFilterModel
+            {
+                Filter = "all",
+                Icon = null,
+                IsSelected = false,
+                Name = "All",
+                ResultCount = 15,
+                ShowResultCount = true,
+                ShowRemoveButton = isRemovable
+            });
+
+            Assert.AreEqual(isRemovable, view.exitButton.gameObject.activeSelf);
+        }
     }
 }
