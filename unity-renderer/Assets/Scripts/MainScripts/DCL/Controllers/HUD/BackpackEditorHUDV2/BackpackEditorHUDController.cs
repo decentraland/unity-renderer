@@ -101,7 +101,7 @@ namespace DCL.Backpack
         }
 
         private void OnBackpackVisibleChanged(bool current, bool _) =>
-            SetVisibility(current, avatarIsDirty);
+            SetVisibility(current, saveAvatar: avatarIsDirty);
 
         private void SetVisibility(bool visible, bool saveAvatar = true)
         {
