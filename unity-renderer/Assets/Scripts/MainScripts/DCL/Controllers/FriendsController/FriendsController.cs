@@ -32,11 +32,13 @@ namespace DCL.Social.Friends
         public bool IsInitialized { get; private set; }
 
         public int ReceivedRequestCount => friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
+
         public int TotalFriendCount
         {
             get => useSocialApiBridge ? friends.Count : totalFriendCount;
             private set => totalFriendCount = value;
         }
+
         public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
         public int TotalReceivedFriendRequestCount { get; private set; }
         public int TotalSentFriendRequestCount { get; private set; }
@@ -566,7 +568,11 @@ namespace DCL.Social.Friends
                 var friend = this.friends[userId];
                 friends.Remove(userId);
 
+<<<<<<< HEAD
                 if (!string.IsNullOrEmpty(friend.userName)) { friendsSortedByName.Remove(friend.userName); }
+=======
+                if (!string.IsNullOrEmpty(friend.userName) && friendsSortedByName.ContainsKey(friend.userName)) { friendsSortedByName.Remove(friend.userName); }
+>>>>>>> 567a22679 (fix tests)
             }
 
             OnUpdateFriendship?.Invoke(userId, msg.action);
