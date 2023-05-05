@@ -79,13 +79,6 @@ namespace DCL.Camera
                 }
             }
 
-            // Note: we force a selective culling distance for the skybox and the infinite floor
-            // This array represents the culling distance, where distances[0] is the farthest distance
-            // Skybox and infinite floor are in layer 25, so we set the culling distance for that layer
-            float[] distances = new float[32];
-            distances[0] = 25;
-            camera.layerCullDistances = distances;
-
             cameraChangeAction.OnTriggered += OnCameraChangeAction;
             mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
             worldOffset.OnChange += OnWorldReposition;
@@ -104,6 +97,15 @@ namespace DCL.Camera
             SetInvertYAxis(DataStore.i.camera.invertYAxis.Get(), false);
 
             wasBlendingLastFrame = false;
+
+            // Note: we force a selective culling distance for the skybox and the infinite floor
+            // This array represents the culling distance, where distances[28] is the infinite floor layer
+            float[] distances = new float[32];
+            distances[28] = 3000;
+            distances[0] = 500;
+            camera.layerCullDistances = distances;
+            // Note FD:: test this option and remember to add the floor to the rendered layers in the camera
+            // camera.layerCullSpherical = true;
         }
 
         private void OnDecoupledLoadingScreenChange(bool visibleState, bool prevVisibleState)
