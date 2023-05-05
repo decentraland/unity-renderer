@@ -7,6 +7,7 @@ using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using DCL.Providers;
 using NSubstitute;
 using Tests;
 using UnityEditor;
@@ -548,7 +549,7 @@ namespace DCL.Tutorial_Tests
 
         private void CreateAndConfigureTutorial()
         {
-            tutorialController = new TutorialController(DataStore.i.common, DataStore.i.settings, DataStore.i.exploreV2);
+            tutorialController = new TutorialController(new AddressableResourceProvider(),DataStore.i.common, DataStore.i.settings, DataStore.i.exploreV2);
             tutorialView = tutorialController.tutorialView;
 
             // NOTE(Brian): Avoid AudioListener warning
