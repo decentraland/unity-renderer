@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using NSubstitute;
 using SocialFeaturesAnalytics;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class ProfileHUDTests : IntegrationTestSuite_Legacy
@@ -22,7 +23,7 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         allUIHiddenOriginalValue = CommonScriptableObjects.allUIHidden.Get();
         CommonScriptableObjects.allUIHidden.Set(false);
-        controller = new ProfileHUDController(userProfileBridge, socialAnalytics, Substitute.For<DataStore>());
+        controller = new ProfileHUDController(new GameObject().AddComponent<ProfileHUDViewV2>(), userProfileBridge, socialAnalytics, Substitute.For<DataStore>());
         baseView = controller.view.GameObject.GetComponent<BaseComponentView>();
     }
 
