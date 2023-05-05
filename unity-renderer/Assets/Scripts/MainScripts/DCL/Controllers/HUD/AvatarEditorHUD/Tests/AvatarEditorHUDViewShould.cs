@@ -6,6 +6,8 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using DCL.Providers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -61,7 +63,7 @@ namespace AvatarEditorHUD_Tests
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService,
                 userProfileBridge);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize();
+            controller.Initialize(new AddressableResourceProvider());
         }
 
         [Test]

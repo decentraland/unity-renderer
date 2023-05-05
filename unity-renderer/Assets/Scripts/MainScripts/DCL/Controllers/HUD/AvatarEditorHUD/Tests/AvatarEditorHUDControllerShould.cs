@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Providers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -50,7 +51,7 @@ namespace AvatarEditorHUD_Tests
             //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
             //       the use of 'collectionsAlreadyLoaded = true'.
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize();
+            controller.Initialize(new AddressableResourceProvider());
             controller.SetVisibility(true);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 

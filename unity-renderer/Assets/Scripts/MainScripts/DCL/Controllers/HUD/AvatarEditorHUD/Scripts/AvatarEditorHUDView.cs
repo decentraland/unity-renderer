@@ -18,8 +18,6 @@ using Random = System.Random;
 public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointerDownHandler
 {
     private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
-    private const string VIEW_PATH = "AvatarEditorHUD";
-    private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
     internal const int AVATAR_SECTION_INDEX = 0;
     internal const string AVATAR_SECTION_TITLE = "Avatar";
     internal const int EMOTES_SECTION_INDEX = 1;
@@ -159,10 +157,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         arePanelsInitialized = false;
     }
 
-    private void Initialize(AvatarEditorHUDController controller)
+    public void Initialize(AvatarEditorHUDController controller)
     {
         this.controller = controller;
-        gameObject.name = VIEW_OBJECT_NAME;
 
         randomizeButton.onClick.AddListener(OnRandomizeButton);
         doneButton.onClick.AddListener(OnDoneButton);
@@ -260,14 +257,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         facialHairColorPickerComponent.OnColorChanged += controller.HairColorClicked;
         eyeBrowsColorPickerComponent.OnColorChanged += controller.HairColorClicked;
     }
-
-    internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
-    {
-        var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<AvatarEditorHUDView>();
-        view.Initialize(controller);
-        return view;
-    }
-
+    
     public void UpdateSelectedBody(WearableItem bodyShape)
     {
         for (int i = 0; i < wearableGridPairs.Length; i++)

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using DCL.Providers;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -21,6 +22,7 @@ using Categories = WearableLiterals.Categories;
 
 public class AvatarEditorHUDController : IHUD
 {
+    private const string VIEW_PATH = "AvatarEditorHUD";
     private const string LOADING_OWNED_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
     private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
     private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
@@ -96,13 +98,13 @@ public class AvatarEditorHUDController : IHUD
         this.userProfileBridge = userProfileBridge;
     }
 
-    public void Initialize(
-        bool bypassUpdateAvatarPreview = false
-        )
+    public async void Initialize(IAddressableResourceProvider resourceProvider, CancellationToken ct = default, bool bypassUpdateAvatarPreview = false)
     {
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
-        view = AvatarEditorHUDView.Create(this);
+        var view = await resourceProvider.Instantiate<AvatarEditorHUDView>(VIEW_PATH, $"_{VIEW_PATH}", cancellationToken: ct);
+        view.Initialize(this);
+        
 
         view.skinsFeatureContainer.SetActive(true);
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
