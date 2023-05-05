@@ -8087,10 +8087,10 @@ RectTransform:
   m_Father: {fileID: 8122654311339567853}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -80, y: -132}
-  m_SizeDelta: {x: -981, y: -1009}
+  m_SizeDelta: {x: 824, y: 136}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &216720716380197272
 MonoBehaviour:
@@ -8109,7 +8109,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 2
+  m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 136, y: 136}
@@ -8555,7 +8555,7 @@ PrefabInstance:
     - target: {fileID: 3576930520628333720, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 40.55
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3576930520628333720, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
@@ -8586,6 +8586,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PageSelector
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213288149590170572, guid: f5f14a07355bcff46ac345f4d95ec24a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5955730194940385775, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
