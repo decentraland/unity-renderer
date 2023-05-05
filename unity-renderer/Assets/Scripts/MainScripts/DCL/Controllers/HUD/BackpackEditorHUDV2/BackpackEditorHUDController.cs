@@ -31,6 +31,7 @@ namespace DCL.Backpack
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
         private readonly BackpackEditorHUDModel model = new ();
+        private readonly BackpackEditorHUDModel preEquipModel = new ();
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -64,6 +65,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
 
+            wearableGridController.OnWearableSelected += SelectWearable;
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
@@ -86,6 +88,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
             backpackEmotesSectionController.Dispose();
 
+            wearableGridController.OnWearableSelected -= SelectWearable;
             wearableGridController.OnWearableEquipped -= EquipWearable;
             wearableGridController.OnWearableUnequipped -= UnEquipWearable;
             wearableGridController.Dispose();
@@ -98,7 +101,7 @@ namespace DCL.Backpack
         }
 
         private void OnBackpackVisibleChanged(bool current, bool _) =>
-            SetVisibility(current);
+            SetVisibility(current, avatarIsDirty);
 
         private void SetVisibility(bool visible, bool saveAvatar = true)
         {
@@ -183,6 +186,8 @@ namespace DCL.Backpack
                 model.wearables.Add(wearable.id, wearable);
                 avatarSlotsHUDController.Equip(wearable, userProfile.avatar.bodyShape);
             }
+
+            view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
         private void UpdateAvatarPreview()
@@ -255,6 +260,26 @@ namespace DCL.Backpack
             }
 
             avatarIsDirty = false;
+        }
+
+        private void SelectWearable(string wearableId)
+        {
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            {
+                Debug.LogError($"Cannot pre-visualize wearable {wearableId}");
+                return;
+            }
+
+            preEquipModel.Update(model);
+
+            WearableItem wearableToBeReplaced = preEquipModel.wearables.Values.FirstOrDefault(item => item.data.category == wearable.data.category);
+
+            if (wearableToBeReplaced != null)
+                preEquipModel.wearables.Remove(wearableToBeReplaced.id);
+
+            preEquipModel.wearables.Add(wearableId, wearable);
+
+            view.UpdateAvatarPreview(preEquipModel.ToAvatarModel());
         }
 
         private void EquipWearable(string wearableId)
