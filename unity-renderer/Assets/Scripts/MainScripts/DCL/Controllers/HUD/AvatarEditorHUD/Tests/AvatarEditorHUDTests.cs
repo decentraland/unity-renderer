@@ -5,6 +5,7 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Providers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -59,7 +60,7 @@ namespace AvatarEditorHUD_Tests
                 userProfileBridge);
 
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize();
+            controller.Initialize(new AddressableResourceProvider());
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }
 
