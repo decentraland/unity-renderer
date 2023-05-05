@@ -1,9 +1,11 @@
 using DCL;
+using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
@@ -167,7 +169,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (placesAndEventsSectionController != null)
             return;
 
-        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i, new UserProfileWebInterfaceBridge());
+        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(
+            view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i, new UserProfileWebInterfaceBridge(),
+            Environment.i.serviceLocator.Get<IFriendsController>());
+
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }
 

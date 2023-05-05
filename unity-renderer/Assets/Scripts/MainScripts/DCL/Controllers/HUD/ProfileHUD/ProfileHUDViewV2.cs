@@ -138,10 +138,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             NameSubmitted?.Invoke(this, newName);
         });
 
-        buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
-        buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
-        buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
-
         descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
         descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
         descriptionInputText.onTextSelection.AddListener((description, x, y) =>

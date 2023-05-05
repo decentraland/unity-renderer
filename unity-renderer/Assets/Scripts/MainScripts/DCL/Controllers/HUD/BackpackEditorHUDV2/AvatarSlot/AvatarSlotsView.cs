@@ -59,11 +59,11 @@ namespace DCL.Backpack
 
         public void ResetCategorySlot(string category)
         {
-            foreach (var slot in avatarSlots[category].GetHideList())
-            {
-                if(avatarSlots.ContainsKey(slot))
-                    avatarSlots[slot].SetIsHidden(false, category);
-            }
+            if (avatarSlots[category].GetHideList() != null)
+                foreach (var slot in avatarSlots[category].GetHideList())
+                    if (avatarSlots.ContainsKey(slot))
+                        avatarSlots[slot].SetIsHidden(false, category);
+
             avatarSlots[category].ResetSlot();
         }
 

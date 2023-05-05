@@ -159,7 +159,8 @@ async function buildProtocol() {
     ...getProtofiles('decentraland/common/**/*.proto'),
     ...getProtofiles('decentraland/sdk/components/**/*.proto').filter((value) => !value.endsWith('id.proto')),
     ...getProtofiles('decentraland/bff/**/*.proto'),
-    ...getProtofiles('decentraland/renderer/**/*.proto')
+    ...getProtofiles('decentraland/renderer/**/*.proto'),
+    ...getProtofiles('decentraland/social/**/*.proto')
   ].join(' ')
 
   const ext = isWin ? 'cmd' : 'js'

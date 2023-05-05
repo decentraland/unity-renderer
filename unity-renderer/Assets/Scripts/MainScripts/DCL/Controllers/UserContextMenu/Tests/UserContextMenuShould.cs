@@ -1,13 +1,14 @@
 using DCL;
+using DCL.Social.Friends;
+using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
-using DCl.Social.Friends;
-using DCL.Social.Friends;
 using UnityEngine;
 using UnityEngine.TestTools;
-using SocialFeaturesAnalytics;
-using NSubstitute;
+using Environment = DCL.Environment;
+using Object = UnityEngine.Object;
 
 public class UserContextMenuShould
 {
@@ -15,19 +16,22 @@ public class UserContextMenuShould
 
     private UserContextMenu contextMenu;
     private UserProfileController profileController;
-    private IFriendsApiBridge friendsApiBridge;
+    private IFriendsController friendsController;
 
     [UnitySetUp]
     public IEnumerator SetUp()
     {
         var prefab = Resources.Load<UserContextMenu>("UserContextMenuPanel");
-        contextMenu = UnityEngine.Object.Instantiate(prefab);
+        contextMenu = Object.Instantiate(prefab);
         contextMenu.socialAnalytics = Substitute.For<ISocialAnalytics>();
 
-        friendsApiBridge = Substitute.For<IFriendsApiBridge>();
-        FriendsController.CreateSharedInstance(friendsApiBridge);
+        var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+        Environment.Setup(serviceLocator);
+        friendsController = Environment.i.serviceLocator.Get<IFriendsController>();
+
         profileController = new GameObject().AddComponent<UserProfileController>();
-        profileController.AddUserProfileToCatalog(new UserProfileModel()
+
+        profileController.AddUserProfileToCatalog(new UserProfileModel
         {
             name = TEST_USER_ID,
             userId = TEST_USER_ID
@@ -41,8 +45,8 @@ public class UserContextMenuShould
     [UnityTearDown]
     public IEnumerator TearDown()
     {
-        UnityEngine.Object.Destroy(contextMenu.gameObject);
-        UnityEngine.Object.Destroy(profileController.gameObject);
+        Object.Destroy(contextMenu.gameObject);
+        Object.Destroy(profileController.gameObject);
 
         yield break;
     }
@@ -141,8 +145,10 @@ public class UserContextMenuShould
 
         Assert.IsTrue(contextMenu.friendAddContainer.activeSelf, "friendAddContainer should be active");
         Assert.IsFalse(contextMenu.friendRemoveContainer.activeSelf, "friendRemoveContainer should not be active");
+
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf,
             "friendRequestedContainer should not be active");
+
         Assert.IsFalse(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should not be active");
 
         WhenFriendshipStatusUpdates(new FriendshipUpdateStatusMessage
@@ -164,8 +170,10 @@ public class UserContextMenuShould
 
         Assert.IsFalse(contextMenu.friendAddContainer.activeSelf, "friendAddContainer should not be active");
         Assert.IsTrue(contextMenu.friendRemoveContainer.activeSelf, "friendRemoveContainer should be active");
+
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf,
             "friendRequestedContainer should not be active");
+
         Assert.IsTrue(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should be active");
 
         WhenFriendshipStatusUpdates(new FriendshipUpdateStatusMessage
@@ -176,8 +184,10 @@ public class UserContextMenuShould
 
         Assert.IsTrue(contextMenu.friendAddContainer.activeSelf, "friendAddContainer should be active");
         Assert.IsFalse(contextMenu.friendRemoveContainer.activeSelf, "friendRemoveContainer should not be active");
+
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf,
             "friendRequestedContainer should not be active");
+
         Assert.IsFalse(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should not be active");
     }
 
@@ -215,7 +225,6 @@ public class UserContextMenuShould
 
     private void WhenFriendshipStatusUpdates(FriendshipUpdateStatusMessage status)
     {
-        friendsApiBridge.OnFriendshipStatusUpdated += Raise.Event<Action<FriendshipUpdateStatusMessage>>(
-            status);
+        friendsController.OnUpdateFriendship += Raise.Event<Action<string, FriendshipAction>>(status.userId, status.action);
     }
 }

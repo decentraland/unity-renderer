@@ -29,16 +29,11 @@ namespace DCL.Backpack
         [TestCase(9, 26)]
         public void SetPages(int currentPage, int totalPages)
         {
-            int calledPage = -1;
-            int calledTotalPages = -1;
-            view.wearablePageSelector.OnValueChanged += i => calledPage = i;
-            view.wearablePageSelector.OnTotalPagesChanged += i => calledTotalPages = i;
-
             view.SetWearablePages(currentPage, totalPages);
 
             Assert.IsTrue(view.wearablePageSelector.gameObject.activeSelf);
-            Assert.AreEqual(currentPage, calledPage);
-            Assert.AreEqual(calledTotalPages, totalPages);
+            Assert.AreEqual(currentPage - 1, view.wearablePageSelector.CurrentPage);
+            Assert.AreEqual(totalPages, view.wearablePageSelector.TotalPages);
         }
 
         [Test]
