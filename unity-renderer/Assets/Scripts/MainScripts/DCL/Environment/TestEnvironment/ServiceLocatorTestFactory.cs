@@ -5,8 +5,11 @@ using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
+using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
@@ -41,6 +44,7 @@ namespace DCL
                 subs.TrackWebRequest(default, default).Returns(new DisposableTransaction(Substitute.For<ISpan>()));
                 return subs;
             });
+
             result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
 
             result.Register<IServiceProviders>(
@@ -128,6 +132,8 @@ namespace DCL
 
                 return chatController;
             });
+
+            result.Register<IFriendsController>(() => Substitute.For<IFriendsController>());
 
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());
