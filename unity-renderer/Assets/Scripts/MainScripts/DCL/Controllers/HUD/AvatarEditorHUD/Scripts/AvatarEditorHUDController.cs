@@ -102,7 +102,7 @@ public class AvatarEditorHUDController : IHUD
     {
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
-        var view = await resourceProvider.Instantiate<AvatarEditorHUDView>(VIEW_PATH, $"_{VIEW_PATH}", cancellationToken: ct);
+        view = await resourceProvider.Instantiate<AvatarEditorHUDView>(VIEW_PATH, $"_{VIEW_PATH}", cancellationToken: ct);
         view.Initialize(this);
         
 
