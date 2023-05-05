@@ -70,8 +70,8 @@ public class AddressablesValidationTests
 
         Dictionary<string, (List<string>, List<string> assets)> bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
 
-        string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, 5_000_000);
-        Assert.That(msg, Is.Empty, message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
+        string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, 4_500_000);
+        Assert.That(msg, Is.Empty, message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool \n"));
     }
 
     private static long GetAssetSize(string asset)
