@@ -113,7 +113,7 @@ namespace DCL.Backpack
 
         [UnityTest]
         [TestCase(14, 1, ExpectedResult = null)]
-        [TestCase(0, 1, ExpectedResult = null)]
+        [TestCase(0, 0, ExpectedResult = null)]
         [TestCase(16, 2, ExpectedResult = null)]
         [TestCase(87, 6, ExpectedResult = null)]
         [TestCase(1356, 91, ExpectedResult = null)]
