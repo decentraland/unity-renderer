@@ -31,7 +31,7 @@ namespace DCL.Backpack
 
         private void Awake()
         {
-            wearablePageSelector.OnValueChanged += i => OnWearablePageChanged?.Invoke(i);
+            wearablePageSelector.OnValueChanged += i => OnWearablePageChanged?.Invoke(i + 1);
 
             wearableGridItemsPool = PoolManager.i.AddPool(
                 $"GridWearableItems_{GetInstanceID()}",
@@ -60,7 +60,7 @@ namespace DCL.Backpack
                 Destroy(gameObject);
         }
 
-        public void SetWearablePages(int currentPage, int totalPages)
+        public void SetWearablePages(int pageNumber, int totalPages)
         {
             if (totalPages <= 1)
             {
@@ -69,12 +69,8 @@ namespace DCL.Backpack
             }
 
             wearablePageSelector.gameObject.SetActive(true);
-
-            wearablePageSelector.SetModel(new PageSelectorModel
-            {
-                CurrentPage = currentPage,
-                TotalPages = totalPages,
-            });
+            wearablePageSelector.Setup(totalPages, true);
+            wearablePageSelector.SelectPage(pageNumber - 1, false);
         }
 
         public void ShowWearables(IEnumerable<WearableGridItemModel> wearables)
