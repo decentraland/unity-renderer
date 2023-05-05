@@ -1,9 +1,10 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public class QuestCompletedComponentViewShould
     {
@@ -21,7 +22,7 @@ namespace DCL.Quest
         public void TearDown()
         {
             questCompletedComponentView.Dispose();
-            Object.Destroy(questCompletedComponentView);
+            Object.Destroy(questCompletedComponentView.gameObject);
         }
 
         [Test]
