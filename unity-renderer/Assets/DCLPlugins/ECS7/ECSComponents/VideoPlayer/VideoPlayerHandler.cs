@@ -98,24 +98,10 @@ namespace DCL.ECSComponents
 
             lastModel = model;
 
-            // Add GrowOnlyValueSet VideoEvent component + its internalComponent counterpart
-            var currentVideoState = (VideoState)videoPlayer.GetState();
-            componentWriter.AppendComponent(
-                scene.sceneData.sceneNumber,
-                entity.entityId,
-                ComponentID.VIDEO_EVENT,
-                new PBVideoEvent()
-                {
-                    State = currentVideoState,
-                    CurrentOffset = videoPlayer.GetTime(),
-                    VideoLength = videoPlayer.GetDuration()
-                },
-                ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
-            );
             videoEventInternalComponent.PutFor(scene, entity, new InternalVideoEvent()
             {
                 timeStamp = 1,
-                videoState = currentVideoState
+                videoState = (VideoState)videoPlayer.GetState()
             });
 
             ConditionsToPlayVideoChanged();

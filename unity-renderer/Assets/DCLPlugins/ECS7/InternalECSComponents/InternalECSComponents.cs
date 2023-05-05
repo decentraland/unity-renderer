@@ -216,6 +216,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         renderersComponent.Dispose();
         inputEventResultsComponent.Dispose();
         videoPlayerComponent.Dispose();
+        videoEventComponent.Dispose();
         videoMaterialComponent.Dispose();
         visibilityComponent.Dispose();
         uiContainerComponent.Dispose();
