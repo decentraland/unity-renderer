@@ -5,19 +5,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using Object = UnityEngine.Object;
-using RareBackground = DCL.Backpack.WearableGridItemComponentView.RareBackground;
 
 namespace DCL.Backpack
 {
     public class WearableGridItemComponentViewShould
     {
         private WearableGridItemComponentView view;
+        private NftRarityBackgroundSO backgrounds;
 
         [SetUp]
         public void SetUp()
         {
             view = Object.Instantiate(AssetDatabase.LoadAssetAtPath<WearableGridItemComponentView>(
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BackpackEditorHUDV2/Prefabs/WearableGridItemView.prefab"));
+
+            backgrounds = AssetDatabase.LoadAssetAtPath<NftRarityBackgroundSO>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BackpackEditorHUDV2/AvatarSlot/NftWearableRarityBackground.asset");
         }
 
         [TearDown]
@@ -277,7 +280,7 @@ namespace DCL.Backpack
         }
 
         [TestCaseSource(nameof(GetAllRarities))]
-        public void EnableRarityBackground(NftRarity nftRarity)
+        public void SetCorrectBackgroundForRarity(NftRarity nftRarity)
         {
             view.SetModel(new WearableGridItemModel
             {
@@ -289,11 +292,11 @@ namespace DCL.Backpack
                 WearableId = "w1",
             });
 
-            foreach (RareBackground background in view.backgroundsByRarityConfiguration)
-                Assert.AreEqual(background.rarity == nftRarity, background.container.activeSelf);
+            Assert.AreEqual(view.nftBackground.sprite, backgrounds.GetRarityImage(nftRarity.ToString().ToLower()));
         }
 
         private static IEnumerable<NftRarity> GetAllRarities() =>
             Enum.GetValues(typeof(NftRarity)).Cast<NftRarity>();
     }
 }
+
