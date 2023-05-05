@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public interface IProfileHUDView
+public interface IProfileHUDView : IDisposable
 {
     event EventHandler SignedUpPressed;
     event EventHandler LogedOutPressed;

@@ -58,13 +58,13 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.MINIMAP:
                 return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i);
             case HUDElementID.PROFILE_HUD:
-                return new ProfileHUDController(new UserProfileWebInterfaceBridge(),
-                    new SocialAnalytics(
-                        Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
+                return new ProfileHUDController(
+                    await CreateHUDView<IProfileHUDView>(PROFILE_HUD, cancellationToken),
+                    new UserProfileWebInterfaceBridge(),
+                    new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, new UserProfileWebInterfaceBridge()),
                     DataStore.i);
             case HUDElementID.NOTIFICATION:
-                return new NotificationHUDController( await CreateHUDView<NotificationHUDView>(VIEW_PATH, cancellationToken));
+                return new NotificationHUDController( await CreateHUDView<NotificationHUDView>(NOTIFICATION_HUD, cancellationToken));
             case HUDElementID.SETTINGS_PANEL:
                 return new SettingsPanelHUDController();
             case HUDElementID.TERMS_OF_SERVICE:
@@ -176,9 +176,9 @@ public class HUDFactory : IHUDFactory
     public async UniTask<ISignupHUDView> CreateSignupHUDView(CancellationToken cancellationToken = default) =>
         await CreateHUDView<ISignupHUDView>(SIGNUP_HUD, cancellationToken);
 
-    protected async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default) where T:IDisposable
+    protected async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default, string name = null) where T:IDisposable
     {
-        var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}", cancellationToken);
+        var view = await assetsProvider.Instantiate<T>(assetAddress, name ?? $"_{assetAddress}", cancellationToken);
         disposableViews.Add(view);
 
         return view;
