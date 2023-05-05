@@ -309,6 +309,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -342,6 +346,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -370,6 +378,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -403,6 +415,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
