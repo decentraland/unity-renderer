@@ -28,7 +28,6 @@ namespace DCL
 
         private HotScenesController hotScenesController;
 
-        public PoolableComponentFactory componentFactory;
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         protected IKernelCommunication kernelCommunication;
 
