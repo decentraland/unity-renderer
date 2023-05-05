@@ -64,7 +64,7 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()),
                     DataStore.i);
             case HUDElementID.NOTIFICATION:
-                return new NotificationHUDController();
+                return new NotificationHUDController( await CreateHUDView<NotificationHUDView>(VIEW_PATH, cancellationToken));
             case HUDElementID.SETTINGS_PANEL:
                 return new SettingsPanelHUDController();
             case HUDElementID.TERMS_OF_SERVICE:
