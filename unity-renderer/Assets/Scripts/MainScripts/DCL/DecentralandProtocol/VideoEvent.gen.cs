@@ -25,18 +25,18 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci1kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdmlkZW9fZXZlbnQucHJv",
-            "dG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyKHAQoMUEJWaWRlb0V2",
-            "ZW50EhEKCXRpbWVzdGFtcBgBIAEoDRIWCg5jdXJyZW50X29mZnNldBgCIAEo",
-            "AhIUCgx2aWRlb19sZW5ndGgYAyABKAISNgoFc3RhdGUYBCABKA4yJy5kZWNl",
-            "bnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuVmlkZW9TdGF0ZSqGAQoKVmlkZW9T",
-            "dGF0ZRILCgdWU19OT05FEAASDAoIVlNfRVJST1IQARIOCgpWU19MT0FESU5H",
-            "EAISDAoIVlNfUkVBRFkQAxIOCgpWU19QTEFZSU5HEAQSEAoMVlNfQlVGRkVS",
-            "SU5HEAUSDgoKVlNfU0VFS0lORxAGEg0KCVZTX1BBVVNFRBAHQhSqAhFEQ0wu",
-            "RUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "dG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyKcAQoMUEJWaWRlb0V2",
+            "ZW50EhEKCXRpbWVzdGFtcBgBIAEoDRITCgt0aWNrX251bWJlchgCIAEoDRIW",
+            "Cg5jdXJyZW50X29mZnNldBgDIAEoAhIUCgx2aWRlb19sZW5ndGgYBCABKAIS",
+            "NgoFc3RhdGUYBSABKA4yJy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMu",
+            "VmlkZW9TdGF0ZSqGAQoKVmlkZW9TdGF0ZRILCgdWU19OT05FEAASDAoIVlNf",
+            "RVJST1IQARIOCgpWU19MT0FESU5HEAISDAoIVlNfUkVBRFkQAxIOCgpWU19Q",
+            "TEFZSU5HEAQSEAoMVlNfQlVGRkVSSU5HEAUSDgoKVlNfU0VFS0lORxAGEg0K",
+            "CVZTX1BBVVNFRBAHQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.VideoState), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBVideoEvent), global::DCL.ECSComponents.PBVideoEvent.Parser, new[]{ "Timestamp", "CurrentOffset", "VideoLength", "State" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBVideoEvent), global::DCL.ECSComponents.PBVideoEvent.Parser, new[]{ "Timestamp", "TickNumber", "CurrentOffset", "VideoLength", "State" }, null, null, null, null)
           }));
     }
     #endregion
@@ -92,6 +92,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBVideoEvent(PBVideoEvent other) : this() {
       timestamp_ = other.timestamp_;
+      tickNumber_ = other.tickNumber_;
       currentOffset_ = other.currentOffset_;
       videoLength_ = other.videoLength_;
       state_ = other.state_;
@@ -119,8 +120,23 @@ namespace DCL.ECSComponents {
       }
     }
 
+    /// <summary>Field number for the "tick_number" field.</summary>
+    public const int TickNumberFieldNumber = 2;
+    private uint tickNumber_;
+    /// <summary>
+    /// number of tick in which the event was produced, equals to EngineInfo.tick_number
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public uint TickNumber {
+      get { return tickNumber_; }
+      set {
+        tickNumber_ = value;
+      }
+    }
+
     /// <summary>Field number for the "current_offset" field.</summary>
-    public const int CurrentOffsetFieldNumber = 2;
+    public const int CurrentOffsetFieldNumber = 3;
     private float currentOffset_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -132,7 +148,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "video_length" field.</summary>
-    public const int VideoLengthFieldNumber = 3;
+    public const int VideoLengthFieldNumber = 4;
     private float videoLength_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -144,7 +160,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "state" field.</summary>
-    public const int StateFieldNumber = 4;
+    public const int StateFieldNumber = 5;
     private global::DCL.ECSComponents.VideoState state_ = global::DCL.ECSComponents.VideoState.VsNone;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -171,6 +187,7 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Timestamp != other.Timestamp) return false;
+      if (TickNumber != other.TickNumber) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentOffset, other.CurrentOffset)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(VideoLength, other.VideoLength)) return false;
       if (State != other.State) return false;
@@ -182,6 +199,7 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
+      if (TickNumber != 0) hash ^= TickNumber.GetHashCode();
       if (CurrentOffset != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentOffset);
       if (VideoLength != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(VideoLength);
       if (State != global::DCL.ECSComponents.VideoState.VsNone) hash ^= State.GetHashCode();
@@ -207,16 +225,20 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(8);
         output.WriteUInt32(Timestamp);
       }
+      if (TickNumber != 0) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(TickNumber);
+      }
       if (CurrentOffset != 0F) {
-        output.WriteRawTag(21);
+        output.WriteRawTag(29);
         output.WriteFloat(CurrentOffset);
       }
       if (VideoLength != 0F) {
-        output.WriteRawTag(29);
+        output.WriteRawTag(37);
         output.WriteFloat(VideoLength);
       }
       if (State != global::DCL.ECSComponents.VideoState.VsNone) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(40);
         output.WriteEnum((int) State);
       }
       if (_unknownFields != null) {
@@ -233,16 +255,20 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(8);
         output.WriteUInt32(Timestamp);
       }
+      if (TickNumber != 0) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(TickNumber);
+      }
       if (CurrentOffset != 0F) {
-        output.WriteRawTag(21);
+        output.WriteRawTag(29);
         output.WriteFloat(CurrentOffset);
       }
       if (VideoLength != 0F) {
-        output.WriteRawTag(29);
+        output.WriteRawTag(37);
         output.WriteFloat(VideoLength);
       }
       if (State != global::DCL.ECSComponents.VideoState.VsNone) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(40);
         output.WriteEnum((int) State);
       }
       if (_unknownFields != null) {
@@ -257,6 +283,9 @@ namespace DCL.ECSComponents {
       int size = 0;
       if (Timestamp != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Timestamp);
+      }
+      if (TickNumber != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(TickNumber);
       }
       if (CurrentOffset != 0F) {
         size += 1 + 4;
@@ -281,6 +310,9 @@ namespace DCL.ECSComponents {
       }
       if (other.Timestamp != 0) {
         Timestamp = other.Timestamp;
+      }
+      if (other.TickNumber != 0) {
+        TickNumber = other.TickNumber;
       }
       if (other.CurrentOffset != 0F) {
         CurrentOffset = other.CurrentOffset;
@@ -310,15 +342,19 @@ namespace DCL.ECSComponents {
             Timestamp = input.ReadUInt32();
             break;
           }
-          case 21: {
-            CurrentOffset = input.ReadFloat();
+          case 16: {
+            TickNumber = input.ReadUInt32();
             break;
           }
           case 29: {
+            CurrentOffset = input.ReadFloat();
+            break;
+          }
+          case 37: {
             VideoLength = input.ReadFloat();
             break;
           }
-          case 32: {
+          case 40: {
             State = (global::DCL.ECSComponents.VideoState) input.ReadEnum();
             break;
           }
@@ -341,15 +377,19 @@ namespace DCL.ECSComponents {
             Timestamp = input.ReadUInt32();
             break;
           }
-          case 21: {
-            CurrentOffset = input.ReadFloat();
+          case 16: {
+            TickNumber = input.ReadUInt32();
             break;
           }
           case 29: {
+            CurrentOffset = input.ReadFloat();
+            break;
+          }
+          case 37: {
             VideoLength = input.ReadFloat();
             break;
           }
-          case 32: {
+          case 40: {
             State = (global::DCL.ECSComponents.VideoState) input.ReadEnum();
             break;
           }
