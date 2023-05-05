@@ -15,7 +15,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new NotificationHUDController();
+            controller = new NotificationHUDController(new GameObject().AddComponent<NotificationHUDView>());
         }
 
         protected override IEnumerator TearDown()
