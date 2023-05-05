@@ -1,3 +1,5 @@
+using System.Threading;
+using DCL.Providers;
 using DCLServices.WearablesCatalogService;
 
 namespace DCL.AvatarEditor
@@ -5,9 +7,12 @@ namespace DCL.AvatarEditor
     public class AvatarEditorHUDPlugin : IPlugin
     {
         private readonly AvatarEditorHUDController hudController;
-
+        private readonly CancellationTokenSource cts;
+        
         public AvatarEditorHUDPlugin()
         {
+            cts = new CancellationTokenSource();
+            
             hudController = new AvatarEditorHUDController(
                 DataStore.i.featureFlags,
                 Environment.i.platform.serviceProviders.analytics,
@@ -17,11 +22,14 @@ namespace DCL.AvatarEditor
             // there could be a race condition going on if we initialize the avatar editor before the feature flags are set
             // WearablesCatalogServiceProxy.wearablesCatalogServiceInUse is not defined when is needed to retrieve the wearable catalog
             // since this plugin is bound to backpack_editor_v1 we assume that the feature flags has been already initialized
-            hudController.Initialize();
+            hudController.Initialize(Environment.i.serviceLocator.Get<IAddressableResourceProvider>(), cts.Token);
         }
 
         public void Dispose()
         {
+            cts.Cancel();
+            cts.Dispose();
+            
             hudController.Dispose();
         }
     }
