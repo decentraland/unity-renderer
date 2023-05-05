@@ -162,6 +162,7 @@ namespace DCL.Backpack
             previewEquippedWearables.Set(userProfile.avatar.wearables);
 
             EquipBodyShape(bodyShape);
+
             model.skinColor = userProfile.avatar.skinColor;
             model.hairColor = userProfile.avatar.hairColor;
             model.eyesColor = userProfile.avatar.eyeColor;
@@ -182,6 +183,7 @@ namespace DCL.Backpack
 
                 model.wearables.Add(wearable.id, wearable);
                 avatarSlotsHUDController.Equip(wearable, userProfile.avatar.bodyShape);
+                wearableGridController.Equip(wearable.id);
             }
         }
 
@@ -210,11 +212,11 @@ namespace DCL.Backpack
                 return;
             }
 
-            if (model.bodyShape == bodyShape)
-                return;
-
             model.bodyShape = bodyShape;
+            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id);
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
+            wearableGridController.Equip(bodyShape.id);
+            previewEquippedWearables.Add(bodyShape.id);
         }
 
         private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
@@ -265,28 +267,57 @@ namespace DCL.Backpack
                 return;
             }
 
-            WearableItem wearableToBeReplaced = model.wearables.Values.FirstOrDefault(item => item.data.category == wearable.data.category);
+            if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
+            {
+                UnEquipCurrentBodyShape();
+                EquipBodyShape(wearable);
+            }
+            else
+            {
+                WearableItem wearableToBeReplaced = model.wearables.Values.FirstOrDefault(item => item.data.category == wearable.data.category);
 
-            if (wearableToBeReplaced != null)
-                UnEquipWearable(wearableToBeReplaced.id);
+                if (wearableToBeReplaced != null)
+                    UnEquipWearable(wearableToBeReplaced);
 
-            model.wearables.Add(wearableId, wearable);
-            previewEquippedWearables.Add(wearableId);
-
-            avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape);
-            wearableGridController.Equip(wearableId);
+                model.wearables.Add(wearableId, wearable);
+                previewEquippedWearables.Add(wearableId);
+                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape);
+                wearableGridController.Equip(wearableId);
+            }
 
             avatarIsDirty = true;
 
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
+        private void UnEquipCurrentBodyShape()
+        {
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(model.bodyShape.id, out WearableItem wearable))
+            {
+                Debug.LogError($"Cannot unequip body shape {model.bodyShape.id}");
+                return;
+            }
+
+            UnEquipWearable(wearable);
+        }
+
         private void UnEquipWearable(string wearableId)
         {
-            avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category);
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            {
+                Debug.LogError($"Cannot unequip wearable {wearableId}");
+                return;
+            }
+
+            UnEquipWearable(wearable);
+        }
+
+        private void UnEquipWearable(WearableItem wearable)
+        {
+            string wearableId = wearable.id;
+            avatarSlotsHUDController.UnEquip(wearable.data.category);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
-
             wearableGridController.UnEquip(wearableId);
 
             avatarIsDirty = true;
