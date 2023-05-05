@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
+using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
 using NUnit.Framework;
+using rpc_csharp.transport;
 using System.Collections;
 using System.Threading;
 using UnityEngine;
@@ -14,13 +16,24 @@ namespace DCL.Social.Friends
     public class FriendsControllerShould
     {
         private IFriendsApiBridge apiBridge;
+        private RPCSocialApiBridge rpcSocialApiBridge;
         private FriendsController controller;
 
         [SetUp]
         public void SetUp()
         {
             apiBridge = Substitute.For<IFriendsApiBridge>();
-            controller = new FriendsController(apiBridge);
+            GameObject go = new GameObject();
+            var component = go.AddComponent<MatrixInitializationBridge>();
+            var dataStore = new DataStore();
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
+
+            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component, new UserProfileWebInterfaceBridge(),
+                () => Substitute.For<ITransport>()), dataStore);
+
+            dataStore.featureFlags.flags.Get().SetAsInitialized();
+            controller.Initialize();
+
         }
 
         [Test]
@@ -42,12 +55,14 @@ namespace DCL.Social.Friends
         [Test]
         public void AddFriends()
         {
-            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(
-                new AddFriendsPayload
-                {
-                    totalFriends = 2,
-                    friends = new[] {"woah", "bleh"}
-                }));
+            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(
+                              new AddFriendsPayload
+                              {
+                                  totalFriends = 2,
+                                  friends = new[] { "woah", "bleh" }
+                              }));
+
             controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
 
             Assert.AreEqual(2, controller.TotalFriendCount);
@@ -189,12 +204,14 @@ namespace DCL.Social.Friends
             var updatedFriends = new Dictionary<string, UserStatus>();
             controller.OnUpdateUserStatus += (s, status) => updatedFriends[s] = status;
 
-            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(
-                new AddFriendsPayload
-                {
-                    totalFriends = 7,
-                    friends = new[] {"usr1"}
-                }));
+            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(
+                              new AddFriendsPayload
+                              {
+                                  totalFriends = 7,
+                                  friends = new[] { "usr1" }
+                              }));
+
             controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
 
             apiBridge.OnUserPresenceUpdated += Raise.Event<Action<UserStatus>>(new UserStatus
