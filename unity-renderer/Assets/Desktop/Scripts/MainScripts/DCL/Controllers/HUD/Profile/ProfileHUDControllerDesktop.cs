@@ -8,9 +8,10 @@ namespace MainScripts.DCL.Controllers.HUD.Profile
 {
     public class ProfileHUDControllerDesktop : ProfileHUDController
     {
-        private ProfileHUDViewDesktop_V2 viewDesktop;
+        private readonly ProfileHUDViewDesktop_V2 viewDesktop;
 
-        public ProfileHUDControllerDesktop(IUserProfileBridge userProfileBridge, ISocialAnalytics socialAnalytics, DataStore dataStore) : base(userProfileBridge, socialAnalytics, dataStore)
+        public ProfileHUDControllerDesktop(IProfileHUDView view, IUserProfileBridge userProfileBridge, ISocialAnalytics socialAnalytics, DataStore dataStore)
+            : base(view, userProfileBridge, socialAnalytics, dataStore)
         {
             viewDesktop = (ProfileHUDViewDesktop_V2)view;
             viewDesktop.getButtonSignUp.onClick.RemoveAllListeners();
@@ -28,11 +29,6 @@ namespace MainScripts.DCL.Controllers.HUD.Profile
             base.Dispose();
             viewDesktop.getButtonSignUp.onClick.RemoveAllListeners(); // When you exit the renderer, you will see the launcher where you can sign up
             viewDesktop.exitButtons.ForEach(e => e.onClick.RemoveAllListeners());
-        }
-
-        protected override GameObject GetViewPrefab()
-        {
-            return Resources.Load<GameObject>("ProfileHUDDesktop_V2");
         }
     }
 }
