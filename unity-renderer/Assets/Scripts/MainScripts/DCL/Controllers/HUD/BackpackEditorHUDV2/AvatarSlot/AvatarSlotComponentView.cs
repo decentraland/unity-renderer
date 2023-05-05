@@ -14,9 +14,6 @@ namespace DCL.Backpack
         private const float ANIMATION_TIME = 0.2f;
         private const float SHAKE_ANIMATION_TIME = 0.75f;
 
-        [Header("Configuration")]
-        [SerializeField] internal AvatarSlotComponentModel model;
-
         [SerializeField] internal NftTypeColorSupportingSO typeColorSupporting;
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal RectTransform nftContainer;
@@ -27,7 +24,7 @@ namespace DCL.Backpack
         [SerializeField] internal Image focusedImage;
         [SerializeField] internal Image selectedImage;
         [SerializeField] private GameObject emptySlot;
-        [SerializeField] private GameObject hiddenSlot;
+        [SerializeField] internal GameObject hiddenSlot;
         [SerializeField] internal RectTransform tooltipContainer;
         [SerializeField] internal TMP_Text tooltipCategoryText;
         [SerializeField] internal TMP_Text tooltipHiddenText;

@@ -23,7 +23,7 @@ public class ClientRestrictedActionsService : IClientRestrictedActionsService
       this.module = module;
   }
 
-
+  
   public UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request)
   {
       return module.CallUnaryProcedure<OpenModalResponse>("OpenExternalUrl", request);

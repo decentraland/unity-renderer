@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCL.Interface;
 using DCl.Social.Friends;
 using JetBrains.Annotations;
@@ -13,6 +14,15 @@ namespace DCL.Social.Friends
     public partial class WebInterfaceFriendsApiBridge : MonoBehaviour, IFriendsApiBridge
     {
         private const string GET_FRIENDS_REQUEST_MESSAGE_ID = "GetFriendsRequest";
+
+        public static WebInterfaceFriendsApiBridge GetOrCreate()
+        {
+            var bridgeObj = GameObject.Find("Main");
+
+            return bridgeObj == null
+                ? new GameObject("Main").AddComponent<WebInterfaceFriendsApiBridge>()
+                : bridgeObj.GetOrCreateComponent<WebInterfaceFriendsApiBridge>();
+        }
 
         private readonly Dictionary<string, IUniTaskSource> pendingRequests = new ();
         private readonly Dictionary<string, UniTaskCompletionSource<FriendshipUpdateStatusMessage>> updatedFriendshipPendingRequests = new ();
@@ -40,6 +50,7 @@ namespace DCL.Social.Friends
         {
             var payload = JsonUtility.FromJson<AddFriendsPayload>(json);
             string messageId = GET_FRIENDS_REQUEST_MESSAGE_ID;
+
             if (!pendingRequests.ContainsKey(messageId))
                 return;
 

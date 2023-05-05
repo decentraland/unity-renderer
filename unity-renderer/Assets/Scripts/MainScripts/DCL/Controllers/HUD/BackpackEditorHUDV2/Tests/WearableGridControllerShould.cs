@@ -112,7 +112,7 @@ namespace DCL.Backpack
 
         [UnityTest]
         [TestCase(14, 1, ExpectedResult = null)]
-        [TestCase(0, 1, ExpectedResult = null)]
+        [TestCase(0, 0, ExpectedResult = null)]
         [TestCase(16, 2, ExpectedResult = null)]
         [TestCase(87, 6, ExpectedResult = null)]
         [TestCase(1356, 91, ExpectedResult = null)]
@@ -308,6 +308,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -341,6 +345,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -369,6 +377,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -402,6 +414,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 

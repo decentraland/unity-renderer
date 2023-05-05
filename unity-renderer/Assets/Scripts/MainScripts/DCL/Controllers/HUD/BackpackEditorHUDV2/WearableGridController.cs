@@ -197,7 +197,7 @@ namespace DCL.Backpack
                 currentWearables = wearables.Select(ToWearableGridModel)
                                             .ToDictionary(item => item.WearableId, model => model);
 
-                view.SetWearablePages(page, (totalAmount / PAGE_SIZE) + 1);
+                view.SetWearablePages(page, (totalAmount + PAGE_SIZE - 1) / PAGE_SIZE);
 
                 // TODO: mark the wearables to be disposed if no references left
                 view.ClearWearables();
@@ -214,7 +214,7 @@ namespace DCL.Backpack
         {
             if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
             {
-                rarity = NftRarity.Common;
+                rarity = NftRarity.None;
                 Debug.LogWarning($"Could not parse the rarity of the wearable '{wearable.id}'. Fallback to common.");
             }
 
@@ -222,6 +222,7 @@ namespace DCL.Backpack
             {
                 WearableId = wearable.id,
                 Rarity = rarity,
+                Category = wearable.data.category,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
                 IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
                 IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
