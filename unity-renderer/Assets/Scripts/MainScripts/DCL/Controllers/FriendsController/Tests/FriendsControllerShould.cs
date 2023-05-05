@@ -603,7 +603,7 @@ namespace DCL.Social.Friends
                 var firstUserId = "userId";
                 var secondUserId = "userId2";
                 var thirdUserId = "userId3";
-                var fourthdUserId = "userId4";
+                var fourthUserId = "userId4";
 
                 var firstUser = new UserStatus()
                 {
@@ -625,7 +625,7 @@ namespace DCL.Social.Friends
 
                 var fourthUser = new UserStatus()
                 {
-                    userId = fourthdUserId,
+                    userId = fourthUserId,
                     userName = "searchText2",
                 };
 
@@ -636,7 +636,7 @@ namespace DCL.Social.Friends
                 rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(firstUser);
 
                 IReadOnlyList<string> response = await controller.GetFriendsAsync(100, 0, cancellationToken);
-                string[] expected = { firstUserId, secondUserId, thirdUserId, fourthdUserId };
+                string[] expected = { firstUserId, secondUserId, thirdUserId, fourthUserId };
 
                 CollectionAssert.AreEqual(response, expected);
 
@@ -651,7 +651,7 @@ namespace DCL.Social.Friends
                 CollectionAssert.AreEqual(response, expected);
 
                 response = await controller.GetFriendsAsync("search", 10, cancellationToken);
-                expected = new[] { thirdUserId, fourthdUserId };
+                expected = new[] { thirdUserId, fourthUserId };
 
                 CollectionAssert.AreEqual(response, expected);
 
