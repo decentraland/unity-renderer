@@ -75,7 +75,7 @@ namespace DCL.Backpack
             view.SetColorPickerVisibility(false);
             view.OnColorChanged += OnWearableColorChanged;
 
-            SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
+            SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
         }
 
         public void Dispose()
