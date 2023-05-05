@@ -7,15 +7,14 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Build.AnalyzeRules;
 using UnityEngine;
-using UnityEngine;
-using UnityEditor.PackageManager;
 
 public class AddressablesValidationTests
 {
     private const string NO_ISSUES_FOUND = "No issues found";
     private static readonly string[] EXCLUDED_FILE_TYPES = { }; // "shader", "png", "jpg"
 
-    [TestCase("Rendering")] [Category("EditModeCI")]
+    [TestCase("Scripts/MainScripts/DCL/Controllers/HUD/NotificationHUD")]
+    [Category("EditModeCI")]
     public void ValidateFolderDoesNotHaveResourcesFolderInside(string folderName)
     {
         string folderPath = Application.dataPath + $"/{folderName}";
@@ -70,7 +69,7 @@ public class AddressablesValidationTests
 
         Dictionary<string, (List<string>, List<string> assets)> bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
 
-        string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, 4_500_000);
+        string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, 4_000_000);
         Assert.That(msg, Is.Empty, message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool \n"));
     }
 
