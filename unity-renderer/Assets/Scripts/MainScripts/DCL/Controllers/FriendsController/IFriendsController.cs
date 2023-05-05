@@ -7,7 +7,7 @@ using SocialFriendRequest = DCL.Social.Friends.FriendRequest;
 
 namespace DCL.Social.Friends
 {
-    public interface IFriendsController
+    public interface IFriendsController : IService
     {
         event Action OnInitialized;
         event Action<string, FriendshipAction> OnUpdateFriendship;

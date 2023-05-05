@@ -12,7 +12,7 @@ namespace DCL.Social.Friends
         public FriendRequestHUDPlugin()
         {
             var userProfileBridge = new UserProfileWebInterfaceBridge();
-            FriendsController friendsController = FriendsController.i;
+            var friendsController = Environment.i.serviceLocator.Get<IFriendsController>();
             DataStore dataStore = DataStore.i;
             var socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileBridge);
 

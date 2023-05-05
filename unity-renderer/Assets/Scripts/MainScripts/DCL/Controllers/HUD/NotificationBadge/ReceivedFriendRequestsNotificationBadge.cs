@@ -1,3 +1,4 @@
+using DCL;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using TMPro;
@@ -11,14 +12,14 @@ public class ReceivedFriendRequestsNotificationBadge : MonoBehaviour
 
     private IFriendsController friendsController;
     private int currentUnreadMessagesValue;
-    
+
     public int CurrentUnreadMessages
     {
         get => currentUnreadMessagesValue;
         set
         {
             currentUnreadMessagesValue = value;
-            
+
             if (currentUnreadMessagesValue > 0)
             {
                 notificationContainer.SetActive(true);
@@ -35,7 +36,7 @@ public class ReceivedFriendRequestsNotificationBadge : MonoBehaviour
 
     private void Start()
     {
-        Initialize(FriendsController.i);
+        Initialize(Environment.i.serviceLocator.Get<IFriendsController>());
     }
 
     private void OnEnable()

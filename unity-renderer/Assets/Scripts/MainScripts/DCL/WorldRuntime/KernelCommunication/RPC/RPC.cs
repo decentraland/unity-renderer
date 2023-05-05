@@ -61,6 +61,7 @@ namespace DCL
             catch (Exception e)
             {
                 Debug.LogException(e);
+
                 // TODO: may be improved by returning a valid instance with dummy behaviour. This way we force to do null-checks on usage
                 return null;
             }
