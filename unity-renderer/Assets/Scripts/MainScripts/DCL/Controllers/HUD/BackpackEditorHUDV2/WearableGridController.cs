@@ -202,7 +202,7 @@ namespace DCL.Backpack
         {
             if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
             {
-                rarity = NftRarity.Common;
+                rarity = NftRarity.None;
                 Debug.LogWarning($"Could not parse the rarity of the wearable '{wearable.id}'. Fallback to common.");
             }
 
@@ -210,6 +210,7 @@ namespace DCL.Backpack
             {
                 WearableId = wearable.id,
                 Rarity = rarity,
+                Category = wearable.data.category,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
                 IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
                 IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
