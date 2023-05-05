@@ -7,6 +7,7 @@ using NSubstitute;
 using NUnit.Framework;
 using rpc_csharp.transport;
 using System.Collections;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -28,8 +29,7 @@ namespace DCL.Social.Friends
             var dataStore = new DataStore();
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
 
-            rpcSocialApiBridge = new RPCSocialApiBridge(component, new UserProfileWebInterfaceBridge(),
-                () => Substitute.For<ITransport>());
+            rpcSocialApiBridge = Substitute.For<ISocialApiBridge>();
 
             controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
 
@@ -581,7 +581,7 @@ namespace DCL.Social.Friends
                 var component = go.AddComponent<MatrixInitializationBridge>();
                 var dataStore = new DataStore();
 
-                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
 
                 var cancellationToken = default(CancellationToken);
 
@@ -607,13 +607,13 @@ namespace DCL.Social.Friends
                 var firstUser = new UserStatus()
                 {
                     userId = firstUserId,
-                    userName = "a userName",
+                    userName = "aUserName1",
                 };
 
                 var secondUser = new UserStatus()
                 {
                     userId = secondUserId,
-                    userName = "a userName",
+                    userName = "aUserName2",
                 };
 
                 var thirdUser = new UserStatus()
@@ -627,8 +627,13 @@ namespace DCL.Social.Friends
                 rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(secondUser);
                 rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(firstUser);
 
-                string[] response = await controller.GetFriendsAsync(2, 0, cancellationToken);
-                string[] expected = { firstUserId, secondUserId };
+                string[] response = await controller.GetFriendsAsync(100, 0, cancellationToken);
+                string[] expected = { firstUserId, secondUserId, thirdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync(1, 0, cancellationToken);
+                expected = new[] { firstUserId };
 
                 CollectionAssert.AreEqual(response, expected);
 

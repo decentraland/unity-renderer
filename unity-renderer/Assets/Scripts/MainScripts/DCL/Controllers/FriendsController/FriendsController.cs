@@ -26,18 +26,19 @@ namespace DCL.Social.Friends
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
-        // private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
         private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
 
         public int ReceivedRequestCount => friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
+
         public int TotalFriendCount
         {
             get => useSocialApiBridge ? friends.Count : totalFriendCount;
             private set => totalFriendCount = value;
         }
+
         public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
         public int TotalReceivedFriendRequestCount { get; private set; }
         public int TotalSentFriendRequestCount { get; private set; }
@@ -284,10 +285,7 @@ namespace DCL.Social.Friends
 
         public async UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default)
         {
-            if (useSocialApiBridge)
-            {
-                return friendsSortedByName.Values.Skip(skip).Take(limit).Select(friend => friend.userId).ToArray();
-            }
+            if (useSocialApiBridge) { return friendsSortedByName.Values.Skip(skip).Take(limit).Select(friend => friend.userId).ToArray(); }
 
             var payload = await apiBridge.GetFriendsAsync(limit, skip, cancellationToken);
             await UniTask.SwitchToMainThread();
@@ -550,7 +548,7 @@ namespace DCL.Social.Friends
                 var friend = this.friends[userId];
                 friends.Remove(userId);
 
-                if (friendsSortedByName.ContainsKey(friend.userName)) { friendsSortedByName.Remove(friend.userName); }
+                if (!string.IsNullOrEmpty(friend.userName) && friendsSortedByName.ContainsKey(friend.userName)) { friendsSortedByName.Remove(friend.userName); }
             }
 
             OnUpdateFriendship?.Invoke(userId, msg.action);
