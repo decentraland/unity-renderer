@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class TaskbarHUDView : MonoBehaviour
 {
     private const string VIEW_PATH = "Taskbar";
-    private const string INTERCOM_URL = "https://intercom.decentraland.org/";
 
     [SerializeField] internal RectTransform fullScreenWindowContainer;
 
@@ -39,6 +38,7 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnEmotesToggle;
     public event System.Action<bool> OnVoiceChatToggle;
     public event System.Action<bool> OnExperiencesToggle;
+    public event Action OnIntercomPressed;
 
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
@@ -53,11 +53,8 @@ public class TaskbarHUDView : MonoBehaviour
     {
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         intercomButton.onClick.RemoveAllListeners();
-        intercomButton.onClick.AddListener(OpenIntercom);
+        intercomButton.onClick.AddListener(()=>OnIntercomPressed?.Invoke());
     }
-
-    private void OpenIntercom() =>
-        WebInterface.OpenURL(INTERCOM_URL);
 
     private void Initialize()
     {
