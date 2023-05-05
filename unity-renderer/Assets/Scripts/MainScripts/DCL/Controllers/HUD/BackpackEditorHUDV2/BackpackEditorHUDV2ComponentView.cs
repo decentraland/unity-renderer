@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -26,11 +25,13 @@ namespace DCL.Backpack
         [SerializeField] private AvatarSlotsView avatarSlotsView;
         [SerializeField] private ColorPickerComponentView colorPickerComponentView;
         [SerializeField] private ColorPresetsSO colorPresetsSO;
+        [SerializeField] private BackpackFiltersComponentView backpackFiltersComponentView;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
         public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
         public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
+        public BackpackFiltersComponentView BackpackFiltersComponentView => backpackFiltersComponentView;
 
         private Transform thisTransform;
         private bool isAvatarDirty;

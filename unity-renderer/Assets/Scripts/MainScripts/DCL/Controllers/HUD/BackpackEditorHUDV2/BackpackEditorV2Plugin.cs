@@ -29,12 +29,16 @@ namespace DCL.Backpack
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
                 wearablesCatalogService);
 
+            var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
+
+            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
+
             var wearableGridController = new WearableGridController(view.WearableGridComponentView,
                 userProfileBridge, wearablesCatalogService,
                 dataStore.backpackV2,
-                new WebInterfaceBrowserBridge());
-
-            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
+                new WebInterfaceBrowserBridge(),
+                backpackFiltersController,
+                avatarSlotsHUDController);
 
             hudController = new BackpackEditorHUDController(
                 view,

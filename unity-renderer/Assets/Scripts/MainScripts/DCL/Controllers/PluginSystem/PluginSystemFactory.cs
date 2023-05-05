@@ -71,10 +71,10 @@ namespace DCL
             pluginSystem.RegisterWithFlag<PromoteChannelsToastPlugin>(() => new PromoteChannelsToastPlugin(), "promote_channels_toast");
             pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
             pluginSystem.RegisterWithFlag<FavoritePlacesPlugin>(() => new FavoritePlacesPlugin(), "favourite_places");
-            pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()), "avatar_outliner");
+            pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
 
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
-                FriendsController.i,
+                Environment.i.serviceLocator.Get<IFriendsController>(),
                 NotificationScriptableObjects.pendingFriendRequests,
                 NotificationScriptableObjects.newApprovedFriends,
                 DataStore.i));

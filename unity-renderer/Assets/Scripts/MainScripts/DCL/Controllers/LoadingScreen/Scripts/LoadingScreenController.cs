@@ -1,11 +1,8 @@
-using Cysharp.Threading.Tasks;
 using DCL.Helpers;
+using DCL.Interface;
+using DCL.NotificationModel;
 using System;
 using UnityEngine;
-using DCL.NotificationModel;
-using DCL.Tasks;
-using System.Threading;
-using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
 {
@@ -15,8 +12,6 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
-        private const int LOAD_SCENE_TIMEOUT = 120000;
-
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
         private readonly DataStore_Player playerDataStore;
@@ -24,16 +19,16 @@ namespace DCL.LoadingScreen
         private readonly DataStore_LoadingScreen loadingScreenDataStore;
         private readonly DataStore_Realm realmDataStore;
         private readonly IWorldState worldState;
-        private readonly NotificationsController notificationsController;
 
         private Vector2Int currentDestination;
         private string currentRealm;
         private bool currentRealmIsWorld;
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
+        internal readonly LoadingScreenTimeoutController timeoutController;
+        private readonly NotificationsController notificationsController;
         private bool onSignUpFlow;
-
-        private CancellationTokenSource timeoutCTS;
+        internal bool showRandomPositionNotification;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -49,18 +44,23 @@ namespace DCL.LoadingScreen
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
+            timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView(), worldState, this);
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
+
+            // The initial loading has still a destination to set. We are starting the timeout for the
+            // websocket initialization
+            timeoutController.StartTimeout(new Vector2Int(-1, -1));
         }
 
         public void Dispose()
         {
             view.Dispose();
             percentageController.Dispose();
-            timeoutCTS.SafeCancelAndDispose();
+            timeoutController.Dispose();
 
             playerDataStore.lastTeleportPosition.OnChange -= TeleportRequested;
             commonDataStore.isSignUpFlow.OnChange -= OnSignupFlow;
@@ -77,15 +77,13 @@ namespace DCL.LoadingScreen
         {
             //We have to check that the latest scene loaded is the one from our current destination
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
-            {
                 HandlePlayerLoading();
-            }
         }
 
         //We have to add one more check not to show the loadingScreen unless the player is loaded
         private void PlayerLoaded(bool loaded, bool _)
         {
-            if(loaded)
+            if (loaded)
                 FadeOutView();
 
             commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
@@ -94,6 +92,7 @@ namespace DCL.LoadingScreen
         private void OnSignupFlow(bool current, bool previous)
         {
             onSignUpFlow = current;
+
             if (current)
                 FadeOutView();
             else
@@ -115,18 +114,11 @@ namespace DCL.LoadingScreen
                 //Temporarily removing tips until V2
                 //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
+                timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
-                timeoutCTS = timeoutCTS.SafeRestart();
-                StartTimeoutCounter(timeoutCTS.Token);
-            }else if (IsSceneLoaded(currentDestinationCandidate))
+            }
+            else if (IsSceneLoaded(currentDestinationCandidate))
                 HandlePlayerLoading();
-        }
-
-
-        private async UniTaskVoid StartTimeoutCounter(CancellationToken ct)
-        {
-            if (!await UniTask.Delay(TimeSpan.FromMilliseconds(LOAD_SCENE_TIMEOUT), cancellationToken: ct).SuppressCancellationThrow())
-                DoTimeout();
         }
 
         //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,
@@ -152,7 +144,7 @@ namespace DCL.LoadingScreen
         //If the destination scene is not loaded, we show the teleport screen. THis is called in the POSITION_UNSETTLED
         //On the other hand, the POSITION_SETTLED event is called; but since the scene will already be loaded, the loading screen wont be shown
         private bool IsNewScene(Vector2Int currentDestinationCandidate) =>
-             worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
+            worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
 
         private bool IsSceneLoaded(Vector2Int candidate) =>
             worldState.GetScene(worldState.GetSceneNumberByCoords(candidate))?.loadingProgress >= 100;
@@ -167,26 +159,38 @@ namespace DCL.LoadingScreen
                 percentageController.SetAvatarLoadingMessage();
                 commonDataStore.isPlayerRendererLoaded.OnChange += PlayerLoaded;
             }
-
         }
 
         private void FadeOutView()
         {
-            timeoutCTS.SafeCancelAndDispose();
+            timeoutController.StopTimeout();
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+            if (showRandomPositionNotification)
+                ShowRandomPositionNotification();
         }
 
-        private void DoTimeout()
+        private void ShowRandomPositionNotification()
         {
             notificationsController.ShowNotification(new Model
             {
-                message = "Loading scene timeout",
-                type = Type.GENERIC,
+                message = "There was an error while trying to load your home scene. If the problem persists contact support.",
+                type = NotificationModel.Type.ERROR,
                 timer = 10f,
                 destroyOnFinish = true
             });
-            FadeOutView();
+            showRandomPositionNotification = false;
+        }
+
+        public void RandomPositionRequested()
+        {
+            WebInterface.SendChatMessage(new ChatMessage
+            {
+                messageType = ChatMessage.Type.NONE,
+                recipient = string.Empty,
+                body = "/goto random",
+            });
+            showRandomPositionNotification = true;
         }
     }
 }

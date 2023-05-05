@@ -1,7 +1,8 @@
-using System;
-using System.Collections.Generic;
 using DCL.Components;
 using UnityEngine;
+using UnityEngine.Diagnostics;
+using DCL.Helpers;
+using Utils = DCL.Helpers.Utils;
 
 namespace DCL
 {
@@ -269,13 +270,7 @@ namespace DCL
 
         private void QuitGame()
         {
-#if UNITY_EDITOR
-            // Application.Quit() does not work in the editor so
-            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            Utils.QuitApplication();
         }
     }
 }
