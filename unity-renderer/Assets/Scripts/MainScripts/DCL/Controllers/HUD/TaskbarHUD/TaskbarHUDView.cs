@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using DCL;
+using DCL.Interface;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TaskbarHUDView : MonoBehaviour
 {
     private const string VIEW_PATH = "Taskbar";
+    private const string INTERCOM_URL = "https://intercom.decentraland.org/";
 
     [SerializeField] internal RectTransform fullScreenWindowContainer;
 
@@ -24,6 +27,7 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
     [SerializeField] internal RectTransform socialTooltipReference;
+    [SerializeField] internal Button intercomButton;
 
     private readonly Dictionary<TaskbarButtonType, TaskbarButton> buttonsByType =
         new Dictionary<TaskbarButtonType, TaskbarButton>();
@@ -45,7 +49,15 @@ public class TaskbarHUDView : MonoBehaviour
         return view;
     }
 
-    private void Awake() { hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
+    private void Awake()
+    {
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+        intercomButton.onClick.RemoveAllListeners();
+        intercomButton.onClick.AddListener(OpenIntercom);
+    }
+
+    private void OpenIntercom() =>
+        WebInterface.OpenURL(INTERCOM_URL);
 
     private void Initialize()
     {
