@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.Backpack
 {
-    public class AvatarSlotComponentViewTests
+    public class AvatarSlotComponentViewShould
     {
         private const string TEST_CATEGORY = "testCategory";
         private const string TEST_RARITY = "ultraRare";
@@ -92,14 +92,12 @@ namespace DCL.Backpack
         [Test]
         public void SetTooltipText1()
         {
-            avatarSlot.model = new AvatarSlotComponentModel()
+            avatarSlot.SetModel(new AvatarSlotComponentModel()
             {
                 category = TEST_CATEGORY,
                 isHidden = true,
                 hiddenBy = "HidingCategory"
-            };
-
-            avatarSlot.RefreshControl();
+            });
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
@@ -109,17 +107,65 @@ namespace DCL.Backpack
         [Test]
         public void SetTooltipText2()
         {
-            avatarSlot.model = new AvatarSlotComponentModel()
+            avatarSlot.SetModel(new AvatarSlotComponentModel()
             {
                 category = TEST_CATEGORY,
                 isHidden = false,
                 hiddenBy = ""
-            };
+            });
 
             avatarSlot.RefreshControl();
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
             Assert.False(avatarSlot.tooltipHiddenText.gameObject.activeInHierarchy);
+        }
+
+        [Test]
+        public void SetHiddenBy()
+        {
+            avatarSlot.SetModel(new AvatarSlotComponentModel()
+            {
+                category = TEST_CATEGORY
+            });
+            avatarSlot.SetIsHidden(true, "hiding category1");
+
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: hiding category1");
+        }
+
+        [Test]
+        public void SetHiddenByMultipleCategories()
+        {
+            avatarSlot.SetModel(new AvatarSlotComponentModel()
+            {
+                category = TEST_CATEGORY
+            });
+
+            //Set first hiding category
+            avatarSlot.SetIsHidden(true, "hiding category1");
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
+            Assert.True(avatarSlot.hiddenSlot.activeSelf);
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: hiding category1");
+
+            //Set second hiding category that should hide the first one
+            avatarSlot.SetIsHidden(true, "hiding category2");
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: hiding category2");
+
+            //Remove the first hiding category that should leave the second one as hiding
+            avatarSlot.SetIsHidden(false, "hiding category1");
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: hiding category2");
+
+            //Remove the first hiding category that should remove all hiding constrains
+            avatarSlot.SetIsHidden(false, "hiding category2");
+            Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
+            Assert.False(avatarSlot.tooltipHiddenText.gameObject.activeInHierarchy);
+            Assert.False(avatarSlot.hiddenSlot.activeSelf);
         }
     }
 }
