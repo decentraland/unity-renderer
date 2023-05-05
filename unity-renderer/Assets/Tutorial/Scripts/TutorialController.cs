@@ -4,6 +4,10 @@ using DCL.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using DCL.Providers;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -52,7 +56,7 @@ namespace DCL.Tutorial
         private readonly DataStore_Settings settingsDataStore;
         private readonly DataStore_ExploreV2 exploreV2DataStore;
 
-        internal readonly TutorialView tutorialView;
+        internal TutorialView tutorialView;
 
         internal TutorialSettings configuration;
 
@@ -71,7 +75,9 @@ namespace DCL.Tutorial
 
         internal bool userAlreadyDidTheTutorial { get; set; }
 
-        public TutorialController(DataStore_Common commonDataStore, DataStore_Settings settingsDataStore, DataStore_ExploreV2 exploreV2DataStore)
+        private CancellationTokenSource cts;
+
+        public TutorialController(IAddressableResourceProvider resourceProvider, DataStore_Common commonDataStore, DataStore_Settings settingsDataStore, DataStore_ExploreV2 exploreV2DataStore)
         {
             this.commonDataStore = commonDataStore;
             this.settingsDataStore = settingsDataStore;
@@ -79,19 +85,17 @@ namespace DCL.Tutorial
 
             i = this;
 
-            tutorialView = CreateTutorialView();
-            SetConfiguration(tutorialView.configuration);
+            cts = new CancellationTokenSource();
+            
+            Initialize(resourceProvider, cts.Token).Forget();
         }
 
-        private TutorialView CreateTutorialView()
+        private async UniTaskVoid Initialize(IAddressableResourceProvider resourceProvider, CancellationToken ct)
         {
-            GameObject tutorialObject = Object.Instantiate(Resources.Load<GameObject>("TutorialView"));
-            tutorialObject.name = "TutorialController";
-
-            TutorialView view = tutorialObject.GetComponent<TutorialView>();
-            view.ConfigureView(this);
-
-            return view;
+            tutorialView = await resourceProvider.Instantiate<TutorialView>("TutorialView",  name: "TutorialController", ct);
+            tutorialView.ConfigureView(this);
+            
+            SetConfiguration(tutorialView.configuration);
         }
 
         public void SetConfiguration(TutorialSettings config)
@@ -115,11 +119,14 @@ namespace DCL.Tutorial
 
         public void Dispose()
         {
+            cts.Cancel();
+            cts.Dispose();
+            
             SetTutorialDisabled();
 
             settingsDataStore.isInitialized.OnChange -= IsSettingsHUDInitialized_OnChange;
 
-            if (hudController is { settingsPanelHud: { } })
+            if (hudController is { settingsPanelHud: not null })
                 hudController.settingsPanelHud.OnRestartTutorial -= OnRestartTutorial;
 
             NotificationsController.disableWelcomeNotification = false;
