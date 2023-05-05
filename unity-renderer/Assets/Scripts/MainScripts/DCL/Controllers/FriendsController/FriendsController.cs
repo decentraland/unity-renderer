@@ -32,13 +32,11 @@ namespace DCL.Social.Friends
         public bool IsInitialized { get; private set; }
 
         public int ReceivedRequestCount => friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
-
         public int TotalFriendCount
         {
             get => useSocialApiBridge ? friends.Count : totalFriendCount;
             private set => totalFriendCount = value;
         }
-
         public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
         public int TotalReceivedFriendRequestCount { get; private set; }
         public int TotalSentFriendRequestCount { get; private set; }
