@@ -642,6 +642,12 @@ function* refreshFriends() {
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
     yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
 
+    let token = client.getAccessToken()
+
+    if (token) {
+      getUnityInstance().InitializeMatrix(token)
+    }
+
     getUnityInstance().InitializeFriends(initFriendsMessage)
     getUnityInstance().InitializeChat(initChatMessage)
     const { lastStatusOfFriends, numberOfFriendRequests, coolDownOfFriendRequests } = (yield select(
