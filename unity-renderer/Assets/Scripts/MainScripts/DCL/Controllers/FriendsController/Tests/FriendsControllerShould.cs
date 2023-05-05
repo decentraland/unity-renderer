@@ -16,7 +16,7 @@ namespace DCL.Social.Friends
     public class FriendsControllerShould
     {
         private IFriendsApiBridge apiBridge;
-        private RPCSocialApiBridge rpcSocialApiBridge;
+        private ISocialApiBridge rpcSocialApiBridge;
         private FriendsController controller;
 
         [SetUp]
@@ -28,12 +28,13 @@ namespace DCL.Social.Friends
             var dataStore = new DataStore();
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
 
-            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component, new UserProfileWebInterfaceBridge(),
-                () => Substitute.For<ITransport>()), dataStore);
+            rpcSocialApiBridge = new RPCSocialApiBridge(component, new UserProfileWebInterfaceBridge(),
+                () => Substitute.For<ITransport>());
+
+            controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
 
             dataStore.featureFlags.flags.Get().SetAsInitialized();
             controller.Initialize();
-
         }
 
         [Test]
@@ -570,6 +571,76 @@ namespace DCL.Social.Friends
                 Assert.IsNotNull(request);
                 request = controller.GetAllocatedFriendRequestByUser("usr4");
                 Assert.IsNotNull(request);
+            });
+
+        [UnityTest]
+        public IEnumerator GetFriendsAsyncWithSocialService() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                GameObject go = new GameObject();
+                var component = go.AddComponent<MatrixInitializationBridge>();
+                var dataStore = new DataStore();
+
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
+
+                var cancellationToken = default(CancellationToken);
+
+                var initializationResponse = UniTask.FromResult(new FriendshipInitializationMessage()
+                {
+                    totalReceivedRequests = 0,
+                });
+
+                rpcSocialApiBridge.GetInitializationInformationAsync(cancellationToken)
+                                  .Returns(initializationResponse);
+
+                controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
+
+                dataStore.featureFlags.flags.Get().SetAsInitialized();
+                controller.Initialize();
+
+                await controller.InitializeAsync(cancellationToken);
+
+                var firstUserId = "userId";
+                var secondUserId = "userId2";
+                var thirdUserId = "userId3";
+
+                var firstUser = new UserStatus()
+                {
+                    userId = firstUserId,
+                    userName = "a userName",
+                };
+
+                var secondUser = new UserStatus()
+                {
+                    userId = secondUserId,
+                    userName = "a userName",
+                };
+
+                var thirdUser = new UserStatus()
+                {
+                    userId = thirdUserId,
+                    userName = "searchText",
+                };
+
+                // insert unsorted
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(thirdUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(secondUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(firstUser);
+
+                string[] response = await controller.GetFriendsAsync(2, 0, cancellationToken);
+                string[] expected = { firstUserId, secondUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync(2, 1, cancellationToken);
+                expected = new[] { secondUserId, thirdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync("search", 10, cancellationToken);
+                expected = new[] { thirdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
             });
     }
 }
