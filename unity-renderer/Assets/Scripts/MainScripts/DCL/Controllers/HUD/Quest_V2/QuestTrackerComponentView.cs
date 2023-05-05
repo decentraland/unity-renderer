@@ -5,7 +5,7 @@ using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public class QuestTrackerComponentView : BaseComponentView<QuestTrackerComponentModel>, IQuestTrackerComponentView
     {

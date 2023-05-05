@@ -3,7 +3,7 @@ using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public class QuestStepComponentView : BaseComponentView<QuestStepComponentModel>, IQuestStepComponentView
     {
