@@ -69,7 +69,7 @@ namespace DCL.Providers
             AsyncOperationHandle<GameObject> request = Addressables.InstantiateAsync(address);
             await request.WithCancellation(cancellationToken);
 
-            if(Application.isEditor && name != default(string))
+            if(Application.isEditor && name != default)
                 request.Result.name = name;
 
             return request.Result.GetComponent<T>();
