@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: shadervariants-DCLLit
+  m_Shaders:
+  - first: {fileID: 4800000, guid: 3b75227de96217540aae9be81fbd99f6, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _ALPHATEST_ON
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
+          _NORMALMAP _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
+          _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
+          _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: _ALPHATEST_ON _NORMALMAP
+        passType: 13
+      - keywords: _NORMALMAP
+        passType: 13

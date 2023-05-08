@@ -1,24 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DCL.Backpack
 {
     public class NftBreadcrumbComponentView : BaseComponentView<NftBreadcrumbModel>
     {
-        [Serializable]
-        internal struct FilterIconType
-        {
-            public string filterPrefix;
-            public Sprite icon;
-        }
-
         [SerializeField] internal NftSubCategoryFilterComponentView prefab;
         [SerializeField] internal RectTransform container;
-        [SerializeField] internal FilterIconType[] iconsByFilter;
+        [SerializeField] internal NFTTypeIconsAndColors iconsByCategory;
 
         private readonly Dictionary<NftSubCategoryFilterComponentView, PoolableObject> pooledObjects = new ();
         private NftSubCategoryFilterComponentView[] categoriesByIndex = Array.Empty<NftSubCategoryFilterComponentView>();
@@ -26,7 +17,8 @@ namespace DCL.Backpack
 
         internal NftBreadcrumbModel Model => model;
 
-        public event Action<string> OnNavigate;
+        public event Action<string> OnFilterSelected;
+        public event Action<string> OnFilterRemoved;
 
         public override void Awake()
         {
@@ -46,8 +38,8 @@ namespace DCL.Backpack
             foreach ((NftSubCategoryFilterComponentView view, PoolableObject poolObj) in pooledObjects)
             {
                 poolObj.Release();
-                view.OnNavigate -= Navigate;
-                view.OnExit -= NavigateToPreviousCategory;
+                view.OnNavigate -= ApplyFilter;
+                view.OnExit -= RemoveFilter;
             }
 
             pooledObjects.Clear();
@@ -55,13 +47,13 @@ namespace DCL.Backpack
             categoriesByIndex = new NftSubCategoryFilterComponentView[model.Path.Length];
             var i = 0;
 
-            foreach ((string Filter, string Name) subCategory in model.Path)
+            foreach ((string Filter, string Name, string Type, bool Removable) subCategory in model.Path)
             {
                 PoolableObject poolObj = pool.Get();
                 NftSubCategoryFilterComponentView view = poolObj.gameObject.GetComponent<NftSubCategoryFilterComponentView>();
 
                 bool isLastItem = i == model.Path.Length - 1;
-                FilterIconType filterIcon = iconsByFilter.FirstOrDefault(o => subCategory.Filter.StartsWith(o.filterPrefix));
+                Sprite icon = iconsByCategory.GetTypeImage(subCategory.Type);
 
                 view.SetModel(new NftSubCategoryFilterModel
                 {
@@ -69,12 +61,13 @@ namespace DCL.Backpack
                     Filter = subCategory.Filter,
                     ResultCount = model.ResultCount,
                     ShowResultCount = isLastItem,
-                    Icon = filterIcon.icon,
+                    Icon = icon,
                     IsSelected = model.Current == i,
+                    ShowRemoveButton = subCategory.Removable,
                 });
 
-                view.OnNavigate += Navigate;
-                view.OnExit += NavigateToPreviousCategory;
+                view.OnNavigate += ApplyFilter;
+                view.OnExit += RemoveFilter;
                 view.transform.SetParent(container, false);
 
                 pooledObjects[view] = poolObj;
@@ -82,13 +75,10 @@ namespace DCL.Backpack
             }
         }
 
-        private void NavigateToPreviousCategory(NftSubCategoryFilterModel model)
-        {
-            int index = Array.FindIndex(this.model.Path, tuple => tuple.Filter == model.Filter);
-            Navigate(categoriesByIndex[index].Model);
-        }
+        private void RemoveFilter(NftSubCategoryFilterModel model) =>
+            OnFilterRemoved?.Invoke(model.Filter);
 
-        private void Navigate(NftSubCategoryFilterModel model) =>
-            OnNavigate?.Invoke(model.Filter);
+        private void ApplyFilter(NftSubCategoryFilterModel model) =>
+            OnFilterSelected?.Invoke(model.Filter);
     }
 }

@@ -149,73 +149,6 @@ ShaderVariantCollection:
         passType: 0
       - keywords: _TONEMAP_ACES
         passType: 0
-  - first: {fileID: 4800000, guid: 8d2bb70cbf9db8d4da26e15b26e74248, type: 3}
-    second:
-      variants:
-      - keywords: 
-        passType: 8
-      - keywords: INSTANCING_ON
-        passType: 8
-      - keywords: INSTANCING_ON _GLOSSINESS_FROM_BASE_ALPHA
-        passType: 8
-      - keywords: _GLOSSINESS_FROM_BASE_ALPHA
-        passType: 8
-      - keywords: 
-        passType: 13
-      - keywords: FOG_EXP _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
-          _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
-          _SHADOWS_SOFT _SPECULAR_COLOR
-        passType: 13
-      - keywords: FOG_LINEAR _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
-          _SPECULAR_COLOR
-        passType: 13
-      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS
-        passType: 13
-      - keywords: _GLOSSINESS_FROM_BASE_ALPHA
-        passType: 13
-  - first: {fileID: 4800000, guid: 3b75227de96217540aae9be81fbd99f6, type: 3}
-    second:
-      variants:
-      - keywords: 
-        passType: 8
-      - keywords: _ALPHATEST_ON
-        passType: 8
-      - keywords: 
-        passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
-          _NORMALMAP _SCREEN_SPACE_OCCLUSION
-        passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
-          _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
-          _SCREEN_SPACE_OCCLUSION
-        passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
-          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
-          _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
-        passType: 13
-      - keywords: FOG_LINEAR _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
-          _SHADOWS_SOFT
-        passType: 13
-      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS
-        passType: 13
-      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _NORMALMAP
-        passType: 13
-      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
-        passType: 13
-      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
-        passType: 13
-      - keywords: _ALPHATEST_ON _NORMALMAP
-        passType: 13
-      - keywords: _NORMALMAP
-        passType: 13
   - first: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
     second:
       variants:
@@ -254,6 +187,37 @@ ShaderVariantCollection:
       - keywords: FOG_LINEAR _SCREEN_SPACE_OCCLUSION _SURFACE_TYPE_TRANSPARENT
         passType: 0
   - first: {fileID: 4800000, guid: d540ea39c5edb8e44b3119aa7ed2d662, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 8d2bb70cbf9db8d4da26e15b26e74248, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: INSTANCING_ON
+        passType: 8
+      - keywords: INSTANCING_ON _GLOSSINESS_FROM_BASE_ALPHA
+        passType: 8
+      - keywords: _GLOSSINESS_FROM_BASE_ALPHA
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_EXP _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT _SPECULAR_COLOR
+        passType: 13
+      - keywords: FOG_LINEAR _GLOSSINESS_FROM_BASE_ALPHA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SPECULAR_COLOR
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS
+        passType: 13
+      - keywords: _GLOSSINESS_FROM_BASE_ALPHA
+        passType: 13
+  - first: {fileID: 4800000, guid: d7215c6dfa072d74ba8f86f5606e4cd8, type: 3}
     second:
       variants:
       - keywords: 
@@ -317,6 +281,11 @@ ShaderVariantCollection:
       variants:
       - keywords: SNOISE
         passType: 0
+  - first: {fileID: 4800000, guid: 7d0f2d70494277a42b52e83bc500f6ec, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
   - first: {fileID: 4800000, guid: e3aa1a34ff3944f9cb36479e4b6b9e43, type: 3}
     second:
       variants:
@@ -330,13 +299,3 @@ ShaderVariantCollection:
         passType: 0
       - keywords: 
         passType: 8
-  - first: {fileID: 4800000, guid: d7215c6dfa072d74ba8f86f5606e4cd8, type: 3}
-    second:
-      variants:
-      - keywords: 
-        passType: 0
-  - first: {fileID: 4800000, guid: 7d0f2d70494277a42b52e83bc500f6ec, type: 3}
-    second:
-      variants:
-      - keywords: 
-        passType: 0
