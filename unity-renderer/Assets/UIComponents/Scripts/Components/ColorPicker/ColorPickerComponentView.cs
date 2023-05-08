@@ -21,6 +21,10 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
     [Header("Configuration")]
     [SerializeField] internal ColorPickerComponentModel model;
 
+    public bool IsShowingOnlyPresetColors => model.showOnlyPresetColors;
+    public List<Color> ColorList => model.colorList;
+    public Color CurrentSelectedColor { get; private set; }
+
     public event Action<Color> OnColorChanged;
 
     private IColorSelector colorSelector;
@@ -60,8 +64,11 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
         SetShowOnlyPresetColors(model.showOnlyPresetColors);
     }
 
-    public void SetColorSelector(Color newColor) =>
+    public void SetColorSelector(Color newColor)
+    {
         colorSelector.Select(newColor);
+        CurrentSelectedColor = newColor;
+    }
 
     public void SetColorList(List<Color> colorList)
     {
