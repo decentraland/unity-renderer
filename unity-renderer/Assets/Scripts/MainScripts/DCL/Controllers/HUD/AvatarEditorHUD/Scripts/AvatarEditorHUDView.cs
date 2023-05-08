@@ -12,7 +12,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static WearableCollectionsAPIData;
-using Random = System.Random;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
@@ -539,7 +538,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     {
         cts.Cancel();
         cts.Dispose();
-        
+
         loadingSpinnerGameObject = null;
         randomizeAnimator = null;
         if (wearableGridPairs != null)
