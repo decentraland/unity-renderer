@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using System.Collections;
 using DCL;
@@ -7,7 +6,6 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Helpers.NFT.Markets;
 using NSubstitute;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -31,8 +29,10 @@ namespace SceneBoundariesCheckerTests
             scene.isPersistent = false;
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
             TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
+
         }
 
+        [UnityTearDown]
         protected override IEnumerator TearDown()
         {
             uuidEventsPlugin.Dispose();
@@ -56,113 +56,109 @@ namespace SceneBoundariesCheckerTests
             return result;
         }
 
-        [Test]
-        public async Task EntitiesAreBeingCorrectlyRegistered() { await SBC_Asserts.EntitiesAreBeingCorrectlyRegistered(scene); }
+        [UnityTest]
+        public IEnumerator EntitiesAreBeingCorrectlyRegistered() { yield return SBC_Asserts.EntitiesAreBeingCorrectlyRegistered(scene); }
 
-        [Test]
-        public async Task EntityIsEvaluatedOnReparenting() { await SBC_Asserts.EntityIsEvaluatedOnReparenting(scene); }
+        [UnityTest]
+        public IEnumerator EntityIsEvaluatedOnReparenting() { yield return SBC_Asserts.EntityIsEvaluatedOnReparenting(scene); }
 
-        [Test]
-        public async Task PShapeIsInvalidatedWhenStartingOutOfBounds() { await SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
+        [UnityTest]
+        public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
-        [Test]
-        public async Task GLTFShapeIsInvalidatedWhenStartingOutOfBounds() { await SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
+        [UnityTest]
+        public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
-        [Test]
-        public async Task GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds() { await SBC_Asserts.GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds(scene); }
+        [UnityTest]
+        public IEnumerator GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds(scene); }
 
-        [Test]
-        public async Task GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries() { await SBC_Asserts.GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries(scene); }
+        [UnityTest]
+        public IEnumerator GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries() { yield return SBC_Asserts.GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries(scene); }
 
-        [Test]
-        public async Task PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { await SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
+        [UnityTest]
+        public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
 
-        [Test]
-        public async Task GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { await SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
+        [UnityTest]
+        public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
 
-        [Test]
-        public async Task PShapeIsEvaluatedAfterCorrectTransformAttachment() { await SBC_Asserts.PShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
+        [UnityTest]
+        public IEnumerator PShapeIsEvaluatedAfterCorrectTransformAttachment() { yield return SBC_Asserts.PShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
 
-        [Test]
-        public async Task GLTFShapeIsEvaluatedAfterCorrectTransformAttachment() { await SBC_Asserts.GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
+        [UnityTest]
+        public IEnumerator GLTFShapeIsEvaluatedAfterCorrectTransformAttachment() { yield return SBC_Asserts.GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
 
-        [Test]
-        public async Task PShapeIsInvalidatedWhenLeavingBounds() { await SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene); }
+        [UnityTest]
+        public IEnumerator PShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene); }
 
-        [Test]
-        public async Task GLTFShapeIsInvalidatedWhenLeavingBounds() { await SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene); }
+        [UnityTest]
+        public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene); }
 
-        [Test]
-        public async Task PShapeIsResetWhenReenteringBounds() { await SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
+        [UnityTest]
+        public IEnumerator PShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
 
-        [Test]
-        public async Task OnPointerEventCollidersAreResetWhenReenteringBounds() { await SBC_Asserts.OnPointerEventCollidersAreResetWhenReenteringBounds(scene); }
+        [UnityTest]
+        public IEnumerator OnPointerEventCollidersAreResetWhenReenteringBounds() { yield return SBC_Asserts.OnPointerEventCollidersAreResetWhenReenteringBounds(scene); }
 
-        [Test]
-        public async Task NFTShapeIsInvalidatedWhenStartingOutOfBounds() { await SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
+        [UnityTest]
+        public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
-        [Test]
-        public async Task NFTShapeIsInvalidatedWhenLeavingBounds() { await SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
+        [UnityTest]
+        public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
-        [Test]
+        [UnityTest]
         [Explicit]
         [Category("Explicit")]
-        public async Task NFTShapeIsResetWhenReenteringBounds() { await SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
+        public IEnumerator NFTShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
 
-        [Test]
-        public async Task GLTFShapeIsResetWhenReenteringBounds() { await SBC_Asserts.GLTFShapeIsResetWhenReenteringBounds(scene); }
+        [UnityTest]
+        public IEnumerator GLTFShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.GLTFShapeIsResetWhenReenteringBounds(scene); }
 
-        [Test]
-        public async Task ChildShapeIsEvaluated() { await SBC_Asserts.ChildShapeIsEvaluated(scene); }
+        [UnityTest]
+        public IEnumerator ChildShapeIsEvaluated() { yield return SBC_Asserts.ChildShapeIsEvaluated(scene); }
 
-        [Test]
-        public async Task ChildShapeIsEvaluatedOnShapelessParent() { await SBC_Asserts.ChildShapeIsEvaluatedOnShapelessParent(scene); }
+        [UnityTest]
+        public IEnumerator ChildShapeIsEvaluatedOnShapelessParent() { yield return SBC_Asserts.ChildShapeIsEvaluatedOnShapelessParent(scene); }
 
-        [Test]
-        public async Task HeightIsEvaluated() { await SBC_Asserts.HeightIsEvaluated(scene); }
+        [UnityTest]
+        public IEnumerator HeightIsEvaluated() { yield return SBC_Asserts.HeightIsEvaluated(scene); }
 
-        [Test]
-        public async Task AudioSourceIsMuted()
+        [UnityTest]
+        public IEnumerator AudioSourceIsMuted()
         {
             var entity = TestUtils.CreateSceneEntity(scene);
             scene.isPersistent = false;
 
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
-            await TestUtils.CreateAudioSourceWithClipForEntity(entity).ToUniTask();
+            yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);
 
-            await UniTask.Yield();
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
             Assert.AreEqual(0, dclAudioSource.volume);
         }
 
-        [Test]
-        public async Task AudioSourceWithMeshIsDisabled()
+        [UnityTest]
+        public IEnumerator AudioSourceWithMeshIsDisabled()
         {
             scene.isPersistent = false;
 
             TestUtils.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out var entity);
             LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
-            await new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
-            await TestUtils.CreateAudioSourceWithClipForEntity(entity);
+            yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);
 
-            await UniTask.Yield();
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
             Assert.AreEqual(0, dclAudioSource.volume);
         }
 
-        [Test]
-        public async Task AudioSourcePlaysBackOnReentering()
+        [UnityTest]
+        public IEnumerator AudioSourcePlaysBackOnReentering()
         {
             var entity = TestUtils.CreateSceneEntity(scene);
 
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
-            await UniTask.WaitForFixedUpdate();
-
-            await TestUtils.CreateAudioSourceWithClipForEntity(entity);
+            yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(2, 1, 2) });
+            yield return null;
 
-            await UniTask.Yield();
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
             Assert.IsTrue(dclAudioSource.enabled);
         }
