@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -141,6 +142,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     private AvatarModel avatarModelToUpdate;
 
     private bool doAvatarFeedback;
+    private CancellationTokenSource cts;
 
     public ICharacterPreviewController CharacterPreview { get; private set; }
 
@@ -155,6 +157,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
         isOpen = false;
         arePanelsInitialized = false;
+
+        cts = new CancellationTokenSource();
     }
 
     public void Initialize(AvatarEditorHUDController controller)
@@ -257,7 +261,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         facialHairColorPickerComponent.OnColorChanged += controller.HairColorClicked;
         eyeBrowsColorPickerComponent.OnColorChanged += controller.HairColorClicked;
     }
-    
+
     public void UpdateSelectedBody(WearableItem bodyShape)
     {
         for (int i = 0; i < wearableGridPairs.Length; i++)
@@ -533,6 +537,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     public void Dispose()
     {
+        cts.Cancel();
+        cts.Dispose();
+        
         loadingSpinnerGameObject = null;
         randomizeAnimator = null;
         if (wearableGridPairs != null)
@@ -725,7 +732,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         {
             async UniTaskVoid UpdateAvatarAsync()
             {
-                await CharacterPreview.TryUpdateModelAsync(avatarModelToUpdate);
+                await CharacterPreview.TryUpdateModelAsync(avatarModelToUpdate, cts.Token);
                 if (doneButton != null)
                     doneButton.interactable = true;
 
