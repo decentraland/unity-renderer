@@ -5,16 +5,16 @@ using UnityEngine.UIElements;
 
 namespace DCLServices.QuestsService.Tests.TestScene.Editor
 {
-    [CustomEditor(typeof(QuestsServiceMock))]
-    public class QuestsServiceMockInspector : UnityEditor.Editor
+    [CustomEditor(typeof(ClientQuestsServiceMock))]
+    public class ClientQuestsServiceMockMockInspector : UnityEditor.Editor
     {
         private VisualElement root;
 
-        private QuestsServiceMock questService;
+        private ClientQuestsServiceMock clientQuestService;
 
         private void OnEnable()
         {
-            questService = (QuestsServiceMock)serializedObject.targetObject;
+            clientQuestService = (ClientQuestsServiceMock)serializedObject.targetObject;
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -27,7 +27,7 @@ namespace DCLServices.QuestsService.Tests.TestScene.Editor
             if (Application.isPlaying)
             {
                 IntegerField amountField = new IntegerField("Add amount",2);
-                var initButton = new Button(() => questService.EnqueueChanges(amountField.value))
+                var initButton = new Button(() => clientQuestService.EnqueueChanges(amountField.value))
                 {
                     text = "Enqueue",
                 };

@@ -14,7 +14,8 @@
     "precompiledReferences": [
         "NSubstitute.dll",
         "nunit.framework.dll",
-        "Google.Protobuf.dll"
+        "Google.Protobuf.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
