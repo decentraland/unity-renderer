@@ -60,7 +60,7 @@ namespace ECSSystems.VideoPlayerSystem
         {
             if (videoPlayerModel.removed)
             {
-                componentWriter.RemoveComponent(videoPlayerComponentData.scene, videoPlayerComponentData.entity, ComponentID.VIDEO_EVENT);
+                componentWriter.RemoveComponent(videoPlayerComponentData.scene.sceneData.sceneNumber, videoPlayerComponentData.entity.entityId, ComponentID.VIDEO_EVENT);
                 videoEvents.Remove(videoPlayerComponentData.entity);
                 return;
             }

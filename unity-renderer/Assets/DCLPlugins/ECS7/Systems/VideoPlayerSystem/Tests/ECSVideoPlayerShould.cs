@@ -1,6 +1,5 @@
 using DCL;
 using DCL.Components.Video.Plugin;
-using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
 using System;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCL.Models;
 using DCL.Shaders;
 using ECSSystems.VideoPlayerSystem;
 using NSubstitute;
@@ -183,8 +181,8 @@ namespace Tests
             systemsUpdate();
 
             componentWriter.Received(1).RemoveComponent(
-                Arg.Is<IParcelScene>(val => val == scene0),
-                Arg.Is<IDCLEntity>(val => val == entity),
+                Arg.Is<int>(val => val == scene0.sceneData.sceneNumber),
+                Arg.Is<long>(val => val == entity.entityId),
                 Arg.Is<int>(val => val == ComponentID.VIDEO_EVENT)
             );
         }
