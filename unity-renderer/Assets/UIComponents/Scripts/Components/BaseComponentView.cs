@@ -1,6 +1,7 @@
 using DCL;
 using System;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -177,9 +178,17 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         OnScreenSizeChanged();
     }
 
+#if UNITY_EDITOR
     public static T Create<T>(string resourceName) where T: BaseComponentView
     {
-        T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
+        string[] guid = AssetDatabase.FindAssets(resourceName + $" t:{typeof(T)}");
+
+        T buttonComponentView = Instantiate(
+            AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid[0])))
+           .GetComponent<T>();
+
         return buttonComponentView;
     }
+#endif
+
 }
