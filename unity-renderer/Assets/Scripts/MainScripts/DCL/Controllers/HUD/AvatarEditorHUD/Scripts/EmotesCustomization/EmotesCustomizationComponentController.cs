@@ -305,9 +305,6 @@ namespace DCL.EmotesCustomization
             equipInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
             equipInputAction.OnFinished += OnEquipInputActionTriggered;
 
-            // showInfoInputAction = Resources.Load<InputAction_Hold>("ZoomIn");
-            // showInfoInputAction.OnFinished += OnShowInfoInputActionTriggered;
-
             shortcut0InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut0");
             shortcut0InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
