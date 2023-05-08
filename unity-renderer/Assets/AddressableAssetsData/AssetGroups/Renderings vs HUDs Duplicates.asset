@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Renderings vs HUDs Duplicates
+  m_EditorClassIdentifier: 
+  m_GroupName: Renderings vs HUDs Duplicates
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 6ab96f49bac44054dbf7502af142aa3b
+  m_SerializeEntries:
+  - m_GUID: 537b3c029e4916749868ad462dca58c5
+    m_Address: Assets/Rendering/UI/ChargeWheel/S_LoadingSpinner.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 36e335017ad71d54fbb10842863188ae
+    m_Address: Packages/com.unity.render-pipelines.core/Runtime/FallbackShader.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e6e9a19c3678ded42a3bc431ebef7dbd
+    m_Address: Packages/com.unity.render-pipelines.universal/Shaders/Utils/FallbackError.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4efba42f3dd906045b5c914fe2dd264a, type: 2}
+    - {fileID: 11400000, guid: 54dd8446a78868448b4c6a226dde7cbd, type: 2}
