@@ -549,7 +549,7 @@ namespace DCL.Social.Friends
                 var friend = this.friends[userId];
                 friends.Remove(userId);
 
-                if (!string.IsNullOrEmpty(friend.userName) && friendsSortedByName.ContainsKey(friend.userName)) { friendsSortedByName.Remove(friend.userName); }
+                if (!string.IsNullOrEmpty(friend.userName)) { friendsSortedByName.Remove(friend.userName); }
             }
 
             OnUpdateFriendship?.Invoke(userId, msg.action);
