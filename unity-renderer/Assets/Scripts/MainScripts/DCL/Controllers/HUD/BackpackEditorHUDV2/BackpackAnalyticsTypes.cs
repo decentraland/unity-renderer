@@ -1,25 +1,28 @@
-public enum EquipWearableSource
+namespace DCL.Backpack
 {
-    Wearable,
-    InfoCard
-}
+    public enum EquipWearableSource
+    {
+        Wearable,
+        InfoCard
+    }
 
-public enum UnequipWearableSource
-{
-    Wearable,
-    InfoCard,
-    AvatarSlot,
-    None
-}
+    public enum UnequipWearableSource
+    {
+        Wearable,
+        InfoCard,
+        AvatarSlot,
+        None
+    }
 
-public enum SlotType
-{
-    Free,
-    Extra
-}
+    public enum SlotType
+    {
+        Free,
+        Extra
+    }
 
-public enum AvatarScreenshotSource
-{
-    Icon,
-    Shortcut
+    public enum AvatarScreenshotSource
+    {
+        Icon,
+        Shortcut
+    }
 }
