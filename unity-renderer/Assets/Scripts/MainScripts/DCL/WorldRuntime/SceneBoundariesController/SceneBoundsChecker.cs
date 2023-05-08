@@ -1,7 +1,8 @@
+using Cysharp.Threading.Tasks;
 using DCL.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Controllers
@@ -11,7 +12,7 @@ namespace DCL.Controllers
         private const float NERFED_TIME_BUDGET = 0.5f / 1000f;
         private const float RECHECK_BUDGET = 0.5f;
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
-        public bool enabled => entitiesCheckRoutine != null;
+        public bool enabled => isEnabled;
         public float timeBetweenChecks { get; set; } = RECHECK_BUDGET;
         public int entitiesToCheckCount => entitiesToCheck.Count;
 
@@ -21,7 +22,6 @@ namespace DCL.Controllers
         private HashSet<IDCLEntity> checkedEntities = new ();
         private HashSet<IDCLEntity> persistentEntities = new ();
         private ISceneBoundsFeedbackStyle feedbackStyle;
-        private Coroutine entitiesCheckRoutine;
         private float lastCheckTime;
 
         private Service<IMessagingControllersManager> messagingManagerService;
@@ -29,6 +29,8 @@ namespace DCL.Controllers
 
         private bool isNerfed;
         private bool isInsistent;
+        private bool isEnabled;
+        private CancellationTokenSource cancellationTokenSource = new ();
 
         public void Initialize()
         {
@@ -61,32 +63,28 @@ namespace DCL.Controllers
         }
 
         // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
-        private IEnumerator CheckEntities()
+        private async UniTask CheckEntitiesAsync(CancellationToken cancellationToken)
         {
-            while (true)
+            isEnabled = true;
+
+            try
             {
-                // Kinerius: Since the nerf can skip the process a lot faster than before, we need faster rechecks
-                var finalTimeBetweenChecks = isNerfed ? NERFED_TIME_BUDGET : timeBetweenChecks;
-
-                float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
-
-                if ((entitiesToCheck.Count > 0) && (finalTimeBetweenChecks <= 0f || elapsedTime >= finalTimeBetweenChecks))
+                while (true)
                 {
-                    var timeBudget = NERFED_TIME_BUDGET;
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    void processEntitiesList(HashSet<IDCLEntity> entities)
+                    await UniTask.WaitForFixedUpdate();
+
+                    // Kinerius: Since the nerf can skip the process a lot faster than before, we need faster rechecks
+                    var finalTimeBetweenChecks = isNerfed ? NERFED_TIME_BUDGET : timeBetweenChecks;
+
+                    float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
+
+                    if ((entitiesToCheck.Count > 0) && (finalTimeBetweenChecks <= 0f || elapsedTime >= finalTimeBetweenChecks))
                     {
-                        if (IsTimeBudgetDepleted(timeBudget))
-                        {
-                            if (VERBOSE)
-                                logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
+                        var timeBudget = NERFED_TIME_BUDGET;
 
-                            return;
-                        }
-
-                        using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
-
-                        while (iterator.MoveNext())
+                        void processEntitiesList(HashSet<IDCLEntity> entities)
                         {
                             if (IsTimeBudgetDepleted(timeBudget))
                             {
@@ -96,41 +94,61 @@ namespace DCL.Controllers
                                 return;
                             }
 
-                            float startTime = Time.realtimeSinceStartup;
+                            using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
 
-                            RunEntityEvaluation(iterator.Current);
-                            checkedEntities.Add(iterator.Current);
-
-                            float finishTime = Time.realtimeSinceStartup;
-                            float usedTimeBudget = finishTime - startTime;
-
-                            if (!isNerfed)
+                            while (iterator.MoveNext())
                             {
-                                if (messagingManager != null)
-                                    messagingManager.timeBudgetCounter -= usedTimeBudget;
+                                if (IsTimeBudgetDepleted(timeBudget))
+                                {
+                                    if (VERBOSE)
+                                        logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
+
+                                    return;
+                                }
+
+                                float startTime = Time.realtimeSinceStartup;
+
+                                RunEntityEvaluation(iterator.Current);
+                                checkedEntities.Add(iterator.Current);
+
+                                float finishTime = Time.realtimeSinceStartup;
+                                float usedTimeBudget = finishTime - startTime;
+
+                                if (!isNerfed)
+                                {
+                                    if (messagingManager != null)
+                                        messagingManager.timeBudgetCounter -= usedTimeBudget;
+                                }
+
+                                timeBudget -= usedTimeBudget;
                             }
-
-                            timeBudget -= usedTimeBudget;
                         }
+
+                        processEntitiesList(entitiesToCheck);
+
+                        // As we can't modify the hashset while traversing it, we keep track of the entities that should be removed afterwards
+                        using (var iterator = checkedEntities.GetEnumerator())
+                        {
+                            while (iterator.MoveNext()) { RemoveEntity(iterator.Current, removeIfPersistent: false, resetState: false); }
+                        }
+
+                        if (VERBOSE)
+                            logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}");
+
+                        checkedEntities.Clear();
+
+                        lastCheckTime = Time.realtimeSinceStartup;
                     }
-
-                    processEntitiesList(entitiesToCheck);
-
-                    // As we can't modify the hashset while traversing it, we keep track of the entities that should be removed afterwards
-                    using (var iterator = checkedEntities.GetEnumerator())
-                    {
-                        while (iterator.MoveNext()) { RemoveEntity(iterator.Current, removeIfPersistent: false, resetState: false); }
-                    }
-
-                    if (VERBOSE)
-                        logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}");
-
-                    checkedEntities.Clear();
-
-                    lastCheckTime = Time.realtimeSinceStartup;
                 }
-
-                yield return null;
+            }
+            catch (Exception e)
+            {
+                if (e is not OperationCanceledException)
+                    throw;
+            }
+            finally
+            {
+                isEnabled = false;
             }
         }
 
@@ -147,20 +165,19 @@ namespace DCL.Controllers
 
         public void Start()
         {
-            if (entitiesCheckRoutine != null)
+            if (isEnabled)
                 return;
 
             lastCheckTime = Time.realtimeSinceStartup;
-            entitiesCheckRoutine = CoroutineStarter.Start(CheckEntities());
+            CheckEntitiesAsync(cancellationTokenSource.Token).Forget();
         }
 
         public void Stop()
         {
-            if (entitiesCheckRoutine == null)
+            if (!isEnabled)
                 return;
 
-            CoroutineStarter.Stop(entitiesCheckRoutine);
-            entitiesCheckRoutine = null;
+            cancellationTokenSource.Cancel();
         }
 
         public void Dispose()
@@ -180,15 +197,29 @@ namespace DCL.Controllers
 
             if (runPreliminaryEvaluation)
             {
-                // The outer bounds check is cheaper than the regular check
-                RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
-
-                // No need to add the entity to be checked later if we already found it outside scene outer boundaries.
-                // When the correct events are triggered again, the entity will be checked again.
-                if (!isInsistent && !isPersistent && !entity.isInsideSceneOuterBoundaries)
-                    return;
+                RunPreliminaryEvaluationAsync(entity, isPersistent).Forget();
             }
+            else
+                AddEntity(entity, isPersistent);
+        }
 
+        private async UniTask RunPreliminaryEvaluationAsync(IDCLEntity entity, bool isPersistent)
+        {
+            await UniTask.WaitForFixedUpdate();
+
+            // The outer bounds check is cheaper than the regular check
+            RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
+
+            // No need to add the entity to be checked later if we already found it outside scene outer boundaries.
+            // When the correct events are triggered again, the entity will be checked again.
+            if (!isInsistent && !isPersistent && !entity.isInsideSceneOuterBoundaries)
+                return;
+
+            AddEntity(entity, isPersistent);
+        }
+
+        private void AddEntity(IDCLEntity entity, bool isPersistent)
+        {
             entitiesToCheck.Add(entity);
 
             if (isPersistent)
@@ -248,7 +279,6 @@ namespace DCL.Controllers
                 return;
 
             entity.UpdateOuterBoundariesStatus(entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds));
-
 
             if (!entity.isInsideSceneOuterBoundaries)
                 SetMeshesAndComponentsInsideBoundariesState(entity, false);

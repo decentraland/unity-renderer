@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Components;
@@ -112,7 +113,7 @@ namespace DCL.Models
             OnUpdated?.Invoke();
         }
 
-        public void RecalculateBounds()
+        public async UniTask RecalculateBounds()
         {
             if ((renderers == null || renderers.Length == 0) && colliders.Count == 0)
             {
@@ -124,6 +125,8 @@ namespace DCL.Models
             lastBoundsCalculationScale = meshRootGameObjectValue.transform.lossyScale;
             lastBoundsCalculationRotation = meshRootGameObjectValue.transform.rotation;
 
+            await UniTask.WaitForFixedUpdate();
+
             mergedBoundsValue = MeshesInfoUtils.BuildMergedBounds(renderers, colliders);
         }
 
@@ -131,7 +134,7 @@ namespace DCL.Models
         {
             OnCleanup?.Invoke();
             meshRootGameObjectValue = null;
-            animation = null; 
+            animation = null;
             currentShape = null;
             renderers = null;
             colliders.Clear();
