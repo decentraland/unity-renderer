@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DCL.Backpack
 {
-    public class BackpackAnalyticsController
+    public class BackpackAnalyticsController : IBackpackAnalyticsController
     {
         private const string AVATAR_SCREENSHOT = "avatar_screenshot";
         private const string OUTFIT_EQUIP = "outfit_equip";

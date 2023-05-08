@@ -43,6 +43,7 @@ namespace DCL.ECSComponents {
   #region Enums
   /// <summary>
   /// BillboardMode indicates one or more axis for automatic rotation, in OR-able bit flag form.
+  /// Only the values below and the (BM_X | BM_Y) combination are valid.
   /// </summary>
   public enum BillboardMode {
     [pbr::OriginalName("BM_NONE")] BmNone = 0,

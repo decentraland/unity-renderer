@@ -269,7 +269,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         }
 
         private static bool WereColliderComponentRemoved(IParcelScene scene, IDCLEntity entity,
-            KeyValueSet<Collider, int> sbcComponentColliders, IInternalECSComponent<InternalColliders> colliderComponent)
+            KeyValueSet<Collider, uint> sbcComponentColliders, IInternalECSComponent<InternalColliders> colliderComponent)
         {
             return sbcComponentColliders != null && colliderComponent.GetFor(scene, entity) == null;
         }

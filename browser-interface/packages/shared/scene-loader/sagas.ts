@@ -7,7 +7,7 @@ import { waitFor } from 'lib/redux'
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { SceneFail, SceneStart, SceneUnload, SCENE_FAIL, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
+import { SceneStart, SceneUnload, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
 import { getResourcesURL } from 'shared/location'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import { SetRealmAdapterAction, SET_REALM_ADAPTER } from 'shared/realm/actions'
@@ -249,7 +249,7 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
  */
 function* positionSettler() {
   while (true) {
-    const reason: SceneStart | SceneFail | SceneUnload = yield take([SCENE_START, SCENE_FAIL, SCENE_UNLOAD])
+    const reason: SceneStart | SceneUnload = yield take([SCENE_START, SCENE_UNLOAD])
 
     const sceneId: string = reason.payload?.id
 

@@ -26,7 +26,7 @@ namespace DCL.ECSComponents {
           string.Concat(
             "Ci9kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbWVzaF9jb2xsaWRlci5w",
             "cm90bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzIvgDCg5QQk1lc2hD",
-            "b2xsaWRlchIbCg5jb2xsaXNpb25fbWFzaxgBIAEoBUgBiAEBEkIKA2JveBgC",
+            "b2xsaWRlchIbCg5jb2xsaXNpb25fbWFzaxgBIAEoDUgBiAEBEkIKA2JveBgC",
             "IAEoCzIzLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQk1lc2hDb2xs",
             "aWRlci5Cb3hNZXNoSAASSAoGc3BoZXJlGAMgASgLMjYuZGVjZW50cmFsYW5k",
             "LnNkay5jb21wb25lbnRzLlBCTWVzaENvbGxpZGVyLlNwaGVyZU1lc2hIABJM",
@@ -166,13 +166,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "collision_mask" field.</summary>
     public const int CollisionMaskFieldNumber = 1;
-    private int collisionMask_;
+    private uint collisionMask_;
     /// <summary>
     /// enabled ColliderLayers (default CL_POINTER | CL_PHYSICS)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CollisionMask {
+    public uint CollisionMask {
       get { if ((_hasBits0 & 1) != 0) { return collisionMask_; } else { return 0; } }
       set {
         _hasBits0 |= 1;
@@ -317,7 +317,7 @@ namespace DCL.ECSComponents {
     #else
       if (HasCollisionMask) {
         output.WriteRawTag(8);
-        output.WriteInt32(CollisionMask);
+        output.WriteUInt32(CollisionMask);
       }
       if (meshCase_ == MeshOneofCase.Box) {
         output.WriteRawTag(18);
@@ -347,7 +347,7 @@ namespace DCL.ECSComponents {
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (HasCollisionMask) {
         output.WriteRawTag(8);
-        output.WriteInt32(CollisionMask);
+        output.WriteUInt32(CollisionMask);
       }
       if (meshCase_ == MeshOneofCase.Box) {
         output.WriteRawTag(18);
@@ -376,7 +376,7 @@ namespace DCL.ECSComponents {
     public int CalculateSize() {
       int size = 0;
       if (HasCollisionMask) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(CollisionMask);
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(CollisionMask);
       }
       if (meshCase_ == MeshOneofCase.Box) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Box);
@@ -448,7 +448,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            CollisionMask = input.ReadInt32();
+            CollisionMask = input.ReadUInt32();
             break;
           }
           case 18: {
@@ -503,7 +503,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            CollisionMask = input.ReadInt32();
+            CollisionMask = input.ReadUInt32();
             break;
           }
           case 18: {
@@ -761,7 +761,7 @@ namespace DCL.ECSComponents {
         public const int RadiusTopFieldNumber = 1;
         private float radiusTop_;
         /// <summary>
-        /// (default 1.0)
+        /// (default 0.5)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -789,7 +789,7 @@ namespace DCL.ECSComponents {
         public const int RadiusBottomFieldNumber = 2;
         private float radiusBottom_;
         /// <summary>
-        /// (default 1.0)
+        /// (default 0.5)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

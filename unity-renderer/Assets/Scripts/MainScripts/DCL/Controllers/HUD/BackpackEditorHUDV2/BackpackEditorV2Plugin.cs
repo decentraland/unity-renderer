@@ -34,7 +34,8 @@ namespace DCL.Backpack
             var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
 
             var wearableGridController = new WearableGridController(view.WearableGridComponentView,
-                userProfileBridge, wearablesCatalogService,
+                userProfileBridge,
+                wearablesCatalogService,
                 dataStore.backpackV2,
                 new WebInterfaceBrowserBridge(),
                 backpackFiltersController,

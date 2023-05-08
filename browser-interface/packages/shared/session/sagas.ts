@@ -1,6 +1,6 @@
 import { Authenticator } from '@dcl/crypto'
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
-import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
+import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK, PREVIEW, RESET_TUTORIAL } from 'config'
 import { RequestManager } from 'eth-connect'
 import { DecentralandIdentity, LoginState } from 'kernel-web-interface'
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
@@ -44,6 +44,13 @@ import {
 import { deleteSession, retrieveLastGuestSession, retrieveLastSessionByAddress, storeSession } from './index'
 import { getCurrentIdentity, isGuestLogin } from './selectors'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
+import { getFeatureFlagVariantName, getFeatureFlagVariantValue, getWorldConfig } from '../meta/selectors'
+import { trackEvent } from '../analytics/trackEvent'
+import { setOnboardingState } from '../realm/actions'
+import { changeRealm } from '../dao'
+import { SET_SCENE_LOADER } from '../scene-loader/actions'
+import { WorldConfig } from '../meta/types'
+import { getUnityInstance } from '../../unity-interface/IUnityInterface'
 
 const TOS_KEY = 'tos'
 const logger = DEBUG_KERNEL_LOG ? createLogger('session: ') : createDummyLogger()
@@ -127,9 +134,50 @@ function* authenticate(action: AuthenticateAction) {
     yield take(SIGNUP)
   }
 
+  if (avatar.tutorialStep === 0 || RESET_TUTORIAL) {
+    yield call(SetupTutorial)
+  }
+
   // 4. finish sign in
   yield call(ensureMetaConfigurationInitialized)
   yield put(changeLoginState(LoginState.COMPLETED))
+}
+
+function* SetupTutorial() {
+  // only enable the old tutorial if the feature flag new_tutorial is off
+  // this code should be removed once the "hardcoded" tutorial is removed
+  // from the renderer
+  const onboardingRealmName: string | undefined = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
+  const isNewTutorialDisabled =
+    onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
+  if (!isNewTutorialDisabled) {
+    try {
+      const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
+      if (realm) {
+        trackEvent('onboarding_started', { onboardingRealm: realm })
+        //We are using the previous tutorial flow. 256 meant complete in the previous tutorial.
+        //Also, with just going to the onboarding, we are assuming completion. If not, the onboarding will be shown on every login
+        //So, we start an async function that just waits for a SET_REALM_ADAPTER. Meaning that we left the onboarding realm
+        //TODO: This should be added organically in the onboarding or replaced when we dont use the old tutorial anymore
+        yield put(setOnboardingState({ isInOnboarding: true, onboardingRealm: realm }))
+        yield call(changeRealm, realm, true)
+        //The scene loader change is not instant, so we wait for it to be done using a take of the SET_SCENE_LOADER action
+        yield take(SET_SCENE_LOADER)
+      } else {
+        logger.warn('No realm was provided for the onboarding experience.')
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  } else {
+    const worldConfig: WorldConfig | undefined = yield select(getWorldConfig)
+    const enableNewTutorialCamera = worldConfig ? worldConfig.enableNewTutorialCamera ?? false : false
+    const tutorialConfig = {
+      fromDeepLink: HAS_INITIAL_POSITION_MARK,
+      enableNewTutorialCamera: enableNewTutorialCamera
+    }
+    getUnityInstance().ConfigureTutorial(0, tutorialConfig)
+  }
 }
 
 function* authorize(requestManager: RequestManager) {
@@ -270,7 +318,10 @@ function* logout() {
 }
 
 function* redirectToSignUp() {
-  window.location.search += '&show_wallet=1'
+
+  const q = new URLSearchParams(globalThis.location.search)
+  q.set('show_wallet', '1')
+  globalThis.history.replaceState({ show_wallet: '1' }, 'show_wallet', `?${q.toString()}`)
   window.location.reload()
 }
 
