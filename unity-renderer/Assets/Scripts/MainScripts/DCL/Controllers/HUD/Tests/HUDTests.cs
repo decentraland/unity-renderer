@@ -1,10 +1,9 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
-using DCl.Social.Friends;
 using DCL.Social.Friends;
-using NSubstitute;
 using NUnit.Framework;
+using NSubstitute;
 using System;
 using System.Collections;
 using UnityEngine.TestTools;
@@ -18,9 +17,8 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-
-            FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
             hudController = new HUDController(new DataStore(), new HUDFactory(new AddressableResourceProvider()));
+
             hudController.Initialize();
             yield return null;
         }
@@ -35,6 +33,9 @@ namespace Tests
         {
             var serviceLocator = base.InitializeServiceLocator();
             serviceLocator.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            serviceLocator.Register<IFriendsController>(() => Substitute.For<IFriendsController>());
+            serviceLocator.Register<IFriendsController>(() => Substitute.For<IFriendsController>());
+            serviceLocator.Register<ISocialApiBridge>(() => Substitute.For<ISocialApiBridge>());
             return serviceLocator;
         }
 

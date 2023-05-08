@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
 using DCL.CRDT;
@@ -7,8 +5,9 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
-using NSubstitute;
 using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -24,6 +23,7 @@ namespace Tests
         private IInternalECSComponent<InternalColliders> pointerColliderComponent;
         private IInternalECSComponent<InternalColliders> physicColliderComponent;
         private IInternalECSComponent<InternalRenderers> renderersComponent;
+        private IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent;
         private DataStore_ECS7 dataStoreEcs7;
 
         [SetUp]
@@ -44,8 +44,9 @@ namespace Tests
 
             var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
                 0, componentsManager, componentFactory, null,
-                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
+                new KeyValueSet<ComponentIdentifier, ComponentWriteData>(),
                 executors);
+
             keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
 
             scene.contentProvider.baseUrl = $"{TestAssetsUtils.GetPath()}/GLB/";
@@ -55,9 +56,16 @@ namespace Tests
             renderersComponent = internalEcsComponents.renderersComponent;
             pointerColliderComponent = internalEcsComponents.onPointerColliderComponent;
             physicColliderComponent = internalEcsComponents.physicColliderComponent;
+            gltfContainerLoadingStateComponent = internalEcsComponents.GltfContainerLoadingStateComponent;
             dataStoreEcs7 = new DataStore_ECS7();
 
-            handler = new GltfContainerHandler(pointerColliderComponent, physicColliderComponent, renderersComponent, dataStoreEcs7, new DataStore_FeatureFlag());
+            handler = new GltfContainerHandler(pointerColliderComponent,
+                physicColliderComponent,
+                renderersComponent,
+                gltfContainerLoadingStateComponent,
+                dataStoreEcs7,
+                new DataStore_FeatureFlag());
+
             handler.OnComponentCreated(scene, entity);
         }
 
@@ -140,6 +148,7 @@ namespace Tests
 
             IList<Renderer> renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
             IECSReadOnlyComponentData<InternalRenderers> internalRenderers = renderersComponent.GetFor(scene, entity);
+
             for (int i = 0; i < renderers.Count; i++)
             {
                 Assert.IsTrue(internalRenderers.model.renderers.Contains(renderers[i]));
@@ -171,7 +180,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator RemoveComponentCorreclty()
+        public IEnumerator RemoveComponentCorrectly()
         {
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
@@ -183,6 +192,48 @@ namespace Tests
             Assert.IsNull(renderersComponent.GetFor(scene, entity));
             Assert.IsNull(physicColliderComponent.GetFor(scene, entity));
             Assert.IsNull(pointerColliderComponent.GetFor(scene, entity));
+        }
+
+        [Test]
+        public void PutGltfContainerLoadingStateAsLoading()
+        {
+            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
+            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
+            Assert.AreEqual(LoadingState.Loading, model.LoadingState);
+            Assert.IsFalse(model.GltfContainerRemoved);
+        }
+
+        [UnityTest]
+        public IEnumerator PutGltfContainerLoadingStateAsFinished()
+        {
+            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
+            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
+            Assert.AreEqual(LoadingState.Finished, model.LoadingState);
+            Assert.IsFalse(model.GltfContainerRemoved);
+        }
+
+        [UnityTest]
+        public IEnumerator PutGltfContainerLoadingStateAsFinishedWithError()
+        {
+            var ignoreFailingMessages = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "non-existing-gltf" });
+            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+
+            LogAssert.ignoreFailingMessages = ignoreFailingMessages;
+            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
+            Assert.AreEqual(LoadingState.FinishedWithError, model.LoadingState);
+            Assert.IsFalse(model.GltfContainerRemoved);
+        }
+
+        [Test]
+        public void RemoveGltfContainerLoadingStateWhenGltfContainerRemoved()
+        {
+            handler.OnComponentRemoved(scene, entity);
+            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
+            Assert.AreEqual(LoadingState.Unknown, model.LoadingState);
+            Assert.IsTrue(model.GltfContainerRemoved);
         }
     }
 }

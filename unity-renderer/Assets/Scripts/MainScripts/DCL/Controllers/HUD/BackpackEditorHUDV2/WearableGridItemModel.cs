@@ -1,3 +1,5 @@
+using DCLServices.WearablesCatalogService;
+
 namespace DCL.Backpack
 {
     public record WearableGridItemModel
@@ -8,5 +10,6 @@ namespace DCL.Backpack
         public string ImageUrl { get; set; }
         public NftRarity Rarity { get; set; }
         public bool IsNew { get; set; }
+        public string Category { get; set; }
     }
 }

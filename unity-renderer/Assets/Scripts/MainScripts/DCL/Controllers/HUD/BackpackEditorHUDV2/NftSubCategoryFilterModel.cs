@@ -10,5 +10,6 @@ namespace DCL.Backpack
         public bool ShowResultCount { get; set; }
         public Sprite Icon { get; set; }
         public bool IsSelected { get; set; }
+        public bool ShowRemoveButton { get; set; }
     }
 }

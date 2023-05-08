@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
@@ -13,7 +14,7 @@ namespace DCL.Helpers
         // TODO: change fetching logic to allow for auto-pagination
         // The https://nft-api.decentraland.org/v1/ endpoint doesn't fetch L1 wearables right now, if those need to be re-converted we should use that old endpoint again and change the WearablesAPIData structure again for that response.
         public const string BASE_FETCH_URL = "https://peer.decentraland.org/lambdas/collections";
-        public const string COLLECTIONS_FETCH_PARAMS = "?sortBy=newest&first=1000"; 
+        public const string COLLECTIONS_FETCH_PARAMS = "?sortBy=newest&first=1000";
         public const string WEARABLES_FETCH_PARAMS = "/wearables?";
         public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
@@ -44,7 +45,7 @@ namespace DCL.Helpers
         {
             return $"{BASE_FETCH_URL}{COLLECTIONS_FETCH_PARAMS}";
         }
-        
+
         public static string GetWearablesFetchURL()
         {
             return $"{BASE_FETCH_URL}{WEARABLES_FETCH_PARAMS}";
@@ -60,7 +61,7 @@ namespace DCL.Helpers
 
             finalCollectionIdsList.Add( BASE_WEARABLES_COLLECTION_ID );
         }
-        
+
         public static IEnumerator GetRandomCollections(int amount, List<string> finalCollectionIdsList)
         {
             yield return EnsureCollectionsData();
@@ -72,15 +73,15 @@ namespace DCL.Helpers
             for (int i = 0; i < amount; i++)
             {
                 randomIndex = Random.Range(0, collections.Length);
-            
+
                 while (randomizedIndices.Contains(randomIndex))
                 {
                     randomIndex = Random.Range(0, collections.Length);
                 }
-            
+
                 if (collections[randomIndex].urn == BASE_WEARABLES_COLLECTION_ID)
                     addedBaseWearablesCollection = true;
-            
+
                 finalCollectionIdsList.Add(collections[randomIndex].urn);
                 randomizedIndices.Add(randomIndex);
             }
@@ -95,7 +96,7 @@ namespace DCL.Helpers
         public static IEnumerator GetWearableItems(string url, List<WearableItem> finalWearableItemsList)
         {
             string nextPageParams = null;
-            
+
             yield return Environment.i.platform.webRequest.Get(
                 url: url,
                 downloadHandler: new DownloadHandlerBuffer(),
@@ -119,11 +120,12 @@ namespace DCL.Helpers
                 // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
                 // batches sequentially
                 yield return GetWearableItems(
-                    GetWearablesFetchURL() + $"{nextPageParams}", 
+                    GetWearablesFetchURL() + $"{nextPageParams}",
                     finalWearableItemsList);
             }
         }
 
+        [Obsolete("Deprecated. Use IWearablesCatalogService.GetAllThirdPartyCollectionsAsync instead")]
         public static Promise<Collection[]> GetThirdPartyCollections()
         {
             Promise<Collection[]> promiseResult = new Promise<Collection[]>();

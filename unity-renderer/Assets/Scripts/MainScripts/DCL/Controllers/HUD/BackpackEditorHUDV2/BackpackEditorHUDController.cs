@@ -91,6 +91,7 @@ namespace DCL.Backpack
             wearableGridController.Dispose();
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
+            avatarSlotsHUDController.Dispose();
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.Dispose();
@@ -107,6 +108,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController.RestoreEmoteSlots();
                 backpackEmotesSectionController.LoadEmotes();
                 wearableGridController.LoadWearables();
+                wearableGridController.LoadCollections();
                 LoadUserProfile(ownUserProfile, true);
 
                 view.Show();

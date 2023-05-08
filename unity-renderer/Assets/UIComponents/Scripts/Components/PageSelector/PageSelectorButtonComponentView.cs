@@ -5,45 +5,43 @@ using UnityEngine.UI;
 
 namespace UIComponents.Scripts.Components
 {
-    public class PageSelectorButtonComponentView : BaseComponentView<PageSelectorButtonModel>
+    public class PageSelectorButtonComponentView : BaseComponentView
     {
-        private static readonly int IS_ACTIVE_ANIMATOR_HASH = Animator.StringToHash("IsActive");
-        private static readonly int IS_HOVER_ANIMATOR_HASH = Animator.StringToHash("IsHover");
+        public event Action<int> OnPageClicked;
 
         [SerializeField] private TMP_Text text;
         [SerializeField] private Button button;
         [SerializeField] private Animator anim;
 
-        private int pageNumber;
+        private static readonly int IS_ACTIVE = Animator.StringToHash("IsActive");
+        private static readonly int IS_HOVER = Animator.StringToHash("IsHover");
 
-        public event Action<int> OnPageClicked;
+        private int pageNumber;
 
         public override void Awake()
         {
             base.Awake();
-
-            onFocused += focused =>
-            {
-                anim.SetBool(IS_HOVER_ANIMATOR_HASH, focused);
-            };
-
             button.onClick.AddListener(OnButtonDown);
         }
 
-        public override void RefreshControl()
+        public override void RefreshControl() { }
+
+        public void Initialize(int i)
         {
-            pageNumber = model.PageNumber;
-            text.text = model.PageNumber.ToString();
+            pageNumber = i;
+            text.text = (i + 1).ToString();
         }
 
-        private void OnButtonDown()
-        {
+        public void Toggle(bool b) =>
+            anim.SetBool(IS_ACTIVE, b);
+
+        private void OnButtonDown() =>
             OnPageClicked?.Invoke(pageNumber);
-        }
 
-        public void Toggle(bool isOn)
-        {
-            anim.SetBool(IS_ACTIVE_ANIMATOR_HASH, isOn);
-        }
+        public override void OnFocus() =>
+            anim.SetBool(IS_HOVER, true);
+
+        public override void OnLoseFocus() =>
+            anim.SetBool(IS_HOVER, false);
     }
 }
