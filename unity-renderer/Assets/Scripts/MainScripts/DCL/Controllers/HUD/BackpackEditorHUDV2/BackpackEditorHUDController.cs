@@ -1,7 +1,6 @@
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -272,10 +271,14 @@ namespace DCL.Backpack
 
             preEquipModel.Update(model);
 
-            WearableItem wearableToBeReplaced = preEquipModel.wearables.Values.FirstOrDefault(item => item.data.category == wearable.data.category);
+            foreach (var w in preEquipModel.wearables.Values)
+            {
+                if (w.data.category != wearable.data.category)
+                    continue;
 
-            if (wearableToBeReplaced != null)
-                preEquipModel.wearables.Remove(wearableToBeReplaced.id);
+                preEquipModel.wearables.Remove(w.id);
+                break;
+            }
 
             preEquipModel.wearables.Add(wearableId, wearable);
 
@@ -290,10 +293,14 @@ namespace DCL.Backpack
                 return;
             }
 
-            WearableItem wearableToBeReplaced = model.wearables.Values.FirstOrDefault(item => item.data.category == wearable.data.category);
+            foreach (var w in model.wearables.Values)
+            {
+                if (w.data.category != wearable.data.category)
+                    continue;
 
-            if (wearableToBeReplaced != null)
-                UnEquipWearable(wearableToBeReplaced.id);
+                UnEquipWearable(w.id);
+                break;
+            }
 
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
