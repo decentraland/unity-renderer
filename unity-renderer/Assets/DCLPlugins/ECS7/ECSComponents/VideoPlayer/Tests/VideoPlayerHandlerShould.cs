@@ -23,7 +23,6 @@ namespace Tests
         private Func<IVideoPluginWrapper> originalVideoPluginBuilder;
         private VideoPlayerHandler videoPlayerHandler;
         private IInternalECSComponent<InternalVideoPlayer> internalVideoPlayerComponent;
-        private IInternalECSComponent<InternalVideoEvent> internalVideoEventComponent;
         private ICatalyst catalyst;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
@@ -43,10 +42,8 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
-            internalVideoEventComponent = internalComponents.videoEventComponent;
             videoPlayerHandler = new VideoPlayerHandler(
                 internalVideoPlayerComponent,
-                internalVideoEventComponent,
                 loadingScreenDataStore.decoupledLoadingHUD,
                 Substitute.For<IECSComponentWriter>());
 
@@ -141,6 +138,8 @@ namespace Tests
         [Test]
         public void CreateInternalComponentCorrectly()
         {
+            Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
+
             videoPlayerHandler.OnComponentCreated(scene, entity);
             videoPlayerHandler.hadUserInteraction = true;
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
@@ -152,10 +151,10 @@ namespace Tests
 
             Assert.NotNull(internalVideoPlayerComponent.GetFor(scene, entity));
 
-            // remove component, internal component should be removed too
+            // The internal component is removed with a default model flagged as removed to
+            // be able to remove video events in ECSVideoPlayerSystem
             videoPlayerHandler.OnComponentRemoved(scene, entity);
-
-            Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
+            Assert.IsTrue(internalVideoPlayerComponent.GetFor(scene, entity).model.removed);
         }
 
         [Test]
@@ -264,26 +263,6 @@ namespace Tests
             Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
 
             videoPlayerHandler.OnComponentRemoved(scene, entity);
-        }
-
-        [Test]
-        public void AttachAndRemoveVideoEventComponent()
-        {
-            videoPlayerHandler.OnComponentCreated(scene, entity);
-            videoPlayerHandler.hadUserInteraction = true;
-            videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
-            {
-                Src = "other-video.mp4",
-                Playing = true,
-                Volume = 0.5f,
-            });
-
-            Assert.NotNull(internalVideoEventComponent.GetFor(scene, entity));
-
-            // remove component, internal component should be removed too
-            videoPlayerHandler.OnComponentRemoved(scene, entity);
-
-            Assert.IsNull(internalVideoEventComponent.GetFor(scene, entity));
         }
     }
 }

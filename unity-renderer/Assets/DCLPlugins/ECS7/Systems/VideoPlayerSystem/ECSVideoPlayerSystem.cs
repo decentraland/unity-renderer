@@ -2,6 +2,7 @@ using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Models;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,23 +11,26 @@ namespace ECSSystems.VideoPlayerSystem
 {
     public class ECSVideoPlayerSystem
     {
+        private struct VideoEventData
+        {
+            public VideoState videoState;
+            public uint timeStamp;
+        }
+
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
         private readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
-        private readonly IInternalECSComponent<InternalVideoEvent> videoEventComponent;
         private readonly IECSComponentWriter componentWriter;
-        private HashSet<ECSComponentData<InternalVideoPlayer>> videoPlayersToRemove = new HashSet<ECSComponentData<InternalVideoPlayer>>();
+        private Dictionary<IDCLEntity, VideoEventData> videoEvents = new Dictionary<IDCLEntity, VideoEventData>();
 
         private static readonly Vector2 VIDEO_TEXTURE_SCALE = new Vector2(1, -1);
 
         public ECSVideoPlayerSystem(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent,
             IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent,
-            IInternalECSComponent<InternalVideoEvent> videoEventComponent,
             IECSComponentWriter componentWriter)
         {
             this.videoPlayerComponent = videoPlayerComponent;
             this.videoMaterialComponent = videoMaterialComponent;
-            this.videoEventComponent = videoEventComponent;
             this.componentWriter = componentWriter;
         }
 
@@ -41,11 +45,7 @@ namespace ECSSystems.VideoPlayerSystem
 
                 playerModel.videoPlayer?.Update();
 
-                UpdateVideoEvent(videoEventComponent.GetFor(playerComponentData.scene, playerComponentData.entity)?.model,
-                    playerModel, playerComponentData);
-
-                if (playerModel.removed)
-                    videoPlayersToRemove.Add(playerComponentData);
+                UpdateVideoEvent(playerModel, playerComponentData);
             }
 
             var allMaterialComponent = videoMaterialComponent.GetForAll();
@@ -56,30 +56,34 @@ namespace ECSSystems.VideoPlayerSystem
             }
         }
 
-        private void UpdateVideoEvent(InternalVideoEvent videoEventModel, InternalVideoPlayer videoPlayerModel, ECSComponentData<InternalVideoPlayer> videoPlayerComponentData)
+        private void UpdateVideoEvent(InternalVideoPlayer videoPlayerModel, ECSComponentData<InternalVideoPlayer> videoPlayerComponentData)
         {
             if (videoPlayerModel.removed)
             {
-                // Clean up video event component
                 componentWriter.RemoveComponent(videoPlayerComponentData.scene, videoPlayerComponentData.entity, ComponentID.VIDEO_EVENT);
-                videoEventComponent.RemoveFor(videoPlayerComponentData.scene, videoPlayerComponentData.entity);
+                videoEvents.Remove(videoPlayerComponentData.entity);
                 return;
             }
 
-            bool hasVideoEvent = videoEventModel != null;
-            int previousVideoState = hasVideoEvent ? (int)videoEventModel.videoState : -1;
+            bool videoEventExists = videoEvents.TryGetValue(videoPlayerComponentData.entity, out VideoEventData videoEvent);
+            if (!videoEventExists)
+            {
+                videoEvent = new VideoEventData()
+                {
+                    videoState = VideoState.VsNone,
+                    timeStamp = 0
+                };
+            }
+
+            int previousVideoState = videoEventExists ? (int)videoEvent.videoState : -1;
             int currentVideoState = (int)videoPlayerModel.videoPlayer.GetState();
             if (previousVideoState != currentVideoState)
             {
-                uint updatedTimestamp = hasVideoEvent ? videoEventModel.timeStamp + 1 : 1;
-                VideoState updatedVideoState = (VideoState)currentVideoState;
+                videoEvent.timeStamp++;
+                videoEvent.videoState = (VideoState)currentVideoState;
 
-                // Update internal component for needed checks
-                videoEventComponent.PutFor(videoPlayerComponentData.scene, videoPlayerComponentData.entity,
-                new InternalVideoEvent(){
-                    videoState = updatedVideoState,
-                    timeStamp = updatedTimestamp
-                });
+                // save video event updated data
+                videoEvents[videoPlayerComponentData.entity] = videoEvent;
 
                 // Update GrowOnlyValueSet VideoEvent component for the video player entity
                 componentWriter.AppendComponent(
@@ -88,10 +92,10 @@ namespace ECSSystems.VideoPlayerSystem
                     ComponentID.VIDEO_EVENT,
                     new PBVideoEvent()
                     {
-                        State = updatedVideoState,
+                        State = videoEvent.videoState,
                         CurrentOffset = videoPlayerModel.videoPlayer.GetTime(),
                         VideoLength = videoPlayerModel.videoPlayer.GetDuration(),
-                        Timestamp = updatedTimestamp
+                        Timestamp = videoEvent.timeStamp
                     },
                     ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
                 );

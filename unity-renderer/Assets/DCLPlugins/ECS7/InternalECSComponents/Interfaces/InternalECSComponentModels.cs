@@ -62,12 +62,6 @@ namespace DCL.ECS7.InternalComponents
         public bool removed = false;
     }
 
-    public class InternalVideoEvent : InternalComponent
-    {
-        public VideoState videoState;
-        public uint timeStamp = 0;
-    }
-
     public class InternalColliders : InternalComponent
     {
         public KeyValueSet<Collider, uint> colliders = new KeyValueSet<Collider, uint>();

@@ -70,7 +70,6 @@ public class ECSSystemsController : IDisposable
         videoPlayerSystem = new ECSVideoPlayerSystem(
             context.internalEcsComponents.videoPlayerComponent,
             context.internalEcsComponents.videoMaterialComponent,
-            context.internalEcsComponents.videoEventComponent,
             context.componentWriter);
 
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),

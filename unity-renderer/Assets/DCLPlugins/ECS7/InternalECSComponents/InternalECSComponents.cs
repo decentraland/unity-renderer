@@ -18,7 +18,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
     public IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent { get; }
     public IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent { get; }
-    public IInternalECSComponent<InternalVideoEvent> videoEventComponent { get; }
     public IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     public IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
     public IInternalECSComponent<InternalColliders> customLayerColliderComponent { get; }
@@ -133,14 +132,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             markAsDirtyComponents,
             crdtExecutors);
 
-        videoEventComponent = new InternalECSComponent<InternalVideoEvent>(
-            InternalECSComponentsId.VIDEO_EVENTS,
-            componentsManager,
-            componentsFactory,
-            null,
-            markAsDirtyComponents,
-            crdtExecutors);
-
         videoMaterialComponent = new InternalECSComponent<InternalVideoMaterial>(
             InternalECSComponentsId.VIDEO_MATERIAL,
             componentsManager,
@@ -216,7 +207,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         renderersComponent.Dispose();
         inputEventResultsComponent.Dispose();
         videoPlayerComponent.Dispose();
-        videoEventComponent.Dispose();
         videoMaterialComponent.Dispose();
         visibilityComponent.Dispose();
         uiContainerComponent.Dispose();

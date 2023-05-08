@@ -25,17 +25,14 @@ namespace DCL.ECSComponents
         internal bool isValidUrl = false;
 
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
-        private readonly IInternalECSComponent<InternalVideoEvent> videoEventInternalComponent;
         private bool canVideoBePlayed => isRendererActive && hadUserInteraction && isValidUrl;
 
         public VideoPlayerHandler(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
-            IInternalECSComponent<InternalVideoEvent> videoEventInternalComponent,
             DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen,
             IECSComponentWriter componentWriter)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
-            this.videoEventInternalComponent = videoEventInternalComponent;
             this.loadingScreen = loadingScreen;
             this.componentWriter = componentWriter;
         }
