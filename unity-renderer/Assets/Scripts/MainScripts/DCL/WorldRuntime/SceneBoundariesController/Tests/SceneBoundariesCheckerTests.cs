@@ -29,16 +29,17 @@ namespace SceneBoundariesCheckerTests
             scene.isPersistent = false;
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
             TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
-            
+
         }
 
+        [UnityTearDown]
         protected override IEnumerator TearDown()
         {
             uuidEventsPlugin.Dispose();
             coreComponentsPlugin.Dispose();
             yield return base.TearDown();
         }
-        
+
         protected override ServiceLocator InitializeServiceLocator()
         {
             ServiceLocator result = base.InitializeServiceLocator();
@@ -57,7 +58,7 @@ namespace SceneBoundariesCheckerTests
 
         [UnityTest]
         public IEnumerator EntitiesAreBeingCorrectlyRegistered() { yield return SBC_Asserts.EntitiesAreBeingCorrectlyRegistered(scene); }
-        
+
         [UnityTest]
         public IEnumerator EntityIsEvaluatedOnReparenting() { yield return SBC_Asserts.EntityIsEvaluatedOnReparenting(scene); }
 
@@ -69,22 +70,22 @@ namespace SceneBoundariesCheckerTests
 
         [UnityTest]
         public IEnumerator GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds(scene); }
-        
+
         [UnityTest]
         public IEnumerator GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries() { yield return SBC_Asserts.GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries(scene); }
 
         [UnityTest]
         public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
-        
+
         [UnityTest]
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
-        
+
         [UnityTest]
         public IEnumerator PShapeIsEvaluatedAfterCorrectTransformAttachment() { yield return SBC_Asserts.PShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
-        
+
         [UnityTest]
         public IEnumerator GLTFShapeIsEvaluatedAfterCorrectTransformAttachment() { yield return SBC_Asserts.GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
-        
+
         [UnityTest]
         public IEnumerator PShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene); }
 
@@ -93,7 +94,7 @@ namespace SceneBoundariesCheckerTests
 
         [UnityTest]
         public IEnumerator PShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
-        
+
         [UnityTest]
         public IEnumerator OnPointerEventCollidersAreResetWhenReenteringBounds() { yield return SBC_Asserts.OnPointerEventCollidersAreResetWhenReenteringBounds(scene); }
 
