@@ -8,7 +8,8 @@ public enum UnequipWearableSource
 {
     Wearable,
     InfoCard,
-    AvatarSlot
+    AvatarSlot,
+    None
 }
 
 public enum SlotType

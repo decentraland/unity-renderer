@@ -59,8 +59,8 @@ namespace DCL.Backpack
         public void SendWearableFilter(bool onlyNft) =>
             analytics.SendAnalytic(WEARABLE_FILTER, new () {{"only_nft", onlyNft.ToString()}});
 
-        public void SendWearableSortedBy(string sortMethod) =>
-            analytics.SendAnalytic(WEARABLE_SORTED_BY, new () {{"sorted_by", sortMethod}});
+        public void SendWearableSortedBy(NftOrderByOperation order, bool asc) =>
+            analytics.SendAnalytic(WEARABLE_SORTED_BY, new () { { "sorted_by", CalculateSorting(order, asc) } });
 
         public void SendWearablePreviewRotated() =>
             analytics.SendAnalytic(WEARABLE_PREVIEW_ROTATED, null);
@@ -68,33 +68,15 @@ namespace DCL.Backpack
         public void SendWearableCreatorGoTo(string creatorName) =>
             analytics.SendAnalytic(WEARABLE_CREATOR_GO_TO, new () {{"creator_name", creatorName}});
 
-        public void SendNewEquippedWearablesAnalytics(List<string> oldWearables, List<string> newWearables)
-        {
-            foreach (string newWearable in newWearables)
-            {
-                if (oldWearables.Contains(newWearable))
-                    continue;
-
-                wearablesCatalogService.WearablesCatalog.TryGetValue(newWearable, out WearableItem newEquippedEmote);
-                if (newEquippedEmote != null && !newEquippedEmote.IsEmote())
-                    SendEquipWearableAnalytic(newEquippedEmote, EquipWearableSource.Wearable);
-            }
-        }
-
         public void SendAvatarEditSuccessNuxAnalytic() =>
             newUserExperienceAnalytics.AvatarEditSuccessNux();
 
-        public void SendEquipWearableAnalytic(WearableItem equippedWearable, EquipWearableSource source)
+        public void SendEquipWearableAnalytic(string category, string rarity, EquipWearableSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
-                { "name", equippedWearable.GetName() },
-                { "rarity", equippedWearable.rarity },
-                { "category", equippedWearable.data.category },
-                { "linked_wearable", equippedWearable.IsFromThirdPartyCollection.ToString() },
-                { "third_party_collection_id", equippedWearable.ThirdPartyCollectionId },
-                { "is_in_l2", equippedWearable.IsInL2().ToString() },
-                { "smart_item", equippedWearable.IsSmart().ToString() },
+                { "rarity", rarity },
+                { "category", category },
             };
 
             data.Add("source", source.ToString());
@@ -102,17 +84,12 @@ namespace DCL.Backpack
             analytics.SendAnalytic(EQUIP_WEARABLE_METRIC, data);
         }
 
-        public void SendUnequippedWearableAnalytic(WearableItem unequippedWearable, UnequipWearableSource source)
+        public void SendUnequippedWearableAnalytic(string category, string rarity, UnequipWearableSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
-                { "name", unequippedWearable.GetName() },
-                { "rarity", unequippedWearable.rarity },
-                { "category", unequippedWearable.data.category },
-                { "linked_wearable", unequippedWearable.IsFromThirdPartyCollection.ToString() },
-                { "third_party_collection_id", unequippedWearable.ThirdPartyCollectionId },
-                { "is_in_l2", unequippedWearable.IsInL2().ToString() },
-                { "smart_item", unequippedWearable.IsSmart().ToString() },
+                { "rarity", rarity },
+                { "category", category },
             };
             data.Add("source", source.ToString());
 
@@ -121,5 +98,20 @@ namespace DCL.Backpack
 
         public void SendAvatarColorPick() =>
             analytics.SendAnalytic(AVATAR_COLOR_PICK, null);
+
+
+        private string CalculateSorting(NftOrderByOperation order, bool asc)
+        {
+            if (order == NftOrderByOperation.Date)
+                return asc ? "newest" : "oldest";
+
+            if (order == NftOrderByOperation.Name)
+                return asc ? "nameaz" : "nameza";
+
+            if (order == NftOrderByOperation.Rarity)
+                return asc ? "rarest" : "less_rare";
+
+            return "";
+        }
     }
 }

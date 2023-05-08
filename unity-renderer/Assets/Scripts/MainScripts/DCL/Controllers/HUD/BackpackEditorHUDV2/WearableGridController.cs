@@ -37,8 +37,8 @@ namespace DCL.Backpack
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
         private NftCollectionType collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
 
-        public event Action<string> OnWearableEquipped;
-        public event Action<string> OnWearableUnequipped;
+        public event Action<string, EquipWearableSource> OnWearableEquipped;
+        public event Action<string, UnequipWearableSource> OnWearableUnequipped;
 
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
@@ -264,11 +264,11 @@ namespace DCL.Backpack
             });
         }
 
-        private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem) =>
-            OnWearableUnequipped?.Invoke(wearableGridItem.WearableId);
+        private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem, UnequipWearableSource unequipSource) =>
+            OnWearableUnequipped?.Invoke(wearableGridItem.WearableId, unequipSource);
 
-        private void HandleWearableEquipped(WearableGridItemModel wearableGridItem) =>
-            OnWearableEquipped?.Invoke(wearableGridItem.WearableId);
+        private void HandleWearableEquipped(WearableGridItemModel wearableGridItem, EquipWearableSource equipSource) =>
+            OnWearableEquipped?.Invoke(wearableGridItem.WearableId, equipSource);
 
         private void FilterWearablesFromReferencePath(string referencePath)
         {
@@ -321,6 +321,7 @@ namespace DCL.Backpack
         {
             wearableSorting = newSorting;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            backpackAnalyticsController.SendWearableSortedBy(newSorting.type, newSorting.directionAscendent);
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
         }
 
@@ -328,6 +329,7 @@ namespace DCL.Backpack
         {
             nameFilter = newText;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            backpackAnalyticsController.SendWearableSearch(newText);
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
         }
 
@@ -335,6 +337,7 @@ namespace DCL.Backpack
         {
             collectionTypeMask = collectionType;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
+            backpackAnalyticsController.SendWearableFilter(!collectionType.Equals(NftCollectionType.Base));
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
         }
 

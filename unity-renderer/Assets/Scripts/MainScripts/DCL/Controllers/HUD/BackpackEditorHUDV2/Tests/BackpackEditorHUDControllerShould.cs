@@ -120,9 +120,9 @@ namespace DCL.Backpack
         {
             // Arrange
             userProfile.avatar.wearables.Clear();
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
 
             view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
                 Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
@@ -143,10 +143,9 @@ namespace DCL.Backpack
         {
             // Arrange
             EquipAndSaveCorrectly();
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
-
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
 
             view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
                 Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),

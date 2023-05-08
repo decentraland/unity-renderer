@@ -242,7 +242,6 @@ namespace DCL.Backpack
 
             avatarModel.emotes = emoteEntries;
 
-            backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
             dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
 
             userProfileBridge.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, dataStore.common.isSignUpFlow.Get());
@@ -257,7 +256,7 @@ namespace DCL.Backpack
             avatarIsDirty = false;
         }
 
-        private void EquipWearable(string wearableId)
+        private void EquipWearable(string wearableId, EquipWearableSource source)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -268,7 +267,7 @@ namespace DCL.Backpack
             WearableItem wearableToBeReplaced = model.wearables.Values.FirstOrDefault(item => item.data.category == wearable.data.category);
 
             if (wearableToBeReplaced != null)
-                UnEquipWearable(wearableToBeReplaced.id);
+                UnEquipWearable(wearableToBeReplaced.id, UnequipWearableSource.None);
 
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
@@ -277,12 +276,16 @@ namespace DCL.Backpack
             wearableGridController.Equip(wearableId);
 
             avatarIsDirty = true;
+            backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
-        private void UnEquipWearable(string wearableId)
+        private void UnEquipWearable(string wearableId, UnequipWearableSource source)
         {
+            if(source != UnequipWearableSource.None)
+                backpackAnalyticsController.SendUnequippedWearableAnalytic(model.wearables[wearableId].data.category, model.wearables[wearableId].rarity, source);
+
             avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
