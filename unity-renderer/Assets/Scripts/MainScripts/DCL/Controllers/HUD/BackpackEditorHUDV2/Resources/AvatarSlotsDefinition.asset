@@ -15,7 +15,7 @@ MonoBehaviour:
   slotsDefinition:
   - key: body
     value:
-    - bodyshape
+    - body_shape
     - hair
     - eyebrows
     - eyes

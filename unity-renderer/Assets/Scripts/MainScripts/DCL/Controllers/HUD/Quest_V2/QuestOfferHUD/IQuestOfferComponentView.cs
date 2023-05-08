@@ -1,6 +1,6 @@
 using System;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public interface IQuestOfferComponentView
     {

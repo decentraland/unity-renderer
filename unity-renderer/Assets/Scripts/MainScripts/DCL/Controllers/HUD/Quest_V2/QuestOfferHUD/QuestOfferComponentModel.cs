@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     [Serializable]
     public record QuestOfferComponentModel

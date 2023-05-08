@@ -74,7 +74,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
 
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
-                FriendsController.i,
+                Environment.i.serviceLocator.Get<IFriendsController>(),
                 NotificationScriptableObjects.pendingFriendRequests,
                 NotificationScriptableObjects.newApprovedFriends,
                 DataStore.i));

@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public class QuestStepComponentViewShould
     {
