@@ -121,11 +121,13 @@ namespace DCL.Models
                 return;
             }
 
+            await UniTask.WaitForFixedUpdate();
+
+            if (meshRootGameObjectValue == null) return;
+
             lastBoundsCalculationPosition = meshRootGameObjectValue.transform.position;
             lastBoundsCalculationScale = meshRootGameObjectValue.transform.lossyScale;
             lastBoundsCalculationRotation = meshRootGameObjectValue.transform.rotation;
-
-            await UniTask.WaitForFixedUpdate();
 
             mergedBoundsValue = MeshesInfoUtils.BuildMergedBounds(renderers, colliders);
         }

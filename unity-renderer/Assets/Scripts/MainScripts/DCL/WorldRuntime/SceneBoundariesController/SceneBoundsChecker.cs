@@ -29,7 +29,7 @@ namespace DCL.Controllers
         private bool isNerfed;
         private bool isInsistent;
         private bool isEnabled;
-        private readonly CancellationTokenSource cancellationTokenSource = new ();
+        private CancellationTokenSource cancellationTokenSource = new ();
 
         public void Initialize()
         {
@@ -59,8 +59,6 @@ namespace DCL.Controllers
 
         private async UniTask CheckEntitiesAsync(CancellationToken cancellationToken)
         {
-            isEnabled = true;
-
             try
             {
                 while (true)
@@ -140,10 +138,6 @@ namespace DCL.Controllers
                 if (e is not OperationCanceledException)
                     throw;
             }
-            finally
-            {
-                isEnabled = false;
-            }
         }
 
         private bool IsTimeBudgetDepleted(float timeBudget) =>
@@ -160,7 +154,9 @@ namespace DCL.Controllers
             if (isEnabled)
                 return;
 
+            cancellationTokenSource = new CancellationTokenSource();
             lastCheckTime = Time.realtimeSinceStartup;
+            isEnabled = true;
             CheckEntitiesAsync(cancellationTokenSource.Token).Forget();
         }
 
@@ -170,6 +166,9 @@ namespace DCL.Controllers
                 return;
 
             cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+
+            isEnabled = false;
         }
 
         public void Dispose()
