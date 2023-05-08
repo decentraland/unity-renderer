@@ -973,7 +973,7 @@ public class AvatarEditorHUDController : IHUD
                 collectionsAlreadyLoaded = true;
                 LoadUserThirdPartyWearables();
             })
-            .Catch((error) => Debug.LogError(error));
+            .Catch(Debug.LogError);
     }
 
     private void LoadUserThirdPartyWearables()
