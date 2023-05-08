@@ -144,7 +144,10 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                if(!Application.isEditor) Debug.LogException(e);
+                if (Application.isEditor)
+                    Debug.LogWarning(e);
+                else
+                    Debug.LogException(e);
             }
         }
 
