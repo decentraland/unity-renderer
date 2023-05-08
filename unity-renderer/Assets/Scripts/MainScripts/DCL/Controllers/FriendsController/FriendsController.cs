@@ -285,7 +285,8 @@ namespace DCL.Social.Friends
 
         public async UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default)
         {
-            if (useSocialApiBridge) { return friendsSortedByName.Values.Skip(skip).Take(limit).Select(friend => friend.userId).ToArray(); }
+            if (useSocialApiBridge)
+                return friendsSortedByName.Values.Skip(skip).Take(limit).Select(friend => friend.userId).ToArray();
 
             var payload = await apiBridge.GetFriendsAsync(limit, skip, cancellationToken);
             await UniTask.SwitchToMainThread();
