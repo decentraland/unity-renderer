@@ -50,7 +50,8 @@ public class AddressablesValidationTests
 
                 foreach (KeyValuePair<string, string> searchString in new Dictionary<string, string>(searchStrings))
                 {
-                    if (line.Contains("const") && line.Contains("string") && line.Contains(searchString.Value) && searchStrings.ContainsKey(searchString.Key))
+                    if (line.Contains("const") && line.Contains("string") && line.Contains(searchString.Value)
+                        && searchStrings.ContainsKey(searchString.Key))
                         searchStrings.Remove(searchString.Key);
 
                     if (line.Contains("Load") && line.Contains(searchString.Value))
@@ -59,8 +60,6 @@ public class AddressablesValidationTests
 
                         if (searchStrings.ContainsKey(searchString.Key))
                             searchStrings.Remove(searchString.Key);
-
-                        break;
                     }
                 }
             }
