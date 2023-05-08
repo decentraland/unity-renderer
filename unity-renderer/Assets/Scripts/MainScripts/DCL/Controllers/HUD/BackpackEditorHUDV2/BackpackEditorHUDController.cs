@@ -1,7 +1,6 @@
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -31,6 +30,7 @@ namespace DCL.Backpack
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
         private readonly BackpackEditorHUDModel model = new ();
+        private readonly BackpackEditorHUDModel preEquipModel = new ();
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -64,6 +64,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
 
+            wearableGridController.OnWearableSelected += SelectWearable;
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
@@ -73,7 +74,7 @@ namespace DCL.Backpack
             view.SetColorPickerVisibility(false);
             view.OnColorChanged += OnWearableColorChanged;
 
-            SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
+            SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
         }
 
         public void Dispose()
@@ -86,6 +87,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
             backpackEmotesSectionController.Dispose();
 
+            wearableGridController.OnWearableSelected -= SelectWearable;
             wearableGridController.OnWearableEquipped -= EquipWearable;
             wearableGridController.OnWearableUnequipped -= UnEquipWearable;
             wearableGridController.Dispose();
@@ -98,7 +100,7 @@ namespace DCL.Backpack
         }
 
         private void OnBackpackVisibleChanged(bool current, bool _) =>
-            SetVisibility(current);
+            SetVisibility(current, saveAvatar: avatarIsDirty);
 
         private void SetVisibility(bool visible, bool saveAvatar = true)
         {
@@ -183,6 +185,8 @@ namespace DCL.Backpack
                 model.wearables.Add(wearable.id, wearable);
                 avatarSlotsHUDController.Equip(wearable, userProfile.avatar.bodyShape);
             }
+
+            view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
         private void UpdateAvatarPreview()
@@ -257,6 +261,30 @@ namespace DCL.Backpack
             avatarIsDirty = false;
         }
 
+        private void SelectWearable(string wearableId)
+        {
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            {
+                Debug.LogError($"Cannot pre-visualize wearable {wearableId}");
+                return;
+            }
+
+            preEquipModel.Update(model);
+
+            foreach (var w in preEquipModel.wearables.Values)
+            {
+                if (w.data.category != wearable.data.category)
+                    continue;
+
+                preEquipModel.wearables.Remove(w.id);
+                break;
+            }
+
+            preEquipModel.wearables.Add(wearableId, wearable);
+
+            view.UpdateAvatarPreview(preEquipModel.ToAvatarModel());
+        }
+
         private void EquipWearable(string wearableId)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
@@ -265,10 +293,14 @@ namespace DCL.Backpack
                 return;
             }
 
-            WearableItem wearableToBeReplaced = model.wearables.Values.FirstOrDefault(item => item.data.category == wearable.data.category);
+            foreach (var w in model.wearables.Values)
+            {
+                if (w.data.category != wearable.data.category)
+                    continue;
 
-            if (wearableToBeReplaced != null)
-                UnEquipWearable(wearableToBeReplaced.id);
+                UnEquipWearable(w.id);
+                break;
+            }
 
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
