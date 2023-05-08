@@ -49,5 +49,5 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: 4a803782af3694d97b17f31e269c04d1, type: 3}
   - key: emote
     value: {fileID: 21300000, guid: 05bc7d6b12857fb4b9b7634bf2a4f440, type: 3}
-  - key: bodyshape
+  - key: body_shape
     value: {fileID: 21300000, guid: 7df132fb4eb304d619c7dd33841261a1, type: 3}

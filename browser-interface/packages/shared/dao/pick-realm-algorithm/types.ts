@@ -93,28 +93,28 @@ export type AllPeersScoreParameters = Required<AllPeersScoreConfig['config']> & 
 }
 
 export type VersionCatalystConfig = {
-  type: AlgorithmLinkTypes.VERSION_CATALYST,
+  type: AlgorithmLinkTypes.VERSION_CATALYST
   config?: VersionCatalystParameters
 }
 
 /**
  * An object containing the minimum versions required
  * to be selected.
- * 
+ *
  * @property {string} [content] - Minimum content version required
  * @property {string} [lambdas] - Minimum lambdas version required
  * @property {string} [comms] - Minimum comms protocol version required
  * @property {string} [bff] - Minimum bff version required
  */
 export type VersionCatalystParameters = {
-  content?: string,
-  lambdas?: string,
-  comms?: string,
+  content?: string
+  lambdas?: string
+  comms?: string
   bff?: string
 }
 
 export type ForceCatalystConfig = {
-  type: AlgorithmLinkTypes.FORCE_CATALYST,
+  type: AlgorithmLinkTypes.FORCE_CATALYST
   config: ForceCatalystParameters
 }
 

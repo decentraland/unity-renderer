@@ -67,7 +67,7 @@ namespace DCL.ECS7.InternalComponents
         }
 
         public static void SetPhysicsColliders(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
-            IParcelScene scene, IDCLEntity entity, KeyValueSet<Collider, int> newCollidersCollection)
+            IParcelScene scene, IDCLEntity entity, KeyValueSet<Collider, uint> newCollidersCollection)
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.physicsColliders = newCollidersCollection;
@@ -77,7 +77,7 @@ namespace DCL.ECS7.InternalComponents
         }
 
         public static void SetPointerColliders(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
-            IParcelScene scene, IDCLEntity entity, KeyValueSet<Collider, int> newCollidersCollection)
+            IParcelScene scene, IDCLEntity entity, KeyValueSet<Collider, uint> newCollidersCollection)
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.pointerColliders = newCollidersCollection;

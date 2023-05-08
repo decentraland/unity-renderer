@@ -15,7 +15,7 @@ describe('RestrictedActions tests', () => {
   beforeEach(() => {
     sinon.reset()
     sinon.restore()
-    setUnityInstance({ Teleport: () => {}, TriggerSelfUserExpression: () => {} } as any)
+    setUnityInstance({ Teleport: () => { }, TriggerSelfUserExpression: () => { } } as any)
     buildStore()
   })
 
@@ -147,7 +147,12 @@ describe('RestrictedActions tests', () => {
       },
       sendBatch() {
         throw new Error('not implemented')
-      }
+      },
+      hasMainCrdt: false,
+      initialEntitiesTick0: Uint8Array.of(),
+      readFile(_path) {
+        throw new Error('not implemented')
+      },
     }
   }
 

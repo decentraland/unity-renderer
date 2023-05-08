@@ -9,6 +9,7 @@ using DCL.Models;
 using ECSSystems.PointerInputSystem;
 using NSubstitute;
 using NUnit.Framework;
+using RPC.Context;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace Tests
         private IECSInteractionHoverCanvas interactionHoverCanvas;
         private ECSComponentsManager componentsManager;
         private InternalECSComponents internalComponents;
+        private RestrictedActionsContext restrictedActionsRpcContext;
 
         private Collider colliderEntity1;
         private Collider colliderEntity2;
@@ -58,20 +60,17 @@ namespace Tests
             interactionHoverCanvas = Substitute.For<IECSInteractionHoverCanvas>();
             interactionHoverCanvas.tooltipsCount.Returns(MAX_TOOLTIPS);
 
+            restrictedActionsRpcContext = new RestrictedActionsContext();
+            restrictedActionsRpcContext.LastFrameWithInput = -1;
+
             systemUpdate = ECSPointerInputSystem.CreateSystem(
                 internalComponents.onPointerColliderComponent,
                 internalComponents.inputEventResultsComponent,
                 internalComponents.PointerEventsComponent,
                 interactionHoverCanvas,
                 worldState,
-                dataStoreEcs7);
-
-            // systemUpdate = () =>
-            // {
-            //     internalComponents.MarkDirtyComponentsUpdate();
-            //     inputSystemUpdate();
-            //     internalComponents.ResetDirtyComponentsUpdate();
-            // };
+                dataStoreEcs7,
+                restrictedActionsRpcContext);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             inputEventResultsComponent = internalComponents.inputEventResultsComponent;
@@ -89,10 +88,10 @@ namespace Tests
             colliderEntity2 = colliderGO2.AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity1,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { colliderEntity1, 0 } } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity1, 0 } } });
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity2,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { colliderEntity2, 0 } } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity2, 0 } } });
         }
 
         [TearDown]
@@ -574,7 +573,7 @@ namespace Tests
             Collider testEntityCollider = new GameObject("testEntityCollider").AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(newTestScene, testEntity,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { testEntityCollider, 0 } } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { testEntityCollider, 0 } } });
 
             // 2. position collider entity inside scene space
             ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
@@ -678,6 +677,29 @@ namespace Tests
             {
                 Assert.AreEqual(inputActionsWebInterface[i], inputActionsProto[i]);
             }
+        }
+
+        [Test]
+        [TestCase(InputAction.IaAction3, ExpectedResult = true)]
+        [TestCase(InputAction.IaAction4, ExpectedResult = true)]
+        [TestCase(InputAction.IaAction5, ExpectedResult = true)]
+        [TestCase(InputAction.IaAction6, ExpectedResult = true)]
+        [TestCase(InputAction.IaPrimary, ExpectedResult = true)]
+        [TestCase(InputAction.IaSecondary, ExpectedResult = true)]
+        [TestCase(InputAction.IaPointer, ExpectedResult = true)]
+        [TestCase(InputAction.IaAny, ExpectedResult = false)]
+        [TestCase(InputAction.IaForward, ExpectedResult = false)]
+        [TestCase(InputAction.IaBackward, ExpectedResult = false)]
+        [TestCase(InputAction.IaRight, ExpectedResult = false)]
+        [TestCase(InputAction.IaLeft, ExpectedResult = false)]
+        [TestCase(InputAction.IaJump, ExpectedResult = false)]
+        [TestCase(InputAction.IaWalk, ExpectedResult = false)]
+        public bool SetCurrentFrameWhenInputActionIsValid(InputAction inputAction)
+        {
+            int currentFrame = Time.frameCount;
+            dataStoreEcs7.inputActionState[(int)inputAction] = true;
+            systemUpdate();
+            return currentFrame == restrictedActionsRpcContext.LastFrameWithInput;
         }
     }
 }

@@ -21,6 +21,7 @@ import { FATAL_ERROR } from 'shared/loading/types'
 import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { notifyStatusThroughChat } from 'shared/chat'
 import { realmToConnectionString } from './resolver'
+import { hookConnectToFixedAdaptersIfNecessary } from './logic'
 
 const logger = createLogger('realm')
 
@@ -42,7 +43,7 @@ export function* bffSaga() {
  * This function binds the given IBff to the kernel and returns the "unbind"
  * function in charge of disconnecting it from kernel.
  */
-async function bindHandlersToAdapter(realm: IRealmAdapter, address: string): Promise<() => Promise<void>> {
+async function bindHandlersToAdapter(realm: IRealmAdapter, _address: string): Promise<() => Promise<void>> {
   realm.events.on('DISCONNECTION', () => {
     store.dispatch(handleRealmDisconnection(realm))
   })
@@ -52,6 +53,7 @@ async function bindHandlersToAdapter(realm: IRealmAdapter, address: string): Pro
     store.dispatch(connectToComms(message))
   })
 
+  hookConnectToFixedAdaptersIfNecessary(realm)
   const realmName = realm.about.configurations?.realmName || realmToConnectionString(realm)
   notifyStatusThroughChat(`Welcome to realm ${realmName}!`)
 
