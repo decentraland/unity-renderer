@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -21,6 +20,7 @@ namespace DCL.Backpack
         void UpdateAvatarPreview(AvatarModel avatarModel);
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
         void SetColorPickerVisibility(bool isActive);
+        void SetColorPickerAsSkinMode(bool isSkinMode);
         void SetColorPickerValue(Color color);
     }
 }

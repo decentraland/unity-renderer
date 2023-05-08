@@ -214,7 +214,7 @@ namespace DCL.Backpack
         [TestCase("hair")]
         [TestCase("eyebrows")]
         [TestCase("facial_hair")]
-        [TestCase("bodyshape")]
+        [TestCase("body_shape")]
         [TestCase("non_existing_category")]
         public void ToggleSlotCorrectly(string slotCategory)
         {
@@ -223,6 +223,7 @@ namespace DCL.Backpack
 
             // Assert
             view.Received(1).SetColorPickerVisibility(true);
+            view.Received(1).SetColorPickerAsSkinMode(slotCategory == "body_shape");
 
             if (slotCategory == "non_existing_category")
             {
@@ -238,7 +239,7 @@ namespace DCL.Backpack
                 case "hair" or "eyebrows" or "facial_hair":
                     view.Received(1).SetColorPickerValue(userProfile.avatar.hairColor);
                     break;
-                case "bodyshape":
+                case "body_shape":
                     view.Received(1).SetColorPickerValue(userProfile.avatar.skinColor);
                     break;
             }

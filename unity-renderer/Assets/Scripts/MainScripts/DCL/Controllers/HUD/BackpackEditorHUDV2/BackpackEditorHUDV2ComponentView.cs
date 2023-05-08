@@ -25,6 +25,7 @@ namespace DCL.Backpack
         [SerializeField] private AvatarSlotsView avatarSlotsView;
         [SerializeField] private ColorPickerComponentView colorPickerComponentView;
         [SerializeField] private ColorPresetsSO colorPresetsSO;
+        [SerializeField] private ColorPresetsSO skinColorPresetsSO;
         [SerializeField] private BackpackFiltersComponentView backpackFiltersComponentView;
 
         public override bool isVisible => gameObject.activeInHierarchy;
@@ -52,7 +53,6 @@ namespace DCL.Backpack
             ConfigureSectionSelector();
             backpackPreviewPanel.Initialize(characterPreviewFactory);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
-            colorPickerComponentView.SetColorList(colorPresetsSO.colors);
         }
 
         private void Update() =>
@@ -149,6 +149,12 @@ namespace DCL.Backpack
 
         public void SetColorPickerVisibility(bool isActive) =>
             colorPickerComponentView.gameObject.SetActive(isActive);
+
+        public void SetColorPickerAsSkinMode(bool isSkinMode)
+        {
+            colorPickerComponentView.SetShowOnlyPresetColors(isSkinMode);
+            colorPickerComponentView.SetColorList(isSkinMode ? skinColorPresetsSO.colors : colorPresetsSO.colors);
+        }
 
         public void SetColorPickerValue(Color color)
         {
