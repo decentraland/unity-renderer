@@ -11,7 +11,6 @@ namespace DCL.Controllers
     {
         private const float NERFED_TIME_BUDGET = 0.5f / 1000f;
         private const float RECHECK_BUDGET = 0.5f;
-        public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
         public bool enabled => isEnabled;
         public float timeBetweenChecks { get; set; } = RECHECK_BUDGET;
         public int entitiesToCheckCount => entitiesToCheck.Count;
@@ -30,7 +29,7 @@ namespace DCL.Controllers
         private bool isNerfed;
         private bool isInsistent;
         private bool isEnabled;
-        private CancellationTokenSource cancellationTokenSource = new ();
+        private readonly CancellationTokenSource cancellationTokenSource = new ();
 
         public void Initialize()
         {
@@ -52,17 +51,12 @@ namespace DCL.Controllers
             Restart();
         }
 
-        public ISceneBoundsFeedbackStyle GetFeedbackStyle()
-        {
-            return feedbackStyle;
-        }
+        public ISceneBoundsFeedbackStyle GetFeedbackStyle() =>
+            feedbackStyle;
 
-        public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
-        {
-            return feedbackStyle.GetOriginalMaterials(meshesInfo);
-        }
+        public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo) =>
+            feedbackStyle.GetOriginalMaterials(meshesInfo);
 
-        // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
         private async UniTask CheckEntitiesAsync(CancellationToken cancellationToken)
         {
             isEnabled = true;
@@ -84,7 +78,7 @@ namespace DCL.Controllers
                     {
                         var timeBudget = NERFED_TIME_BUDGET;
 
-                        void processEntitiesList(HashSet<IDCLEntity> entities)
+                        void ProcessEntitiesList(HashSet<IDCLEntity> entities)
                         {
                             if (IsTimeBudgetDepleted(timeBudget))
                             {
@@ -108,7 +102,7 @@ namespace DCL.Controllers
 
                                 float startTime = Time.realtimeSinceStartup;
 
-                                RunEntityEvaluation(iterator.Current);
+                                RunEntityEvaluation(iterator.Current, false);
                                 checkedEntities.Add(iterator.Current);
 
                                 float finishTime = Time.realtimeSinceStartup;
@@ -124,7 +118,7 @@ namespace DCL.Controllers
                             }
                         }
 
-                        processEntitiesList(entitiesToCheck);
+                        ProcessEntitiesList(entitiesToCheck);
 
                         // As we can't modify the hashset while traversing it, we keep track of the entities that should be removed afterwards
                         using (var iterator = checkedEntities.GetEnumerator())
@@ -152,12 +146,10 @@ namespace DCL.Controllers
             }
         }
 
-        private bool IsTimeBudgetDepleted(float timeBudget)
-        {
-            return isNerfed ? timeBudget <= 0f : messagingManager != null && messagingManager.timeBudgetCounter <= 0f;
-        }
+        private bool IsTimeBudgetDepleted(float timeBudget) =>
+            isNerfed ? timeBudget <= 0f : messagingManager != null && messagingManager.timeBudgetCounter <= 0f;
 
-        public void Restart()
+        private void Restart()
         {
             Stop();
             Start();
@@ -196,9 +188,7 @@ namespace DCL.Controllers
                 return;
 
             if (runPreliminaryEvaluation)
-            {
                 RunPreliminaryEvaluationAsync(entity, isPersistent).Forget();
-            }
             else
                 AddEntity(entity, isPersistent);
         }
@@ -238,16 +228,8 @@ namespace DCL.Controllers
                 SetMeshesAndComponentsInsideBoundariesState(entity, true);
         }
 
-        public bool WasAddedAsPersistent(IDCLEntity entity)
-        {
-            return persistentEntities.Contains(entity);
-        }
-
-        // TODO: When we remove the DCLBuilderEntity class we'll be able to remove this overload
-        public void RunEntityEvaluation(IDCLEntity entity)
-        {
-            RunEntityEvaluation(entity, false);
-        }
+        public bool WasAddedAsPersistent(IDCLEntity entity) =>
+            persistentEntities.Contains(entity);
 
         public void RunEntityEvaluation(IDCLEntity entity, bool onlyOuterBoundsCheck)
         {
@@ -340,16 +322,13 @@ namespace DCL.Controllers
                 return;
 
             entity.UpdateInsideBoundariesStatus(isInsideBoundaries);
-            OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
         }
 
-        private bool HasMesh(IDCLEntity entity)
-        {
-            return entity.meshRootGameObject != null
-                   && (entity.meshesInfo.colliders.Count > 0
-                       || (entity.meshesInfo.renderers != null
-                           && entity.meshesInfo.renderers.Length > 0));
-        }
+        private bool HasMesh(IDCLEntity entity) =>
+            entity.meshRootGameObject != null
+            && (entity.meshesInfo.colliders.Count > 0
+                || (entity.meshesInfo.renderers != null
+                    && entity.meshesInfo.renderers.Length > 0));
 
         public bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity)
         {
@@ -362,12 +341,12 @@ namespace DCL.Controllers
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);
 
             // 2nd check (submeshes & colliders AABB)
-            if (!isInsideBoundaries) { isInsideBoundaries = AreSubmeshesInsideBoundaries(entity) && AreCollidersInsideBoundaries(entity); }
+            if (!isInsideBoundaries) { isInsideBoundaries = AreSubMeshesInsideBoundaries(entity) && AreCollidersInsideBoundaries(entity); }
 
             return isInsideBoundaries;
         }
 
-        private bool AreSubmeshesInsideBoundaries(IDCLEntity entity)
+        private static bool AreSubMeshesInsideBoundaries(IDCLEntity entity)
         {
             for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
             {
