@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using DCL.Browser;
+﻿using DCL.Browser;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
@@ -197,19 +196,6 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void EquipBodyShapeCorrectly()
-        {
-            // Arrange
-            var testUserProfileModel = GetTestUserProfileModel();
-
-            // Act
-            userProfile.UpdateData(testUserProfileModel);
-
-            // Assert
-            backpackEmotesSectionController.Received(1).SetEquippedBodyShape(testUserProfileModel.avatar.bodyShape);
-        }
-
-        [Test]
         [TestCase("eyes")]
         [TestCase("hair")]
         [TestCase("eyebrows")]
@@ -242,6 +228,55 @@ namespace DCL.Backpack
                     view.Received(1).SetColorPickerValue(userProfile.avatar.skinColor);
                     break;
             }
+        }
+
+        [Test]
+        public void EquipBodyShapeWhenProfileUpdates()
+        {
+            const string BODY_SHAPE_ID = WearableLiterals.BodyShapes.FEMALE;
+
+            // Arrange
+            var testUserProfileModel = GetTestUserProfileModel();
+
+            // Act
+            userProfile.UpdateData(testUserProfileModel);
+
+            // Assert
+            Assert.IsFalse(userProfile.avatar.wearables.Contains(BODY_SHAPE_ID));
+            Assert.IsTrue(dataStore.backpackV2.previewEquippedWearables.Contains(BODY_SHAPE_ID));
+            backpackEmotesSectionController.Received(1).SetEquippedBodyShape(BODY_SHAPE_ID);
+            avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
+                Arg.Is<WearableItem>(w => w.id == BODY_SHAPE_ID),
+                BODY_SHAPE_ID);
+        }
+
+        [TestCase(WearableLiterals.BodyShapes.FEMALE)]
+        [TestCase(WearableLiterals.BodyShapes.MALE)]
+        public void EquipBodyShapeFromGrid(string bodyShapeId)
+        {
+            userProfile.avatar.wearables.Clear();
+            view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
+                Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
+                Arg.Any<Action>());
+
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel
+            {
+                WearableId = bodyShapeId,
+            });
+
+            Assert.IsFalse(userProfile.avatar.wearables.Contains(bodyShapeId));
+            Assert.IsTrue(dataStore.backpackV2.previewEquippedWearables.Contains(bodyShapeId));
+            backpackEmotesSectionController.Received(1).SetEquippedBodyShape(bodyShapeId);
+            avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
+                Arg.Is<WearableItem>(w => w.id == bodyShapeId),
+                bodyShapeId);
+        }
+
+        [Test]
+        public void ReplaceBodyShape()
+        {
+            EquipBodyShapeFromGrid(WearableLiterals.BodyShapes.FEMALE);
+            EquipBodyShapeFromGrid(WearableLiterals.BodyShapes.MALE);
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>
