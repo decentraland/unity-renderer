@@ -181,7 +181,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 #if UNITY_EDITOR
     public static T Create<T>(string resourceName) where T: BaseComponentView
     {
-        string[] guid = AssetDatabase.FindAssets(resourceName + $" t:{typeof(T)}");
+        string[] guid = AssetDatabase.FindAssets(resourceName + " t:GameObject", new[] { "Assets/UIComponents/Prefabs" });
 
         T buttonComponentView = Instantiate(
             AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid[0])))
