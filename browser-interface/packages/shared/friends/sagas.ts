@@ -283,6 +283,7 @@ async function handleIncomingFriendshipUpdateStatus(
   await ensureFriendProfile(userId)
 
   // add to friendRequests & update renderer
+  // TODO: add feature flag
   await UpdateFriendshipAsPromise(action, userId, true, messageBody)
 }
 
@@ -317,6 +318,7 @@ function* configureMatrixClient(action: SetMatrixClient) {
           if (!isAddedToCatalog(store.getState(), userId)) {
             await ensureFriendProfile(userId)
           }
+          // TODO: add feature flag
           getUnityInstance().AddFriends({
             friends: [userId],
             totalFriends: getTotalFriends(store.getState())
@@ -428,6 +430,7 @@ function* configureMatrixClient(action: SetMatrixClient) {
     }
   })
 
+  // TODO: add feature flag
   client.onFriendshipRequest((socialId, messageBody) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.REQUESTED_FROM, socialId, messageBody).catch((error) => {
       const message = 'Failed while processing friendship request'
@@ -441,17 +444,21 @@ function* configureMatrixClient(action: SetMatrixClient) {
     })
   )
 
+  // TODO: add feature flag
   client.onFriendshipRequestCancellation((socialId) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.CANCELED, socialId)
   )
 
+  // TODO: add feature flag
   client.onFriendshipRequestApproval(async (socialId) => {
     await handleIncomingFriendshipUpdateStatus(FriendshipAction.APPROVED, socialId)
     updateUserStatus(client, socialId)
   })
 
+  // TODO: add feature flag
   client.onFriendshipDeletion((socialId) => handleIncomingFriendshipUpdateStatus(FriendshipAction.DELETED, socialId))
 
+  // TODO: add feature flag
   client.onFriendshipRequestRejection((socialId) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.REJECTED, socialId)
   )
@@ -556,6 +563,7 @@ function* initializePrivateMessaging() {
 
   yield put(setMatrixClient(client))
 }
+
 function getPrivateMessagingIdentityInfo(state: RootState) {
   return {
     synapseUrl: getSynapseUrl(state),
@@ -644,11 +652,14 @@ function* refreshFriends() {
 
     let token = client.getAccessToken()
 
+    // TODO: add feature flag
     if (token) {
       getUnityInstance().InitializeMatrix(token)
     }
 
+    // TODO: add feature flag
     getUnityInstance().InitializeFriends(initFriendsMessage)
+    // TODO: add feature flag
     getUnityInstance().InitializeChat(initChatMessage)
     const { lastStatusOfFriends, numberOfFriendRequests, coolDownOfFriendRequests } = (yield select(
       getFriendStatusInfo
@@ -1338,9 +1349,11 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           }
 
           // Send message to renderer via rpc
+          // TODO: add feature flag
           yield apply(friendRequestModule, friendRequestModule.approveFriendRequest, [approveFriendRequest])
 
           // Update notification badges
+          // TODO: add feature flag
           const conversationId = yield call(async () => await conversationIdPromise)
           const unreadMessages = client.getConversationUnreadMessages(conversationId).length
           getUnityInstance().UpdateUserUnseenMessages({
@@ -1349,6 +1362,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           })
 
           // Update notification badges
+          // TODO: add feature flag
           const friends = yield call(async () => await friendsPromise)
           const totalUnseenMessages = getTotalUnseenMessages(client, getUserIdFromMatrix(ownId), friends)
           getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
@@ -1395,6 +1409,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           }
 
           // Send message to renderer via rpc
+          // TODO: add feature flag
           yield call(async () => await friendRequestModule.rejectFriendRequest(rejectFriendRequest))
         }
 
@@ -1426,6 +1441,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           }
 
           // Send message to renderer via rpc
+          // TODO: add feature flag
           yield apply(friendRequestModule, friendRequestModule.cancelFriendRequest, [cancelFriendRequest])
         }
 
@@ -1464,6 +1480,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
             }
 
             // Send messsage to renderer via rpc
+            // TODO: add feature flag
             yield apply(friendRequestModule, friendRequestModule.receiveFriendRequest, [receiveFriendRequest])
           }
         }
@@ -1503,7 +1520,9 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
       }
     }
 
+    // TODO: add feature flag
     getUnityInstance().UpdateTotalFriendRequests(updateTotalFriendRequestsPayload)
+    // TODO: add feature flag
     getUnityInstance().UpdateTotalFriends({ totalFriends })
 
     if (newState) {
@@ -1520,6 +1539,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
       // + The new friend request flow is disabled
       // + The new friend request flow is enabled and the action is an incoming/outgoing delete
       if (!newFriendRequestFlow || (newFriendRequestFlow && action === FriendshipAction.DELETED)) {
+        // TODO: add feature flag
         getUnityInstance().UpdateFriendshipStatus(payload)
       }
     }
