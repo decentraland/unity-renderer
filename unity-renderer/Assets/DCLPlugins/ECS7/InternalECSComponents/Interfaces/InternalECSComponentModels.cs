@@ -59,6 +59,7 @@ namespace DCL.ECS7.InternalComponents
 
         public WebVideoPlayer videoPlayer = null;
         public IList<MaterialAssigned> assignedMaterials;
+        public bool removed = false;
     }
 
     public class InternalVideoEvent : InternalComponent

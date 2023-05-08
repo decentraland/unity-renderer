@@ -1,7 +1,6 @@
 using DCL.Components;
 using DCL.Components.Video.Plugin;
 using DCL.Controllers;
-using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -59,9 +58,12 @@ namespace DCL.ECSComponents
             Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
             loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
 
-            componentWriter.RemoveComponent(scene, entity, ComponentID.VIDEO_EVENT);
-            videoEventInternalComponent.RemoveFor(scene, entity);
-            videoPlayerInternalComponent.RemoveFor(scene, entity);
+            // ECSVideoPlayerSystem.Update() will run a video events check before the component is removed
+            videoPlayerInternalComponent.RemoveFor(scene, entity, new InternalVideoPlayer()
+            {
+                removed = true
+            });
+
             videoPlayer?.Dispose();
         }
 
@@ -97,12 +99,6 @@ namespace DCL.ECSComponents
             videoPlayer.SetLoop(model.GetLoop());
 
             lastModel = model;
-
-            videoEventInternalComponent.PutFor(scene, entity, new InternalVideoEvent()
-            {
-                timeStamp = 1,
-                videoState = (VideoState)videoPlayer.GetState()
-            });
 
             ConditionsToPlayVideoChanged();
         }
