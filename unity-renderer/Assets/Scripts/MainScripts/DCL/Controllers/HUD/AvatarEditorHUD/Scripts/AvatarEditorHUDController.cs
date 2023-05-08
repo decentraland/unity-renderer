@@ -98,13 +98,13 @@ public class AvatarEditorHUDController : IHUD
         this.userProfileBridge = userProfileBridge;
     }
 
-    public async void Initialize(IAddressableResourceProvider resourceProvider, CancellationToken ct = default, bool bypassUpdateAvatarPreview = false)
+    public async UniTask Initialize(IAddressableResourceProvider resourceProvider, CancellationToken ct = default, bool bypassUpdateAvatarPreview = false)
     {
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
         view = await resourceProvider.Instantiate<AvatarEditorHUDView>(VIEW_PATH, $"_{VIEW_PATH}", cancellationToken: ct);
         view.Initialize(this);
-        
+
 
         view.skinsFeatureContainer.SetActive(true);
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
