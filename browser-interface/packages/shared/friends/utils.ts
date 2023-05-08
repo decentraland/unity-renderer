@@ -187,3 +187,10 @@ export function getAntiSpamLimits(store: RootMetaState): AntiSpamConfig {
 
   return (getFeatureFlagVariantValue(store, 'friend_request_anti_spam_config') as AntiSpamConfig) ?? config
 }
+
+/**
+ * Returns true if the new RPC Social Client is enabled for consuming friends instead of the Kernel implementation
+ */
+export function isUseSocialClientEnabled(state: RootMetaState): boolean {
+  return getFeatureFlagEnabled(state, 'use-social-client')
+}

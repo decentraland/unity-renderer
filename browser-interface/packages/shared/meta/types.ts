@@ -31,6 +31,7 @@ export type FeatureFlagsName =
   | 'users_allowed_to_create_channels' // users who are allowed to create channels
   | 'new_friend_requests' // enables the new friends request flow
   | 'friend_request_anti_spam_config' // json with anti-spam config values
+  | 'use-social-client' // enables the usage of the new RPC social client to consume friends instead of using the kernel implementation
   | 'avatar_lods'
   | 'asset_bundles'
   | 'explorev2'
