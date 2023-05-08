@@ -163,6 +163,7 @@ namespace DCL.Backpack
 
             previewEquippedWearables.Set(userProfile.avatar.wearables);
 
+            UnEquipCurrentBodyShape();
             EquipBodyShape(bodyShape);
 
             model.skinColor = userProfile.avatar.skinColor;
@@ -221,6 +222,8 @@ namespace DCL.Backpack
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
             wearableGridController.Equip(bodyShape.id);
             previewEquippedWearables.Add(bodyShape.id);
+
+            avatarIsDirty = true;
         }
 
         private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
@@ -324,6 +327,8 @@ namespace DCL.Backpack
 
         private void UnEquipCurrentBodyShape()
         {
+            if (model.bodyShape.id == "NOT_LOADED") return;
+
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(model.bodyShape.id, out WearableItem wearable))
             {
                 Debug.LogError($"Cannot unequip body shape {model.bodyShape.id}");
