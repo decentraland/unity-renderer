@@ -98,7 +98,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             loadingCts?.Dispose();
             loadingCts = new CancellationTokenSource();
 
-            cancellationToken = cancellationToken == default
+            cancellationToken = cancellationToken == default(CancellationToken)
                 ? loadingCts.Token
                 : CancellationTokenSource.CreateLinkedTokenSource(loadingCts.Token, cancellationToken).Token;
 
@@ -142,7 +142,10 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                     skinColor = newModel.skinColor
                 }, ct);
             }
-            catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                if(!Application.isEditor) Debug.LogException(e);
+            }
         }
 
         public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed)
