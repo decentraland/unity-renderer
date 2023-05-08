@@ -34,21 +34,22 @@ message AbortQuestResponse {
   bool accepted = 1;
 }
 
+message QuestDefinitionRequest {
+  string quest_id = 1;
+}
+
 message Event {
   string address = 1;
   Action action = 2;
 }
 
 message EventResponse {
-  optional fixed32 event_id = 1;
+  fixed32 event_id = 1;
   bool accepted = 2;
 }
 
 message QuestDefinition {
   repeated Step steps = 1;
-  /// Connections between steps
-  ///
-  /// First position in the tuple is for `from` and second one `to`
   repeated Connection connections = 2;
 }
 
@@ -61,8 +62,6 @@ message Step {
   string id = 1;
   string description = 2;
   repeated Task tasks = 3;
-  /// Allow hooks on every completed step
-  optional string on_complete_hook = 4; // TODO: should we put this here?
 }
 
 message Action {
@@ -72,7 +71,7 @@ message Action {
 
 message Task {
   string id = 1;
-  optional string description = 2;
+  string description = 2;
   repeated Action action_items = 3;
 }
 
@@ -102,6 +101,22 @@ message UserUpdate {
   }
 }
 
+message Quests {
+  repeated QuestInstance quests = 1;
+}
+
+message ProtoQuest {
+  string name = 1;
+  string description = 2;
+  QuestDefinition definition = 3;
+}
+
+message QuestInstance {
+  string instance_id = 1;
+  ProtoQuest quest = 2;
+  QuestState state = 3;
+}
+
 service QuestsService {
   // User actions
   rpc StartQuest(StartQuestRequest) returns (StartQuestResponse) {}
@@ -110,4 +125,8 @@ service QuestsService {
 
   // Listen to changes in quest states and event processing updates
   rpc Subscribe(UserAddress) returns (stream UserUpdate) {}
+
+  // Query quest information
+  rpc GetAllQuests(UserAddress) returns (Quests) {}
+  rpc GetQuestDefinition(QuestDefinitionRequest) returns (ProtoQuest) {}
 }

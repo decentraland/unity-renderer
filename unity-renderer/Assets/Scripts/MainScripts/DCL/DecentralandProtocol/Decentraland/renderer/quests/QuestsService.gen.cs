@@ -20,6 +20,10 @@ public interface IQuestsService<Context>
 
   IUniTaskAsyncEnumerable<UserUpdate> Subscribe(UserAddress request, Context context);
 
+  UniTask<Quests> GetAllQuests(UserAddress request, Context context, CancellationToken ct);
+
+  UniTask<ProtoQuest> GetQuestDefinition(QuestDefinitionRequest request, Context context, CancellationToken ct);
+
 }
 
 public static class QuestsServiceCodeGen
@@ -34,6 +38,8 @@ public static class QuestsServiceCodeGen
     result.definition.Add("AbortQuest", async (payload, context, ct) => { var res = await service.AbortQuest(AbortQuestRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("SendEvent", async (payload, context, ct) => { var res = await service.SendEvent(Event.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.serverStreamDefinition.Add("Subscribe", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<UserUpdate>(service.Subscribe(UserAddress.Parser.ParseFrom(payload), context)); });
+    result.definition.Add("GetAllQuests", async (payload, context, ct) => { var res = await service.GetAllQuests(UserAddress.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("GetQuestDefinition", async (payload, context, ct) => { var res = await service.GetQuestDefinition(QuestDefinitionRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }
