@@ -8,12 +8,13 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Build.AnalyzeRules;
 using UnityEngine;
 
+[Category("EditModeCI")]
+
 public class AddressablesValidationTests
 {
     private const string NO_ISSUES_FOUND = "No issues found";
     private static readonly string[] EXCLUDED_FILE_TYPES = { }; // "shader", "png", "jpg"
 
-    [Category("EditModeCI")]
     [TestCase("Scripts/MainScripts/DCL/Controllers/HUD/NotificationHUD")]
     public void ValidateFolderDoesNotHaveResourcesFolderInside(string folderName)
     {
@@ -27,7 +28,7 @@ public class AddressablesValidationTests
         Assert.IsFalse(hasResourcesFolder, $"{folderName} folder or its sub-folders contain Resources folder");
     }
 
-    [Test] [Category("EditModeCI")]
+    [Test]
     public void ValidateDuplicateBundleDependencies()
     {
         var rule = new CheckBundleDupeDependencies();
@@ -43,7 +44,7 @@ public class AddressablesValidationTests
             message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies in Addressables->Analyze tool"));
     }
 
-    [Test] [Category("EditModeCI")]
+    [Test]
     public void ValidateScenesToAddressableDuplicateDependencies()
     {
         var rule = new CheckSceneDupeDependencies();
@@ -59,8 +60,8 @@ public class AddressablesValidationTests
             message: ComposeAssertMessage(msg, analyzeRule: "Check Scene to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
     }
 
-    [Test] [Category("EditModeCI")]
-    public void ValidateResourcesToAddressableDuplicateDependencies()
+    [TestCase(4.33f)]
+    public void ValidateResourcesToAddressableDuplicateDependencies(float maxAssetSize)
     {
         var rule = new CheckResourcesDupeDependencies();
         List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
@@ -69,7 +70,7 @@ public class AddressablesValidationTests
 
         Dictionary<string, (List<string>, List<string> assets)> bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
 
-        string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, 4_340_000);
+        string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, maxAssetSize * 1_000_000);
         Assert.That(msg, Is.Empty, message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool \n"));
     }
 
@@ -135,7 +136,7 @@ public class AddressablesValidationTests
         return scenesAndBundlesByAsset;
     }
 
-    private static string CreateDuplicatesMessage(Dictionary<string, (List<string>, List<string> assets)> bundlesByAsset, string[] excludedFileTypesFilter, int minDuplicatesSize = 0)
+    private static string CreateDuplicatesMessage(Dictionary<string, (List<string>, List<string> assets)> bundlesByAsset, string[] excludedFileTypesFilter, float minDuplicatesSize = 0)
     {
         var message = new StringBuilder();
 
