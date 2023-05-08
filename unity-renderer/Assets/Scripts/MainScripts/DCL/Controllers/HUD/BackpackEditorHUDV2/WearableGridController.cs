@@ -36,6 +36,7 @@ namespace DCL.Backpack
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
         private NftCollectionType collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
 
+        public event Action<string> OnWearableSelected;
         public event Action<string> OnWearableEquipped;
         public event Action<string> OnWearableUnequipped;
 
@@ -259,6 +260,8 @@ namespace DCL.Backpack
                 removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
             });
+
+            OnWearableSelected?.Invoke(wearableId);
         }
 
         private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem) =>
