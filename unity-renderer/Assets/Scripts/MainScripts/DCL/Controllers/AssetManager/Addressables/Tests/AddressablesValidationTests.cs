@@ -45,7 +45,7 @@ public class AddressablesValidationTests
             {
                 string line = lines[i];
 
-                if (!(line.Contains("const") && line.Contains("string")) && !line.Contains("Resources.Load"))
+                if (!(line.Contains("const") && line.Contains("string")) && !line.Contains("Load"))
                     continue;
 
                 foreach (KeyValuePair<string, string> searchString in new Dictionary<string, string>(searchStrings))
@@ -53,7 +53,7 @@ public class AddressablesValidationTests
                     if (line.Contains("const") && line.Contains("string") && line.Contains(searchString.Value) && searchStrings.ContainsKey(searchString.Key))
                         searchStrings.Remove(searchString.Key);
 
-                    if (line.Contains("Resources.Load") && line.Contains(searchString.Value))
+                    if (line.Contains("Load") && line.Contains(searchString.Value))
                     {
                         result.Add(new { searchString, filePath, line, lineIndex = i + 1 });
 
