@@ -1,4 +1,5 @@
-﻿using DCL.Browser;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
@@ -156,6 +157,20 @@ namespace DCL.Backpack
 
             // Assert
             Assert.IsTrue(userProfile.avatar.wearables.Count == 0);
+        }
+
+        [Test]
+        public void SelectAndPreVisualizeWearableCorrectly()
+        {
+            // Arrange
+            EquipAndSaveCorrectly();
+
+            // Act
+            wearableGridView.OnWearableSelected += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_african_leggins" });
+
+            // Assert
+            view.Received(1).UpdateAvatarPreview(Arg.Is<AvatarModel>(avatarModel =>
+                avatarModel.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_african_leggins")));
         }
 
         [Test]

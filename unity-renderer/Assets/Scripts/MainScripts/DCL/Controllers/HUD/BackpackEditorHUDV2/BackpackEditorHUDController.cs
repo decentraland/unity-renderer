@@ -1,7 +1,6 @@
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -18,7 +17,7 @@ namespace DCL.Backpack
         private readonly DataStore dataStore;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IBackpackEmotesSectionController backpackEmotesSectionController;
-        private readonly IBackpackAnalyticsController backpackAnalyticsController;
+        private readonly BackpackAnalyticsController backpackAnalyticsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
@@ -31,6 +30,7 @@ namespace DCL.Backpack
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
         private readonly BackpackEditorHUDModel model = new ();
+        private readonly BackpackEditorHUDModel preEquipModel = new ();
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -39,7 +39,7 @@ namespace DCL.Backpack
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
             IBackpackEmotesSectionController backpackEmotesSectionController,
-            IBackpackAnalyticsController backpackAnalyticsController,
+            BackpackAnalyticsController backpackAnalyticsController,
             WearableGridController wearableGridController,
             AvatarSlotsHUDController avatarSlotsHUDController)
         {
@@ -64,6 +64,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
 
+            wearableGridController.OnWearableSelected += SelectWearable;
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
 
@@ -73,7 +74,7 @@ namespace DCL.Backpack
             view.SetColorPickerVisibility(false);
             view.OnColorChanged += OnWearableColorChanged;
 
-            SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), false);
+            SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
         }
 
         public void Dispose()
@@ -86,6 +87,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
             backpackEmotesSectionController.Dispose();
 
+            wearableGridController.OnWearableSelected -= SelectWearable;
             wearableGridController.OnWearableEquipped -= EquipWearable;
             wearableGridController.OnWearableUnequipped -= UnEquipWearable;
             wearableGridController.Dispose();
@@ -98,7 +100,7 @@ namespace DCL.Backpack
         }
 
         private void OnBackpackVisibleChanged(bool current, bool _) =>
-            SetVisibility(current);
+            SetVisibility(current, saveAvatar: avatarIsDirty);
 
         private void SetVisibility(bool visible, bool saveAvatar = true)
         {
@@ -183,6 +185,8 @@ namespace DCL.Backpack
                 model.wearables.Add(wearable.id, wearable);
                 avatarSlotsHUDController.Equip(wearable, userProfile.avatar.bodyShape);
             }
+
+            view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
         private void UpdateAvatarPreview()
@@ -256,6 +260,30 @@ namespace DCL.Backpack
             avatarIsDirty = false;
         }
 
+        private void SelectWearable(string wearableId)
+        {
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            {
+                Debug.LogError($"Cannot pre-visualize wearable {wearableId}");
+                return;
+            }
+
+            preEquipModel.Update(model);
+
+            foreach (var w in preEquipModel.wearables.Values)
+            {
+                if (w.data.category != wearable.data.category)
+                    continue;
+
+                preEquipModel.wearables.Remove(w.id);
+                break;
+            }
+
+            preEquipModel.wearables.Add(wearableId, wearable);
+
+            view.UpdateAvatarPreview(preEquipModel.ToAvatarModel());
+        }
+
         private void EquipWearable(string wearableId, EquipWearableSource source)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
@@ -264,10 +292,14 @@ namespace DCL.Backpack
                 return;
             }
 
-            WearableItem wearableToBeReplaced = model.wearables.Values.FirstOrDefault(item => item.data.category == wearable.data.category);
+            foreach (var w in model.wearables.Values)
+            {
+                if (w.data.category != wearable.data.category)
+                    continue;
 
-            if (wearableToBeReplaced != null)
-                UnEquipWearable(wearableToBeReplaced.id, UnequipWearableSource.None);
+                UnEquipWearable(w.id, UnequipWearableSource.None);
+                break;
+            }
 
             model.wearables.Add(wearableId, wearable);
             previewEquippedWearables.Add(wearableId);
@@ -277,7 +309,6 @@ namespace DCL.Backpack
 
             avatarIsDirty = true;
             backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
-
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
@@ -339,7 +370,6 @@ namespace DCL.Backpack
             if (!colorChanged)
                 return;
 
-            backpackAnalyticsController.SendAvatarColorPick();
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
