@@ -129,9 +129,9 @@ namespace AvatarSystem
 
                 return (
                     wearablesByCategory[WearableLiterals.Categories.BODY_SHAPE],
-                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.EYES) ? wearablesByCategory[WearableLiterals.Categories.EYES] : null,
-                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.EYEBROWS) ? wearablesByCategory[WearableLiterals.Categories.EYEBROWS] : null,
-                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.MOUTH) ? wearablesByCategory[WearableLiterals.Categories.MOUTH] : null,
+                    wearablesByCategory.TryGetValue(WearableLiterals.Categories.EYES, out WearableItem value) ? value : null,
+                    wearablesByCategory.TryGetValue(WearableLiterals.Categories.EYEBROWS, out WearableItem value1) ? value1 : null,
+                    wearablesByCategory.TryGetValue(WearableLiterals.Categories.MOUTH, out WearableItem value2) ? value2 : null,
                     wearables,
                     emotes.ToList()
                 );
