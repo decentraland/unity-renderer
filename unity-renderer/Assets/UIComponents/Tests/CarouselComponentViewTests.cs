@@ -9,7 +9,7 @@ public class CarouselComponentViewTests
     private CarouselComponentView carouselComponent;
 
     [SetUp]
-    public void SetUp() { carouselComponent = BaseComponentView.Create<CarouselComponentView>("Carousel"); }
+    public void SetUp() { carouselComponent = BaseComponentView.CreateFromAssetDatabase<CarouselComponentView>("Carousel"); }
 
     [TearDown]
     public void TearDown()
@@ -131,9 +131,9 @@ public class CarouselComponentViewTests
     {
         // Arrange
         List<BaseComponentView> testItems = new List<BaseComponentView>();
-        testItems.Add(BaseComponentView.Create<ButtonComponentView>("Button_Common"));
-        testItems.Add(BaseComponentView.Create<ButtonComponentView>("Button_Common"));
-        testItems.Add(BaseComponentView.Create<ButtonComponentView>("Button_Common"));
+        testItems.Add(BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common"));
+        testItems.Add(BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common"));
+        testItems.Add(BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common"));
 
         // Act
         carouselComponent.SetItems(testItems);
