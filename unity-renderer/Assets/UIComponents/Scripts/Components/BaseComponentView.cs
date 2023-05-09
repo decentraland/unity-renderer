@@ -184,8 +184,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         return buttonComponentView;
     }
 
-    public static T CreateFromAssetDatabase<T>(string resourceName) where T: BaseComponentView =>
-        Instantiate(
-                AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/UIComponents/Prefabs/{resourceName}.prefab"))
-           .GetComponent<T>();
+    public static T CreateUIComponentFromAssetDatabase<T>(string assetName) where T: BaseComponentView =>
+        Instantiate(AssetDatabase.LoadAssetAtPath<T>($"Assets/UIComponents/Prefabs/{assetName}.prefab"));
 }

@@ -14,7 +14,7 @@ public class SectionSelectorComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        sectionSelectorComponent = BaseComponentView.CreateFromAssetDatabase<SectionSelectorComponentView>("SectionSelector");
+        sectionSelectorComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<SectionSelectorComponentView>("SectionSelector");
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }

@@ -8,7 +8,7 @@ public class ToggleComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        toggleComponent = BaseComponentView.CreateFromAssetDatabase<ToggleComponentView>("Toggle_Capsule");
+        toggleComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<ToggleComponentView>("Toggle_Capsule");
     }
 
     [TearDown]

@@ -12,7 +12,7 @@ public class ModalComponentShould
     [SetUp]
     public void SetUp()
     {
-        modalComponent = BaseComponentView.CreateFromAssetDatabase<ModalComponentView>("Modal");
+        modalComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<ModalComponentView>("Modal");
     }
 
     [TearDown]
