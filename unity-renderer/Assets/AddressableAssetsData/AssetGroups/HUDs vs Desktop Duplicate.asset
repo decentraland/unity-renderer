@@ -16,12 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 8b9664c261480d34ca4f30719063aa39
-  m_SerializeEntries:
-  - m_GUID: 0bfffff4668dbb745a58ec7845891d43
-    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/Common/Audio/SFX/UI
-      - Confirm 01.wav
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
