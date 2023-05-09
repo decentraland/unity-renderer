@@ -251,7 +251,6 @@ namespace DCL.Backpack
 
             avatarModel.emotes = emoteEntries;
 
-            backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
             dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
 
             userProfileBridge.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, dataStore.common.isSignUpFlow.Get());
@@ -290,7 +289,7 @@ namespace DCL.Backpack
             view.UpdateAvatarPreview(preEquipModel.ToAvatarModel());
         }
 
-        private void EquipWearable(string wearableId)
+        private void EquipWearable(string wearableId, EquipWearableSource source)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -310,7 +309,7 @@ namespace DCL.Backpack
                     if (w.data.category != wearable.data.category)
                         continue;
 
-                    UnEquipWearable(w.id);
+                    UnEquipWearable(w.id, UnequipWearableSource.None);
                     break;
                 }
 
@@ -321,7 +320,7 @@ namespace DCL.Backpack
             }
 
             avatarIsDirty = true;
-
+            backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
@@ -335,10 +334,10 @@ namespace DCL.Backpack
                 return;
             }
 
-            UnEquipWearable(wearable);
+            UnEquipWearable(wearable, UnequipWearableSource.None);
         }
 
-        private void UnEquipWearable(string wearableId)
+        private void UnEquipWearable(string wearableId, UnequipWearableSource source)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -346,12 +345,16 @@ namespace DCL.Backpack
                 return;
             }
 
-            UnEquipWearable(wearable);
+            UnEquipWearable(wearable, source);
         }
 
-        private void UnEquipWearable(WearableItem wearable)
+        private void UnEquipWearable(WearableItem wearable, UnequipWearableSource source)
         {
             string wearableId = wearable.id;
+
+            if(source != UnequipWearableSource.None)
+                backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
+
             avatarSlotsHUDController.UnEquip(wearable.data.category);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
