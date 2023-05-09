@@ -322,7 +322,7 @@ namespace DCL.Social.Friends
                     if (friend.userName.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0 ||
                         friend.userId.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0) { friendsToReturn.Add(friend.userId); }
 
-                    if (friendsToReturn.Count > limit) { break; }
+                    if (friendsToReturn.Count >= limit) { break; }
                 }
 
                 return friendsToReturn.ToArray();
