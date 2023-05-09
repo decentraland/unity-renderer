@@ -314,23 +314,14 @@ namespace DCL.Social.Friends
         {
             if (useSocialApiBridge)
             {
-                var friendIds = new List<string>();
                 var friendsToReturn = new List<string>();
 
-                for (int i = 0; i < friendsSortedByName.Values.Count; i++)
+                foreach (var friend in friendsSortedByName.Values)
                 {
-                    var friend = friendsSortedByName.Values[i];
-
                     if (friend.userName.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        friend.userId.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        friendsToReturn.Add(friend.userId);
-                    }
+                        friend.userId.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0) { friendsToReturn.Add(friend.userId); }
 
-                    if (friendsToReturn.Count > limit)
-                    {
-                        break;
-                    }
+                    if (friendsToReturn.Count > limit) { break; }
                 }
 
                 return friendsToReturn.ToArray();
