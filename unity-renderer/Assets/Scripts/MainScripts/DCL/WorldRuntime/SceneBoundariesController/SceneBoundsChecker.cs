@@ -201,10 +201,8 @@ namespace DCL.Controllers
 
             // No need to add the entity to be checked later if we already found it outside scene outer boundaries.
             // When the correct events are triggered again, the entity will be checked again.
-            if (!isInsistent && !isPersistent && !entity.isInsideSceneOuterBoundaries)
-                return;
-
-            AddEntity(entity, isPersistent);
+            if (isInsistent || isPersistent || entity.isInsideSceneOuterBoundaries)
+                AddEntity(entity, isPersistent);
         }
 
         private void AddEntity(IDCLEntity entity, bool isPersistent)
