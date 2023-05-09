@@ -25,6 +25,8 @@ namespace DCL.Social.Friends
         private UniTaskCompletionSource<FriendshipInitializationMessage> initializationInformationTask;
 
         public event Action<UserStatus> OnFriendAdded;
+        public event Action<FriendRequest> OnIncomingFriendRequestAdded;
+        public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
         public event Action<string> OnFriendRemoved;
         public event Action<FriendRequest> OnFriendRequestAdded;
         public event Action<string> OnFriendRequestRemoved;
@@ -87,15 +89,44 @@ namespace DCL.Social.Friends
 
             initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
             await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
+            var friendshipInitializationMessage = await GetRequestEvents();
 
-            initializationInformationTask.TrySetResult(new FriendshipInitializationMessage
-            {
-                totalReceivedRequests = 0,
-            });
+            initializationInformationTask.TrySetResult(friendshipInitializationMessage);
 
             await UniTask.SwitchToMainThread(cancellationToken);
 
             return await initializationInformationTask.Task.AttachExternalCancellation(cancellationToken);
+        }
+
+        private async UniTask<FriendshipInitializationMessage> GetRequestEvents()
+        {
+            var requestEvents = await socialClient.GetRequestEvents(new Payload
+                { SynapseToken = accessToken });
+
+            foreach (var friendRequest in requestEvents.Incoming.Items)
+            {
+                OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
+                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
+                    friendRequest.CreatedAt,
+                    friendRequest.User.Address,
+                    userProfileWebInterfaceBridge.GetOwn().userId,
+                    friendRequest.Message));
+            }
+
+            foreach (var friendRequest in requestEvents.Outgoing.Items)
+            {
+                OnOutgoingFriendRequestAdded?.Invoke(new FriendRequest(
+                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
+                    friendRequest.CreatedAt,
+                    userProfileWebInterfaceBridge.GetOwn().userId,
+                    friendRequest.User.Address,
+                    friendRequest.Message));
+            }
+
+            return new FriendshipInitializationMessage()
+            {
+                totalReceivedRequests = requestEvents.Incoming.Items.Count
+            };
         }
 
         private async UniTask InitializeMatrixTokenThenRetrieveAllFriends(CancellationToken cancellationToken)

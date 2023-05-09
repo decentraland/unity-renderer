@@ -15,7 +15,13 @@ namespace DCL.Social.Friends
 
         private readonly IFriendsApiBridge apiBridge;
         private readonly ISocialApiBridge socialApiBridge;
+
+        // Used only when social client feature flag is false
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
+        private readonly Dictionary<string, FriendRequest> incomingFriendRequestsById = new ();
+        private readonly Dictionary<string, FriendRequest> outgoingFriendRequestsById = new ();
+        private readonly SortedList<long, FriendRequest> incomingFriendRequestsByTimestamp = new ();
+        private readonly SortedList<long, FriendRequest> outgoingFriendRequestsByTimestamp = new ();
         private readonly Dictionary<string, UserStatus> friends = new ();
         private readonly SortedList<string, UserStatus> friendsSortedByName = new ();
         private readonly DataStore dataStore;
@@ -23,6 +29,8 @@ namespace DCL.Social.Friends
         private CancellationTokenSource controllerCancellationTokenSource = new ();
         private UniTaskCompletionSource featureFlagsInitializedTask;
         private int totalFriendCount;
+        private int totalReceivedFriendRequestCount;
+        private int totalSentFriendRequestCount;
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
@@ -40,8 +48,19 @@ namespace DCL.Social.Friends
         }
 
         public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
-        public int TotalReceivedFriendRequestCount { get; private set; }
-        public int TotalSentFriendRequestCount { get; private set; }
+
+        public int TotalReceivedFriendRequestCount
+        {
+            get => useSocialApiBridge ? incomingFriendRequestsById.Count : totalReceivedFriendRequestCount;
+            private set => totalReceivedFriendRequestCount = value;
+        }
+
+        public int TotalSentFriendRequestCount
+        {
+            get => useSocialApiBridge ? outgoingFriendRequestsById.Count : totalSentFriendRequestCount;
+            private set => totalSentFriendRequestCount = value;
+        }
+
         public int TotalFriendsWithDirectMessagesCount { get; private set; }
 
         public event Action<string, UserStatus> OnUpdateUserStatus;
@@ -75,6 +94,8 @@ namespace DCL.Social.Friends
                 if (useSocialApiBridge)
                 {
                     socialApiBridge.OnFriendAdded += AddFriend;
+                    socialApiBridge.OnIncomingFriendRequestAdded += AddIncomingFriendRequest;
+                    socialApiBridge.OnOutgoingFriendRequestAdded += AddOutgoingFriendRequest;
                     socialApiBridge.OnFriendRemoved += InternalRemoveFriend;
                     socialApiBridge.OnFriendRequestAdded += AddFriendRequest;
                     socialApiBridge.OnFriendRequestRemoved += RemoveFriendRequest;
@@ -119,6 +140,8 @@ namespace DCL.Social.Friends
             socialApiBridge.OnFriendRemoved -= InternalRemoveFriend;
             socialApiBridge.OnFriendRequestAdded -= AddFriendRequest;
             socialApiBridge.OnFriendRequestRemoved -= RemoveFriendRequest;
+            socialApiBridge.OnIncomingFriendRequestAdded -= AddIncomingFriendRequest;
+            socialApiBridge.OnOutgoingFriendRequestAdded -= AddOutgoingFriendRequest;
 
             apiBridge.OnInitialized -= InitializeFriendships;
 
@@ -135,12 +158,14 @@ namespace DCL.Social.Friends
 
         private void RemoveFriendRequest(string userId)
         {
+            // TODO: FIX
             this.friendRequests.Remove(userId);
         }
 
         // TODO (Joni): Replace by AddFriendRequests, this is just for successful compilation
         private void AddFriendRequest(FriendRequest friendRequest)
         {
+            // TODO: FIX
             this.friendRequests[friendRequest.FriendRequestId] = friendRequest;
         }
 
@@ -194,7 +219,14 @@ namespace DCL.Social.Friends
 
             FriendRequest friendRequest;
 
-            if (useSocialApiBridge) { friendRequest = await socialApiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken); }
+            if (useSocialApiBridge)
+            {
+                friendRequest = await socialApiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
+                outgoingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
+
+                // it's impossible to have duplicated timestamps for two different correctly created friend requests
+                outgoingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
+            }
             else
             {
                 RequestFriendshipConfirmationPayload payload = await apiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
@@ -249,7 +281,7 @@ namespace DCL.Social.Friends
 
             if (useSocialApiBridge)
             {
-                friendRequest = friendRequests[friendRequestId];
+                friendRequest = incomingFriendRequestsById[friendRequestId];
 
                 await socialApiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
             }
@@ -345,6 +377,18 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            if (useSocialApiBridge)
+            {
+                // TODO: change linQ for for lists
+                var sent = outgoingFriendRequestsById.Values.Skip(sentSkip).Take(sentLimit);
+
+                var received = incomingFriendRequestsById.Values.Skip(receivedSkip).Take(receivedLimit);
+
+                var result = received.Concat(sent).ToList();
+
+                return result;
+            }
+
             var payload = await apiBridge.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip, cancellationToken);
 
             TotalReceivedFriendRequestCount = payload.totalReceivedFriendRequests;
@@ -386,15 +430,31 @@ namespace DCL.Social.Friends
         public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
             apiBridge.GetFriendsWithDirectMessages(userNameOrId, limit, 0);
 
-        public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
-            friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
+        public FriendRequest GetAllocatedFriendRequest(string friendRequestId)
+        {
+            if (useSocialApiBridge)
+            {
+                return incomingFriendRequestsById.ContainsKey(friendRequestId) ? incomingFriendRequestsById[friendRequestId] :
+                    outgoingFriendRequestsById.ContainsKey(friendRequestId) ? outgoingFriendRequestsById[friendRequestId] : null;
+            }
+
+            return friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
+        }
 
         public FriendRequest GetAllocatedFriendRequestByUser(string userId)
         {
             long max = long.MinValue;
             FriendRequest result = null;
 
-            foreach (var request in friendRequests.Values)
+            foreach (var request in incomingFriendRequestsById.Values)
+            {
+                if (request.From != userId && request.To != userId) continue;
+                if (request.Timestamp <= max) continue;
+                result = request;
+                max = request.Timestamp;
+            }
+
+            foreach (var request in outgoingFriendRequestsById.Values)
             {
                 if (request.From != userId && request.To != userId) continue;
                 if (request.Timestamp <= max) continue;
@@ -455,8 +515,8 @@ namespace DCL.Social.Friends
             CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequestAsync(friendRequestId, cancellationToken);
 
             var friendRequest = ToFriendRequest(payload.friendRequest);
-            friendRequestId = friendRequest.FriendRequestId;
-            friendRequests.Remove(friendRequestId);
+
+            friendRequests.Remove(friendRequest.FriendRequestId);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.CANCELLED, userId = friendRequest.To });
@@ -526,8 +586,8 @@ namespace DCL.Social.Friends
 
         private void ReceiveFriendRequest(FriendRequestPayload msg)
         {
-            // TODO (Joni): This will be called from RPCSocialBridge, modify accordingly
             FriendRequest request = ToFriendRequest(msg);
+
             friendRequests[msg.friendRequestId] = request;
             OnFriendRequestReceived?.Invoke(request);
         }
@@ -625,8 +685,6 @@ namespace DCL.Social.Friends
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         private void AddFriendRequests(AddFriendRequestsPayload msg)
         {
-            // TODO (Joni): use the social bridge result
-            // this should be called from OnFriendRequestsAdded
             TotalReceivedFriendRequestCount = msg.totalReceivedFriendRequests;
             TotalSentFriendRequestCount = msg.totalSentFriendRequests;
             OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
@@ -642,6 +700,20 @@ namespace DCL.Social.Friends
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     { action = FriendshipAction.REQUESTED_TO, userId = userId });
             }
+        }
+
+        private void AddIncomingFriendRequest(FriendRequest friendRequest)
+        {
+            this.incomingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
+
+            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+        }
+
+        private void AddOutgoingFriendRequest(FriendRequest friendRequest)
+        {
+            this.outgoingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
+
+            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
         }
 
         private FriendshipAction ToFriendshipAction(FriendshipStatus status)
