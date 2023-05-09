@@ -2,6 +2,7 @@ using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace DCL.Backpack
 {
@@ -144,16 +145,14 @@ namespace DCL.Backpack
 
         private void LoadUserProfile(UserProfile userProfile, bool forceLoading)
         {
+            if (avatarIsDirty) return;
             bool avatarEditorNotVisible = rendererState.Get() && !view.isVisible;
-
             if (!forceLoading && avatarEditorNotVisible) return;
             if (userProfile == null) return;
             if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape)) return;
 
             wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
-
-            if (bodyShape == null) return;
-            if (avatarIsDirty) return;
+            bodyShape ??= GetFallbackBodyShape();
 
             previewEquippedWearables.Set(userProfile.avatar.wearables);
 
@@ -216,8 +215,6 @@ namespace DCL.Backpack
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
             wearableGridController.Equip(bodyShape.id);
             previewEquippedWearables.Add(bodyShape.id);
-
-            avatarIsDirty = true;
         }
 
         private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
@@ -406,5 +403,15 @@ namespace DCL.Backpack
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
+
+        private WearableItem GetFallbackBodyShape() =>
+            new()
+            {
+                id = Random.Range(0, 2) == 0 ? WearableLiterals.BodyShapes.MALE : WearableLiterals.BodyShapes.FEMALE,
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.BODY_SHAPE,
+                },
+            };
     }
 }
