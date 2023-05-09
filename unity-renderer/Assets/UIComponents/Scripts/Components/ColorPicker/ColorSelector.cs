@@ -30,7 +30,13 @@ public class ColorSelector : MonoBehaviour, IColorSelector
     public void Cleanup()
     {
         foreach (var colorToggle in colorToggles)
+        {
+#if UNITY_EDITOR
+            DestroyImmediate(colorToggle.gameObject);
+#else
             Destroy(colorToggle.gameObject);
+#endif
+        }
 
         colorToggles.Clear();
     }
