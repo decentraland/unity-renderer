@@ -9,6 +9,6 @@ namespace DCL.Components.Video.Plugin
         PLAYING = 4,
         BUFFERING = 5,
         SEEKING = 6,
-        PAUSED = 7,
+        PAUSED = 7
     };
 }
