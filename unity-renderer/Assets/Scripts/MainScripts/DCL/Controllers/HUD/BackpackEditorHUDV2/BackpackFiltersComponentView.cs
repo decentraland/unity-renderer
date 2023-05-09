@@ -84,6 +84,9 @@ namespace DCL.Backpack
             loadedFilters = collectionsToAdd;
         }
 
+        public void SetSearchText(string text, bool notify) =>
+            searchBar.SubmitSearch(text, notify);
+
         private void LoadSortByDropdown()
         {
             List<ToggleComponentModel> sortingMethodsToAdd = new List<ToggleComponentModel>

@@ -33,16 +33,16 @@ namespace DCL.Backpack
 
             view.OnOnlyCollectiblesChanged += SetOnlyCollectibles;
             view.OnCollectionChanged += SetCollections;
-            view.OnSortByChanged += SetSorting;
-            view.OnSearchTextChanged += SetSearchText;
+            view.OnSortByChanged += TriggerSorting;
+            view.OnSearchTextChanged += TriggerTextSearch;
         }
 
         public void Dispose()
         {
             view.OnOnlyCollectiblesChanged -= SetOnlyCollectibles;
             view.OnCollectionChanged -= SetCollections;
-            view.OnSortByChanged -= SetSorting;
-            view.OnSearchTextChanged -= SetSearchText;
+            view.OnSortByChanged -= TriggerSorting;
+            view.OnSearchTextChanged -= TriggerTextSearch;
 
             view.Dispose();
         }
@@ -70,6 +70,9 @@ namespace DCL.Backpack
             loadThirdPartyCollectionsCancellationToken = loadThirdPartyCollectionsCancellationToken.SafeRestart();
             FetchTPWAndLoadDropdown(loadThirdPartyCollectionsCancellationToken.Token).Forget();
         }
+
+        public void ClearTextSearch(bool notify = true) =>
+            view.SetSearchText(null, notify);
 
         private void SetOnlyCollectibles(bool isOn)
         {
@@ -102,10 +105,10 @@ namespace DCL.Backpack
             OnThirdPartyCollectionChanged?.Invoke(selectedCollections);
         }
 
-        private void SetSorting((NftOrderByOperation type, bool directionAscendent) newSorting) =>
+        private void TriggerSorting((NftOrderByOperation type, bool directionAscendent) newSorting) =>
             OnSortByChanged?.Invoke(newSorting);
 
-        private void SetSearchText(string newText) =>
+        private void TriggerTextSearch(string newText) =>
             OnSearchTextChanged?.Invoke(newText);
     }
 }

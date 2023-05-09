@@ -13,5 +13,6 @@ namespace DCL.Backpack
 
         void Dispose();
         void LoadCollectionDropdown(WearableCollectionsAPIData.Collection[] collections, WearableCollectionsAPIData.Collection defaultCollection = null);
+        void SetSearchText(string text, bool notify);
     }
 }

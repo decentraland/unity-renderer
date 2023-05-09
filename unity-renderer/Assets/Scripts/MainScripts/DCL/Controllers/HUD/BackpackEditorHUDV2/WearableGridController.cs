@@ -116,7 +116,7 @@ namespace DCL.Backpack
             this.nameFilter = nameFilter;
             this.wearableSorting = wearableSorting;
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
-            ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
+            ShowWearablesAndUpdateFilters(1, requestWearablesCancellationToken.Token).Forget();
         }
 
         public void CancelWearableLoading() =>
@@ -141,7 +141,7 @@ namespace DCL.Backpack
         public void LoadCollections() =>
             backpackFiltersController.LoadCollections();
 
-        private async UniTaskVoid ShowWearablesAndItsFilteringPath(int page, CancellationToken cancellationToken)
+        private async UniTaskVoid ShowWearablesAndUpdateFilters(int page, CancellationToken cancellationToken)
         {
             List<(string reference, string name, string type, bool removable)> path = new ();
 
@@ -291,7 +291,7 @@ namespace DCL.Backpack
             }
 
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
-            ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
+            ShowWearablesAndUpdateFilters(1, requestWearablesCancellationToken.Token).Forget();
         }
 
         private void RemoveFiltersFromReferencePath(string referencePath)
@@ -300,12 +300,18 @@ namespace DCL.Backpack
             string filter = filters[^1];
 
             if (filter.StartsWith(NAME_FILTER_REF))
+            {
                 nameFilter = null;
+                backpackFiltersController.ClearTextSearch(false);
+            }
             else if (filter.StartsWith(CATEGORY_FILTER_REF))
+            {
+                avatarSlotsHUDController.ClearSlotSelection(categoryFilter);
                 categoryFilter = null;
+            }
 
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
-            ShowWearablesAndItsFilteringPath(1, requestWearablesCancellationToken.Token).Forget();
+            ShowWearablesAndUpdateFilters(1, requestWearablesCancellationToken.Token).Forget();
         }
 
         private void GoToMarketplace()

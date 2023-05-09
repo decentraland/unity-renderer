@@ -34,6 +34,7 @@ namespace DCL.Backpack
             avatarSlotsView.RebuildLayout();
         }
 
+        // TODO: this method should be private
         public void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
@@ -56,6 +57,14 @@ namespace DCL.Backpack
 
         public void UnEquip(string category) =>
             avatarSlotsView.ResetCategorySlot(category);
+
+        public void ClearSlotSelection(string category)
+        {
+            avatarSlotsView.DisablePreviousSlot(category);
+
+            if (lastSelectedSlot == category)
+                lastSelectedSlot = "";
+        }
 
         private bool CanAvatarSlotBeUnEquipped(string avatarSlotSection) =>
             avatarSlotSection != WearableLiterals.Categories.BODY_SHAPE &&
