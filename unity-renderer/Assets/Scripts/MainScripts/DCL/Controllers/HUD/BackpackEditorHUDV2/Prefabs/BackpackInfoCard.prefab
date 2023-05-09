@@ -2271,6 +2271,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ViewMore
       objectReference: {fileID: 0}
+    - target: {fileID: 9184385989617192438, guid: 64a4a5d7e268f42bb914c893aa556f3f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2545207666023077646, guid: 64a4a5d7e268f42bb914c893aa556f3f, type: 3}
     - {fileID: 4660432234067924201, guid: 64a4a5d7e268f42bb914c893aa556f3f, type: 3}
