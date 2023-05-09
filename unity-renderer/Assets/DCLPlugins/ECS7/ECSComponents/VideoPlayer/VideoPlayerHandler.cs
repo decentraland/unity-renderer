@@ -16,7 +16,6 @@ namespace DCL.ECSComponents
 
         internal DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen;
         internal PBVideoPlayer lastModel = null;
-        internal IECSComponentWriter componentWriter;
         internal WebVideoPlayer videoPlayer;
 
         // Flags to check if we can activate the video
@@ -29,12 +28,10 @@ namespace DCL.ECSComponents
 
         public VideoPlayerHandler(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
-            DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen,
-            IECSComponentWriter componentWriter)
+            DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
             this.loadingScreen = loadingScreen;
-            this.componentWriter = componentWriter;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)

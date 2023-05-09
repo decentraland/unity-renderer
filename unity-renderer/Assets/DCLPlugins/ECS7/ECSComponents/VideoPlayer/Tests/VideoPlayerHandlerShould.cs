@@ -44,8 +44,7 @@ namespace Tests
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
             videoPlayerHandler = new VideoPlayerHandler(
                 internalVideoPlayerComponent,
-                loadingScreenDataStore.decoupledLoadingHUD,
-                Substitute.For<IECSComponentWriter>());
+                loadingScreenDataStore.decoupledLoadingHUD);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
