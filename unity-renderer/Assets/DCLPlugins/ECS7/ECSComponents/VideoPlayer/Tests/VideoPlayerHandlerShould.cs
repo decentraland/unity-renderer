@@ -6,7 +6,6 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections;

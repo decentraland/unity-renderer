@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
-using VideoState = DCL.ECSComponents.VideoState;
 
 namespace DCL.ECS7.InternalComponents
 {
