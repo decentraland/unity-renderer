@@ -26,9 +26,9 @@ namespace DCL.Controllers
 
                 meshesInfo.renderers[i].enabled = isInsideBoundaries;
 
-                if (isInsideBoundaries && disabledRenderers.Contains(meshesInfo.renderers[i]))
+                if (isInsideBoundaries)
                     disabledRenderers.Remove( meshesInfo.renderers[i]);
-                else if (!isInsideBoundaries)
+                else
                     disabledRenderers.Add( meshesInfo.renderers[i]);
             }
         }
