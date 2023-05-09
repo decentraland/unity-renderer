@@ -17,6 +17,7 @@ namespace DCL.Quests
         [SerializeField] internal Transform rewardsContainer;
         [SerializeField] private Button confirmButton;
         [SerializeField] internal GameObject guestSection;
+        [SerializeField] internal GameObject container;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
 
@@ -31,6 +32,7 @@ namespace DCL.Quests
             rewardsPool.Prewarm(MAX_REWARDS_COUNT);
             confirmButton.onClick.RemoveAllListeners();
             confirmButton.onClick.AddListener(()=>OnConfirmed?.Invoke());
+            container.SetActive(false);
         }
 
         public override void RefreshControl()

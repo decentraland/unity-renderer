@@ -867,6 +867,7 @@ MonoBehaviour:
   acceptButton: {fileID: 1018855186851495725}
   cancelButton: {fileID: 1034651163098091734}
   rewardsContainer: {fileID: 1798156650007868679}
+  container: {fileID: 8457596591578133131}
   rewardPrefab: {fileID: 5656798287975932091, guid: abaa562bf9c674359b69b21f405fe692,
     type: 3}
 --- !u!1 &3947200786942160820

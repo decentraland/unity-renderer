@@ -20,6 +20,7 @@ namespace DCL.Quests
         [SerializeField] internal Button acceptButton;
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Transform rewardsContainer;
+        [SerializeField] internal GameObject container;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
         public event Action<string> OnQuestAccepted;
@@ -33,6 +34,7 @@ namespace DCL.Quests
             acceptButton.onClick.AddListener(()=>OnQuestAccepted?.Invoke(model.questId));
             rewardsPool = new UnityObjectPool<QuestRewardComponentView>(rewardPrefab, rewardsContainer);
             rewardsPool.Prewarm(MAX_REWARDS_COUNT);
+            container.SetActive(false);
         }
 
         public override void Dispose()
