@@ -286,7 +286,19 @@ namespace DCL.Social.Friends
         public async UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default)
         {
             if (useSocialApiBridge)
-                return friendsSortedByName.Values.Skip(skip).Take(limit).Select(friend => friend.userId).ToArray();
+            {
+                int startIndex = skip;
+                int endIndex = Math.Min(skip + limit, friendsSortedByName.Count - 1);
+                var friendIds = new string[endIndex - startIndex];
+
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    string key = friendsSortedByName.Keys[i];
+                    friendIds[i - startIndex] = friendsSortedByName[key].userId;
+                }
+
+                return friendIds;
+            }
 
             var payload = await apiBridge.GetFriendsAsync(limit, skip, cancellationToken);
             await UniTask.SwitchToMainThread();
@@ -301,6 +313,13 @@ namespace DCL.Social.Friends
         {
             if (useSocialApiBridge)
             {
+                var friendIds = new List<string>();
+
+                for (int i = 0; i < friendsSortedByName.Values.Count; i++)
+                {
+                    var friend = friendsSortedByName.Values[i];
+                }
+
                 return friendsSortedByName.Values.Where(friend =>
                                                friend.userName.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0 ||
                                                friend.userId.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0)
