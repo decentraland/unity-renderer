@@ -169,6 +169,7 @@ import {
   getUsersAllowedToCreate,
   isBlocked,
   isNewFriendRequestEnabled,
+  isUseSocialClientEnabled,
   validateFriendRequestId
 } from './utils'
 
@@ -283,7 +284,6 @@ async function handleIncomingFriendshipUpdateStatus(
   await ensureFriendProfile(userId)
 
   // add to friendRequests & update renderer
-  // TODO: add feature flag
   await UpdateFriendshipAsPromise(action, userId, true, messageBody)
 }
 
@@ -318,11 +318,14 @@ function* configureMatrixClient(action: SetMatrixClient) {
           if (!isAddedToCatalog(store.getState(), userId)) {
             await ensureFriendProfile(userId)
           }
-          // TODO: add feature flag
-          getUnityInstance().AddFriends({
-            friends: [userId],
-            totalFriends: getTotalFriends(store.getState())
-          })
+          // TODO!: remove FF validation once the RPC flow is the only one
+          // Not sure about this one, how r we handling presence?
+          if (!isUseSocialClientEnabled(store.getState())) {
+            getUnityInstance().AddFriends({
+              friends: [userId],
+              totalFriends: getTotalFriends(store.getState())
+            })
+          }
         }
 
         sendUpdateUserStatus(userId, status)
@@ -430,7 +433,6 @@ function* configureMatrixClient(action: SetMatrixClient) {
     }
   })
 
-  // TODO: add feature flag
   client.onFriendshipRequest((socialId, messageBody) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.REQUESTED_FROM, socialId, messageBody).catch((error) => {
       const message = 'Failed while processing friendship request'
@@ -444,21 +446,17 @@ function* configureMatrixClient(action: SetMatrixClient) {
     })
   )
 
-  // TODO: add feature flag
   client.onFriendshipRequestCancellation((socialId) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.CANCELED, socialId)
   )
 
-  // TODO: add feature flag
   client.onFriendshipRequestApproval(async (socialId) => {
     await handleIncomingFriendshipUpdateStatus(FriendshipAction.APPROVED, socialId)
     updateUserStatus(client, socialId)
   })
 
-  // TODO: add feature flag
   client.onFriendshipDeletion((socialId) => handleIncomingFriendshipUpdateStatus(FriendshipAction.DELETED, socialId))
 
-  // TODO: add feature flag
   client.onFriendshipRequestRejection((socialId) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.REJECTED, socialId)
   )
@@ -652,15 +650,18 @@ function* refreshFriends() {
 
     let token = client.getAccessToken()
 
-    // TODO: add feature flag
+    // TODO!: remove FF validation once the RPC flow is the only one
+    const isUseSocialClientEnabled: boolean = yield select(getFeatureFlagEnabled, 'use-social-client')
+    if (!isUseSocialClientEnabled) {
+      getUnityInstance().InitializeFriends(initFriendsMessage)
+    }
+
     if (token) {
       getUnityInstance().InitializeMatrix(token)
     }
 
-    // TODO: add feature flag
-    getUnityInstance().InitializeFriends(initFriendsMessage)
-    // TODO: add feature flag
     getUnityInstance().InitializeChat(initChatMessage)
+
     const { lastStatusOfFriends, numberOfFriendRequests, coolDownOfFriendRequests } = (yield select(
       getFriendStatusInfo
     )) as ReturnType<typeof getFriendStatusInfo>
@@ -1293,7 +1294,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
     yield call(future.resolve, { userId, error: FriendshipErrorCode.FEC_UNKNOWN })
     return
   }
-  const { client, rendererModules, newFriendRequestFlow } = queryResult
+  const { client, rendererModules, newFriendRequestFlow, isUseSocialClientEnabled } = queryResult
 
   // Get friend request module
   const friendRequestModule = rendererModules.friendRequest
@@ -1349,23 +1350,29 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           }
 
           // Send message to renderer via rpc
-          // TODO: add feature flag
-          yield apply(friendRequestModule, friendRequestModule.approveFriendRequest, [approveFriendRequest])
+          // TODO!: remove FF validation once the RPC flow is the only one
+          if (!isUseSocialClientEnabled) {
+            yield apply(friendRequestModule, friendRequestModule.approveFriendRequest, [approveFriendRequest])
+          }
 
           // Update notification badges
-          // TODO: add feature flag
-          const conversationId = yield call(async () => await conversationIdPromise)
-          const unreadMessages = client.getConversationUnreadMessages(conversationId).length
-          getUnityInstance().UpdateUserUnseenMessages({
-            userId: getUserIdFromMatrix(userId),
-            total: unreadMessages
-          })
+          // TODO!: remove FF validation once the RPC flow is the only one
+          if (!isUseSocialClientEnabled) {
+            const conversationId = yield call(async () => await conversationIdPromise)
+            const unreadMessages = client.getConversationUnreadMessages(conversationId).length
+            getUnityInstance().UpdateUserUnseenMessages({
+              userId: getUserIdFromMatrix(userId),
+              total: unreadMessages
+            })
+          }
 
           // Update notification badges
-          // TODO: add feature flag
-          const friends = yield call(async () => await friendsPromise)
-          const totalUnseenMessages = getTotalUnseenMessages(client, getUserIdFromMatrix(ownId), friends)
-          getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
+          // TODO!: remove FF validation once the RPC flow is the only one
+          if (!isUseSocialClientEnabled) {
+            const friends = yield call(async () => await friendsPromise)
+            const totalUnseenMessages = getTotalUnseenMessages(client, getUserIdFromMatrix(ownId), friends)
+            getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
+          }
         }
       }
       // The approved should not have a break since it should execute all the code as the rejected case
@@ -1409,8 +1416,10 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           }
 
           // Send message to renderer via rpc
-          // TODO: add feature flag
-          yield call(async () => await friendRequestModule.rejectFriendRequest(rejectFriendRequest))
+          // TODO!: remove FF validation once the RPC flow is the only one
+          if (!isUseSocialClientEnabled) {
+            yield call(async () => await friendRequestModule.rejectFriendRequest(rejectFriendRequest))
+          }
         }
 
         break
@@ -1441,8 +1450,10 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           }
 
           // Send message to renderer via rpc
-          // TODO: add feature flag
-          yield apply(friendRequestModule, friendRequestModule.cancelFriendRequest, [cancelFriendRequest])
+          // TODO!: remove FF validation once the RPC flow is the only one
+          if (!isUseSocialClientEnabled) {
+            yield apply(friendRequestModule, friendRequestModule.cancelFriendRequest, [cancelFriendRequest])
+          }
         }
 
         break
@@ -1480,8 +1491,10 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
             }
 
             // Send messsage to renderer via rpc
-            // TODO: add feature flag
-            yield apply(friendRequestModule, friendRequestModule.receiveFriendRequest, [receiveFriendRequest])
+            // TODO!: remove FF validation once the RPC flow is the only one
+            if (!isUseSocialClientEnabled) {
+              yield apply(friendRequestModule, friendRequestModule.receiveFriendRequest, [receiveFriendRequest])
+            }
           }
         }
 
@@ -1520,9 +1533,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
       }
     }
 
-    // TODO: add feature flag
     getUnityInstance().UpdateTotalFriendRequests(updateTotalFriendRequestsPayload)
-    // TODO: add feature flag
     getUnityInstance().UpdateTotalFriends({ totalFriends })
 
     if (newState) {
@@ -1539,8 +1550,10 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
       // + The new friend request flow is disabled
       // + The new friend request flow is enabled and the action is an incoming/outgoing delete
       if (!newFriendRequestFlow || (newFriendRequestFlow && action === FriendshipAction.DELETED)) {
-        // TODO: add feature flag
-        getUnityInstance().UpdateFriendshipStatus(payload)
+        // TODO!: remove FF validation once the RPC flow is the only one
+        if (!isUseSocialClientEnabled) {
+          getUnityInstance().UpdateFriendshipStatus(payload)
+        }
       }
     }
 
@@ -1584,7 +1597,8 @@ function getTotalFriendsAndSocialData(rootState: RootState, userId: string) {
     socialData: findPrivateMessagingFriendsByUserId(rootState, userId),
     conversationIdPromise: () => getConversationId(client, getUserIdFromMatrix(userId)),
     updateTotalFriendRequestsPayload: getTotalFriendRequests(rootState),
-    totalFriends: getTotalFriends(rootState)
+    totalFriends: getTotalFriends(rootState),
+    isUseSocialClientEnabled: isUseSocialClientEnabled(rootState)
   }
 }
 
