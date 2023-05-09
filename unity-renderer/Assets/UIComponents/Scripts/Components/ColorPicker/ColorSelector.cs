@@ -32,7 +32,10 @@ public class ColorSelector : MonoBehaviour, IColorSelector
         foreach (var colorToggle in colorToggles)
         {
 #if UNITY_EDITOR
-            DestroyImmediate(colorToggle.gameObject);
+            if (Application.isPlaying)
+                Destroy(colorToggle.gameObject);
+            else
+                DestroyImmediate(colorToggle.gameObject);
 #else
             Destroy(colorToggle.gameObject);
 #endif
