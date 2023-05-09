@@ -1,6 +1,12 @@
-public interface IQuestStepComponentView
-{
-    void SetIsCompleted(bool isCompleted);
+using UnityEngine;
 
-    void SetQuestStepText(string stepText);
+namespace DCL.Quests
+{
+    public interface IQuestStepComponentView
+    {
+        void SetIsCompleted(bool isCompleted);
+        void SetQuestStepText(string stepText);
+        void SetCoordinates(Vector2Int coordinates);
+        void SetSupportsJumpIn(bool supportsJumpIn);
+    }
 }

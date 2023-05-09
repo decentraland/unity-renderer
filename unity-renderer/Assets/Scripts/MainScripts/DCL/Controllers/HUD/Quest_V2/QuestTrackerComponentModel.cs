@@ -10,5 +10,6 @@ namespace DCL.Quests
         public string questTitle;
         public Vector2Int coordinates;
         public List<QuestStepComponentModel> questSteps;
+        public bool supportsJumpIn;
     }
 }

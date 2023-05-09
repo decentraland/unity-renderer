@@ -24,7 +24,8 @@ namespace DCL.Backpack
         private NftCollectionType collectionType = NftCollectionType.OnChain | NftCollectionType.Base;
         private CancellationTokenSource loadThirdPartyCollectionsCancellationToken = new ();
 
-        public BackpackFiltersController(IBackpackFiltersComponentView view,
+        public BackpackFiltersController(
+            IBackpackFiltersComponentView view,
             IWearablesCatalogService wearablesCatalogService)
         {
             this.view = view;

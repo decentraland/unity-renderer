@@ -62,5 +62,16 @@ namespace DCL.Quests
 
             Assert.AreEqual(finalCoordinates, clickedCoordinates);
         }
+
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetJumpInButtonSupport(bool supports)
+        {
+            questTrackerComponentView.SetSupportsJumpIn(supports);
+
+            Assert.AreEqual(supports, questTrackerComponentView.jumpInButton.gameObject.activeSelf);
+        }
     }
 }

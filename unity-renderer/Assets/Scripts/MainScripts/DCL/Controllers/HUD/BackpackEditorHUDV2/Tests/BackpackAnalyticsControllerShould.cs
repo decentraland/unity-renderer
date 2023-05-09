@@ -23,32 +23,6 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void SendNewEquippedWearablesAnalyticsCorrectly()
-        {
-            // Arrange
-            var testWearable1 = new WearableItem { id = "newWearable1", i18n = new[] { new i18n() }, data = new WearableItem.Data { category = "test" } };
-            var testWearable2 = new WearableItem { id = "newWearable2", i18n = new[] { new i18n() }, data = new WearableItem.Data { category = "test" } };
-            var testWearable3 = new WearableItem { id = "newWearable3", i18n = new[] { new i18n() }, data = new WearableItem.Data { category = "test" } };
-            var oldWearables = new List<string> { testWearable1.id };
-            var newWearables = new List<string> { testWearable1.id, testWearable2.id, testWearable3.id };
-
-            wearablesCatalogService
-               .Configure()
-               .WearablesCatalog.Returns(new BaseDictionary<string, WearableItem>
-                {
-                    { testWearable1.id, testWearable1 },
-                    { testWearable2.id, testWearable2 },
-                    { testWearable3.id, testWearable3 },
-                });
-
-            // Act
-            backpackAnalyticsController.SendNewEquippedWearablesAnalytics(oldWearables, newWearables);
-
-            // Assert
-            analytics.Received(2).SendAnalytic("equip_wearable", Arg.Any<Dictionary<string, string>>());
-        }
-
-        [Test]
         public void SendAvatarEditSuccessNuxAnalyticCorrectly()
         {
             // Act
@@ -56,6 +30,46 @@ namespace DCL.Backpack
 
             // Assert
             newUserExperienceAnalytics.Received(1).AvatarEditSuccessNux();
+        }
+
+        [Test]
+        public void SendEquipAnalyticCorrectly()
+        {
+            backpackAnalyticsController.SendEquipWearableAnalytic("testcat", "rare", EquipWearableSource.Wearable);
+
+            analytics.Received(1).SendAnalytic("equip_wearable", Arg.Any<Dictionary<string, string>>());
+        }
+
+        [Test]
+        public void SendUnEquipAnalyticCorrectly()
+        {
+            backpackAnalyticsController.SendUnequippedWearableAnalytic("testcat", "rare", UnequipWearableSource.AvatarSlot);
+
+            analytics.Received(1).SendAnalytic("unequip_wearable", Arg.Any<Dictionary<string, string>>());
+        }
+
+        [Test]
+        public void SendWearableFilter()
+        {
+            backpackAnalyticsController.SendWearableFilter(false);
+
+            analytics.Received(1).SendAnalytic("wearable_filter", Arg.Any<Dictionary<string, string>>());
+        }
+
+        [Test]
+        public void SendWearableSort()
+        {
+            backpackAnalyticsController.SendWearableSortedBy(NftOrderByOperation.Date, false);
+
+            analytics.Received(1).SendAnalytic("wearable_sorted_by", Arg.Any<Dictionary<string, string>>());
+        }
+
+        [Test]
+        public void SendWearableSearch()
+        {
+            backpackAnalyticsController.SendWearableSearch("testsearch");
+
+            analytics.Received(1).SendAnalytic("wearable_search", Arg.Any<Dictionary<string, string>>());
         }
     }
 }
