@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using UIComponents.Scripts.Components;
@@ -73,6 +74,8 @@ namespace DCL.Backpack
                 pooledObjects[view] = poolObj;
                 categoriesByIndex[i++] = view;
             }
+
+            container.ForceUpdateLayout();
         }
 
         private void RemoveFilter(NftSubCategoryFilterModel model) =>
