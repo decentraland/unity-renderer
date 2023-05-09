@@ -318,6 +318,7 @@ namespace DCL.Backpack
             thirdPartyCollectionIdsFilter = selectedCollections;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+            view.SetInfoCardVisible(false);
         }
 
         private void SetSorting((NftOrderByOperation type, bool directionAscendent) newSorting)
@@ -325,6 +326,7 @@ namespace DCL.Backpack
             wearableSorting = newSorting;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+            view.SetInfoCardVisible(false);
         }
 
         private void SetTextFilter(string newText)
@@ -340,6 +342,7 @@ namespace DCL.Backpack
             collectionTypeMask = collectionType;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+            view.SetInfoCardVisible(false);
         }
 
         private void SetCategory(string category, bool supportColor, bool isSelected)
