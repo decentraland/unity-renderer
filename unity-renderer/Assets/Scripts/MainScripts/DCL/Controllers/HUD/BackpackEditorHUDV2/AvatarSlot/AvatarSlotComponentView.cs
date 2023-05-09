@@ -130,7 +130,7 @@ namespace DCL.Backpack
             model.category = category;
             model.allowsColorChange = typeColorSupporting.IsColorSupportedByType(category);
             typeImage.sprite = typeIcons.GetTypeImage(category);
-            tooltipCategoryText.text = category;
+            tooltipCategoryText.text = category.Replace("_", " ");
         }
 
         public void SetUnEquipAllowed(bool allowUnEquip) =>
