@@ -184,6 +184,8 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         return buttonComponentView;
     }
 
+#if UNITY_EDITOR
     public static T CreateUIComponentFromAssetDatabase<T>(string assetName) where T: BaseComponentView =>
         Instantiate(AssetDatabase.LoadAssetAtPath<T>($"Assets/UIComponents/Prefabs/{assetName}.prefab"));
+#endif
 }
