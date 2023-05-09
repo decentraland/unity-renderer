@@ -1,56 +1,171 @@
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using Decentraland.Quests;
+using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
-using System.Collections.Generic;
 using Task = System.Threading.Tasks.Task;
 
 namespace DCLServices.QuestsService.Tests
 {
+    [Category("EditModeCI")]
     public class QuestsServiceShould
     {
+        private QuestsService questsService;
+        private IClientQuestsService client;
+        private Channel<UserUpdate> channel; // to simulate the asyncEnumerable
+
+        [SetUp]
+        public void SetUp()
+        {
+            channel = Channel.CreateSingleConsumerUnbounded<UserUpdate>();
+            client = Substitute.For<IClientQuestsService>();
+            client.Configure().Subscribe(Arg.Any<UserAddress>()).Returns((x) => channel.Reader.ReadAllAsync());
+            questsService = new QuestsService(client);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            questsService?.Dispose();
+        }
+
         [Test]
-        public async Task TestCachedTasks()
+        public void InitializeWithNoUserSubscription()
         {
-            block = true;
-            var orig = GetCachedDefinition("hola");
-            var copy = GetCachedDefinition("hola");
-            var copy2 = GetCachedDefinition("hola");
+            var anyQuestUpdated = false;
+            questsService.OnQuestUpdated += (x) => anyQuestUpdated = true;
 
-            UnblockIn(3).Forget();
-            (QuestDefinition origin, QuestDefinition copy, QuestDefinition copy2) results = await UniTask.WhenAll(orig, copy, copy2);
-
-            Assert.AreEqual("hola", results.origin.Steps[0].Id);
-            Assert.AreEqual("0", results.origin.Steps[0].Description);
-            Assert.AreEqual(results.origin, results.copy);
-            Assert.AreEqual(results.origin, results.copy2);
-        }
-
-        private static int created = 0;
-        private bool block = false;
-        private Dictionary<string, UniTask<QuestDefinition>> cachedDefinitions = new ();
-
-        private async UniTask UnblockIn(float seconds)
-        {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(seconds));
-            block = false;
-        }
-
-        private async UniTask<QuestDefinition> GetCachedDefinition(string questId)
-        {
-            if (!cachedDefinitions.TryGetValue(questId, out var cached))
+            channel.Writer.TryWrite(new UserUpdate()
             {
-                cached = GetDefinition(questId);
-                cachedDefinitions[questId] = cached;
+                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
+                QuestState = new QuestStateUpdate
+                {
+                    QuestInstanceId = "0"
+                },
+            });
+
+            channel.Writer.TryWrite(new UserUpdate()
+            {
+                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
+                QuestState = new QuestStateUpdate
+                {
+                    QuestInstanceId = "1"
+                },
+            });
+
+            Assert.IsFalse(anyQuestUpdated);
+            Assert.AreEqual(0, questsService.CurrentState.Count);
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(10)]
+        public void TriggerOnQuestUpdateEvents(int count)
+        {
+            int questsUpdated = 0;
+            questsService.OnQuestUpdated += (x) => questsUpdated++;
+
+            questsService.SetUserId("user");
+            for (int i = 0; i < count; i++)
+            {
+                channel.Writer.TryWrite(new UserUpdate()
+                {
+                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
+                    QuestState = new QuestStateUpdate
+                    {
+                        QuestInstanceId = i.ToString()
+                    },
+                });
             }
 
-            return await cached;
+            Assert.AreEqual(count, questsUpdated);
+            Assert.AreEqual(count, questsService.CurrentState.Count);
         }
 
-        async UniTask<QuestDefinition> GetDefinition(string questId)
+        [TestCase((uint)1)]
+        [TestCase((uint)5)]
+        [TestCase((uint)10)]
+        public void UpdateCurrentStateIfSameQuestIsUpdated(uint updates)
         {
-            await UniTask.WaitUntil(() => block != false);
+            QuestStateUpdate latestUpdate = null;
+            questsService.OnQuestUpdated += (x) => { latestUpdate = x; };
 
-            return new QuestDefinition() { Steps = { new[] { new Step() { Id = questId, Description = (created++).ToString() } } } };
+            questsService.SetUserId("user");
+            for (uint i = 0; i < updates; i++)
+            {
+                channel.Writer.TryWrite(new UserUpdate()
+                {
+                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
+                    QuestState = new QuestStateUpdate
+                    {
+                        QuestInstanceId = "quest_id",
+                        QuestState = new QuestState
+                        {
+                            StepsLeft = (updates-1) - i,
+                        },
+                    },
+                });
+            }
+
+            Assert.AreEqual(0, latestUpdate.QuestState.StepsLeft);
+            Assert.AreEqual(1, questsService.CurrentState.Count);
+            Assert.AreEqual(latestUpdate, questsService.CurrentState["quest_id"]);
+        }
+
+        [Test]
+        public void KeepCurrentStateUpdated()
+        {
+            var questStateUpdate = new QuestStateUpdate() { QuestInstanceId = "questInstanceId", };
+
+            questsService.SetUserId("user");
+            channel.Writer.TryWrite(new UserUpdate()
+            {
+                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
+                QuestState = questStateUpdate,
+            });
+
+            Assert.AreEqual(1, questsService.CurrentState.Count);
+            Assert.AreEqual(questStateUpdate, questsService.CurrentState["questInstanceId"]);
+        }
+
+        [Test]
+        public async Task StartQuest()
+        {
+            questsService.SetUserId("userId");
+            await questsService.StartQuest("questId");
+
+            client.Received().StartQuest(Arg.Is<StartQuestRequest>(s => s.QuestId == "questId" && s.UserAddress == "userId"));
+        }
+
+        [Test]
+        public async Task ThrowWhenStartingQuestWithNoUserIdSet()
+        {
+            await TestUtils.ThrowsAsync<UserIdNotSetException>(questsService.StartQuest("questId"));
+        }
+
+        [Test]
+        public async Task ThrowWhenAbortingQuestWithNoUserIdSet()
+        {
+            await TestUtils.ThrowsAsync<UserIdNotSetException>(questsService.AbortQuest("questId"));
+        }
+
+        [Test]
+        public void StopReceivingUpdatesWhenDisposing()
+        {
+            questsService.SetUserId("userId");
+            bool questUpdated = false;
+            questsService.OnQuestUpdated += (x) => questUpdated = true;
+
+            questsService.Dispose();
+            channel.Writer.TryWrite(new UserUpdate()
+            {
+                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
+                QuestState = new QuestStateUpdate(),
+            });
+
+            Assert.IsFalse(questUpdated);
+            Assert.AreEqual(0, questsService.stateCache.Count);
         }
     }
 }
