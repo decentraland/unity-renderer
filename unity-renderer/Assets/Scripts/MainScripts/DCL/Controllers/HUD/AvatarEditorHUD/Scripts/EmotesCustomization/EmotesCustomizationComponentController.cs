@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Emotes;
+using DCL.Providers;
 using UnityEngine;
 
 namespace DCL.EmotesCustomization
@@ -51,7 +53,7 @@ namespace DCL.EmotesCustomization
             Initialize(emotesCustomizationDataStore, emotesDataStore, exploreV2DataStore, hudsDataStore, parent);
         }
 
-        internal void Initialize(
+        internal async void Initialize(
             DataStore_EmotesCustomization emotesCustomizationDataStore,
             DataStore_Emotes emotesDataStore,
             DataStore_ExploreV2 exploreV2DataStore,
@@ -63,6 +65,7 @@ namespace DCL.EmotesCustomization
             this.exploreV2DataStore = exploreV2DataStore;
             this.hudsDataStore = hudsDataStore;
 
+            view = await CreateView();
             ConfigureView(parent);
             ConfigureShortcuts();
 
@@ -148,7 +151,6 @@ namespace DCL.EmotesCustomization
 
         private void ConfigureView(Transform parent)
         {
-            view = CreateView();
             if (view.viewTransform != null)
                 view.viewTransform.SetParent(parent, false);
             view.onEmoteEquipped += OnEmoteEquipped;
@@ -410,6 +412,7 @@ namespace DCL.EmotesCustomization
             }
         }
 
-        internal virtual IEmotesCustomizationComponentView CreateView() => EmotesCustomizationComponentView.Create();
+        internal virtual async UniTask<IEmotesCustomizationComponentView> CreateView() =>
+            await Environment.i.serviceLocator.Get<IAddressableResourceProvider>().Instantiate<IEmotesCustomizationComponentView>("EmotesCustomizationSection");
     }
 }
