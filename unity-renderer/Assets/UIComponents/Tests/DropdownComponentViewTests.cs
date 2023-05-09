@@ -11,7 +11,7 @@ public class DropdownComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        dropdownComponent = BaseComponentView.Create<DropdownComponentView>("Dropdown_MultiSelect");
+        dropdownComponent = BaseComponentView.CreateFromAssetDatabase<DropdownComponentView>("Dropdown_MultiSelect");
     }
 
     [TearDown]

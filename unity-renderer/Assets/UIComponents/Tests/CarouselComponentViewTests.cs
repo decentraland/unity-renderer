@@ -149,7 +149,7 @@ public class CarouselComponentViewTests
     public void AddItemCorrectly()
     {
         // Arrange
-        BaseComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        BaseComponentView testItem = BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common");
 
         // Act
         carouselComponent.AddItemWithDotsSelector(testItem);
@@ -162,7 +162,7 @@ public class CarouselComponentViewTests
     public void RemoveItemCorrectly()
     {
         // Arrange
-        BaseComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        BaseComponentView testItem = BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common");
         carouselComponent.AddItemWithDotsSelector(testItem);
 
         // Act
@@ -176,8 +176,8 @@ public class CarouselComponentViewTests
     public void GetItemsCorrectly()
     {
         // Arrange
-        ButtonComponentView testItem1 = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        ImageComponentView testItem2 = BaseComponentView.Create<ImageComponentView>("Image");
+        ButtonComponentView testItem1 = BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common");
+        ImageComponentView testItem2 = BaseComponentView.CreateFromAssetDatabase<ImageComponentView>("Image");
         List<BaseComponentView> testItems = new List<BaseComponentView>();
         testItems.Add(testItem1);
         testItems.Add(testItem2);
@@ -196,8 +196,8 @@ public class CarouselComponentViewTests
     public void ExtractItemsCorrectly()
     {
         // Arrange
-        ButtonComponentView testItem1 = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        ImageComponentView testItem2 = BaseComponentView.Create<ImageComponentView>("Image");
+        ButtonComponentView testItem1 = BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common");
+        ImageComponentView testItem2 = BaseComponentView.CreateFromAssetDatabase<ImageComponentView>("Image");
         List<BaseComponentView> testItems = new List<BaseComponentView>();
         testItems.Add(testItem1);
         testItems.Add(testItem2);
@@ -222,8 +222,8 @@ public class CarouselComponentViewTests
     public IEnumerator RemoveItemsCorrectly()
     {
         // Arrange
-        ButtonComponentView testItem1 = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        ImageComponentView testItem2 = BaseComponentView.Create<ImageComponentView>("Image");
+        ButtonComponentView testItem1 = BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common");
+        ImageComponentView testItem2 = BaseComponentView.CreateFromAssetDatabase<ImageComponentView>("Image");
         List<BaseComponentView> testItems = new List<BaseComponentView>();
         testItems.Add(testItem1);
         testItems.Add(testItem2);
@@ -333,7 +333,7 @@ public class CarouselComponentViewTests
     public void CreateItemCorrectly()
     {
         // Arrange
-        ButtonComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        ButtonComponentView testItem = BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common");
         string testName = "TestName";
 
         // Act
@@ -377,8 +377,8 @@ public class CarouselComponentViewTests
 
     private void FillCarouselWithSomeTestItems()
     {
-        ButtonComponentView testItem1 = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        ImageComponentView testItem2 = BaseComponentView.Create<ImageComponentView>("Image");
+        ButtonComponentView testItem1 = BaseComponentView.CreateFromAssetDatabase<ButtonComponentView>("Button_Common");
+        ImageComponentView testItem2 = BaseComponentView.CreateFromAssetDatabase<ImageComponentView>("Image");
         List<BaseComponentView> testItems = new List<BaseComponentView>();
         testItems.Add(testItem1);
         testItems.Add(testItem2);

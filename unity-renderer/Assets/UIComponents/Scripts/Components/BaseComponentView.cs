@@ -1,6 +1,7 @@
 using DCL;
 using System;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -182,4 +183,9 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
         return buttonComponentView;
     }
+
+    public static T CreateFromAssetDatabase<T>(string resourceName) where T: BaseComponentView =>
+        Instantiate(
+                AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/UIComponents/Prefabs/{resourceName}.prefab"))
+           .GetComponent<T>();
 }

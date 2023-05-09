@@ -6,7 +6,7 @@ public class ColumnsOrganizerComponentViewTests
     private ColumnsOrganizerComponentView columnsOrganizerComponent;
 
     [SetUp]
-    public void SetUp() { columnsOrganizerComponent = BaseComponentView.Create<ColumnsOrganizerComponentView>("ColumnsOrganizer"); }
+    public void SetUp() { columnsOrganizerComponent = BaseComponentView.CreateFromAssetDatabase<ColumnsOrganizerComponentView>("ColumnsOrganizer"); }
 
     [TearDown]
     public void TearDown()
