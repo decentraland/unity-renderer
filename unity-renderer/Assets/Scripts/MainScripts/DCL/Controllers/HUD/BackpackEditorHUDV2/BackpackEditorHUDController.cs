@@ -11,7 +11,7 @@ namespace DCL.Backpack
         private const string HAIR_CATEGORY = "hair";
         private const string EYEBROWS_CATEGORY = "eyebrows";
         private const string FACIAL_HAIR_CATEGORY = "facial_hair";
-        private const string BODYSHAPE_CATEGORY = "bodyshape";
+        private const string BODYSHAPE_CATEGORY = "body_shape";
 
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
@@ -369,6 +369,8 @@ namespace DCL.Backpack
         {
             currentSlotSelected = isSelected ? slotCategory : null;
             view.SetColorPickerVisibility(isSelected && supportColor);
+            if (isSelected && supportColor)
+                view.SetColorPickerAsSkinMode(slotCategory == BODYSHAPE_CATEGORY);
 
             switch (slotCategory)
             {
