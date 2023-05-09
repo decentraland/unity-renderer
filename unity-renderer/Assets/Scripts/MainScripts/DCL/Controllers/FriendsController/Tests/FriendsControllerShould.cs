@@ -603,6 +603,7 @@ namespace DCL.Social.Friends
                 var firstUserId = "userId";
                 var secondUserId = "userId2";
                 var thirdUserId = "userId3";
+                var fourthdUserId = "userId4";
 
                 var firstUser = new UserStatus()
                 {
@@ -622,13 +623,20 @@ namespace DCL.Social.Friends
                     userName = "searchText",
                 };
 
+                var fourthUser = new UserStatus()
+                {
+                    userId = fourthdUserId,
+                    userName = "searchText2",
+                };
+
                 // insert unsorted
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(fourthUser);
                 rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(thirdUser);
                 rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(secondUser);
                 rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(firstUser);
 
                 string[] response = await controller.GetFriendsAsync(100, 0, cancellationToken);
-                string[] expected = { firstUserId, secondUserId, thirdUserId };
+                string[] expected = { firstUserId, secondUserId, thirdUserId, fourthdUserId };
 
                 CollectionAssert.AreEqual(response, expected);
 
@@ -643,6 +651,11 @@ namespace DCL.Social.Friends
                 CollectionAssert.AreEqual(response, expected);
 
                 response = await controller.GetFriendsAsync("search", 10, cancellationToken);
+                expected = new[] { thirdUserId, fourthdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync("search", 1, cancellationToken);
                 expected = new[] { thirdUserId };
 
                 CollectionAssert.AreEqual(response, expected);
