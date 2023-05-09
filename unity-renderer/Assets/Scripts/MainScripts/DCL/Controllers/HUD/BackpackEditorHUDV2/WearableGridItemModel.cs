@@ -11,5 +11,6 @@ namespace DCL.Backpack
         public NftRarity Rarity { get; set; }
         public bool IsNew { get; set; }
         public string Category { get; set; }
+        public bool UnEquipAllowed { get; set; } = true;
     }
 }

@@ -128,7 +128,7 @@ namespace DCL.Backpack
             model.isEquipped = isEquipped;
 
             equipButton.gameObject.SetActive(!isEquipped);
-            unEquipButton.gameObject.SetActive(isEquipped);
+            unEquipButton.gameObject.SetActive(model.unEquipAllowed && isEquipped);
         }
 
         public void SetWearableId(string wearableId)

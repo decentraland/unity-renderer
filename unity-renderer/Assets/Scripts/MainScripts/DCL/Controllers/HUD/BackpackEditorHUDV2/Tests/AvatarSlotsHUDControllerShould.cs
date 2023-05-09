@@ -22,7 +22,7 @@ namespace DCL.Backpack
             avatarSlotsDefinition.slotsDefinition[0] = new SerializableKeyValuePair<string, List<string>>()
             {
                 key = "section1",
-                value = new List<string>(){ "bodyshape", "head", }
+                value = new List<string>(){ "body_shape", "head", }
             };
             avatarSlotsDefinition.slotsDefinition[1] = new SerializableKeyValuePair<string, List<string>>()
             {
@@ -46,13 +46,13 @@ namespace DCL.Backpack
             avatarSlotsHUDController.GenerateSlots();
 
             avatarSlotsView.Received().CreateAvatarSlotSection("section1", true);
-            avatarSlotsView.Received().AddSlotToSection("section1", "bodyshape");
-            avatarSlotsView.Received().AddSlotToSection("section1", "head");
+            avatarSlotsView.Received().AddSlotToSection("section1", "body_shape", false);
+            avatarSlotsView.Received().AddSlotToSection("section1", "head", true);
 
             avatarSlotsView.Received().CreateAvatarSlotSection("section2", false);
-            avatarSlotsView.Received().AddSlotToSection("section2", "tiara");
-            avatarSlotsView.Received().AddSlotToSection("section2", "mask");
-            avatarSlotsView.Received().AddSlotToSection("section2", "helmet");
+            avatarSlotsView.Received().AddSlotToSection("section2", "tiara", true);
+            avatarSlotsView.Received().AddSlotToSection("section2", "mask", true);
+            avatarSlotsView.Received().AddSlotToSection("section2", "helmet", true);
         }
 
         [Test]

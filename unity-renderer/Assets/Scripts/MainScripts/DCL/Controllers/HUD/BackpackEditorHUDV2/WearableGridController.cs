@@ -231,6 +231,7 @@ namespace DCL.Backpack
                 IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
                 IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
                 IsSelected = false,
+                UnEquipAllowed = CanWearableBeUnEquipped(wearable),
             };
         }
 
@@ -262,6 +263,7 @@ namespace DCL.Backpack
                 isEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearableId),
                 removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
+                unEquipAllowed = CanWearableBeUnEquipped(wearable),
             });
 
             OnWearableSelected?.Invoke(wearableId);
@@ -358,5 +360,10 @@ namespace DCL.Backpack
             await UniTask.NextFrame(cancellationToken);
             LoadWearables();
         }
+
+        private bool CanWearableBeUnEquipped(WearableItem wearable) =>
+            wearable.data.category != WearableLiterals.Categories.BODY_SHAPE &&
+            wearable.data.category != WearableLiterals.Categories.EYES &&
+            wearable.data.category != WearableLiterals.Categories.MOUTH;
     }
 }

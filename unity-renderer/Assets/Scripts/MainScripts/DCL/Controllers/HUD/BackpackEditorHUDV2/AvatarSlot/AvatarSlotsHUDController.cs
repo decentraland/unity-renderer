@@ -29,7 +29,7 @@ namespace DCL.Backpack
                 SerializableKeyValuePair<string, List<string>> section = avatarSlotsDefinition.slotsDefinition[i];
                 avatarSlotsView.CreateAvatarSlotSection(section.key, i < avatarSlotsDefinition.slotsDefinition.Length - 1);
                 foreach (string avatarSlotSection in section.value)
-                    avatarSlotsView.AddSlotToSection(section.key, avatarSlotSection);
+                    avatarSlotsView.AddSlotToSection(section.key, avatarSlotSection, CanAvatarSlotBeUnEquipped(avatarSlotSection));
             }
             avatarSlotsView.RebuildLayout();
         }
@@ -56,5 +56,10 @@ namespace DCL.Backpack
 
         public void UnEquip(string category) =>
             avatarSlotsView.ResetCategorySlot(category);
+
+        private bool CanAvatarSlotBeUnEquipped(string avatarSlotSection) =>
+            avatarSlotSection != WearableLiterals.Categories.BODY_SHAPE &&
+            avatarSlotSection != WearableLiterals.Categories.EYES &&
+            avatarSlotSection != WearableLiterals.Categories.MOUTH;
     }
 }

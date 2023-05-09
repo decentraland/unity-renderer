@@ -10,6 +10,7 @@ namespace DCL.Backpack
 
         void SetIsHidden(bool isHidden, string hiddenBy);
         void SetCategory(string category);
+        void SetUnEquipAllowed(bool allowUnEquip);
         void SetNftImage(string imageUri);
         void SetRarity(string rarity);
         void SetWearableId(string wearableId);

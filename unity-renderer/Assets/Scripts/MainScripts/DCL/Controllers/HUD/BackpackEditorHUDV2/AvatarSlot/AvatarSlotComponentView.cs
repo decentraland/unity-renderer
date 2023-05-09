@@ -133,6 +133,9 @@ namespace DCL.Backpack
             tooltipCategoryText.text = category;
         }
 
+        public void SetUnEquipAllowed(bool allowUnEquip) =>
+            model.unEquipAllowed = allowUnEquip;
+
         public void SetNftImage(string imageUri)
         {
             model.imageUri = imageUri;
@@ -164,7 +167,7 @@ namespace DCL.Backpack
             focusedImage.enabled = true;
             tooltipContainer.gameObject.SetActive(true);
 
-            if (!string.IsNullOrEmpty(model.imageUri))
+            if (model.unEquipAllowed && !string.IsNullOrEmpty(model.imageUri))
                 unequipButton.gameObject.SetActive(true);
 
             if(model.isHidden)

@@ -16,5 +16,6 @@ namespace DCL.Backpack
         public List<string> hideList;
         public List<string> removeList;
         public string wearableId;
+        public bool unEquipAllowed = true;
     }
 }

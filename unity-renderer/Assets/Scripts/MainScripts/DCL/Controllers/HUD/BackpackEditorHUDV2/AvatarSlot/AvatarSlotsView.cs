@@ -35,10 +35,11 @@ namespace DCL.Backpack
             Utils.ForceRebuildLayoutImmediate(avatarSlotsContainer);
         }
 
-        public void AddSlotToSection(string sectionName, string slotCategory)
+        public void AddSlotToSection(string sectionName, string slotCategory, bool allowUnEquip)
         {
             IAvatarSlotComponentView avatarSlot = Instantiate(avatarSlotPrefab, avatarSlotSections[sectionName]).GetComponent<IAvatarSlotComponentView>();
             avatarSlot.SetCategory(slotCategory);
+            avatarSlot.SetUnEquipAllowed(allowUnEquip);
             avatarSlots.Add(slotCategory, avatarSlot);
             avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, isToggled);
             avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);

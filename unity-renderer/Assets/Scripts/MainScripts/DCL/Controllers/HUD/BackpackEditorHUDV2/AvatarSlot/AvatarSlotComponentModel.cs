@@ -13,5 +13,6 @@ namespace DCL.Backpack
         public bool allowsColorChange;
         public string wearableId;
         public string[] hidesList;
+        public bool unEquipAllowed = true;
     }
 }
