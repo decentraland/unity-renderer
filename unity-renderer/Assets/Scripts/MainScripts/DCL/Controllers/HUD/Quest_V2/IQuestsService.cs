@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Decentraland.Quests;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 public interface IQuestsService

@@ -25,22 +25,23 @@ public class QuestsController : IDisposable
         this.questOfferComponentView = questOfferComponentView;
 
         questsService.OnQuestUpdated += UpdateQuestTracker;
+        //UpdateQuestTracker(questsService.CurrentState);
 
         questOfferComponentView.OnQuestAccepted += AccceptQuest;
     }
 
     private void UpdateQuestTracker(QuestStateUpdate questStateUpdate)
     {
+        //if(questStateUpdate.QuestState.StepsLeft == 0 && questStateUpdate.QuestState.CurrentSteps.Values)
+
         List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
         foreach (var step in questStateUpdate.QuestState.CurrentSteps)
         {
             foreach (Task task in step.Value.TasksCompleted)
-                foreach (var action in task.ActionItems)
-                    questSteps.Add(new QuestStepComponentModel {isCompleted = true, text = action.Type});
+                questSteps.Add(new QuestStepComponentModel {isCompleted = true, text = task.Description});
 
             foreach (Task task in step.Value.ToDos)
-                foreach (var action in task.ActionItems)
-                    questSteps.Add(new QuestStepComponentModel {isCompleted = false, text = action.Type});
+                questSteps.Add(new QuestStepComponentModel {isCompleted = false, text = task.Description});
         }
         questTrackerComponentView.SetQuestTitle(questStateUpdate.Name);
         questTrackerComponentView.SetQuestSteps(questSteps);
@@ -49,6 +50,11 @@ public class QuestsController : IDisposable
     private void AccceptQuest(string questId)
     {
         questsService.StartQuest(questId);
+    }
+
+    private void AbortQuest(string questId)
+    {
+        questsService.AbortQuest(questId);
     }
 
     public void Dispose()
