@@ -206,6 +206,16 @@ namespace DCL.Backpack
         }
 
         [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetInfoCardVisible(bool isVisible)
+        {
+            view.SetInfoCardVisible(isVisible);
+
+            Assert.AreEqual(isVisible, view.infoCardComponentView.gameObject.activeSelf);
+        }
+
+        [Test]
         public void SetBreadcrumb()
         {
             var model = new NftBreadcrumbModel

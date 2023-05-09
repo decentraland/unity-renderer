@@ -332,6 +332,7 @@ namespace DCL.Backpack
             nameFilter = newText;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+            view.SetInfoCardVisible(false);
         }
 
         private void SetCollectionType(NftCollectionType collectionType)
@@ -346,6 +347,7 @@ namespace DCL.Backpack
             categoryFilter = isSelected ? category : null;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+            view.SetInfoCardVisible(false);
         }
 
         private async UniTaskVoid ThrottleLoadWearablesWithCurrentFilters(CancellationToken cancellationToken)

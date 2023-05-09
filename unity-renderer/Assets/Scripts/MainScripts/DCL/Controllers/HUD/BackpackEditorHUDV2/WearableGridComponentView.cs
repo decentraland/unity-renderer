@@ -132,18 +132,21 @@ namespace DCL.Backpack
                 view.Unselect();
 
             selectedWearableItem = null;
-            infoCardComponentView.SetVisible(false);
+            SetInfoCardVisible(false);
         }
 
         public void SelectWearable(string wearableId)
         {
             selectedWearableItem = wearablesById[wearableId];
             selectedWearableItem.Select();
-            infoCardComponentView.SetVisible(true);
+            SetInfoCardVisible(true);
         }
 
         public void FillInfoCard(InfoCardComponentModel model) =>
             infoCardComponentView.SetModel(model);
+
+        public void SetInfoCardVisible(bool isVisible) =>
+            infoCardComponentView.SetVisible(isVisible);
 
         public void SetWearableBreadcrumb(NftBreadcrumbModel model) =>
             wearablesBreadcrumbComponentView.SetModel(model);
