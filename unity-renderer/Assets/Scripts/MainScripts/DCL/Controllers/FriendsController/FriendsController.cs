@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Tasks;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -314,18 +315,25 @@ namespace DCL.Social.Friends
             if (useSocialApiBridge)
             {
                 var friendIds = new List<string>();
+                var friendsToReturn = new List<string>();
 
                 for (int i = 0; i < friendsSortedByName.Values.Count; i++)
                 {
                     var friend = friendsSortedByName.Values[i];
+
+                    if (friend.userName.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        friend.userId.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        friendsToReturn.Add(friend.userId);
+                    }
+
+                    if (friendsToReturn.Count > limit)
+                    {
+                        break;
+                    }
                 }
 
-                return friendsSortedByName.Values.Where(friend =>
-                                               friend.userName.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                               friend.userId.IndexOf(userNameOrId, StringComparison.OrdinalIgnoreCase) >= 0)
-                                          .Take(limit)
-                                          .Select(friend => friend.userId)
-                                          .ToArray();
+                return friendsToReturn.ToArray();
             }
 
             var payload = await apiBridge.GetFriendsAsync(userNameOrId, limit, cancellationToken);
