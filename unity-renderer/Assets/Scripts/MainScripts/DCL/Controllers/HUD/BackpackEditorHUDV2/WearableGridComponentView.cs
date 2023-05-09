@@ -27,8 +27,8 @@ namespace DCL.Backpack
         public event Action<string> OnFilterRemoved;
         public event Action OnGoToMarketplace;
         public event Action<WearableGridItemModel> OnWearableSelected;
-        public event Action<WearableGridItemModel, EquipWearableSource> OnWearableEquipped;
-        public event Action<WearableGridItemModel, UnequipWearableSource> OnWearableUnequipped;
+        public event Action<WearableGridItemModel> OnWearableEquipped;
+        public event Action<WearableGridItemModel> OnWearableUnequipped;
 
         private void Awake()
         {
@@ -45,8 +45,8 @@ namespace DCL.Backpack
             wearablesBreadcrumbComponentView.OnFilterSelected += reference => OnFilterSelected?.Invoke(reference);
             wearablesBreadcrumbComponentView.OnFilterRemoved += reference => OnFilterRemoved?.Invoke(reference);
 
-            infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model, EquipWearableSource.InfoCard);
-            infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model, UnequipWearableSource.InfoCard);
+            infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model);
+            infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model);
 
             goToMarketplaceButton.onClick.AddListener(() => OnGoToMarketplace?.Invoke());
         }
@@ -152,10 +152,10 @@ namespace DCL.Backpack
             OnWearableSelected?.Invoke(model);
 
         private void HandleWearableEquipped(WearableGridItemModel model) =>
-            OnWearableEquipped?.Invoke(model, EquipWearableSource.Wearable);
+            OnWearableEquipped?.Invoke(model);
 
         private void HandleWearableUnequipped(WearableGridItemModel model) =>
-            OnWearableUnequipped?.Invoke(model, UnequipWearableSource.Wearable);
+            OnWearableUnequipped?.Invoke(model);
 
         private void UpdateEmptyState()
         {

@@ -68,8 +68,7 @@ namespace DCL.Backpack
                 dataStore.backpackV2,
                 Substitute.For<IBrowserBridge>(),
                 backpackFiltersController,
-                avatarSlotsHUDController,
-                Substitute.For<IBackpackAnalyticsController>());
+                avatarSlotsHUDController);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
@@ -120,9 +119,9 @@ namespace DCL.Backpack
         {
             // Arrange
             userProfile.avatar.wearables.Clear();
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" }, EquipWearableSource.Wearable);
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" }, EquipWearableSource.Wearable);
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" }, EquipWearableSource.Wearable);
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
 
             view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
                 Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
@@ -143,9 +142,10 @@ namespace DCL.Backpack
         {
             // Arrange
             EquipAndSaveCorrectly();
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" }, UnequipWearableSource.None);
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" }, UnequipWearableSource.None);
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" }, UnequipWearableSource.None);
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
+
 
             view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
                 Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
@@ -259,10 +259,10 @@ namespace DCL.Backpack
                 Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
                 Arg.Any<Action>());
 
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel
             {
                 WearableId = bodyShapeId,
-            }, EquipWearableSource.Wearable);
+            });
 
             Assert.IsFalse(userProfile.avatar.wearables.Contains(bodyShapeId));
             Assert.IsTrue(dataStore.backpackV2.previewEquippedWearables.Contains(bodyShapeId));

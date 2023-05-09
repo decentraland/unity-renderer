@@ -61,8 +61,7 @@ namespace DCL.Backpack
                 dataStore,
                 browserBridge,
                 backpackFiltersController,
-                avatarSlotsHUDController,
-                Substitute.For<IBackpackAnalyticsController>());
+                avatarSlotsHUDController);
         }
 
         [TearDown]
