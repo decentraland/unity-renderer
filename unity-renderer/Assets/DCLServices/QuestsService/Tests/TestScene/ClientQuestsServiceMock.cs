@@ -15,9 +15,9 @@ namespace DCLServices.QuestsService.Tests.TestScene
         [SerializeField] TextAsset questDefinitionsText;
         [SerializeField] TextAsset questUpdatesText;
 
+        private int amountToDequeue = 0;
         private Queue<QuestStateUpdate> questStateUpdates = new Queue<QuestStateUpdate>();
         private Dictionary<string, ProtoQuest> questDefinitions = new Dictionary<string, ProtoQuest>();
-        private int amountToDequeue = 0;
 
 
         private void Awake()

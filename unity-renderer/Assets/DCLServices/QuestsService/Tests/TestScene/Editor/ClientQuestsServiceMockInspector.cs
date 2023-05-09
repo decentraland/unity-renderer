@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace DCLServices.QuestsService.Tests.TestScene.Editor
 {
     [CustomEditor(typeof(ClientQuestsServiceMock))]
-    public class ClientQuestsServiceMockMockInspector : UnityEditor.Editor
+    public class ClientQuestsServiceMockInspector : UnityEditor.Editor
     {
         private VisualElement root;
 

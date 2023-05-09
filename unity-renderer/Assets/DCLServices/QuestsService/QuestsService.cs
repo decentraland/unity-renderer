@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Castle.Core.Internal;
+using Cysharp.Threading.Tasks;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,12 @@ namespace DCLServices.QuestsService
     {
         public event Action<QuestStateUpdate> OnQuestUpdated;
         public IReadOnlyDictionary<string, QuestStateUpdate> CurrentState => stateCache;
+        internal readonly Dictionary<string, QuestStateUpdate> stateCache = new ();
 
-        private readonly IClientQuestsService clientQuestsService;
-        private readonly Dictionary<string, UniTaskCompletionSource<ProtoQuest>> definitionCache = new ();
-        private readonly Dictionary<string, QuestStateUpdate> stateCache = new ();
-        private string userId = null;
-        private CancellationTokenSource userSubscribeCt = null;
+        internal readonly IClientQuestsService clientQuestsService;
+        internal string userId = null;
+        internal readonly Dictionary<string, UniTaskCompletionSource<ProtoQuest>> definitionCache = new ();
+        internal CancellationTokenSource userSubscribeCt = null;
 
         public QuestsService(IClientQuestsService clientQuestsService)
         {
@@ -59,12 +60,18 @@ namespace DCLServices.QuestsService
 
         public async UniTask<StartQuestResponse> StartQuest(string questId)
         {
-            return await clientQuestsService.StartQuest(new StartQuestRequest { QuestId = questId });
+            if(userId.IsNullOrEmpty())
+                throw new UserIdNotSetException();
+
+            return await clientQuestsService.StartQuest(new StartQuestRequest { QuestId = questId, UserAddress = userId });
         }
 
         public async UniTask<AbortQuestResponse> AbortQuest(string questInstanceId)
         {
-            return await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId });
+            if(userId.IsNullOrEmpty())
+                throw new UserIdNotSetException();
+
+            return await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId, UserAddress = userId });
         }
 
         public async UniTask<ProtoQuest> GetDefinition(string questId, CancellationToken cancellationToken = default)
@@ -92,7 +99,6 @@ namespace DCLServices.QuestsService
             userSubscribeCt?.Cancel();
             userSubscribeCt?.Dispose();
             userSubscribeCt = null;
-
         }
     }
 }
