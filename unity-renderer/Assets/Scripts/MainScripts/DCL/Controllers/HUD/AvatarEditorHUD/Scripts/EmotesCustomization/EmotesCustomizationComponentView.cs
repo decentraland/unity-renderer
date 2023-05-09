@@ -233,13 +233,5 @@ namespace DCL.EmotesCustomization
                 .Select(x => x as EmoteCardComponentView)
                 .ToList();
         }
-
-        internal static IEmotesCustomizationComponentView Create()
-        {
-            EmotesCustomizationComponentView emotesCustomizationComponentView = Instantiate(Resources.Load<GameObject>("EmotesCustomization/EmotesCustomizationSection")).GetComponent<EmotesCustomizationComponentView>();
-            emotesCustomizationComponentView.name = "_EmotesCustomizationSection";
-
-            return emotesCustomizationComponentView;
-        }
     }
 }
