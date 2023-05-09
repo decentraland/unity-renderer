@@ -115,8 +115,6 @@ public class HUDController : IHUDController
     public QuestsTrackerHUDController questsTrackerHUD =>
         GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
 
-    public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
-
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -372,11 +370,6 @@ public class HUDController : IHUDController
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (configuration.active)
                     questsTrackerHUD.Initialize(QuestsController.i);
-                break;
-            case HUDElementID.SIGNUP:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                if (configuration.active)
-                    signupHUD.Initialize();
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message

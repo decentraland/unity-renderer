@@ -11,7 +11,7 @@ namespace DCL.Backpack
         private const string HAIR_CATEGORY = "hair";
         private const string EYEBROWS_CATEGORY = "eyebrows";
         private const string FACIAL_HAIR_CATEGORY = "facial_hair";
-        private const string BODYSHAPE_CATEGORY = "bodyshape";
+        private const string BODYSHAPE_CATEGORY = "body_shape";
 
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
@@ -163,7 +163,9 @@ namespace DCL.Backpack
 
             previewEquippedWearables.Set(userProfile.avatar.wearables);
 
+            UnEquipCurrentBodyShape();
             EquipBodyShape(bodyShape);
+
             model.skinColor = userProfile.avatar.skinColor;
             model.hairColor = userProfile.avatar.hairColor;
             model.eyesColor = userProfile.avatar.eyeColor;
@@ -184,6 +186,7 @@ namespace DCL.Backpack
 
                 model.wearables.Add(wearable.id, wearable);
                 avatarSlotsHUDController.Equip(wearable, userProfile.avatar.bodyShape);
+                wearableGridController.Equip(wearable.id);
             }
 
             view.UpdateAvatarPreview(model.ToAvatarModel());
@@ -214,11 +217,13 @@ namespace DCL.Backpack
                 return;
             }
 
-            if (model.bodyShape == bodyShape)
-                return;
-
             model.bodyShape = bodyShape;
+            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id);
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
+            wearableGridController.Equip(bodyShape.id);
+            previewEquippedWearables.Add(bodyShape.id);
+
+            avatarIsDirty = true;
         }
 
         private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
@@ -246,7 +251,6 @@ namespace DCL.Backpack
 
             avatarModel.emotes = emoteEntries;
 
-            backpackAnalyticsController.SendNewEquippedWearablesAnalytics(ownUserProfile.avatar.wearables, avatarModel.wearables);
             dataStore.emotesCustomization.equippedEmotes.Set(dataStore.emotesCustomization.unsavedEquippedEmotes.Get());
 
             userProfileBridge.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, dataStore.common.isSignUpFlow.Get());
@@ -285,7 +289,7 @@ namespace DCL.Backpack
             view.UpdateAvatarPreview(preEquipModel.ToAvatarModel());
         }
 
-        private void EquipWearable(string wearableId)
+        private void EquipWearable(string wearableId, EquipWearableSource source)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -293,32 +297,67 @@ namespace DCL.Backpack
                 return;
             }
 
-            foreach (var w in model.wearables.Values)
+            if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
             {
-                if (w.data.category != wearable.data.category)
-                    continue;
+                UnEquipCurrentBodyShape();
+                EquipBodyShape(wearable);
+            }
+            else
+            {
+                foreach (var w in model.wearables.Values)
+                {
+                    if (w.data.category != wearable.data.category)
+                        continue;
 
-                UnEquipWearable(w.id);
-                break;
+                    UnEquipWearable(w.id, UnequipWearableSource.None);
+                    break;
+                }
+
+                model.wearables.Add(wearableId, wearable);
+                previewEquippedWearables.Add(wearableId);
+                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape);
+                wearableGridController.Equip(wearableId);
             }
 
-            model.wearables.Add(wearableId, wearable);
-            previewEquippedWearables.Add(wearableId);
-
-            avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape);
-            wearableGridController.Equip(wearableId);
-
             avatarIsDirty = true;
-
+            backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
-        private void UnEquipWearable(string wearableId)
+        private void UnEquipCurrentBodyShape()
         {
-            avatarSlotsHUDController.UnEquip(model.wearables[wearableId].data.category);
+            if (model.bodyShape.id == "NOT_LOADED") return;
+
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(model.bodyShape.id, out WearableItem wearable))
+            {
+                Debug.LogError($"Cannot unequip body shape {model.bodyShape.id}");
+                return;
+            }
+
+            UnEquipWearable(wearable, UnequipWearableSource.None);
+        }
+
+        private void UnEquipWearable(string wearableId, UnequipWearableSource source)
+        {
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            {
+                Debug.LogError($"Cannot unequip wearable {wearableId}");
+                return;
+            }
+
+            UnEquipWearable(wearable, source);
+        }
+
+        private void UnEquipWearable(WearableItem wearable, UnequipWearableSource source)
+        {
+            string wearableId = wearable.id;
+
+            if(source != UnequipWearableSource.None)
+                backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
+
+            avatarSlotsHUDController.UnEquip(wearable.data.category);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
-
             wearableGridController.UnEquip(wearableId);
 
             avatarIsDirty = true;
@@ -330,6 +369,8 @@ namespace DCL.Backpack
         {
             currentSlotSelected = isSelected ? slotCategory : null;
             view.SetColorPickerVisibility(isSelected && supportColor);
+            if (isSelected && supportColor)
+                view.SetColorPickerAsSkinMode(slotCategory == BODYSHAPE_CATEGORY);
 
             switch (slotCategory)
             {
