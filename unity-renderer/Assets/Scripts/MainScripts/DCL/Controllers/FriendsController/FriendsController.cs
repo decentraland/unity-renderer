@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Tasks;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -289,13 +288,15 @@ namespace DCL.Social.Friends
             if (useSocialApiBridge)
             {
                 int startIndex = skip;
-                int endIndex = Math.Min(skip + limit, friendsSortedByName.Count - 1);
-                var friendIds = new string[endIndex - startIndex];
+                int endIndex = Math.Min(skip + limit, friendsSortedByName.Count) - 1;
+                int arraySize = endIndex - startIndex + 1;
+
+                var friendIds = new string[arraySize];
 
                 for (int i = startIndex; i <= endIndex; i++)
                 {
                     string key = friendsSortedByName.Keys[i];
-                    friendIds[i - startIndex] = friendsSortedByName[key].userId;
+                    friendIds.SetValue(friendsSortedByName[key].userId, i - startIndex);
                 }
 
                 return friendIds;
