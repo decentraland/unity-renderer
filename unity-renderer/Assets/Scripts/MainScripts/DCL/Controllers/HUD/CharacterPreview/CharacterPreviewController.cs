@@ -27,6 +27,9 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             DefaultEditing,
             FaceEditing,
+            ChestEditing,
+            LegsEditing,
+            FeetEditing,
             FaceSnapshot,
             BodySnapshot,
             Preview
@@ -36,7 +39,10 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         [SerializeField] private new Camera camera;
         [SerializeField] private Transform defaultEditingTemplate;
+        [SerializeField] private Transform chestEditingTemplate;
+        [SerializeField] private Transform legsEditingTemplate;
         [SerializeField] private Transform faceEditingTemplate;
+        [SerializeField] private Transform feetEditingTemplate;
 
         [SerializeField] private Transform faceSnapshotTemplate;
         [SerializeField] private Transform bodySnapshotTemplate;
@@ -61,6 +67,9 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             {
                 { CameraFocus.DefaultEditing, defaultEditingTemplate },
                 { CameraFocus.FaceEditing, faceEditingTemplate },
+                { CameraFocus.ChestEditing, chestEditingTemplate },
+                { CameraFocus.LegsEditing, legsEditingTemplate },
+                { CameraFocus.FeetEditing, feetEditingTemplate },
                 { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
                 { CameraFocus.BodySnapshot, bodySnapshotTemplate },
                 { CameraFocus.Preview, previewTemplate }

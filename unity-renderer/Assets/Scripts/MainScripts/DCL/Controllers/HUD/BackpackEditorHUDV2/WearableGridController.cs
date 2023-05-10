@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Browser;
 using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -354,7 +355,7 @@ namespace DCL.Backpack
             view.SetInfoCardVisible(false);
         }
 
-        private void SetCategory(string category, bool supportColor, bool isSelected)
+        private void SetCategory(string category, bool supportColor, CharacterPreviewController.CameraFocus previewCameraFocus, bool isSelected)
         {
             categoryFilter = isSelected ? category : null;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();

@@ -1,3 +1,4 @@
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace DCL.Backpack
         void PlayPreviewEmote(string emoteId);
         void ResetPreviewEmote();
         void UpdateAvatarPreview(AvatarModel avatarModel);
+        void SetAvatarPreviewFocus(CharacterPreviewController.CameraFocus focus, bool useTransition = true);
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
         void SetColorPickerVisibility(bool isActive);
         void SetColorPickerAsSkinMode(bool isSkinMode);

@@ -72,6 +72,9 @@ namespace DCL.Backpack
                 (face256, body) => onSuccess?.Invoke(face256, body),
                 () => onFailed?.Invoke());
 
+        public void SetFocus(CharacterPreviewController.CameraFocus focus, bool useTransition = true) =>
+            characterPreviewController.SetFocus(focus, useTransition);
+
         private void OnPreviewRotation(float angularVelocity) =>
             characterPreviewController.Rotate(angularVelocity);
 

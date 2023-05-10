@@ -1,3 +1,4 @@
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ namespace DCL.Backpack
 {
     public class AvatarSlotsHUDController
     {
-        public event Action<string, bool, bool> OnToggleSlot;
+        public event Action<string, bool, CharacterPreviewController.CameraFocus, bool> OnToggleSlot;
 
         private readonly IAvatarSlotsView avatarSlotsView;
         private string lastSelectedSlot;
@@ -35,14 +36,14 @@ namespace DCL.Backpack
         }
 
         // TODO: this method should be private
-        public void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
+        public void ToggleSlot(string slotCategory, bool supportColor, CharacterPreviewController.CameraFocus previewCameraFocus, bool isSelected)
         {
             if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
                 avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);
 
             lastSelectedSlot = isSelected ? slotCategory : "";
 
-            OnToggleSlot?.Invoke(slotCategory, supportColor, isSelected);
+            OnToggleSlot?.Invoke(slotCategory, supportColor, previewCameraFocus, isSelected);
         }
 
         public void Dispose()

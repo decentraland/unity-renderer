@@ -1,3 +1,4 @@
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -58,10 +59,10 @@ namespace DCL.Backpack
         [Test]
         public void ToggleSlotCorrectly()
         {
-            avatarSlotsHUDController.ToggleSlot("tiara", false, true);
+            avatarSlotsHUDController.ToggleSlot("tiara", false, CharacterPreviewController.CameraFocus.DefaultEditing, true);
             avatarSlotsView.DidNotReceive().DisablePreviousSlot(Arg.Any<string>());
 
-            avatarSlotsHUDController.ToggleSlot("mask", false, true);
+            avatarSlotsHUDController.ToggleSlot("mask", false, CharacterPreviewController.CameraFocus.DefaultEditing, true);
             avatarSlotsView.Received().DisablePreviousSlot("tiara");
         }
     }

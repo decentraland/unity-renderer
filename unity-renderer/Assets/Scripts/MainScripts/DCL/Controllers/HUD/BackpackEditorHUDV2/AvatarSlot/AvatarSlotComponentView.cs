@@ -3,6 +3,7 @@ using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using DG.Tweening;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ namespace DCL.Backpack
         private const float SHAKE_ANIMATION_TIME = 0.75f;
 
         [SerializeField] internal NftTypeColorSupportingSO typeColorSupporting;
+        [SerializeField] internal NftTypePreviewCameraFocusSO previewCameraFocus;
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal RectTransform nftContainer;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
@@ -129,6 +131,7 @@ namespace DCL.Backpack
         {
             model.category = category;
             model.allowsColorChange = typeColorSupporting.IsColorSupportedByType(category);
+            model.previewCameraFocus = previewCameraFocus.GetPreviewCameraFocus(category);
             typeImage.sprite = typeIcons.GetTypeImage(category);
             tooltipCategoryText.text = category.Replace("_", " ");
         }
