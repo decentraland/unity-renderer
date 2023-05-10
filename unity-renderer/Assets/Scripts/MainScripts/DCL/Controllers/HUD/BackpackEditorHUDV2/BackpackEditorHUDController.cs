@@ -1,8 +1,10 @@
+using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace DCL.Backpack
 {
@@ -19,6 +21,7 @@ namespace DCL.Backpack
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
         private string currentSlotSelected;
         private bool avatarIsDirty;
+        private CancellationTokenSource loadProfileCancellationToken = new ();
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
@@ -49,7 +52,7 @@ namespace DCL.Backpack
             this.avatarSlotsHUDController = avatarSlotsHUDController;
 
             avatarSlotsHUDController.GenerateSlots();
-            ownUserProfile.OnUpdate += LoadUserProfile;
+            ownUserProfile.OnUpdate += LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
@@ -63,9 +66,11 @@ namespace DCL.Backpack
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
             wearableGridController.OnHideUnhidePressed += UpdateOverrideHides;
+            wearableGridController.OnWearableEquipped += EquipWearableFromGrid;
+            wearableGridController.OnWearableUnequipped += UnEquipWearableFromGrid;
 
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
-            avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearable;
+            avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearableFromSlot;
 
             view.SetColorPickerVisibility(false);
             view.OnColorChanged += OnWearableColorChanged;
@@ -75,7 +80,7 @@ namespace DCL.Backpack
 
         public void Dispose()
         {
-            ownUserProfile.OnUpdate -= LoadUserProfile;
+            ownUserProfile.OnUpdate -= LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange -= OnBackpackVisibleChanged;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
 
@@ -84,12 +89,13 @@ namespace DCL.Backpack
             backpackEmotesSectionController.Dispose();
 
             wearableGridController.OnWearableSelected -= SelectWearable;
-            wearableGridController.OnWearableEquipped -= EquipWearable;
-            wearableGridController.OnWearableUnequipped -= UnEquipWearable;
+            wearableGridController.OnWearableEquipped -= EquipWearableFromGrid;
+            wearableGridController.OnWearableUnequipped -= UnEquipWearableFromGrid;
             wearableGridController.Dispose();
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
             avatarSlotsHUDController.OnUnequipFromSlot -= UnEquipWearable;
+            avatarSlotsHUDController.OnUnequipFromSlot -= UnEquipWearableFromSlot;
             avatarSlotsHUDController.Dispose();
 
             view.OnColorChanged -= OnWearableColorChanged;
@@ -119,8 +125,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController.LoadEmotes();
                 wearableGridController.LoadWearables();
                 wearableGridController.LoadCollections();
-                LoadUserProfile(ownUserProfile, true);
-
+                LoadUserProfile(ownUserProfile);
                 view.Show();
             }
             else
@@ -153,49 +158,54 @@ namespace DCL.Backpack
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
 
-        private void LoadUserProfile(UserProfile userProfile) =>
-            LoadUserProfile(userProfile, false);
+        private void LoadUserProfileFromProfileUpdate(UserProfile userProfile)
+        {
+            bool isEditorVisible = rendererState.Get() && view.isVisible;
+            if (!isEditorVisible) return;
+            LoadUserProfile(userProfile);
+        }
 
-        private void LoadUserProfile(UserProfile userProfile, bool forceLoading)
+        private void LoadUserProfile(UserProfile userProfile)
         {
             if (avatarIsDirty) return;
-            bool avatarEditorNotVisible = rendererState.Get() && !view.isVisible;
-            if (!forceLoading && avatarEditorNotVisible) return;
             if (userProfile == null) return;
-            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape)) return;
 
-            wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
-            bodyShape ??= GetFallbackBodyShape();
-
-            previewEquippedWearables.Set(userProfile.avatar.wearables);
-
-            UnEquipCurrentBodyShape();
-            EquipBodyShape(bodyShape);
-
-            model.skinColor = userProfile.avatar.skinColor;
-            model.hairColor = userProfile.avatar.hairColor;
-            model.eyesColor = userProfile.avatar.eyeColor;
-
-            model.wearables.Clear();
-
-            int wearablesCount = userProfile.avatar.wearables.Count;
-
-            if (!dataStore.common.isPlayerRendererLoaded.Get()) return;
-
-            for (var i = 0; i < wearablesCount; i++)
+            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
             {
-                if (!wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.wearables[i], out var wearable))
-                {
-                    Debug.LogError($"Couldn't find wearable with ID {userProfile.avatar.wearables[i]}");
-                    continue;
-                }
-
-                model.wearables.Add(wearable.id, wearable);
-                avatarSlotsHUDController.Equip(wearable, userProfile.avatar.bodyShape);
-                wearableGridController.Equip(wearable.id);
+                Debug.LogWarning("Cannot update the avatar body shape is invalid");
+                return;
             }
 
-            view.UpdateAvatarPreview(model.ToAvatarModel());
+            async UniTaskVoid LoadUserProfileAsync(UserProfile userProfile, CancellationToken cancellationToken)
+            {
+                try
+                {
+                    wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
+                    bodyShape ??= await wearablesCatalogService.RequestWearableAsync(userProfile.avatar.bodyShape, cancellationToken);
+
+                    UnEquipCurrentBodyShape(false);
+                    EquipBodyShape(bodyShape, false);
+
+                    model.skinColor = userProfile.avatar.skinColor;
+                    model.hairColor = userProfile.avatar.hairColor;
+                    model.eyesColor = userProfile.avatar.eyeColor;
+
+                    model.wearables.Clear();
+                    previewEquippedWearables.Clear();
+
+                    int wearablesCount = userProfile.avatar.wearables.Count;
+
+                    for (var i = 0; i < wearablesCount; i++)
+                        EquipWearable(userProfile.avatar.wearables[i], EquipWearableSource.None, false, false);
+
+                    view.UpdateAvatarPreview(model.ToAvatarModel());
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e) { Debug.LogError(e); }
+            }
+
+            loadProfileCancellationToken = loadProfileCancellationToken.SafeRestart();
+            LoadUserProfileAsync(userProfile, loadProfileCancellationToken.Token).Forget();
         }
 
         private void UpdateAvatarPreview()
@@ -215,7 +225,7 @@ namespace DCL.Backpack
         private void OnEmotePreviewed(string emoteId) =>
             view.PlayPreviewEmote(emoteId);
 
-        private void EquipBodyShape(WearableItem bodyShape)
+        private void EquipBodyShape(WearableItem bodyShape, bool setAsDirty = true)
         {
             if (bodyShape.data.category != WearableLiterals.Categories.BODY_SHAPE)
             {
@@ -228,6 +238,9 @@ namespace DCL.Backpack
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
             wearableGridController.Equip(bodyShape.id);
             previewEquippedWearables.Add(bodyShape.id);
+
+            if (setAsDirty)
+                avatarIsDirty = true;
         }
 
         private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
@@ -244,9 +257,11 @@ namespace DCL.Backpack
             // Add the equipped emotes to the avatar model
             List<AvatarModel.AvatarEmoteEntry> emoteEntries = new List<AvatarModel.AvatarEmoteEntry>();
             int equippedEmotesCount = dataStore.emotesCustomization.unsavedEquippedEmotes.Count();
+
             for (var i = 0; i < equippedEmotesCount; i++)
             {
                 var equippedEmote = dataStore.emotesCustomization.unsavedEquippedEmotes[i];
+
                 if (equippedEmote == null)
                     continue;
 
@@ -293,7 +308,19 @@ namespace DCL.Backpack
             view.UpdateAvatarPreview(preEquipModel.ToAvatarModel());
         }
 
-        private void EquipWearable(string wearableId, EquipWearableSource source)
+        private void EquipWearableFromGrid(string wearableId, EquipWearableSource source) =>
+            EquipWearable(wearableId, source);
+
+        private void UnEquipWearableFromGrid(string wearableId, UnequipWearableSource source) =>
+            UnEquipWearable(wearableId, source);
+
+        private void UnEquipWearableFromSlot(string wearableId, UnequipWearableSource source) =>
+            UnEquipWearable(wearableId, source);
+
+        private void EquipWearable(string wearableId,
+            EquipWearableSource source = EquipWearableSource.None,
+            bool setAsDirty = true,
+            bool updateAvatarPreview = true)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -323,12 +350,17 @@ namespace DCL.Backpack
                 wearableGridController.Equip(wearableId);
             }
 
-            avatarIsDirty = true;
-            backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
-            view.UpdateAvatarPreview(model.ToAvatarModel());
+            if (setAsDirty)
+                avatarIsDirty = true;
+
+            if (source != EquipWearableSource.None)
+                backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
+
+            if (updateAvatarPreview)
+                view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
-        private void UnEquipCurrentBodyShape()
+        private void UnEquipCurrentBodyShape(bool setAsDirty = true)
         {
             if (model.bodyShape.id == "NOT_LOADED") return;
 
@@ -338,10 +370,10 @@ namespace DCL.Backpack
                 return;
             }
 
-            UnEquipWearable(wearable, UnequipWearableSource.None);
+            UnEquipWearable(wearable, UnequipWearableSource.None, setAsDirty);
         }
 
-        private void UnEquipWearable(string wearableId, UnequipWearableSource source)
+        private void UnEquipWearable(string wearableId, UnequipWearableSource source, bool setAsDirty = true)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -349,14 +381,16 @@ namespace DCL.Backpack
                 return;
             }
 
-            UnEquipWearable(wearable, source);
+            UnEquipWearable(wearable, source, setAsDirty);
         }
 
-        private void UnEquipWearable(WearableItem wearable, UnequipWearableSource source)
+        private void UnEquipWearable(WearableItem wearable,
+            UnequipWearableSource source = UnequipWearableSource.None,
+            bool setAsDirty = true)
         {
             string wearableId = wearable.id;
 
-            if(source != UnequipWearableSource.None)
+            if (source != UnequipWearableSource.None)
                 backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
             avatarSlotsHUDController.UnEquip(wearable.data.category);
@@ -364,7 +398,8 @@ namespace DCL.Backpack
             previewEquippedWearables.Remove(wearableId);
             wearableGridController.UnEquip(wearableId);
 
-            avatarIsDirty = true;
+            if (setAsDirty)
+                avatarIsDirty = true;
 
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
@@ -374,6 +409,7 @@ namespace DCL.Backpack
             currentSlotSelected = isSelected ? slotCategory : null;
             view.SetBreadcrumbHideUnhideToggle(currentSlotSelected);
             view.SetColorPickerVisibility(isSelected && supportColor);
+
             if (isSelected && supportColor)
                 view.SetColorPickerAsSkinMode(slotCategory == WearableLiterals.Categories.BODY_SHAPE);
 
@@ -417,15 +453,5 @@ namespace DCL.Backpack
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
-
-        private WearableItem GetFallbackBodyShape() =>
-            new()
-            {
-                id = Random.Range(0, 2) == 0 ? WearableLiterals.BodyShapes.MALE : WearableLiterals.BodyShapes.FEMALE,
-                data = new WearableItem.Data
-                {
-                    category = WearableLiterals.Categories.BODY_SHAPE,
-                },
-            };
     }
 }
