@@ -1,3 +1,4 @@
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -14,6 +15,8 @@ namespace DCL.Backpack
         private Sprite testSprite;
         private NftTypeIconSO nftTypeIconMapping;
         private NftRarityBackgroundSO nftRarityBackgroundMapping;
+        private NftTypeColorSupportingSO nftTypeColorSupporting;
+        private NftTypePreviewCameraFocusSO nftTypePreviewCameraFocus;
 
         [SetUp]
         public void SetUp()
@@ -22,18 +25,32 @@ namespace DCL.Backpack
             testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
             nftTypeIconMapping = ScriptableObject.CreateInstance<NftTypeIconSO>();
             nftRarityBackgroundMapping = ScriptableObject.CreateInstance<NftRarityBackgroundSO>();
+            nftTypeColorSupporting = ScriptableObject.CreateInstance<NftTypeColorSupportingSO>();
+            nftTypePreviewCameraFocus = ScriptableObject.CreateInstance<NftTypePreviewCameraFocusSO>();
 
             nftTypeIconMapping.nftIcons = new SerializableKeyValuePair<string, Sprite>[1];
-
-            nftTypeIconMapping.nftIcons[0] = new SerializableKeyValuePair<string, Sprite>()
+            nftTypeIconMapping.nftIcons[0] = new SerializableKeyValuePair<string, Sprite>
             {
                 key = TEST_CATEGORY,
                 value = testSprite
             };
 
-            nftRarityBackgroundMapping.rarityIcons = new SerializableKeyValuePair<string, Sprite>[1];
+            nftTypeColorSupporting.colorSupportingByNftType = new SerializableKeyValuePair<string, bool>[1];
+            nftTypeColorSupporting.colorSupportingByNftType[0] = new SerializableKeyValuePair<string, bool>
+            {
+                key = TEST_CATEGORY,
+                value = true
+            };
 
-            nftRarityBackgroundMapping.rarityIcons[0] = new SerializableKeyValuePair<string, Sprite>()
+            nftTypePreviewCameraFocus.previewCameraFocusByNftType = new SerializableKeyValuePair<string, CharacterPreviewController.CameraFocus>[1];
+            nftTypePreviewCameraFocus.previewCameraFocusByNftType[0] = new SerializableKeyValuePair<string, CharacterPreviewController.CameraFocus>
+            {
+                key = TEST_CATEGORY,
+                value = CharacterPreviewController.CameraFocus.ChestEditing
+            };
+
+            nftRarityBackgroundMapping.rarityIcons = new SerializableKeyValuePair<string, Sprite>[1];
+            nftRarityBackgroundMapping.rarityIcons[0] = new SerializableKeyValuePair<string, Sprite>
             {
                 key = TEST_RARITY,
                 value = testSprite
@@ -45,6 +62,8 @@ namespace DCL.Backpack
             avatarSlot = Object.Instantiate(prefab);
             avatarSlot.typeIcons = nftTypeIconMapping;
             avatarSlot.rarityBackgrounds = nftRarityBackgroundMapping;
+            avatarSlot.typeColorSupporting = nftTypeColorSupporting;
+            avatarSlot.previewCameraFocus = nftTypePreviewCameraFocus;
         }
 
         [TearDown]
@@ -54,15 +73,19 @@ namespace DCL.Backpack
             Object.Destroy(avatarSlot.gameObject);
             Object.Destroy(nftTypeIconMapping);
             Object.Destroy(nftRarityBackgroundMapping);
+            Object.Destroy(nftTypeColorSupporting);
+            Object.Destroy(nftTypePreviewCameraFocus);
             Object.Destroy(testTexture);
             Object.Destroy(testSprite);
         }
 
         [Test]
-        public void SetCategoryIcon()
+        public void SetCategory()
         {
             avatarSlot.SetCategory(TEST_CATEGORY);
             Assert.IsTrue(Equals(avatarSlot.typeImage.sprite, nftTypeIconMapping.GetTypeImage(TEST_CATEGORY)), "The icon obtained from the mapping differs from the set one.");
+            Assert.IsTrue(nftTypeColorSupporting.IsColorSupportedByType(TEST_CATEGORY));
+            Assert.AreEqual(CharacterPreviewController.CameraFocus.ChestEditing, nftTypePreviewCameraFocus.GetPreviewCameraFocus(TEST_CATEGORY));
         }
 
         [Test]

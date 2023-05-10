@@ -1,5 +1,6 @@
 ﻿using DCL.Browser;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -196,16 +197,16 @@ namespace DCL.Backpack
         }
 
         [Test]
-        [TestCase("eyes")]
-        [TestCase("hair")]
-        [TestCase("eyebrows")]
-        [TestCase("facial_hair")]
-        [TestCase("body_shape")]
-        [TestCase("non_existing_category")]
-        public void ToggleSlotCorrectly(string slotCategory)
+        [TestCase("eyes", CharacterPreviewController.CameraFocus.FaceEditing)]
+        [TestCase("hair", CharacterPreviewController.CameraFocus.ChestEditing)]
+        [TestCase("eyebrows", CharacterPreviewController.CameraFocus.FeetEditing)]
+        [TestCase("facial_hair", CharacterPreviewController.CameraFocus.LegsEditing)]
+        [TestCase("body_shape", CharacterPreviewController.CameraFocus.DefaultEditing)]
+        [TestCase("non_existing_category", CharacterPreviewController.CameraFocus.DefaultEditing)]
+        public void ToggleSlotCorrectly(string slotCategory, CharacterPreviewController.CameraFocus previewCameraFocus)
         {
             // Act
-            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, true);
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, previewCameraFocus, true);
 
             // Assert
             view.Received(1).SetColorPickerVisibility(true);
@@ -229,6 +230,8 @@ namespace DCL.Backpack
                     view.Received(1).SetColorPickerValue(userProfile.avatar.skinColor);
                     break;
             }
+
+            view.Received(1).SetAvatarPreviewFocus(previewCameraFocus);
         }
 
         [Test]

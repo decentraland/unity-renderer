@@ -3,7 +3,6 @@ using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using DG.Tweening;
-using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
