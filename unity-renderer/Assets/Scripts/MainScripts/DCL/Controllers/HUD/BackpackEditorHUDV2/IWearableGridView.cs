@@ -12,6 +12,7 @@ namespace DCL.Backpack
         event Action<string> OnFilterSelected;
         event Action<string> OnFilterRemoved;
         event Action OnGoToMarketplace;
+        event Action<string, bool> OnHideUnhidePressed;
 
         void Dispose();
         void SetWearablePages(int pageNumber, int totalPages);

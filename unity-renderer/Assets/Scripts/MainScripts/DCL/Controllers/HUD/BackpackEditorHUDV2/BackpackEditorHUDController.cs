@@ -62,6 +62,7 @@ namespace DCL.Backpack
             wearableGridController.OnWearableSelected += SelectWearable;
             wearableGridController.OnWearableEquipped += EquipWearable;
             wearableGridController.OnWearableUnequipped += UnEquipWearable;
+            wearableGridController.OnHideUnhidePressed += UpdateOverrideHides;
 
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
             avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearable;
@@ -88,10 +89,22 @@ namespace DCL.Backpack
             wearableGridController.Dispose();
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
+            avatarSlotsHUDController.OnUnequipFromSlot -= UnEquipWearable;
             avatarSlotsHUDController.Dispose();
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.Dispose();
+        }
+
+        private void UpdateOverrideHides(string category, bool toggleOn)
+        {
+            if (toggleOn)
+                model.hidingOverrideMap.Add(category);
+            else
+                model.hidingOverrideMap.Remove(category);
+
+            avatarIsDirty = true;
+            UpdateAvatarPreview();
         }
 
         private void OnBackpackVisibleChanged(bool current, bool _) =>
@@ -359,6 +372,7 @@ namespace DCL.Backpack
         private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             currentSlotSelected = isSelected ? slotCategory : null;
+            view.SetBreadcrumbHideUnhideToggle(currentSlotSelected);
             view.SetColorPickerVisibility(isSelected && supportColor);
             if (isSelected && supportColor)
                 view.SetColorPickerAsSkinMode(slotCategory == WearableLiterals.Categories.BODY_SHAPE);

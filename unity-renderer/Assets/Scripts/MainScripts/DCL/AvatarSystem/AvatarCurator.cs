@@ -41,13 +41,13 @@ namespace AvatarSystem
             )> Curate(AvatarSettings settings, IEnumerable<string> wearablesId, IEnumerable<string> emoteIds, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-
+            Debug.Log("Curate");
             try
             {
                 //Old flow contains emotes among the wearablesIds
                 (List<WearableItem> wearableItems, List<WearableItem> emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
 
-                HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
+                HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategoriesOrdered(settings.bodyshapeId, settings.hidingOverrideMapping, wearableItems);
 
                 //New emotes flow use the emotes catalog
                 if (emoteIds != null)

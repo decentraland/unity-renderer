@@ -40,6 +40,7 @@ namespace DCL.Backpack
         public event Action<string> OnWearableSelected;
         public event Action<string, EquipWearableSource> OnWearableEquipped;
         public event Action<string, UnequipWearableSource> OnWearableUnequipped;
+        public event Action<string, bool> OnHideUnhidePressed;
 
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
@@ -66,6 +67,8 @@ namespace DCL.Backpack
             view.OnFilterSelected += FilterWearablesFromReferencePath;
             view.OnFilterRemoved += RemoveFiltersFromReferencePath;
             view.OnGoToMarketplace += GoToMarketplace;
+            view.OnHideUnhidePressed += (s,b) => OnHideUnhidePressed?.Invoke(s,b);
+
 
             backpackFiltersController.OnThirdPartyCollectionChanged += SetThirdPartCollectionIds;
             backpackFiltersController.OnSortByChanged += SetSorting;
