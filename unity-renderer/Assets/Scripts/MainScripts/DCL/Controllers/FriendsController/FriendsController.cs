@@ -311,7 +311,7 @@ namespace DCL.Social.Friends
             return payload.friends;
         }
 
-        public async UniTask<string[]> GetFriendsAsync(string userNameOrId, int limit, CancellationToken cancellationToken = default)
+        public async UniTask<IReadOnlyList<string>> GetFriendsAsync(string userNameOrId, int limit, CancellationToken cancellationToken = default)
         {
             if (useSocialApiBridge)
             {
@@ -325,7 +325,7 @@ namespace DCL.Social.Friends
                     if (friendsToReturn.Count >= limit) { break; }
                 }
 
-                return friendsToReturn.ToArray();
+                return friendsToReturn;
             }
 
             var payload = await apiBridge.GetFriendsAsync(userNameOrId, limit, cancellationToken);

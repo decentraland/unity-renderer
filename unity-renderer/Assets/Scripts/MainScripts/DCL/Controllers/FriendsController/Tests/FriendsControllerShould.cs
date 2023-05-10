@@ -635,7 +635,7 @@ namespace DCL.Social.Friends
                 rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(secondUser);
                 rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(firstUser);
 
-                string[] response = await controller.GetFriendsAsync(100, 0, cancellationToken);
+                IReadOnlyList<string> response = await controller.GetFriendsAsync(100, 0, cancellationToken);
                 string[] expected = { firstUserId, secondUserId, thirdUserId, fourthdUserId };
 
                 CollectionAssert.AreEqual(response, expected);
