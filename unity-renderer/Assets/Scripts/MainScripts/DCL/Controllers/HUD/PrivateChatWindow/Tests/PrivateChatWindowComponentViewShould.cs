@@ -23,7 +23,7 @@ public class PrivateChatWindowComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        view = PrivateChatWindowComponentView.Create();
+        view =            GameObject.Instantiate(Resources.Load<PrivateChatWindowComponentView>("SocialBarV1/PrivateChatHUD"));
         userThumbnail = new GameObject("userThumbnail").AddComponent<UserThumbnailComponentViewMock>();
         view.userThumbnail = userThumbnail;
 

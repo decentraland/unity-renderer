@@ -62,7 +62,8 @@ namespace DCL.Chat.HUD
 
         public void Initialize(IChatChannelWindowView view = null, bool isVisible = true)
         {
-            view ??= ChatChannelComponentView.Create();
+            view ??=                 GameObject.Instantiate(Resources.Load<ChatChannelComponentView>("SocialBarV1/ChatChannelHUD"));
+
             View = view;
             view.OnBack -= HandlePressBack;
             view.OnBack += HandlePressBack;

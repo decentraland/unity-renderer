@@ -11,7 +11,8 @@ namespace DCL.Chat.Notifications
         [SetUp]
         public void SetUp()
         {
-            view = MainChatNotificationsComponentView.Create();
+            view =             GameObject.Instantiate(Resources.Load<MainChatNotificationsComponentView>("SocialBarV1/ChatNotificationHUD"));
+
         }
 
         [TearDown]

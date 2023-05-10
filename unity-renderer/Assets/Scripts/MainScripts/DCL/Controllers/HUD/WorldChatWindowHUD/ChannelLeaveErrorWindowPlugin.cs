@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace DCL.Chat.HUD
 {
     public class ChannelLeaveErrorWindowPlugin : IPlugin
@@ -7,8 +9,8 @@ namespace DCL.Chat.HUD
         public ChannelLeaveErrorWindowPlugin()
         {
             controller = new ChannelLeaveErrorWindowController(
-                ChannelLeaveErrorWindowComponentView.Create(),
-                Environment.i.serviceLocator.Get<IChatController>(),
+                GameObject.Instantiate(Resources.Load<ChannelLeaveErrorWindowComponentView>("SocialBarV1/ChannelLeaveErrorModal")),
+            Environment.i.serviceLocator.Get<IChatController>(),
                 DataStore.i);
         }
 

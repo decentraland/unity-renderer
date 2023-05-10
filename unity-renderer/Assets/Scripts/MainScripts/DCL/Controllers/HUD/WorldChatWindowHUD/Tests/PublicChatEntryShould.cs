@@ -66,7 +66,8 @@ namespace DCL.Chat.HUD
         [Test]
         public void InitializeUnreadNotificationBadge()
         {
-            view = PublicChatEntry.Create();
+            view =                 GameObject.Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/PublicChannelElement"));
+
             var chatController = Substitute.For<IChatController>();
             chatController.GetAllocatedUnseenChannelMessages("channelId").Returns(5);
             view.Initialize(chatController, new DataStore_Mentions());
@@ -78,7 +79,8 @@ namespace DCL.Chat.HUD
         [Test]
         public void TriggerOpenChat()
         {
-            view = PublicChatEntry.Create();
+            view =                 GameObject.Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/PublicChannelElement"));
+
             var called = false;
             view.OnOpenChat += entry => called = true;
             view.openChatButton.onClick.Invoke();
@@ -89,7 +91,7 @@ namespace DCL.Chat.HUD
         [Test]
         public void TriggerOptionsMenu()
         {
-            view = PublicChatEntry.Create();
+            view =                 GameObject.Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/PublicChannelElement"));
             view.GetComponent<UIHoverObjectToggler>().OnPointerEnter(null);
             var called = false;
             view.OnOpenOptions += entry => called = true;

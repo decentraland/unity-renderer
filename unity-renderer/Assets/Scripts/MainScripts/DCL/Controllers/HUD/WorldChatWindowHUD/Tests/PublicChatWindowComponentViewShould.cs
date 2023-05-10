@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using UnityEngine;
 
 public class PublicChatWindowComponentViewShould
 {
@@ -7,7 +8,8 @@ public class PublicChatWindowComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        view = PublicChatWindowComponentView.Create();
+        view =             GameObject.Instantiate(Resources.Load<PublicChatWindowComponentView>("SocialBarV1/NearbyChatChannelHUD"));
+
     }
 
     [TearDown]

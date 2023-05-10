@@ -2,6 +2,7 @@ using DCL.ProfanityFiltering;
 using DCL.SettingsCommon;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
+using UnityEngine;
 
 namespace DCL.Chat.Notifications
 {
@@ -22,7 +23,9 @@ namespace DCL.Chat.Notifications
             ServiceLocator serviceLocator = Environment.i.serviceLocator;
 
             return new ChatNotificationController(DataStore.i,
-                MainChatNotificationsComponentView.Create(), TopNotificationComponentView.Create(),
+                    GameObject.Instantiate(Resources.Load<MainChatNotificationsComponentView>("SocialBarV1/ChatNotificationHUD")),
+
+                GameObject.Instantiate(Resources.Load<TopNotificationComponentView>("SocialBarV1/TopNotificationHUD")),
                 serviceLocator.Get<IChatController>(),
                 serviceLocator.Get<IFriendsController>(),
                 new UserProfileWebInterfaceBridge(),

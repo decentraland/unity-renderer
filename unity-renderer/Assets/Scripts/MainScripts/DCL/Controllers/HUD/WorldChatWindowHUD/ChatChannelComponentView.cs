@@ -51,11 +51,6 @@ namespace DCL.Chat.HUD
         public bool IsFocused => isFocused;
         private Color targetGraphicColor;
 
-        public static ChatChannelComponentView Create()
-        {
-            return Instantiate(Resources.Load<ChatChannelComponentView>("SocialBarV1/ChatChannelHUD"));
-        }
-
         public override void Awake()
         {
             base.Awake();

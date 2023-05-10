@@ -2,6 +2,7 @@ using DCL.Chat.HUD;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 public class ChannelMemberEntryShould
 {
@@ -10,7 +11,7 @@ public class ChannelMemberEntryShould
     [SetUp]
     public void SetUp()
     {
-        channelMemberEntryComponent = BaseComponentView.Create<ChannelMemberEntry>("SocialBarV1/ChannelMemberEntry");
+        channelMemberEntryComponent = GameObject.Instantiate(Resources.Load<ChannelMemberEntry>("SocialBarV1/ChannelMemberEntry"));
         channelMemberEntryComponent.userThumbnail.imageObserver = Substitute.For<ILazyTextureObserver>();
     }
 

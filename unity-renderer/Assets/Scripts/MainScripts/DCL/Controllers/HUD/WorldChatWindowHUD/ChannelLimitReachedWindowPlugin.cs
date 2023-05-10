@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace DCL.Chat.HUD
 {
     public class ChannelLimitReachedWindowPlugin : IPlugin
@@ -7,10 +9,10 @@ namespace DCL.Chat.HUD
         public ChannelLimitReachedWindowPlugin()
         {
             channelLimitReachedWindow = new ChannelLimitReachedWindowController(
-                ChannelLimitReachedWindowComponentView.Create(),
+                GameObject.Instantiate(Resources.Load<ChannelLimitReachedWindowComponentView>("SocialBarV1/ChannelLimitReachedModal")),
                 DataStore.i);
         }
-        
+
         public void Dispose() => channelLimitReachedWindow.Dispose();
     }
 }

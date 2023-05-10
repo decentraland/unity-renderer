@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEngine;
 
 namespace DCL.Chat.HUD
 {
@@ -9,7 +10,7 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view = ChatChannelComponentView.Create();
+            view = GameObject.Instantiate(Resources.Load<ChatChannelComponentView>("SocialBarV1/ChatChannelHUD"));
             view.Setup(new PublicChatModel("channelId", "name", "desc", true, 5, false, true));
         }
 
@@ -24,10 +25,10 @@ namespace DCL.Chat.HUD
         {
             var called = false;
             view.OnLeaveChannel += () => called = true;
-            
+
             view.optionsButton.onClick.Invoke();
             view.contextualMenu.leaveButton.onClick.Invoke();
-            
+
             Assert.IsTrue(called);
         }
     }
