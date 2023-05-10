@@ -654,10 +654,10 @@ function* refreshFriends() {
     const isUseSocialClientEnabled: boolean = yield select(getFeatureFlagEnabled, 'use-social-client')
     if (!isUseSocialClientEnabled) {
       getUnityInstance().InitializeFriends(initFriendsMessage)
-    }
 
-    if (token) {
-      getUnityInstance().InitializeMatrix(token)
+      if (token) {
+        getUnityInstance().InitializeMatrix(token)
+      }
     }
 
     getUnityInstance().InitializeChat(initChatMessage)
