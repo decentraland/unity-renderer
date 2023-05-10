@@ -88,7 +88,7 @@ namespace RPC.Services
 
         // TODO: change this when support for wearables/emotes/etc urn is added
         // urn format urn:<CHAIN>:<CONTRACT_STANDARD>:<CONTRACT>:<TOKEN_ID> i.e: urn:ethereum:erc721:0x00...000:123
-        internal static bool TryParseUrn(string urn, out string contractAddress, out string tokenId)
+        public static bool TryParseUrn(string urn, out string contractAddress, out string tokenId)
         {
             const char SEPARATOR = ':';
             const string CHAIN_ETHEREUM = "ethereum";

@@ -8,6 +8,7 @@ using DCL.Helpers.NFT;
 using DCL.Models;
 using Decentraland.Common;
 using NFTShape_Internal;
+using RPC.Services;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -82,7 +83,7 @@ namespace DCL.ECSComponents
                 shapeFrame.UpdateBackgroundColor(new Color(modelColor.R, modelColor.G, modelColor.B, 1));
             }
 
-            if (!string.IsNullOrEmpty(model.Src) && nftLoadedScr != model.Src)
+            if (!string.IsNullOrEmpty(model.Urn) && nftLoadedScr != model.Urn)
             {
                 if (!infoRetrieverDisposed)
                 {
@@ -94,7 +95,7 @@ namespace DCL.ECSComponents
                     assetRetriever.Dispose();
                     assetRetrieverDisposed = true;
                 }
-                LoadNFT(model.Src);
+                LoadNFT(model.Urn);
             }
 
             prevModel = model;
@@ -111,12 +112,13 @@ namespace DCL.ECSComponents
             Object.Destroy(nftFrame.gameObject);
         }
 
-        internal async void LoadNFT(string scr)
+        internal async void LoadNFT(string urn)
         {
             try
             {
                 infoRetrieverDisposed = false;
-                NFTInfo info = await infoRetriever.FetchNFTInfo(scr);
+                RestrictedActionsServiceImpl.TryParseUrn(urn, out string contractAddress, out string tokenId);
+                NFTInfo info = await infoRetriever.FetchNFTInfoAsync(contractAddress, tokenId);
 
                 if (info == null)
                 {
@@ -134,7 +136,7 @@ namespace DCL.ECSComponents
                 }
 
                 shapeFrame.SetImage(info.name, info.imageUrl, nftAsset);
-                nftLoadedScr = scr;
+                nftLoadedScr = urn;
             }
             catch (TaskCanceledException cancellation) { }
             catch (OperationCanceledException cancellation) { }
