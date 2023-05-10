@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Tasks;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -373,18 +374,15 @@ namespace DCL.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public async UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken)
+        public async UniTask<IEnumerable<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             if (useSocialApiBridge)
             {
-                // TODO: change linQ for for lists
                 var sent = outgoingFriendRequestsById.Values.Skip(sentSkip).Take(sentLimit);
-
                 var received = incomingFriendRequestsById.Values.Skip(receivedSkip).Take(receivedLimit);
-
-                var result = received.Concat(sent).ToList();
+                var result = received.Concat(sent);
 
                 return result;
             }

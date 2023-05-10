@@ -547,8 +547,8 @@ namespace DCL.Social.Friends
                               requestedTo = requestedTo,
                           }));
 
-                List<FriendRequest> requests = await controller.GetFriendRequestsAsync(5, 0, 5, 0,
-                    default(CancellationToken));
+                List<FriendRequest> requests = (await controller.GetFriendRequestsAsync(5, 0, 5, 0,
+                    default(CancellationToken))).ToList();
 
                 Verify(requests[0], requestedFrom[0]);
                 Verify(requests[1], requestedFrom[1]);
