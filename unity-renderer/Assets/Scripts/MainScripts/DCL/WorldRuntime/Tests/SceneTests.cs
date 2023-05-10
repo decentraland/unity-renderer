@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using DCL;
 using DCL.Components;
@@ -14,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NSubstitute;
 using RPC.Context;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -380,7 +382,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void ParcelScene_SetEntityParent()
+    public async Task ParcelScene_SetEntityParent()
     {
         var entityId = 1134;
         var entityId2 = 3124;
@@ -389,26 +391,34 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         // Make sure that it doesn't have a parent
         Assert.IsNull(entity.parent);
+        await UniTask.WaitForFixedUpdate();
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set player reference as parent
         TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
         Assert.AreEqual(entity.gameObject.transform.parent,
             DCLCharacterController.i.firstPersonCameraGameObject.transform);
+        await UniTask.WaitForFixedUpdate();
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set another entity as parent and ensure is not added as persistent
         TestUtils.SetEntityParent(scene, entityId, entityId2);
+
+        await UniTask.WaitForFixedUpdate();
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set avatar position reference as parent
         TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE);
         Assert.AreEqual(entity.gameObject.transform.parent, DCLCharacterController.i.avatarGameObject.transform);
+
+        await UniTask.WaitForFixedUpdate();
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Remove all parents
         TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.SCENE_ROOT_ENTITY);
         Assert.IsNull(entity.parent);
+
+        await UniTask.WaitForFixedUpdate();
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
     }
 

@@ -67,7 +67,10 @@ public class ECSSystemsController : IDisposable
             DataStore.i.HUDs.isSceneUIEnabled);
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
-        videoPlayerSystem = new ECSVideoPlayerSystem(context.internalEcsComponents.videoPlayerComponent, context.internalEcsComponents.videoMaterialComponent);
+        videoPlayerSystem = new ECSVideoPlayerSystem(
+            context.internalEcsComponents.videoPlayerComponent,
+            context.internalEcsComponents.videoMaterialComponent,
+            context.componentWriter);
 
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
             DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
@@ -126,7 +129,7 @@ public class ECSSystemsController : IDisposable
                 DataStore.i.ecs7,
                 DataStore.i.rpc.context.restrictedActions),
             billboardSystem.Update,
-            videoPlayerSystem.Update,
+            videoPlayerSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]
