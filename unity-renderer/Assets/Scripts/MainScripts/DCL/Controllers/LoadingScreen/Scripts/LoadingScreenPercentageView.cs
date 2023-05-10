@@ -33,7 +33,7 @@ namespace DCL.LoadingScreen
 
         public void SetShaderCompilingMessage(float progress)
         {
-            currentMessage = COMPILING_SHADERS_MESSAGE;
+            loadingMessage.text = COMPILING_SHADERS_MESSAGE;
             loadingPercentage.fillAmount = progress;
         }
 
