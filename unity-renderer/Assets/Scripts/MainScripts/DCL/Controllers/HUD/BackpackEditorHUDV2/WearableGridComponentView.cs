@@ -23,11 +23,12 @@ namespace DCL.Backpack
         private WearableGridItemComponentView selectedWearableItem;
 
         public event Action<int> OnWearablePageChanged;
-        public event Action<string> OnFilterWearables;
+        public event Action<string> OnFilterSelected;
+        public event Action<string> OnFilterRemoved;
         public event Action OnGoToMarketplace;
         public event Action<WearableGridItemModel> OnWearableSelected;
-        public event Action<WearableGridItemModel> OnWearableEquipped;
-        public event Action<WearableGridItemModel> OnWearableUnequipped;
+        public event Action<WearableGridItemModel, EquipWearableSource> OnWearableEquipped;
+        public event Action<WearableGridItemModel, UnequipWearableSource> OnWearableUnequipped;
 
         private void Awake()
         {
@@ -41,10 +42,11 @@ namespace DCL.Backpack
 
             wearableGridItemsPool.ForcePrewarm();
 
-            wearablesBreadcrumbComponentView.OnNavigate += reference => OnFilterWearables?.Invoke(reference);
+            wearablesBreadcrumbComponentView.OnFilterSelected += reference => OnFilterSelected?.Invoke(reference);
+            wearablesBreadcrumbComponentView.OnFilterRemoved += reference => OnFilterRemoved?.Invoke(reference);
 
-            infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model);
-            infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model);
+            infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model, EquipWearableSource.InfoCard);
+            infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model, UnequipWearableSource.InfoCard);
 
             goToMarketplaceButton.onClick.AddListener(() => OnGoToMarketplace?.Invoke());
         }
@@ -150,10 +152,10 @@ namespace DCL.Backpack
             OnWearableSelected?.Invoke(model);
 
         private void HandleWearableEquipped(WearableGridItemModel model) =>
-            OnWearableEquipped?.Invoke(model);
+            OnWearableEquipped?.Invoke(model, EquipWearableSource.Wearable);
 
         private void HandleWearableUnequipped(WearableGridItemModel model) =>
-            OnWearableUnequipped?.Invoke(model);
+            OnWearableUnequipped?.Invoke(model, UnequipWearableSource.Wearable);
 
         private void UpdateEmptyState()
         {

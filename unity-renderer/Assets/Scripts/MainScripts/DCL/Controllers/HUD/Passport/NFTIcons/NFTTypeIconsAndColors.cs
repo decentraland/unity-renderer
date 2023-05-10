@@ -12,7 +12,7 @@ public class NFTTypeIconsAndColors : ScriptableObject
     {
         foreach (var icon in nftIcons)
         {
-            if(icon.key == nftType)
+            if (icon.key == nftType)
                 return icon.value;
         }
 
@@ -23,7 +23,7 @@ public class NFTTypeIconsAndColors : ScriptableObject
     {
         foreach (var color in nftColors)
         {
-            if(color.key == rarity)
+            if (color.key == rarity)
                 return color.value;
         }
 

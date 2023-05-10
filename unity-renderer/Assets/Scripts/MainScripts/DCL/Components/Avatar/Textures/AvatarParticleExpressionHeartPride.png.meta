@@ -36,7 +36,7 @@ TextureImporter:
       213: -924287825326529467
     second: AvatarParticleExpressionHeartPride 1_10
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -96,6 +96,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -111,6 +112,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -366,17 +379,17 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      AvatarParticleExpressionHeartPride 1_6: 7065040574335784077
-      AvatarParticleExpressionHeartPride 1_5: 6726948905552063219
+      AvatarParticleExpressionHeartPride 1_0: -5678512871157408403
+      AvatarParticleExpressionHeartPride 1_1: -6134993809297719219
+      AvatarParticleExpressionHeartPride 1_10: -924287825326529467
       AvatarParticleExpressionHeartPride 1_2: -5653411428424605918
       AvatarParticleExpressionHeartPride 1_3: -6234104402273833510
-      AvatarParticleExpressionHeartPride 1_1: -6134993809297719219
-      AvatarParticleExpressionHeartPride 1_8: 5026146890834185380
-      AvatarParticleExpressionHeartPride 1_10: -924287825326529467
-      AvatarParticleExpressionHeartPride 1_0: -5678512871157408403
       AvatarParticleExpressionHeartPride 1_4: -23437870716378929
-      AvatarParticleExpressionHeartPride 1_9: -5677250123261470903
+      AvatarParticleExpressionHeartPride 1_5: 6726948905552063219
+      AvatarParticleExpressionHeartPride 1_6: 7065040574335784077
       AvatarParticleExpressionHeartPride 1_7: -2592509462476873157
+      AvatarParticleExpressionHeartPride 1_8: 5026146890834185380
+      AvatarParticleExpressionHeartPride 1_9: -5677250123261470903
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

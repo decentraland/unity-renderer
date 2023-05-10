@@ -87,7 +87,8 @@ namespace AvatarSystem
                 // either we have the wearable and we have to add it to forget it later
                 // or it's null and we just return it
                 if (wearable != null)
-                    wearablesRetrieved.Add(wearableId, wearable);
+                    // TODO: dispose replaced wearable if exists
+                    wearablesRetrieved[wearableId] = wearable;
 
                 // return promise.value;
                 return wearable;
