@@ -1356,25 +1356,20 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           }
 
           // Update notification badges
-          // TODO!: remove FF validation once the RPC flow is the only one
-          if (!isUseSocialClientEnabled) {
-            const conversationId = yield call(async () => await conversationIdPromise)
-            const unreadMessages = client.getConversationUnreadMessages(conversationId).length
-            getUnityInstance().UpdateUserUnseenMessages({
-              userId: getUserIdFromMatrix(userId),
-              total: unreadMessages
-            })
-          }
+          const conversationId = yield call(async () => await conversationIdPromise)
+          const unreadMessages = client.getConversationUnreadMessages(conversationId).length
+          getUnityInstance().UpdateUserUnseenMessages({
+            userId: getUserIdFromMatrix(userId),
+            total: unreadMessages
+          })
 
           // Update notification badges
-          // TODO!: remove FF validation once the RPC flow is the only one
-          if (!isUseSocialClientEnabled) {
-            const friends = yield call(async () => await friendsPromise)
-            const totalUnseenMessages = getTotalUnseenMessages(client, getUserIdFromMatrix(ownId), friends)
-            getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
-          }
+          const friends = yield call(async () => await friendsPromise)
+          const totalUnseenMessages = getTotalUnseenMessages(client, getUserIdFromMatrix(ownId), friends)
+          getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
         }
       }
+
       // The approved should not have a break since it should execute all the code as the rejected case
       // Also the rejected needs to be directly after the Approved to make sure this works
       case FriendshipAction.REJECTED: {
