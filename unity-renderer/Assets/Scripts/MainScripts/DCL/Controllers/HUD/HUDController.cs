@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Environment = DCL.Environment;
+using Object = UnityEngine.Object;
 using Type = DCL.NotificationModel.Type;
 
 public class HUDController : IHUDController
@@ -192,7 +193,8 @@ public class HUDController : IHUDController
 
                     if (worldChatWindowHud != null)
                     {
-                        worldChatWindowHud.Initialize(WorldChatWindowComponentView.Create());
+                        worldChatWindowHud.Initialize (               GameObject.Instantiate(Resources.Load<WorldChatWindowComponentView>("SocialBarV1/ConversationListHUD")));
+
                         worldChatWindowHud.SetVisibility(false);
                         worldChatWindowHud.OnOpenPrivateChat -= OpenPrivateChatWindow;
                         worldChatWindowHud.OnOpenPrivateChat += OpenPrivateChatWindow;
@@ -265,7 +267,8 @@ public class HUDController : IHUDController
 
                     if (channelSearchHud != null)
                     {
-                        channelSearchHud.Initialize(SearchChannelsWindowComponentView.Create());
+                        channelSearchHud.Initialize(
+                            GameObject.Instantiate(Resources.Load<SearchChannelsWindowComponentView>("SocialBarV1/ChannelSearchHUD")));
                         channelSearchHud.SetVisibility(false);
                         taskbarHud?.AddChannelSearch(channelSearchHud);
                     }
@@ -277,7 +280,9 @@ public class HUDController : IHUDController
 
                     if (channelCreateHud != null)
                     {
-                        channelCreateHud.Initialize(CreateChannelWindowComponentView.Create());
+                        channelCreateHud.Initialize(
+                            Object.Instantiate(Resources.Load<CreateChannelWindowComponentView>("SocialBarV1/ChannelCreationHUD"))
+                            );
                         channelCreateHud.SetVisibility(false);
                         taskbarHud?.AddChannelCreation(channelCreateHud);
                     }
@@ -289,7 +294,8 @@ public class HUDController : IHUDController
 
                     if (channelLeaveHud != null)
                     {
-                        channelLeaveHud.Initialize(LeaveChannelConfirmationWindowComponentView.Create());
+                        channelLeaveHud.Initialize(
+                            GameObject.Instantiate(Resources.Load<GameObject>("SocialBarV1/LeaveChannelConfirmationHUD")).GetComponent<LeaveChannelConfirmationWindowComponentView>());
                         channelLeaveHud.SetVisibility(false);
                         taskbarHud?.AddChannelLeaveConfirmation(channelLeaveHud);
                     }
@@ -303,7 +309,7 @@ public class HUDController : IHUDController
 
                     if (friendsHud != null)
                     {
-                        friendsHud.Initialize(FriendsHUDComponentView.Create());
+                        friendsHud.Initialize(            GameObject.Instantiate(Resources.Load<GameObject>("SocialBarV1/FriendsHUD")).GetComponent<FriendsHUDComponentView>());
                         friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
                         friendsHud.OnPressWhisper += OpenPrivateChatWindow;
 

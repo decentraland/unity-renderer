@@ -2,6 +2,7 @@ using DCL;
 using DCL.Chat.HUD;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 public class PublicChannelEntryShould
 {
@@ -10,7 +11,8 @@ public class PublicChannelEntryShould
     [SetUp]
     public void SetUp()
     {
-        view = PublicChatEntry.Create();
+        view =                 GameObject.Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/PublicChannelElement"));
+
         view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
     }
 

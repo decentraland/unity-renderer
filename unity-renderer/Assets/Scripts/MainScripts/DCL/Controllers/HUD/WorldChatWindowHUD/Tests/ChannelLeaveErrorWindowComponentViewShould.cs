@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEngine;
 
 namespace DCL.Chat.HUD
 {
@@ -9,23 +10,24 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view = ChannelLeaveErrorWindowComponentView.Create();
+            view =                 GameObject.Instantiate(Resources.Load<ChannelLeaveErrorWindowComponentView>("SocialBarV1/ChannelLeaveErrorModal"));
+            ;
         }
 
         [Test]
         public void Show()
         {
             view.Show("random");
-            
+
             Assert.AreEqual("There was an error while trying to leave the channel #random. Please try again.", view.titleLabel.text);
             Assert.IsTrue(view.gameObject.activeSelf);
         }
-        
+
         [Test]
         public void Hide()
         {
             view.Hide();
-            
+
             Assert.IsFalse(view.gameObject.activeSelf);
         }
 
@@ -34,10 +36,10 @@ namespace DCL.Chat.HUD
         {
             var calls = 0;
             view.OnClose += () => calls++;
-            
+
             foreach (var button in view.acceptButton)
                 button.onClick.Invoke();
-            
+
             Assert.AreEqual(view.acceptButton.Length, calls);
         }
 
@@ -46,9 +48,9 @@ namespace DCL.Chat.HUD
         {
             var calls = 0;
             view.OnRetry += () => calls++;
-            
+
             view.retryButton.onClick.Invoke();
-            
+
             Assert.AreEqual(1, calls);
         }
     }

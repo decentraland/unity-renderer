@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using Tests;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace DCL.Social.Chat
@@ -16,7 +17,8 @@ namespace DCL.Social.Chat
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            view = ChatHUDView.Create();
+            view =                 GameObject.Instantiate(Resources.Load<GameObject>("SocialBarV1/ChatHUD")).GetComponent<ChatHUDView>();
+            ;
             IWebRequestAsyncOperation webRequestAsyncOperation = Substitute.For<IWebRequestAsyncOperation>();
             Environment.i.platform.webRequest.GetTexture(default).ReturnsForAnyArgs(webRequestAsyncOperation);
         }

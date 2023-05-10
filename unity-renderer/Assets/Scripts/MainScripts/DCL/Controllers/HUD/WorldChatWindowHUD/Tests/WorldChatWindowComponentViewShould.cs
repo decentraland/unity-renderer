@@ -14,7 +14,8 @@ public class WorldChatWindowComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        view = WorldChatWindowComponentView.Create();
+        view =                GameObject.Instantiate(Resources.Load<WorldChatWindowComponentView>("SocialBarV1/ConversationListHUD"));
+
         view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
     }
 

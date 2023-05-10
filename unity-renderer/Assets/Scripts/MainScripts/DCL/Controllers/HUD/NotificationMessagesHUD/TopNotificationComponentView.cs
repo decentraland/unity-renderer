@@ -34,11 +34,6 @@ namespace DCL.Chat.Notifications
 
         public bool isShowingNotification;
 
-        public static TopNotificationComponentView Create()
-        {
-            return Instantiate(Resources.Load<TopNotificationComponentView>("SocialBarV1/TopNotificationHUD"));
-        }
-
         public void Start()
         {
             offsetContentXPos = NORMAL_CONTENT_X_POS - X_OFFSET;
