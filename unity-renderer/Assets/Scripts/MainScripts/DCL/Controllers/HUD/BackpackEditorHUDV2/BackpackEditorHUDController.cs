@@ -1,8 +1,10 @@
+using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace DCL.Backpack
 {
@@ -19,6 +21,7 @@ namespace DCL.Backpack
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
         private string currentSlotSelected;
         private bool avatarIsDirty;
+        private CancellationTokenSource loadProfileCancellationToken = new ();
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
@@ -151,27 +154,43 @@ namespace DCL.Backpack
         {
             if (avatarIsDirty) return;
             if (userProfile == null) return;
-            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape)) return;
 
-            wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
-            bodyShape ??= GetFallbackBodyShape();
+            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
+            {
+                Debug.LogWarning("Cannot update the avatar body shape is invalid");
+                return;
+            }
 
-            UnEquipCurrentBodyShape(false);
-            EquipBodyShape(bodyShape, false);
+            async UniTaskVoid LoadUserProfileAsync(UserProfile userProfile, CancellationToken cancellationToken)
+            {
+                try
+                {
+                    wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
+                    bodyShape ??= await wearablesCatalogService.RequestWearableAsync(userProfile.avatar.bodyShape, cancellationToken);
 
-            model.skinColor = userProfile.avatar.skinColor;
-            model.hairColor = userProfile.avatar.hairColor;
-            model.eyesColor = userProfile.avatar.eyeColor;
+                    UnEquipCurrentBodyShape(false);
+                    EquipBodyShape(bodyShape, false);
 
-            model.wearables.Clear();
-            previewEquippedWearables.Clear();
+                    model.skinColor = userProfile.avatar.skinColor;
+                    model.hairColor = userProfile.avatar.hairColor;
+                    model.eyesColor = userProfile.avatar.eyeColor;
 
-            int wearablesCount = userProfile.avatar.wearables.Count;
+                    model.wearables.Clear();
+                    previewEquippedWearables.Clear();
 
-            for (var i = 0; i < wearablesCount; i++)
-                EquipWearable(userProfile.avatar.wearables[i], EquipWearableSource.None, false, false);
+                    int wearablesCount = userProfile.avatar.wearables.Count;
 
-            view.UpdateAvatarPreview(model.ToAvatarModel());
+                    for (var i = 0; i < wearablesCount; i++)
+                        EquipWearable(userProfile.avatar.wearables[i], EquipWearableSource.None, false, false);
+
+                    view.UpdateAvatarPreview(model.ToAvatarModel());
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e) { Debug.LogError(e); }
+            }
+
+            loadProfileCancellationToken = loadProfileCancellationToken.SafeRestart();
+            LoadUserProfileAsync(userProfile, loadProfileCancellationToken.Token).Forget();
         }
 
         private void UpdateAvatarPreview()
@@ -418,15 +437,5 @@ namespace DCL.Backpack
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
-
-        private WearableItem GetFallbackBodyShape() =>
-            new ()
-            {
-                id = Random.Range(0, 2) == 0 ? WearableLiterals.BodyShapes.MALE : WearableLiterals.BodyShapes.FEMALE,
-                data = new WearableItem.Data
-                {
-                    category = WearableLiterals.Categories.BODY_SHAPE,
-                },
-            };
     }
 }
