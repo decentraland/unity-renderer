@@ -3,6 +3,8 @@ using NUnit.Framework;
 using DCL.Social.Passports;
 using DCL;
 using System.Threading;
+using UnityEditor;
+using UnityEngine;
 
 public class PassportHUDViewShould
 {
@@ -11,7 +13,8 @@ public class PassportHUDViewShould
     [SetUp]
     public void SetUp()
     {
-        view = PlayerPassportHUDView.CreateView();
+        view = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<PlayerPassportHUDView>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Passport/Prefabs/PlayerPassport.prefab"));
         view.Initialize(Substitute.For<MouseCatcher>());
     }
 
