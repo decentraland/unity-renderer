@@ -49,7 +49,7 @@ namespace DCL.Backpack
             this.avatarSlotsHUDController = avatarSlotsHUDController;
 
             avatarSlotsHUDController.GenerateSlots();
-            ownUserProfile.OnUpdate += LoadUserProfile;
+            ownUserProfile.OnUpdate += LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
@@ -74,7 +74,7 @@ namespace DCL.Backpack
 
         public void Dispose()
         {
-            ownUserProfile.OnUpdate -= LoadUserProfile;
+            ownUserProfile.OnUpdate -= LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange -= OnBackpackVisibleChanged;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
 
@@ -107,8 +107,7 @@ namespace DCL.Backpack
                 backpackEmotesSectionController.LoadEmotes();
                 wearableGridController.LoadWearables();
                 wearableGridController.LoadCollections();
-                LoadUserProfile(ownUserProfile, true);
-
+                LoadUserProfile(ownUserProfile);
                 view.Show();
             }
             else
@@ -141,14 +140,16 @@ namespace DCL.Backpack
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
 
-        private void LoadUserProfile(UserProfile userProfile) =>
-            LoadUserProfile(userProfile, false);
+        private void LoadUserProfileFromProfileUpdate(UserProfile userProfile)
+        {
+            bool isEditorVisible = rendererState.Get() && view.isVisible;
+            if (!isEditorVisible) return;
+            LoadUserProfile(userProfile);
+        }
 
-        private void LoadUserProfile(UserProfile userProfile, bool forceLoading)
+        private void LoadUserProfile(UserProfile userProfile)
         {
             if (avatarIsDirty) return;
-            bool isEditorVisible = rendererState.Get() && view.isVisible;
-            if (!forceLoading && !isEditorVisible) return;
             if (userProfile == null) return;
             if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape)) return;
 
