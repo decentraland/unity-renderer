@@ -2,6 +2,7 @@
 using DCL.Chat.HUD;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 public class PrivateChatEntryShould
 {
@@ -11,7 +12,8 @@ public class PrivateChatEntryShould
     [SetUp]
     public void SetUp()
     {
-        view = PrivateChatEntry.Create();
+        view = Object.Instantiate(Resources.Load<PrivateChatEntry>("SocialBarV1/WhisperChannelElement"));
+
         userContextMenu = Substitute.ForPartsOf<UserContextMenu>();
         view.Initialize(Substitute.For<IChatController>(), userContextMenu, new DataStore_Mentions());
     }

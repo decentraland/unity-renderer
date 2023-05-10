@@ -18,7 +18,8 @@ namespace DCL.Social.Friends
         public void Setup()
         {
             // we need to add friends controller because the badge internally uses FriendsController.i
-            view = FriendsHUDComponentView.Create();
+            view =             GameObject.Instantiate(Resources.Load<GameObject>("SocialBarV1/FriendsHUD")).GetComponent<FriendsHUDComponentView>();
+
 
             var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
             Environment.Setup(serviceLocator);

@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class FriendRequestEntryShould
 {
-    static string FRIEND_REQUEST_ENTRY_RESOURCE_NAME = "SocialBarV1/FriendRequestEntry";
-
     FriendRequestEntry entry;
 
     [SetUp]
     public void SetUp()
     {
-        GameObject go = Object.Instantiate((GameObject) Resources.Load(FRIEND_REQUEST_ENTRY_RESOURCE_NAME));
+        GameObject go = Object.Instantiate((GameObject) Resources.Load("SocialBarV1/FriendRequestEntry"));
         entry = go.GetComponent<FriendRequestEntry>();
     }
 

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace DCL.Chat.HUD
 {
     public class ChannelJoinErrorWindowPlugin : IPlugin
@@ -7,7 +9,7 @@ namespace DCL.Chat.HUD
         public ChannelJoinErrorWindowPlugin()
         {
             channelLimitReachedWindow = new ChannelJoinErrorWindowController(
-                ChannelJoinErrorWindowComponentView.Create(),
+                GameObject.Instantiate(Resources.Load<ChannelJoinErrorWindowComponentView>("SocialBarV1/ChannelJoinErrorModal")),
                 Environment.i.serviceLocator.Get<IChatController>(),
                 DataStore.i);
         }

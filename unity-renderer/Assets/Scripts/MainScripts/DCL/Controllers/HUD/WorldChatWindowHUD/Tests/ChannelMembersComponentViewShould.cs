@@ -1,6 +1,7 @@
 using System.Collections;
 using DCL.Chat.HUD;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class ChannelMembersComponentViewShould
@@ -10,7 +11,7 @@ public class ChannelMembersComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        experienceRowComponent = BaseComponentView.Create<ChannelMembersComponentView>("SocialBarV1/ChannelMembersHUD");
+        experienceRowComponent = GameObject.Instantiate(Resources.Load<ChannelMembersComponentView>("SocialBarV1/ChannelMembersHUD"));
     }
 
     [TearDown]

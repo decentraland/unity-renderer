@@ -1,4 +1,5 @@
 using DCL.Helpers;
+using UnityEngine;
 
 namespace DCL.Chat.HUD
 {
@@ -9,7 +10,7 @@ namespace DCL.Chat.HUD
         public PromoteChannelsToastPlugin()
         {
             promoteChannelsToastController = new PromoteChannelsToastComponentController(
-                PromoteChannelsToastComponentView.Create(),
+                GameObject.Instantiate(Resources.Load<PromoteChannelsToastComponentView>("SocialBarV1/PromoteChannelsHUD")),
                 new DefaultPlayerPrefs(),
                 DataStore.i,
                 CommonScriptableObjects.rendererState);
