@@ -33,7 +33,7 @@ namespace DCL.Backpack
         public override void Awake()
         {
             base.Awake();
-
+            image.OnLoaded += PlayLoadingSound;
             interactButton.onClick.AddListener(() =>
             {
                 if (model.IsSelected)
@@ -51,6 +51,11 @@ namespace DCL.Backpack
                 else
                     OnSelected?.Invoke(model);
             });
+        }
+
+        public override void Dispose()
+        {
+            image.OnLoaded -= PlayLoadingSound;
         }
 
         public override void OnFocus()
@@ -86,6 +91,11 @@ namespace DCL.Backpack
             nftBackground.sprite = rarityNftBackgrounds.GetRarityImage(nftRarity);
             categoryBackground.color = nftTypesIcons.GetColor(nftRarity);
             categoryImage.sprite = nftTypesIcons.GetTypeImage(model.Category);
+        }
+
+        private void PlayLoadingSound(Sprite sprt)
+        {
+            AudioScriptableObjects.listItemAppear.Play(true);
         }
 
         public void Unselect()

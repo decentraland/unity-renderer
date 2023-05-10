@@ -177,6 +177,7 @@ namespace DCL.Backpack
 
         private void HandleNewPageRequested(int page)
         {
+            AudioScriptableObjects.listItemAppear.ResetPitch();
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
             RequestWearablesAndShowThem(page, requestWearablesCancellationToken.Token).Forget();
         }
