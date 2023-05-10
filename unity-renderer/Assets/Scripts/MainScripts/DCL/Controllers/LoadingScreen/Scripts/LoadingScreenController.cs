@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.NotificationModel;
-using DCL.Providers;
+using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System;
 using UnityEngine;
 
@@ -14,7 +14,6 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
-        private const string SHADER_VARIANTS_ASSET = "shadervariants-selected";
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
         private readonly DataStore_Player playerDataStore;
@@ -32,12 +31,13 @@ namespace DCL.LoadingScreen
         private readonly NotificationsController notificationsController;
         private bool onSignUpFlow;
         internal bool showRandomPositionNotification;
-        private bool areShadersPrewarm;
         private bool isFadingOut;
+        private IShaderPrewarm shaderPrewarm;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
-            DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
+            DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore, IShaderPrewarm shaderPrewarm)
         {
+            this.shaderPrewarm = shaderPrewarm;
             this.view = view;
             this.sceneController = sceneController;
             this.playerDataStore = playerDataStore;
@@ -177,7 +177,8 @@ namespace DCL.LoadingScreen
         {
             timeoutController.StopTimeout();
 
-            await PrewarmShaderVariantsAsync();
+            percentageController.SetShaderCompilingMessage();
+            await shaderPrewarm.PrewarmAsync();
 
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
@@ -187,23 +188,6 @@ namespace DCL.LoadingScreen
 
             isFadingOut = false;
         }
-
-        private async UniTask PrewarmShaderVariantsAsync()
-        {
-            if (areShadersPrewarm) return;
-
-            percentageController.SetShaderCompilingMessage();
-
-            await UniTask.Yield();
-
-            var shaderVariants = await GetShaderVariantsAsset();
-
-            shaderVariants.WarmUp();
-            areShadersPrewarm = true;
-        }
-
-        private static UniTask<ShaderVariantCollection> GetShaderVariantsAsset() =>
-            Environment.i.serviceLocator.Get<IAddressableResourceProvider>().GetAddressable<ShaderVariantCollection>(SHADER_VARIANTS_ASSET);
 
         private void ShowRandomPositionNotification()
         {
