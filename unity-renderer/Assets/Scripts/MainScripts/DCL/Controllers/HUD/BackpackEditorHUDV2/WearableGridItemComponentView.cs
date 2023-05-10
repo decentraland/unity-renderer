@@ -21,6 +21,9 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject isNewContainer;
         [SerializeField] internal ImageComponentView image;
         [SerializeField] internal Button interactButton;
+        [SerializeField] internal Material grayScaleMaterial;
+        [SerializeField] internal GameObject incompatibleContainer;
+        [SerializeField] internal GameObject incompatibleTooltip;
 
         private string lastThumbnailUrl;
 
@@ -68,16 +71,17 @@ namespace DCL.Backpack
         {
             base.OnLoseFocus();
             RefreshControl();
+            incompatibleTooltip.SetActive(false);
         }
 
         public override void RefreshControl()
         {
             selectedContainer.SetActive(model.IsSelected);
             equippedContainer.SetActive(model.IsEquipped);
-            hoverEquippedContainer.SetActive(!model.IsSelected && model.IsEquipped && isFocused);
-            hoverUnequippedContainer.SetActive(!model.IsSelected && !model.IsEquipped && isFocused);
-            hoverSelectedUnequippedContainer.SetActive(model.IsSelected && !model.IsEquipped && isFocused);
-            hoverSelectedEquippedContainer.SetActive(model.UnEquipAllowed && model.IsSelected && model.IsEquipped && isFocused);
+            hoverEquippedContainer.SetActive(!model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
+            hoverUnequippedContainer.SetActive(!model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
+            hoverSelectedUnequippedContainer.SetActive(model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
+            hoverSelectedEquippedContainer.SetActive(model.UnEquipAllowed && model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
             isNewContainer.SetActive(model.IsNew);
 
             // we gotta check for url changes, otherwise the image component will start a "loading" state, even if the url is the same
@@ -91,6 +95,18 @@ namespace DCL.Backpack
             nftBackground.sprite = rarityNftBackgrounds.GetRarityImage(nftRarity);
             categoryBackground.color = nftTypesIcons.GetColor(nftRarity);
             categoryImage.sprite = nftTypesIcons.GetTypeImage(model.Category);
+
+            if (model.IsCompatibleWithBodyShape)
+                image.ImageComponent.material = null;
+            else
+            {
+                image.ImageComponent.material = grayScaleMaterial;
+                image.ImageComponent.SetMaterialDirty();
+            }
+
+            incompatibleContainer.SetActive(!model.IsCompatibleWithBodyShape);
+            interactButton.interactable = model.IsCompatibleWithBodyShape;
+            incompatibleTooltip.SetActive(!model.IsCompatibleWithBodyShape && isFocused);
         }
 
         private void PlayLoadingSound(Sprite sprt)
