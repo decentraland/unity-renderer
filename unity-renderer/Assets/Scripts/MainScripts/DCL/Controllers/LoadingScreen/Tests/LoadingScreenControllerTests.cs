@@ -48,7 +48,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView.GetTipsView().Returns(auxiliaryViews.GetTipsView());
             loadingScreenView.GetPercentageView().Returns(auxiliaryViews.GetPercentageView());
             loadingScreenView.GetTimeoutView().Returns(loadingScreenTimeoutView);
-            shaderPrewarm.PrewarmAsync().Returns(UniTask.CompletedTask);
+            shaderPrewarm.PrewarmAsync(Arg.Any<Action<float>>()).Returns(UniTask.CompletedTask);
 
             worldState.GetSceneNumberByCoords(destination).Returns(-1);
 
@@ -156,7 +156,7 @@ namespace DCL.LoadingScreen.Test
             commonDataStore.isSignUpFlow.Set(true);
 
             //Assert
-            shaderPrewarm.Received().PrewarmAsync();
+            shaderPrewarm.Received().PrewarmAsync(Arg.Any<Action<float>>());
         }
     }
 }

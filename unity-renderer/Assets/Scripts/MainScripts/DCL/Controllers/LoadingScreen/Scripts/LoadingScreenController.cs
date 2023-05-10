@@ -161,7 +161,9 @@ namespace DCL.LoadingScreen
                 FadeOutView();
             else
             {
-                percentageController.SetAvatarLoadingMessage();
+                if (!isFadingOut)
+                    percentageController.SetAvatarLoadingMessage();
+
                 commonDataStore.isPlayerRendererLoaded.OnChange += PlayerLoaded;
             }
         }
@@ -177,8 +179,7 @@ namespace DCL.LoadingScreen
         {
             timeoutController.StopTimeout();
 
-            percentageController.SetShaderCompilingMessage();
-            await shaderPrewarm.PrewarmAsync();
+            await shaderPrewarm.PrewarmAsync(OnShaderPrewarmProgress);
 
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
@@ -187,6 +188,11 @@ namespace DCL.LoadingScreen
                 ShowRandomPositionNotification();
 
             isFadingOut = false;
+        }
+
+        private void OnShaderPrewarmProgress(float progress)
+        {
+            percentageController.SetShaderCompilingMessage(progress);
         }
 
         private void ShowRandomPositionNotification()

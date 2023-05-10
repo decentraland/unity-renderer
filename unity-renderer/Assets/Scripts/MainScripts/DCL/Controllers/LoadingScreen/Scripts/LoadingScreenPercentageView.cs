@@ -31,10 +31,10 @@ namespace DCL.LoadingScreen
         public void SetPlayerLoadingMessage() =>
             currentMessage = LOADING_AVATAR_MESSAGE;
 
-        public void SetShaderCompilingMessage()
+        public void SetShaderCompilingMessage(float progress)
         {
             currentMessage = COMPILING_SHADERS_MESSAGE;
-            loadingPercentage.fillAmount = 1;
+            loadingPercentage.fillAmount = progress;
         }
 
     }
