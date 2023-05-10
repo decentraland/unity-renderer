@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using NSubstitute;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 
 public class PlacesSubSectionComponentControllerTests
 {
@@ -85,7 +87,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
         placesSubSectionComponentView.Received().SetAllAsLoading();
         placesSubSectionComponentView.Received().SetShowMoreButtonActive(false);
-        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<IHotScenesController.HotSceneInfo>>>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -96,7 +98,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<IHotScenesController.HotSceneInfo>>>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -107,7 +109,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
-        placesSubSectionComponentController.view.SetPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(
+        placesSubSectionComponentController.view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(
             placesSubSectionComponentController.TakeAllForAvailableSlots(placesSubSectionComponentController.placesFromAPI)));
 
         // Assert
@@ -121,24 +123,29 @@ public class PlacesSubSectionComponentControllerTests
     {
         // Act
         placesSubSectionComponentController.ShowMorePlaces();
-
         // Assert
-        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(Arg.Any<bool>());
+        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
     public void ShowPlaceDetailedInfoCorrectly()
     {
         // Arrange
-        PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel();
-        testPlaceCardModel.hotSceneInfo = new IHotScenesController.HotSceneInfo();
+        PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel
+            {
+                placeInfo = new IHotScenesController.PlaceInfo()
+                {
+                    base_position = "10,10",
+                    title = "Test place"
+                },
+            };
 
         // Act
         placesSubSectionComponentController.ShowPlaceDetailedInfo(testPlaceCardModel);
 
         // Assert
         placesSubSectionComponentView.Received().ShowPlaceModal(testPlaceCardModel);
-        exploreV2Analytics.Received().SendClickOnPlaceInfo(testPlaceCardModel.hotSceneInfo.id, testPlaceCardModel.placeName);
+        exploreV2Analytics.Received().SendClickOnPlaceInfo(testPlaceCardModel.placeInfo.id, testPlaceCardModel.placeName);
     }
 
     [Test]
@@ -147,7 +154,7 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         bool exploreClosed = false;
         placesSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
-        IHotScenesController.HotSceneInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
+        IHotScenesController.PlaceInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
         placesSubSectionComponentController.OnJumpInToPlace(testPlaceFromAPI);
@@ -155,6 +162,6 @@ public class PlacesSubSectionComponentControllerTests
         // Assert
         placesSubSectionComponentView.Received().HidePlaceModal();
         Assert.IsTrue(exploreClosed);
-        exploreV2Analytics.Received().SendPlaceTeleport(testPlaceFromAPI.id, testPlaceFromAPI.name, testPlaceFromAPI.baseCoords);
+        exploreV2Analytics.Received().SendPlaceTeleport(testPlaceFromAPI.id, testPlaceFromAPI.title, Utils.ConvertStringToVector(testPlaceFromAPI.base_position));
     }
 }
