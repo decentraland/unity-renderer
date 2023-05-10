@@ -63,8 +63,6 @@ namespace DCL.Backpack
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
 
             wearableGridController.OnWearableSelected += SelectWearable;
-            wearableGridController.OnWearableEquipped += EquipWearable;
-            wearableGridController.OnWearableUnequipped += UnEquipWearable;
             wearableGridController.OnHideUnhidePressed += UpdateOverrideHides;
             wearableGridController.OnWearableEquipped += EquipWearableFromGrid;
             wearableGridController.OnWearableUnequipped += UnEquipWearableFromGrid;
@@ -94,7 +92,6 @@ namespace DCL.Backpack
             wearableGridController.Dispose();
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
-            avatarSlotsHUDController.OnUnequipFromSlot -= UnEquipWearable;
             avatarSlotsHUDController.OnUnequipFromSlot -= UnEquipWearableFromSlot;
             avatarSlotsHUDController.Dispose();
 
