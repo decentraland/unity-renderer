@@ -28,7 +28,6 @@ namespace DCL.ECSRuntime
         void PutComponent<T>(IParcelScene scene, IDCLEntity entity, int componentId, T model, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
         void PutComponent<T>(int sceneNumber, long entityId, int componentId, T model, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
         void PutComponent<T>(int sceneNumber, long entityId, int componentId, T model, int minTimeStamp, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
-        void RemoveComponent(IParcelScene scene, IDCLEntity entity, int componentId, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
         void RemoveComponent(int sceneNumber, long entityId, int componentId, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
         void RemoveComponent(int sceneNumber, long entityId, int componentId, int minTimeStamp, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
 

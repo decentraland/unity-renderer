@@ -15,15 +15,12 @@ public class FavoriteButtonComponentView : BaseComponentView, IComponentModelCon
 
     public event Action<string, bool> OnFavoriteChange;
 
-    private bool isFavorite;
-    private string placeUUID;
-
     public override void Awake()
     {
         base.Awake();
 
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(SetFavorite);
+        button.onClick.AddListener(SetFavoriteFromButton);
     }
 
     public override void RefreshControl()
@@ -31,16 +28,22 @@ public class FavoriteButtonComponentView : BaseComponentView, IComponentModelCon
         if (model == null)
             return;
 
-        isFavorite = model.isFavorite;
-        SetFavorite();
+        SetFavorite(model.isFavorite);
     }
 
-    private void SetFavorite()
-    {
-        isFavorite = !isFavorite;
-        SetButtonVisuals(isFavorite);
+    public bool IsFavorite() =>
+        model?.isFavorite ?? false;
 
-        OnFavoriteChange?.Invoke(placeUUID, isFavorite);
+    private void SetFavoriteFromButton()
+    {
+        model.isFavorite = !model.isFavorite;
+        OnFavoriteChange?.Invoke(model.placeUUID, model.isFavorite);
+        RefreshControl();
+    }
+
+    private void SetFavorite(bool isFavorite)
+    {
+        SetButtonVisuals(isFavorite);
     }
 
     private void SetButtonVisuals(bool isFavorite) =>
@@ -49,9 +52,6 @@ public class FavoriteButtonComponentView : BaseComponentView, IComponentModelCon
     public void Configure(FavoriteButtonComponentModel newModel)
     {
         model = newModel;
-        isFavorite = newModel.isFavorite;
-        placeUUID = newModel.placeUUID;
-
         RefreshControl();
     }
 }
