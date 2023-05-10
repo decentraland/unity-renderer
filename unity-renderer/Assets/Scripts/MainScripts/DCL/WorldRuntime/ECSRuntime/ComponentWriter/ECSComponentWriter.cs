@@ -97,11 +97,6 @@ namespace DCL.ECSRuntime
             }
         }
 
-        public void RemoveComponent(IParcelScene scene, IDCLEntity entity, int componentId, ECSComponentWriteType writeType)
-        {
-            RemoveComponent(scene.sceneData.sceneNumber, entity.entityId, componentId, writeType);
-        }
-
         public void RemoveComponent(int sceneNumber, long entityId, int componentId, ECSComponentWriteType writeType)
         {
             RemoveComponent(sceneNumber, entityId, componentId, -1, writeType);

@@ -74,7 +74,7 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
     {
         base.Awake();
 
-        friendsTrackerController = new RealmTrackerController(FriendsController.i, friendColors);
+        friendsTrackerController = new RealmTrackerController(Environment.i.serviceLocator.Get<IFriendsController>(), friendColors);
 
         if (sortByNameButton != null)
             sortByNameButton.onClick.AddListener(() =>

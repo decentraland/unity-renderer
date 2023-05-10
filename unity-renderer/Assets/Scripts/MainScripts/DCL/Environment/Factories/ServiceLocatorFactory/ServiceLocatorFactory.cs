@@ -7,6 +7,8 @@ using DCL.Providers;
 using DCL.Rendering;
 using DCL.Services;
 using DCL.Social.Chat;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
@@ -15,9 +17,12 @@ using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
+using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
+using rpc_csharp.transport;
+using RPC.Transports;
 using System.Collections.Generic;
 using WorldsFeaturesAnalytics;
 
@@ -29,6 +34,8 @@ namespace DCL
         {
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
+
+            var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
 
             // Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
@@ -42,15 +49,19 @@ namespace DCL
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
+
             result.Register<IWebRequestController>(() => new WebRequestController(
                 new GetWebRequestFactory(),
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
+                new PutWebRequestFactory(),
+                new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             ));
+
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
@@ -71,10 +82,39 @@ namespace DCL
             result.Register<IAvatarFactory>(() => new AvatarFactory(result));
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
             result.Register<IChatController>(() => new ChatController(WebInterfaceChatBridge.GetOrCreate(), DataStore.i));
+
+            result.Register<ISocialApiBridge>(() =>
+            {
+                ITransport TransportProvider() =>
+                    new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
+
+                var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
+                    userProfileWebInterfaceBridge,
+                    TransportProvider);
+
+                return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
+            });
+
+            result.Register<IFriendsController>(() =>
+            {
+                // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
+                WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
+
+                return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
+                        webInterfaceFriendsApiBridge,
+                        RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
+                        DataStore.i), result.Get<ISocialApiBridge>(),
+                    DataStore.i);
+            });
+
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
+
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
+
             result.Register<ITeleportController>(() => new TeleportController());
+
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
+
             result.Register<IBillboardsController>(BillboardsController.Create);
 
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
@@ -91,19 +131,31 @@ namespace DCL
             // Asset Providers
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
-                { AssetSource.EMBEDDED, new EmbeddedTextureProvider() },
-                { AssetSource.WEB, new AssetTextureWebLoader() },
+                {
+                    AssetSource.EMBEDDED, new EmbeddedTextureProvider()
+                },
+
+                {
+                    AssetSource.WEB, new AssetTextureWebLoader()
+                },
             }, DataStore.i.featureFlags));
 
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
-                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) },
+                {
+                    AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance)
+                },
             }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
 
             result.Register<IFontAssetResolver>(() => new FontAssetResolver(new Dictionary<AssetSource, IFontAssetProvider>
             {
-                { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
-                { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
+                {
+                    AssetSource.EMBEDDED, new EmbeddedFontProvider()
+                },
+
+                {
+                    AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider)
+                },
             }, DataStore.i.featureFlags));
 
             // Map
@@ -111,6 +163,7 @@ namespace DCL
 
             const int ATLAS_CHUNK_SIZE = 1020;
             const int PARCEL_SIZE = 20;
+
             // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
             const float CULLING_BOUNDS_IN_PARCELS = 10;
 
@@ -121,14 +174,13 @@ namespace DCL
             result.Register<IHUDController>(() => new HUDController(DataStore.i));
 
             result.Register<IChannelsFeatureFlagService>(() =>
-                new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
+                new ChannelsFeatureFlagService(DataStore.i, userProfileWebInterfaceBridge));
 
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
             // Analytics
 
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
-
             return result;
         }
     }

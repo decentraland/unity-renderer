@@ -1,0 +1,17 @@
+{
+    "name": "RPCHelpers",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7deefc26eb4ef824586f2f51caa3b0e7",
+        "GUID:32414f40c5c02494097836a15ff47eac"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

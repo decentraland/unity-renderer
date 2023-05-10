@@ -14,9 +14,13 @@ namespace DCL.ECS7
         public const int GLTF_CONTAINER = 1041;
         public const int ANIMATOR = 1042;
         public const int VIDEO_PLAYER = 1043;
+        public const int VIDEO_EVENT = 1044;
+        public const int ENGINE_INFO = 1048;
+        public const int GLTF_CONTAINER_LOADING_STATE = 1049;
         public const int UI_TRANSFORM = 1050;
         public const int UI_TEXT = 1052;
         public const int UI_BACKGROUND = 1053;
+        public const int UI_CANVAS_INFORMATION = 1054;
         public const int POINTER_EVENTS = 1062;
         public const int POINTER_EVENTS_RESULT = 1063;
         public const int RAYCAST = 1067;

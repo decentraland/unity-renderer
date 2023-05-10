@@ -23,5 +23,17 @@ namespace DCL.Backpack
                 eyeColor = eyesColor
             };
         }
+
+        public void Update(BackpackEditorHUDModel newModel)
+        {
+            wearables.Clear();
+            foreach (var wearable in newModel.wearables)
+                wearables.Add(wearable.Key, wearable.Value);
+
+            bodyShape = newModel.bodyShape;
+            hairColor = newModel.hairColor;
+            skinColor = newModel.skinColor;
+            eyesColor = newModel.eyesColor;
+        }
     }
 }

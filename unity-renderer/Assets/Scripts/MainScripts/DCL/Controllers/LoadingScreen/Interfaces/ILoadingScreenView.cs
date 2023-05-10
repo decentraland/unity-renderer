@@ -13,5 +13,7 @@ namespace DCL.LoadingScreen
         LoadingScreenTipsView GetTipsView();
 
         LoadingScreenPercentageView GetPercentageView();
+
+        ILoadingScreenTimeoutView GetTimeoutView();
     }
 }

@@ -275,18 +275,18 @@ namespace DCLServices.WearablesCatalogService
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithDefinitionResponse>(
-                                   "https://peer-ue-2.decentraland.zone/explorer-service/backpack/:userId/wearables",
-                                   $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{USER_ID}/wearables",
+                                   "https://peer-testing.decentraland.org/explorer/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
-                                       args[0].paramName == "pageNumber"
+                                       args[0].paramName == "pageNum"
                                        && args[0].paramValue == "0"
                                        && args[1].paramName == "pageSize"
                                        && args[1].paramValue == "10"
                                        && args[2].paramName == "rarity"
                                        && args[2].paramValue == "epic"
-                                       && args[3].paramName == "categories"
+                                       && args[3].paramName == "category"
                                        && args[3].paramValue == "upper_body"
                                        && args[4].paramName == "name"
                                        && args[4].paramValue == "woah"
@@ -294,50 +294,70 @@ namespace DCLServices.WearablesCatalogService
                                        && args[5].paramValue == "date"
                                        && args[6].paramName == "direction"
                                        && args[6].paramValue == "ASC"
-                                       && args[7].paramName == "collectionCategory"
-                                       && args[7].paramValue == "third-party,base-wearable,on-chain"));
+                                       && args[7].paramName == "collectionType"
+                                       && args[7].paramValue == "base-wearable"
+                                       && args[8].paramName == "collectionType"
+                                       && args[8].paramValue == "on-chain"
+                                       && args[9].paramName == "collectionType"
+                                       && args[9].paramValue == "third-party"));
             });
 
         [UnityTest]
-        [TestCase("urn:decentraland:off-chain:base-avatars:male",
-            "base-wearable",
-            new[] {"urn:decentraland:off-chain:base-avatars:male"},
-            ExpectedResult = null)]
-        [TestCase("urn:collections-thirdparty:woah,urn:decentraland:off-chain:base-avatars:male",
-            "third-party,base-wearable",
-            new[] {"urn:collections-thirdparty:woah", "urn:decentraland:off-chain:base-avatars:male"},
-            ExpectedResult = null)]
-        [TestCase("urn:decentraland:custom:wearables,urn:decentraland:custom2:wearables,urn:collections-thirdparty:woah,urn:decentraland:off-chain:base-avatars:male",
-            "third-party,base-wearable,on-chain",
-            new[] {"urn:decentraland:custom:wearables", "urn:decentraland:custom2:wearables", "urn:collections-thirdparty:woah", "urn:decentraland:off-chain:base-avatars:male"},
-            ExpectedResult = null)]
-        public IEnumerator ValidateCollectionIdParamsWhenRequestingOwnedWearablesWithFilters(
-            string expectedCollectionIdsParamValue,
-            string expectedCollectionCategoryParamValue,
-            string[] collectionIds) =>
+        [TestCase(NftCollectionType.Base, ExpectedResult = null)]
+        [TestCase(NftCollectionType.OnChain, ExpectedResult = null)]
+        public IEnumerator ValidateCollectionIdParamsWhenRequestingOwnedWearablesWithoutThirdPartyFilters(NftCollectionType collectionType) =>
             UniTask.ToCoroutine(async () =>
             {
                 GivenWearableWithSpecificLambdasUrl(GivenValidWearableItem(VALID_WEARABLE_ID, ""));
 
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) =
                     await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, default(CancellationToken),
-                        collectionIds: collectionIds);
+                        collectionTypeMask: collectionType);
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithDefinitionResponse>(
-                                   "https://peer-ue-2.decentraland.zone/explorer-service/backpack/:userId/wearables",
-                                   $"https://peer-ue-2.decentraland.zone/explorer-service/backpack/{USER_ID}/wearables",
+                                   "https://peer-testing.decentraland.org/explorer/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
-                                       args[0].paramName == "pageNumber"
+                                       args[0].paramName == "pageNum"
                                        && args[0].paramValue == "0"
                                        && args[1].paramName == "pageSize"
                                        && args[1].paramValue == "10"
-                                       && args[2].paramName == "collectionIds"
-                                       && args[2].paramValue == expectedCollectionIdsParamValue
-                                       && args[3].paramName == "collectionCategory"
-                                       && args[3].paramValue == expectedCollectionCategoryParamValue));
+                                       && args[2].paramName == "collectionType"
+                                       && args[2].paramValue == (collectionType == NftCollectionType.Base ? "base-wearable" : "on-chain")));
+            });
+
+        [UnityTest]
+        public IEnumerator ValidateCollectionIdParamsWhenRequestingOwnedWearablesWithThirdPartyFilters() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                NftCollectionType collectionType = NftCollectionType.ThirdParty;
+                var thirdPartyCollectionId = "testThirdPartyCollectionId";
+
+                GivenWearableWithSpecificLambdasUrl(GivenValidWearableItem(VALID_WEARABLE_ID, ""));
+
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) =
+                    await service.RequestOwnedWearablesAsync(USER_ID, 0, 10, default(CancellationToken),
+                        thirdPartyCollectionIds: thirdPartyCollectionId != null ? new List<string> { thirdPartyCollectionId } : null,
+                        collectionTypeMask: collectionType);
+
+                lambdasService.Received(1)
+                              .GetFromSpecificUrl<WearableWithDefinitionResponse>(
+                                   "https://peer-testing.decentraland.org/explorer/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer/{USER_ID}/wearables",
+                                   30, 3,
+                                   Arg.Any<CancellationToken>(),
+                                   Arg.Is<(string paramName, string paramValue)[]>(args =>
+                                       args[0].paramName == "pageNum"
+                                       && args[0].paramValue == "0"
+                                       && args[1].paramName == "pageSize"
+                                       && args[1].paramValue == "10"
+                                       && args[2].paramName == "collectionType"
+                                       && args[2].paramValue == "third-party"
+                                       && args[3].paramName == "thirdPartyCollectionId"
+                                       && args[3].paramValue == thirdPartyCollectionId));
             });
 
         [Test]

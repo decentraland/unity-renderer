@@ -71,7 +71,7 @@ public class HUDFactory : IHUDFactory
                 return new TermsOfServiceHUDController();
             case HUDElementID.FRIENDS:
                 return new FriendsHUDController(DataStore.i,
-                    FriendsController.i,
+                    Environment.i.serviceLocator.Get<IFriendsController>(),
                     new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
@@ -81,7 +81,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.WORLD_CHAT_WINDOW:
                 return new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    FriendsController.i,
+                    Environment.i.serviceLocator.Get<IFriendsController>(),
                     Environment.i.serviceLocator.Get<IChatController>(),
                     DataStore.i,
                     SceneReferences.i.mouseCatcher,
@@ -97,7 +97,7 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     Environment.i.serviceLocator.Get<IChatController>(),
-                    FriendsController.i,
+                    Environment.i.serviceLocator.Get<IFriendsController>(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
@@ -139,7 +139,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
                 return new LeaveChannelConfirmationWindowController(Environment.i.serviceLocator.Get<IChatController>());
             case HUDElementID.TASKBAR:
-                return new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(), FriendsController.i);
+                return new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(), Environment.i.serviceLocator.Get<IFriendsController>());
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 return new ExternalUrlPromptHUDController(DataStore.i.rpc.context.restrictedActions);
             case HUDElementID.NFT_INFO_DIALOG:
@@ -151,7 +151,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 return new VoiceChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    FriendsController.i,
+                    Environment.i.serviceLocator.Get<IFriendsController>(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
@@ -164,17 +164,10 @@ public class HUDFactory : IHUDFactory
                 return new QuestsPanelHUDController();
             case HUDElementID.QUESTS_TRACKER:
                 return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
-            case HUDElementID.SIGNUP:
-                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(cancellationToken),
-                    dataStoreLoadingScreen.Ref,
-                    DataStore.i.HUDs);
         }
 
         return null;
     }
-
-    public async UniTask<ISignupHUDView> CreateSignupHUDView(CancellationToken cancellationToken = default) =>
-        await CreateHUDView<ISignupHUDView>(SIGNUP_HUD, cancellationToken);
 
     protected async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default) where T:IDisposable
     {

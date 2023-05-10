@@ -27,5 +27,5 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: 14b14542e832343729c812d8e4c8cbae, type: 3}
   - key: mythic
     value: {fileID: 21300000, guid: 94d7328f5583d47d6b961ae666f6db88, type: 3}
-  - key: base
+  - key: default
     value: {fileID: 21300000, guid: 43c5d03f6ddc94dd59cebf176b48c9d8, type: 3}

@@ -26,7 +26,9 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
         private bool canVideoBePlayed => isRendererActive && hadUserInteraction && isValidUrl;
 
-        public VideoPlayerHandler(IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent, DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen)
+        public VideoPlayerHandler(
+            IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
+            DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
             this.loadingScreen = loadingScreen;
@@ -50,7 +52,12 @@ namespace DCL.ECSComponents
             Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
             loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
 
-            videoPlayerInternalComponent.RemoveFor(scene, entity);
+            // ECSVideoPlayerSystem.Update() will run a video events check before the component is removed
+            videoPlayerInternalComponent.RemoveFor(scene, entity, new InternalVideoPlayer()
+            {
+                removed = true
+            });
+
             videoPlayer?.Dispose();
         }
 

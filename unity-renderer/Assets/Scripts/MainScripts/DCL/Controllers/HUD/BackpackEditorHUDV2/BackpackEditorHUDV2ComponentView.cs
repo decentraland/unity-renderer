@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -18,19 +17,22 @@ namespace DCL.Backpack
         private const int EMOTES_SECTION_INDEX = 1;
         private const int MS_TO_RESET_PREVIEW_ANIMATION = 200;
 
-        [SerializeField] private SectionSelectorComponentView sectionSelector;
-        [SerializeField] private GameObject wearablesSection;
-        [SerializeField] private GameObject emotesSection;
+        [SerializeField] internal SectionSelectorComponentView sectionSelector;
+        [SerializeField] internal GameObject wearablesSection;
+        [SerializeField] internal GameObject emotesSection;
         [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
         [SerializeField] private WearableGridComponentView wearableGridComponentView;
         [SerializeField] private AvatarSlotsView avatarSlotsView;
-        [SerializeField] private ColorPickerComponentView colorPickerComponentView;
-        [SerializeField] private ColorPresetsSO colorPresetsSO;
+        [SerializeField] internal ColorPickerComponentView colorPickerComponentView;
+        [SerializeField] internal ColorPresetsSO colorPresetsSO;
+        [SerializeField] internal ColorPresetsSO skinColorPresetsSO;
+        [SerializeField] private BackpackFiltersComponentView backpackFiltersComponentView;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
         public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
         public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
+        public BackpackFiltersComponentView BackpackFiltersComponentView => backpackFiltersComponentView;
 
         private Transform thisTransform;
         private bool isAvatarDirty;
@@ -51,7 +53,6 @@ namespace DCL.Backpack
             ConfigureSectionSelector();
             backpackPreviewPanel.Initialize(characterPreviewFactory);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
-            colorPickerComponentView.SetColorList(colorPresetsSO.colors);
         }
 
         private void Update() =>
@@ -148,6 +149,12 @@ namespace DCL.Backpack
 
         public void SetColorPickerVisibility(bool isActive) =>
             colorPickerComponentView.gameObject.SetActive(isActive);
+
+        public void SetColorPickerAsSkinMode(bool isSkinMode)
+        {
+            colorPickerComponentView.SetShowOnlyPresetColors(isSkinMode);
+            colorPickerComponentView.SetColorList(isSkinMode ? skinColorPresetsSO.colors : colorPresetsSO.colors);
+        }
 
         public void SetColorPickerValue(Color color)
         {

@@ -12,6 +12,7 @@ using DCL.Configuration;
 using DG.Tweening;
 using Google.Protobuf.Collections;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -42,6 +43,18 @@ namespace DCL.Helpers
             }
 
             return staticMaterials[path];
+        }
+
+        public static void QuitApplication()
+        {
+#if UNITY_EDITOR
+
+            // Application.Quit() does not work in the editor so
+            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
 
         public static void CleanMaterials(Renderer r)
@@ -308,7 +321,10 @@ namespace DCL.Helpers
 
         public static IWebRequestAsyncOperation FetchTexture(string textureURL, bool isReadable, Action<Texture2D> OnSuccess, Action<IWebRequestAsyncOperation> OnFail = null)
         {
-            void SuccessInternal(IWebRequestAsyncOperation request) { OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest)); }
+            void SuccessInternal(IWebRequestAsyncOperation request)
+            {
+                OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest));
+            }
 
             var asyncOp = Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,
@@ -669,6 +685,17 @@ namespace DCL.Helpers
             DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
             return dtDateTime;
+        }
+
+        private static readonly Regex COORDINATES_REGEX = new Regex(@"^(-?\d+),(-?\d+)$");
+
+        public static Vector2Int ConvertStringToVector(string input)
+        {
+            Match match = COORDINATES_REGEX.Match(input);
+
+            if (!int.TryParse(match.Groups[1].Value, out int x) || !int.TryParse(match.Groups[2].Value, out int y)) { throw new Exception("Coordinates parsing error"); }
+
+            return new Vector2Int(x, y);
         }
 
         public static Color GetRandomColorInGradient(Color minColor, Color maxColor)

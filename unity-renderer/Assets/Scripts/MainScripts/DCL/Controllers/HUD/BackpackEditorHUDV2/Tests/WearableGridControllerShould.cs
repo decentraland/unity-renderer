@@ -23,8 +23,10 @@ namespace DCL.Backpack
         private IUserProfileBridge userProfileBridge;
         private IWearablesCatalogService wearablesCatalogService;
         private DataStore_BackpackV2 dataStore;
+        private BackpackFiltersController backpackFiltersController;
         private UserProfile ownUserProfile;
         private IBrowserBridge browserBridge;
+        private AvatarSlotsHUDController avatarSlotsHUDController;
 
         [SetUp]
         public void SetUp()
@@ -48,11 +50,19 @@ namespace DCL.Backpack
 
             browserBridge = Substitute.For<IBrowserBridge>();
 
+            backpackFiltersController = new BackpackFiltersController(Substitute.For<IBackpackFiltersComponentView>(),
+                Substitute.For<IWearablesCatalogService>());
+
+            avatarSlotsHUDController = new AvatarSlotsHUDController(Substitute.For<IAvatarSlotsView>());
+
             controller = new WearableGridController(view,
                 userProfileBridge,
                 wearablesCatalogService,
                 dataStore,
-                browserBridge);
+                browserBridge,
+                backpackFiltersController,
+                avatarSlotsHUDController,
+                Substitute.For<IBackpackAnalyticsController>());
         }
 
         [TearDown]
@@ -72,7 +82,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             view.Received(1)
@@ -93,7 +103,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             wearablesCatalogService.Received(1)
@@ -103,7 +113,7 @@ namespace DCL.Backpack
 
         [UnityTest]
         [TestCase(14, 1, ExpectedResult = null)]
-        [TestCase(0, 1, ExpectedResult = null)]
+        [TestCase(0, 0, ExpectedResult = null)]
         [TestCase(16, 2, ExpectedResult = null)]
         [TestCase(87, 6, ExpectedResult = null)]
         [TestCase(1356, 91, ExpectedResult = null)]
@@ -115,7 +125,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, wearableTotalAmount)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             view.Received(1).SetWearablePages(1, expectedTotalPages);
@@ -216,7 +226,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             view.Received(1).ClearWearables();
@@ -272,7 +282,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
 
             view.Received(1).ClearWearables();
@@ -299,6 +309,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -306,7 +320,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
             view.ClearReceivedCalls();
 
@@ -332,6 +346,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -339,7 +357,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
             view.ClearReceivedCalls();
 
@@ -360,6 +378,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -367,7 +389,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
             view.ClearReceivedCalls();
 
@@ -393,6 +415,10 @@ namespace DCL.Backpack
                     description = "super wearable",
                     thumbnail = "w1thumbnail",
                     baseUrl = "http://localimages",
+                    data = new WearableItem.Data()
+                    {
+                        category = "skin"
+                    }
                 },
             };
 
@@ -400,7 +426,7 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
 
-            controller.LoadWearables();
+            controller.LoadWearablesWithFilters();
             yield return null;
             view.ClearReceivedCalls();
 
@@ -413,14 +439,26 @@ namespace DCL.Backpack
         public void ChangePageWhenViewRequestsIt()
         {
             wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 3, 15,
-                                        Arg.Any<CancellationToken>())
+                                        Arg.Any<CancellationToken>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<NftRarity>(),
+                                        Arg.Any<NftCollectionType>(),
+                                        Arg.Any<ICollection<string>>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
             view.OnWearablePageChanged += Raise.Event<Action<int>>(3);
 
             wearablesCatalogService.Received(1)
-                                   .RequestOwnedWearablesAsync(OWN_USER_ID,
-                                        3, 15, Arg.Any<CancellationToken>());
+                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 3, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<NftRarity>(),
+                                        Arg.Any<NftCollectionType>(),
+                                        Arg.Any<ICollection<string>>(),
+                                        Arg.Any<string>(),
+                                        Arg.Any<(NftOrderByOperation type, bool directionAscendent)?>());
 
             view.Received(1).SetWearablePages(3, 4);
         }
@@ -456,6 +494,9 @@ namespace DCL.Backpack
 
             dataStore.previewEquippedWearables.Add("w1");
 
+            string wearableSelectedId = null;
+            controller.OnWearableSelected += wearableId => wearableSelectedId = wearableId;
+
             view.OnWearableSelected += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel
             {
                 WearableId = "w1",
@@ -479,16 +520,19 @@ namespace DCL.Backpack
                      && i.hiddenBy == null
                      && i.hideList[0] == "lower_body"
                      && i.removeList[0] == "eyes"));
+
+            Assert.AreEqual("w1", wearableSelectedId);
         }
 
         [UnityTest]
         public IEnumerator FilterAllWearablesFromBreadcrumb()
         {
             wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
-                                        Arg.Any<CancellationToken>())
+                                        Arg.Any<CancellationToken>(),
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
 
-            view.OnFilterWearables += Raise.Event<Action<string>>("all");
+            view.OnFilterSelected += Raise.Event<Action<string>>("all");
             yield return null;
 
             view.Received(1)
@@ -498,7 +542,115 @@ namespace DCL.Backpack
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"));
 
-            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15, Arg.Any<CancellationToken>());
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                Arg.Any<CancellationToken>(),
+                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain);
+        }
+
+        [UnityTest]
+        public IEnumerator FilterWearablesByCategoryAndNameFromBreadcrumb()
+        {
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        category: "upper_body",
+                                        name: "festival",
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
+
+            view.OnFilterSelected += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
+            yield return null;
+
+            view.Received(1)
+                .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
+                     n.ResultCount == 50
+                     && n.Current == 0
+                     && n.Path[0].Filter == "all"
+                     && n.Path[0].Name == "All"
+                     && n.Path[0].Removable == false
+                     && n.Path[1].Filter == "all&category=upper_body"
+                     && n.Path[1].Name == "upper_body"
+                     && n.Path[1].Removable == true
+                     && n.Path[2].Filter == "all&category=upper_body&name=festival"
+                     && n.Path[2].Name == "festival"
+                     && n.Path[2].Removable == true));
+
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                Arg.Any<CancellationToken>(),
+                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                category: "upper_body",
+                name: "festival");
+        }
+
+        [UnityTest]
+        public IEnumerator RemoveNameFilterFromBreadcrumb()
+        {
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        category: "upper_body",
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
+
+            view.OnFilterSelected += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
+            yield return null;
+
+            view.ClearReceivedCalls();
+            wearablesCatalogService.ClearReceivedCalls();
+
+            view.OnFilterRemoved += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
+            yield return null;
+
+            view.Received(1)
+                .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
+                     n.ResultCount == 50
+                     && n.Current == 0
+                     && n.Path[0].Filter == "all"
+                     && n.Path[0].Name == "All"
+                     && n.Path[0].Removable == false
+                     && n.Path[1].Filter == "all&category=upper_body"
+                     && n.Path[1].Name == "upper_body"
+                     && n.Path[1].Removable == true
+                     && n.Path.Length == 2));
+
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                Arg.Any<CancellationToken>(),
+                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                category: "upper_body");
+        }
+
+        [UnityTest]
+        public IEnumerator RemoveCategoryFilterFromBreadcrumb()
+        {
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        name: "festival",
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain)
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((Array.Empty<WearableItem>(), 50)));
+
+            view.OnFilterSelected += Raise.Event<Action<string>>("all&name=festival&category=upper_body");
+            yield return null;
+
+            view.ClearReceivedCalls();
+            wearablesCatalogService.ClearReceivedCalls();
+
+            view.OnFilterRemoved += Raise.Event<Action<string>>("all&name=festival&category=upper_body");
+            yield return null;
+
+            view.Received(1)
+                .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
+                     n.ResultCount == 50
+                     && n.Current == 0
+                     && n.Path[0].Filter == "all"
+                     && n.Path[0].Name == "All"
+                     && n.Path[0].Removable == false
+                     && n.Path[1].Filter == "all&name=festival"
+                     && n.Path[1].Name == "festival"
+                     && n.Path[1].Removable == true
+                     && n.Path.Length == 2));
+
+            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                Arg.Any<CancellationToken>(),
+                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                name: "festival");
         }
 
         [UnityTest]
@@ -509,7 +661,6 @@ namespace DCL.Backpack
             const string ON_CHAIN_COLLECTION = "urn:decentraland:on:chain";
             const string BASE_OFF_CHAIN_COLLECTION = "urn:decentraland:off-chain:base-avatars:male";
             const string THIRD_PARTY_COLLECTION = "urn:collections-thirdparty:woah";
-            const NftRarity RARITY = NftRarity.Epic;
             const string NAME = "awesome";
 
             IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
@@ -518,7 +669,8 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>())
                                    .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, WEARABLE_TOTAL_AMOUNT)));
 
-            controller.LoadWearables(CATEGORY, RARITY,
+            controller.LoadWearablesWithFilters(CATEGORY,
+                NftCollectionType.Base | NftCollectionType.OnChain | NftCollectionType.ThirdParty,
                 new[] { ON_CHAIN_COLLECTION, BASE_OFF_CHAIN_COLLECTION, THIRD_PARTY_COLLECTION },
                 NAME,
                 (NftOrderByOperation.Name, false));
@@ -529,7 +681,8 @@ namespace DCL.Backpack
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
                                         CATEGORY,
-                                        RARITY,
+                                        NftRarity.None,
+                                        NftCollectionType.Base | NftCollectionType.OnChain | NftCollectionType.ThirdParty,
                                         Arg.Is<ICollection<string>>(i =>
                                             i.ElementAt(0) == ON_CHAIN_COLLECTION
                                             && i.ElementAt(1) == BASE_OFF_CHAIN_COLLECTION
@@ -567,6 +720,54 @@ namespace DCL.Backpack
             view.OnGoToMarketplace += Raise.Event<Action>();
 
             browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/get-a-wallet");
+        }
+
+        [UnityTest]
+        public IEnumerator ShowWearableAsNewWhenHasBeenTransferredBetweenOneDay()
+        {
+            IReadOnlyList<WearableItem> wearableList = new[]
+            {
+                new WearableItem
+                {
+                    id = "w1",
+                    rarity = "common",
+                    description = "super wearable",
+                    thumbnail = "w1thumbnail",
+                    baseUrl = "http://localimages",
+                    i18n = new[]
+                    {
+                        new i18n
+                        {
+                            text = "idk",
+                            code = "wtf",
+                        }
+                    },
+                    data = new WearableItem.Data
+                    {
+                        replaces = new[] { "category1", "category2", "category3" },
+                        representations = new[]
+                        {
+                            new WearableItem.Representation
+                            {
+                                bodyShapes = new[] { "bodyShape1" },
+                                overrideReplaces = new[] { "override1", "override2", "override3" },
+                            }
+                        }
+                    },
+                    MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+                }
+            };
+
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
+
+            controller.LoadWearablesWithFilters();
+            yield return null;
+
+            view.Received(1)
+                .ShowWearables(Arg.Is<IEnumerable<WearableGridItemModel>>(i =>
+                     i.ElementAt(0).IsNew == true));
         }
     }
 }

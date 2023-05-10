@@ -53,7 +53,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   prefab: {fileID: 2968125776301508163, guid: eb2bad04291304b91a1bc5ad2369acd1, type: 3}
   container: {fileID: 8565597220570756557}
-  iconsByFilter: []
+  iconsByCategory: {fileID: 11400000, guid: c4c1fb78d1c9a4db5ba93b000ce13026, type: 2}
 --- !u!1 &5721556695713121045
 GameObject:
   m_ObjectHideFlags: 0

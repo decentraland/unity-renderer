@@ -19,8 +19,8 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             else
                 AddInvalidMeshEffect(entity, sbcComponentModel);
 
-            KeyValueSet<Collider, int> physicsColliders = sbcComponentModel.physicsColliders;
-            KeyValueSet<Collider, int> pointerColliders = sbcComponentModel.pointerColliders;
+            KeyValueSet<Collider, uint> physicsColliders = sbcComponentModel.physicsColliders;
+            KeyValueSet<Collider, uint> pointerColliders = sbcComponentModel.pointerColliders;
 
             if (physicsColliders != null)
             {

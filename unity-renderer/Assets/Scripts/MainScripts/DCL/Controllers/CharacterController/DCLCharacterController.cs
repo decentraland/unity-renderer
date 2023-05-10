@@ -557,7 +557,6 @@ public class DCLCharacterController : MonoBehaviour
         //             The race conditions that can arise from not having this flag can result in:
         //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
         //                  - Random teleports to 0,0 or other positions that shouldn't happen.
-        //We are sending a fixated camera height of 1.675f
         if (initialPositionAlreadySet)
             DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, characterController.height, cameraRotation);
 
