@@ -60,7 +60,7 @@ public class AddressablesValidationTests
             message: ComposeAssertMessage(msg, analyzeRule: "Check Scene to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
     }
 
-    [TestCase(4.33f)]
+    [TestCase(4.0f)]
     public void ValidateResourcesToAddressableDuplicateDependencies(float maxAssetSize)
     {
         var rule = new CheckResourcesDupeDependencies();

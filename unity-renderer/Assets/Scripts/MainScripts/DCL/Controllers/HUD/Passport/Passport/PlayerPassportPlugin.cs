@@ -1,6 +1,7 @@
 using AvatarSystem;
 using DCL;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Social.Friends;
 using DCl.Social.Passports;
 using DCL.Social.Passports;
@@ -8,15 +9,25 @@ using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
 using SocialFeaturesAnalytics;
+using System.Threading;
 using UnityEngine;
 
 public class PlayerPassportPlugin : IPlugin
 {
-    private readonly PlayerPassportHUDController passportController;
+    private readonly CancellationTokenSource cts = new ();
+    private PlayerPassportHUDController passportController;
 
     public PlayerPassportPlugin()
     {
-        PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportReferenceContainer>();
+        Initialize(cts.Token);
+    }
+
+    private async void Initialize(CancellationToken ct)
+    {
+        PlayerPassportReferenceContainer referenceContainer =
+            await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                             .Instantiate<PlayerPassportReferenceContainer>("PlayerPassport", cancellationToken: ct);
+
         var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
 
         passportController = new PlayerPassportHUDController(
@@ -66,6 +77,9 @@ public class PlayerPassportPlugin : IPlugin
 
     public void Dispose()
     {
+        cts.Cancel();
+        cts.Dispose();
+
         passportController?.Dispose();
     }
 }

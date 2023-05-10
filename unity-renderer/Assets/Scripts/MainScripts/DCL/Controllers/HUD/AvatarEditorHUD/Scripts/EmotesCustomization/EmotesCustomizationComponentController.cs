@@ -43,6 +43,8 @@ namespace DCL.EmotesCustomization
 
         public EmotesCustomizationComponentController() { }
 
+        public bool IsInitialized { get; private set; }
+
         public EmotesCustomizationComponentController(
             DataStore_EmotesCustomization emotesCustomizationDataStore,
             DataStore_Emotes emotesDataStore,
@@ -74,6 +76,8 @@ namespace DCL.EmotesCustomization
 
             emotesDataStore.animations.OnAdded -= OnAnimationAdded;
             emotesDataStore.animations.OnAdded += OnAnimationAdded;
+
+            IsInitialized = true;
         }
 
         public void SetEmotes(WearableItem[] ownedEmotes)

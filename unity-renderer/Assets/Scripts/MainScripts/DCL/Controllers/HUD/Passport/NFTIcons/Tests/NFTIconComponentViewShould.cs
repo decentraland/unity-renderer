@@ -8,7 +8,7 @@ public class NFTIconComponentViewShould : MonoBehaviour
     [SetUp]
     public void SetUp()
     {
-        nftIconComponentView = BaseComponentView.Create<NFTIconComponentView>("NFTIcon");
+        nftIconComponentView = null; // BaseComponentView.Create<NFTIconComponentView>("NFTIcon");
     }
 
     [TearDown]
