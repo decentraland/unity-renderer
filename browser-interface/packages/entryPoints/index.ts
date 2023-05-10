@@ -31,25 +31,17 @@ import { isWebGLCompatible } from './validations'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
+    ensureWebGLCapability()
 
-    try {
-      ensureWebGLCapability()
+    ensureHLSCapability()
 
-      ensureHLSCapability()
+    await setupBaseUrl(options)
 
-      await setupBaseUrl(options)
+    ensureValidWebGLCanvasContainer(options)
 
-      ensureValidWebGLCanvasContainer(options)
+    configurePersistentLocalStorage(options)
 
-      configurePersistentLocalStorage(options)
-
-      initShared()
-    } catch(err: any) {
-      if (err instanceof UserError)
-        BringDownClientAndShowError(err.message)
-      else
-        throw err
-    }
+    initShared()
 
     /**
      * These are executed asynchronously. After initShared sets up the redux store and sagas, we can return
