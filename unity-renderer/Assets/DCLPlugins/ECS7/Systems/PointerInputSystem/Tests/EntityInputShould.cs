@@ -78,10 +78,10 @@ namespace Tests
             colliderEntity2 = colliderGO2.AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity1,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { colliderEntity1, 0 } } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity1, 0 } } });
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity2,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { colliderEntity2, 0 } } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity2, 0 } } });
         }
 
         [TearDown]
@@ -466,7 +466,7 @@ namespace Tests
             Collider testEntityCollider = new GameObject("testEntityCollider").AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(newTestScene, testEntity,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, int>() { { testEntityCollider, 0 } } });
+                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { testEntityCollider, 0 } } });
 
             pointerEventsComponent.PutFor(newTestScene, testEntity, new InternalPointerEvents()
             {
