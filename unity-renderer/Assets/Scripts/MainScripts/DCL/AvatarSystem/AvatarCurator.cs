@@ -41,7 +41,7 @@ namespace AvatarSystem
             )> Curate(AvatarSettings settings, IEnumerable<string> wearablesId, IEnumerable<string> emoteIds, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-            Debug.Log("Curate");
+
             try
             {
                 //Old flow contains emotes among the wearablesIds

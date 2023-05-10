@@ -77,18 +77,26 @@ namespace DCL.Backpack
                 if (avatarSlots.ContainsKey(slotToHide))
                     avatarSlots[slotToHide].SetIsHidden(true, hiddenBy);
         }
-
+        private static readonly List<string> CATEGORIES_PRIORITY = new ()
+        {
+            "skin", "upper_body", "lower_body", "feet", "helmet", "hat", "top_head", "mask", "eyewear", "earring", "tiara",
+        };
         private void RecalculateHideList()
         {
-            foreach (var slot in avatarSlots)
+            HashSet<string> alreadyProcessedCategories = new HashSet<string>();
+            foreach (string s in CATEGORIES_PRIORITY)
             {
-                var hideList = slot.Value.GetHideList();
-                if (hideList == null)
-                    continue;
+                if (avatarSlots.ContainsKey(s))
+                {
+                    foreach (string s1 in avatarSlots[s].GetHideList())
+                    {
+                        if (!avatarSlots.ContainsKey(s1)) continue;
+                        if (alreadyProcessedCategories.Contains(s1)) continue;
 
-                foreach (string s in hideList)
-                    if(avatarSlots.ContainsKey(s))
-                        avatarSlots[s].SetIsHidden(true, slot.Key);
+                        avatarSlots[s1].SetIsHidden(true, s);
+                    }
+                    alreadyProcessedCategories.Add(s);
+                }
             }
         }
 

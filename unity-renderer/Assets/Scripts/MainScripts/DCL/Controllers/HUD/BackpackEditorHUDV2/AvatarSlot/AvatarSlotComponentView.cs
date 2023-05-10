@@ -94,34 +94,37 @@ namespace DCL.Backpack
         public void SetHideList(string[] hideList) =>
             model.hidesList = hideList;
 
+
+        private static readonly List<string> CATEGORIES_PRIORITY = new List<string>
+        {
+            "skin", "upper_body", "lower_body", "feet", "helmet", "hat", "top_head", "mask", "eyewear", "earring", "tiara",
+        };
         public void SetIsHidden(bool isHidden, string hiddenBy)
         {
             model.isHidden = isHidden;
             model.hiddenBy = hiddenBy;
-            hiddenSlot.SetActive(isHidden);
 
             if (isHidden)
+                hiddenByList.Add(hiddenBy);
+            else
+                hiddenByList.Remove(hiddenBy);
+
+            List<string> sortedList1 = hiddenByList.OrderBy(x => CATEGORIES_PRIORITY.IndexOf(x)).ToList();
+            
+            if (sortedList1.Count > 0)
             {
+                hiddenSlot.SetActive(true);
                 emptySlot.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
-                tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
-                hiddenByList.Add(hiddenBy);
+                tooltipHiddenText.text = $"Hidden by: {sortedList1.First()}";
             }
             else
             {
-                hiddenByList.Remove(hiddenBy);
+                hiddenSlot.SetActive(false);
+                emptySlot.SetActive(string.IsNullOrEmpty(model.imageUri));
                 tooltipHiddenText.gameObject.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipDefaultPosition;
-                emptySlot.SetActive(string.IsNullOrEmpty(model.imageUri));
-
-                if (hiddenByList.Count > 0)
-                {
-                    emptySlot.SetActive(false);
-                    tooltipContainer.anchoredPosition = tooltipFullPosition;
-                    tooltipHiddenText.gameObject.SetActive(true);
-                    tooltipHiddenText.text = $"Hidden by: {hiddenByList.Last()}";
-                }
             }
         }
 
