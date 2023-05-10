@@ -296,7 +296,7 @@ namespace DCL.Social.Friends
                 for (int i = startIndex; i <= endIndex; i++)
                 {
                     string key = friendsSortedByName.Keys[i];
-                    friendIds.SetValue(friendsSortedByName[key].userId, i - startIndex);
+                    friendIds[i - startIndex] = friendsSortedByName[key].userId;
                 }
 
                 return friendIds;

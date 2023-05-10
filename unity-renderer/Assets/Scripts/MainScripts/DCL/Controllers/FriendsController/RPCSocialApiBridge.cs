@@ -120,6 +120,7 @@ namespace DCL.Social.Friends
                         var profile = await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friend.Address, cancellationToken);
                         OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address, userName = profile.userName });
                     }
+                    catch (OperationCanceledException) { }
                     catch (Exception e) { Debug.LogException(e); }
                 }));
             }
