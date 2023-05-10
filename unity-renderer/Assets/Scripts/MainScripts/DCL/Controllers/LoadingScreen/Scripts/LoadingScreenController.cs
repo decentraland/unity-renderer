@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.NotificationModel;
+using DCL.Providers;
 using System;
 using UnityEngine;
 
@@ -12,6 +14,7 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
+        private const string SHADER_VARIANTS_ASSET = "shadervariants-selected";
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
         private readonly DataStore_Player playerDataStore;
@@ -29,6 +32,8 @@ namespace DCL.LoadingScreen
         private readonly NotificationsController notificationsController;
         private bool onSignUpFlow;
         internal bool showRandomPositionNotification;
+        private bool areShadersPrewarm;
+        private bool isFadingOut;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -163,12 +168,42 @@ namespace DCL.LoadingScreen
 
         private void FadeOutView()
         {
+            if (isFadingOut) return;
+            isFadingOut = true;
+            FadeOutViewAsync().Forget();
+        }
+
+        private async UniTask FadeOutViewAsync()
+        {
             timeoutController.StopTimeout();
+
+            await PrewarmShaderVariantsAsync();
+
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+
             if (showRandomPositionNotification)
                 ShowRandomPositionNotification();
+
+            isFadingOut = false;
         }
+
+        private async UniTask PrewarmShaderVariantsAsync()
+        {
+            if (areShadersPrewarm) return;
+
+            percentageController.SetShaderCompilingMessage();
+
+            await UniTask.Yield();
+
+            var shaderVariants = await GetShaderVariantsAsset();
+
+            shaderVariants.WarmUp();
+            areShadersPrewarm = true;
+        }
+
+        private static UniTask<ShaderVariantCollection> GetShaderVariantsAsset() =>
+            Environment.i.serviceLocator.Get<IAddressableResourceProvider>().GetAddressable<ShaderVariantCollection>(SHADER_VARIANTS_ASSET);
 
         private void ShowRandomPositionNotification()
         {
@@ -179,6 +214,7 @@ namespace DCL.LoadingScreen
                 timer = 10f,
                 destroyOnFinish = true
             });
+
             showRandomPositionNotification = false;
         }
 
@@ -190,6 +226,7 @@ namespace DCL.LoadingScreen
                 recipient = string.Empty,
                 body = "/goto random",
             });
+
             showRandomPositionNotification = true;
         }
     }

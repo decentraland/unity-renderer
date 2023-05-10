@@ -62,8 +62,6 @@ namespace DCL
             {
                 SetupServices();
                 performanceMetricsController = new PerformanceMetricsController();
-
-                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
 
 #if UNITY_STANDALONE || UNITY_EDITOR
@@ -113,24 +111,6 @@ namespace DCL
 #endif
         }
 
-        private void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
-        {
-            if (newVisibleValue)
-            {
-                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
-                PrewarmShaderVariants().Forget();
-
-                async UniTask PrewarmShaderVariants()
-                {
-                    var collection = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                      .GetAddressable<ShaderVariantCollection>("shadervariants-selected");
-
-                    await UniTask.DelayFrame(1);
-                    collection.WarmUp();
-                }
-            }
-        }
-
         protected virtual void SetupPlugins()
         {
             pluginSystem = PluginSystemFactory.Create();
@@ -160,8 +140,6 @@ namespace DCL
 
         protected virtual void Dispose()
         {
-            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
-
             DataStore.i.common.isApplicationQuitting.Set(true);
             Settings.i.SaveSettings();
 

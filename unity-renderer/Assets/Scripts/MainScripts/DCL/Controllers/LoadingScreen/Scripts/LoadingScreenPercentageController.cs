@@ -79,5 +79,8 @@ namespace DCL.LoadingScreen
 
         public void SetAvatarLoadingMessage() =>
             loadingScreenPercentageView.SetPlayerLoadingMessage();
+
+        public void SetShaderCompilingMessage() =>
+            loadingScreenPercentageView.SetShaderCompilingMessage();
     }
 }
