@@ -275,8 +275,8 @@ namespace DCLServices.WearablesCatalogService
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithDefinitionResponse>(
-                                   "https://peer-testing.decentraland.org/explorer-service/backpack/:userId/wearables",
-                                   $"https://peer-testing.decentraland.org/explorer-service/backpack/{USER_ID}/wearables",
+                                   "https://peer-testing.decentraland.org/explorer/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
@@ -316,8 +316,8 @@ namespace DCLServices.WearablesCatalogService
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithDefinitionResponse>(
-                                   "https://peer-testing.decentraland.org/explorer-service/backpack/:userId/wearables",
-                                   $"https://peer-testing.decentraland.org/explorer-service/backpack/{USER_ID}/wearables",
+                                   "https://peer-testing.decentraland.org/explorer/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
@@ -345,8 +345,8 @@ namespace DCLServices.WearablesCatalogService
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithDefinitionResponse>(
-                                   "https://peer-testing.decentraland.org/explorer-service/backpack/:userId/wearables",
-                                   $"https://peer-testing.decentraland.org/explorer-service/backpack/{USER_ID}/wearables",
+                                   "https://peer-testing.decentraland.org/explorer/:userId/wearables",
+                                   $"https://peer-testing.decentraland.org/explorer/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>

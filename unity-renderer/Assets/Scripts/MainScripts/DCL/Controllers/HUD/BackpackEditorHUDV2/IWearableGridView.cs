@@ -7,8 +7,8 @@ namespace DCL.Backpack
     {
         event Action<int> OnWearablePageChanged;
         event Action<WearableGridItemModel> OnWearableSelected;
-        event Action<WearableGridItemModel> OnWearableEquipped;
-        event Action<WearableGridItemModel> OnWearableUnequipped;
+        event Action<WearableGridItemModel, EquipWearableSource> OnWearableEquipped;
+        event Action<WearableGridItemModel, UnequipWearableSource> OnWearableUnequipped;
         event Action<string> OnFilterSelected;
         event Action<string> OnFilterRemoved;
         event Action OnGoToMarketplace;

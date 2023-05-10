@@ -54,5 +54,15 @@ namespace DCL.Quests
             Assert.AreEqual(questStepComponentView.questStepText.color, questStepComponentView.normalTextColor);
             Assert.AreEqual(questStepText, questStepComponentView.questStepText.text);
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetJumpInButtonSupport(bool supports)
+        {
+            questStepComponentView.SetSupportsJumpIn(supports);
+
+            Assert.AreEqual(supports, questStepComponentView.jumpInButton.gameObject.activeSelf);
+        }
     }
 }

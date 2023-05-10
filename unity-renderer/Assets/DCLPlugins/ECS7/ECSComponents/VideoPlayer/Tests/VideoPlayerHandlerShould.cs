@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
+using VideoState = DCL.Components.Video.Plugin.VideoState;
 
 namespace Tests
 {
@@ -40,7 +41,9 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
-            videoPlayerHandler = new VideoPlayerHandler(internalVideoPlayerComponent, loadingScreenDataStore.decoupledLoadingHUD);
+            videoPlayerHandler = new VideoPlayerHandler(
+                internalVideoPlayerComponent,
+                loadingScreenDataStore.decoupledLoadingHUD);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
@@ -133,6 +136,8 @@ namespace Tests
         [Test]
         public void CreateInternalComponentCorrectly()
         {
+            Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
+
             videoPlayerHandler.OnComponentCreated(scene, entity);
             videoPlayerHandler.hadUserInteraction = true;
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
@@ -144,10 +149,10 @@ namespace Tests
 
             Assert.NotNull(internalVideoPlayerComponent.GetFor(scene, entity));
 
-            // remove component, internal component should be removed too
+            // The internal component is removed with a default model flagged as removed to
+            // be able to remove video events in ECSVideoPlayerSystem
             videoPlayerHandler.OnComponentRemoved(scene, entity);
-
-            Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
+            Assert.IsTrue(internalVideoPlayerComponent.GetFor(scene, entity).model.removed);
         }
 
         [Test]
