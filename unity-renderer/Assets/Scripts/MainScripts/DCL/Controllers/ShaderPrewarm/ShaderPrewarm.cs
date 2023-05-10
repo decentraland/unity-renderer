@@ -1,7 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Providers;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -9,7 +8,7 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
 {
     public class ShaderPrewarm : IShaderPrewarm
     {
-        private const string SHADER_VARIANTS_ASSET = "ShaderVariantsGroup";
+        private const string SHADER_VARIANTS_ASSET = "ShaderVariantsData";
 
         private bool areShadersPrewarm;
 
@@ -19,13 +18,15 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
 
             await UniTask.Yield();
 
-            var assets = await LoadAssets();
+            var variantsData = await LoadAssets();
 
-            for (var i = 0; i < assets.Count; i++)
+            int length = variantsData.collections.Length;
+
+            for (var i = 0; i < length; i++)
             {
-                ShaderVariantCollection collection = assets[i];
+                ShaderVariantCollection collection = variantsData.collections[i];
 
-                progressCallback.Invoke(i/(float)assets.Count);
+                progressCallback.Invoke(i/(float)length);
                 await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
 
                 collection.WarmUp();
@@ -34,8 +35,8 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
             areShadersPrewarm = true;
         }
 
-        private static UniTask<IList<ShaderVariantCollection>> LoadAssets() =>
-            Environment.i.serviceLocator.Get<IAddressableResourceProvider>().GetAddressablesList<ShaderVariantCollection>(SHADER_VARIANTS_ASSET);
+        private static UniTask<ShaderVariantsData> LoadAssets() =>
+            Environment.i.serviceLocator.Get<IAddressableResourceProvider>().GetAddressable<ShaderVariantsData>(SHADER_VARIANTS_ASSET);
 
     }
 }
