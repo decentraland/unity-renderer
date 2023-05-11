@@ -71,14 +71,14 @@ namespace Tests
 
             PBNftShape model = new PBNftShape()
             {
-                Urn = "urn:ethereum:erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d:1540722"
+                Urn = "urn:decentraland:ethereum:erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d:1540722"
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
             RestrictedActionsServiceImpl.TryParseUrn(model.Urn, out string contractAddress, out string tokenID);
             infoRetriever.Received(1).FetchNFTInfoAsync(contractAddress, tokenID);
 
-            model.Urn = "urn:ethereum:erc721:0x8eaa9ae1ac89b1c8c8a8104d08c045f78aadb42d:450";
+            model.Urn = "urn:decentraland:ethereum:erc721:0x8eaa9ae1ac89b1c8c8a8104d08c045f78aadb42d:450";
 
             handler.OnComponentModelUpdated(scene, entity, model);
             RestrictedActionsServiceImpl.TryParseUrn(model.Urn, out contractAddress, out tokenID);

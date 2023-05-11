@@ -86,11 +86,13 @@ namespace RPC.Services
             return Time.frameCount;
         }
 
-        // TODO: change this when support for wearables/emotes/etc urn is added
-        // urn format urn:<CHAIN>:<CONTRACT_STANDARD>:<CONTRACT>:<TOKEN_ID> i.e: urn:ethereum:erc721:0x00...000:123
+        // TODO: update this when support for wearables/emotes/etc urn is added
+        // urn format urn:decentraland:<CHAIN>:<CONTRACT_STANDARD>:<CONTRACT_ADDRESS>:<TOKEN_ID>
+        // i.e: urn:decentraland:ethereum:erc721:0x00...000:123
         public static bool TryParseUrn(string urn, out string contractAddress, out string tokenId)
         {
             const char SEPARATOR = ':';
+            const string DCL_URN_ID = "urn:decentraland";
             const string CHAIN_ETHEREUM = "ethereum";
 
             contractAddress = string.Empty;
@@ -100,30 +102,35 @@ namespace RPC.Services
             {
                 var urnSpan = urn.AsSpan();
 
-                if (!urnSpan.Slice(0, 3).Equals("urn", StringComparison.Ordinal))
+                // 1: "urn:decentraland"
+                if (!urnSpan.Slice(0, DCL_URN_ID.Length).Equals(DCL_URN_ID, StringComparison.Ordinal))
                     return false;
+                urnSpan = urnSpan.Slice(DCL_URN_ID.Length + 1);
 
-                urnSpan = urnSpan.Slice(4);
-
+                // TODO: allow 'matic' chain when Opensea implements its APIv2 "retrieve assets" endpoint
+                // (https://docs.opensea.io/v2.0/reference/api-overview) in the future
+                // 2: chain/network
                 var chainSpan = urnSpan.Slice(0, CHAIN_ETHEREUM.Length);
+                if (!chainSpan.Equals(CHAIN_ETHEREUM, StringComparison.Ordinal))
+                        return false;
                 urnSpan = urnSpan.Slice(chainSpan.Length + 1);
 
-                if (!chainSpan.Equals(CHAIN_ETHEREUM, StringComparison.Ordinal))
-                    return false;
-
+                // 3: contract standard
                 var contractStandardSpan = urnSpan.Slice(0, urnSpan.IndexOf(SEPARATOR));
                 urnSpan = urnSpan.Slice(contractStandardSpan.Length + 1);
 
+                // 4: contract address
                 var contractAddressSpan = urnSpan.Slice(0, urnSpan.IndexOf(SEPARATOR));
                 urnSpan = urnSpan.Slice(contractAddressSpan.Length + 1);
 
+                // 5: token id
                 var tokenIdSpan = urnSpan;
-
                 contractAddress = contractAddressSpan.ToString();
                 tokenId = tokenIdSpan.ToString();
+
                 return true;
             }
-            catch (Exception _)
+            catch (Exception e)
             { // ignored
             }
 
