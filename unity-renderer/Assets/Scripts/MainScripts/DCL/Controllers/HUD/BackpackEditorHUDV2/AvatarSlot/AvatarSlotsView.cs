@@ -90,7 +90,9 @@ namespace DCL.Backpack
                 {
                     foreach (string s1 in avatarSlots[s].GetHideList())
                     {
+                        //if it hides a slot that doesn't exist, avoid processing hides
                         if (!avatarSlots.ContainsKey(s1)) continue;
+                        //if category has already been processed, avoid processing hides
                         if (alreadyProcessedCategories.Contains(s1)) continue;
 
                         avatarSlots[s1].SetIsHidden(true, s);

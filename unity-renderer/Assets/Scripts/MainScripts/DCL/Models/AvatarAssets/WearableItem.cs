@@ -199,7 +199,7 @@ public class WearableItem
             var combinedArray = new string[hides.Length + replaces.Length];
             Array.Copy(hides, combinedArray, hides.Length);
             Array.Copy(replaces, 0, combinedArray, hides.Length, replaces.Length);
-            return combinedArray;
+            return combinedArray.Where(w => w != data.category).ToArray();
         }
 
         return hides;
