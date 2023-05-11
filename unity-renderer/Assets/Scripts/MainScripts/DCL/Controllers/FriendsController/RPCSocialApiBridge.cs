@@ -103,6 +103,8 @@ namespace DCL.Social.Friends
             var requestEvents = await socialClient.GetRequestEvents(new Payload
                 { SynapseToken = accessToken });
 
+            await UniTask.SwitchToMainThread();
+
             foreach (var friendRequest in requestEvents.Incoming.Items)
             {
                 OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
