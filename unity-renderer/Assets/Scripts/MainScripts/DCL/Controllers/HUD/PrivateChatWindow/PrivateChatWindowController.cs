@@ -55,9 +55,8 @@ public class PrivateChatWindowController : IHUD
         this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
     }
 
-    public void Initialize(IPrivateChatComponentView view = null)
+    public void Initialize(IPrivateChatComponentView view)
     {
-        view ??=             GameObject.Instantiate(Resources.Load<PrivateChatWindowComponentView>("SocialBarV1/PrivateChatHUD"));
         View = view;
         View.Initialize(friendsController, socialAnalytics);
         view.OnPressBack -= HandlePressBack;

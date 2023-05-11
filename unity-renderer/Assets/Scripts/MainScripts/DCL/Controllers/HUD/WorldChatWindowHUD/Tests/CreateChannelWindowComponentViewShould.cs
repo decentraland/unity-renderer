@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -10,7 +11,9 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view = Object.Instantiate(Resources.Load<CreateChannelWindowComponentView>("SocialBarV1/ChannelCreationHUD"));
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<CreateChannelWindowComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/ChannelCreationHUD.prefab"));
         }
 
         [TearDown]

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -10,8 +11,9 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view =                 GameObject.Instantiate(Resources.Load<ChannelLeaveErrorWindowComponentView>("SocialBarV1/ChannelLeaveErrorModal"));
-            ;
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<ChannelLeaveErrorWindowComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/ChannelLeaveErrorModal.prefab"));
         }
 
         [Test]
