@@ -107,6 +107,7 @@ namespace DCL.Backpack
                 model.hidingOverrideMap.Remove(category);
 
             avatarIsDirty = true;
+            avatarSlotsHUDController.Recalculate(model.hidingOverrideMap);
             UpdateAvatarPreview();
         }
 
@@ -233,7 +234,7 @@ namespace DCL.Backpack
             model.bodyShape = bodyShape;
             previewEquippedWearables.Add(bodyShape.id);
             dataStore.backpackV2.previewBodyShape.Set(bodyShape.id);
-            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id);
+            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id, model.hidingOverrideMap);
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
             wearableGridController.Equip(bodyShape.id);
             wearableGridController.UpdateBodyShapeCompatibility(bodyShape.id);
@@ -345,7 +346,11 @@ namespace DCL.Backpack
 
                 model.wearables.Add(wearableId, wearable);
                 previewEquippedWearables.Add(wearableId);
-                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape);
+                foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
+                {
+                    UpdateOverrideHides(s,false);
+                }
+                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.hidingOverrideMap);
                 wearableGridController.Equip(wearableId);
             }
 
@@ -392,7 +397,11 @@ namespace DCL.Backpack
             if (source != UnequipWearableSource.None)
                 backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
-            avatarSlotsHUDController.UnEquip(wearable.data.category);
+            foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
+            {
+                UpdateOverrideHides(s,false);
+            }
+            avatarSlotsHUDController.UnEquip(wearable.data.category, model.hidingOverrideMap);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
             wearableGridController.UnEquip(wearableId);

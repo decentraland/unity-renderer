@@ -248,7 +248,8 @@ namespace DCL.Backpack
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(BODY_SHAPE_ID);
             avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
                 Arg.Is<WearableItem>(w => w.id == BODY_SHAPE_ID),
-                BODY_SHAPE_ID);
+                BODY_SHAPE_ID,
+                Arg.Any<HashSet<string>>());
         }
 
         [TestCase(WearableLiterals.BodyShapes.FEMALE)]
@@ -270,7 +271,8 @@ namespace DCL.Backpack
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(bodyShapeId);
             avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
                 Arg.Is<WearableItem>(w => w.id == bodyShapeId),
-                bodyShapeId);
+                bodyShapeId,
+                Arg.Any<HashSet<string>>());
         }
 
         [Test]

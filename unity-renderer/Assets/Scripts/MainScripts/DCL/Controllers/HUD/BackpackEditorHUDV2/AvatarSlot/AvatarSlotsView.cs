@@ -49,16 +49,16 @@ namespace DCL.Backpack
         public void DisablePreviousSlot(string category) =>
             avatarSlots[category].OnPointerClickOnDifferentSlot();
 
-        public void SetSlotContent(string category, WearableItem wearableItem, string bodyShape)
+        public void SetSlotContent(string category, WearableItem wearableItem, string bodyShape, HashSet<string> hideOverrides)
         {
             avatarSlots[category].SetRarity(wearableItem.rarity);
             avatarSlots[category].SetNftImage(wearableItem.ComposeThumbnailUrl());
             avatarSlots[category].SetWearableId(wearableItem.id);
             avatarSlots[category].SetHideList(wearableItem.GetHidesList(bodyShape));
-            RecalculateHideList();
+            RecalculateHideList(hideOverrides);
         }
 
-        public void ResetCategorySlot(string category)
+        public void ResetCategorySlot(string category, HashSet<string> hideOverrides)
         {
             if (avatarSlots[category].GetHideList() != null)
                 foreach (var slot in avatarSlots[category].GetHideList())
@@ -66,10 +66,10 @@ namespace DCL.Backpack
                         avatarSlots[slot].SetIsHidden(false, category);
 
             avatarSlots[category].ResetSlot();
-            RecalculateHideList();
+            RecalculateHideList(hideOverrides);
         }
 
-        private void RecalculateHideList()
+        public void RecalculateHideList(HashSet<string> hideOverrides)
         {
             Dictionary<string, HashSet<string>> previouslyHidden = new Dictionary<string, HashSet<string>>();
 
@@ -97,6 +97,12 @@ namespace DCL.Backpack
 
                         if(previouslyHidden.ContainsKey(priorityCategory))
                             previouslyHidden[priorityCategory].Add(categoryToHide);
+
+                        if (hideOverrides != null && hideOverrides.Contains(categoryToHide))
+                        {
+                            avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
+                            continue;
+                        }
 
                         avatarSlots[categoryToHide].SetIsHidden(true, priorityCategory);
                     }

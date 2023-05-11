@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DCL.Backpack
 {
@@ -13,7 +14,8 @@ namespace DCL.Backpack
         void RebuildLayout();
         void AddSlotToSection(string sectionName, string slotCategory, bool allowUnEquip);
         void DisablePreviousSlot(string category);
-        void SetSlotContent(string category, WearableItem wearableItem, string bodyShape);
-        void ResetCategorySlot(string category);
+        void SetSlotContent(string category, WearableItem wearableItem, string bodyShape, HashSet<string> hideOverrides);
+        void ResetCategorySlot(string category, HashSet<string> hideOverrides);
+        void RecalculateHideList(HashSet<string> hideOverrides);
     }
 }

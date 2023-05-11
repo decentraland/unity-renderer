@@ -315,13 +315,13 @@ public class WearableItem
 
             foreach (string categoryToHide in wearablesByCategory[priorityCategory].GetHidesList(bodyShapeId))
             {
-
                 //If higher priority hides this category, skip
-                if (hideOverrides != null && hideOverrides.Contains(categoryToHide)) continue;
                 if (previouslyHidden.ContainsKey(categoryToHide) && previouslyHidden[categoryToHide].Contains(priorityCategory)) continue;
 
                 if(previouslyHidden.ContainsKey(priorityCategory))
                     previouslyHidden[priorityCategory].Add(categoryToHide);
+
+                if (hideOverrides != null && hideOverrides.Contains(categoryToHide)) continue;
 
                 result.Add(categoryToHide);
             }
