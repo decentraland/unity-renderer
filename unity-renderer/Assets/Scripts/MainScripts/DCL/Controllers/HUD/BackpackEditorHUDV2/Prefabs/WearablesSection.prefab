@@ -1176,7 +1176,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Hide/Unhide
+  m_Text: Override hide
 --- !u!1 &7747725482117158820
 GameObject:
   m_ObjectHideFlags: 0
@@ -1789,7 +1789,7 @@ PrefabInstance:
     - target: {fileID: 3576930520628333720, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 40.55
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3576930520628333720, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}

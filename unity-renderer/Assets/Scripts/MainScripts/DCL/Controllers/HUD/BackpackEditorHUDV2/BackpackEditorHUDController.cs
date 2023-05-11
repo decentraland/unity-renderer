@@ -415,7 +415,7 @@ namespace DCL.Backpack
         private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             currentSlotSelected = isSelected ? slotCategory : null;
-            view.SetBreadcrumbHideUnhideToggle(currentSlotSelected);
+            view.SetBreadcrumbHideUnhideToggle(currentSlotSelected, model.hidingOverrideMap);
             view.SetColorPickerVisibility(isSelected && supportColor);
 
             if (isSelected && supportColor)

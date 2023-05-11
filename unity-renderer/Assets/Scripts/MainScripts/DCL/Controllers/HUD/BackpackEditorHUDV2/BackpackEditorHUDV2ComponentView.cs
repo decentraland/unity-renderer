@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -156,10 +157,8 @@ namespace DCL.Backpack
             colorPickerComponentView.SetColorList(isSkinMode ? skinColorPresetsSO.colors : colorPresetsSO.colors);
         }
 
-        public void SetBreadcrumbHideUnhideToggle(string slotCategory)
-        {
-            wearableGridComponentView.SetBreadcrumbHideUnhideToggle(slotCategory, model.hidingOverrideMap.Contains(slotCategory));
-        }
+        public void SetBreadcrumbHideUnhideToggle(string slotCategory, HashSet<string> hidingOverrides) =>
+            wearableGridComponentView.SetBreadcrumbHideUnhideToggle(slotCategory, hidingOverrides.Contains(slotCategory));
 
         public void SetColorPickerValue(Color color)
         {

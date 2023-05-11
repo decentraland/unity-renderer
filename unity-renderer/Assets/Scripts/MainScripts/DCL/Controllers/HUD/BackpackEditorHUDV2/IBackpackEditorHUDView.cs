@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -21,7 +22,7 @@ namespace DCL.Backpack
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
         void SetColorPickerVisibility(bool isActive);
         void SetColorPickerAsSkinMode(bool isSkinMode);
-        void SetBreadcrumbHideUnhideToggle(string slotCategory);
+        void SetBreadcrumbHideUnhideToggle(string slotCategory, HashSet<string> hidingOverrides);
         void SetColorPickerValue(Color color);
     }
 }
