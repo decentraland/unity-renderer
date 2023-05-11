@@ -177,14 +177,14 @@ public class WearableItem
     {
         var representation = GetRepresentation(bodyShapeType);
 
-        string[] hides = data.hides;
+        string[] hides;
 
-        /*
+
         if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
             hides = data.hides;
         else
             hides = representation.overrideHides;
-*/
+
         if (IsSkin())
         {
             hides = hides == null
