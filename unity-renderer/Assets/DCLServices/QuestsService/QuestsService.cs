@@ -7,7 +7,28 @@ using System.Threading;
 
 namespace DCLServices.QuestsService
 {
-    public class QuestsService: IDisposable
+
+    public interface IQuestsService : IDisposable
+    {
+        event Action<QuestStateUpdate> OnQuestUpdated;
+        IReadOnlyDictionary<string, QuestStateUpdate> CurrentState { get; }
+
+        void SetUserId(string userId);
+
+        UniTask<StartQuestResponse> StartQuest(string questId);
+
+        UniTask<AbortQuestResponse> AbortQuest(string questInstanceId);
+
+        UniTask<ProtoQuest> GetDefinition(string questId, CancellationToken cancellationToken = default);
+    }
+
+    /* TODO Alex:
+        - Add service to ServiceLocator
+        - Find a good place to call QuestsService.SetUserId
+        All these requirements are only needed to launch quests,
+        in the meantime the service is ready to be tested by mocking a ClientQuestService (look at the test scene)
+     */
+    public class QuestsService: IQuestsService
     {
         public event Action<QuestStateUpdate> OnQuestUpdated;
         public IReadOnlyDictionary<string, QuestStateUpdate> CurrentState => stateCache;
@@ -33,8 +54,13 @@ namespace DCLServices.QuestsService
             stateCache.Clear();
             userSubscribeCt?.Cancel();
             userSubscribeCt?.Dispose();
-            userSubscribeCt = new CancellationTokenSource();
-            Subscribe(userSubscribeCt.Token).Forget();
+            userSubscribeCt = null;
+
+            if (!userId.IsNullOrEmpty())
+            {
+                userSubscribeCt = new CancellationTokenSource();
+                Subscribe(userSubscribeCt.Token).Forget();
+            }
         }
 
         private async UniTaskVoid Subscribe(CancellationToken ct)
