@@ -9,7 +9,7 @@ using UnityEngine;
 public class WearableItem
 {
     private const string THIRD_PARTY_COLLECTIONS_PATH = "collections-thirdparty";
-    private static readonly List<string> CATEGORIES_PRIORITY = new ()
+    public static readonly List<string> CATEGORIES_PRIORITY = new ()
     {
         "skin", "upper_body", "lower_body", "feet", "helmet", "hat", "top_head", "mask", "eyewear", "earring", "tiara",
     };
@@ -179,7 +179,6 @@ public class WearableItem
 
         string[] hides;
 
-
         if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
             hides = data.hides;
         else
@@ -301,24 +300,31 @@ public class WearableItem
     public static HashSet<string> ComposeHiddenCategoriesOrdered(string bodyShapeId, HashSet<string> hideOverrides, List<WearableItem> wearables)
     {
         HashSet<string> result = new HashSet<string>();
-        HashSet<string> alreadyProcessedCategories = new HashSet<string>();
         Dictionary<string, WearableItem> wearablesByCategory = wearables.ToDictionary(w => w.data.category);
+        Dictionary<string, HashSet<string>> previouslyHidden = new Dictionary<string, HashSet<string>>();
 
-        for (int i = 0; i < CATEGORIES_PRIORITY.Count; i++)
+        for (var i = 0; i < CATEGORIES_PRIORITY.Count; i++)
         {
-            if (!wearablesByCategory.ContainsKey(CATEGORIES_PRIORITY[i]) || wearablesByCategory[CATEGORIES_PRIORITY[i]].GetHidesList(bodyShapeId) == null)
+            previouslyHidden.Add(CATEGORIES_PRIORITY[i], new HashSet<string>());
+        }
+
+        foreach (var priorityCategory in CATEGORIES_PRIORITY)
+        {
+            if (!wearablesByCategory.ContainsKey(priorityCategory) || wearablesByCategory[priorityCategory].GetHidesList(bodyShapeId) == null)
                 continue;
 
-            foreach (string categoryToBeHidden in wearablesByCategory[CATEGORIES_PRIORITY[i]].GetHidesList(bodyShapeId))
+            foreach (string categoryToHide in wearablesByCategory[priorityCategory].GetHidesList(bodyShapeId))
             {
-                if (alreadyProcessedCategories.Contains(categoryToBeHidden)) continue;
 
-                if (hideOverrides != null && hideOverrides.Contains(categoryToBeHidden)) continue;
+                //If higher priority hides this category, skip
+                if (hideOverrides != null && hideOverrides.Contains(categoryToHide)) continue;
+                if (previouslyHidden.ContainsKey(categoryToHide) && previouslyHidden[categoryToHide].Contains(priorityCategory)) continue;
 
-                result.Add(categoryToBeHidden);
+                if(previouslyHidden.ContainsKey(priorityCategory))
+                    previouslyHidden[priorityCategory].Add(categoryToHide);
+
+                result.Add(categoryToHide);
             }
-
-            alreadyProcessedCategories.Add(CATEGORIES_PRIORITY[i]);
         }
 
         return result;

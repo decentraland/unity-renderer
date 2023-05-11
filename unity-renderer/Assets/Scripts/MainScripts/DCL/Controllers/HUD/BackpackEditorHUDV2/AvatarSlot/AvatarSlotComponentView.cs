@@ -35,7 +35,7 @@ namespace DCL.Backpack
         public event Action<string> OnUnEquip;
         public event Action<string> OnFocusHiddenBy;
         private bool isSelected = false;
-        private readonly HashSet<string> hiddenByList = new HashSet<string>();
+        private HashSet<string> hiddenByList = new HashSet<string>();
         private Vector2 tooltipDefaultPosition;
         private Vector2 tooltipFullPosition;
         private Vector2 nftContainerDefaultPosition;
@@ -94,22 +94,16 @@ namespace DCL.Backpack
         public void SetHideList(string[] hideList) =>
             model.hidesList = hideList;
 
-
-        private static readonly List<string> CATEGORIES_PRIORITY = new List<string>
-        {
-            "skin", "upper_body", "lower_body", "feet", "helmet", "hat", "top_head", "mask", "eyewear", "earring", "tiara",
-        };
         public void SetIsHidden(bool isHidden, string hiddenBy)
         {
             model.isHidden = isHidden;
-            model.hiddenBy = hiddenBy;
 
             if (isHidden)
                 hiddenByList.Add(hiddenBy);
             else
                 hiddenByList.Remove(hiddenBy);
 
-            List<string> sortedList1 = hiddenByList.OrderBy(x => CATEGORIES_PRIORITY.IndexOf(x)).ToList();
+            List<string> sortedList1 = hiddenByList.OrderBy(x => WearableItem.CATEGORIES_PRIORITY.IndexOf(x)).ToList();
 
             if (sortedList1.Count > 0)
             {
@@ -118,6 +112,7 @@ namespace DCL.Backpack
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
                 tooltipHiddenText.text = $"Hidden by: {sortedList1.First()}";
+                model.hiddenBy = sortedList1.First();
             }
             else
             {
@@ -125,6 +120,7 @@ namespace DCL.Backpack
                 emptySlot.SetActive(string.IsNullOrEmpty(model.imageUri));
                 tooltipHiddenText.gameObject.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipDefaultPosition;
+                model.hiddenBy = "";
             }
         }
 
