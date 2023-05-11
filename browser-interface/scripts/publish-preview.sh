@@ -19,6 +19,8 @@ npx @dcl/cdn-uploader@next \
   --bucket-folder "branch/${CIRCLE_BRANCH}" \
   --concurrency 10 \
   --config scripts/cdn-uploader-config.yml
+# TODO: Create a --delete flag for cdn-uploader and remove this line
+#       --delete will delete all files in the bucket-folder that are not in the local-folder
 
 
 set +u # unbound variables
