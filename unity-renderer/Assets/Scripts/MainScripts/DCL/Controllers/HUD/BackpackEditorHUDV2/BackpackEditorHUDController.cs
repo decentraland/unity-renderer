@@ -219,7 +219,6 @@ namespace DCL.Backpack
             }
 
             model.bodyShape = bodyShape;
-            previewEquippedWearables.Add(bodyShape.id);
             dataStore.backpackV2.previewBodyShape.Set(bodyShape.id);
             avatarSlotsHUDController.Equip(bodyShape, bodyShape.id);
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
