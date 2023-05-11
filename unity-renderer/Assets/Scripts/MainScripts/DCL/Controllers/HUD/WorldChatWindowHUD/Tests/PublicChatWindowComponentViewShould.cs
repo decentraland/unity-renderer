@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 public class PublicChatWindowComponentViewShould
@@ -8,8 +9,9 @@ public class PublicChatWindowComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        view =             GameObject.Instantiate(Resources.Load<PublicChatWindowComponentView>("SocialBarV1/NearbyChatChannelHUD"));
-
+        view = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<PublicChatWindowComponentView>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/NearbyChatChannelHUD.prefab"));
     }
 
     [TearDown]

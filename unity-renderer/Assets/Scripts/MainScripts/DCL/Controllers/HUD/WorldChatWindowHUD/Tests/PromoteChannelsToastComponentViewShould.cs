@@ -1,5 +1,6 @@
 ﻿using DCL.Chat.HUD;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 public class PromoteChannelsToastComponentViewShould
@@ -9,8 +10,9 @@ public class PromoteChannelsToastComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        promoteChannelsToastView =                 GameObject.Instantiate(Resources.Load<PromoteChannelsToastComponentView>("SocialBarV1/PromoteChannelsHUD"));
-
+        promoteChannelsToastView = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<PromoteChannelsToastComponentView>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/PromoteChannelsHUD.prefab"));
     }
 
     [TearDown]

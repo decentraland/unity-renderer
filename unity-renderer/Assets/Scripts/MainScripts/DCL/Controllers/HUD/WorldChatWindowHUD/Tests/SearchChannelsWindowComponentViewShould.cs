@@ -1,6 +1,7 @@
 using System.Collections;
 using DCL.Chat.Channels;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -13,7 +14,9 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view =                 GameObject.Instantiate(Resources.Load<SearchChannelsWindowComponentView>("SocialBarV1/ChannelSearchHUD"));
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<SearchChannelsWindowComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/ChannelSearchHUD.prefab"));
         }
 
         [TearDown]

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -10,7 +11,9 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void Setup()
         {
-            leaveChannelComponentView =                 GameObject.Instantiate(Resources.Load<GameObject>("SocialBarV1/LeaveChannelConfirmationHUD")).GetComponent<LeaveChannelConfirmationWindowComponentView>();
+            leaveChannelComponentView = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<LeaveChannelConfirmationWindowComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/LeaveChannelConfirmationHUD.prefab"));
         }
 
         [TearDown]

@@ -54,9 +54,8 @@ namespace DCL.Chat.HUD
             this.socialAnalytics = socialAnalytics;
         }
 
-        public void Initialize(IPublicChatWindowView view = null, bool isVisible = true)
+        public void Initialize(IPublicChatWindowView view, bool isVisible = true)
         {
-            view ??=             GameObject.Instantiate(Resources.Load<PublicChatWindowComponentView>("SocialBarV1/NearbyChatChannelHUD"));
             View = view;
             view.OnClose += HandleViewClosed;
             view.OnBack += HandleViewBacked;

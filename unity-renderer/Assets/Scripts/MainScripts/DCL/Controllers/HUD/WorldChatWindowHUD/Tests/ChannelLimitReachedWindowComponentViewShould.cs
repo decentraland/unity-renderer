@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -10,8 +11,9 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view =                 GameObject.Instantiate(Resources.Load<ChannelLimitReachedWindowComponentView>("SocialBarV1/ChannelLimitReachedModal"));
-            ;
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<ChannelLimitReachedWindowComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/ChannelLimitReachedModal.prefab"));
         }
 
         [Test]
