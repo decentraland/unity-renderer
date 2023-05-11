@@ -20,6 +20,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void Rotate(float rotationVelocity);
 
         void ResetRotation();
-        void PanCamera(Vector3 delta);
+        void MoveCamera(Vector3 delta, Space relativeTo);
     }
 }

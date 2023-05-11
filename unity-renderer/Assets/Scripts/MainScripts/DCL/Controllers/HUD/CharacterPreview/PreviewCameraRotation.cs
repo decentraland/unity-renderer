@@ -21,7 +21,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!Input.GetMouseButton(0))
+            if (Input.GetMouseButton(2))
                 return;
 
             startDragDateTime = DateTime.Now;
@@ -30,7 +30,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!Input.GetMouseButton(0))
+            if (Input.GetMouseButton(2))
                 return;
 
             if (slowDownCoroutine != null)

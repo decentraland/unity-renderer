@@ -39,27 +39,27 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 inertiaCoroutine = null;
             }
 
-            var delta = Input.mousePosition - lastMousePosition;
-            delta.y *= -1;
+            var panningDelta = Input.mousePosition - lastMousePosition;
+            panningDelta.y *= -1;
 
             if (!allowVerticalPanning)
-                delta.y = 0f;
+                panningDelta.y = 0f;
 
             if (!allowHorizontalPanning)
-                delta.x = 0f;
+                panningDelta.x = 0f;
 
-            delta *= panSpeed * Time.deltaTime;
-            lastPanningDeltaBeforeEndDrag = delta;
+            panningDelta *= panSpeed * Time.deltaTime;
+            lastPanningDeltaBeforeEndDrag = panningDelta;
             lastMousePosition = Input.mousePosition;
 
-            OnPanning?.Invoke(delta);
+            OnPanning?.Invoke(panningDelta);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             if (lastPanningDeltaBeforeEndDrag.magnitude >= 0.01f)
                 inertiaCoroutine ??= StartCoroutine(InertiaCoroutine());
-            
+
             AudioScriptableObjects.buttonRelease.Play(true);
         }
 

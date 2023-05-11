@@ -255,8 +255,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             avatarContainer.transform.rotation = avatarContainerDefaultRotation;
         }
 
-        public void PanCamera(Vector3 delta) =>
-            camera.transform.Translate(delta, Space.World);
+        public void MoveCamera(Vector3 delta, Space relativeTo) =>
+            camera.transform.Translate(delta, relativeTo);
 
         public void PlayEmote(string emoteId, long timestamp)
         {
