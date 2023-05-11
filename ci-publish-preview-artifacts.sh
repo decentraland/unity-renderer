@@ -21,7 +21,7 @@ ARTIFACTS_PATH=/tmp/workspace/unity-renderer/unity-artifacts/
 echo "{\"version\":\"${VERSION}\"}" > ${ARTIFACTS_PATH}/version.json
 
 # Upload artifacts for preview
-aws s3 sync ${ARTIFACTS_PATH} "s3://${S3_BUCKET}/desktop/${CIRCLE_BRANCH}" --acl public-read
+aws s3 sync --delete ${ARTIFACTS_PATH} "s3://${S3_BUCKET}/desktop/${CIRCLE_BRANCH}" --acl public-read
 
 # Invalidate cache
 aws configure set preview.cloudfront true
@@ -30,5 +30,5 @@ aws cloudfront create-invalidation --distribution-id "${CLOUDFRONT_DISTRIBUTION}
 
 # Upload artifacts to prod
 if [ "${CIRCLE_BRANCH}" == "main" ] || [ "${CIRCLE_BRANCH}" == "dev" ]; then
-  aws s3 sync ${ARTIFACTS_PATH} "s3://${S3_BUCKET}/release-desktop/${VERSION}" --acl public-read
+  aws s3 sync --delete ${ARTIFACTS_PATH} "s3://${S3_BUCKET}/release-desktop/${VERSION}" --acl public-read
 fi

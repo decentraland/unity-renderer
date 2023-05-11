@@ -25,4 +25,4 @@ mkdir -p output
 cp "$PROJECT_PATH/benchmark-results.xml" output/UnityPerformanceBenchmark/
 cd output/UnityPerformanceBenchmark/
 mv UnityPerformanceBenchmark*.html index.html
-aws s3 sync ./ "s3://${S3_BUCKET}/branch-benchmark/${CIRCLE_BRANCH}" --acl public-read
+aws s3 sync --delete ./ "s3://${S3_BUCKET}/branch-benchmark/${CIRCLE_BRANCH}" --acl public-read
