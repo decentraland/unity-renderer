@@ -12,5 +12,6 @@ namespace DCL.Backpack
         public bool IsNew { get; set; }
         public string Category { get; set; }
         public bool UnEquipAllowed { get; set; } = true;
+        public bool IsCompatibleWithBodyShape { get; set; } = true;
     }
 }

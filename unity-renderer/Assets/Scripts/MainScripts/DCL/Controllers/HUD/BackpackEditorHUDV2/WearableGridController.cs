@@ -139,6 +139,15 @@ namespace DCL.Backpack
             view.SetWearable(wearableGridModel with { IsEquipped = false });
         }
 
+        public void UpdateBodyShapeCompatibility(string bodyShapeId)
+        {
+            foreach ((string wearableId, WearableGridItemModel model) in currentWearables)
+            {
+                if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable)) continue;
+                view.SetWearable(model with { IsCompatibleWithBodyShape = wearable.SupportsBodyShape(bodyShapeId) });
+            }
+        }
+
         public void LoadCollections() =>
             backpackFiltersController.LoadCollections();
 
@@ -152,6 +161,7 @@ namespace DCL.Backpack
             if (!string.IsNullOrEmpty(categoryFilter))
             {
                 additiveReferencePath += $"&{CATEGORY_FILTER_REF}{categoryFilter}";
+
                 // TODO: translate category id into names (??)
                 path.Add((reference: additiveReferencePath, name: categoryFilter, type: categoryFilter, removable: true));
             }
@@ -234,6 +244,7 @@ namespace DCL.Backpack
                 IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
                 IsSelected = false,
                 UnEquipAllowed = CanWearableBeUnEquipped(wearable),
+                IsCompatibleWithBodyShape = wearable.SupportsBodyShape(dataStoreBackpackV2.previewBodyShape.Get()),
             };
         }
 
@@ -258,6 +269,7 @@ namespace DCL.Backpack
                 category = wearable.data.category,
                 description = wearable.description,
                 imageUri = wearable.ComposeThumbnailUrl(),
+
                 // TODO: solve hidden by field
                 hiddenBy = null,
                 name = wearable.GetName(),

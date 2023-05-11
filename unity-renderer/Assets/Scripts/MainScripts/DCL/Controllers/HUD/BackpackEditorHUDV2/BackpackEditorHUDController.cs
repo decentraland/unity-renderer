@@ -220,10 +220,12 @@ namespace DCL.Backpack
             }
 
             model.bodyShape = bodyShape;
+            previewEquippedWearables.Add(bodyShape.id);
+            dataStore.backpackV2.previewBodyShape.Set(bodyShape.id);
             avatarSlotsHUDController.Equip(bodyShape, bodyShape.id);
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
             wearableGridController.Equip(bodyShape.id);
-            previewEquippedWearables.Add(bodyShape.id);
+            wearableGridController.UpdateBodyShapeCompatibility(bodyShape.id);
 
             if (setAsDirty)
                 avatarIsDirty = true;
