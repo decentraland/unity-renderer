@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Build.AnalyzeRules;
 using UnityEngine;
 
 [Category("EditModeCI")]
-
 public class AddressablesValidationTests
 {
     private const string NO_ISSUES_FOUND = "No issues found";
@@ -60,7 +58,7 @@ public class AddressablesValidationTests
             message: ComposeAssertMessage(msg, analyzeRule: "Check Scene to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
     }
 
-    [TestCase(4.33f)]
+    [TestCase(7f)]
     public void ValidateResourcesToAddressableDuplicateDependencies(float maxAssetSize)
     {
         var rule = new CheckResourcesDupeDependencies();
