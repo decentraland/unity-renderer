@@ -11,7 +11,7 @@ public class DynamicIconListComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        listComponentView = BaseComponentView.Create<DynamicListComponentView>("DynamicIconList");
+        listComponentView = BaseComponentView.CreateUIComponentFromAssetDatabase<DynamicListComponentView>("DynamicIconList");
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }
