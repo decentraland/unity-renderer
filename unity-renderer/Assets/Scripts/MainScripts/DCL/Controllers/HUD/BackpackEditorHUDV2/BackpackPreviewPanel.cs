@@ -15,6 +15,7 @@ namespace DCL.Backpack
 
         [SerializeField] private RectTransform avatarPreviewPanel;
         [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
+        [SerializeField] private PreviewCameraPanning avatarPreviewPanning;
         [SerializeField] private RawImage avatarPreviewImage;
         [SerializeField] internal GameObject avatarPreviewLoadingSpinner;
 
@@ -28,6 +29,7 @@ namespace DCL.Backpack
             characterPreviewController = characterPreviewFactory.Create(CharacterPreviewMode.WithoutHologram, (RenderTexture) avatarPreviewImage.texture, false);
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
             avatarPreviewRotation.OnHorizontalRotation += OnPreviewRotation;
+            avatarPreviewPanning.OnPanning += OnPreviewPanning;
         }
 
         public override void Dispose()
@@ -36,6 +38,7 @@ namespace DCL.Backpack
 
             characterPreviewController.Dispose();
             avatarPreviewRotation.OnHorizontalRotation -= OnPreviewRotation;
+            avatarPreviewPanning.OnPanning -= OnPreviewPanning;
         }
 
         public override void RefreshControl() { }
@@ -77,6 +80,9 @@ namespace DCL.Backpack
 
         private void OnPreviewRotation(float angularVelocity) =>
             characterPreviewController.Rotate(angularVelocity);
+
+        private void OnPreviewPanning(Vector3 delta) =>
+            characterPreviewController.PanCamera(delta);
 
         // TODO: We have to investigate why we have to use this workaround to fix the preview rendering
         private void FixThePreviewRenderingSomehowRelatedToTheRenderScale(bool isEnabled)

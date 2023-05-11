@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 160430747983648423}
   - component: {fileID: 8592443274156419516}
   - component: {fileID: 1722018204688604907}
+  - component: {fileID: 6304968292617268423}
   m_Layer: 5
   m_Name: CharacterPreview
   m_TagString: Untagged
@@ -37,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 13.5, y: 11.9999695}
+  m_AnchoredPosition: {x: 13.5, y: 12}
   m_SizeDelta: {x: 0, y: -116.00003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6101877714986778067
@@ -103,6 +104,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotationFactor: -15
   slowDownTime: 0.5
+--- !u!114 &6304968292617268423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2584397978103117796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd60b00682d844a3a9d1f7599b156085, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panSpeed: 0.2
+  allowVerticalPanning: 1
+  allowHorizontalPanning: 0
 --- !u!1 &5529394846407413599
 GameObject:
   m_ObjectHideFlags: 0
@@ -351,6 +367,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   avatarPreviewPanel: {fileID: 7059152913108139601}
   avatarPreviewRotation: {fileID: 1722018204688604907}
+  avatarPreviewPanning: {fileID: 6304968292617268423}
   avatarPreviewImage: {fileID: 160430747983648423}
   avatarPreviewLoadingSpinner: {fileID: 9054132650566966005}
 --- !u!1001 &6759333177557949564

@@ -7,30 +7,32 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
     public class PreviewCameraRotation : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        public event System.Action<float> OnHorizontalRotation;
-        public event System.Action<double> OnEndDragEvent;
+        public event Action<float> OnHorizontalRotation;
+        public event Action<double> OnEndDragEvent;
 
         public float rotationFactor = -15f;
-
         public float slowDownTime = 0.5f;
 
-        private float currentHorizontalRotationVelocity = 0f;
-
+        private float currentHorizontalRotationVelocity;
         private float slowDownVelocity;
-
         private Coroutine slowDownCoroutine;
-
         private float timer;
         private DateTime startDragDateTime;
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (!Input.GetMouseButton(0))
+                return;
+
             startDragDateTime = DateTime.Now;
             AudioScriptableObjects.buttonClick.Play(true);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (!Input.GetMouseButton(0))
+                return;
+
             if (slowDownCoroutine != null)
             {
                 StopCoroutine(slowDownCoroutine);
@@ -45,12 +47,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             timer = slowDownTime;
             slowDownVelocity = currentHorizontalRotationVelocity;
-
-            if (slowDownCoroutine == null)
-            {
-                slowDownCoroutine = StartCoroutine(SlowDown());
-            }
-
+            slowDownCoroutine ??= StartCoroutine(SlowDown());
             OnEndDragEvent?.Invoke((DateTime.Now - startDragDateTime).TotalMilliseconds);
             AudioScriptableObjects.buttonRelease.Play(true);
         }
@@ -64,7 +61,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 timer -= Time.deltaTime;
                 currentHorizontalRotationVelocity  = Mathf.Lerp(slowDownVelocity, 0, 1 - (timer * inverseTimer));
                 OnHorizontalRotation?.Invoke(currentHorizontalRotationVelocity);
-
                 yield return null;
             }
         }

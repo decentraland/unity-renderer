@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
+using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
@@ -19,5 +20,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void Rotate(float rotationVelocity);
 
         void ResetRotation();
+        void PanCamera(Vector3 delta);
     }
 }
