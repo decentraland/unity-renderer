@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -10,8 +11,9 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view =  Object.Instantiate(
-                Resources.Load<ChannelJoinErrorWindowComponentView>("SocialBarV1/ChannelJoinErrorModal"));
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<ChannelJoinErrorWindowComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/ChannelJoinErrorModal.prefab"));
         }
 
         [Test]

@@ -46,11 +46,9 @@ namespace DCL.Chat.HUD
             this.channelsFeatureFlagService = channelsFeatureFlagService;
         }
 
-        public void Initialize(ISearchChannelsWindowView view = null)
+        public void Initialize(ISearchChannelsWindowView view)
         {
-            view ??= GameObject.Instantiate(Resources.Load<SearchChannelsWindowComponentView>("SocialBarV1/ChannelSearchHUD"));
             this.view = view;
-
             channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
         }
 
