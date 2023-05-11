@@ -11,13 +11,33 @@ using DCL.Social.Friends;
 using MainScripts.DCL.Controllers.HotScenes;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.FriendsController;
+using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using DG.Tweening;
 #endif
 
 namespace DCL
 {
+
+#if UNITY_WEBGL
+    public class DebugLogHandler : ILogHandler
+    {
+        public void LogFormat(LogType logType, Object context, string format, params object[] args)
+        {
+            if (logType is LogType.Log or LogType.Warning) return;
+            Debug.LogFormat(logType, LogOption.None, context, format, args);
+        }
+
+        public void LogException(Exception exception, Object context)
+        {
+            Debug.LogException(exception, context);
+        }
+    }
+#endif
+
+
     /// <summary>
     ///     This is the InitialScene entry point.
     ///     Most of the application subsystems should be initialized from this class Awake() event.
@@ -38,6 +58,9 @@ namespace DCL
 
         protected virtual void Awake()
         {
+#if UNITY_WEBGL
+            Debug.unityLogger.logHandler = new DebugLogHandler();
+#endif
             if (i != null)
             {
                 Utils.SafeDestroy(this);
