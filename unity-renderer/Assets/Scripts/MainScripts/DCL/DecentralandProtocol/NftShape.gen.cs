@@ -87,7 +87,7 @@ namespace DCL.ECSComponents {
   /// <summary>
   /// The NftShape component renders a framed picture from an NFT. It supports PNG, JPEG and GIF files.
   ///
-  /// The `urn` field is the URI of the NFT, and must follow the format 'urn:&lt;CHAIN>:&lt;CONTRACT_STANDARD>:&lt;CONTRACT>:&lt;TOKEN_ID>'
+  /// The `urn` field is the URI of the NFT, and must follow the format 'urn:decentraland:&lt;CHAIN>:&lt;CONTRACT_STANDARD>:&lt;CONTRACT_ADDRESS>:&lt;TOKEN_ID>'
   /// Example: 'urn:ethereum:erc721:0x00000000:123'
   ///
   /// The picture frame can have several different styles, plus a background color for images that have
@@ -144,6 +144,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "urn" field.</summary>
     public const int UrnFieldNumber = 1;
     private string urn_ = "";
+    /// <summary>
+    /// the URI of the NFT
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Urn {
