@@ -14,7 +14,7 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { receivePeerUserData } from 'shared/comms/peers'
 import { getExploreRealmsService } from 'shared/dao/selectors'
 import { waitingForRenderer } from 'shared/loading/types'
-import { getAllowedContentServer } from 'shared/meta/selectors'
+import {getAllowedContentServer, getFeatureFlagEnabled} from 'shared/meta/selectors'
 import {
   addProfileToLastSentProfileVersionAndCatalog,
   SendProfileToRenderer,
@@ -27,10 +27,11 @@ import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromReal
 import { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { isSceneFeatureToggleEnabled } from 'lib/decentraland/sceneJson/isSceneFeatureToggleEnabled'
-import { SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
+import {SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP, signUp} from 'shared/session/actions'
 import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { CurrentRealmInfoForRenderer, NotificationType, VOICE_CHAT_FEATURE_TOGGLE } from 'shared/types'
+import { store } from 'shared/store/isolatedStore'
 import {
   SetVoiceChatErrorAction,
   SET_VOICE_CHAT_ERROR,
@@ -244,10 +245,20 @@ function* initializeRenderer(action: InitializeRenderer) {
 
 function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   if (action.payload.isSignUp) {
-    getUnityInstance().ShowAvatarEditorInSignIn()
+    if(getFeatureFlagEnabled(store.getState(), 'seamless_login'))
+    {
+      const userId: string = yield select(getCurrentUserId)
+      yield put(sendProfileToRenderer(userId))
+      store.dispatch(signUp('', 'testing-name'))
+    }
+    else
+    {
+      getUnityInstance().ShowAvatarEditorInSignIn()
+      const userId: string = yield select(getCurrentUserId)
+      yield put(sendProfileToRenderer(userId))
+    }
 
-    const userId: string = yield select(getCurrentUserId)
-    yield put(sendProfileToRenderer(userId))
+
   }
 }
 
