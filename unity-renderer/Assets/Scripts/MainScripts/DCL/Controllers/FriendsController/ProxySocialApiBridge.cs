@@ -16,7 +16,7 @@ namespace DCL.Social.Friends
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
-        private bool useSocialApiBridge => featureFlags.IsFeatureEnabled("use-social-client");
+        private bool useSocialApiBridge => true; //featureFlags.IsFeatureEnabled("use-social-client");
 
         public event Action<FriendRequest> OnIncomingFriendRequestAdded
         {

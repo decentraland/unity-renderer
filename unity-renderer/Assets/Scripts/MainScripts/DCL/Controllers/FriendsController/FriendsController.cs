@@ -35,7 +35,8 @@ namespace DCL.Social.Friends
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
-        private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
+        // private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
+        private bool useSocialApiBridge => true;
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
@@ -380,8 +381,8 @@ namespace DCL.Social.Friends
 
             if (useSocialApiBridge)
             {
-                var sent = outgoingFriendRequestsById.Values.Skip(sentSkip).Take(sentLimit);
-                var received = incomingFriendRequestsById.Values.Skip(receivedSkip).Take(receivedLimit);
+                var sent = outgoingFriendRequestsByTimestamp.Values.Skip(sentSkip).Take(sentLimit);
+                var received = incomingFriendRequestsByTimestamp.Values.Skip(receivedSkip).Take(receivedLimit);
                 var result = received.Concat(sent);
 
                 return result;
@@ -703,6 +704,7 @@ namespace DCL.Social.Friends
         private void AddIncomingFriendRequest(FriendRequest friendRequest)
         {
             this.incomingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
+            this.incomingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
 
             OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
         }
@@ -710,6 +712,7 @@ namespace DCL.Social.Friends
         private void AddOutgoingFriendRequest(FriendRequest friendRequest)
         {
             this.outgoingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
+            this.outgoingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
 
             OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
         }
