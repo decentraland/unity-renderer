@@ -158,7 +158,7 @@ namespace DCL.Backpack
 
         public void SetBreadcrumbHideUnhideToggle(string slotCategory)
         {
-            wearableGridComponentView.SetBreadcrumbHideUnhideToggle(slotCategory);
+            wearableGridComponentView.SetBreadcrumbHideUnhideToggle(slotCategory, model.hidingOverrideMap.Contains(slotCategory));
         }
 
         public void SetColorPickerValue(Color color)

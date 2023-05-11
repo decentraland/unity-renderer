@@ -83,10 +83,11 @@ namespace DCL.Backpack
             container.ForceUpdateLayout();
         }
 
-        public void SetHideUnhideToggle(string category)
+        public void SetHideUnhideToggle(string category, bool isAlreadyToggled)
         {
             currentCategory = category;
             hideUnhide.gameObject.SetActive(!string.IsNullOrEmpty(category));
+            hideUnhide.SetIsOnWithoutNotify(isAlreadyToggled);
         }
 
         private void RemoveFilter(NftSubCategoryFilterModel model) =>

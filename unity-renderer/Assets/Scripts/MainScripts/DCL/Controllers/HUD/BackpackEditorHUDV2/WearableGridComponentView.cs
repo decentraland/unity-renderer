@@ -102,8 +102,8 @@ namespace DCL.Backpack
             UpdateEmptyState();
         }
 
-        public void SetBreadcrumbHideUnhideToggle(string slotCategory) =>
-            wearablesBreadcrumbComponentView.SetHideUnhideToggle(slotCategory);
+        public void SetBreadcrumbHideUnhideToggle(string slotCategory, bool isAlreadyToggled) =>
+            wearablesBreadcrumbComponentView.SetHideUnhideToggle(slotCategory, isAlreadyToggled);
 
         public void SetWearable(WearableGridItemModel model)
         {
