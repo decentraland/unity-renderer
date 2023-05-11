@@ -9,6 +9,7 @@ using Decentraland.Bff;
 using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System;
 using System.Collections;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine.TestTools;
 
@@ -48,7 +49,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView.GetTipsView().Returns(auxiliaryViews.GetTipsView());
             loadingScreenView.GetPercentageView().Returns(auxiliaryViews.GetPercentageView());
             loadingScreenView.GetTimeoutView().Returns(loadingScreenTimeoutView);
-            shaderPrewarm.PrewarmAsync(Arg.Any<Action<float>>()).Returns(UniTask.CompletedTask);
+            shaderPrewarm.PrewarmAsync(Arg.Any<Action<float>>(), Arg.Any<CancellationToken>()).Returns(UniTask.CompletedTask);
 
             worldState.GetSceneNumberByCoords(destination).Returns(-1);
 
@@ -156,7 +157,7 @@ namespace DCL.LoadingScreen.Test
             commonDataStore.isSignUpFlow.Set(true);
 
             //Assert
-            shaderPrewarm.Received().PrewarmAsync(Arg.Any<Action<float>>());
+            shaderPrewarm.Received().PrewarmAsync(Arg.Any<Action<float>>(), Arg.Any<CancellationToken>());
         }
     }
 }

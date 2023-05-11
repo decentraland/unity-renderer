@@ -4,6 +4,7 @@ using DCL.Interface;
 using DCL.NotificationModel;
 using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.LoadingScreen
@@ -32,11 +33,14 @@ namespace DCL.LoadingScreen
         private bool onSignUpFlow;
         internal bool showRandomPositionNotification;
         private bool isFadingOut;
-        private IShaderPrewarm shaderPrewarm;
+        private readonly IShaderPrewarm shaderPrewarm;
+        private readonly CancellationTokenSource cancellationTokenSource;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore, IShaderPrewarm shaderPrewarm)
         {
+            cancellationTokenSource = new CancellationTokenSource();
+
             this.shaderPrewarm = shaderPrewarm;
             this.view = view;
             this.sceneController = sceneController;
@@ -71,6 +75,9 @@ namespace DCL.LoadingScreen
             commonDataStore.isSignUpFlow.OnChange -= OnSignupFlow;
             sceneController.OnReadyScene -= ReadyScene;
             view.OnFadeInFinish -= FadeInFinished;
+
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
         }
 
         private void FadeInFinished(ShowHideAnimator obj)
@@ -172,14 +179,14 @@ namespace DCL.LoadingScreen
         {
             if (isFadingOut) return;
             isFadingOut = true;
-            FadeOutViewAsync().Forget();
+            FadeOutViewAsync(cancellationTokenSource.Token).Forget();
         }
 
-        private async UniTask FadeOutViewAsync()
+        private async UniTask FadeOutViewAsync(CancellationToken cancellationToken)
         {
             timeoutController.StopTimeout();
 
-            await shaderPrewarm.PrewarmAsync(OnShaderPrewarmProgress);
+            await shaderPrewarm.PrewarmAsync(OnShaderPrewarmProgress, cancellationToken);
 
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);

@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Providers;
 using System;
+using System.Threading;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -12,13 +13,13 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
 
         private bool areShadersPrewarm;
 
-        public async UniTask PrewarmAsync(Action<float> progressCallback)
+        public async UniTask PrewarmAsync(Action<float> progressCallback, CancellationToken cancellationToken)
         {
             if (areShadersPrewarm) return;
 
             await UniTask.Yield();
 
-            var variantsData = await LoadAssets();
+            var variantsData = await LoadAssets(cancellationToken);
 
             int length = variantsData.collections.Length;
 
@@ -27,7 +28,7 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
                 ShaderVariantCollection collection = variantsData.collections[i];
 
                 progressCallback.Invoke(i/(float)length);
-                await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
+                await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken);
 
                 collection.WarmUp();
             }
@@ -35,8 +36,8 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
             areShadersPrewarm = true;
         }
 
-        private static UniTask<ShaderVariantsData> LoadAssets() =>
-            Environment.i.serviceLocator.Get<IAddressableResourceProvider>().GetAddressable<ShaderVariantsData>(SHADER_VARIANTS_ASSET);
+        private static UniTask<ShaderVariantsData> LoadAssets(CancellationToken cancellationToken) =>
+            Environment.i.serviceLocator.Get<IAddressableResourceProvider>().GetAddressable<ShaderVariantsData>(SHADER_VARIANTS_ASSET, cancellationToken);
 
     }
 }
