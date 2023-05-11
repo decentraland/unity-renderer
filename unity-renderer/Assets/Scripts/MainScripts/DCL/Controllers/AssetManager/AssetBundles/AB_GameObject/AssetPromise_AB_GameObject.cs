@@ -196,10 +196,7 @@ namespace DCL
 
                 // colliders will fail to be created if they are not readable on WebGL
                 if (!isCollider)
-                {
-                    Physics.BakeMesh(mesh.GetInstanceID(), false);
                     mesh.UploadMeshData(true);
-                }
             }
         }
 
