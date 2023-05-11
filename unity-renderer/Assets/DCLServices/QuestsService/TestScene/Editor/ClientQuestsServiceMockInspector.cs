@@ -3,14 +3,15 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace DCLServices.QuestsService.Tests.TestScene.Editor
+namespace DCLServices.QuestsService.TestScene.Editor
 {
     [CustomEditor(typeof(ClientQuestsServiceMock))]
-    public class ClientQuestsServiceMockMockInspector : UnityEditor.Editor
+    public class ClientQuestsServiceMockInspector : UnityEditor.Editor
     {
         private VisualElement root;
 
         private ClientQuestsServiceMock clientQuestService;
+        private Label messagesLeftLabel;
 
         private void OnEnable()
         {
@@ -27,6 +28,7 @@ namespace DCLServices.QuestsService.Tests.TestScene.Editor
             if (Application.isPlaying)
             {
                 IntegerField amountField = new IntegerField("Add amount",2);
+                amountField.value = 1;
                 var initButton = new Button(() => clientQuestService.EnqueueChanges(amountField.value))
                 {
                     text = "Enqueue",
@@ -37,11 +39,26 @@ namespace DCLServices.QuestsService.Tests.TestScene.Editor
                 container.style.flexDirection = FlexDirection.Row;
                 container.Add(amountField);
                 container.Add(initButton);
+
+                messagesLeftLabel = new Label("Hola");
+                container.Add(messagesLeftLabel);
+
                 root.Add(container);
             }
 
             return root;
 
+        }
+
+        public override void OnInspectorGUI()
+        {
+            if (Application.isPlaying)
+            {
+                if (messagesLeftLabel != null)
+                    messagesLeftLabel.text = $"Messages left: {clientQuestService.QuestStateUpdatesCount}";
+            }
+
+            base.OnInspectorGUI();
         }
     }
 }
