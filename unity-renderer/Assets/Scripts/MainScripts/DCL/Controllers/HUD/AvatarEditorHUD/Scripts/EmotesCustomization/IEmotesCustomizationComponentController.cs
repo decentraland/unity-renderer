@@ -41,7 +41,5 @@ namespace DCL.EmotesCustomization
         /// Restore the emote slots with the stored data.
         /// </summary>
         void RestoreEmoteSlots();
-
-        bool IsInitialized { get; }
     }
 }

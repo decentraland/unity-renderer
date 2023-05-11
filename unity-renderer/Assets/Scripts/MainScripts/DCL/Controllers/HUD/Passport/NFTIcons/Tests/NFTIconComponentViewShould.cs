@@ -1,6 +1,5 @@
 using UnityEngine;
 using NUnit.Framework;
-using UnityEditor;
 
 public class NFTIconComponentViewShould : MonoBehaviour
 {
@@ -9,9 +8,7 @@ public class NFTIconComponentViewShould : MonoBehaviour
     [SetUp]
     public void SetUp()
     {
-        nftIconComponentView = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath<NFTIconComponentView>(
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/Passport/Prefabs/NFTIcon.prefab"));
+        nftIconComponentView = BaseComponentView.Create<NFTIconComponentView>("NFTIcon");
     }
 
     [TearDown]

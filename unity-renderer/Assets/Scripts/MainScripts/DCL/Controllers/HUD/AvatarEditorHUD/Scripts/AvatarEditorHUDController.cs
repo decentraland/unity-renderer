@@ -137,9 +137,6 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.exploreV2,
             DataStore.i.HUDs,
             view.emotesSection.transform);
-
-        await UniTask.WaitUntil(() => emotesCustomizationComponentController.IsInitialized);
-
         //Initialize with embedded emotes
         emotesCustomizationComponentController.SetEmotes(embeddedEmotesSo.emotes);
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);

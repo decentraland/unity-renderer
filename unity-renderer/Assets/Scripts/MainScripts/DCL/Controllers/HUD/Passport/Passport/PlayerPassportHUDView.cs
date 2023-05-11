@@ -24,6 +24,9 @@ namespace DCL.Social.Passports
         private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
         private MouseCatcher mouseCatcher;
 
+        public static PlayerPassportHUDView CreateView() =>
+            Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportHUDView>();
+
         public void Initialize(MouseCatcher mouseCatcher)
         {
             hideCardButton.onClick.RemoveAllListeners();
