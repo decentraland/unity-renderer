@@ -13,6 +13,7 @@ public class QuestsPlugin : IPlugin
     private const string QUEST_COMPLETED_HUD = "QuestCompletedHUD";
     private const string QUEST_OFFER_HUD = "QuestOfferHUD";
     private readonly IAddressableResourceProvider resourceProvider;
+    private IUserProfileBridge userProfileBridge = new UserProfileWebInterfaceBridge();
 
     private QuestTrackerComponentView questTrackerComponentView;
     private QuestCompletedComponentView questCompletedComponentView;
@@ -33,7 +34,7 @@ public class QuestsPlugin : IPlugin
         questTrackerComponentView = await resourceProvider.Instantiate<QuestTrackerComponentView>(QUEST_TRACKER_HUD, $"_{QUEST_TRACKER_HUD}", cts.Token);
         questCompletedComponentView = await resourceProvider.Instantiate<QuestCompletedComponentView>(QUEST_COMPLETED_HUD, $"_{QUEST_COMPLETED_HUD}", cts.Token);
         questOfferComponentView = await resourceProvider.Instantiate<QuestOfferComponentView>(QUEST_OFFER_HUD, $"_{QUEST_OFFER_HUD}", cts.Token);
-        QuestsController controller = new QuestsController(null, questTrackerComponentView, questCompletedComponentView, questOfferComponentView);
+        QuestsController controller = new QuestsController(null, userProfileBridge, questTrackerComponentView, questCompletedComponentView, questOfferComponentView);
     }
 
     public void Dispose()

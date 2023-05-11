@@ -24,6 +24,7 @@ namespace DCL.Quests
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
         public event Action<string> OnQuestAccepted;
+        public event Action<string> OnQuestRefused;
 
         private UnityObjectPool<QuestRewardComponentView> rewardsPool;
         private List<QuestRewardComponentView> usedRewards = new ();
@@ -32,6 +33,8 @@ namespace DCL.Quests
         {
             acceptButton.onClick.RemoveAllListeners();
             acceptButton.onClick.AddListener(()=>OnQuestAccepted?.Invoke(model.questId));
+            cancelButton.onClick.RemoveAllListeners();
+            cancelButton.onClick.AddListener(()=>OnQuestRefused?.Invoke(model.questId));
             rewardsPool = new UnityObjectPool<QuestRewardComponentView>(rewardPrefab, rewardsContainer);
             rewardsPool.Prewarm(MAX_REWARDS_COUNT);
             container.SetActive(false);
