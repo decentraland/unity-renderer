@@ -185,18 +185,8 @@ namespace DCL
         {
             foreach (Mesh mesh in meshesList)
             {
-
-                if (!mesh.isReadable)
-                    continue;
-
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
-
-                bool isCollider = mesh.name.Contains("_collider", StringComparison.InvariantCultureIgnoreCase);
-
-                // colliders will fail to be created if they are not readable on WebGL
-                if (!isCollider)
-                    mesh.UploadMeshData(true);
             }
         }
 
