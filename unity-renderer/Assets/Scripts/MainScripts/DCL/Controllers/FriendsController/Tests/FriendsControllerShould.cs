@@ -660,5 +660,60 @@ namespace DCL.Social.Friends
 
                 CollectionAssert.AreEqual(response, expected);
             });
+
+        [UnityTest]
+        public IEnumerator GetFriendRequestsAsyncWithSocialBridge() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                GameObject go = new GameObject();
+                var component = go.AddComponent<MatrixInitializationBridge>();
+                var dataStore = new DataStore();
+
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+
+                var cancellationToken = default(CancellationToken);
+
+                controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
+
+                dataStore.featureFlags.flags.Get().SetAsInitialized();
+                controller.Initialize();
+
+                FriendRequest CreateFriendRequest(int number) =>
+                    new FriendRequest($"id{number}", number, $"from{number}", $"to{number}", $"a message {number}");
+
+                var outgoingFriendRequests = new[]
+                {
+                    CreateFriendRequest(1),
+                    CreateFriendRequest(2),
+                    CreateFriendRequest(3),
+                    CreateFriendRequest(4),
+                };
+
+                var incomingFriendRequests = new[]
+                {
+                    CreateFriendRequest(5),
+                    CreateFriendRequest(6),
+                    CreateFriendRequest(7),
+                    CreateFriendRequest(8),
+                };
+
+                foreach (var friendRequest in outgoingFriendRequests)
+                {
+                    rpcSocialApiBridge.OnOutgoingFriendRequestAdded += Raise.Event<Action<FriendRequest>>(
+                        friendRequest
+                    );
+                }
+
+                foreach (var friendRequest in incomingFriendRequests)
+                {
+                    rpcSocialApiBridge.OnIncomingFriendRequestAdded += Raise.Event<Action<FriendRequest>>(
+                        friendRequest
+                    );
+                }
+
+                var result = await controller.GetFriendRequestsAsync(100, 0, 100, 0, new CancellationToken());
+
+                CollectionAssert.AreEqual(incomingFriendRequests.Concat(outgoingFriendRequests), result);
+            });
     }
 }

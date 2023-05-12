@@ -381,9 +381,30 @@ namespace DCL.Social.Friends
 
             if (useSocialApiBridge)
             {
-                var sent = outgoingFriendRequestsByTimestamp.Values.Skip(sentSkip).Take(sentLimit);
-                var received = incomingFriendRequestsByTimestamp.Values.Skip(receivedSkip).Take(receivedLimit);
-                var result = received.Concat(sent);
+                int sentCount = outgoingFriendRequestsByTimestamp.Values.Count;
+                int receivedCount = incomingFriendRequestsByTimestamp.Values.Count;
+
+                List<FriendRequest> result = new List<FriendRequest>(sentCount - sentSkip + receivedCount - receivedSkip);
+
+                var index = 0;
+
+                foreach (var receivedRequest in incomingFriendRequestsByTimestamp.Values)
+                {
+                    if (index >= receivedSkip && index < receivedSkip + receivedLimit) { result.Add(receivedRequest); }
+                    else if (index >= receivedSkip + receivedLimit) { break; }
+
+                    index++;
+                }
+
+                index = 0;
+
+                foreach (var sentRequest in outgoingFriendRequestsByTimestamp.Values)
+                {
+                    if (index >= sentSkip && index < sentSkip + sentLimit) { result.Add(sentRequest); }
+                    else if (index >= sentSkip + sentLimit) { break; }
+
+                    index++;
+                }
 
                 return result;
             }
