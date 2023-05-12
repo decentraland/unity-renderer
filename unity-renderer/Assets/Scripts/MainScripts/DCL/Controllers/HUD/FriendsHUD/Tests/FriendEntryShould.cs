@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using DCL.Social.Friends;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 public class FriendEntryShould
@@ -10,8 +11,9 @@ public class FriendEntryShould
     [SetUp]
     public void SetUp()
     {
-        GameObject go = Object.Instantiate((GameObject)Resources.Load("SocialBarV1/FriendEntry"));
-        entry = go.GetComponent<FriendEntry>();
+        entry = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<FriendEntry>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/FriendEntry.prefab"));
     }
 
     [TearDown]

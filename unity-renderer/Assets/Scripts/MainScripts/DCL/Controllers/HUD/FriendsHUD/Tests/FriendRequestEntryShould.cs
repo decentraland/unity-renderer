@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 public class FriendRequestEntryShould
@@ -9,8 +10,9 @@ public class FriendRequestEntryShould
     [SetUp]
     public void SetUp()
     {
-        GameObject go = Object.Instantiate((GameObject) Resources.Load("SocialBarV1/FriendRequestEntry"));
-        entry = go.GetComponent<FriendRequestEntry>();
+        entry = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<FriendRequestEntry>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/FriendRequestEntry.prefab"));
     }
 
     [TearDown]
