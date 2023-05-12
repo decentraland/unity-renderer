@@ -9,7 +9,7 @@ public class BaseComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        baseComponent = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        baseComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common");
         baseComponent.OnPointerEnter(null);
         baseComponent.OnPointerExit(null);
         DataStore.i.screen.size.Set(new Vector2Int(800, 600));

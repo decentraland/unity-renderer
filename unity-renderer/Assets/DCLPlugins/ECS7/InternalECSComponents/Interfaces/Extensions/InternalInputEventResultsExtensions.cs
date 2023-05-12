@@ -9,7 +9,7 @@ namespace DCL.ECS7.InternalComponents
         public static void AddEvent(this IInternalECSComponent<InternalInputEventResults> component, IParcelScene scene,
             InternalInputEventResults.EventData data)
         {
-            var entityId = data.hit.EntityId == 0 ? SpecialEntityId.SCENE_ROOT_ENTITY : data.hit.EntityId;
+            var entityId = data.hit?.EntityId?? SpecialEntityId.SCENE_ROOT_ENTITY;
 
             var model = component.GetFor(scene, entityId)?.model ?? new InternalInputEventResults();
 

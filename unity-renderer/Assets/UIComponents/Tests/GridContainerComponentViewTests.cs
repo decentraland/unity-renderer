@@ -10,7 +10,7 @@ public class GridContainerComponentViewTests
     private GridContainerComponentView gridContainerComponent;
 
     [SetUp]
-    public void SetUp() { gridContainerComponent = BaseComponentView.Create<GridContainerComponentView>("GridContainer"); }
+    public void SetUp() { gridContainerComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<GridContainerComponentView>("GridContainer"); }
 
     [TearDown]
     public void TearDown()
@@ -96,7 +96,7 @@ public class GridContainerComponentViewTests
             ((RectTransform)gridContainerComponent.transform).rect.Set(0, 0, 100, 100);
 
         List<BaseComponentView> testItems = new List<BaseComponentView>();
-        testItems.Add(BaseComponentView.Create<ButtonComponentView>("Button_Common"));
+        testItems.Add(BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common"));
         gridContainerComponent.SetItems(testItems);
 
         // Act
@@ -147,9 +147,9 @@ public class GridContainerComponentViewTests
     {
         // Arrange
         List<BaseComponentView> testItems = new List<BaseComponentView>();
-        testItems.Add(BaseComponentView.Create<ButtonComponentView>("Button_Common"));
-        testItems.Add(BaseComponentView.Create<ButtonComponentView>("Button_Common"));
-        testItems.Add(BaseComponentView.Create<ButtonComponentView>("Button_Common"));
+        testItems.Add(BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common"));
+        testItems.Add(BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common"));
+        testItems.Add(BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common"));
 
         // Act
         gridContainerComponent.SetItems(testItems);
@@ -165,7 +165,7 @@ public class GridContainerComponentViewTests
     public void AddItemCorrectly()
     {
         // Arrange
-        BaseComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        BaseComponentView testItem = BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common");
 
         // Act
         gridContainerComponent.AddItemWithResize(testItem);
@@ -178,7 +178,7 @@ public class GridContainerComponentViewTests
     public void RemoveItemCorrectly()
     {
         // Arrange
-        BaseComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        BaseComponentView testItem = BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common");
         gridContainerComponent.AddItemWithResize(testItem);
 
         // Act
@@ -192,8 +192,8 @@ public class GridContainerComponentViewTests
     public void GetItemsCorrectly()
     {
         // Arrange
-        ButtonComponentView testItem1 = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        ImageComponentView testItem2 = BaseComponentView.Create<ImageComponentView>("Image");
+        ButtonComponentView testItem1 = BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common");
+        ImageComponentView testItem2 = BaseComponentView.CreateUIComponentFromAssetDatabase<ImageComponentView>("Image");
         List<BaseComponentView> testItems = new List<BaseComponentView>();
         testItems.Add(testItem1);
         testItems.Add(testItem2);
@@ -212,8 +212,8 @@ public class GridContainerComponentViewTests
     public void ExtractItemsCorrectly()
     {
         // Arrange
-        ButtonComponentView testItem1 = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        ImageComponentView testItem2 = BaseComponentView.Create<ImageComponentView>("Image");
+        ButtonComponentView testItem1 = BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common");
+        ImageComponentView testItem2 = BaseComponentView.CreateUIComponentFromAssetDatabase<ImageComponentView>("Image");
         List<BaseComponentView> testItems = new List<BaseComponentView>();
         testItems.Add(testItem1);
         testItems.Add(testItem2);
@@ -238,8 +238,8 @@ public class GridContainerComponentViewTests
     public IEnumerator RemoveItemsCorrectly()
     {
         // Arrange
-        ButtonComponentView testItem1 = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        ImageComponentView testItem2 = BaseComponentView.Create<ImageComponentView>("Image");
+        ButtonComponentView testItem1 = BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common");
+        ImageComponentView testItem2 = BaseComponentView.CreateUIComponentFromAssetDatabase<ImageComponentView>("Image");
         List<BaseComponentView> testItems = new List<BaseComponentView>();
         testItems.Add(testItem1);
         testItems.Add(testItem2);
@@ -257,7 +257,7 @@ public class GridContainerComponentViewTests
     public void CreateItemCorrectly()
     {
         // Arrange
-        ButtonComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        ButtonComponentView testItem = BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common");
         string testName = "TestName";
 
         // Act

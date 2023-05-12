@@ -70,7 +70,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
     public event Action<EventCardComponentModel> OnEventInfoClicked;
-    public event Action<IHotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
+    public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<string> OnEventSubscribeEventClicked;
