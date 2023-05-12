@@ -7,6 +7,7 @@ namespace DCL.Backpack
     public interface IBackpackEditorHUDView
     {
         event Action<Color> OnColorChanged;
+        event Action OnContinueSignup;
 
         delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
@@ -24,5 +25,7 @@ namespace DCL.Backpack
         void SetColorPickerVisibility(bool isActive);
         void SetColorPickerAsSkinMode(bool isSkinMode);
         void SetColorPickerValue(Color color);
+        void ShowContinueSignup();
+        void HideContinueSignup();
     }
 }

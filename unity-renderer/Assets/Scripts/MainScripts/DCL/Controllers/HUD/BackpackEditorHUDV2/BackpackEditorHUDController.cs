@@ -23,6 +23,7 @@ namespace DCL.Backpack
         private string currentSlotSelected;
         private bool avatarIsDirty;
         private CancellationTokenSource loadProfileCancellationToken = new ();
+        private CancellationTokenSource setVisibilityCancellationToken = new ();
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
@@ -71,6 +72,7 @@ namespace DCL.Backpack
             avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearableFromSlot;
 
             view.SetColorPickerVisibility(false);
+            view.OnContinueSignup += SaveAvatarAndContinueSignupProcess;
             view.OnColorChanged += OnWearableColorChanged;
 
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
@@ -96,6 +98,7 @@ namespace DCL.Backpack
             avatarSlotsHUDController.Dispose();
 
             view.OnColorChanged -= OnWearableColorChanged;
+            view.OnContinueSignup -= SaveAvatarAndContinueSignupProcess;
             view.Dispose();
         }
 
@@ -104,35 +107,48 @@ namespace DCL.Backpack
 
         private void SetVisibility(bool visible, bool saveAvatar = true)
         {
-            if (visible)
+            async UniTaskVoid SetVisibilityAsync(bool visible, bool saveAvatar, CancellationToken cancellationToken)
             {
-                avatarIsDirty = false;
-                backpackEmotesSectionController.RestoreEmoteSlots();
-                backpackEmotesSectionController.LoadEmotes();
-                wearableGridController.LoadWearables();
-                wearableGridController.LoadCollections();
-                LoadUserProfile(ownUserProfile);
-                view.Show();
-            }
-            else
-            {
-                if (saveAvatar)
-                    TakeSnapshots(
-                        onSuccess: (face256Snapshot, bodySnapshot) =>
-                        {
-                            SaveAvatar(face256Snapshot, bodySnapshot);
-                            CloseView();
-                        },
-                        onFailed: () =>
-                        {
-                            Debug.LogError("Error taking avatar screenshots.");
-                            CloseView();
-                        });
-                else
-                    CloseView();
+                if (visible)
+                {
+                    avatarIsDirty = false;
+                    backpackEmotesSectionController.RestoreEmoteSlots();
+                    backpackEmotesSectionController.LoadEmotes();
+                    wearableGridController.LoadWearables();
+                    wearableGridController.LoadCollections();
+                    LoadUserProfile(ownUserProfile);
+                    view.Show();
 
-                wearableGridController.CancelWearableLoading();
+                    if (dataStore.common.isSignUpFlow.Get())
+                        view.ShowContinueSignup();
+                    else
+                        view.HideContinueSignup();
+                }
+                else
+                {
+                    if (saveAvatar)
+                    {
+                        try
+                        {
+                            await TakeSnapshotsAndSaveAvatarAsync(cancellationToken);
+                            CloseView();
+                        }
+                        catch (OperationCanceledException) { }
+                        catch (Exception e)
+                        {
+                            Debug.LogException(e);
+                            CloseView();
+                        }
+                    }
+                    else
+                        CloseView();
+
+                    wearableGridController.CancelWearableLoading();
+                }
             }
+
+            setVisibilityCancellationToken = setVisibilityCancellationToken.SafeRestart();
+            SetVisibilityAsync(visible, saveAvatar, setVisibilityCancellationToken.Token).Forget();
         }
 
         private void CloseView()
@@ -228,6 +244,29 @@ namespace DCL.Backpack
 
             if (setAsDirty)
                 avatarIsDirty = true;
+        }
+
+        private void SaveAvatarAndContinueSignupProcess() =>
+            SetVisibility(false, saveAvatar: true);
+
+        private UniTask TakeSnapshotsAndSaveAvatarAsync(CancellationToken cancellationToken)
+        {
+            UniTaskCompletionSource task = new ();
+
+            TakeSnapshots(
+                onSuccess: (face256Snapshot, bodySnapshot) =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    SaveAvatar(face256Snapshot, bodySnapshot);
+                    task.TrySetResult();
+                },
+                onFailed: () =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    task.TrySetException(new Exception("Error taking avatar screenshots."));
+                });
+
+            return task.Task;
         }
 
         private void TakeSnapshots(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
