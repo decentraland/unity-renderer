@@ -141,8 +141,7 @@ async function preProcessComponents() {
   generateComponentsEnum(components)
 }
 
-function getProtofiles(pattern: string)
-{
+function getProtofiles(pattern: string) {
   return glob
     .sync(
       normalizePath(path.resolve(protocolInputPath, pattern)),
@@ -158,6 +157,7 @@ async function buildProtocol() {
   const protoFiles = [
     ...getProtofiles('decentraland/common/**/*.proto'),
     ...getProtofiles('decentraland/sdk/components/**/*.proto').filter((value) => !value.endsWith('id.proto')),
+    ...getProtofiles('decentraland/sdk/ecs6/**/*.proto'),
     ...getProtofiles('decentraland/bff/**/*.proto'),
     ...getProtofiles('decentraland/renderer/**/*.proto'),
     ...getProtofiles('decentraland/social/**/*.proto')

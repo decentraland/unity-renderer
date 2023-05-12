@@ -4,13 +4,15 @@ using System.Collections;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
     public class UIInputText : UIShape<UIInputTextRefContainer, UIInputText.Model>
     {
         [System.Serializable]
-        new public class Model : UIShape.Model
+        public new class Model : UIShape.Model
         {
             public float outlineWidth = 0f;
             public Color outlineColor = Color.white;
@@ -44,10 +46,53 @@ namespace DCL.Components
             public string onBlur;
             public string onTextChanged;
 
-            public override BaseModel GetDataFromJSON(string json)
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
             {
-                Model model = Utils.SafeFromJson<Model>(json);
-                return model;
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.UiInputText)
+                    return Utils.SafeUnimplemented<UIInputText, Model>(expected: ComponentBodyPayload.PayloadOneofCase.UiInputText, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.UiInputText.HasName) pb.name = pbModel.UiInputText.Name;
+                if (pbModel.UiInputText.HasParentComponent) pb.parentComponent = pbModel.UiInputText.ParentComponent;
+                if (pbModel.UiInputText.HasVisible) pb.visible = pbModel.UiInputText.Visible;
+                if (pbModel.UiInputText.HasOpacity) pb.opacity = pbModel.UiInputText.Opacity;
+                if (pbModel.UiInputText.HasHAlign) pb.hAlign = pbModel.UiInputText.HAlign;
+                if (pbModel.UiInputText.HasVAlign) pb.vAlign = pbModel.UiInputText.VAlign;
+                if (pbModel.UiInputText.Width != null) pb.width = SDK6DataMapExtensions.FromProtobuf(pb.width, pbModel.UiInputText.Width);
+                if (pbModel.UiInputText.Height != null) pb.height = SDK6DataMapExtensions.FromProtobuf(pb.height, pbModel.UiInputText.Height);
+                if (pbModel.UiInputText.PositionX != null) pb.positionX = SDK6DataMapExtensions.FromProtobuf(pb.positionX, pbModel.UiInputText.PositionX);
+                if (pbModel.UiInputText.PositionY != null) pb.positionY = SDK6DataMapExtensions.FromProtobuf(pb.positionY, pbModel.UiInputText.PositionY);
+                if (pbModel.UiInputText.HasIsPointerBlocker) pb.isPointerBlocker = pbModel.UiInputText.IsPointerBlocker;
+
+                if (pbModel.UiInputText.HasOutlineWidth) pb.outlineWidth = pbModel.UiInputText.OutlineWidth;
+                if (pbModel.UiInputText.OutlineColor != null) pb.outlineColor = pbModel.UiInputText.OutlineColor.AsUnityColor();
+                if (pbModel.UiInputText.Color != null) pb.color = pbModel.UiInputText.Color.AsUnityColor();
+                if (pbModel.UiInputText.HasFontSize) pb.fontSize = pbModel.UiInputText.FontSize;
+                if (pbModel.UiInputText.HasFont) pb.font = pbModel.UiInputText.Font;
+                if (pbModel.UiInputText.HasValue) pb.value = pbModel.UiInputText.Value;
+                if (pbModel.UiInputText.HasHTextAlign) pb.hTextAlign = pbModel.UiInputText.HTextAlign;
+                if (pbModel.UiInputText.HasVTextAlign) pb.vTextAlign = pbModel.UiInputText.VTextAlign;
+                if (pbModel.UiInputText.HasTextWrapping) pb.textWrapping = pbModel.UiInputText.TextWrapping;
+                if (pbModel.UiInputText.HasShadowBlur) pb.shadowBlur = pbModel.UiInputText.ShadowBlur;
+                if (pbModel.UiInputText.HasShadowOffsetX) pb.shadowOffsetX = pbModel.UiInputText.ShadowOffsetX;
+                if (pbModel.UiInputText.HasShadowOffsetY) pb.shadowOffsetY = pbModel.UiInputText.ShadowOffsetY;
+                if (pbModel.UiInputText.ShadowColor != null) pb.shadowColor = pbModel.UiInputText.ShadowColor.AsUnityColor();
+                if (pbModel.UiInputText.HasPaddingTop) pb.paddingTop = pbModel.UiInputText.PaddingTop;
+                if (pbModel.UiInputText.HasPaddingRight) pb.paddingRight = pbModel.UiInputText.PaddingRight;
+                if (pbModel.UiInputText.HasPaddingBottom) pb.paddingBottom = pbModel.UiInputText.PaddingBottom;
+                if (pbModel.UiInputText.HasPaddingLeft) pb.paddingLeft = pbModel.UiInputText.PaddingLeft;
+                if (pbModel.UiInputText.HasPlaceholder) pb.placeholder = pbModel.UiInputText.Placeholder;
+                if (pbModel.UiInputText.FocusedBackground != null) pb.focusedBackground = pbModel.UiInputText.FocusedBackground.AsUnityColor();
+                if (pbModel.UiInputText.HasOnTextSubmit) pb.onTextSubmit = pbModel.UiInputText.OnTextSubmit;
+                if (pbModel.UiInputText.HasOnTextChanged) pb.onChanged = pbModel.UiInputText.OnTextChanged;
+                if (pbModel.UiInputText.HasOnFocus) pb.onFocus = pbModel.UiInputText.OnFocus;
+                if (pbModel.UiInputText.HasOnBlur) pb.onBlur = pbModel.UiInputText.OnBlur;
+                if (pbModel.UiInputText.HasOnTextChanged) pb.onTextChanged = pbModel.UiInputText.OnTextChanged;
+
+                return pb;
             }
         }
 
