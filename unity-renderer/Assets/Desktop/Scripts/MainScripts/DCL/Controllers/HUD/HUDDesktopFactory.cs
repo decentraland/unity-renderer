@@ -5,7 +5,6 @@ using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
 using SocialFeaturesAnalytics;
 using System.Threading;
-using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 
 public class HUDDesktopFactory : HUDFactory
 {
@@ -23,10 +22,10 @@ public class HUDDesktopFactory : HUDFactory
                 hudElement = new SettingsPanelHUDControllerDesktop();
                 break;
             case HUDElementID.PROFILE_HUD:
-                hudElement = new ProfileHUDControllerDesktop(
-                    await CreateHUDView<IProfileHUDView>(PROFILE_HUD_DESKTOP, cancellationToken, $"_{PROFILE_HUD}"),
-                    new UserProfileWebInterfaceBridge(),
-                    new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, new UserProfileWebInterfaceBridge()),
+                hudElement = new ProfileHUDControllerDesktop(new UserProfileWebInterfaceBridge(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
                     DataStore.i);
                 break;
             case HUDElementID.MINIMAP:

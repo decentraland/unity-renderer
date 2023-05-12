@@ -29,18 +29,6 @@ MonoBehaviour:
     m_Address: HelpAndSupportHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 987f12680f06c40d0a902d4004a36e3c
-    m_Address: NotificationHUD
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3b2c31cfa7e4a4d619b7f715848fc3b1
-    m_Address: ProfileHUDDesktop
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 0f02993942607204bb37508b41ec4d98
-    m_Address: ProfileHUD
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

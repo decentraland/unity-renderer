@@ -22,6 +22,7 @@ public class ProfileHUDController : IHUD
     private const string URL_MANA_PURCHASE = "https://account.decentraland.org";
     private const string URL_TERMS_OF_USE = "https://decentraland.org/terms";
     private const string URL_PRIVACY_POLICY = "https://decentraland.org/privacy";
+    private const string VIEW_NAME = "_ProfileHUD";
     private const string LINKS_REGEX = @"\[(.*?)\)";
     private const float FETCH_MANA_INTERVAL = 60;
 
@@ -43,43 +44,48 @@ public class ProfileHUDController : IHUD
 
     public RectTransform TutorialTooltipReference => view.TutorialReference;
 
-    public ProfileHUDController(IProfileHUDView view, IUserProfileBridge userProfileBridge, ISocialAnalytics socialAnalytics, DataStore dataStore)
+    public ProfileHUDController(
+        IUserProfileBridge userProfileBridge,
+        ISocialAnalytics socialAnalytics,
+        DataStore dataStore)
     {
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.dataStore = dataStore;
 
-        this.view = view;
+        GameObject viewGo = UnityEngine.Object.Instantiate(GetViewPrefab());
+        viewGo.name = VIEW_NAME;
+        view = viewGo.GetComponent<IProfileHUDView>();
 
         dataStore.exploreV2.isOpen.OnChange += SetAsFullScreenMenuMode;
         dataStore.exploreV2.profileCardIsOpen.OnChange += SetProfileCardExtended;
 
-        this.view.SetWalletSectionEnabled(false);
-        this.view.SetNonWalletSectionEnabled(false);
-        this.view.SetDescriptionIsEditing(false);
+        view.SetWalletSectionEnabled(false);
+        view.SetNonWalletSectionEnabled(false);
+        view.SetDescriptionIsEditing(false);
 
-        this.view.LogedOutPressed += OnLoggedOut;
-        this.view.SignedUpPressed += OnSignedUp;
+        view.LogedOutPressed += OnLoggedOut;
+        view.SignedUpPressed += OnSignedUp;
 
-        this.view.ClaimNamePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_CLAIM_NAME);
+        view.ClaimNamePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_CLAIM_NAME);
 
-        this.view.Opened += (object sender, EventArgs args) =>
+        view.Opened += (object sender, EventArgs args) =>
         {
             WebInterface.RequestOwnProfileUpdate();
             OnOpen?.Invoke();
         };
 
-        this.view.Closed += (object sender, EventArgs args) => OnClose?.Invoke();
-        this.view.NameSubmitted += (object sender, string name) => UpdateProfileName(name);
-        this.view.DescriptionSubmitted += (object sender, string description) => UpdateProfileDescription(description);
+        view.Closed += (object sender, EventArgs args) => OnClose?.Invoke();
+        view.NameSubmitted += (object sender, string name) => UpdateProfileName(name);
+        view.DescriptionSubmitted += (object sender, string description) => UpdateProfileDescription(description);
 
-        this.view.TermsAndServicesPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_TERMS_OF_USE);
-        this.view.PrivacyPolicyPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_PRIVACY_POLICY);
+        view.TermsAndServicesPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_TERMS_OF_USE);
+        view.PrivacyPolicyPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_PRIVACY_POLICY);
 
-        if (this.view.HasManaCounterView() || this.view.HasPolygonManaCounterView())
+        if (view.HasManaCounterView() || view.HasPolygonManaCounterView())
         {
-            this.view.ManaInfoPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_INFO);
-            this.view.ManaPurchasePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_PURCHASE);
+            view.ManaInfoPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_INFO);
+            view.ManaPurchasePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_PURCHASE);
         }
 
         ownUserProfile.OnUpdate += OnProfileUpdated;
@@ -161,6 +167,11 @@ public class ProfileHUDController : IHUD
 
         dataStore.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
         dataStore.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
+    }
+
+    protected virtual GameObject GetViewPrefab()
+    {
+        return Resources.Load<GameObject>("ProfileHUD_V2");
     }
 
     private void OnProfileUpdated(UserProfile profile) =>
