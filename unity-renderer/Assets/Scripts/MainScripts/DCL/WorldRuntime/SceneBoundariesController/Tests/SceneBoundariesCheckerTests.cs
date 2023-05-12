@@ -33,7 +33,6 @@ namespace SceneBoundariesCheckerTests
             TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }
 
-        [UnityTearDown]
         protected override IEnumerator TearDown()
         {
             uuidEventsPlugin.Dispose();
