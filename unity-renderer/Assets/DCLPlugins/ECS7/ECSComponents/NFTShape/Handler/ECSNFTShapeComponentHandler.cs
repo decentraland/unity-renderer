@@ -8,7 +8,6 @@ using DCL.Helpers.NFT;
 using DCL.Models;
 using Decentraland.Common;
 using NFTShape_Internal;
-using RPC.Services;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -117,7 +116,7 @@ namespace DCL.ECSComponents
             try
             {
                 infoRetrieverDisposed = false;
-                RestrictedActionsServiceImpl.TryParseUrn(urn, out string contractAddress, out string tokenId);
+                NFTUtils.TryParseUrn(urn, out string contractAddress, out string tokenId);
                 NFTInfo info = await infoRetriever.FetchNFTInfoAsync(contractAddress, tokenId);
 
                 if (info == null)

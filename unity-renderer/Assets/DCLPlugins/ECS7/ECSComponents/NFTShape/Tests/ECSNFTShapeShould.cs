@@ -9,7 +9,6 @@ using Decentraland.Common;
 using NFTShape_Internal;
 using NSubstitute;
 using NUnit.Framework;
-using RPC.Services;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -75,13 +74,13 @@ namespace Tests
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            RestrictedActionsServiceImpl.TryParseUrn(model.Urn, out string contractAddress, out string tokenID);
+            NFTUtils.TryParseUrn(model.Urn, out string contractAddress, out string tokenID);
             infoRetriever.Received(1).FetchNFTInfoAsync(contractAddress, tokenID);
 
             model.Urn = "urn:decentraland:ethereum:erc721:0x8eaa9ae1ac89b1c8c8a8104d08c045f78aadb42d:450";
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            RestrictedActionsServiceImpl.TryParseUrn(model.Urn, out contractAddress, out tokenID);
+            NFTUtils.TryParseUrn(model.Urn, out contractAddress, out tokenID);
             infoRetriever.Received(1).FetchNFTInfoAsync(contractAddress, tokenID);
 
             handler.OnComponentRemoved(scene, entity);
