@@ -94,6 +94,7 @@ MonoBehaviour:
     m_LabelNames:
     - default
     - SkyboxConfiguration
+    - ShaderVariantsGroup
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 1861e97f1e599df4ba42e39baceb02ce, type: 2}

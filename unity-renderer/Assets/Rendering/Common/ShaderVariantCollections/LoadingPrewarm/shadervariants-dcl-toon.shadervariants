@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: shadervariants-dcl-toon
+  m_Shaders:
+  - first: {fileID: 4800000, guid: 08f57eed8cd29db40bdfc5af4b40f41b, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _GPU_SKINNING
+        passType: 8
+      - keywords: _GPU_SKINNING _SSAO_OFF
+        passType: 8
+      - keywords: _SSAO_OFF
+        passType: 8
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT _SSAO_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _SCREEN_SPACE_OCCLUSION _SSAO_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _SHADOWS_SOFT _SSAO_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _SSAO_OFF
+        passType: 13
+      - keywords: _GPU_SKINNING
+        passType: 13
+      - keywords: _GPU_SKINNING _SSAO_OFF
+        passType: 13
