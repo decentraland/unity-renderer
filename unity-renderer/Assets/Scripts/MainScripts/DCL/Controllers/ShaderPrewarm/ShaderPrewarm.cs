@@ -11,7 +11,13 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
     {
         private const string SHADER_VARIANTS_ASSET = "ShaderVariantsData";
 
+        private readonly IAddressableResourceProvider addressables;
         private bool areShadersPrewarm;
+
+        public ShaderPrewarm(IAddressableResourceProvider addressables)
+        {
+            this.addressables = addressables;
+        }
 
         public async UniTask PrewarmAsync(Action<float> progressCallback, CancellationToken cancellationToken)
         {
@@ -19,7 +25,7 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
 
             await UniTask.Yield();
 
-            var variantsData = await LoadAssets(cancellationToken);
+            var variantsData = await addressables.GetAddressable<ShaderVariantsData>(SHADER_VARIANTS_ASSET, cancellationToken);
 
             int length = variantsData.collections.Length;
 
@@ -27,7 +33,7 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
             {
                 ShaderVariantCollection collection = variantsData.collections[i];
 
-                progressCallback.Invoke(i/(float)length);
+                progressCallback.Invoke(i / (float)length);
                 await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken);
 
                 collection.WarmUp();
@@ -35,9 +41,5 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
 
             areShadersPrewarm = true;
         }
-
-        private static UniTask<ShaderVariantsData> LoadAssets(CancellationToken cancellationToken) =>
-            Environment.i.serviceLocator.Get<IAddressableResourceProvider>().GetAddressable<ShaderVariantsData>(SHADER_VARIANTS_ASSET, cancellationToken);
-
     }
 }

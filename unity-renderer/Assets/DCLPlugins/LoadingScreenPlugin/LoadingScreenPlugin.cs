@@ -33,7 +33,7 @@ namespace DCLPlugins.LoadingScreenPlugin
             loadingScreenController = new LoadingScreenController(
                 CreateLoadingScreenView(),
                 Environment.i.world.sceneController, Environment.i.world.state, NotificationsController.i,
-                DataStore.i.player, DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm, new ShaderPrewarm());
+                DataStore.i.player, DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm, new ShaderPrewarm(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()));
         }
 
         public void Dispose()
