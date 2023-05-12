@@ -12,6 +12,10 @@ namespace DCL.Backpack
     public class BackpackPreviewPanel : BaseComponentView
     {
         private const string RESET_PREVIEW_ANIMATION = "Idle";
+        private const float CAMERA_MIN_Y = 0f;
+        private const float CAMERA_MAX_Y = 1.7f;
+        private const float CAMERA_MIN_Z = 1f;
+        private const float CAMERA_MAX_Z = 3f;
 
         [SerializeField] private RectTransform avatarPreviewPanel;
         [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
@@ -28,6 +32,7 @@ namespace DCL.Backpack
         public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
         {
             characterPreviewController = characterPreviewFactory.Create(CharacterPreviewMode.WithoutHologram, (RenderTexture) avatarPreviewImage.texture, false);
+            characterPreviewController.SetCameraLimits(null, null, CAMERA_MIN_Y, CAMERA_MAX_Y, CAMERA_MIN_Z, CAMERA_MAX_Z);
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
             avatarPreviewRotation.OnHorizontalRotation += OnPreviewRotation;
             avatarPreviewPanning.OnPanning += OnPreviewPanning;

@@ -57,9 +57,10 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private IAvatar avatar;
         private readonly AvatarModel currentAvatarModel = new () { wearables = new List<string>() };
         private CancellationTokenSource loadingCts = new ();
-
         private IAnimator animator;
         private Quaternion avatarContainerDefaultRotation;
+        private Transform cameraTransform;
+        private (float? minZ, float? maxZ, float? minY, float? maxY, float? minX, float? maxX) cameraLimits;
 
         private void Awake()
         {
@@ -77,6 +78,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
             this.animator = GetComponentInChildren<IAnimator>();
             avatarContainerDefaultRotation = avatarContainer.transform.rotation;
+            cameraTransform = camera.transform;
         }
 
         public void SetEnabled(bool isEnabled)
@@ -206,10 +208,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private Coroutine cameraTransitionCoroutine;
 
-        public void SetFocus(CameraFocus focus, bool useTransition = true)
-        {
+        public void SetFocus(CameraFocus focus, bool useTransition = true) =>
             SetFocus(cameraFocusLookUp[focus], useTransition);
-        }
 
         private void SetFocus(Transform transform, bool useTransition = true)
         {
@@ -217,11 +217,10 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
             if (useTransition && gameObject.activeInHierarchy)
             {
-                cameraTransitionCoroutine = StartCoroutine(CameraTransition(camera.transform.position, transform.position, camera.transform.rotation, transform.rotation, CAMERA_TRANSITION_TIME));
+                cameraTransitionCoroutine = StartCoroutine(CameraTransition(cameraTransform.position, transform.position, cameraTransform.rotation, transform.rotation, CAMERA_TRANSITION_TIME));
             }
             else
             {
-                var cameraTransform = camera.transform;
                 cameraTransform.position = transform.position;
                 cameraTransform.rotation = transform.rotation;
             }
@@ -229,7 +228,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private IEnumerator CameraTransition(Vector3 initPos, Vector3 endPos, Quaternion initRotation, Quaternion endRotation, float time)
         {
-            var cameraTransform = camera.transform;
             float currentTime = 0;
 
             float inverseTime = 1 / time;
@@ -245,27 +243,41 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             cameraTransitionCoroutine = null;
         }
 
-        public void Rotate(float rotationVelocity)
-        {
+        public void Rotate(float rotationVelocity) =>
             avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up);
-        }
 
-        public void ResetRotation()
-        {
+        public void ResetRotation() =>
             avatarContainer.transform.rotation = avatarContainerDefaultRotation;
+
+        public void MoveCamera(Vector3 delta, Space relativeTo)
+        {
+            cameraTransform.Translate(delta, relativeTo);
+            ApplyCameraLimits();
         }
 
-        public void MoveCamera(Vector3 delta, Space relativeTo) =>
-            camera.transform.Translate(delta, relativeTo);
-
-        public void PlayEmote(string emoteId, long timestamp)
+        public void SetCameraLimits(float? minX, float? maxX, float? minY, float? maxY, float? minZ, float? maxZ)
         {
+            cameraLimits.minX = minX;
+            cameraLimits.maxX = maxX;
+            cameraLimits.minY = minY;
+            cameraLimits.maxY = maxY;
+            cameraLimits.minZ = minZ;
+            cameraLimits.maxZ = maxZ;
+        }
+
+        private void ApplyCameraLimits()
+        {
+            Vector3 pos = cameraTransform.localPosition;
+            pos.x = Mathf.Clamp(pos.x, cameraLimits.minX ?? float.MinValue, cameraLimits.maxX ?? float.MaxValue);
+            pos.y = Mathf.Clamp(pos.y, cameraLimits.minY ?? float.MinValue, cameraLimits.maxY ?? float.MaxValue);
+            pos.z = Mathf.Clamp(pos.z, cameraLimits.minZ ?? float.MinValue, cameraLimits.maxZ ?? float.MaxValue);
+            cameraTransform.localPosition = pos;
+        }
+
+        public void PlayEmote(string emoteId, long timestamp) =>
             avatar.PlayEmote(emoteId, timestamp);
-        }
 
-        public void Dispose()
-        {
+        public void Dispose() =>
             Destroy(gameObject);
-        }
     }
 }
