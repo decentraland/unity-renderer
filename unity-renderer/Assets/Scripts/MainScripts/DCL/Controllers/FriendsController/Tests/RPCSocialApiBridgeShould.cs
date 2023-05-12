@@ -1,8 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Decentraland.Social.Friendships;
-using Google.Protobuf.Collections;
-using Google.Protobuf.WellKnownTypes;
 using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
 using NUnit.Framework;
@@ -12,9 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -54,13 +50,17 @@ namespace DCL.Social.Friends
                               .Returns(callInfo =>
                                {
                                    MockSocialServerContext context = (MockSocialServerContext)callInfo[1];
-            
-                                   return UniTaskAsyncEnumerable.Create<Users>(async (writer, token) =>
+
+                                   return UniTaskAsyncEnumerable.Create<UsersResponse>(async (writer, token) =>
                                    {
                                        foreach (var users in context.userList)
                                        {
                                            if (token.IsCancellationRequested) break;
-                                           await writer.YieldAsync(users);
+
+                                           await writer.YieldAsync(new UsersResponse()
+                                           {
+                                               Users = users
+                                           });
                                        }
                                    });
                                });
@@ -156,19 +156,24 @@ namespace DCL.Social.Friends
                 };
 
                 friendshipsService.GetRequestEvents(Arg.Any<Payload>(), Arg.Any<MockSocialServerContext>(), Arg.Any<CancellationToken>())
-                                  .Returns(UniTask.FromResult(new RequestEvents()
-                                   {
-                                       Incoming = new Requests()
+                                  .Returns(UniTask.FromResult(
+                                       new RequestEventsResponse()
                                        {
-                                           Items = { incomingRequests },
-                                           Total = incomingRequests.Length,
-                                       },
-                                       Outgoing = new Requests()
-                                       {
-                                           Items = { outgoingRequests },
-                                           Total = outgoingRequests.Length,
+                                           Events = new RequestEvents()
+                                           {
+                                               Incoming = new Requests()
+                                               {
+                                                   Items = { incomingRequests },
+                                                   Total = incomingRequests.Length,
+                                               },
+                                               Outgoing = new Requests()
+                                               {
+                                                   Items = { outgoingRequests },
+                                                   Total = outgoingRequests.Length,
+                                               }
+                                           }
                                        }
-                                   }));
+                                   ));
 
                 var response = await rpcSocialApiBridge.GetInitializationInformationAsync(cancellationToken);
 

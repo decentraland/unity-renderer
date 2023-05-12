@@ -34,58 +34,98 @@ namespace Decentraland.Social.Friendships {
             "EkEKBmRlbGV0ZRgFIAEoCzIvLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5k",
             "c2hpcHMuRGVsZXRlUmVzcG9uc2VIABJBCgZjYW5jZWwYBiABKAsyLy5kZWNl",
             "bnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLkNhbmNlbFJlc3BvbnNlSABC",
-            "BgoEYm9keSLsAgoWRnJpZW5kc2hpcEV2ZW50UGF5bG9hZBJCCgdyZXF1ZXN0",
-            "GAEgASgLMi8uZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5SZXF1",
-            "ZXN0UGF5bG9hZEgAEkAKBmFjY2VwdBgCIAEoCzIuLmRlY2VudHJhbGFuZC5z",
-            "b2NpYWwuZnJpZW5kc2hpcHMuQWNjZXB0UGF5bG9hZEgAEkAKBnJlamVjdBgE",
-            "IAEoCzIuLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUmVqZWN0",
-            "UGF5bG9hZEgAEkAKBmRlbGV0ZRgFIAEoCzIuLmRlY2VudHJhbGFuZC5zb2Np",
-            "YWwuZnJpZW5kc2hpcHMuRGVsZXRlUGF5bG9hZEgAEkAKBmNhbmNlbBgGIAEo",
-            "CzIuLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuQ2FuY2VsUGF5",
-            "bG9hZEgAQgYKBGJvZHkiFwoEVXNlchIPCgdhZGRyZXNzGAEgASgJIj0KBVVz",
-            "ZXJzEjQKBXVzZXJzGAEgAygLMiUuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmll",
-            "bmRzaGlwcy5Vc2VyInwKD1JlcXVlc3RSZXNwb25zZRIzCgR1c2VyGAEgASgL",
-            "MiUuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Vc2VyEhIKCmNy",
-            "ZWF0ZWRfYXQYAiABKAMSFAoHbWVzc2FnZRgDIAEoCUgAiAEBQgoKCF9tZXNz",
-            "YWdlImcKDlJlcXVlc3RQYXlsb2FkEjMKBHVzZXIYASABKAsyJS5kZWNlbnRy",
-            "YWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlVzZXISFAoHbWVzc2FnZRgDIAEo",
-            "CUgAiAEBQgoKCF9tZXNzYWdlIloKCFJlcXVlc3RzEg0KBXRvdGFsGAEgASgD",
-            "Ej8KBWl0ZW1zGAIgAygLMjAuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRz",
-            "aGlwcy5SZXF1ZXN0UmVzcG9uc2UiiQEKDVJlcXVlc3RFdmVudHMSOwoIb3V0",
-            "Z29pbmcYASABKAsyKS5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBz",
-            "LlJlcXVlc3RzEjsKCGluY29taW5nGAIgASgLMikuZGVjZW50cmFsYW5kLnNv",
-            "Y2lhbC5mcmllbmRzaGlwcy5SZXF1ZXN0cyJFCg5BY2NlcHRSZXNwb25zZRIz",
-            "CgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlw",
-            "cy5Vc2VyIkQKDUFjY2VwdFBheWxvYWQSMwoEdXNlchgBIAEoCzIlLmRlY2Vu",
-            "dHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuVXNlciJFCg5SZWplY3RSZXNw",
-            "b25zZRIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmll",
-            "bmRzaGlwcy5Vc2VyIkQKDVJlamVjdFBheWxvYWQSMwoEdXNlchgBIAEoCzIl",
-            "LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuVXNlciJFCg5EZWxl",
-            "dGVSZXNwb25zZRIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5kLnNvY2lh",
-            "bC5mcmllbmRzaGlwcy5Vc2VyIkQKDURlbGV0ZVBheWxvYWQSMwoEdXNlchgB",
-            "IAEoCzIlLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuVXNlciJF",
-            "Cg5DYW5jZWxSZXNwb25zZRIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5k",
-            "LnNvY2lhbC5mcmllbmRzaGlwcy5Vc2VyIkQKDUNhbmNlbFBheWxvYWQSMwoE",
-            "dXNlchgBIAEoCzIlLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMu",
-            "VXNlciKzAQoXVXBkYXRlRnJpZW5kc2hpcFBheWxvYWQSRgoFZXZlbnQYASAB",
-            "KAsyNy5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLkZyaWVuZHNo",
-            "aXBFdmVudFBheWxvYWQSQQoKYXV0aF90b2tlbhgCIAEoCzIoLmRlY2VudHJh",
-            "bGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUGF5bG9hZEgAiAEBQg0KC19hdXRo",
-            "X3Rva2VuImMKGFVwZGF0ZUZyaWVuZHNoaXBSZXNwb25zZRJHCgVldmVudBgB",
-            "IAEoCzI4LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuRnJpZW5k",
-            "c2hpcEV2ZW50UmVzcG9uc2UidAooU3Vic2NyaWJlRnJpZW5kc2hpcEV2ZW50",
-            "c1VwZGF0ZXNSZXNwb25zZRJICgZldmVudHMYASADKAsyOC5kZWNlbnRyYWxh",
-            "bmQuc29jaWFsLmZyaWVuZHNoaXBzLkZyaWVuZHNoaXBFdmVudFJlc3BvbnNl",
-            "IjcKB1BheWxvYWQSGgoNc3luYXBzZV90b2tlbhgBIAEoCUgAiAEBQhAKDl9z",
-            "eW5hcHNlX3Rva2VuKpUBCg1TZXJ2aWNlRXJyb3JzEgsKB1VOS05PV04QABIQ",
-            "CgtCQURfUkVRVUVTVBCQAxIRCgxVTkFVVEhPUklaRUQQkQMSDgoJRk9SQklE",
-            "REVOEJMDEg4KCU5PVF9GT1VORBCUAxIWChFUT09fTUFOWV9SRVFVRVNUUxCt",
-            "AxIaChVJTlRFUk5BTF9TRVJWRVJfRVJST1IQ9AMylwQKEkZyaWVuZHNoaXBz",
-            "U2VydmljZRJiCgpHZXRGcmllbmRzEiguZGVjZW50cmFsYW5kLnNvY2lhbC5m",
-            "cmllbmRzaGlwcy5QYXlsb2FkGiYuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmll",
-            "bmRzaGlwcy5Vc2VycyIAMAESbgoQR2V0UmVxdWVzdEV2ZW50cxIoLmRlY2Vu",
-            "dHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUGF5bG9hZBouLmRlY2VudHJh",
-            "bGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUmVxdWVzdEV2ZW50cyIAEo4BChVV",
+            "BgoEYm9keSJnChhGcmllbmRzaGlwRXZlbnRSZXNwb25zZXMSSwoJcmVzcG9u",
+            "c2VzGAEgAygLMjguZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5G",
+            "cmllbmRzaGlwRXZlbnRSZXNwb25zZSLsAgoWRnJpZW5kc2hpcEV2ZW50UGF5",
+            "bG9hZBJCCgdyZXF1ZXN0GAEgASgLMi8uZGVjZW50cmFsYW5kLnNvY2lhbC5m",
+            "cmllbmRzaGlwcy5SZXF1ZXN0UGF5bG9hZEgAEkAKBmFjY2VwdBgCIAEoCzIu",
+            "LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuQWNjZXB0UGF5bG9h",
+            "ZEgAEkAKBnJlamVjdBgEIAEoCzIuLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJp",
+            "ZW5kc2hpcHMuUmVqZWN0UGF5bG9hZEgAEkAKBmRlbGV0ZRgFIAEoCzIuLmRl",
+            "Y2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuRGVsZXRlUGF5bG9hZEgA",
+            "EkAKBmNhbmNlbBgGIAEoCzIuLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5k",
+            "c2hpcHMuQ2FuY2VsUGF5bG9hZEgAQgYKBGJvZHkiFwoEVXNlchIPCgdhZGRy",
+            "ZXNzGAEgASgJIj0KBVVzZXJzEjQKBXVzZXJzGAEgAygLMiUuZGVjZW50cmFs",
+            "YW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Vc2VyInwKD1JlcXVlc3RSZXNwb25z",
+            "ZRIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRz",
+            "aGlwcy5Vc2VyEhIKCmNyZWF0ZWRfYXQYAiABKAMSFAoHbWVzc2FnZRgDIAEo",
+            "CUgAiAEBQgoKCF9tZXNzYWdlImcKDlJlcXVlc3RQYXlsb2FkEjMKBHVzZXIY",
+            "ASABKAsyJS5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlVzZXIS",
+            "FAoHbWVzc2FnZRgDIAEoCUgAiAEBQgoKCF9tZXNzYWdlIloKCFJlcXVlc3Rz",
+            "Eg0KBXRvdGFsGAEgASgDEj8KBWl0ZW1zGAIgAygLMjAuZGVjZW50cmFsYW5k",
+            "LnNvY2lhbC5mcmllbmRzaGlwcy5SZXF1ZXN0UmVzcG9uc2UiiQEKDVJlcXVl",
+            "c3RFdmVudHMSOwoIb3V0Z29pbmcYASABKAsyKS5kZWNlbnRyYWxhbmQuc29j",
+            "aWFsLmZyaWVuZHNoaXBzLlJlcXVlc3RzEjsKCGluY29taW5nGAIgASgLMiku",
+            "ZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5SZXF1ZXN0cyJFCg5B",
+            "Y2NlcHRSZXNwb25zZRIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFsYW5kLnNv",
+            "Y2lhbC5mcmllbmRzaGlwcy5Vc2VyIkQKDUFjY2VwdFBheWxvYWQSMwoEdXNl",
+            "chgBIAEoCzIlLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuVXNl",
+            "ciJFCg5SZWplY3RSZXNwb25zZRIzCgR1c2VyGAEgASgLMiUuZGVjZW50cmFs",
+            "YW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Vc2VyIkQKDVJlamVjdFBheWxvYWQS",
+            "MwoEdXNlchgBIAEoCzIlLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hp",
+            "cHMuVXNlciJFCg5EZWxldGVSZXNwb25zZRIzCgR1c2VyGAEgASgLMiUuZGVj",
+            "ZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Vc2VyIkQKDURlbGV0ZVBh",
+            "eWxvYWQSMwoEdXNlchgBIAEoCzIlLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJp",
+            "ZW5kc2hpcHMuVXNlciJFCg5DYW5jZWxSZXNwb25zZRIzCgR1c2VyGAEgASgL",
+            "MiUuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Vc2VyIkQKDUNh",
+            "bmNlbFBheWxvYWQSMwoEdXNlchgBIAEoCzIlLmRlY2VudHJhbGFuZC5zb2Np",
+            "YWwuZnJpZW5kc2hpcHMuVXNlciKzAQoXVXBkYXRlRnJpZW5kc2hpcFBheWxv",
+            "YWQSRgoFZXZlbnQYASABKAsyNy5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVu",
+            "ZHNoaXBzLkZyaWVuZHNoaXBFdmVudFBheWxvYWQSQQoKYXV0aF90b2tlbhgC",
+            "IAEoCzIoLmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuUGF5bG9h",
+            "ZEgAiAEBQg0KC19hdXRoX3Rva2VuIjcKB1BheWxvYWQSGgoNc3luYXBzZV90",
+            "b2tlbhgBIAEoCUgAiAEBQhAKDl9zeW5hcHNlX3Rva2VuIiIKD0JhZFJlcXVl",
+            "c3RFcnJvchIPCgdtZXNzYWdlGAEgASgJIiQKEVVuYXV0aG9yaXplZEVycm9y",
+            "Eg8KB21lc3NhZ2UYASABKAkiIQoORm9yYmlkZGVuRXJyb3ISDwoHbWVzc2Fn",
+            "ZRgBIAEoCSInChRUb29NYW55UmVxdWVzdHNFcnJvchIPCgdtZXNzYWdlGAEg",
+            "ASgJIiYKE0ludGVybmFsU2VydmVyRXJyb3ISDwoHbWVzc2FnZRgBIAEoCSKj",
+            "AwoNVXNlcnNSZXNwb25zZRI3CgV1c2VycxgBIAEoCzImLmRlY2VudHJhbGFu",
+            "ZC5zb2NpYWwuZnJpZW5kc2hpcHMuVXNlcnNIABJVChVpbnRlcm5hbF9zZXJ2",
+            "ZXJfZXJyb3IYAiABKAsyNC5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNo",
+            "aXBzLkludGVybmFsU2VydmVyRXJyb3JIABJQChJ1bmF1dGhvcml6ZWRfZXJy",
+            "b3IYAyABKAsyMi5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlVu",
+            "YXV0aG9yaXplZEVycm9ySAASSgoPZm9yYmlkZGVuX2Vycm9yGAQgASgLMi8u",
+            "ZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Gb3JiaWRkZW5FcnJv",
+            "ckgAElgKF3Rvb19tYW55X3JlcXVlc3RzX2Vycm9yGAUgASgLMjUuZGVjZW50",
+            "cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5Ub29NYW55UmVxdWVzdHNFcnJv",
+            "ckgAQgoKCHJlc3BvbnNlIrQDChVSZXF1ZXN0RXZlbnRzUmVzcG9uc2USQAoG",
+            "ZXZlbnRzGAEgASgLMi4uZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlw",
+            "cy5SZXF1ZXN0RXZlbnRzSAASVQoVaW50ZXJuYWxfc2VydmVyX2Vycm9yGAIg",
+            "ASgLMjQuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5JbnRlcm5h",
+            "bFNlcnZlckVycm9ySAASUAoSdW5hdXRob3JpemVkX2Vycm9yGAMgASgLMjIu",
+            "ZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5VbmF1dGhvcml6ZWRF",
+            "cnJvckgAEkoKD2ZvcmJpZGRlbl9lcnJvchgEIAEoCzIvLmRlY2VudHJhbGFu",
+            "ZC5zb2NpYWwuZnJpZW5kc2hpcHMuRm9yYmlkZGVuRXJyb3JIABJYChd0b29f",
+            "bWFueV9yZXF1ZXN0c19lcnJvchgFIAEoCzI1LmRlY2VudHJhbGFuZC5zb2Np",
+            "YWwuZnJpZW5kc2hpcHMuVG9vTWFueVJlcXVlc3RzRXJyb3JIAEIKCghyZXNw",
+            "b25zZSKPBAoYVXBkYXRlRnJpZW5kc2hpcFJlc3BvbnNlEkkKBWV2ZW50GAEg",
+            "ASgLMjguZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5GcmllbmRz",
+            "aGlwRXZlbnRSZXNwb25zZUgAElUKFWludGVybmFsX3NlcnZlcl9lcnJvchgC",
+            "IAEoCzI0LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuSW50ZXJu",
+            "YWxTZXJ2ZXJFcnJvckgAElAKEnVuYXV0aG9yaXplZF9lcnJvchgDIAEoCzIy",
+            "LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuVW5hdXRob3JpemVk",
+            "RXJyb3JIABJKCg9mb3JiaWRkZW5fZXJyb3IYBCABKAsyLy5kZWNlbnRyYWxh",
+            "bmQuc29jaWFsLmZyaWVuZHNoaXBzLkZvcmJpZGRlbkVycm9ySAASWAoXdG9v",
+            "X21hbnlfcmVxdWVzdHNfZXJyb3IYBSABKAsyNS5kZWNlbnRyYWxhbmQuc29j",
+            "aWFsLmZyaWVuZHNoaXBzLlRvb01hbnlSZXF1ZXN0c0Vycm9ySAASTQoRYmFk",
+            "X3JlcXVlc3RfZXJyb3IYBiABKAsyMC5kZWNlbnRyYWxhbmQuc29jaWFsLmZy",
+            "aWVuZHNoaXBzLkJhZFJlcXVlc3RFcnJvckgAQgoKCHJlc3BvbnNlItIDCihT",
+            "dWJzY3JpYmVGcmllbmRzaGlwRXZlbnRzVXBkYXRlc1Jlc3BvbnNlEksKBmV2",
+            "ZW50cxgBIAEoCzI5LmRlY2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMu",
+            "RnJpZW5kc2hpcEV2ZW50UmVzcG9uc2VzSAASVQoVaW50ZXJuYWxfc2VydmVy",
+            "X2Vycm9yGAIgASgLMjQuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlw",
+            "cy5JbnRlcm5hbFNlcnZlckVycm9ySAASUAoSdW5hdXRob3JpemVkX2Vycm9y",
+            "GAMgASgLMjIuZGVjZW50cmFsYW5kLnNvY2lhbC5mcmllbmRzaGlwcy5VbmF1",
+            "dGhvcml6ZWRFcnJvckgAEkoKD2ZvcmJpZGRlbl9lcnJvchgEIAEoCzIvLmRl",
+            "Y2VudHJhbGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuRm9yYmlkZGVuRXJyb3JI",
+            "ABJYChd0b29fbWFueV9yZXF1ZXN0c19lcnJvchgFIAEoCzI1LmRlY2VudHJh",
+            "bGFuZC5zb2NpYWwuZnJpZW5kc2hpcHMuVG9vTWFueVJlcXVlc3RzRXJyb3JI",
+            "AEIKCghyZXNwb25zZTKnBAoSRnJpZW5kc2hpcHNTZXJ2aWNlEmoKCkdldEZy",
+            "aWVuZHMSKC5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlBheWxv",
+            "YWQaLi5kZWNlbnRyYWxhbmQuc29jaWFsLmZyaWVuZHNoaXBzLlVzZXJzUmVz",
+            "cG9uc2UiADABEnYKEEdldFJlcXVlc3RFdmVudHMSKC5kZWNlbnRyYWxhbmQu",
+            "c29jaWFsLmZyaWVuZHNoaXBzLlBheWxvYWQaNi5kZWNlbnRyYWxhbmQuc29j",
+            "aWFsLmZyaWVuZHNoaXBzLlJlcXVlc3RFdmVudHNSZXNwb25zZSIAEo4BChVV",
             "cGRhdGVGcmllbmRzaGlwRXZlbnQSOC5kZWNlbnRyYWxhbmQuc29jaWFsLmZy",
             "aWVuZHNoaXBzLlVwZGF0ZUZyaWVuZHNoaXBQYXlsb2FkGjkuZGVjZW50cmFs",
             "YW5kLnNvY2lhbC5mcmllbmRzaGlwcy5VcGRhdGVGcmllbmRzaGlwUmVzcG9u",
@@ -95,8 +135,9 @@ namespace Decentraland.Social.Friendships {
             "aXBFdmVudHNVcGRhdGVzUmVzcG9uc2UiADABYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Social.Friendships.ServiceErrors), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.FriendshipEventResponse), global::Decentraland.Social.Friendships.FriendshipEventResponse.Parser, new[]{ "Request", "Accept", "Reject", "Delete", "Cancel" }, new[]{ "Body" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.FriendshipEventResponses), global::Decentraland.Social.Friendships.FriendshipEventResponses.Parser, new[]{ "Responses" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.FriendshipEventPayload), global::Decentraland.Social.Friendships.FriendshipEventPayload.Parser, new[]{ "Request", "Accept", "Reject", "Delete", "Cancel" }, new[]{ "Body" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.User), global::Decentraland.Social.Friendships.User.Parser, new[]{ "Address" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Users), global::Decentraland.Social.Friendships.Users.Parser, new[]{ "Users_" }, null, null, null, null),
@@ -113,30 +154,21 @@ namespace Decentraland.Social.Friendships {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.CancelResponse), global::Decentraland.Social.Friendships.CancelResponse.Parser, new[]{ "User" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.CancelPayload), global::Decentraland.Social.Friendships.CancelPayload.Parser, new[]{ "User" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UpdateFriendshipPayload), global::Decentraland.Social.Friendships.UpdateFriendshipPayload.Parser, new[]{ "Event", "AuthToken" }, new[]{ "AuthToken" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UpdateFriendshipResponse), global::Decentraland.Social.Friendships.UpdateFriendshipResponse.Parser, new[]{ "Event" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.SubscribeFriendshipEventsUpdatesResponse), global::Decentraland.Social.Friendships.SubscribeFriendshipEventsUpdatesResponse.Parser, new[]{ "Events" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Payload), global::Decentraland.Social.Friendships.Payload.Parser, new[]{ "SynapseToken" }, new[]{ "SynapseToken" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.Payload), global::Decentraland.Social.Friendships.Payload.Parser, new[]{ "SynapseToken" }, new[]{ "SynapseToken" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.BadRequestError), global::Decentraland.Social.Friendships.BadRequestError.Parser, new[]{ "Message" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UnauthorizedError), global::Decentraland.Social.Friendships.UnauthorizedError.Parser, new[]{ "Message" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.ForbiddenError), global::Decentraland.Social.Friendships.ForbiddenError.Parser, new[]{ "Message" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.TooManyRequestsError), global::Decentraland.Social.Friendships.TooManyRequestsError.Parser, new[]{ "Message" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.InternalServerError), global::Decentraland.Social.Friendships.InternalServerError.Parser, new[]{ "Message" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UsersResponse), global::Decentraland.Social.Friendships.UsersResponse.Parser, new[]{ "Users", "InternalServerError", "UnauthorizedError", "ForbiddenError", "TooManyRequestsError" }, new[]{ "Response" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.RequestEventsResponse), global::Decentraland.Social.Friendships.RequestEventsResponse.Parser, new[]{ "Events", "InternalServerError", "UnauthorizedError", "ForbiddenError", "TooManyRequestsError" }, new[]{ "Response" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.UpdateFriendshipResponse), global::Decentraland.Social.Friendships.UpdateFriendshipResponse.Parser, new[]{ "Event", "InternalServerError", "UnauthorizedError", "ForbiddenError", "TooManyRequestsError", "BadRequestError" }, new[]{ "Response" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Social.Friendships.SubscribeFriendshipEventsUpdatesResponse), global::Decentraland.Social.Friendships.SubscribeFriendshipEventsUpdatesResponse.Parser, new[]{ "Events", "InternalServerError", "UnauthorizedError", "ForbiddenError", "TooManyRequestsError" }, new[]{ "Response" }, null, null, null)
           }));
     }
     #endregion
 
   }
-  #region Enums
-  public enum ServiceErrors {
-    /// <summary>
-    /// proto3 requires that first value in enum have numeric value of 0
-    /// </summary>
-    [pbr::OriginalName("UNKNOWN")] Unknown = 0,
-    [pbr::OriginalName("BAD_REQUEST")] BadRequest = 400,
-    [pbr::OriginalName("UNAUTHORIZED")] Unauthorized = 401,
-    [pbr::OriginalName("FORBIDDEN")] Forbidden = 403,
-    [pbr::OriginalName("NOT_FOUND")] NotFound = 404,
-    [pbr::OriginalName("TOO_MANY_REQUESTS")] TooManyRequests = 429,
-    [pbr::OriginalName("INTERNAL_SERVER_ERROR")] InternalServerError = 500,
-  }
-
-  #endregion
-
   #region Messages
   /// <summary>
   /// This message is a response that is sent from the server to the client
@@ -585,6 +617,184 @@ namespace Decentraland.Social.Friendships {
 
   }
 
+  public sealed partial class FriendshipEventResponses : pb::IMessage<FriendshipEventResponses>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<FriendshipEventResponses> _parser = new pb::MessageParser<FriendshipEventResponses>(() => new FriendshipEventResponses());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<FriendshipEventResponses> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[1]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public FriendshipEventResponses() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public FriendshipEventResponses(FriendshipEventResponses other) : this() {
+      responses_ = other.responses_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public FriendshipEventResponses Clone() {
+      return new FriendshipEventResponses(this);
+    }
+
+    /// <summary>Field number for the "responses" field.</summary>
+    public const int ResponsesFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Decentraland.Social.Friendships.FriendshipEventResponse> _repeated_responses_codec
+        = pb::FieldCodec.ForMessage(10, global::Decentraland.Social.Friendships.FriendshipEventResponse.Parser);
+    private readonly pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEventResponse> responses_ = new pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEventResponse>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEventResponse> Responses {
+      get { return responses_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as FriendshipEventResponses);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(FriendshipEventResponses other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!responses_.Equals(other.responses_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= responses_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      responses_.WriteTo(output, _repeated_responses_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      responses_.WriteTo(ref output, _repeated_responses_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      size += responses_.CalculateSize(_repeated_responses_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(FriendshipEventResponses other) {
+      if (other == null) {
+        return;
+      }
+      responses_.Add(other.responses_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            responses_.AddEntriesFrom(input, _repeated_responses_codec);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            responses_.AddEntriesFrom(ref input, _repeated_responses_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
   public sealed partial class FriendshipEventPayload : pb::IMessage<FriendshipEventPayload>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -599,7 +809,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1043,7 +1253,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1232,7 +1442,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1410,7 +1620,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1694,7 +1904,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[5]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1941,7 +2151,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[6]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2159,7 +2369,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[7]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2409,7 +2619,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[8]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2607,7 +2817,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[9]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2805,7 +3015,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[10]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3003,7 +3213,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[11]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3201,7 +3411,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[12]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3399,7 +3609,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[13]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[14]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3597,7 +3807,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[14]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[15]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3795,7 +4005,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[15]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[16]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3993,7 +4203,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[16]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[17]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4226,382 +4436,6 @@ namespace Decentraland.Social.Friendships {
 
   }
 
-  public sealed partial class UpdateFriendshipResponse : pb::IMessage<UpdateFriendshipResponse>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<UpdateFriendshipResponse> _parser = new pb::MessageParser<UpdateFriendshipResponse>(() => new UpdateFriendshipResponse());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<UpdateFriendshipResponse> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[17]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public UpdateFriendshipResponse() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public UpdateFriendshipResponse(UpdateFriendshipResponse other) : this() {
-      event_ = other.event_ != null ? other.event_.Clone() : null;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public UpdateFriendshipResponse Clone() {
-      return new UpdateFriendshipResponse(this);
-    }
-
-    /// <summary>Field number for the "event" field.</summary>
-    public const int EventFieldNumber = 1;
-    private global::Decentraland.Social.Friendships.FriendshipEventResponse event_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Social.Friendships.FriendshipEventResponse Event {
-      get { return event_; }
-      set {
-        event_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as UpdateFriendshipResponse);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(UpdateFriendshipResponse other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (!object.Equals(Event, other.Event)) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (event_ != null) hash ^= Event.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (event_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(Event);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (event_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(Event);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (event_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(UpdateFriendshipResponse other) {
-      if (other == null) {
-        return;
-      }
-      if (other.event_ != null) {
-        if (event_ == null) {
-          Event = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
-        }
-        Event.MergeFrom(other.Event);
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            if (event_ == null) {
-              Event = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
-            }
-            input.ReadMessage(Event);
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            if (event_ == null) {
-              Event = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
-            }
-            input.ReadMessage(Event);
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  public sealed partial class SubscribeFriendshipEventsUpdatesResponse : pb::IMessage<SubscribeFriendshipEventsUpdatesResponse>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<SubscribeFriendshipEventsUpdatesResponse> _parser = new pb::MessageParser<SubscribeFriendshipEventsUpdatesResponse>(() => new SubscribeFriendshipEventsUpdatesResponse());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<SubscribeFriendshipEventsUpdatesResponse> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[18]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SubscribeFriendshipEventsUpdatesResponse() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SubscribeFriendshipEventsUpdatesResponse(SubscribeFriendshipEventsUpdatesResponse other) : this() {
-      events_ = other.events_.Clone();
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SubscribeFriendshipEventsUpdatesResponse Clone() {
-      return new SubscribeFriendshipEventsUpdatesResponse(this);
-    }
-
-    /// <summary>Field number for the "events" field.</summary>
-    public const int EventsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Decentraland.Social.Friendships.FriendshipEventResponse> _repeated_events_codec
-        = pb::FieldCodec.ForMessage(10, global::Decentraland.Social.Friendships.FriendshipEventResponse.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEventResponse> events_ = new pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEventResponse>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Social.Friendships.FriendshipEventResponse> Events {
-      get { return events_; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as SubscribeFriendshipEventsUpdatesResponse);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(SubscribeFriendshipEventsUpdatesResponse other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if(!events_.Equals(other.events_)) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      hash ^= events_.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      events_.WriteTo(output, _repeated_events_codec);
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      events_.WriteTo(ref output, _repeated_events_codec);
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      size += events_.CalculateSize(_repeated_events_codec);
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(SubscribeFriendshipEventsUpdatesResponse other) {
-      if (other == null) {
-        return;
-      }
-      events_.Add(other.events_);
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            events_.AddEntriesFrom(input, _repeated_events_codec);
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            events_.AddEntriesFrom(ref input, _repeated_events_codec);
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
   public sealed partial class Payload : pb::IMessage<Payload>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -4616,7 +4450,7 @@ namespace Decentraland.Social.Friendships {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[19]; }
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[18]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4797,6 +4631,2780 @@ namespace Decentraland.Social.Friendships {
             break;
           case 10: {
             SynapseToken = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class BadRequestError : pb::IMessage<BadRequestError>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<BadRequestError> _parser = new pb::MessageParser<BadRequestError>(() => new BadRequestError());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<BadRequestError> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[19]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public BadRequestError() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public BadRequestError(BadRequestError other) : this() {
+      message_ = other.message_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public BadRequestError Clone() {
+      return new BadRequestError(this);
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 1;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as BadRequestError);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(BadRequestError other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Message != other.Message) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(BadRequestError other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class UnauthorizedError : pb::IMessage<UnauthorizedError>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<UnauthorizedError> _parser = new pb::MessageParser<UnauthorizedError>(() => new UnauthorizedError());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<UnauthorizedError> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[20]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UnauthorizedError() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UnauthorizedError(UnauthorizedError other) : this() {
+      message_ = other.message_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UnauthorizedError Clone() {
+      return new UnauthorizedError(this);
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 1;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as UnauthorizedError);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(UnauthorizedError other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Message != other.Message) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(UnauthorizedError other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class ForbiddenError : pb::IMessage<ForbiddenError>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<ForbiddenError> _parser = new pb::MessageParser<ForbiddenError>(() => new ForbiddenError());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<ForbiddenError> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[21]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ForbiddenError() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ForbiddenError(ForbiddenError other) : this() {
+      message_ = other.message_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ForbiddenError Clone() {
+      return new ForbiddenError(this);
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 1;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as ForbiddenError);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(ForbiddenError other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Message != other.Message) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(ForbiddenError other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class TooManyRequestsError : pb::IMessage<TooManyRequestsError>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<TooManyRequestsError> _parser = new pb::MessageParser<TooManyRequestsError>(() => new TooManyRequestsError());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<TooManyRequestsError> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[22]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TooManyRequestsError() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TooManyRequestsError(TooManyRequestsError other) : this() {
+      message_ = other.message_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TooManyRequestsError Clone() {
+      return new TooManyRequestsError(this);
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 1;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as TooManyRequestsError);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(TooManyRequestsError other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Message != other.Message) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(TooManyRequestsError other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class InternalServerError : pb::IMessage<InternalServerError>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<InternalServerError> _parser = new pb::MessageParser<InternalServerError>(() => new InternalServerError());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<InternalServerError> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[23]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public InternalServerError() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public InternalServerError(InternalServerError other) : this() {
+      message_ = other.message_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public InternalServerError Clone() {
+      return new InternalServerError(this);
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 1;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as InternalServerError);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(InternalServerError other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Message != other.Message) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(InternalServerError other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class UsersResponse : pb::IMessage<UsersResponse>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<UsersResponse> _parser = new pb::MessageParser<UsersResponse>(() => new UsersResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<UsersResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[24]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UsersResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UsersResponse(UsersResponse other) : this() {
+      switch (other.ResponseCase) {
+        case ResponseOneofCase.Users:
+          Users = other.Users.Clone();
+          break;
+        case ResponseOneofCase.InternalServerError:
+          InternalServerError = other.InternalServerError.Clone();
+          break;
+        case ResponseOneofCase.UnauthorizedError:
+          UnauthorizedError = other.UnauthorizedError.Clone();
+          break;
+        case ResponseOneofCase.ForbiddenError:
+          ForbiddenError = other.ForbiddenError.Clone();
+          break;
+        case ResponseOneofCase.TooManyRequestsError:
+          TooManyRequestsError = other.TooManyRequestsError.Clone();
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UsersResponse Clone() {
+      return new UsersResponse(this);
+    }
+
+    /// <summary>Field number for the "users" field.</summary>
+    public const int UsersFieldNumber = 1;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.Users Users {
+      get { return responseCase_ == ResponseOneofCase.Users ? (global::Decentraland.Social.Friendships.Users) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.Users;
+      }
+    }
+
+    /// <summary>Field number for the "internal_server_error" field.</summary>
+    public const int InternalServerErrorFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.InternalServerError InternalServerError {
+      get { return responseCase_ == ResponseOneofCase.InternalServerError ? (global::Decentraland.Social.Friendships.InternalServerError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.InternalServerError;
+      }
+    }
+
+    /// <summary>Field number for the "unauthorized_error" field.</summary>
+    public const int UnauthorizedErrorFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.UnauthorizedError UnauthorizedError {
+      get { return responseCase_ == ResponseOneofCase.UnauthorizedError ? (global::Decentraland.Social.Friendships.UnauthorizedError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.UnauthorizedError;
+      }
+    }
+
+    /// <summary>Field number for the "forbidden_error" field.</summary>
+    public const int ForbiddenErrorFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.ForbiddenError ForbiddenError {
+      get { return responseCase_ == ResponseOneofCase.ForbiddenError ? (global::Decentraland.Social.Friendships.ForbiddenError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.ForbiddenError;
+      }
+    }
+
+    /// <summary>Field number for the "too_many_requests_error" field.</summary>
+    public const int TooManyRequestsErrorFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.TooManyRequestsError TooManyRequestsError {
+      get { return responseCase_ == ResponseOneofCase.TooManyRequestsError ? (global::Decentraland.Social.Friendships.TooManyRequestsError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.TooManyRequestsError;
+      }
+    }
+
+    private object response_;
+    /// <summary>Enum of possible cases for the "response" oneof.</summary>
+    public enum ResponseOneofCase {
+      None = 0,
+      Users = 1,
+      InternalServerError = 2,
+      UnauthorizedError = 3,
+      ForbiddenError = 4,
+      TooManyRequestsError = 5,
+    }
+    private ResponseOneofCase responseCase_ = ResponseOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ResponseOneofCase ResponseCase {
+      get { return responseCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearResponse() {
+      responseCase_ = ResponseOneofCase.None;
+      response_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as UsersResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(UsersResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Users, other.Users)) return false;
+      if (!object.Equals(InternalServerError, other.InternalServerError)) return false;
+      if (!object.Equals(UnauthorizedError, other.UnauthorizedError)) return false;
+      if (!object.Equals(ForbiddenError, other.ForbiddenError)) return false;
+      if (!object.Equals(TooManyRequestsError, other.TooManyRequestsError)) return false;
+      if (ResponseCase != other.ResponseCase) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (responseCase_ == ResponseOneofCase.Users) hash ^= Users.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.InternalServerError) hash ^= InternalServerError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) hash ^= UnauthorizedError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) hash ^= ForbiddenError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) hash ^= TooManyRequestsError.GetHashCode();
+      hash ^= (int) responseCase_;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (responseCase_ == ResponseOneofCase.Users) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Users);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        output.WriteRawTag(18);
+        output.WriteMessage(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        output.WriteRawTag(26);
+        output.WriteMessage(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        output.WriteRawTag(42);
+        output.WriteMessage(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (responseCase_ == ResponseOneofCase.Users) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Users);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        output.WriteRawTag(18);
+        output.WriteMessage(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        output.WriteRawTag(26);
+        output.WriteMessage(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        output.WriteRawTag(42);
+        output.WriteMessage(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (responseCase_ == ResponseOneofCase.Users) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Users);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(UsersResponse other) {
+      if (other == null) {
+        return;
+      }
+      switch (other.ResponseCase) {
+        case ResponseOneofCase.Users:
+          if (Users == null) {
+            Users = new global::Decentraland.Social.Friendships.Users();
+          }
+          Users.MergeFrom(other.Users);
+          break;
+        case ResponseOneofCase.InternalServerError:
+          if (InternalServerError == null) {
+            InternalServerError = new global::Decentraland.Social.Friendships.InternalServerError();
+          }
+          InternalServerError.MergeFrom(other.InternalServerError);
+          break;
+        case ResponseOneofCase.UnauthorizedError:
+          if (UnauthorizedError == null) {
+            UnauthorizedError = new global::Decentraland.Social.Friendships.UnauthorizedError();
+          }
+          UnauthorizedError.MergeFrom(other.UnauthorizedError);
+          break;
+        case ResponseOneofCase.ForbiddenError:
+          if (ForbiddenError == null) {
+            ForbiddenError = new global::Decentraland.Social.Friendships.ForbiddenError();
+          }
+          ForbiddenError.MergeFrom(other.ForbiddenError);
+          break;
+        case ResponseOneofCase.TooManyRequestsError:
+          if (TooManyRequestsError == null) {
+            TooManyRequestsError = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+          }
+          TooManyRequestsError.MergeFrom(other.TooManyRequestsError);
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            global::Decentraland.Social.Friendships.Users subBuilder = new global::Decentraland.Social.Friendships.Users();
+            if (responseCase_ == ResponseOneofCase.Users) {
+              subBuilder.MergeFrom(Users);
+            }
+            input.ReadMessage(subBuilder);
+            Users = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Decentraland.Social.Friendships.InternalServerError subBuilder = new global::Decentraland.Social.Friendships.InternalServerError();
+            if (responseCase_ == ResponseOneofCase.InternalServerError) {
+              subBuilder.MergeFrom(InternalServerError);
+            }
+            input.ReadMessage(subBuilder);
+            InternalServerError = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.UnauthorizedError subBuilder = new global::Decentraland.Social.Friendships.UnauthorizedError();
+            if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+              subBuilder.MergeFrom(UnauthorizedError);
+            }
+            input.ReadMessage(subBuilder);
+            UnauthorizedError = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Decentraland.Social.Friendships.ForbiddenError subBuilder = new global::Decentraland.Social.Friendships.ForbiddenError();
+            if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+              subBuilder.MergeFrom(ForbiddenError);
+            }
+            input.ReadMessage(subBuilder);
+            ForbiddenError = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Decentraland.Social.Friendships.TooManyRequestsError subBuilder = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+            if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+              subBuilder.MergeFrom(TooManyRequestsError);
+            }
+            input.ReadMessage(subBuilder);
+            TooManyRequestsError = subBuilder;
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            global::Decentraland.Social.Friendships.Users subBuilder = new global::Decentraland.Social.Friendships.Users();
+            if (responseCase_ == ResponseOneofCase.Users) {
+              subBuilder.MergeFrom(Users);
+            }
+            input.ReadMessage(subBuilder);
+            Users = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Decentraland.Social.Friendships.InternalServerError subBuilder = new global::Decentraland.Social.Friendships.InternalServerError();
+            if (responseCase_ == ResponseOneofCase.InternalServerError) {
+              subBuilder.MergeFrom(InternalServerError);
+            }
+            input.ReadMessage(subBuilder);
+            InternalServerError = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.UnauthorizedError subBuilder = new global::Decentraland.Social.Friendships.UnauthorizedError();
+            if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+              subBuilder.MergeFrom(UnauthorizedError);
+            }
+            input.ReadMessage(subBuilder);
+            UnauthorizedError = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Decentraland.Social.Friendships.ForbiddenError subBuilder = new global::Decentraland.Social.Friendships.ForbiddenError();
+            if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+              subBuilder.MergeFrom(ForbiddenError);
+            }
+            input.ReadMessage(subBuilder);
+            ForbiddenError = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Decentraland.Social.Friendships.TooManyRequestsError subBuilder = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+            if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+              subBuilder.MergeFrom(TooManyRequestsError);
+            }
+            input.ReadMessage(subBuilder);
+            TooManyRequestsError = subBuilder;
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class RequestEventsResponse : pb::IMessage<RequestEventsResponse>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<RequestEventsResponse> _parser = new pb::MessageParser<RequestEventsResponse>(() => new RequestEventsResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<RequestEventsResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[25]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public RequestEventsResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public RequestEventsResponse(RequestEventsResponse other) : this() {
+      switch (other.ResponseCase) {
+        case ResponseOneofCase.Events:
+          Events = other.Events.Clone();
+          break;
+        case ResponseOneofCase.InternalServerError:
+          InternalServerError = other.InternalServerError.Clone();
+          break;
+        case ResponseOneofCase.UnauthorizedError:
+          UnauthorizedError = other.UnauthorizedError.Clone();
+          break;
+        case ResponseOneofCase.ForbiddenError:
+          ForbiddenError = other.ForbiddenError.Clone();
+          break;
+        case ResponseOneofCase.TooManyRequestsError:
+          TooManyRequestsError = other.TooManyRequestsError.Clone();
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public RequestEventsResponse Clone() {
+      return new RequestEventsResponse(this);
+    }
+
+    /// <summary>Field number for the "events" field.</summary>
+    public const int EventsFieldNumber = 1;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.RequestEvents Events {
+      get { return responseCase_ == ResponseOneofCase.Events ? (global::Decentraland.Social.Friendships.RequestEvents) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.Events;
+      }
+    }
+
+    /// <summary>Field number for the "internal_server_error" field.</summary>
+    public const int InternalServerErrorFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.InternalServerError InternalServerError {
+      get { return responseCase_ == ResponseOneofCase.InternalServerError ? (global::Decentraland.Social.Friendships.InternalServerError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.InternalServerError;
+      }
+    }
+
+    /// <summary>Field number for the "unauthorized_error" field.</summary>
+    public const int UnauthorizedErrorFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.UnauthorizedError UnauthorizedError {
+      get { return responseCase_ == ResponseOneofCase.UnauthorizedError ? (global::Decentraland.Social.Friendships.UnauthorizedError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.UnauthorizedError;
+      }
+    }
+
+    /// <summary>Field number for the "forbidden_error" field.</summary>
+    public const int ForbiddenErrorFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.ForbiddenError ForbiddenError {
+      get { return responseCase_ == ResponseOneofCase.ForbiddenError ? (global::Decentraland.Social.Friendships.ForbiddenError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.ForbiddenError;
+      }
+    }
+
+    /// <summary>Field number for the "too_many_requests_error" field.</summary>
+    public const int TooManyRequestsErrorFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.TooManyRequestsError TooManyRequestsError {
+      get { return responseCase_ == ResponseOneofCase.TooManyRequestsError ? (global::Decentraland.Social.Friendships.TooManyRequestsError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.TooManyRequestsError;
+      }
+    }
+
+    private object response_;
+    /// <summary>Enum of possible cases for the "response" oneof.</summary>
+    public enum ResponseOneofCase {
+      None = 0,
+      Events = 1,
+      InternalServerError = 2,
+      UnauthorizedError = 3,
+      ForbiddenError = 4,
+      TooManyRequestsError = 5,
+    }
+    private ResponseOneofCase responseCase_ = ResponseOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ResponseOneofCase ResponseCase {
+      get { return responseCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearResponse() {
+      responseCase_ = ResponseOneofCase.None;
+      response_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as RequestEventsResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(RequestEventsResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Events, other.Events)) return false;
+      if (!object.Equals(InternalServerError, other.InternalServerError)) return false;
+      if (!object.Equals(UnauthorizedError, other.UnauthorizedError)) return false;
+      if (!object.Equals(ForbiddenError, other.ForbiddenError)) return false;
+      if (!object.Equals(TooManyRequestsError, other.TooManyRequestsError)) return false;
+      if (ResponseCase != other.ResponseCase) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (responseCase_ == ResponseOneofCase.Events) hash ^= Events.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.InternalServerError) hash ^= InternalServerError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) hash ^= UnauthorizedError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) hash ^= ForbiddenError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) hash ^= TooManyRequestsError.GetHashCode();
+      hash ^= (int) responseCase_;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (responseCase_ == ResponseOneofCase.Events) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Events);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        output.WriteRawTag(18);
+        output.WriteMessage(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        output.WriteRawTag(26);
+        output.WriteMessage(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        output.WriteRawTag(42);
+        output.WriteMessage(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (responseCase_ == ResponseOneofCase.Events) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Events);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        output.WriteRawTag(18);
+        output.WriteMessage(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        output.WriteRawTag(26);
+        output.WriteMessage(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        output.WriteRawTag(42);
+        output.WriteMessage(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (responseCase_ == ResponseOneofCase.Events) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Events);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(RequestEventsResponse other) {
+      if (other == null) {
+        return;
+      }
+      switch (other.ResponseCase) {
+        case ResponseOneofCase.Events:
+          if (Events == null) {
+            Events = new global::Decentraland.Social.Friendships.RequestEvents();
+          }
+          Events.MergeFrom(other.Events);
+          break;
+        case ResponseOneofCase.InternalServerError:
+          if (InternalServerError == null) {
+            InternalServerError = new global::Decentraland.Social.Friendships.InternalServerError();
+          }
+          InternalServerError.MergeFrom(other.InternalServerError);
+          break;
+        case ResponseOneofCase.UnauthorizedError:
+          if (UnauthorizedError == null) {
+            UnauthorizedError = new global::Decentraland.Social.Friendships.UnauthorizedError();
+          }
+          UnauthorizedError.MergeFrom(other.UnauthorizedError);
+          break;
+        case ResponseOneofCase.ForbiddenError:
+          if (ForbiddenError == null) {
+            ForbiddenError = new global::Decentraland.Social.Friendships.ForbiddenError();
+          }
+          ForbiddenError.MergeFrom(other.ForbiddenError);
+          break;
+        case ResponseOneofCase.TooManyRequestsError:
+          if (TooManyRequestsError == null) {
+            TooManyRequestsError = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+          }
+          TooManyRequestsError.MergeFrom(other.TooManyRequestsError);
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            global::Decentraland.Social.Friendships.RequestEvents subBuilder = new global::Decentraland.Social.Friendships.RequestEvents();
+            if (responseCase_ == ResponseOneofCase.Events) {
+              subBuilder.MergeFrom(Events);
+            }
+            input.ReadMessage(subBuilder);
+            Events = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Decentraland.Social.Friendships.InternalServerError subBuilder = new global::Decentraland.Social.Friendships.InternalServerError();
+            if (responseCase_ == ResponseOneofCase.InternalServerError) {
+              subBuilder.MergeFrom(InternalServerError);
+            }
+            input.ReadMessage(subBuilder);
+            InternalServerError = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.UnauthorizedError subBuilder = new global::Decentraland.Social.Friendships.UnauthorizedError();
+            if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+              subBuilder.MergeFrom(UnauthorizedError);
+            }
+            input.ReadMessage(subBuilder);
+            UnauthorizedError = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Decentraland.Social.Friendships.ForbiddenError subBuilder = new global::Decentraland.Social.Friendships.ForbiddenError();
+            if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+              subBuilder.MergeFrom(ForbiddenError);
+            }
+            input.ReadMessage(subBuilder);
+            ForbiddenError = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Decentraland.Social.Friendships.TooManyRequestsError subBuilder = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+            if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+              subBuilder.MergeFrom(TooManyRequestsError);
+            }
+            input.ReadMessage(subBuilder);
+            TooManyRequestsError = subBuilder;
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            global::Decentraland.Social.Friendships.RequestEvents subBuilder = new global::Decentraland.Social.Friendships.RequestEvents();
+            if (responseCase_ == ResponseOneofCase.Events) {
+              subBuilder.MergeFrom(Events);
+            }
+            input.ReadMessage(subBuilder);
+            Events = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Decentraland.Social.Friendships.InternalServerError subBuilder = new global::Decentraland.Social.Friendships.InternalServerError();
+            if (responseCase_ == ResponseOneofCase.InternalServerError) {
+              subBuilder.MergeFrom(InternalServerError);
+            }
+            input.ReadMessage(subBuilder);
+            InternalServerError = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.UnauthorizedError subBuilder = new global::Decentraland.Social.Friendships.UnauthorizedError();
+            if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+              subBuilder.MergeFrom(UnauthorizedError);
+            }
+            input.ReadMessage(subBuilder);
+            UnauthorizedError = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Decentraland.Social.Friendships.ForbiddenError subBuilder = new global::Decentraland.Social.Friendships.ForbiddenError();
+            if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+              subBuilder.MergeFrom(ForbiddenError);
+            }
+            input.ReadMessage(subBuilder);
+            ForbiddenError = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Decentraland.Social.Friendships.TooManyRequestsError subBuilder = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+            if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+              subBuilder.MergeFrom(TooManyRequestsError);
+            }
+            input.ReadMessage(subBuilder);
+            TooManyRequestsError = subBuilder;
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class UpdateFriendshipResponse : pb::IMessage<UpdateFriendshipResponse>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<UpdateFriendshipResponse> _parser = new pb::MessageParser<UpdateFriendshipResponse>(() => new UpdateFriendshipResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<UpdateFriendshipResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[26]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UpdateFriendshipResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UpdateFriendshipResponse(UpdateFriendshipResponse other) : this() {
+      switch (other.ResponseCase) {
+        case ResponseOneofCase.Event:
+          Event = other.Event.Clone();
+          break;
+        case ResponseOneofCase.InternalServerError:
+          InternalServerError = other.InternalServerError.Clone();
+          break;
+        case ResponseOneofCase.UnauthorizedError:
+          UnauthorizedError = other.UnauthorizedError.Clone();
+          break;
+        case ResponseOneofCase.ForbiddenError:
+          ForbiddenError = other.ForbiddenError.Clone();
+          break;
+        case ResponseOneofCase.TooManyRequestsError:
+          TooManyRequestsError = other.TooManyRequestsError.Clone();
+          break;
+        case ResponseOneofCase.BadRequestError:
+          BadRequestError = other.BadRequestError.Clone();
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public UpdateFriendshipResponse Clone() {
+      return new UpdateFriendshipResponse(this);
+    }
+
+    /// <summary>Field number for the "event" field.</summary>
+    public const int EventFieldNumber = 1;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.FriendshipEventResponse Event {
+      get { return responseCase_ == ResponseOneofCase.Event ? (global::Decentraland.Social.Friendships.FriendshipEventResponse) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.Event;
+      }
+    }
+
+    /// <summary>Field number for the "internal_server_error" field.</summary>
+    public const int InternalServerErrorFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.InternalServerError InternalServerError {
+      get { return responseCase_ == ResponseOneofCase.InternalServerError ? (global::Decentraland.Social.Friendships.InternalServerError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.InternalServerError;
+      }
+    }
+
+    /// <summary>Field number for the "unauthorized_error" field.</summary>
+    public const int UnauthorizedErrorFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.UnauthorizedError UnauthorizedError {
+      get { return responseCase_ == ResponseOneofCase.UnauthorizedError ? (global::Decentraland.Social.Friendships.UnauthorizedError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.UnauthorizedError;
+      }
+    }
+
+    /// <summary>Field number for the "forbidden_error" field.</summary>
+    public const int ForbiddenErrorFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.ForbiddenError ForbiddenError {
+      get { return responseCase_ == ResponseOneofCase.ForbiddenError ? (global::Decentraland.Social.Friendships.ForbiddenError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.ForbiddenError;
+      }
+    }
+
+    /// <summary>Field number for the "too_many_requests_error" field.</summary>
+    public const int TooManyRequestsErrorFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.TooManyRequestsError TooManyRequestsError {
+      get { return responseCase_ == ResponseOneofCase.TooManyRequestsError ? (global::Decentraland.Social.Friendships.TooManyRequestsError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.TooManyRequestsError;
+      }
+    }
+
+    /// <summary>Field number for the "bad_request_error" field.</summary>
+    public const int BadRequestErrorFieldNumber = 6;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.BadRequestError BadRequestError {
+      get { return responseCase_ == ResponseOneofCase.BadRequestError ? (global::Decentraland.Social.Friendships.BadRequestError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.BadRequestError;
+      }
+    }
+
+    private object response_;
+    /// <summary>Enum of possible cases for the "response" oneof.</summary>
+    public enum ResponseOneofCase {
+      None = 0,
+      Event = 1,
+      InternalServerError = 2,
+      UnauthorizedError = 3,
+      ForbiddenError = 4,
+      TooManyRequestsError = 5,
+      BadRequestError = 6,
+    }
+    private ResponseOneofCase responseCase_ = ResponseOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ResponseOneofCase ResponseCase {
+      get { return responseCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearResponse() {
+      responseCase_ = ResponseOneofCase.None;
+      response_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as UpdateFriendshipResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(UpdateFriendshipResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Event, other.Event)) return false;
+      if (!object.Equals(InternalServerError, other.InternalServerError)) return false;
+      if (!object.Equals(UnauthorizedError, other.UnauthorizedError)) return false;
+      if (!object.Equals(ForbiddenError, other.ForbiddenError)) return false;
+      if (!object.Equals(TooManyRequestsError, other.TooManyRequestsError)) return false;
+      if (!object.Equals(BadRequestError, other.BadRequestError)) return false;
+      if (ResponseCase != other.ResponseCase) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (responseCase_ == ResponseOneofCase.Event) hash ^= Event.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.InternalServerError) hash ^= InternalServerError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) hash ^= UnauthorizedError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) hash ^= ForbiddenError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) hash ^= TooManyRequestsError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.BadRequestError) hash ^= BadRequestError.GetHashCode();
+      hash ^= (int) responseCase_;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (responseCase_ == ResponseOneofCase.Event) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Event);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        output.WriteRawTag(18);
+        output.WriteMessage(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        output.WriteRawTag(26);
+        output.WriteMessage(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        output.WriteRawTag(42);
+        output.WriteMessage(TooManyRequestsError);
+      }
+      if (responseCase_ == ResponseOneofCase.BadRequestError) {
+        output.WriteRawTag(50);
+        output.WriteMessage(BadRequestError);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (responseCase_ == ResponseOneofCase.Event) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Event);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        output.WriteRawTag(18);
+        output.WriteMessage(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        output.WriteRawTag(26);
+        output.WriteMessage(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        output.WriteRawTag(42);
+        output.WriteMessage(TooManyRequestsError);
+      }
+      if (responseCase_ == ResponseOneofCase.BadRequestError) {
+        output.WriteRawTag(50);
+        output.WriteMessage(BadRequestError);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (responseCase_ == ResponseOneofCase.Event) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(TooManyRequestsError);
+      }
+      if (responseCase_ == ResponseOneofCase.BadRequestError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(BadRequestError);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(UpdateFriendshipResponse other) {
+      if (other == null) {
+        return;
+      }
+      switch (other.ResponseCase) {
+        case ResponseOneofCase.Event:
+          if (Event == null) {
+            Event = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
+          }
+          Event.MergeFrom(other.Event);
+          break;
+        case ResponseOneofCase.InternalServerError:
+          if (InternalServerError == null) {
+            InternalServerError = new global::Decentraland.Social.Friendships.InternalServerError();
+          }
+          InternalServerError.MergeFrom(other.InternalServerError);
+          break;
+        case ResponseOneofCase.UnauthorizedError:
+          if (UnauthorizedError == null) {
+            UnauthorizedError = new global::Decentraland.Social.Friendships.UnauthorizedError();
+          }
+          UnauthorizedError.MergeFrom(other.UnauthorizedError);
+          break;
+        case ResponseOneofCase.ForbiddenError:
+          if (ForbiddenError == null) {
+            ForbiddenError = new global::Decentraland.Social.Friendships.ForbiddenError();
+          }
+          ForbiddenError.MergeFrom(other.ForbiddenError);
+          break;
+        case ResponseOneofCase.TooManyRequestsError:
+          if (TooManyRequestsError == null) {
+            TooManyRequestsError = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+          }
+          TooManyRequestsError.MergeFrom(other.TooManyRequestsError);
+          break;
+        case ResponseOneofCase.BadRequestError:
+          if (BadRequestError == null) {
+            BadRequestError = new global::Decentraland.Social.Friendships.BadRequestError();
+          }
+          BadRequestError.MergeFrom(other.BadRequestError);
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            global::Decentraland.Social.Friendships.FriendshipEventResponse subBuilder = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
+            if (responseCase_ == ResponseOneofCase.Event) {
+              subBuilder.MergeFrom(Event);
+            }
+            input.ReadMessage(subBuilder);
+            Event = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Decentraland.Social.Friendships.InternalServerError subBuilder = new global::Decentraland.Social.Friendships.InternalServerError();
+            if (responseCase_ == ResponseOneofCase.InternalServerError) {
+              subBuilder.MergeFrom(InternalServerError);
+            }
+            input.ReadMessage(subBuilder);
+            InternalServerError = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.UnauthorizedError subBuilder = new global::Decentraland.Social.Friendships.UnauthorizedError();
+            if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+              subBuilder.MergeFrom(UnauthorizedError);
+            }
+            input.ReadMessage(subBuilder);
+            UnauthorizedError = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Decentraland.Social.Friendships.ForbiddenError subBuilder = new global::Decentraland.Social.Friendships.ForbiddenError();
+            if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+              subBuilder.MergeFrom(ForbiddenError);
+            }
+            input.ReadMessage(subBuilder);
+            ForbiddenError = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Decentraland.Social.Friendships.TooManyRequestsError subBuilder = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+            if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+              subBuilder.MergeFrom(TooManyRequestsError);
+            }
+            input.ReadMessage(subBuilder);
+            TooManyRequestsError = subBuilder;
+            break;
+          }
+          case 50: {
+            global::Decentraland.Social.Friendships.BadRequestError subBuilder = new global::Decentraland.Social.Friendships.BadRequestError();
+            if (responseCase_ == ResponseOneofCase.BadRequestError) {
+              subBuilder.MergeFrom(BadRequestError);
+            }
+            input.ReadMessage(subBuilder);
+            BadRequestError = subBuilder;
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            global::Decentraland.Social.Friendships.FriendshipEventResponse subBuilder = new global::Decentraland.Social.Friendships.FriendshipEventResponse();
+            if (responseCase_ == ResponseOneofCase.Event) {
+              subBuilder.MergeFrom(Event);
+            }
+            input.ReadMessage(subBuilder);
+            Event = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Decentraland.Social.Friendships.InternalServerError subBuilder = new global::Decentraland.Social.Friendships.InternalServerError();
+            if (responseCase_ == ResponseOneofCase.InternalServerError) {
+              subBuilder.MergeFrom(InternalServerError);
+            }
+            input.ReadMessage(subBuilder);
+            InternalServerError = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.UnauthorizedError subBuilder = new global::Decentraland.Social.Friendships.UnauthorizedError();
+            if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+              subBuilder.MergeFrom(UnauthorizedError);
+            }
+            input.ReadMessage(subBuilder);
+            UnauthorizedError = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Decentraland.Social.Friendships.ForbiddenError subBuilder = new global::Decentraland.Social.Friendships.ForbiddenError();
+            if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+              subBuilder.MergeFrom(ForbiddenError);
+            }
+            input.ReadMessage(subBuilder);
+            ForbiddenError = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Decentraland.Social.Friendships.TooManyRequestsError subBuilder = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+            if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+              subBuilder.MergeFrom(TooManyRequestsError);
+            }
+            input.ReadMessage(subBuilder);
+            TooManyRequestsError = subBuilder;
+            break;
+          }
+          case 50: {
+            global::Decentraland.Social.Friendships.BadRequestError subBuilder = new global::Decentraland.Social.Friendships.BadRequestError();
+            if (responseCase_ == ResponseOneofCase.BadRequestError) {
+              subBuilder.MergeFrom(BadRequestError);
+            }
+            input.ReadMessage(subBuilder);
+            BadRequestError = subBuilder;
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class SubscribeFriendshipEventsUpdatesResponse : pb::IMessage<SubscribeFriendshipEventsUpdatesResponse>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<SubscribeFriendshipEventsUpdatesResponse> _parser = new pb::MessageParser<SubscribeFriendshipEventsUpdatesResponse>(() => new SubscribeFriendshipEventsUpdatesResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<SubscribeFriendshipEventsUpdatesResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Social.Friendships.FriendshipsReflection.Descriptor.MessageTypes[27]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SubscribeFriendshipEventsUpdatesResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SubscribeFriendshipEventsUpdatesResponse(SubscribeFriendshipEventsUpdatesResponse other) : this() {
+      switch (other.ResponseCase) {
+        case ResponseOneofCase.Events:
+          Events = other.Events.Clone();
+          break;
+        case ResponseOneofCase.InternalServerError:
+          InternalServerError = other.InternalServerError.Clone();
+          break;
+        case ResponseOneofCase.UnauthorizedError:
+          UnauthorizedError = other.UnauthorizedError.Clone();
+          break;
+        case ResponseOneofCase.ForbiddenError:
+          ForbiddenError = other.ForbiddenError.Clone();
+          break;
+        case ResponseOneofCase.TooManyRequestsError:
+          TooManyRequestsError = other.TooManyRequestsError.Clone();
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SubscribeFriendshipEventsUpdatesResponse Clone() {
+      return new SubscribeFriendshipEventsUpdatesResponse(this);
+    }
+
+    /// <summary>Field number for the "events" field.</summary>
+    public const int EventsFieldNumber = 1;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.FriendshipEventResponses Events {
+      get { return responseCase_ == ResponseOneofCase.Events ? (global::Decentraland.Social.Friendships.FriendshipEventResponses) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.Events;
+      }
+    }
+
+    /// <summary>Field number for the "internal_server_error" field.</summary>
+    public const int InternalServerErrorFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.InternalServerError InternalServerError {
+      get { return responseCase_ == ResponseOneofCase.InternalServerError ? (global::Decentraland.Social.Friendships.InternalServerError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.InternalServerError;
+      }
+    }
+
+    /// <summary>Field number for the "unauthorized_error" field.</summary>
+    public const int UnauthorizedErrorFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.UnauthorizedError UnauthorizedError {
+      get { return responseCase_ == ResponseOneofCase.UnauthorizedError ? (global::Decentraland.Social.Friendships.UnauthorizedError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.UnauthorizedError;
+      }
+    }
+
+    /// <summary>Field number for the "forbidden_error" field.</summary>
+    public const int ForbiddenErrorFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.ForbiddenError ForbiddenError {
+      get { return responseCase_ == ResponseOneofCase.ForbiddenError ? (global::Decentraland.Social.Friendships.ForbiddenError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.ForbiddenError;
+      }
+    }
+
+    /// <summary>Field number for the "too_many_requests_error" field.</summary>
+    public const int TooManyRequestsErrorFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Social.Friendships.TooManyRequestsError TooManyRequestsError {
+      get { return responseCase_ == ResponseOneofCase.TooManyRequestsError ? (global::Decentraland.Social.Friendships.TooManyRequestsError) response_ : null; }
+      set {
+        response_ = value;
+        responseCase_ = value == null ? ResponseOneofCase.None : ResponseOneofCase.TooManyRequestsError;
+      }
+    }
+
+    private object response_;
+    /// <summary>Enum of possible cases for the "response" oneof.</summary>
+    public enum ResponseOneofCase {
+      None = 0,
+      Events = 1,
+      InternalServerError = 2,
+      UnauthorizedError = 3,
+      ForbiddenError = 4,
+      TooManyRequestsError = 5,
+    }
+    private ResponseOneofCase responseCase_ = ResponseOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ResponseOneofCase ResponseCase {
+      get { return responseCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearResponse() {
+      responseCase_ = ResponseOneofCase.None;
+      response_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as SubscribeFriendshipEventsUpdatesResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(SubscribeFriendshipEventsUpdatesResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Events, other.Events)) return false;
+      if (!object.Equals(InternalServerError, other.InternalServerError)) return false;
+      if (!object.Equals(UnauthorizedError, other.UnauthorizedError)) return false;
+      if (!object.Equals(ForbiddenError, other.ForbiddenError)) return false;
+      if (!object.Equals(TooManyRequestsError, other.TooManyRequestsError)) return false;
+      if (ResponseCase != other.ResponseCase) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (responseCase_ == ResponseOneofCase.Events) hash ^= Events.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.InternalServerError) hash ^= InternalServerError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) hash ^= UnauthorizedError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) hash ^= ForbiddenError.GetHashCode();
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) hash ^= TooManyRequestsError.GetHashCode();
+      hash ^= (int) responseCase_;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (responseCase_ == ResponseOneofCase.Events) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Events);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        output.WriteRawTag(18);
+        output.WriteMessage(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        output.WriteRawTag(26);
+        output.WriteMessage(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        output.WriteRawTag(42);
+        output.WriteMessage(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (responseCase_ == ResponseOneofCase.Events) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Events);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        output.WriteRawTag(18);
+        output.WriteMessage(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        output.WriteRawTag(26);
+        output.WriteMessage(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        output.WriteRawTag(42);
+        output.WriteMessage(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (responseCase_ == ResponseOneofCase.Events) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Events);
+      }
+      if (responseCase_ == ResponseOneofCase.InternalServerError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(InternalServerError);
+      }
+      if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(UnauthorizedError);
+      }
+      if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ForbiddenError);
+      }
+      if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(TooManyRequestsError);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(SubscribeFriendshipEventsUpdatesResponse other) {
+      if (other == null) {
+        return;
+      }
+      switch (other.ResponseCase) {
+        case ResponseOneofCase.Events:
+          if (Events == null) {
+            Events = new global::Decentraland.Social.Friendships.FriendshipEventResponses();
+          }
+          Events.MergeFrom(other.Events);
+          break;
+        case ResponseOneofCase.InternalServerError:
+          if (InternalServerError == null) {
+            InternalServerError = new global::Decentraland.Social.Friendships.InternalServerError();
+          }
+          InternalServerError.MergeFrom(other.InternalServerError);
+          break;
+        case ResponseOneofCase.UnauthorizedError:
+          if (UnauthorizedError == null) {
+            UnauthorizedError = new global::Decentraland.Social.Friendships.UnauthorizedError();
+          }
+          UnauthorizedError.MergeFrom(other.UnauthorizedError);
+          break;
+        case ResponseOneofCase.ForbiddenError:
+          if (ForbiddenError == null) {
+            ForbiddenError = new global::Decentraland.Social.Friendships.ForbiddenError();
+          }
+          ForbiddenError.MergeFrom(other.ForbiddenError);
+          break;
+        case ResponseOneofCase.TooManyRequestsError:
+          if (TooManyRequestsError == null) {
+            TooManyRequestsError = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+          }
+          TooManyRequestsError.MergeFrom(other.TooManyRequestsError);
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            global::Decentraland.Social.Friendships.FriendshipEventResponses subBuilder = new global::Decentraland.Social.Friendships.FriendshipEventResponses();
+            if (responseCase_ == ResponseOneofCase.Events) {
+              subBuilder.MergeFrom(Events);
+            }
+            input.ReadMessage(subBuilder);
+            Events = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Decentraland.Social.Friendships.InternalServerError subBuilder = new global::Decentraland.Social.Friendships.InternalServerError();
+            if (responseCase_ == ResponseOneofCase.InternalServerError) {
+              subBuilder.MergeFrom(InternalServerError);
+            }
+            input.ReadMessage(subBuilder);
+            InternalServerError = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.UnauthorizedError subBuilder = new global::Decentraland.Social.Friendships.UnauthorizedError();
+            if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+              subBuilder.MergeFrom(UnauthorizedError);
+            }
+            input.ReadMessage(subBuilder);
+            UnauthorizedError = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Decentraland.Social.Friendships.ForbiddenError subBuilder = new global::Decentraland.Social.Friendships.ForbiddenError();
+            if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+              subBuilder.MergeFrom(ForbiddenError);
+            }
+            input.ReadMessage(subBuilder);
+            ForbiddenError = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Decentraland.Social.Friendships.TooManyRequestsError subBuilder = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+            if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+              subBuilder.MergeFrom(TooManyRequestsError);
+            }
+            input.ReadMessage(subBuilder);
+            TooManyRequestsError = subBuilder;
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            global::Decentraland.Social.Friendships.FriendshipEventResponses subBuilder = new global::Decentraland.Social.Friendships.FriendshipEventResponses();
+            if (responseCase_ == ResponseOneofCase.Events) {
+              subBuilder.MergeFrom(Events);
+            }
+            input.ReadMessage(subBuilder);
+            Events = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Decentraland.Social.Friendships.InternalServerError subBuilder = new global::Decentraland.Social.Friendships.InternalServerError();
+            if (responseCase_ == ResponseOneofCase.InternalServerError) {
+              subBuilder.MergeFrom(InternalServerError);
+            }
+            input.ReadMessage(subBuilder);
+            InternalServerError = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Decentraland.Social.Friendships.UnauthorizedError subBuilder = new global::Decentraland.Social.Friendships.UnauthorizedError();
+            if (responseCase_ == ResponseOneofCase.UnauthorizedError) {
+              subBuilder.MergeFrom(UnauthorizedError);
+            }
+            input.ReadMessage(subBuilder);
+            UnauthorizedError = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Decentraland.Social.Friendships.ForbiddenError subBuilder = new global::Decentraland.Social.Friendships.ForbiddenError();
+            if (responseCase_ == ResponseOneofCase.ForbiddenError) {
+              subBuilder.MergeFrom(ForbiddenError);
+            }
+            input.ReadMessage(subBuilder);
+            ForbiddenError = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Decentraland.Social.Friendships.TooManyRequestsError subBuilder = new global::Decentraland.Social.Friendships.TooManyRequestsError();
+            if (responseCase_ == ResponseOneofCase.TooManyRequestsError) {
+              subBuilder.MergeFrom(TooManyRequestsError);
+            }
+            input.ReadMessage(subBuilder);
+            TooManyRequestsError = subBuilder;
             break;
           }
         }

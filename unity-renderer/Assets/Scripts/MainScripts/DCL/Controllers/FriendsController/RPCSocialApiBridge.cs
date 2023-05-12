@@ -109,7 +109,7 @@ namespace DCL.Social.Friends
 
             await UniTask.SwitchToMainThread();
 
-            foreach (var friendRequest in requestEvents.Incoming.Items)
+            foreach (var friendRequest in requestEvents.Events.Incoming.Items)
             {
                 OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
                     GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
@@ -119,7 +119,7 @@ namespace DCL.Social.Friends
                     friendRequest.Message));
             }
 
-            foreach (var friendRequest in requestEvents.Outgoing.Items)
+            foreach (var friendRequest in requestEvents.Events.Outgoing.Items)
             {
                 OnOutgoingFriendRequestAdded?.Invoke(new FriendRequest(
                     GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
@@ -131,7 +131,7 @@ namespace DCL.Social.Friends
 
             return new FriendshipInitializationMessage()
             {
-                totalReceivedRequests = requestEvents.Incoming.Items.Count
+                totalReceivedRequests = requestEvents.Events.Incoming.Items.Count
             };
         }
 
@@ -150,7 +150,7 @@ namespace DCL.Social.Friends
 
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
-                tasks.AddRange(friends.Users_.Select(async friend =>
+                tasks.AddRange(friends.Users.Users_.Select(async friend =>
                 {
                     try
                     {
