@@ -113,7 +113,7 @@ namespace DCL.Social.Friends
 
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
-                tasks.AddRange(friends.Users_.Select(async friend =>
+                tasks.AddRange(friends.Users.Users_.Select(async friend =>
                 {
                     try
                     {
