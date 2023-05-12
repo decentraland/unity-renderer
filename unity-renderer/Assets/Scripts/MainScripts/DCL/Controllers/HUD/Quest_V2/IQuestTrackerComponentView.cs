@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public interface IQuestTrackerComponentView
     {
@@ -10,5 +10,6 @@ namespace DCL.Quest
         void SetQuestTitle(string questTitle);
         void SetQuestCoordinates(Vector2Int coordinates);
         void SetQuestSteps(List<QuestStepComponentModel> questSteps);
+        void SetSupportsJumpIn(bool supportsJumpIn);
     }
 }

@@ -14,6 +14,12 @@ import defaultLogger from 'lib/logger'
 import { setRealmAdapter } from 'shared/realm/actions'
 import { setRoomConnection } from 'shared/comms/actions'
 
+export class UserError extends Error {
+  constructor(msg: string) {
+      super(msg);
+  }
+}
+
 export function BringDownClientAndShowError(event: ExecutionLifecycleEvent | string) {
   if (ExecutionLifecycleEventsList.includes(event as any)) {
     store.dispatch(action(event))

@@ -25,6 +25,7 @@ namespace DCL.Controllers
 
                 for (int i = 0; i < count; i++)
                 {
+                    wireframeObjects[i].transform.parent = null;
                     Utils.SafeDestroy(wireframeObjects[i]);
                 }
 

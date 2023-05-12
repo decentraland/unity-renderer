@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace SettingsWidgetTests
 {
-
+    [Category("EditModeCI")]
     public class SettingsWidgetShould_EditMode
     {
         [Test]

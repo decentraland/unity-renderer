@@ -18,7 +18,8 @@
         "BaseVariable",
         "PlayerModels",
         "FeatureFlagData",
-        "MouseCatcher"
+        "MouseCatcher",
+        "IService"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

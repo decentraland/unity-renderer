@@ -1,7 +1,9 @@
-export function base64ToBuffer(base64: string): Buffer {
+import { joinBuffers } from 'lib/javascript/uint8arrays'
+
+export function base64ToBuffer(base64: string): Uint8Array {
   const sliceSize = 1024
   const byteChars = globalThis.atob(base64)
-  const byteArrays: Buffer[] = []
+  const byteArrays: ArrayBuffer[] = []
   let len = byteChars.length
 
   for (let offset = 0; offset < len; offset += sliceSize) {
@@ -14,11 +16,11 @@ export function base64ToBuffer(base64: string): Buffer {
 
     const byteArray = new Uint8Array(byteNumbers)
 
-    byteArrays.push(Buffer.from(byteArray))
+    byteArrays.push(byteArray)
     len = byteChars.length
   }
 
-  return Buffer.concat(byteArrays)
+  return joinBuffers(...byteArrays)
 }
 
 export function base64ToBlob(base64: string, type: string = 'image/jpeg'): Blob {

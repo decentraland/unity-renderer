@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     [Serializable]
     public record QuestTrackerComponentModel
@@ -10,5 +10,6 @@ namespace DCL.Quest
         public string questTitle;
         public Vector2Int coordinates;
         public List<QuestStepComponentModel> questSteps;
+        public bool supportsJumpIn;
     }
 }

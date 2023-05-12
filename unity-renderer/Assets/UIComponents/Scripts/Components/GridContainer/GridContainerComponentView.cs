@@ -35,7 +35,7 @@ public interface IGridContainerComponentView
     /// </summary>
     /// <param name="newItemSize">Size of each child.</param>
     void SetItemSize(Vector2 newItemSize);
-    
+
     /// <summary>
     /// Set item size and resize grid container with respect to the current model.
     /// </summary>
@@ -65,13 +65,13 @@ public interface IGridContainerComponentView
     /// </summary>
     /// <param name="items">List of UI components.</param>
     void SetItems(List<BaseComponentView> items);
-    
+
     /// <summary>
     /// Adds a new item in the grid.
     /// </summary>
     /// <param name="item">An UI component.</param>
     void AddItem(BaseComponentView item);
-    
+
     /// <summary>
     /// Adds a new item in the grid and resize the grid.
     /// </summary>
@@ -120,6 +120,22 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         base.Awake();
 
         RegisterCurrentInstantiatedItems();
+    }
+
+    public override void Show(bool instant = false)
+    {
+        base.Show(instant);
+
+        if (instant)
+            gameObject.SetActive(true);
+    }
+
+    public override void Hide(bool instant = false)
+    {
+        base.Hide(instant);
+
+        if (instant)
+            gameObject.SetActive(false);
     }
 
     public void Configure(GridContainerComponentModel newModel)
@@ -386,11 +402,11 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         CreateItem(item, $"Item{instantiatedItems.Count}");
         SetItemSize(model.itemSize);
     }
-    
+
     public void SetItemSizeForModel() =>
         SetItemSize(model.itemSize);
-    
-    public void AddItem(BaseComponentView item) => 
+
+    public void AddItem(BaseComponentView item) =>
         CreateItem(item, $"Item{instantiatedItems.Count}");
 
     public void RemoveItem(BaseComponentView item)

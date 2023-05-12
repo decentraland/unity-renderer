@@ -12,6 +12,9 @@ namespace ExploreV2Analytics
         void SendClickOnEventInfo(string eventId, string eventName);
         void SendPlaceTeleport(string placeId, string placeName, Vector2Int coords);
         void SendClickOnPlaceInfo(string placeId, string placeName);
+        void AddFavorite(string placeUUID);
+        void RemoveFavorite(string placeUUID);
+        void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
 
     }
 
@@ -23,6 +26,9 @@ namespace ExploreV2Analytics
         private const string EXPLORE_CLICK_EVENT_INFO = "explore_click_event_info";
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
         private const string EXPLORE_CLICK_PLACE_INFO = "explore_click_place_info";
+        private const string ADD_FAVORITE_PLACE = "player_add_favorite_place";
+        private const string REMOVE_FAVORITE_PLACE = "player_remove_favorite_place";
+        private const string TELEPORT_FAVORITE_PLACE = "player_teleport_to_favorite_place";
 
         private static DateTime? exploreMainMenuSetVisibleTimeStamp = null;
         private static DateTime? exploreSectionSetVisibleTimeStamp = null;
@@ -102,5 +108,34 @@ namespace ExploreV2Analytics
             data.Add("place_name", placeName);
             GenericAnalytics.SendAnalytic(EXPLORE_CLICK_PLACE_INFO, data);
         }
+
+        public void AddFavorite(string placeUUID)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["place_id"] = placeUUID
+            };
+            GenericAnalytics.SendAnalytic(ADD_FAVORITE_PLACE, data);
+        }
+
+        public void RemoveFavorite(string placeUUID)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["place_id"] = placeUUID
+            };
+            GenericAnalytics.SendAnalytic(REMOVE_FAVORITE_PLACE, data);
+        }
+
+        public void TeleportToPlaceFromFavorite(string placeUUID, string placeName)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["place_id"] = placeUUID,
+                ["place_name"] = placeName
+            };
+            GenericAnalytics.SendAnalytic(TELEPORT_FAVORITE_PLACE, data);
+        }
+
     }
 }

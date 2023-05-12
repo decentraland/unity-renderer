@@ -48,7 +48,7 @@ namespace DCL.GLTFast.Wrappers
 
         private void OnFail(Asset_Texture arg1, Exception arg2)
         {
-            Error = arg2.Message;
+            Error = arg2.ToString();
         }
     }
 }

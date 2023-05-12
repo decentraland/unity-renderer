@@ -7,7 +7,7 @@ public class SearchBarComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        searchBarComponent = BaseComponentView.Create<SearchBarComponentView>("SearchBar");
+        searchBarComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<SearchBarComponentView>("SearchBar");
         searchBarComponent.model.idleTimeToTriggerSearch = 0;
     }
 

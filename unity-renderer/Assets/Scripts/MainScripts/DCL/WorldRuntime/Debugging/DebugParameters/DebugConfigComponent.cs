@@ -1,12 +1,14 @@
-using System;
-using System.Collections.Generic;
 using DCL.Components;
 using UnityEngine;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
+using Utils = DCL.Helpers.Utils;
 
 namespace DCL
 {
     public class DebugConfigComponent : MonoBehaviour
     {
+        private Stopwatch loadingStopwatch;
         private static DebugConfigComponent sharedInstance;
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
@@ -19,6 +21,7 @@ namespace DCL
 
                 return sharedInstance;
             }
+
             private set => sharedInstance = value;
         }
 
@@ -75,13 +78,11 @@ namespace DCL
         public bool enableDebugMode = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
-
         [Header("Performance")]
         public bool disableGLTFDownloadThrottle = false;
         public bool multithreaded = false;
         public bool runPerformanceMeterToolDuringLoading = false;
         private PerformanceMeterController performanceMeterController;
-
 
         private void Awake()
         {
@@ -101,14 +102,8 @@ namespace DCL
         {
             lock (DataStore.i.wsCommunication.communicationReady)
             {
-                if (DataStore.i.wsCommunication.communicationReady.Get())
-                {
-                    InitConfig();
-                }
-                else
-                {
-                    DataStore.i.wsCommunication.communicationReady.OnChange += OnCommunicationReadyChangedValue;
-                }
+                if (DataStore.i.wsCommunication.communicationReady.Get()) { InitConfig(); }
+                else { DataStore.i.wsCommunication.communicationReady.OnChange += OnCommunicationReadyChangedValue; }
             }
         }
 
@@ -136,20 +131,27 @@ namespace DCL
                 CommonScriptableObjects.forcePerformanceMeter.Set(true);
                 performanceMeterController = new PerformanceMeterController();
 
-                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += StartSampling;
+                StartSampling();
                 CommonScriptableObjects.rendererState.OnChange += EndSampling;
             }
         }
 
-        private void StartSampling(bool current, bool previous)
+        private void StartSampling()
         {
-            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= StartSampling;
+            loadingStopwatch = new Stopwatch();
+            loadingStopwatch.Start();
             performanceMeterController.StartSampling(999);
         }
+
         private void EndSampling(bool current, bool previous)
         {
-            CommonScriptableObjects.rendererState.OnChange -= EndSampling;
-            performanceMeterController.StopSampling();
+            if (current)
+            {
+                loadingStopwatch.Stop();
+                CommonScriptableObjects.rendererState.OnChange -= EndSampling;
+                performanceMeterController.StopSampling();
+                Debug.Log($"Loading time: {loadingStopwatch.Elapsed.Seconds} seconds");
+            }
         }
 
         private void OpenWebBrowser()
@@ -265,17 +267,14 @@ namespace DCL
 #endif
         }
 
-        private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
+        private void OnDestroy()
+        {
+            DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue;
+        }
 
         private void QuitGame()
         {
-#if UNITY_EDITOR
-            // Application.Quit() does not work in the editor so
-            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            Utils.QuitApplication();
         }
     }
 }

@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
+using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
 using NUnit.Framework;
+using rpc_csharp.transport;
 using System.Collections;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -14,13 +17,24 @@ namespace DCL.Social.Friends
     public class FriendsControllerShould
     {
         private IFriendsApiBridge apiBridge;
+        private ISocialApiBridge rpcSocialApiBridge;
         private FriendsController controller;
 
         [SetUp]
         public void SetUp()
         {
             apiBridge = Substitute.For<IFriendsApiBridge>();
-            controller = new FriendsController(apiBridge);
+            GameObject go = new GameObject();
+            var component = go.AddComponent<MatrixInitializationBridge>();
+            var dataStore = new DataStore();
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
+
+            rpcSocialApiBridge = Substitute.For<ISocialApiBridge>();
+
+            controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
+
+            dataStore.featureFlags.flags.Get().SetAsInitialized();
+            controller.Initialize();
         }
 
         [Test]
@@ -42,12 +56,14 @@ namespace DCL.Social.Friends
         [Test]
         public void AddFriends()
         {
-            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(
-                new AddFriendsPayload
-                {
-                    totalFriends = 2,
-                    friends = new[] {"woah", "bleh"}
-                }));
+            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(
+                              new AddFriendsPayload
+                              {
+                                  totalFriends = 2,
+                                  friends = new[] { "woah", "bleh" }
+                              }));
+
             controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
 
             Assert.AreEqual(2, controller.TotalFriendCount);
@@ -189,12 +205,14 @@ namespace DCL.Social.Friends
             var updatedFriends = new Dictionary<string, UserStatus>();
             controller.OnUpdateUserStatus += (s, status) => updatedFriends[s] = status;
 
-            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(
-                new AddFriendsPayload
-                {
-                    totalFriends = 7,
-                    friends = new[] {"usr1"}
-                }));
+            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(
+                              new AddFriendsPayload
+                              {
+                                  totalFriends = 7,
+                                  friends = new[] { "usr1" }
+                              }));
+
             controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
 
             apiBridge.OnUserPresenceUpdated += Raise.Event<Action<UserStatus>>(new UserStatus
@@ -553,6 +571,94 @@ namespace DCL.Social.Friends
                 Assert.IsNotNull(request);
                 request = controller.GetAllocatedFriendRequestByUser("usr4");
                 Assert.IsNotNull(request);
+            });
+
+        [UnityTest]
+        public IEnumerator GetFriendsAsyncWithSocialService() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                GameObject go = new GameObject();
+                var component = go.AddComponent<MatrixInitializationBridge>();
+                var dataStore = new DataStore();
+
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+
+                var cancellationToken = default(CancellationToken);
+
+                var initializationResponse = UniTask.FromResult(new FriendshipInitializationMessage()
+                {
+                    totalReceivedRequests = 0,
+                });
+
+                rpcSocialApiBridge.GetInitializationInformationAsync(cancellationToken)
+                                  .Returns(initializationResponse);
+
+                controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
+
+                dataStore.featureFlags.flags.Get().SetAsInitialized();
+                controller.Initialize();
+
+                await controller.InitializeAsync(cancellationToken);
+
+                var firstUserId = "userId";
+                var secondUserId = "userId2";
+                var thirdUserId = "userId3";
+                var fourthdUserId = "userId4";
+
+                var firstUser = new UserStatus()
+                {
+                    userId = firstUserId,
+                    userName = "aUserName1",
+                };
+
+                var secondUser = new UserStatus()
+                {
+                    userId = secondUserId,
+                    userName = "aUserName2",
+                };
+
+                var thirdUser = new UserStatus()
+                {
+                    userId = thirdUserId,
+                    userName = "searchText",
+                };
+
+                var fourthUser = new UserStatus()
+                {
+                    userId = fourthdUserId,
+                    userName = "searchText2",
+                };
+
+                // insert unsorted
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(fourthUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(thirdUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(secondUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(firstUser);
+
+                IReadOnlyList<string> response = await controller.GetFriendsAsync(100, 0, cancellationToken);
+                string[] expected = { firstUserId, secondUserId, thirdUserId, fourthdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync(1, 0, cancellationToken);
+                expected = new[] { firstUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync(2, 1, cancellationToken);
+                expected = new[] { secondUserId, thirdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync("search", 10, cancellationToken);
+                expected = new[] { thirdUserId, fourthdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync("search", 1, cancellationToken);
+                expected = new[] { thirdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
             });
     }
 }

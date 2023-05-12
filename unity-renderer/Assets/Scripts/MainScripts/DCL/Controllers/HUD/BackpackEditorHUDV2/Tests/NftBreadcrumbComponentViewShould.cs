@@ -28,10 +28,10 @@ namespace DCL.Backpack
             {
                 Current = 0,
                 ResultCount = 42,
-                Path = new (string Filter, string Name)[]
+                Path = new (string Filter, string Name, string Type, bool Removable)[]
                 {
-                    ("all", "All"),
-                    ("name=something", "something")
+                    ("all", "All", "all", false),
+                    ("name=something", "something", "name", true),
                 }
             });
 
@@ -61,10 +61,10 @@ namespace DCL.Backpack
             {
                 Current = 0,
                 ResultCount = 42,
-                Path = new (string Filter, string Name)[]
+                Path = new (string Filter, string Name, string Type, bool Removable)[]
                 {
-                    ("all", "All"),
-                    ("name=something", "something")
+                    ("all", "All", "all", false),
+                    ("name=something", "something", "name", true),
                 }
             });
 
@@ -72,9 +72,9 @@ namespace DCL.Backpack
             {
                 Current = 0,
                 ResultCount = 3,
-                Path = new (string Filter, string Name)[]
+                Path = new (string Filter, string Name, string Type, bool Removable)[]
                 {
-                    ("category=shoes", "Shoes"),
+                    ("category=shoes", "Shoes", "shoes", true),
                 }
             });
 

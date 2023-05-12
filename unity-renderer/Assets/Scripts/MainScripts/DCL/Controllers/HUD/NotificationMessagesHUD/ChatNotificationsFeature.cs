@@ -24,7 +24,7 @@ namespace DCL.Chat.Notifications
             return new ChatNotificationController(DataStore.i,
                 MainChatNotificationsComponentView.Create(), TopNotificationComponentView.Create(),
                 serviceLocator.Get<IChatController>(),
-                FriendsController.i,
+                serviceLocator.Get<IFriendsController>(),
                 new UserProfileWebInterfaceBridge(),
                 serviceLocator.Get<IProfanityFilter>(),
                 Settings.i.audioSettings);

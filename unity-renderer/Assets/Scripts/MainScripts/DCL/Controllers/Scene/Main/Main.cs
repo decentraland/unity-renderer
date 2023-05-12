@@ -1,13 +1,16 @@
+using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Map;
+using DCL.Providers;
 using DCL.SettingsCommon;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using MainScripts.DCL.Controllers.HotScenes;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.FriendsController;
 using UnityEngine;
 #if UNITY_EDITOR
 using DG.Tweening;
@@ -25,7 +28,6 @@ namespace DCL
 
         private HotScenesController hotScenesController;
 
-        public PoolableComponentFactory componentFactory;
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         protected IKernelCommunication kernelCommunication;
 
@@ -47,11 +49,12 @@ namespace DCL
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
+
             // Prevent warning when starting on unity editor mode
             // TODO: Are we instantiating 500 different kinds of animations?
-            DOTween.SetTweensCapacity(500,50);
-            #endif
+            DOTween.SetTweensCapacity(500, 50);
+#endif
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
@@ -62,14 +65,6 @@ namespace DCL
 
                 dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
-
-            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
-            WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = GetComponent<WebInterfaceFriendsApiBridge>();
-
-            FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(
-                webInterfaceFriendsApiBridge,
-                RPCFriendsApiBridge.CreateSharedInstance(Environment.i.serviceLocator.Get<IRPC>(), webInterfaceFriendsApiBridge),
-                DataStore.i));
 
 #if UNITY_STANDALONE || UNITY_EDITOR
             Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
@@ -122,9 +117,17 @@ namespace DCL
         {
             if (newVisibleValue)
             {
-                // Prewarm shader variants
-                Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
                 dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+                PrewarmShaderVariants().Forget();
+
+                async UniTask PrewarmShaderVariants()
+                {
+                    var collection = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                      .GetAddressable<ShaderVariantCollection>("shadervariants-selected");
+
+                    await UniTask.DelayFrame(1);
+                    collection.WarmUp();
+                }
             }
         }
 
@@ -179,6 +182,7 @@ namespace DCL
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             hotScenesController = gameObject.AddComponent<HotScenesController>();
+            gameObject.AddComponent<MatrixInitializationBridge>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();
             gameObject.AddComponent<AssetCatalogBridge>();

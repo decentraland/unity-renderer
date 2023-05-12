@@ -8,7 +8,7 @@ namespace DCL.ECS7.InternalComponents
     public static class InternalCollidersExtensions
     {
         public static void AddCollider(this IInternalECSComponent<InternalColliders> colliderInternalComponent,
-            IParcelScene scene, IDCLEntity entity, Collider collider, int colliderLayer)
+            IParcelScene scene, IDCLEntity entity, Collider collider, uint colliderLayer)
         {
             if (collider is null)
                 return;
@@ -22,7 +22,7 @@ namespace DCL.ECS7.InternalComponents
         }
 
         public static void AddColliders(this IInternalECSComponent<InternalColliders> colliderInternalComponent,
-            IParcelScene scene, IDCLEntity entity, IList<Collider> colliders, int colliderLayer)
+            IParcelScene scene, IDCLEntity entity, IList<Collider> colliders, uint colliderLayer)
         {
             var model = colliderInternalComponent.GetFor(scene, entity)?.model ?? new InternalColliders();
 

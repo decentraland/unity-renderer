@@ -1,12 +1,67 @@
 fileFormatVersion: 2
 guid: a2bef76a06b4b46d493bc336897ad827
 ModelImporter:
-  serializedVersion: 19301
+  serializedVersion: 21300
   internalIDToNameTable:
   - first:
       74: -203655887218126122
     second: mixamo.com
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarMaskEyebrows_MAT.002
+    second: {fileID: 2100000, guid: cd1aec8fc6e90164ba2cb1fa7529c459, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarMaskEyes_MAT.001
+    second: {fileID: 2100000, guid: e7bf1e372ea50f044972787cb8399ba3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarMaskMouth_MAT.002
+    second: {fileID: 2100000, guid: ffef1213c8aafee44b78f4d2117ab1ed, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarSkin_MAT.007
+    second: {fileID: 2100000, guid: adf26194a58788f4698c37ebec9e2f87, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarSkin_MAT.008
+    second: {fileID: 2100000, guid: b86b165ac53907b48b8fd796ec469951, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarWearable_MAT.010
+    second: {fileID: 2100000, guid: 71ea25a069020494f8a9331722d3e1a1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarWearable_MAT.012
+    second: {fileID: 2100000, guid: a4505ace4b15139468b641b40f635bea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarWearable_MAT.014
+    second: {fileID: 2100000, guid: 2b090aaad5e172e47b619705b1d2b083, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarWearable_MAT.022
+    second: {fileID: 2100000, guid: bffdeebc2a8e03c40b398207e5149f3b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: aiStandardSurface5.003
+    second: {fileID: 2100000, guid: 11b65f2768abc774f8668202e082eab0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: aiStandardSurface6.003
+    second: {fileID: 2100000, guid: 0bd8cfa03a5638e41ae5dbccac4d521e, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -17,6 +72,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -46,21 +102,27 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
     fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:
@@ -94,6 +156,8 @@ ModelImporter:
   animationType: 2
   humanoidOversampling: 1
   avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

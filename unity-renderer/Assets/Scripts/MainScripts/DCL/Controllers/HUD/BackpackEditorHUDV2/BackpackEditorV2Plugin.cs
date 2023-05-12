@@ -1,3 +1,4 @@
+using DCL.Browser;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 
@@ -28,11 +29,18 @@ namespace DCL.Backpack
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
                 wearablesCatalogService);
 
-            var wearableGridController = new WearableGridController(view.WearableGridComponentView,
-                userProfileBridge, wearablesCatalogService,
-                dataStore.backpackV2);
+            var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 
             var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
+
+            var wearableGridController = new WearableGridController(view.WearableGridComponentView,
+                userProfileBridge,
+                wearablesCatalogService,
+                dataStore.backpackV2,
+                new WebInterfaceBrowserBridge(),
+                backpackFiltersController,
+                avatarSlotsHUDController,
+                backpackAnalyticsController);
 
             hudController = new BackpackEditorHUDController(
                 view,

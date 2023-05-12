@@ -311,7 +311,7 @@ namespace DCL.ECSComponents {
     public const int CollisionMaskFieldNumber = 9;
     private uint collisionMask_;
     /// <summary>
-    /// Collision mask, by default all bits are 1 (0xFFFF_FFFF)
+    /// Collision mask, by default CL_POINTER | CL_PHYSICS
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

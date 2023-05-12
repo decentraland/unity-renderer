@@ -58,7 +58,7 @@ namespace Tests
         [Test]
         public void RemoveComponent()
         {
-            componentWriter.RemoveComponent(scene, entity, COMPONENT_ID, ECSComponentWriteType.DEFAULT);
+            componentWriter.RemoveComponent(scene.sceneData.sceneNumber, entity.entityId, COMPONENT_ID, ECSComponentWriteType.DEFAULT);
             writeComponentSubscriber.Received(1)
                                     .React(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, null,
                                         Arg.Any<int>(), Arg.Any<ECSComponentWriteType>(), Arg.Any<CrdtMessageType>());

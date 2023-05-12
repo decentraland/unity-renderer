@@ -70,6 +70,16 @@ namespace DCLServices.WearablesCatalogService
             Destroy(this);
         }
 
+        public UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken) =>
+            throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
+
+        public UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
+            NftRarity rarity = NftRarity.None,
+            NftCollectionType collectionTypeMask = NftCollectionType.All,
+            ICollection<string> thirdPartyCollectionIds = null, string name = null,
+            (NftOrderByOperation type, bool directionAscendent)? orderBy = null) =>
+            throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
+
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             var wearables = await RequestWearablesByContextAsync(userId, null, null, $"{OWNED_WEARABLES_CONTEXT}{userId}", false, ct);
