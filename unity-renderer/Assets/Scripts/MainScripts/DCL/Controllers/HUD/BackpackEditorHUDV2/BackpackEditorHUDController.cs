@@ -28,7 +28,6 @@ namespace DCL.Backpack
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
         private readonly BackpackEditorHUDModel model = new ();
-        private readonly BackpackEditorHUDModel preEquipModel = new ();
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -291,21 +290,6 @@ namespace DCL.Backpack
                 Debug.LogError($"Cannot pre-visualize wearable {wearableId}");
                 return;
             }
-
-            preEquipModel.Update(model);
-
-            foreach (var w in preEquipModel.wearables.Values)
-            {
-                if (w.data.category != wearable.data.category)
-                    continue;
-
-                preEquipModel.wearables.Remove(w.id);
-                break;
-            }
-
-            preEquipModel.wearables.Add(wearableId, wearable);
-
-            view.UpdateAvatarPreview(preEquipModel.ToAvatarModel());
         }
 
         private void EquipWearableFromGrid(string wearableId, EquipWearableSource source) =>
