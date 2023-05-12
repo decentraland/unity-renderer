@@ -6,6 +6,7 @@ using System.Collections;
 using DCL;
 using DCL.Social.Friends;
 using NSubstitute.ReceivedExtensions;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -41,8 +42,10 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
             }
         });
 
-        GameObject go = Object.Instantiate((GameObject)Resources.Load("JumpInButton"));
-        jumpInButton = go.GetComponent<JumpInButton>();
+        jumpInButton =  Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<JumpInButton>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/JumpInButton.prefab"));
+
         jumpInButton.Initialize(friendsController, TEST_USER_ID, Substitute.For<ISocialAnalytics>());
 
         Assert.AreEqual(testCoords, jumpInButton.currentCoords, "Position coords should match with [testCoords]");
