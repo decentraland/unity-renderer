@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Quests;
+using DCLServices.QuestsService;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,6 @@ public class QuestsController : IDisposable
     private readonly IQuestCompletedComponentView questCompletedComponentView;
     private readonly IQuestOfferComponentView questOfferComponentView;
     private UserProfile ownUserProfile => userProfileBridge.GetOwn();
-
-    private CancellationTokenSource cts;
 
     public QuestsController(
         IQuestsService questsService,
@@ -31,11 +30,6 @@ public class QuestsController : IDisposable
 
         questsService.SetUserId(ownUserProfile.userId);
         questsService.OnQuestUpdated += UpdateQuestTracker;
-        questsService.OnQuestPopup += ShowQuestOffer;
-        //UpdateQuestTracker(questsService.CurrentState);
-
-        questOfferComponentView.OnQuestAccepted += AccceptQuest;
-        questOfferComponentView.OnQuestRefused += AbortQuest; //??? abort is like cancel?
     }
 
     private void ShowQuestOffer(QuestStateUpdate quest)
@@ -64,25 +58,15 @@ public class QuestsController : IDisposable
 
     private void AccceptQuest(string questId)
     {
-        ResetCts();
-        questsService.StartQuest(questId, cts.Token).Forget();
+        questsService.StartQuest(questId).Forget();
     }
 
     private void AbortQuest(string questId)
     {
-        ResetCts();
-        questsService.AbortQuest(questId, cts.Token).Forget();
+        questsService.AbortQuest(questId).Forget();
     }
 
     public void Dispose()
     {
-        ResetCts();
-    }
-
-    private void ResetCts()
-    {
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
     }
 }

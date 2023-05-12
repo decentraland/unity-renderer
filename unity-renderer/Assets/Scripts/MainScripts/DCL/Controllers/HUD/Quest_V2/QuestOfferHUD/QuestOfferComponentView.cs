@@ -18,13 +18,10 @@ namespace DCL.Quests
         [SerializeField] internal TMP_Text questTitle;
         [SerializeField] internal TMP_Text questDescription;
         [SerializeField] internal Button acceptButton;
-        [SerializeField] internal Button cancelButton;
         [SerializeField] internal Transform rewardsContainer;
         [SerializeField] internal GameObject container;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
-        public event Action<string> OnQuestAccepted;
-        public event Action<string> OnQuestRefused;
 
         private UnityObjectPool<QuestRewardComponentView> rewardsPool;
         private List<QuestRewardComponentView> usedRewards = new ();
@@ -32,9 +29,7 @@ namespace DCL.Quests
         public override void Awake()
         {
             acceptButton.onClick.RemoveAllListeners();
-            acceptButton.onClick.AddListener(()=>OnQuestAccepted?.Invoke(model.questId));
-            cancelButton.onClick.RemoveAllListeners();
-            cancelButton.onClick.AddListener(()=>OnQuestRefused?.Invoke(model.questId));
+            acceptButton.onClick.AddListener(()=>gameObject.SetActive(false));
             rewardsPool = new UnityObjectPool<QuestRewardComponentView>(rewardPrefab, rewardsContainer);
             rewardsPool.Prewarm(MAX_REWARDS_COUNT);
             container.SetActive(false);
