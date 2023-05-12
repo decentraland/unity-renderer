@@ -35,8 +35,7 @@ namespace DCL.Social.Friends
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
-        // private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
-        private bool useSocialApiBridge => true;
+        private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
@@ -466,20 +465,33 @@ namespace DCL.Social.Friends
             long max = long.MinValue;
             FriendRequest result = null;
 
-            foreach (var request in incomingFriendRequestsById.Values)
+            if (useSocialApiBridge)
             {
-                if (request.From != userId && request.To != userId) continue;
-                if (request.Timestamp <= max) continue;
-                result = request;
-                max = request.Timestamp;
-            }
+                foreach (var request in incomingFriendRequestsById.Values)
+                {
+                    if (request.From != userId && request.To != userId) continue;
+                    if (request.Timestamp <= max) continue;
+                    result = request;
+                    max = request.Timestamp;
+                }
 
-            foreach (var request in outgoingFriendRequestsById.Values)
+                foreach (var request in outgoingFriendRequestsById.Values)
+                {
+                    if (request.From != userId && request.To != userId) continue;
+                    if (request.Timestamp <= max) continue;
+                    result = request;
+                    max = request.Timestamp;
+                }
+            }
+            else
             {
-                if (request.From != userId && request.To != userId) continue;
-                if (request.Timestamp <= max) continue;
-                result = request;
-                max = request.Timestamp;
+                foreach (var request in friendRequests.Values)
+                {
+                    if (request.From != userId && request.To != userId) continue;
+                    if (request.Timestamp <= max) continue;
+                    result = request;
+                    max = request.Timestamp;
+                }
             }
 
             return result;
