@@ -654,7 +654,10 @@ function* refreshFriends() {
     const isUseSocialClientEnabled: boolean = yield select(getFeatureFlagEnabled, 'use-social-client')
     if (!isUseSocialClientEnabled) {
       getUnityInstance().InitializeFriends(initFriendsMessage)
+    }
 
+    // TODO!: remove FF validation once the RPC flow is the only one
+    if (isUseSocialClientEnabled) {
       if (token) {
         getUnityInstance().InitializeMatrix(token)
       }
