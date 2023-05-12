@@ -78,7 +78,7 @@ public class AvatarEditorHUDController : IHUD
     private bool isThirdPartyCollectionsEnabled => featureFlags.flags.Get().IsFeatureEnabled(THIRD_PARTY_COLLECTIONS_FEATURE_FLAG);
     private Service<IEmotesCatalogService> emotesCatalogService;
 
-    public AvatarEditorHUDView view;
+    internal AvatarEditorHUDView view;
 
     public event Action OnOpen;
     public event Action OnClose;

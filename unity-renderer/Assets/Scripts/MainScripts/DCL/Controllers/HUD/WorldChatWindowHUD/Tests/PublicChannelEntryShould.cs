@@ -2,6 +2,7 @@ using DCL;
 using DCL.Chat.HUD;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 public class PublicChannelEntryShould
@@ -11,7 +12,9 @@ public class PublicChannelEntryShould
     [SetUp]
     public void SetUp()
     {
-        view =                 GameObject.Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/PublicChannelElement"));
+        view = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<PublicChatEntry>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/PublicChannelElement.prefab"));
 
         view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
     }
