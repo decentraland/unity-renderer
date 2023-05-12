@@ -303,6 +303,7 @@ namespace DCL.Components
             {
                 if (sendMetric)
                     SendMetric(FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT, targetUrl, exception.Message);
+
                 OnFailWrapper(OnFail, exception, hasFallback);
             };
 
@@ -355,16 +356,20 @@ namespace DCL.Components
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
 
+            if (exception is PromiseForgottenException or OperationCanceledException)
+            {
+                ClearEvents();
+                return;
+            }
+
             // If the entity is destroyed while loading, the exception is expected to be null and no error should be thrown
             if (exception != null)
             {
                 if (!hasFallback)
                     Debug.LogWarning("All fallbacks failed for " + targetUrl);
                 else if (VERBOSE)
-                {
                     Debug.LogWarning($"Load Fail Detected, trying to use a fallback, " +
-                              $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
-                }
+                                     $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
             }
 
             OnFail?.Invoke(exception);
