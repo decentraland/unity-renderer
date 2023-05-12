@@ -20,6 +20,8 @@ public interface IRpcSceneControllerService<Context>
 
   UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request, Context context, CancellationToken ct);
 
+  UniTask<SendBatchResponse> SendBatch(SendBatchRequest request, Context context, CancellationToken ct);
+
 }
 
 public static class RpcSceneControllerServiceCodeGen
@@ -34,6 +36,7 @@ public static class RpcSceneControllerServiceCodeGen
     result.definition.Add("UnloadScene", async (payload, context, ct) => { var res = await service.UnloadScene(UnloadSceneMessage.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("SendCrdt", async (payload, context, ct) => { var res = await service.SendCrdt(CRDTSceneMessage.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("GetCurrentState", async (payload, context, ct) => { var res = await service.GetCurrentState(GetCurrentStateMessage.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("SendBatch", async (payload, context, ct) => { var res = await service.SendBatch(SendBatchRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }

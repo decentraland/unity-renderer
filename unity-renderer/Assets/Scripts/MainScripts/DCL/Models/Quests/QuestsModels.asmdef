@@ -2,7 +2,8 @@
     "name": "QuestsModels",
     "references": [
         "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:3c7b57a14671040bd8c549056adc04f5"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

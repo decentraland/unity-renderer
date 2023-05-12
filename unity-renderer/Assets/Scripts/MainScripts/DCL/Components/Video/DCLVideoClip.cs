@@ -1,31 +1,46 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
     public class DCLVideoClip : BaseDisposable
     {
-        private static readonly string[] NO_STREAM_EXTENSIONS = new[] { ".mp4", ".ogg", ".mov", ".webm" };
+        private static readonly string[] NO_STREAM_EXTENSIONS = { ".mp4", ".ogg", ".mov", ".webm" };
 
-        [System.Serializable]
+        [Serializable]
         public class Model : BaseModel
         {
             public string url;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.VideoClip)
+                    return Utils.SafeUnimplemented<DCLVideoClip, Model>(expected: ComponentBodyPayload.PayloadOneofCase.VideoClip, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.VideoClip.HasUrl) pb.url = pbModel.VideoClip.Url;
+                
+                return pb;
+            }
         }
 
         public bool isExternalURL { get; private set; }
         public bool isStream { get; private set; }
 
-        public DCLVideoClip() { model = new Model(); }
+        public DCLVideoClip()
+        {
+            model = new Model();
+        }
 
-        public override int GetClassId() { return (int) CLASS_ID.VIDEO_CLIP; }
+        public override int GetClassId() =>
+            (int) CLASS_ID.VIDEO_CLIP;
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
