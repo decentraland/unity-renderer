@@ -27,6 +27,8 @@ namespace DCL.Backpack
         private UserProfile ownUserProfile;
         private IBrowserBridge browserBridge;
         private AvatarSlotsHUDController avatarSlotsHUDController;
+        private IBackpackFiltersComponentView filtersView;
+        private IAvatarSlotsView slotsView;
 
         [SetUp]
         public void SetUp()
@@ -50,10 +52,13 @@ namespace DCL.Backpack
 
             browserBridge = Substitute.For<IBrowserBridge>();
 
-            backpackFiltersController = new BackpackFiltersController(Substitute.For<IBackpackFiltersComponentView>(),
+            filtersView = Substitute.For<IBackpackFiltersComponentView>();
+
+            backpackFiltersController = new BackpackFiltersController(filtersView,
                 Substitute.For<IWearablesCatalogService>());
 
-            avatarSlotsHUDController = new AvatarSlotsHUDController(Substitute.For<IAvatarSlotsView>());
+            slotsView = Substitute.For<IAvatarSlotsView>();
+            avatarSlotsHUDController = new AvatarSlotsHUDController(slotsView);
 
             controller = new WearableGridController(view,
                 userProfileBridge,
@@ -542,9 +547,10 @@ namespace DCL.Backpack
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"));
 
-            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
-                Arg.Any<CancellationToken>(),
-                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain);
+            wearablesCatalogService.Received(1)
+                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain);
         }
 
         [UnityTest]
@@ -574,11 +580,12 @@ namespace DCL.Backpack
                      && n.Path[2].Name == "festival"
                      && n.Path[2].Removable == true));
 
-            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
-                Arg.Any<CancellationToken>(),
-                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
-                category: "upper_body",
-                name: "festival");
+            wearablesCatalogService.Received(1)
+                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                                        category: "upper_body",
+                                        name: "festival");
         }
 
         [UnityTest]
@@ -611,10 +618,11 @@ namespace DCL.Backpack
                      && n.Path[1].Removable == true
                      && n.Path.Length == 2));
 
-            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
-                Arg.Any<CancellationToken>(),
-                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
-                category: "upper_body");
+            wearablesCatalogService.Received(1)
+                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                                        category: "upper_body");
         }
 
         [UnityTest]
@@ -647,10 +655,11 @@ namespace DCL.Backpack
                      && n.Path[1].Removable == true
                      && n.Path.Length == 2));
 
-            wearablesCatalogService.Received(1).RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
-                Arg.Any<CancellationToken>(),
-                collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
-                name: "festival");
+            wearablesCatalogService.Received(1)
+                                   .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>(),
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                                        name: "festival");
         }
 
         [UnityTest]
@@ -768,6 +777,224 @@ namespace DCL.Backpack
             view.Received(1)
                 .ShowWearables(Arg.Is<IEnumerable<WearableGridItemModel>>(i =>
                      i.ElementAt(0).IsNew == true));
+        }
+
+        [UnityTest]
+        public IEnumerator UpdateBodyShapeCompatibility()
+        {
+            const string BODY_SHAPE = "bodyShape1";
+
+            var w1 = new WearableItem
+            {
+                id = "w1",
+                rarity = "common",
+                description = "super wearable",
+                thumbnail = "w1thumbnail",
+                baseUrl = "http://localimages",
+                i18n = new[]
+                {
+                    new i18n
+                    {
+                        text = "idk",
+                        code = "wtf",
+                    }
+                },
+                data = new WearableItem.Data
+                {
+                    replaces = new[] { "category1", "category2", "category3" },
+                    representations = new[]
+                    {
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new[] { BODY_SHAPE },
+                            overrideReplaces = new[] { "override1", "override2", "override3" },
+                        }
+                    }
+                },
+                MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+            };
+
+            var w2 = new WearableItem
+            {
+                id = "w2",
+                rarity = "common",
+                description = "super wearable",
+                thumbnail = "w1thumbnail",
+                baseUrl = "http://localimages",
+                i18n = new[]
+                {
+                    new i18n
+                    {
+                        text = "idk",
+                        code = "wtf",
+                    }
+                },
+                data = new WearableItem.Data
+                {
+                    replaces = Array.Empty<string>(),
+                    representations = new[]
+                    {
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new[] { "bodyShape2" },
+                            overrideReplaces = Array.Empty<string>(),
+                        }
+                    }
+                },
+                MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+            };
+
+            var wearableCatalog = new BaseDictionary<string, WearableItem>
+            {
+                { "w1", w1 },
+                { "w2", w2 },
+            };
+
+            wearablesCatalogService.WearablesCatalog.Returns(wearableCatalog);
+
+            IReadOnlyList<WearableItem> wearableList = new[]
+            {
+                w1,
+                w2,
+            };
+
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 2)));
+
+            controller.LoadWearablesWithFilters();
+            yield return null;
+            view.ClearReceivedCalls();
+
+            controller.UpdateBodyShapeCompatibility(BODY_SHAPE);
+
+            view.Received(1)
+                .SetWearable(Arg.Is<WearableGridItemModel>(w =>
+                     w.IsCompatibleWithBodyShape == true
+                     && w.WearableId == "w1"));
+
+            view.Received(1)
+                .SetWearable(Arg.Is<WearableGridItemModel>(w =>
+                     w.IsCompatibleWithBodyShape == false
+                     && w.WearableId == "w2"));
+        }
+
+        [UnityTest]
+        public IEnumerator MarkBodyShapeAsEquipped()
+        {
+            const string BODY_SHAPE = "bodyShape1";
+
+            var w1 = new WearableItem
+            {
+                id = BODY_SHAPE,
+                rarity = "common",
+                description = "super wearable",
+                thumbnail = "w1thumbnail",
+                baseUrl = "http://localimages",
+                MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.BODY_SHAPE,
+                },
+            };
+
+            var w2 = new WearableItem
+            {
+                id = "w2",
+                rarity = "common",
+                description = "super wearable",
+                thumbnail = "w1thumbnail",
+                baseUrl = "http://localimages",
+                MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.BODY_SHAPE,
+                },
+            };
+
+            dataStore.previewBodyShape.Set(BODY_SHAPE);
+
+            IReadOnlyList<WearableItem> wearableList = new[] { w1, w2, };
+
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 2)));
+
+            controller.LoadWearablesWithFilters();
+            yield return null;
+
+            view.Received(1)
+                .ShowWearables(Arg.Is<IEnumerable<WearableGridItemModel>>(i =>
+                     i.ElementAt(0).WearableId == BODY_SHAPE
+                     && i.ElementAt(0).IsEquipped == true
+                     && i.ElementAt(1).WearableId == "w2"
+                     && i.ElementAt(1).IsEquipped == false));
+        }
+
+        [UnityTest]
+        [TestCase(WearableLiterals.Categories.BODY_SHAPE, false, ExpectedResult = null)]
+        [TestCase(WearableLiterals.Categories.EYES, false, ExpectedResult = null)]
+        [TestCase(WearableLiterals.Categories.MOUTH, false, ExpectedResult = null)]
+        [TestCase(WearableLiterals.Categories.HAIR, true, ExpectedResult = null)]
+        [TestCase(WearableLiterals.Categories.LOWER_BODY, true, ExpectedResult = null)]
+        [TestCase(WearableLiterals.Categories.FACIAL_HAIR, true, ExpectedResult = null)]
+        public IEnumerator CanWearableBeUnequipped(string category, bool canBeUnequipped)
+        {
+            var w1 = new WearableItem
+            {
+                id = "w",
+                rarity = "common",
+                description = "super wearable",
+                thumbnail = "w1thumbnail",
+                baseUrl = "http://localimages",
+                MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+                data = new WearableItem.Data
+                {
+                    category = category,
+                },
+            };
+
+            IReadOnlyList<WearableItem> wearableList = new[] { w1, };
+
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 1)));
+
+            controller.LoadWearablesWithFilters();
+            yield return null;
+
+            view.Received(1)
+                .ShowWearables(Arg.Is<IEnumerable<WearableGridItemModel>>(i =>
+                     i.ElementAt(0).WearableId == "w"
+                     && i.ElementAt(0).UnEquipAllowed == canBeUnequipped));
+        }
+
+        [Test]
+        public void ClearSearchTextWhenRemoveTextFilteringFromBreadcrumb()
+        {
+            IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
+
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 0)));
+
+            view.OnFilterRemoved += Raise.Event<Action<string>>("name=bleh");
+
+            filtersView.Received(1).SetSearchText(null, false);
+        }
+
+        [Test]
+        public void ClearCategorySlotFilterWhenRemoveCategoryFilterFromBreadcrumb()
+        {
+            IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
+
+            wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((wearableList, 0)));
+
+            view.OnFilterRemoved += Raise.Event<Action<string>>("category=upper_body");
+
+            slotsView.Received(1).DisablePreviousSlot("upper_body");
         }
     }
 }

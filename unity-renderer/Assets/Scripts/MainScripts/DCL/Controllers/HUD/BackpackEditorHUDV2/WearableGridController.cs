@@ -326,7 +326,7 @@ namespace DCL.Backpack
             }
             else if (filter.StartsWith(CATEGORY_FILTER_REF))
             {
-                avatarSlotsHUDController.ClearSlotSelection(categoryFilter);
+                avatarSlotsHUDController.ClearSlotSelection(filter[9..]);
                 categoryFilter = null;
             }
 

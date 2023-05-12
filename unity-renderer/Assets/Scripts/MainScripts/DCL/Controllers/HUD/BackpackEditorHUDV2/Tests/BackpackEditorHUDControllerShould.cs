@@ -284,6 +284,50 @@ namespace DCL.Backpack
             EquipBodyShapeFromGrid(WearableLiterals.BodyShapes.MALE);
         }
 
+        [Test]
+        public void SaveAvatarAndCloseViewWhenContinueSignup()
+        {
+            view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
+                Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
+                Arg.Any<Action>());
+
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(
+                new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" },
+                EquipWearableSource.Wearable);
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(
+                new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" },
+                EquipWearableSource.Wearable);
+            view.ClearReceivedCalls();
+
+            view.OnContinueSignup += Raise.Event<Action>();
+
+            Assert.IsTrue(userProfile.avatar.wearables.Count > 0);
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_eyebrows_01"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:bear_slippers"));
+            view.Received(1).Hide();
+            view.ReceivedWithAnyArgs(1).TakeSnapshotsAfterStopPreviewAnimation(default(IBackpackEditorHUDView.OnSnapshotsReady), default(Action));
+        }
+
+        [Test]
+        public void ShowSignup()
+        {
+            dataStore.common.isSignUpFlow.Set(true);
+
+            dataStore.HUDs.avatarEditorVisible.Set(true, true);
+
+            view.Received(1).ShowContinueSignup();
+        }
+
+        [Test]
+        public void HideSignup()
+        {
+            dataStore.common.isSignUpFlow.Set(false);
+
+            dataStore.HUDs.avatarEditorVisible.Set(true, true);
+
+            view.Received(1).HideContinueSignup();
+        }
+
         private static UserProfileModel GetTestUserProfileModel() =>
             new ()
             {
