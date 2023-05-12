@@ -241,13 +241,16 @@ namespace DCL.Backpack
 
             // Arrange
             var testUserProfileModel = GetTestUserProfileModel();
+            view.isVisible.Returns(true);
+            rendererState.Set(true);
 
             // Act
             userProfile.UpdateData(testUserProfileModel);
 
             // Assert
             Assert.IsFalse(userProfile.avatar.wearables.Contains(BODY_SHAPE_ID));
-            Assert.IsTrue(dataStore.backpackV2.previewEquippedWearables.Contains(BODY_SHAPE_ID));
+            Assert.IsFalse(dataStore.backpackV2.previewEquippedWearables.Contains(BODY_SHAPE_ID));
+            Assert.AreEqual(dataStore.backpackV2.previewBodyShape.Get(), BODY_SHAPE_ID);
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(BODY_SHAPE_ID);
             avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
                 Arg.Is<WearableItem>(w => w.id == BODY_SHAPE_ID),
@@ -269,7 +272,8 @@ namespace DCL.Backpack
             }, EquipWearableSource.Wearable);
 
             Assert.IsFalse(userProfile.avatar.wearables.Contains(bodyShapeId));
-            Assert.IsTrue(dataStore.backpackV2.previewEquippedWearables.Contains(bodyShapeId));
+            Assert.AreEqual(dataStore.backpackV2.previewBodyShape.Get(), bodyShapeId);
+            Assert.IsFalse(dataStore.backpackV2.previewEquippedWearables.Contains(bodyShapeId));
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(bodyShapeId);
             avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
                 Arg.Is<WearableItem>(w => w.id == bodyShapeId),
