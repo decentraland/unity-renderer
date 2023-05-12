@@ -122,7 +122,7 @@ namespace Tests
             const string TOKEN_ID = "645433";
 
             Assert.IsTrue(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:ethereum:erc1150:{CONTRACT_ADDRESS}:{TOKEN_ID}",
+                $"urn:decentraland:ethereum:erc1150:{CONTRACT_ADDRESS}:{TOKEN_ID}",
                 out string contractAddress,
                 out string tokenId));
 
@@ -136,7 +136,7 @@ namespace Tests
             string contractAddress;
             string tokenId;
 
-            // "urn" missing
+            // "urn:decentraland" missing
             Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
                 $"ethereum:erc1150:0x0000temptation:666",
                 out contractAddress,
@@ -144,25 +144,25 @@ namespace Tests
 
             // "chain" missing
             Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:erc1150:0x0000temptation:666",
+                $"urn:decentraland:erc1150:0x0000temptation:666",
                 out contractAddress,
                 out tokenId));
 
             // "chain" invalid
             Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:some-chain:erc1150:0x0000temptation:666",
+                $"urn:decentraland:some-chain:erc1150:0x0000temptation:666",
                 out contractAddress,
                 out tokenId));
 
             // contract address missing
             Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:ethereum:erc1150:666",
+                $"urn:decentraland:ethereum:erc1150:666",
                 out contractAddress,
                 out tokenId));
 
             // token id missing
             Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:ethereum:erc1150:0x0000temptation",
+                $"urn:decentraland:ethereum:erc1150:0x0000temptation",
                 out contractAddress,
                 out tokenId));
 
@@ -199,7 +199,7 @@ namespace Tests
                 var result = await rpcClient.OpenNftDialog(
                     new OpenNftDialogRequest()
                     {
-                        Urn = $"urn:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
+                        Urn = $"urn:decentraland:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
                     });
 
                 Assert.IsTrue(result.Success);
@@ -230,7 +230,7 @@ namespace Tests
                 var result = await rpcClient.OpenNftDialog(
                     new OpenNftDialogRequest()
                     {
-                        Urn = $"urn:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
+                        Urn = $"urn:decentraland:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
                     });
 
                 Assert.IsFalse(result.Success);
