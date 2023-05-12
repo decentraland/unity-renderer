@@ -2,7 +2,7 @@ using System;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
-    public interface IHint
+    public interface IHint:IDisposable
     {
         string TextureUrl { get; }
         string Title { get; }

@@ -1,4 +1,5 @@
 using DCL.Controllers.LoadingScreenV2;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,10 @@ namespace DCL.Controllers.LoadingScreenV2
             this.title = title;
             this.body = body;
             this.sourceTag = sourceTag;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

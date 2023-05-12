@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Controllers.LoadingScreenV2;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -27,27 +28,33 @@ namespace DCL.Controllers.LoadingScreenV2
     ///
     /// This request should be done at the LoadingScreenController after the loading is triggered, we need to figure out if loading the hints in parallel is the best approach, if not, we should load the hints first and then the scene assets.
     /// </summary>
-    public class HintRequestService
+    public class HintRequestService: IDisposable
     {
         private List<IHintRequestSource> hintRequestSources;
         private Dictionary<SourceTag, List<IHint>> hintsDictionary = new Dictionary<SourceTag, List<IHint>>();
+
+        private SourceTag[] orderedSourceTags = { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
 
         public HintRequestService(List<IHintRequestSource> hintRequestSources)
         {
             this.hintRequestSources = hintRequestSources;
         }
 
-        public async UniTask<List<IHint>> RequestHintsAndDownloadTextures(CancellationToken ctx, HintsRules hintRules)
+        public async UniTask<List<IHint>> RequestHintsAndDownloadTextures(CancellationToken ctx, int totalHints)
         {
             var hints = new List<IHint>();
             try
             {
+                if (ctx.IsCancellationRequested)
+                {
+                    return new List<IHint>();
+                }
+
                 // Step 1: Get Hints
                 hints = await GetHintsAsync(ctx);
 
                 // Step 2: Select optimal hints
-                // hints = SelectOptimalHints(hints, hintRules);
-                hints = SelectOptimalHints(hints);
+                hints = SelectOptimalHints(hints, totalHints);
 
                 // Step 3: Download textures
                 await DownloadTextures(hints, ctx);
@@ -55,8 +62,6 @@ namespace DCL.Controllers.LoadingScreenV2
             catch (System.Exception ex)
             {
                 Debug.LogException(ex);
-                // // In case of any exception return an empty list
-                // return new List<IHint>();
             }
             return hints;
         }
@@ -66,6 +71,11 @@ namespace DCL.Controllers.LoadingScreenV2
             var hints = new List<IHint>();
             foreach (var source in hintRequestSources)
             {
+                if (ctx.IsCancellationRequested)
+                {
+                    return new List<IHint>();
+                }
+
                 try
                 {
                     var sourceHints = await source.GetHintsAsync(ctx);
@@ -83,24 +93,21 @@ namespace DCL.Controllers.LoadingScreenV2
                 catch (System.Exception ex)
                 {
                     Debug.LogException(ex);
-                    // continue with other sources if one fails
+                    // In case of any exception return an empty list
+                    return new List<IHint>();
                 }
-                if (ctx.IsCancellationRequested)
-                    break;
             }
             return hints;
         }
 
-        public List<IHint> SelectOptimalHints(List<IHint> hints)
+        public List<IHint> SelectOptimalHints(List<IHint> hints, int totalHints)
         {
             var allAvailableHints = new List<IHint>(hints);
             var selectedHints = new List<IHint>();
 
-            SourceTag[] orderedSourceTags = { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
-
             foreach (var sourceTag in orderedSourceTags)
             {
-                while (hintsDictionary.ContainsKey(sourceTag) && hintsDictionary[sourceTag].Count > 0)
+                while (hintsDictionary.ContainsKey(sourceTag) && hintsDictionary[sourceTag].Count > 0 && selectedHints.Count < totalHints)
                 {
                     var selectedHint = GetRandomHint(hintsDictionary[sourceTag]);
                     allAvailableHints.Remove(selectedHint);
@@ -108,8 +115,8 @@ namespace DCL.Controllers.LoadingScreenV2
                 }
             }
 
-            // If there are still available hints, select them randomly.
-            while (allAvailableHints.Count > 0)
+            // Random hint selection to fill the remaining slots
+            while (allAvailableHints.Count > 0 && selectedHints.Count < totalHints)
             {
                 var selectedHint = GetRandomHint(allAvailableHints);
                 selectedHints.Add(selectedHint);
@@ -126,112 +133,47 @@ namespace DCL.Controllers.LoadingScreenV2
             return randomHint;
         }
 
-        // public Dictionary<SourceTag, List<IHint>> GroupHintsBySourceTag(List<IHint> hints)
-        // {
-        //     var groupedHints = new Dictionary<SourceTag, List<IHint>>();
-        //     foreach (var hint in hints)
-        //     {
-        //         if (!groupedHints.ContainsKey(hint.SourceTag))
-        //         {
-        //             groupedHints[hint.SourceTag] = new List<IHint>();
-        //         }
-        //         groupedHints[hint.SourceTag].Add(hint);
-        //     }
-        //     return groupedHints;
-        // }
-        //
-
-        // public List<IHint> SelectOptimalHints(List<IHint> hints, HintsRules hintsRules)
-        // {
-        //     var allAvailableHints = new List<IHint>(hints);
-        //     var selectedHints = new List<IHint>();
-        //     int hintsToSelect = hintsRules.HintsAmount;
-        //
-        //     while (hintsToSelect > 0 && allAvailableHints.Count > 0)
-        //     {
-        //         SourceTag[] orderedSourceTags = { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
-        //
-        //         foreach (var sourceTag in orderedSourceTags)
-        //         {
-        //             int requiredAmount = 0;
-        //             switch (sourceTag)
-        //             {
-        //                 case SourceTag.Scene:
-        //                     requiredAmount = (int)(hintsRules.HintsAmount * hintsRules.ScenePercentage);
-        //                     break;
-        //                 case SourceTag.Event:
-        //                     requiredAmount = (int)(hintsRules.HintsAmount * hintsRules.EventPercentage);
-        //                     break;
-        //                 case SourceTag.Dcl:
-        //                     requiredAmount = (int)(hintsRules.HintsAmount * hintsRules.DclPercentage);
-        //                     break;
-        //             }
-        //
-        //             while (requiredAmount > 0 && hintsDictionary.ContainsKey(sourceTag) && hintsDictionary[sourceTag].Count > 0)
-        //             {
-        //                 var randomHint = GetRandomHint(hintsDictionary[sourceTag]);
-        //                 allAvailableHints.Remove(randomHint);
-        //                 selectedHints.Add(randomHint);
-        //                 hintsToSelect--;
-        //                 requiredAmount--;
-        //             }
-        //
-        //             if (hintsToSelect <= 0)
-        //             {
-        //                 break;
-        //             }
-        //         }
-        //
-        //         // If we couldn't select enough hints according to the rules, select randomly from the remaining available hints
-        //         while (hintsToSelect > 0 && allAvailableHints.Count > 0)
-        //         {
-        //             var randomHint = GetRandomHint(allAvailableHints);
-        //             selectedHints.Add(randomHint);
-        //             hintsToSelect--;
-        //         }
-        //     }
-        //
-        //     if (hintsToSelect > 0)
-        //     {
-        //         Debug.LogWarning("Couldn't select enough hints according to the rules, selected hints count is less than required amount");
-        //     }
-        //
-        //     return selectedHints;
-        // }
-
-
         private async UniTask DownloadTextures(List<IHint> hints, CancellationToken ctx)
         {
             foreach (var hint in hints)
             {
+                if (ctx.IsCancellationRequested)
+                {
+                    break;
+                }
+
                 try
                 {
-                    // download and create textures here
+                    // TODO:: download and create textures here
 
-                    // assign texture to the hint
+                    // TODO:: assign texture to the hint in a dictionary
                 }
                 catch (System.Exception ex)
                 {
                     Debug.LogException(ex);
-                    // continue with other textures if one fails
                 }
-                if (ctx.IsCancellationRequested)
-                    break;
             }
         }
 
-        // stub
+        // stub methods
         private void DisposeHints(List<IHint> hints)
         {
             foreach (var hint in hints)
             {
+                hint.Dispose();
             }
         }
 
-        public void Destroy()
+        public void Dispose()
         {
+            foreach (var hintList in hintsDictionary.Values)
+            {
+                DisposeHints(hintList);
+            }
 
+            hintsDictionary.Clear();
+
+            // TODO:: FD:: Dispose other stuff
         }
-
     }
 }
