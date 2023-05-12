@@ -18,9 +18,10 @@ namespace DCL.Social.Chat
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+
             view = Object.Instantiate(
                 AssetDatabase.LoadAssetAtPath<ChatHUDView>(
-                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/ChannelMemberEntry.prefab"));
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/ChatHUD.prefab"));
 
             IWebRequestAsyncOperation webRequestAsyncOperation = Substitute.For<IWebRequestAsyncOperation>();
             Environment.i.platform.webRequest.GetTexture(default).ReturnsForAnyArgs(webRequestAsyncOperation);
