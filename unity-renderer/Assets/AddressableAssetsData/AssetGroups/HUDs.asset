@@ -29,6 +29,14 @@ MonoBehaviour:
     m_Address: HelpAndSupportHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: caebda186eba94b46b64e38bb4b7ca27
+    m_Address: PlayerPassport
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d3f9f44ca1c09504488474536a42216f
+    m_Address: EmotesCustomizationSection
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
