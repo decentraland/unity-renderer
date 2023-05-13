@@ -1,9 +1,10 @@
 using Cysharp.Threading.Tasks;
-using DCL.Controllers.LoadingScreenV2;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.Networking;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
@@ -30,28 +31,33 @@ namespace DCL.Controllers.LoadingScreenV2
     /// </summary>
     public class HintRequestService: IDisposable
     {
-        private List<IHintRequestSource> hintRequestSources;
-        private Dictionary<SourceTag, List<IHint>> hintsDictionary = new Dictionary<SourceTag, List<IHint>>();
+        private readonly List<IHintRequestSource> hintRequestSources;
+        private readonly Dictionary<SourceTag, List<IHint>> hintsDictionary;
+        private readonly SourceTag[] orderedSourceTags;
+        private readonly HintTextureRequest textureRequest;
 
-        private SourceTag[] orderedSourceTags = { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
+        private Dictionary<IHint, Texture2D> selectedHints;
 
         public HintRequestService(List<IHintRequestSource> hintRequestSources)
         {
             this.hintRequestSources = hintRequestSources;
+            hintsDictionary = new Dictionary<SourceTag, List<IHint>>();
+            selectedHints = new Dictionary<IHint, Texture2D>();
+            orderedSourceTags = new[] { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
+            this.textureRequest = new HintTextureRequest();
         }
 
-        public async UniTask<List<IHint>> RequestHintsFromSources(CancellationToken ctx, int totalHints)
+        public async UniTask<Dictionary<IHint, Texture2D>> RequestHintsFromSources(CancellationToken ctx, int totalHints)
         {
-            List<IHint> hints = new List<IHint>();
             try
             {
                 if (ctx.IsCancellationRequested)
                 {
-                    return hints;
+                    return selectedHints;
                 }
 
                 // Step 1: Get Hints
-                hints = await GetHintsAsync(ctx);
+                var hints = await GetHintsAsync(ctx);
 
                 // Step 2: Select optimal hints
                 hints = SelectOptimalHints(hints, totalHints);
@@ -59,73 +65,73 @@ namespace DCL.Controllers.LoadingScreenV2
                 // Step 3: Download textures
                 await DownloadTextures(hints, ctx);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogException(ex);
             }
-            return hints;
+            return selectedHints;
         }
 
-        public async UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
+        private async UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
         {
             var hints = new List<IHint>();
             foreach (var source in hintRequestSources)
             {
-                if (ctx.IsCancellationRequested)
+                if (!ctx.IsCancellationRequested)
                 {
-                    return new List<IHint>();
-                }
-
-                try
-                {
-                    var sourceHints = await source.GetHintsAsync(ctx);
-                    hints.AddRange(sourceHints);
-
-                    foreach (var hint in sourceHints)
+                    try
                     {
-                        if (!hintsDictionary.ContainsKey(hint.SourceTag))
+                        var sourceHints = await source.GetHintsAsync(ctx);
+                        hints.AddRange(sourceHints);
+
+                        foreach (var hint in sourceHints)
                         {
-                            hintsDictionary[hint.SourceTag] = new List<IHint>();
+                            if (!hintsDictionary.TryGetValue(hint.SourceTag, out var hintList))
+                            {
+                                hintList = new List<IHint>();
+                                hintsDictionary[hint.SourceTag] = hintList;
+                            }
+                            hintList.Add(hint);
                         }
-                        hintsDictionary[hint.SourceTag].Add(hint);
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogException(ex);
-                    // In case of any exception return an empty list
-                    return new List<IHint>();
+                    catch (Exception ex)
+                    {
+                        Debug.LogException(ex);
+                    }
                 }
             }
             return hints;
         }
 
-        public List<IHint> SelectOptimalHints(List<IHint> hints, int totalHints)
+        private List<IHint> SelectOptimalHints(List<IHint> hints, int totalHints)
         {
+            var optimalHints = new List<IHint>();
             var allAvailableHints = new List<IHint>(hints);
-            var selectedHints = new List<IHint>();
 
             foreach (var sourceTag in orderedSourceTags)
             {
-                while (hintsDictionary.ContainsKey(sourceTag) && hintsDictionary[sourceTag].Count > 0 && selectedHints.Count < totalHints)
+                if (hintsDictionary.TryGetValue(sourceTag, out var sourceHints))
                 {
-                    var selectedHint = GetRandomHint(hintsDictionary[sourceTag]);
-                    allAvailableHints.Remove(selectedHint);
-                    selectedHints.Add(selectedHint);
+                    while (sourceHints.Count > 0 && optimalHints.Count < totalHints)
+                    {
+                        var selectedHint = GetRandomHint(sourceHints);
+                        allAvailableHints.Remove(selectedHint);
+                        optimalHints.Add(selectedHint);
+                    }
                 }
             }
 
             // Random hint selection to fill the remaining slots
-            while (allAvailableHints.Count > 0 && selectedHints.Count < totalHints)
+            while (allAvailableHints.Count > 0 && optimalHints.Count < totalHints)
             {
                 var selectedHint = GetRandomHint(allAvailableHints);
-                selectedHints.Add(selectedHint);
+                optimalHints.Add(selectedHint);
             }
 
-            return selectedHints;
+            return optimalHints;
         }
 
-        public IHint GetRandomHint(List<IHint> hints)
+        private IHint GetRandomHint(List<IHint> hints)
         {
             int randomIndex = UnityEngine.Random.Range(0, hints.Count);
             IHint randomHint = hints[randomIndex];
@@ -133,29 +139,25 @@ namespace DCL.Controllers.LoadingScreenV2
             return randomHint;
         }
 
-        private async UniTask DownloadTextures(List<IHint> hints, CancellationToken ctx)
+        private async UniTask DownloadTextures(List<IHint> finalHints, CancellationToken ctx)
         {
-            foreach (var hint in hints)
+            foreach (var hint in finalHints)
             {
                 if (ctx.IsCancellationRequested)
                 {
                     break;
                 }
-
                 try
                 {
-                    // TODO:: download and create textures here
-
-                    // TODO:: assign texture to the hint in a dictionary
+                    selectedHints.Add(hint, await textureRequest.DownloadTexture(hint.TextureUrl, ctx));
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     Debug.LogException(ex);
                 }
             }
         }
 
-        // stub methods
         private void DisposeHints(List<IHint> hints)
         {
             foreach (var hint in hints)
@@ -166,14 +168,23 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void Dispose()
         {
+            // Dispose of the hints in the hintsDictionary
             foreach (var hintList in hintsDictionary.Values)
             {
                 DisposeHints(hintList);
             }
-
             hintsDictionary.Clear();
 
-            // TODO:: FD:: Dispose other stuff
+            // Dispose of the textures in the selectedHints dictionary
+            foreach (var texture in selectedHints.Values)
+            {
+                if(texture != null)
+                {
+                    UnityEngine.Object.Destroy(texture);
+                }
+            }
+            selectedHints.Clear();
         }
+
     }
 }

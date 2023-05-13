@@ -17,25 +17,21 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private static readonly string LOCAL_HINTS_PATH = "LoadingScreenV2/LocalHintsFallback";
 
-        public LocalHintRequestSource(string source, SourceTag sourceTag)
+        public LocalHintRequestSource(string sourceJson, SourceTag sourceTag)
         {
-            this.source = source;
-            this.sourceTag = sourceTag;
-            this.loading_hints = new List<IHint>();
+            source = sourceJson;
+            sourceTag = sourceTag;
+            loading_hints = new List<IHint>();
 
-            // Load the ScriptableObject from Resources
-            LocalHintsFallback localHintsData = Resources.Load<LocalHintsFallback>(LOCAL_HINTS_PATH);
+            // TODO:: Parse the JSON
+            // var sceneData2 = JsonUtility.FromJson<DataStore_WorldObjects.SceneData>(sceneJson);
+            var sceneData = JsonUtility.FromJson<SceneDataTemp>(sourceJson);
 
-            if (localHintsData == null || localHintsData.slotsDefinition == null) return;
+            if (sceneData == null || sceneData.loading_hints == null) return;
 
-            foreach (SerializableKeyValuePair<SourceTag, List<BaseHint>> slotDefinition in localHintsData.slotsDefinition)
+            foreach (var hint in sceneData.loading_hints)
             {
-                if (slotDefinition.key != this.sourceTag) continue;
-
-                foreach (BaseHint hint in slotDefinition.value)
-                {
-                    this.loading_hints.Add(hint);
-                }
+                loading_hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
             }
         }
 

@@ -22,7 +22,7 @@ namespace DCL.Controllers.LoadingScreenV2
             loading_hints = new List<IHint>();
 
             // TODO:: Parse the JSON
-            var sceneData2 = JsonUtility.FromJson<DataStore_WorldObjects.SceneData>(sceneJson);
+            // var sceneData2 = JsonUtility.FromJson<DataStore_WorldObjects.SceneData>(sceneJson);
             var sceneData = JsonUtility.FromJson<SceneDataTemp>(sceneJson);
 
             if (sceneData == null || sceneData.loading_hints == null) return;
