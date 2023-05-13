@@ -1008,6 +1008,7 @@ GameObject:
   - component: {fileID: 5674188681382852263}
   - component: {fileID: 6256326097809372778}
   - component: {fileID: 1583191953220489047}
+  - component: {fileID: 7846462345703531960}
   m_Layer: 5
   m_Name: QuestDetailsSection
   m_TagString: Untagged
@@ -1117,6 +1118,40 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &7846462345703531960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3625240137481464222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ca98e642d3e34742b87e306af668872, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
+  <model>k__BackingField:
+    questName: 
+    questCreator: 
+    questDescription: 
+    questId: 
+    isPinned: 0
+    coordinates: {x: 0, y: 0}
+    questSteps: []
+    questRewards: []
+  questName: {fileID: 2534285897921027154}
+  questCreator: {fileID: 3822003804269016170}
+  questDescription: {fileID: 6218470521791044476}
+  stepsParent: {fileID: 1851627360813122803}
+  rewardsParent: {fileID: 1798156650007868679}
+  pinButton: {fileID: 4364084687773730676}
+  abandonButton: {fileID: 5285632930822995178}
+  rewardsSection: {fileID: 2111371425988300921}
+  rewardPrefab: {fileID: 5656798287975932091, guid: abaa562bf9c674359b69b21f405fe692,
+    type: 3}
+  stepPrefab: {fileID: 9194670887751839170, guid: 3ce1537ea99a7409797cc21ac18809c7,
+    type: 3}
 --- !u!1 &3947200786942160820
 GameObject:
   m_ObjectHideFlags: 0
