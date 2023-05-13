@@ -15,6 +15,7 @@ namespace DCL.Quests
         [SerializeField] internal GameObject focusOutline;
         [SerializeField] internal GameObject selectedOutline;
         [SerializeField] internal Image background;
+        [SerializeField] internal ImageComponentView backgroundImage;
 
         [SerializeField] internal Color deselectedNameColor;
         [SerializeField] internal Color selectedNameColor;
@@ -25,7 +26,7 @@ namespace DCL.Quests
 
         public event Action<string> OnActiveQuestSelected;
 
-        private bool isSelected = false;
+        internal bool isSelected = false;
 
         public override void RefreshControl()
         {
@@ -61,6 +62,7 @@ namespace DCL.Quests
         public void SetQuestImage(string imageUri)
         {
             model.questImageUri = imageUri;
+            backgroundImage.SetImage(imageUri);
         }
 
         public void Deselect()
