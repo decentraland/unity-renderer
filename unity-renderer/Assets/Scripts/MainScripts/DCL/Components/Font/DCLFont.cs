@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Models;
 using TMPro;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -17,7 +18,7 @@ namespace DCL.Components
         private const string DEFAULT_SANS_SERIF_SEMIBOLD = "Inter-SemiBold SDF";
         private const string DEFAULT_SANS_SERIF = "Inter-Regular SDF";
 
-        private readonly Dictionary<string, string> fontsMapping = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> fontsMapping = new ()
         {
             { "builtin:SF-UI-Text-Regular SDF", DEFAULT_SANS_SERIF },
             { "builtin:SF-UI-Text-Heavy SDF", DEFAULT_SANS_SERIF_HEAVY },
@@ -34,17 +35,33 @@ namespace DCL.Components
         {
             public string src;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.Font)
+                    return Utils.SafeUnimplemented<DCLFont, Model>(expected: ComponentBodyPayload.PayloadOneofCase.Font, actual: pbModel.PayloadCase);
+                
+                var pb = new Model();
+                if (pbModel.Font.HasSrc) pb.src = pbModel.Font.Src;
+                
+                return pb;
+            }
         }
 
-        public bool loaded { private set; get; } = false;
-        public bool error { private set; get; } = false;
+        public bool loaded { private set; get; }
+        public bool error { private set; get; }
 
         public TMP_FontAsset fontAsset { private set; get; }
 
-        public DCLFont() { model = new Model(); }
+        public DCLFont()
+        {
+            model = new Model();
+        }
 
-        public override int GetClassId() { return (int) CLASS_ID.FONT; }
+        public override int GetClassId() =>
+            (int) CLASS_ID.FONT;
 
         public static bool IsFontLoaded(IParcelScene scene, string componentId)
         {
@@ -106,9 +123,9 @@ namespace DCL.Components
 
             if (fontsMapping.TryGetValue(model.src, out string fontResourceName))
             {
-                ResourceRequest request = Resources.LoadAsync($"{RESOURCE_FONT_FOLDER}/{fontResourceName}", 
+                ResourceRequest request = Resources.LoadAsync($"{RESOURCE_FONT_FOLDER}/{fontResourceName}",
                     typeof(TMP_FontAsset));
-                
+
                 yield return request;
 
                 if (request.asset != null)
