@@ -11,23 +11,16 @@ namespace DCL
 {
     public class AssetPromise_AB_GameObject : AssetPromise_WithUrl<Asset_AB_GameObject>
     {
-        public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
+        public AssetPromiseSettings_Rendering settings = new ();
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
-        private const string AB_LOAD_ANIMATION = "ab_load_animation";
-        private bool doTransitionAnimation;
+        private const string FEATURE_AB_MESH_GPU = "ab-mesh-gpu";
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
-            featureFlags.OnChange += OnFeatureFlagChange;
-            OnFeatureFlagChange(featureFlags.Get(), null);
-        }
 
-        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
-        {
-            doTransitionAnimation = current.IsFeatureEnabled(AB_LOAD_ANIMATION);
         }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
@@ -183,14 +176,17 @@ namespace DCL
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
         {
+            bool uploadMesh = IsUploadMeshToGPUEnabled();
+
             foreach (Mesh mesh in meshesList)
             {
-
                 if (!mesh.isReadable)
                     continue;
 
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
+
+                if (!uploadMesh) continue;
 
                 bool isCollider = mesh.name.Contains("_collider", StringComparison.InvariantCultureIgnoreCase);
 
@@ -211,10 +207,7 @@ namespace DCL
             return base.GetAsset(id);
         }
 
-        internal override void OnForget()
-        {
-            base.OnForget();
-            featureFlags.OnChange -= OnFeatureFlagChange;
-        }
+        private bool IsUploadMeshToGPUEnabled() =>
+            featureFlags.Get().IsFeatureEnabled(FEATURE_AB_MESH_GPU);
     }
 }

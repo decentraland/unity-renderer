@@ -9,7 +9,7 @@ import { storeCondition } from 'lib/redux/storeCondition'
 import { initShared } from 'shared'
 import { sendHomeScene } from 'shared/atlas/actions'
 import { homePointKey } from 'shared/atlas/utils'
-import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
+import { BringDownClientAndReportFatalError, BringDownClientAndShowError, ErrorContext, UserError } from 'shared/loading/ReportFatalError'
 import { setResourcesURL } from 'shared/location'
 import { globalObservable } from 'shared/observables'
 import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
@@ -56,7 +56,10 @@ globalThis.DecentralandKernel = {
 
         await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
       } catch (err: any) {
-        BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
+        if (err instanceof UserError)
+          BringDownClientAndShowError(err.message)
+        else
+          BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
       }
     }, 0)
 
@@ -71,17 +74,17 @@ globalThis.DecentralandKernel = {
 
 function ensureHLSCapability() {
   if (!Hls || !Hls.isSupported) {
-    throw new Error('HTTP Live Streaming did not load')
+    throw new UserError('HTTP Live Streaming did not load')
   }
 
   if (!Hls.isSupported()) {
-    throw new Error('HTTP Live Streaming is not supported in your browser')
+    throw new UserError('HTTP Live Streaming is not supported in your browser')
   }
 }
 
 function ensureWebGLCapability() {
   if (!isWebGLCompatible()) {
-    throw new Error(
+    throw new UserError(
       "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible. This error may also happen when many tabs are open and the browser doesn't have enough resources available to start Decentraland, if that's the case, please try closing other tabs and specially other Decentraland instances."
     )
   }

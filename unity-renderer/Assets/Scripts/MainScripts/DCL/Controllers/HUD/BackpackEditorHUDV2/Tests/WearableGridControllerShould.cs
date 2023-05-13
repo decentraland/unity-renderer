@@ -61,7 +61,8 @@ namespace DCL.Backpack
                 dataStore,
                 browserBridge,
                 backpackFiltersController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                Substitute.For<IBackpackAnalyticsController>());
         }
 
         [TearDown]
@@ -493,6 +494,9 @@ namespace DCL.Backpack
 
             dataStore.previewEquippedWearables.Add("w1");
 
+            string wearableSelectedId = null;
+            controller.OnWearableSelected += wearableId => wearableSelectedId = wearableId;
+
             view.OnWearableSelected += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel
             {
                 WearableId = "w1",
@@ -516,6 +520,8 @@ namespace DCL.Backpack
                      && i.hiddenBy == null
                      && i.hideList[0] == "lower_body"
                      && i.removeList[0] == "eyes"));
+
+            Assert.AreEqual("w1", wearableSelectedId);
         }
 
         [UnityTest]

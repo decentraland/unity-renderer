@@ -5,6 +5,7 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 public class UUIDEventsPlugin : IPlugin
 {
@@ -37,7 +38,12 @@ public class UUIDEventsPlugin : IPlugin
 
     private void OnUUIDCallbackIsAdded(int sceneNumber, long entityid, ref int classId, object data)
     {
-        OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
+        OnPointerEvent.Model model = new OnPointerEvent.Model();
+        if (data is string json)
+            model = (OnPointerEvent.Model)model.GetDataFromJSON(json);
+        else if (data is Decentraland.Sdk.Ecs6.ComponentBodyPayload payload)
+            model = (OnPointerEvent.Model)model.GetDataFromPb(payload);
+            
         classId = (int) model.GetClassIdFromType();
     }
 

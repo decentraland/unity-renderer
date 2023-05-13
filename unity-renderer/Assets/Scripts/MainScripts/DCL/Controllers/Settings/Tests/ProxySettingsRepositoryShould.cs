@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace DCL.SettingsCommon.Tests
 {
+    [Category("EditModeCI")]
     public class ProxySettingsRepositoryShould
     {
         [Test]

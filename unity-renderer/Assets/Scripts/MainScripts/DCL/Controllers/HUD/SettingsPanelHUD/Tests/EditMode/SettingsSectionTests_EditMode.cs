@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace SettingsSectionTests
 {
+    [Category("EditModeCI")]
     public class SettingsSectionShould_EditMode
     {
         [Test]

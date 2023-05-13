@@ -10,7 +10,7 @@ public class ButtonComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        buttonComponent = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        buttonComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<ButtonComponentView>("Button_Common");
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }
