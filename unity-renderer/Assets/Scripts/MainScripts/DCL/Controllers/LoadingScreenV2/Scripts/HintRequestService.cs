@@ -40,14 +40,14 @@ namespace DCL.Controllers.LoadingScreenV2
             this.hintRequestSources = hintRequestSources;
         }
 
-        public async UniTask<List<IHint>> RequestHintsAndDownloadTextures(CancellationToken ctx, int totalHints)
+        public async UniTask<List<IHint>> RequestHintsFromSources(CancellationToken ctx, int totalHints)
         {
-            var hints = new List<IHint>();
+            List<IHint> hints = new List<IHint>();
             try
             {
                 if (ctx.IsCancellationRequested)
                 {
-                    return new List<IHint>();
+                    return hints;
                 }
 
                 // Step 1: Get Hints
