@@ -18,24 +18,29 @@ namespace DCL.Quests
         [SerializeField] internal TMP_Text questDescription;
         [SerializeField] internal Transform stepsParent;
         [SerializeField] internal Transform rewardsParent;
+        [SerializeField] internal Button jumpInButton;
         [SerializeField] internal Button pinButton;
         [SerializeField] internal Button abandonButton;
         [SerializeField] internal GameObject rewardsSection;
+        [SerializeField] internal GameObject guestSection;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
         [SerializeField] internal QuestStepComponentView stepPrefab;
 
+        public event Action<Vector2Int> OnJumpIn;
         public event Action<string, bool> OnPinChange;
         public event Action<string> OnQuestAbandon;
 
         private UnityObjectPool<QuestStepComponentView> stepsPool;
         private UnityObjectPool<QuestRewardComponentView> rewardsPool;
 
-        private List<QuestRewardComponentView> usedRewards = new ();
-        private List<QuestStepComponentView> usedSteps = new ();
+        private readonly List<QuestRewardComponentView> usedRewards = new ();
+        private readonly List<QuestStepComponentView> usedSteps = new ();
 
         public override void Awake()
         {
+            jumpInButton.onClick.RemoveAllListeners();
+            jumpInButton.onClick.AddListener(() => InvokeJumpIn(model.coordinates));
             pinButton.onClick.RemoveAllListeners();
             pinButton.onClick.AddListener(() =>
             {
@@ -60,6 +65,7 @@ namespace DCL.Quests
 
         public override void RefreshControl()
         {
+            SetQuestId(model.questId);
             SetQuestName(model.questName);
             SetQuestCreator(model.questCreator);
             SetQuestDescription(model.questDescription);
@@ -86,10 +92,8 @@ namespace DCL.Quests
             questDescription.text = description;
         }
 
-        public void SetQuestId(string questId)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetQuestId(string questId) =>
+            model.questId = questId;
 
         public void SetCoordinates(Vector2Int coordinates) =>
             model.coordinates = coordinates;
@@ -97,6 +101,21 @@ namespace DCL.Quests
         public void SetQuestSteps(List<QuestStepComponentModel> questSteps)
         {
             model.questSteps = questSteps;
+
+            for (var i = 0; i < stepsParent.childCount; i++)
+                Destroy(stepsParent.GetChild(i));
+
+            foreach (var pooledStep in usedSteps)
+                stepsPool.Release(pooledStep);
+
+            foreach (var stepModel in questSteps)
+            {
+                QuestStepComponentView pooledStep = stepsPool.Get();
+                pooledStep.SetModel(stepModel);
+                pooledStep.OnJumpIn -= InvokeJumpIn;
+                pooledStep.OnJumpIn += InvokeJumpIn;
+                usedSteps.Add(pooledStep);
+            }
         }
 
         public void SetQuestRewards(List<QuestRewardComponentModel> questRewards)
@@ -124,6 +143,12 @@ namespace DCL.Quests
                 usedRewards.Add(pooledReward);
             }
         }
+
+        public void SetIsGuest(bool isGuest) =>
+            guestSection.SetActive(isGuest);
+
+        private void InvokeJumpIn(Vector2Int coordinates) =>
+            OnJumpIn?.Invoke(coordinates);
 
         private void InitializePools()
         {
