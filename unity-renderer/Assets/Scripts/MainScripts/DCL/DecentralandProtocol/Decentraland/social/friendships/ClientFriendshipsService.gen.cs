@@ -9,9 +9,9 @@ using rpc_csharp;
 namespace Decentraland.Social.Friendships {
 public interface IClientFriendshipsService
 {
-  IUniTaskAsyncEnumerable<UsersResponse> GetFriends(Payload request);
+  IUniTaskAsyncEnumerable<Users> GetFriends(Payload request);
 
-  UniTask<RequestEventsResponse> GetRequestEvents(Payload request);
+  UniTask<RequestEvents> GetRequestEvents(Payload request);
 
   UniTask<UpdateFriendshipResponse> UpdateFriendshipEvent(UpdateFriendshipPayload request);
 
@@ -28,14 +28,14 @@ public class ClientFriendshipsService : IClientFriendshipsService
   }
 
   
-  public IUniTaskAsyncEnumerable<UsersResponse> GetFriends(Payload request)
+  public IUniTaskAsyncEnumerable<Users> GetFriends(Payload request)
   {
-      return module.CallServerStream<UsersResponse>("GetFriends", request);
+      return module.CallServerStream<Users>("GetFriends", request);
   }
 
-  public UniTask<RequestEventsResponse> GetRequestEvents(Payload request)
+  public UniTask<RequestEvents> GetRequestEvents(Payload request)
   {
-      return module.CallUnaryProcedure<RequestEventsResponse>("GetRequestEvents", request);
+      return module.CallUnaryProcedure<RequestEvents>("GetRequestEvents", request);
   }
 
   public UniTask<UpdateFriendshipResponse> UpdateFriendshipEvent(UpdateFriendshipPayload request)
