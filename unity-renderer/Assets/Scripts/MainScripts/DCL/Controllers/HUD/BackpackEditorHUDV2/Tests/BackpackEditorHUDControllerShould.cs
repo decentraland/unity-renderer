@@ -238,13 +238,16 @@ namespace DCL.Backpack
 
             // Arrange
             var testUserProfileModel = GetTestUserProfileModel();
+            view.isVisible.Returns(true);
+            rendererState.Set(true);
 
             // Act
             userProfile.UpdateData(testUserProfileModel);
 
             // Assert
             Assert.IsFalse(userProfile.avatar.wearables.Contains(BODY_SHAPE_ID));
-            Assert.IsTrue(dataStore.backpackV2.previewEquippedWearables.Contains(BODY_SHAPE_ID));
+            Assert.IsFalse(dataStore.backpackV2.previewEquippedWearables.Contains(BODY_SHAPE_ID));
+            Assert.AreEqual(dataStore.backpackV2.previewBodyShape.Get(), BODY_SHAPE_ID);
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(BODY_SHAPE_ID);
             avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
                 Arg.Is<WearableItem>(w => w.id == BODY_SHAPE_ID),
@@ -267,7 +270,8 @@ namespace DCL.Backpack
             }, EquipWearableSource.Wearable);
 
             Assert.IsFalse(userProfile.avatar.wearables.Contains(bodyShapeId));
-            Assert.IsTrue(dataStore.backpackV2.previewEquippedWearables.Contains(bodyShapeId));
+            Assert.AreEqual(dataStore.backpackV2.previewBodyShape.Get(), bodyShapeId);
+            Assert.IsFalse(dataStore.backpackV2.previewEquippedWearables.Contains(bodyShapeId));
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(bodyShapeId);
             avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
                 Arg.Is<WearableItem>(w => w.id == bodyShapeId),
@@ -280,6 +284,50 @@ namespace DCL.Backpack
         {
             EquipBodyShapeFromGrid(WearableLiterals.BodyShapes.FEMALE);
             EquipBodyShapeFromGrid(WearableLiterals.BodyShapes.MALE);
+        }
+
+        [Test]
+        public void SaveAvatarAndCloseViewWhenContinueSignup()
+        {
+            view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
+                Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
+                Arg.Any<Action>());
+
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(
+                new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" },
+                EquipWearableSource.Wearable);
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(
+                new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" },
+                EquipWearableSource.Wearable);
+            view.ClearReceivedCalls();
+
+            view.OnContinueSignup += Raise.Event<Action>();
+
+            Assert.IsTrue(userProfile.avatar.wearables.Count > 0);
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_eyebrows_01"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:bear_slippers"));
+            view.Received(1).Hide();
+            view.ReceivedWithAnyArgs(1).TakeSnapshotsAfterStopPreviewAnimation(default(IBackpackEditorHUDView.OnSnapshotsReady), default(Action));
+        }
+
+        [Test]
+        public void ShowSignup()
+        {
+            dataStore.common.isSignUpFlow.Set(true);
+
+            dataStore.HUDs.avatarEditorVisible.Set(true, true);
+
+            view.Received(1).ShowContinueSignup();
+        }
+
+        [Test]
+        public void HideSignup()
+        {
+            dataStore.common.isSignUpFlow.Set(false);
+
+            dataStore.HUDs.avatarEditorVisible.Set(true, true);
+
+            view.Received(1).HideContinueSignup();
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

@@ -146,7 +146,8 @@ namespace DCL.Backpack
             foreach ((string wearableId, WearableGridItemModel model) in currentWearables)
             {
                 if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable)) continue;
-                view.SetWearable(model with { IsCompatibleWithBodyShape = wearable.SupportsBodyShape(bodyShapeId) });
+                bool isCompatibleWithBodyShape = IsCompatibleWithBodyShape(bodyShapeId, wearable);
+                view.SetWearable(model with { IsCompatibleWithBodyShape = isCompatibleWithBodyShape });
             }
         }
 
@@ -236,19 +237,25 @@ namespace DCL.Backpack
                 Debug.LogWarning($"Could not parse the rarity of the wearable '{wearable.id}'. Fallback to common.");
             }
 
+            string currentBodyShapeId = dataStoreBackpackV2.previewBodyShape.Get();
+
             return new WearableGridItemModel
             {
                 WearableId = wearable.id,
                 Rarity = rarity,
                 Category = wearable.data.category,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
-                IsEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearable.id),
+                IsEquipped = IsEquipped(wearable.id),
                 IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
                 IsSelected = false,
                 UnEquipAllowed = CanWearableBeUnEquipped(wearable),
-                IsCompatibleWithBodyShape = wearable.SupportsBodyShape(dataStoreBackpackV2.previewBodyShape.Get()),
+                IsCompatibleWithBodyShape = IsCompatibleWithBodyShape(currentBodyShapeId, wearable),
             };
         }
+
+        private bool IsEquipped(string wearableId) =>
+            dataStoreBackpackV2.previewEquippedWearables.Contains(wearableId)
+            || wearableId == dataStoreBackpackV2.previewBodyShape.Get();
 
         private void HandleWearableSelected(WearableGridItemModel wearableGridItem)
         {
@@ -276,7 +283,7 @@ namespace DCL.Backpack
                 hiddenBy = null,
                 name = wearable.GetName(),
                 hideList = hidesList != null ? hidesList.ToList() : new List<string>(),
-                isEquipped = dataStoreBackpackV2.previewEquippedWearables.Contains(wearableId),
+                isEquipped = IsEquipped(wearable.id),
                 removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
                 unEquipAllowed = CanWearableBeUnEquipped(wearable),
@@ -322,7 +329,7 @@ namespace DCL.Backpack
             }
             else if (filter.StartsWith(CATEGORY_FILTER_REF))
             {
-                avatarSlotsHUDController.ClearSlotSelection(categoryFilter);
+                avatarSlotsHUDController.ClearSlotSelection(filter[9..]);
                 categoryFilter = null;
             }
 
@@ -387,5 +394,15 @@ namespace DCL.Backpack
             wearable.data.category != WearableLiterals.Categories.BODY_SHAPE &&
             wearable.data.category != WearableLiterals.Categories.EYES &&
             wearable.data.category != WearableLiterals.Categories.MOUTH;
+
+        private bool IsCompatibleWithBodyShape(string bodyShapeId, WearableItem wearable)
+        {
+            bool isCompatibleWithBodyShape = wearable.data.category
+                                                 is WearableLiterals.Categories.BODY_SHAPE
+                                                 or WearableLiterals.Categories.SKIN
+                                             || wearable.SupportsBodyShape(bodyShapeId);
+
+            return isCompatibleWithBodyShape;
+        }
     }
 }

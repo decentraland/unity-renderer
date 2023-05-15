@@ -7,12 +7,14 @@ using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
     public class BackpackEditorHUDV2ComponentView : BaseComponentView<BackpackEditorHUDModel>, IBackpackEditorHUDView, IPointerDownHandler
     {
         public event Action<Color> OnColorChanged;
+        public event Action OnContinueSignup;
 
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
@@ -28,6 +30,7 @@ namespace DCL.Backpack
         [SerializeField] internal ColorPresetsSO colorPresetsSO;
         [SerializeField] internal ColorPresetsSO skinColorPresetsSO;
         [SerializeField] private BackpackFiltersComponentView backpackFiltersComponentView;
+        [SerializeField] internal Button saveAvatarButton;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
@@ -47,6 +50,7 @@ namespace DCL.Backpack
 
             thisTransform = transform;
             backpackPreviewPanel.SetLoadingActive(false);
+            saveAvatarButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
         }
 
         public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
@@ -165,6 +169,12 @@ namespace DCL.Backpack
             colorPickerComponentView.SetColorSelector(color);
             colorPickerComponentView.UpdateSliderValues(color);
         }
+
+        public void ShowContinueSignup() =>
+            saveAvatarButton.gameObject.SetActive(true);
+
+        public void HideContinueSignup() =>
+            saveAvatarButton.gameObject.SetActive(false);
 
         public void OnPointerDown(PointerEventData eventData)
         {
