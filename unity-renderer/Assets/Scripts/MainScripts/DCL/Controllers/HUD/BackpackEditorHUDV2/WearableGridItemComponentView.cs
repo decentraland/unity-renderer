@@ -99,10 +99,7 @@ namespace DCL.Backpack
             if (model.IsCompatibleWithBodyShape)
                 image.ImageComponent.material = null;
             else
-            {
                 image.ImageComponent.material = grayScaleMaterial;
-                image.ImageComponent.SetMaterialDirty();
-            }
 
             incompatibleContainer.SetActive(!model.IsCompatibleWithBodyShape);
             interactButton.interactable = model.IsCompatibleWithBodyShape;
