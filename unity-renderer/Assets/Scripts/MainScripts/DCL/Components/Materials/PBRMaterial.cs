@@ -7,6 +7,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using DCL.Shaders;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
@@ -38,6 +40,32 @@ namespace DCL.Components
             public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.Material)
+                    return Utils.SafeUnimplemented<PBRMaterial, Model>(expected: ComponentBodyPayload.PayloadOneofCase.Material, actual: pbModel.PayloadCase);
+                
+                var pb = new Model();
+                if (pbModel.Material.HasMetallic) pb.metallic = pbModel.Material.Metallic;
+                if (pbModel.Material.HasRoughness) pb.roughness = pbModel.Material.Roughness;
+                if (pbModel.Material.HasAlphaTest) pb.alphaTest = pbModel.Material.AlphaTest;
+                if (pbModel.Material.HasDirectIntensity) pb.directIntensity = pbModel.Material.DirectIntensity;
+                if (pbModel.Material.HasMicroSurface) pb.microSurface = pbModel.Material.MicroSurface;
+                if (pbModel.Material.HasSpecularIntensity) pb.specularIntensity = pbModel.Material.SpecularIntensity;
+                if (pbModel.Material.HasAlbedoTexture) pb.albedoTexture = pbModel.Material.AlbedoTexture;
+                if (pbModel.Material.HasAlphaTexture) pb.alphaTexture = pbModel.Material.AlphaTexture;
+                if (pbModel.Material.HasBumpTexture) pb.bumpTexture = pbModel.Material.BumpTexture;
+                if (pbModel.Material.HasCastShadows) pb.castShadows = pbModel.Material.CastShadows;
+                if (pbModel.Material.HasEmissiveIntensity) pb.emissiveIntensity = pbModel.Material.EmissiveIntensity;
+                if (pbModel.Material.HasEmissiveTexture) pb.emissiveTexture = pbModel.Material.EmissiveTexture;
+                if (pbModel.Material.HasTransparencyMode) pb.transparencyMode = (int)pbModel.Material.TransparencyMode;
+                if (pbModel.Material.AlbedoColor != null) pb.albedoColor = pbModel.Material.AlbedoColor.AsUnityColor();
+                if (pbModel.Material.EmissiveColor != null) pb.emissiveColor = pbModel.Material.EmissiveColor.AsUnityColor();
+                if (pbModel.Material.ReflectivityColor != null) pb.reflectivityColor = pbModel.Material.ReflectivityColor.AsUnityColor();
+                
+                return pb;
+            }
         }
 
         enum TransparencyMode

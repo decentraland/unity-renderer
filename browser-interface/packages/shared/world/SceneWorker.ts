@@ -6,15 +6,7 @@ import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from 
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { WebWorkerTransport } from '@dcl/rpc/dist/transports/WebWorker'
 import { Scene } from '@dcl/schemas'
-import {
-  DEBUG_SCENE_LOG,
-  ETHEREUM_NETWORK,
-  FORCE_SEND_MESSAGE,
-  getAssetBundlesBaseUrl,
-  PIPE_SCENE_CONSOLE,
-  playerHeight,
-  WSS_ENABLED
-} from 'config'
+import { DEBUG_SCENE_LOG, ETHEREUM_NETWORK, getAssetBundlesBaseUrl, PIPE_SCENE_CONSOLE, playerHeight } from 'config'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
@@ -35,11 +27,9 @@ import {
   signalSceneUnload
 } from 'shared/loading/actions'
 import { incrementAvatarSceneMessages } from 'shared/session/getPerformanceInfo'
-import { EntityAction, LoadableScene } from 'shared/types'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
-import { protobufMsgBridge } from 'unity-interface/protobufMessagesBridge'
+import { LoadableScene } from 'shared/types'
 import { PositionReport } from './positionThings'
+import { EntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_interface_ecs6.gen'
 import { joinBuffers } from 'lib/javascript/uint8arrays'
 
 export enum SceneWorkerReadyState {
@@ -383,70 +373,15 @@ export class SceneWorker {
     if (!(this.ready & SceneWorkerReadyState.INITIALIZED)) {
       let present = false
       for (const action of actions) {
-        if (action.type === 'InitMessagesFinished') {
+        if (action.payload?.payload?.$case === 'initMessagesFinished') {
           present = true
           break
         }
       }
       if (!present) {
-        actions.push({
-          payload: {},
-          type: 'InitMessagesFinished'
-        })
+        actions.push({ payload: { payload: { $case: 'initMessagesFinished', initMessagesFinished: {} } } })
       }
       this.ready |= SceneWorkerReadyState.INITIALIZED
-    }
-
-    if (WSS_ENABLED || FORCE_SEND_MESSAGE) {
-      this.sendBatchWss(actions)
-    } else {
-      this.sendBatchNative(actions)
-    }
-  }
-
-  private sendBatchWss(actions: EntityAction[]): void {
-    const sceneId = this.loadableScene.id
-    const sceneNumber = this.rpcContext.sceneData.sceneNumber
-    const messages: string[] = []
-    let len = 0
-
-    function flush() {
-      if (len) {
-        getUnityInstance().SendSceneMessage(messages.join('\n'))
-        messages.length = 0
-        len = 0
-      }
-    }
-
-    for (let i = 0; i < actions.length; i++) {
-      const action = actions[i]
-
-      // Check moved from SceneRuntime.ts->DecentralandInterface.componentUpdate() here until we remove base64 support.
-      // This way we can still initialize problematic scenes in the Editor, otherwise the protobuf encoding explodes with such messages.
-      if (action.payload.json?.length > 49000) {
-        this.logger.error('Component payload cannot exceed 49.000 bytes. Skipping message.')
-
-        continue
-      }
-
-      const part = protobufMsgBridge.encodeSceneMessage(sceneId, sceneNumber, action.type, action.payload, action.tag)
-      messages.push(part)
-      len += part.length
-
-      if (len > 1024 * 1024) {
-        flush()
-      }
-    }
-
-    flush()
-  }
-
-  private sendBatchNative(actions: EntityAction[]): void {
-    const sceneId = this.loadableScene.id
-    const sceneNumber = this.rpcContext.sceneData.sceneNumber
-    for (let i = 0; i < actions.length; i++) {
-      const action = actions[i]
-      nativeMsgBridge.SendNativeMessage(sceneId, sceneNumber, action)
     }
   }
 

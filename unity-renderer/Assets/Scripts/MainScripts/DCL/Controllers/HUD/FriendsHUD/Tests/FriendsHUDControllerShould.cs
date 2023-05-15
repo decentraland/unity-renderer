@@ -46,7 +46,7 @@ namespace DCl.Social.Friends
             friendsController = Substitute.For<IFriendsController>();
             friendsController.AllocatedFriendCount.Returns(FRIENDS_COUNT);
             friendsController.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(new string[0]));
-            friendsController.GetFriendsAsync(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(new string[0]));
+            friendsController.GetFriendsAsync(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult((IReadOnlyList<string>) Array.Empty<string>()));
             dataStore = new DataStore();
             controller = new FriendsHUDController(dataStore,
                 friendsController,

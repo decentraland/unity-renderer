@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77bab8faa9414fd7b1731e1f3cbc4d5e, type: 3}
+  m_Name: ShaderVariantsData
+  m_EditorClassIdentifier: 
+  collections:
+  - {fileID: 20000000, guid: 05155a166b369cd45942d304cd642652, type: 2}
+  - {fileID: 20000000, guid: eb52176fedb24bf4cba6e7b120b23fec, type: 2}
+  - {fileID: 20000000, guid: 8840bf56131a8ed449cdf72149e05625, type: 2}
+  - {fileID: 20000000, guid: 8d996c673bb3a10489e844b3bc3141c9, type: 2}
+  - {fileID: 20000000, guid: 7e790c79a30cc3e4b8df440ede5dc5e6, type: 2}

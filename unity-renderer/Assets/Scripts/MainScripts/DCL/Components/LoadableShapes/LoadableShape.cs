@@ -3,21 +3,45 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
     public class LoadableShape : BaseShape, IAssetCatalogReferenceHolder
     {
-        [System.Serializable]
+        [Serializable]
         public new class Model : BaseShape.Model
         {
             public string src;
             public string assetId;
 
-            public override BaseModel GetDataFromJSON(string json)
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
             {
-                return Utils.SafeFromJson<Model>(json);
+                switch (pbModel.PayloadCase)
+                {
+                    case ComponentBodyPayload.PayloadOneofCase.GltfShape:
+                        var gltfModel = new Model();
+                        if (pbModel.GltfShape.HasSrc) gltfModel.src = pbModel.GltfShape.Src;
+                        if (pbModel.GltfShape.HasWithCollisions) gltfModel.withCollisions = pbModel.GltfShape.WithCollisions;
+                        if (pbModel.GltfShape.HasVisible) gltfModel.visible = pbModel.GltfShape.Visible;
+                        if (pbModel.GltfShape.HasIsPointerBlocker) gltfModel.isPointerBlocker = pbModel.GltfShape.IsPointerBlocker;
+
+                        return gltfModel;
+                    case ComponentBodyPayload.PayloadOneofCase.ObjShape:
+                        var objModel = new Model();
+                        if (pbModel.ObjShape.HasSrc) objModel.src = pbModel.ObjShape.Src;
+                        if (pbModel.ObjShape.HasWithCollisions) objModel.withCollisions = pbModel.ObjShape.WithCollisions;
+                        if (pbModel.ObjShape.HasVisible) objModel.visible = pbModel.ObjShape.Visible;
+                        if (pbModel.ObjShape.HasIsPointerBlocker) objModel.isPointerBlocker = pbModel.ObjShape.IsPointerBlocker;
+
+                        return objModel;
+                    default:
+                        return Utils.SafeUnimplemented<LoadableShape, Model>(
+                            expected: ComponentBodyPayload.PayloadOneofCase.GltfShape, actual: pbModel.PayloadCase);
+                }
             }
         }
 
@@ -25,40 +49,27 @@ namespace DCL.Components
 
         public Action<LoadableShape> OnLoaded;
 
-        protected Model previousModel = new Model();
+        protected Model previousModel = new ();
 
         protected LoadableShape()
         {
             model = new Model();
         }
 
-        public override int GetClassId()
-        {
-            return -1;
-        }
+        public override int GetClassId() =>
+            -1;
 
-        public override IEnumerator ApplyChanges(BaseModel newModel)
-        {
-            return null;
-        }
+        public override IEnumerator ApplyChanges(BaseModel newModel) =>
+            null;
 
-        public override bool IsVisible()
-        {
-            Model model = (Model)this.model;
-            return model.visible;
-        }
+        public override bool IsVisible() =>
+            ((Model)this.model).visible;
 
-        public override bool HasCollisions()
-        {
-            Model model = (Model)this.model;
-            return model.withCollisions;
-        }
+        public override bool HasCollisions() =>
+            ((Model)this.model).withCollisions;
 
-        public string GetAssetId()
-        {
-            Model model = (Model)this.model;
-            return model.assetId;
-        }
+        public string GetAssetId() =>
+            ((Model)this.model).assetId;
     }
 
     public class LoadableShape<LoadWrapperType, LoadWrapperModelType> : LoadableShape

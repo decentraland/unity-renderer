@@ -6,6 +6,8 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
@@ -20,12 +22,25 @@ namespace DCL.Components
                 public Vector3 box;
             }
 
-            public Area area = new Area();
+            public Area area = new ();
             public CameraMode.ModeId cameraMode = CameraMode.ModeId.ThirdPerson;
 
-            public override BaseModel GetDataFromJSON(string json)
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
             {
-                return Utils.SafeFromJson<Model>(json);
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.CameraModeArea)
+                    return Utils.SafeUnimplemented<CameraModeArea, Model>(expected: ComponentBodyPayload.PayloadOneofCase.CameraModeArea, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+
+                if (pbModel.CameraModeArea.Area is { Box: { } })
+                    pb.area = new Area { box = pbModel.CameraModeArea.Area.Box.AsUnityVector3() };
+
+                pb.cameraMode = (CameraMode.ModeId)pbModel.CameraModeArea.CameraMode;
+
+                return pb;
             }
         }
 
@@ -48,6 +63,13 @@ namespace DCL.Components
         IParcelScene IComponent.scene => areaScene;
 
         string IComponent.componentName => "CameraModeArea";
+
+
+
+        public void UpdateFromPb(ComponentBodyPayload payload)
+        {
+            OnModelUpdated(areaModel.GetDataFromPb(payload) as Model);
+        }
 
         void IComponent.UpdateFromJSON(string json)
         {

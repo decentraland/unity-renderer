@@ -3,7 +3,7 @@ import { action } from 'typesafe-actions'
 import { ETHEREUM_NETWORK } from 'config'
 
 import { ExplorerIdentity } from './types'
-import { IEthereumProvider, LoginState } from 'kernel-web-interface'
+import { IEthereumProvider, LoginState } from '@dcl/kernel-interface'
 
 export const INIT_SESSION = '[SESSION] Initializing'
 export const initSession = () => action(INIT_SESSION)

@@ -7,6 +7,8 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 public class AvatarModifierArea : BaseComponent
 {
@@ -14,22 +16,34 @@ public class AvatarModifierArea : BaseComponent
     public class Model : BaseModel
     {
         // TODO: Change to TriggerArea and handle deserialization with subclasses
-        public BoxTriggerArea area;
+        public BoxTriggerArea area = new ();
         public string[] modifiers;
         public string[] excludeIds;
 
-        public override BaseModel GetDataFromJSON(string json)
+        public override BaseModel GetDataFromJSON(string json) =>
+            Utils.SafeFromJson<Model>(json);
+
+        public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
         {
-            return Utils.SafeFromJson<Model>(json);
+            if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.AvatarModifierArea)
+                return Utils.SafeUnimplemented<AvatarModifierArea, Model>(expected: ComponentBodyPayload.PayloadOneofCase.AvatarModifierArea, actual: pbModel.PayloadCase);
+
+            var pb = new Model();
+
+            if (pbModel.AvatarModifierArea.Modifiers.Count != 0) pb.modifiers = pbModel.AvatarModifierArea.Modifiers.ToArray();
+            if (pbModel.AvatarModifierArea.ExcludeIds.Count != 0) pb.excludeIds = pbModel.AvatarModifierArea.ExcludeIds.ToArray();
+            if (pbModel.AvatarModifierArea.Area.Box != null) pb.area.box = pbModel.AvatarModifierArea.Area.Box.AsUnityVector3();
+
+            return pb;
         }
     }
 
-    private Model cachedModel = new Model();
+    private Model cachedModel = new ();
 
-    private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
+    private HashSet<GameObject> avatarsInArea = new ();
     private event Action<GameObject> OnAvatarEnter;
     private event Action<GameObject> OnAvatarExit;
-    
+
     internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;
@@ -185,7 +199,7 @@ public class AvatarModifierArea : BaseComponent
                 DataStore.i.player.ownPlayer.OnChange += OwnPlayerOnOnChange;
                 DataStore.i.player.otherPlayers.OnAdded += OtherPlayersOnOnAdded;
             }
-            
+
             // Force update due to after model update modifiers are removed and re-added
             // leaving a frame with the avatar without the proper modifications
             Update();
