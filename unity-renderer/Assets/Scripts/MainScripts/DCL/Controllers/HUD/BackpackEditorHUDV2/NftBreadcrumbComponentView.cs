@@ -12,24 +12,20 @@ namespace DCL.Backpack
         [SerializeField] internal NftSubCategoryFilterComponentView prefab;
         [SerializeField] internal RectTransform container;
         [SerializeField] internal NFTTypeIconsAndColors iconsByCategory;
-        [SerializeField] internal Toggle hideUnhide;
 
         private readonly Dictionary<NftSubCategoryFilterComponentView, PoolableObject> pooledObjects = new ();
         private NftSubCategoryFilterComponentView[] categoriesByIndex = Array.Empty<NftSubCategoryFilterComponentView>();
         private Pool pool;
 
         internal NftBreadcrumbModel Model => model;
-        private string currentCategory;
 
         public event Action<string> OnFilterSelected;
         public event Action<string> OnFilterRemoved;
-        public event Action<string, bool> OnHideUnhidePressed;
 
         public override void Awake()
         {
             base.Awake();
-            hideUnhide.onValueChanged.RemoveAllListeners();
-            hideUnhide.onValueChanged.AddListener((isToggled)=>OnHideUnhidePressed?.Invoke(currentCategory, isToggled));
+
             pool = PoolManager.i.AddPool(
                 $"NftBreadcrumbComponentView_{GetInstanceID()}",
                 Instantiate(prefab).gameObject,
@@ -81,13 +77,6 @@ namespace DCL.Backpack
             }
 
             container.ForceUpdateLayout();
-        }
-
-        public void SetHideUnhideToggle(string category, bool isAlreadyToggled)
-        {
-            currentCategory = category;
-            hideUnhide.gameObject.SetActive(!string.IsNullOrEmpty(category));
-            hideUnhide.SetIsOnWithoutNotify(isAlreadyToggled);
         }
 
         private void RemoveFilter(NftSubCategoryFilterModel model) =>

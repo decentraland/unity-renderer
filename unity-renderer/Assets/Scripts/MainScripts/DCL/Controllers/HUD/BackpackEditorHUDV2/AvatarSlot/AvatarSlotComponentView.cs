@@ -30,10 +30,14 @@ namespace DCL.Backpack
         [SerializeField] internal TMP_Text tooltipHiddenText;
         [SerializeField] internal Button button;
         [SerializeField] internal Button unequipButton;
+        [SerializeField] internal Button overriddenHide;
+        [SerializeField] internal Button normalHide;
 
         public event Action<AvatarSlotComponentModel, bool> OnSelectAvatarSlot;
         public event Action<string> OnUnEquip;
         public event Action<string> OnFocusHiddenBy;
+        public event Action<string, bool> OnHideUnhidePressed;
+
         private bool isSelected = false;
         private HashSet<string> hiddenByList = new HashSet<string>();
         private Vector2 tooltipDefaultPosition;
@@ -44,6 +48,18 @@ namespace DCL.Backpack
         {
             base.Awake();
 
+            overriddenHide.onClick.RemoveAllListeners();
+            overriddenHide.onClick.AddListener(()=>
+            {
+                OnHideUnhidePressed?.Invoke(model.category, false);
+                SetOverrideHide(false);
+            });
+            normalHide.onClick.RemoveAllListeners();
+            normalHide.onClick.AddListener(()=>
+            {
+                OnHideUnhidePressed?.Invoke(model.category, true);
+                SetOverrideHide(true);
+            });
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnSlotClick);
             unequipButton.onClick.RemoveAllListeners();
@@ -73,6 +89,7 @@ namespace DCL.Backpack
             RefreshControl();
             SetWearableId("");
             SetHideList(Array.Empty<string>());
+            SetOverrideHide(false);
         }
 
         public string[] GetHideList() =>
@@ -94,6 +111,12 @@ namespace DCL.Backpack
         public void SetHideList(string[] hideList) =>
             model.hidesList = hideList;
 
+        public void SetOverrideHide(bool isOverridden)
+        {
+            overriddenHide.gameObject.SetActive(isOverridden);
+            normalHide.gameObject.SetActive(!isOverridden);
+        }
+
         public void SetIsHidden(bool isHidden, string hiddenBy)
         {
             model.isHidden = isHidden;
@@ -108,7 +131,6 @@ namespace DCL.Backpack
             if (sortedList1.Count > 0)
             {
                 hiddenSlot.SetActive(true);
-                emptySlot.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
                 tooltipHiddenText.text = $"Hidden by: {sortedList1.First()}";
@@ -117,7 +139,6 @@ namespace DCL.Backpack
             else
             {
                 hiddenSlot.SetActive(false);
-                emptySlot.SetActive(string.IsNullOrEmpty(model.imageUri));
                 tooltipHiddenText.gameObject.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipDefaultPosition;
                 model.hiddenBy = "";
@@ -156,10 +177,8 @@ namespace DCL.Backpack
             backgroundRarityImage.sprite = string.IsNullOrEmpty(rarity) ? null : rarityBackgrounds.GetRarityImage(rarity);
         }
 
-        public void SetWearableId(string wearableId)
-        {
+        public void SetWearableId(string wearableId) =>
             model.wearableId = wearableId;
-        }
 
         public override void OnFocus()
         {
@@ -220,6 +239,9 @@ namespace DCL.Backpack
                 targetImage.transform.localScale = new Vector3(1, 1, 1);
             });
         }
+
+        public void SetHideVisible(bool isVisible) =>
+            hiddenSlot.SetActive(isVisible);
 
         public void ShakeAnimation() =>
             nftContainer.DOShakePosition(SHAKE_ANIMATION_TIME, 4).OnComplete(() => nftContainer.anchoredPosition = nftContainerDefaultPosition);

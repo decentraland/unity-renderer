@@ -161,8 +161,8 @@ namespace DCL.Backpack
             colorPickerComponentView.SetColorList(isSkinMode ? skinColorPresetsSO.colors : colorPresetsSO.colors);
         }
 
-        public void SetBreadcrumbHideUnhideToggle(string slotCategory, HashSet<string> hidingOverrides) =>
-            wearableGridComponentView.SetBreadcrumbHideUnhideToggle(slotCategory, hidingOverrides.Contains(slotCategory));
+        public void UpdateHideUnhideStatus(string slotCategory, HashSet<string> hidingOverrides) =>
+            avatarSlotsView.SetHideUnhideStatus(slotCategory, hidingOverrides.Contains(slotCategory));
 
         public void SetColorPickerValue(Color color)
         {

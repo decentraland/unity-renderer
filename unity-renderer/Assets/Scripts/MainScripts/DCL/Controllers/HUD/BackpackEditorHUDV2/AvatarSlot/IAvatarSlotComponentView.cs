@@ -7,7 +7,9 @@ namespace DCL.Backpack
         event Action<AvatarSlotComponentModel, bool> OnSelectAvatarSlot;
         event Action<string> OnUnEquip;
         event Action<string> OnFocusHiddenBy;
+        public event Action<string, bool> OnHideUnhidePressed;
 
+        void SetOverrideHide(bool isOverridden);
         void SetIsHidden(bool isHidden, string hiddenBy);
         void SetCategory(string category);
         void SetUnEquipAllowed(bool allowUnEquip);
@@ -19,5 +21,6 @@ namespace DCL.Backpack
         void SetHideList(string[] hideList);
         string[] GetHideList();
         void ShakeAnimation();
+        void SetHideVisible(bool isVisible);
     }
 }

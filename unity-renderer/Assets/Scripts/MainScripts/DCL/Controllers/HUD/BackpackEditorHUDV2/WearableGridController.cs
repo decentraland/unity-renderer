@@ -67,8 +67,6 @@ namespace DCL.Backpack
             view.OnFilterSelected += FilterWearablesFromReferencePath;
             view.OnFilterRemoved += RemoveFiltersFromReferencePath;
             view.OnGoToMarketplace += GoToMarketplace;
-            view.OnHideUnhidePressed += (s,b) => OnHideUnhidePressed?.Invoke(s,b);
-
 
             backpackFiltersController.OnThirdPartyCollectionChanged += SetThirdPartCollectionIds;
             backpackFiltersController.OnSortByChanged += SetSorting;

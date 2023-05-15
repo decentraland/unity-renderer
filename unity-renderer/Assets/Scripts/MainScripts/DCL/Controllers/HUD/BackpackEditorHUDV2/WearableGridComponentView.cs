@@ -29,7 +29,6 @@ namespace DCL.Backpack
         public event Action<WearableGridItemModel> OnWearableSelected;
         public event Action<WearableGridItemModel, EquipWearableSource> OnWearableEquipped;
         public event Action<WearableGridItemModel, UnequipWearableSource> OnWearableUnequipped;
-        public event Action<string, bool> OnHideUnhidePressed;
 
         private void Awake()
         {
@@ -45,7 +44,6 @@ namespace DCL.Backpack
 
             wearablesBreadcrumbComponentView.OnFilterSelected += reference => OnFilterSelected?.Invoke(reference);
             wearablesBreadcrumbComponentView.OnFilterRemoved += reference => OnFilterRemoved?.Invoke(reference);
-            wearablesBreadcrumbComponentView.OnHideUnhidePressed += (s, b) => OnHideUnhidePressed?.Invoke(s, b);
 
             infoCardComponentView.OnEquipWearable += () => OnWearableEquipped?.Invoke(selectedWearableItem.Model, EquipWearableSource.InfoCard);
             infoCardComponentView.OnUnEquipWearable += () => OnWearableUnequipped?.Invoke(selectedWearableItem.Model, UnequipWearableSource.InfoCard);
@@ -101,9 +99,6 @@ namespace DCL.Backpack
 
             UpdateEmptyState();
         }
-
-        public void SetBreadcrumbHideUnhideToggle(string slotCategory, bool isAlreadyToggled) =>
-            wearablesBreadcrumbComponentView.SetHideUnhideToggle(slotCategory, isAlreadyToggled);
 
         public void SetWearable(WearableGridItemModel model)
         {
