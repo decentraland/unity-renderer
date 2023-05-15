@@ -88,7 +88,7 @@ namespace DCL.ECSComponents {
   /// The NftShape component renders a framed picture from an NFT. It supports PNG, JPEG and GIF files.
   ///
   /// The `urn` field is the URI of the NFT, and must follow the format 'urn:decentraland:&lt;CHAIN>:&lt;CONTRACT_STANDARD>:&lt;CONTRACT_ADDRESS>:&lt;TOKEN_ID>'
-  /// Example: 'urn:ethereum:erc721:0x00000000:123'
+  /// Example: 'urn:decentraland:ethereum:erc721:0x00000000:123'
   ///
   /// The picture frame can have several different styles, plus a background color for images that have
   /// transparent pixels.
