@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -27,7 +26,7 @@ namespace DCL.EmotesCustomization.Tests
             hudsDataStore = new DataStore_HUDs();
             emotesCustomizationComponentView = Substitute.For<IEmotesCustomizationComponentView>();
             emotesCustomizationComponentController = Substitute.ForPartsOf<EmotesCustomizationComponentController>();
-            emotesCustomizationComponentController.Configure().CreateView().Returns(info => new UniTask<IEmotesCustomizationComponentView>(emotesCustomizationComponentView) );
+            emotesCustomizationComponentController.Configure().CreateView().Returns(info => emotesCustomizationComponentView);
             emotesCustomizationComponentController.Initialize(emotesCustomizationDataStore,
                 emotesDataStore,
                 exploreV2DataStore,

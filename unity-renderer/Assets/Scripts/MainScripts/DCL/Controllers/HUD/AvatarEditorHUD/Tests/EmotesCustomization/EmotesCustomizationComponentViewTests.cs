@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace DCL.EmotesCustomization.Tests
@@ -15,10 +14,7 @@ namespace DCL.EmotesCustomization.Tests
         [SetUp]
         public void SetUp()
         {
-            emotesCustomizationComponent =
-                Object.Instantiate(
-                           AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Prefabs/EmotesCustomizationSection.prefab"))
-                      .GetComponent<EmotesCustomizationComponentView>();
+            emotesCustomizationComponent = BaseComponentView.Create<EmotesCustomizationComponentView>("EmotesCustomization/EmotesCustomizationSection");
             testEmoteSlotCard = BaseComponentView.Create<EmoteSlotCardComponentView>("EmotesCustomization/EmoteSlotCard");
             testTexture = new Texture2D(20, 20);
             testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
