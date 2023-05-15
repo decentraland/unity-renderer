@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -12,12 +13,22 @@ namespace DCL.Components
         [Serializable]
         public class Model : BaseModel
         {
-            public string avatarId = null;
-            public int anchorPointId = 0;
+            public string avatarId;
+            public int anchorPointId;
 
-            public override BaseModel GetDataFromJSON(string json)
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
             {
-                return Utils.SafeFromJson<Model>(json);
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.AttachToAvatar)
+                    return Utils.SafeUnimplemented<AvatarAttachComponent, Model>(expected: ComponentBodyPayload.PayloadOneofCase.AttachToAvatar, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.AttachToAvatar.HasAvatarId) pb.avatarId = pbModel.AttachToAvatar.AvatarId;
+                if (pbModel.AttachToAvatar.HasAnchorPointId) pb.anchorPointId = (int)pbModel.AttachToAvatar.AnchorPointId;
+
+                return pb;
             }
         }
 
@@ -38,6 +49,11 @@ namespace DCL.Components
         BaseModel IComponent.GetModel() => handler.model;
 
         int IComponent.GetClassId() => (int)CLASS_ID_COMPONENT.AVATAR_ATTACH;
+
+        void IComponent.UpdateFromPb(ComponentBodyPayload payload)
+        {
+            handler.OnModelUpdated(handler.model.GetDataFromPb(payload) as Model);
+        }
 
         void IComponent.UpdateFromJSON(string json)
         {

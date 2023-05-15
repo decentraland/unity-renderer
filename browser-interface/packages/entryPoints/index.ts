@@ -1,6 +1,6 @@
 import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK } from 'config/index'
 import { WebSocketProvider } from 'eth-connect'
-import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from 'kernel-web-interface'
+import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from '@dcl/kernel-interface'
 import { getFromPersistentStorage, setPersistentStorage } from 'lib/browser/persistentStorage'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
@@ -31,10 +31,6 @@ import { isWebGLCompatible } from './validations'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
-    ensureWebGLCapability()
-
-    ensureHLSCapability()
-
     await setupBaseUrl(options)
 
     ensureValidWebGLCanvasContainer(options)
@@ -49,6 +45,9 @@ globalThis.DecentralandKernel = {
      */
     setTimeout(async () => {
       try {
+        ensureWebGLCapability()
+
+        ensureHLSCapability()
         // TODO: is there a reason why initial teleport needs to happen before initializing a session?
         // TODO: do we need `initSession`? Can't it be just a fork at the begining of the main saga?
         await setupHomeAndInitialTeleport()

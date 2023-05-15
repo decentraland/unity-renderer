@@ -6,8 +6,11 @@ using DCL.Helpers;
 using DCL.Providers;
 using DCLPlugins.LoadingScreenPlugin;
 using Decentraland.Bff;
+using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System;
 using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine.TestTools;
 
 namespace DCL.LoadingScreen.Test
@@ -26,6 +29,7 @@ namespace DCL.LoadingScreen.Test
         private DataStore_Common commonDataStore;
         private DataStore_LoadingScreen loadingScreenDataStore;
         private DataStore_Realm realmDataStore;
+        private IShaderPrewarm shaderPrewarm;
 
         [SetUp]
         public void SetUp()
@@ -34,6 +38,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenTimeoutView = Substitute.For<ILoadingScreenTimeoutView>();
             sceneController = Substitute.For<ISceneController>();
             worldState = Substitute.For<IWorldState>();
+            shaderPrewarm = Substitute.For<IShaderPrewarm>();
             playerDataStore = new DataStore_Player();
             commonDataStore = new DataStore_Common();
             loadingScreenDataStore = new DataStore_LoadingScreen();
@@ -44,13 +49,14 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView.GetTipsView().Returns(auxiliaryViews.GetTipsView());
             loadingScreenView.GetPercentageView().Returns(auxiliaryViews.GetPercentageView());
             loadingScreenView.GetTimeoutView().Returns(loadingScreenTimeoutView);
+            shaderPrewarm.PrewarmAsync(Arg.Any<Action<float>>(), Arg.Any<CancellationToken>()).Returns(UniTask.CompletedTask);
 
             worldState.GetSceneNumberByCoords(destination).Returns(-1);
 
             NotificationsController notificationsController = auxiliaryViews.gameObject.AddComponent<NotificationsController>();
             notificationsController.allowNotifications = false;
 
-            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, worldState, notificationsController, playerDataStore, commonDataStore, loadingScreenDataStore, realmDataStore);
+            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, worldState, notificationsController, playerDataStore, commonDataStore, loadingScreenDataStore, realmDataStore, shaderPrewarm);
         }
 
         [Category("EditModeCI")]
@@ -71,36 +77,35 @@ namespace DCL.LoadingScreen.Test
             });
 
         [Category("EditModeCI")]
-        [UnityTest]
-        public IEnumerator HandleRandomPositionCorrectly() =>
-            UniTask.ToCoroutine(async () =>
-            {
-                //Arrange
-                int simulatedTimeout = 100;
-                loadingScreenController.timeoutController.currentEvaluatedTimeout = simulatedTimeout;
+        [Test]
+        public async Task HandleRandomPositionCorrectly()
+        {
+            //Arrange
+            int simulatedTimeout = 100;
+            loadingScreenController.timeoutController.currentEvaluatedTimeout = simulatedTimeout;
 
-                //Act
-                playerDataStore.lastTeleportPosition.Set(Vector3.one);
-                await UniTask.Delay(simulatedTimeout + 10);
+            //Act
+            playerDataStore.lastTeleportPosition.Set(Vector3.one);
+            await UniTask.Delay(simulatedTimeout + 10);
 
-                //Assert
-                loadingScreenTimeoutView.Received().ShowSceneTimeout();
+            //Assert
+            loadingScreenTimeoutView.Received().ShowSceneTimeout();
 
-                //Act
-                loadingScreenController.timeoutController.GoBackHomeClicked();
-                playerDataStore.lastTeleportPosition.Set(Vector3.one * 100);
+            //Act
+            loadingScreenController.timeoutController.GoBackHomeClicked();
+            playerDataStore.lastTeleportPosition.Set(Vector3.one * 100);
 
-                //Assert
-                loadingScreenTimeoutView.Received().HideSceneTimeout();
-                Assert.IsTrue(loadingScreenController.timeoutController.goHomeRequested);
+            //Assert
+            loadingScreenTimeoutView.Received().HideSceneTimeout();
+            Assert.IsTrue(loadingScreenController.timeoutController.goHomeRequested);
 
-                //Act
-                playerDataStore.lastTeleportPosition.Set(Vector3.one);
-                await UniTask.Delay(simulatedTimeout + 10);
+            //Act
+            playerDataStore.lastTeleportPosition.Set(Vector3.one);
+            await UniTask.Delay(simulatedTimeout + 10);
 
-                //Assert
-                Assert.IsTrue(loadingScreenController.showRandomPositionNotification);
-            });
+            //Assert
+            Assert.IsTrue(loadingScreenController.showRandomPositionNotification);
+        }
 
         [Category("EditModeCI")]
         [Test]
@@ -142,6 +147,17 @@ namespace DCL.LoadingScreen.Test
             //Assert
             loadingScreenView.Received().FadeIn(Arg.Any<bool>(), Arg.Any<bool>());
             Assert.True(loadingScreenDataStore.decoupledLoadingHUD.visible.Get());
+        }
+
+        [Category("EditModeCI")]
+        [Test]
+        public void ShaderAreBeingPrewarmed()
+        {
+            //Initial signup flow
+            commonDataStore.isSignUpFlow.Set(true);
+
+            //Assert
+            shaderPrewarm.Received().PrewarmAsync(Arg.Any<Action<float>>(), Arg.Any<CancellationToken>());
         }
     }
 }

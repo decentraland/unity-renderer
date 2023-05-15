@@ -1,6 +1,7 @@
 syntax = "proto3";
 package decentraland.renderer.renderer_services;
 import "decentraland/common/entity.proto";
+import "decentraland/sdk/ecs6/engine_interface_ecs6.proto";
 
 message LoadSceneMessage {
   // entity and content mappings of the scene (string scene_id = 1; THIS IS NOW entity.id)
@@ -40,6 +41,12 @@ message CRDTSceneCurrentState {
 }
 
 
+message SendBatchRequest {
+  repeated decentraland.sdk.ecs6.EntityAction actions = 1;
+}
+
+message SendBatchResponse {}
+
 // The SceneController exists once per RPC port. Every scene is a independent
 // port and thus, rpcContext and its lifecycle is controlled by the SceneController.
 service RpcSceneControllerService {
@@ -51,4 +58,7 @@ service RpcSceneControllerService {
   rpc SendCrdt(CRDTSceneMessage) returns (CRDTSceneMessage) {}
   // back and forth of CRDT messages
   rpc GetCurrentState(GetCurrentStateMessage) returns (CRDTSceneCurrentState) {}
+
+  // ecs6 binary messages
+  rpc SendBatch(SendBatchRequest) returns (SendBatchResponse) {}
 }
