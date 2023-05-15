@@ -764,7 +764,9 @@ namespace DCL.Social.Friends
 
                 var result = await controller.GetFriendRequestsAsync(100, 0, 100, 0, cancellationToken);
 
-                CollectionAssert.AreEqual(incomingFriendRequests.Concat(outgoingFriendRequests), result);
+
+                // the result should be reversed since the result should be sorted by timestamp
+                CollectionAssert.AreEqual(incomingFriendRequests.Reverse().Concat(outgoingFriendRequests.Reverse()), result);
             });
     }
 }
