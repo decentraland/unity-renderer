@@ -12,8 +12,8 @@ namespace DCL.Backpack
     public class BackpackPreviewPanel : BaseComponentView
     {
         private const string RESET_PREVIEW_ANIMATION = "Idle";
-        private const float CAMERA_MIN_Y = 0f;
-        private const float CAMERA_MAX_Y = 1.7f;
+        private const float CAMERA_MIN_Y = 0.5f;
+        private const float CAMERA_MAX_Y = 1.9f;
         private const float CAMERA_MIN_Z = 0.7f;
         private const float CAMERA_MAX_Z = 3f;
         private const float CAMERA_MIN_ZOOM = 0.7f;
@@ -94,8 +94,8 @@ namespace DCL.Backpack
                 (face256, body) => onSuccess?.Invoke(face256, body),
                 () => onFailed?.Invoke());
 
-        public void SetFocus(CharacterPreviewController.CameraFocus focus, bool useTransition = true) =>
-            characterPreviewController.SetFocus(focus, useTransition);
+        public void SetFocus(CharacterPreviewController.CameraFocus focus, float? orthographicSize, bool useTransition = true) =>
+            characterPreviewController.SetFocus(focus, orthographicSize, useTransition);
 
         private void OnPreviewRotation(float angularVelocity) =>
             characterPreviewController.Rotate(angularVelocity);

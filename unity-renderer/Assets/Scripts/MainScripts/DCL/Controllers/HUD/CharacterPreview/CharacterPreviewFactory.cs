@@ -25,7 +25,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             characterPreviewController.Initialize(loadingMode, renderTexture);
             characterPreviewController.SetEnabled(isVisible);
             characterPreviewController.SetCameraProjection(isOrthographic);
-            characterPreviewController.SetFocus(cameraFocus, false);
+            characterPreviewController.SetFocus(cameraFocus, null, false);
 
             controllersCount++;
 

@@ -27,9 +27,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             DefaultEditing,
             FaceEditing,
-            ChestEditing,
-            LegsEditing,
-            FeetEditing,
             FaceSnapshot,
             BodySnapshot,
             Preview
@@ -39,10 +36,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         [SerializeField] private new Camera camera;
         [SerializeField] private Transform defaultEditingTemplate;
-        [SerializeField] private Transform chestEditingTemplate;
-        [SerializeField] private Transform legsEditingTemplate;
         [SerializeField] private Transform faceEditingTemplate;
-        [SerializeField] private Transform feetEditingTemplate;
 
         [SerializeField] private Transform faceSnapshotTemplate;
         [SerializeField] private Transform bodySnapshotTemplate;
@@ -61,6 +55,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private Quaternion avatarContainerDefaultRotation;
         private Transform cameraTransform;
         private (float? minZ, float? maxZ, float? minY, float? maxY, float? minX, float? maxX, float? minOrthographicSize, float? maxOrthographicSize) cameraLimits;
+        private float originalOrthographicSize;
 
         private void Awake()
         {
@@ -68,9 +63,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             {
                 { CameraFocus.DefaultEditing, defaultEditingTemplate },
                 { CameraFocus.FaceEditing, faceEditingTemplate },
-                { CameraFocus.ChestEditing, chestEditingTemplate },
-                { CameraFocus.LegsEditing, legsEditingTemplate },
-                { CameraFocus.FeetEditing, feetEditingTemplate },
                 { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
                 { CameraFocus.BodySnapshot, bodySnapshotTemplate },
                 { CameraFocus.Preview, previewTemplate }
@@ -79,6 +71,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             this.animator = GetComponentInChildren<IAnimator>();
             avatarContainerDefaultRotation = avatarContainer.transform.rotation;
             cameraTransform = camera.transform;
+            originalOrthographicSize = camera.orthographicSize;
         }
 
         public void SetEnabled(bool isEnabled)
@@ -175,17 +168,17 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             camera.targetTexture = null;
             var avatarAnimator = avatarContainer.gameObject.GetComponentInChildren<AvatarAnimatorLegacy>();
 
-            SetFocus(CameraFocus.FaceSnapshot, false);
+            SetFocus(CameraFocus.FaceSnapshot, null, false);
             avatarAnimator.Reset();
             yield return null;
             Texture2D face256 = Snapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
 
-            SetFocus(CameraFocus.BodySnapshot, false);
+            SetFocus(CameraFocus.BodySnapshot, null, false);
             avatarAnimator.Reset();
             yield return null;
             Texture2D body = Snapshot(SNAPSHOT_BODY_WIDTH_RES, SNAPSHOT_BODY_HEIGHT_RES);
 
-            SetFocus(CameraFocus.DefaultEditing, false);
+            SetFocus(CameraFocus.DefaultEditing, null, false);
 
             camera.targetTexture = current;
 
@@ -208,25 +201,32 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private Coroutine cameraTransitionCoroutine;
 
-        public void SetFocus(CameraFocus focus, bool useTransition = true) =>
-            SetFocus(cameraFocusLookUp[focus], useTransition);
+        public void SetFocus(CameraFocus focus, float? orthographicSize = null, bool useTransition = true) =>
+            SetFocus(cameraFocusLookUp[focus], orthographicSize, useTransition);
 
-        private void SetFocus(Transform transform, bool useTransition = true)
+        private void SetFocus(Transform transformToMove, float? orthographicSize = null, bool useTransition = true)
         {
             if (cameraTransitionCoroutine != null) { StopCoroutine(cameraTransitionCoroutine); }
 
             if (useTransition && gameObject.activeInHierarchy)
             {
-                cameraTransitionCoroutine = StartCoroutine(CameraTransition(cameraTransform.position, transform.position, cameraTransform.rotation, transform.rotation, CAMERA_TRANSITION_TIME));
+                float currentCameraOrthographicSize = camera.orthographicSize;
+
+                cameraTransitionCoroutine = StartCoroutine(
+                    CameraTransition(
+                        cameraTransform.position, transformToMove.position,
+                        cameraTransform.rotation, transformToMove.rotation,
+                        currentCameraOrthographicSize, orthographicSize ?? originalOrthographicSize,
+                        CAMERA_TRANSITION_TIME));
             }
             else
             {
-                cameraTransform.position = transform.position;
-                cameraTransform.rotation = transform.rotation;
+                cameraTransform.position = transformToMove.position;
+                cameraTransform.rotation = transformToMove.rotation;
             }
         }
 
-        private IEnumerator CameraTransition(Vector3 initPos, Vector3 endPos, Quaternion initRotation, Quaternion endRotation, float time)
+        private IEnumerator CameraTransition(Vector3 initPos, Vector3 endPos, Quaternion initRotation, Quaternion endRotation, float initOrthographicSize, float endOrthographicSize, float time)
         {
             float currentTime = 0;
 
@@ -237,6 +237,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 currentTime = Mathf.Clamp(currentTime + Time.deltaTime, 0, time);
                 cameraTransform.position = Vector3.Lerp(initPos, endPos, currentTime * inverseTime);
                 cameraTransform.rotation = Quaternion.Lerp(initRotation, endRotation, currentTime * inverseTime);
+                camera.orthographicSize = Mathf.Lerp(initOrthographicSize, endOrthographicSize, currentTime * inverseTime);
                 yield return null;
             }
 

@@ -42,11 +42,12 @@ namespace DCL.Backpack
                 value = true
             };
 
-            nftTypePreviewCameraFocus.previewCameraFocusByNftType = new SerializableKeyValuePair<string, CharacterPreviewController.CameraFocus>[1];
-            nftTypePreviewCameraFocus.previewCameraFocusByNftType[0] = new SerializableKeyValuePair<string, CharacterPreviewController.CameraFocus>
+            nftTypePreviewCameraFocus.previewCameraFocusByNftType = new NftTypePreviewCameraFocusSO.NftTypePreviewCameraFocus[1];
+            nftTypePreviewCameraFocus.previewCameraFocusByNftType[0] = new NftTypePreviewCameraFocusSO.NftTypePreviewCameraFocus
             {
-                key = TEST_CATEGORY,
-                value = CharacterPreviewController.CameraFocus.ChestEditing
+                nftType = TEST_CATEGORY,
+                cameraFocus = CharacterPreviewController.CameraFocus.FaceEditing,
+                orthographicZoom = 1.5f,
             };
 
             nftRarityBackgroundMapping.rarityIcons = new SerializableKeyValuePair<string, Sprite>[1];
@@ -85,7 +86,10 @@ namespace DCL.Backpack
             avatarSlot.SetCategory(TEST_CATEGORY);
             Assert.IsTrue(Equals(avatarSlot.typeImage.sprite, nftTypeIconMapping.GetTypeImage(TEST_CATEGORY)), "The icon obtained from the mapping differs from the set one.");
             Assert.IsTrue(nftTypeColorSupporting.IsColorSupportedByType(TEST_CATEGORY));
-            Assert.AreEqual(CharacterPreviewController.CameraFocus.ChestEditing, nftTypePreviewCameraFocus.GetPreviewCameraFocus(TEST_CATEGORY));
+
+            var previewCamFocus = nftTypePreviewCameraFocus.GetPreviewCameraFocus(TEST_CATEGORY);
+            Assert.AreEqual(CharacterPreviewController.CameraFocus.FaceEditing, previewCamFocus.cameraFocus);
+            Assert.AreEqual(1.5f, previewCamFocus.orthographicSize);
         }
 
         [Test]

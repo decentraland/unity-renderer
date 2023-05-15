@@ -1,18 +1,27 @@
 ﻿using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NftTypePreviewCameraFocus", menuName = "Variables/NftTypePreviewCameraFocus")]
 public class NftTypePreviewCameraFocusSO : ScriptableObject
 {
-    [SerializeField] public SerializableKeyValuePair<string, CharacterPreviewController.CameraFocus>[] previewCameraFocusByNftType;
+    [Serializable]
+    public class NftTypePreviewCameraFocus
+    {
+        public string nftType;
+        public CharacterPreviewController.CameraFocus cameraFocus;
+        public float orthographicZoom;
+    }
 
-    public CharacterPreviewController.CameraFocus GetPreviewCameraFocus(string category)
+    [SerializeField] public NftTypePreviewCameraFocus[] previewCameraFocusByNftType;
+
+    public (CharacterPreviewController.CameraFocus cameraFocus, float? orthographicSize) GetPreviewCameraFocus(string category)
     {
         foreach (var nftType in previewCameraFocusByNftType)
         {
-            if(nftType.key == category)
-                return nftType.value;
+            if(nftType.nftType == category)
+                return (nftType.cameraFocus, nftType.orthographicZoom);
         }
-        return CharacterPreviewController.CameraFocus.DefaultEditing;
+        return (CharacterPreviewController.CameraFocus.DefaultEditing, null);
     }
 }

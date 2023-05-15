@@ -197,16 +197,13 @@ namespace DCL.Backpack
         }
 
         [Test]
-        [TestCase("eyes", CharacterPreviewController.CameraFocus.FaceEditing)]
-        [TestCase("hair", CharacterPreviewController.CameraFocus.ChestEditing)]
-        [TestCase("eyebrows", CharacterPreviewController.CameraFocus.FeetEditing)]
-        [TestCase("facial_hair", CharacterPreviewController.CameraFocus.LegsEditing)]
-        [TestCase("body_shape", CharacterPreviewController.CameraFocus.DefaultEditing)]
-        [TestCase("non_existing_category", CharacterPreviewController.CameraFocus.DefaultEditing)]
-        public void ToggleSlotCorrectly(string slotCategory, CharacterPreviewController.CameraFocus previewCameraFocus)
+        [TestCase("eyes", CharacterPreviewController.CameraFocus.FaceEditing, 2f)]
+        [TestCase("body_shape", CharacterPreviewController.CameraFocus.DefaultEditing, 3f)]
+        [TestCase("non_existing_category", CharacterPreviewController.CameraFocus.DefaultEditing, 1.5f)]
+        public void ToggleSlotCorrectly(string slotCategory, CharacterPreviewController.CameraFocus previewCameraFocus, float orthographicSize)
         {
             // Act
-            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, previewCameraFocus, true);
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, previewCameraFocus, orthographicSize, true);
 
             // Assert
             view.Received(1).SetColorPickerVisibility(true);
@@ -231,7 +228,7 @@ namespace DCL.Backpack
                     break;
             }
 
-            view.Received(1).SetAvatarPreviewFocus(previewCameraFocus);
+            view.Received(1).SetAvatarPreviewFocus(previewCameraFocus, orthographicSize);
         }
 
         [Test]

@@ -41,7 +41,7 @@ namespace DCL.Backpack
             avatarSlot.SetCategory(slotCategory);
             avatarSlot.SetUnEquipAllowed(allowUnEquip);
             avatarSlots.Add(slotCategory, avatarSlot);
-            avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, slotModel.previewCameraFocus, isToggled);
+            avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, slotModel.previewCameraFocus, slotModel.previewCameraOrthographicSize, isToggled);
             avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
             avatarSlot.OnFocusHiddenBy += (hiddenBy) => avatarSlots[hiddenBy].ShakeAnimation();
         }

@@ -130,7 +130,9 @@ namespace DCL.Backpack
         {
             model.category = category;
             model.allowsColorChange = typeColorSupporting.IsColorSupportedByType(category);
-            model.previewCameraFocus = previewCameraFocus.GetPreviewCameraFocus(category);
+            var camFocus = previewCameraFocus.GetPreviewCameraFocus(category);
+            model.previewCameraFocus = camFocus.cameraFocus;
+            model.previewCameraOrthographicSize = camFocus.orthographicSize;
             typeImage.sprite = typeIcons.GetTypeImage(category);
             tooltipCategoryText.text = category.Replace("_", " ");
         }
