@@ -9,7 +9,7 @@ namespace DCL.Backpack
     public class WearableGridComponentView : MonoBehaviour, IWearableGridView
     {
         [SerializeField] internal NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
-        [SerializeField] internal GridContainerComponentView wearablesGridContainer;
+        [SerializeField] internal GridLayoutGroup wearablesGridContainer;
         [SerializeField] internal WearableGridItemComponentView wearableGridItemPrefab;
         [SerializeField] internal PageSelectorComponentView wearablePageSelector;
         [SerializeField] internal InfoCardComponentView infoCardComponentView;
@@ -111,8 +111,7 @@ namespace DCL.Backpack
                 wearablePooledObjects[wearableGridItem] = poolObj;
                 wearablesById[model.WearableId] = wearableGridItem;
                 wearableGridItem.SetModel(model);
-                wearablesGridContainer.AddItem(wearableGridItem);
-
+                wearableGridItem.transform.SetParent(wearablesGridContainer.transform, false);
                 wearableGridItem.OnSelected += HandleWearableSelected;
                 wearableGridItem.OnEquipped += HandleWearableEquipped;
                 wearableGridItem.OnUnequipped += HandleWearableUnequipped;
@@ -164,11 +163,7 @@ namespace DCL.Backpack
         {
             bool isEmpty = wearablesById.Count == 0;
 
-            if (isEmpty)
-                wearablesGridContainer.Hide(true);
-            else
-                wearablesGridContainer.Show(true);
-
+            wearablesGridContainer.gameObject.SetActive(!isEmpty);
             emptyStateContainer.SetActive(isEmpty);
         }
     }
