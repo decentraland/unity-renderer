@@ -14,6 +14,7 @@ namespace DCL.Quests
         public void SetQuestCreator(string questCreator);
         public void SetQuestDescription(string questDescription);
         public void SetQuestId(string questId);
+        void SetIsPinned(bool isPinned);
         public void SetCoordinates(Vector2Int coordinates);
         public void SetQuestSteps(List<QuestStepComponentModel> questSteps);
         public void SetQuestRewards(List<QuestRewardComponentModel> questRewards);

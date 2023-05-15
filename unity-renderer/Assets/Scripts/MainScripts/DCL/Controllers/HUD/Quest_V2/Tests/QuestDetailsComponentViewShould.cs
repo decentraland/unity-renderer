@@ -1,9 +1,7 @@
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Quests
 {
@@ -23,7 +21,7 @@ namespace DCL.Quests
         public void TearDown()
         {
             questDetailsComponentView.Dispose();
-            Object.Destroy(questDetailsComponentView);
+            Object.Destroy(questDetailsComponentView.gameObject);
         }
 
         [Test]
@@ -120,6 +118,78 @@ namespace DCL.Quests
                     activeSteps++;
 
             Assert.AreEqual(2, activeSteps, "Quest steps count do not match");
+        }
+
+        [Test]
+        public void JumpInFromMainButton()
+        {
+            Vector2Int receivedCoords = new Vector2Int(0,0);
+            Vector2Int targetCoords = new Vector2Int(3, 65);
+            questDetailsComponentView.OnJumpIn += (coords) => receivedCoords = coords;
+            questDetailsComponentView.SetCoordinates(targetCoords);
+
+            questDetailsComponentView.jumpInButton.onClick?.Invoke();
+            Assert.AreEqual(targetCoords, receivedCoords, "Set coordinates and event propagated ones are not the same");
+        }
+
+        [Test]
+        public void JumpInFromStepButton()
+        {
+            Vector2Int receivedCoords = new Vector2Int(0,0);
+            Vector2Int targetCoords = new Vector2Int(-10, 32);
+            questDetailsComponentView.OnJumpIn += (coords) => receivedCoords = coords;
+
+            List<QuestStepComponentModel> steps = new List<QuestStepComponentModel>()
+            {
+                new ()
+                {
+                    text = "step A",
+                    coordinates = targetCoords,
+                    isCompleted = false,
+                    supportsJumpIn = true
+                },
+            };
+            questDetailsComponentView.SetQuestSteps(steps);
+
+            for (var i = 0; i < questDetailsComponentView.stepsParent.childCount; i++)
+                if (questDetailsComponentView.stepsParent.GetChild(i).gameObject.activeSelf)
+                    questDetailsComponentView.stepsParent.GetChild(i).GetComponent<QuestStepComponentView>().jumpInButton.onClick?.Invoke();
+
+            Assert.AreEqual(targetCoords, receivedCoords, "Set coordinates and event propagated ones are not the same");
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(true)]
+        public void PinQuest(bool isPinned)
+        {
+            var questIdReceived = "";
+            var isPinnedReceived = false;
+
+            questDetailsComponentView.OnPinChange += (s, b) =>
+            {
+                questIdReceived = s;
+                isPinnedReceived = b;
+            };
+            questDetailsComponentView.SetIsPinned(isPinned);
+            questDetailsComponentView.SetQuestId("testquestid");
+
+            questDetailsComponentView.pinButton.onClick?.Invoke();
+
+            Assert.AreEqual(!isPinned, isPinnedReceived, "Received wrong is pinned value");
+            Assert.AreEqual("testquestid", questIdReceived, "Received wrong quest id");
+        }
+
+        [Test]
+        public void AbandonQuest()
+        {
+            var receivedQuestId = "";
+
+            questDetailsComponentView.OnQuestAbandon += s => receivedQuestId = s;
+            questDetailsComponentView.SetQuestId("testid");
+            questDetailsComponentView.abandonButton.onClick?.Invoke();
+
+            Assert.AreEqual("testid", receivedQuestId, "Quest id received from abandon action is wrong");
         }
     }
 }

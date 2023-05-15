@@ -98,6 +98,9 @@ namespace DCL.Quests
         public void SetCoordinates(Vector2Int coordinates) =>
             model.coordinates = coordinates;
 
+        public void SetIsPinned(bool isPinned) =>
+            model.isPinned = isPinned;
+
         public void SetQuestSteps(List<QuestStepComponentModel> questSteps)
         {
             model.questSteps = questSteps;
@@ -111,9 +114,9 @@ namespace DCL.Quests
             foreach (var stepModel in questSteps)
             {
                 QuestStepComponentView pooledStep = stepsPool.Get();
-                pooledStep.SetModel(stepModel);
                 pooledStep.OnJumpIn -= InvokeJumpIn;
                 pooledStep.OnJumpIn += InvokeJumpIn;
+                pooledStep.SetModel(stepModel);
                 usedSteps.Add(pooledStep);
             }
         }
