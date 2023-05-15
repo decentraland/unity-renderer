@@ -68,10 +68,10 @@ public class FriendsController_Mock : IFriendsController
 
     public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) { }
 
-    public UniTask<IEnumerable<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip,
+    public UniTask<IReadOnlyList<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip,
         CancellationToken cancellationToken)
     {
-        return UniTask.FromResult((IEnumerable<FriendRequest>)new List<FriendRequest>());
+        return UniTask.FromResult((IReadOnlyList<FriendRequest>)new List<FriendRequest>());
     }
 
     public void GetFriendsWithDirectMessages(int limit, int skip) { }

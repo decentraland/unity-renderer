@@ -444,7 +444,6 @@ namespace DCL.Social.Friends
         public FriendRequest GetAllocatedFriendRequest(string friendRequestId)
         {
             if (!useSocialApiBridge) return friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
-            ;
 
             return incomingFriendRequestsById.ContainsKey(friendRequestId) ? incomingFriendRequestsById[friendRequestId] :
                 outgoingFriendRequestsById.ContainsKey(friendRequestId) ? outgoingFriendRequestsById[friendRequestId] : null;
