@@ -463,8 +463,9 @@ namespace DCL.Social.Friends
                 VerifyRequest(request);
 
                 bool wasFound = controller.GetAllocatedFriendRequest("fr", out request);
-                Assert.IsNull(request);
-                Assert.False(wasFound);
+                Assert.IsNotNull(request);
+                Assert.True(wasFound);
+                VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequestByUser("receiverId");
                 VerifyRequest(request);
