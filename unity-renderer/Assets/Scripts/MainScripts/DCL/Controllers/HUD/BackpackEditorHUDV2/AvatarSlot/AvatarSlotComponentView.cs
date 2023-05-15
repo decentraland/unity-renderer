@@ -36,8 +36,6 @@ namespace DCL.Backpack
         public event Action<string> OnFocusHiddenBy;
         private bool isSelected = false;
         private readonly HashSet<string> hiddenByList = new HashSet<string>();
-        private Vector2 tooltipDefaultPosition;
-        private Vector2 tooltipFullPosition;
         private Vector2 nftContainerDefaultPosition;
 
         public override void Awake()
@@ -59,9 +57,6 @@ namespace DCL.Backpack
         private void InitializeTooltipPositions()
         {
             tooltipContainer.gameObject.SetActive(true);
-            tooltipDefaultPosition = new Vector2(30, 120);
-            tooltipFullPosition = new Vector2(30, 150);
-            tooltipContainer.anchoredPosition = tooltipDefaultPosition;
             tooltipContainer.gameObject.SetActive(false);
             nftContainerDefaultPosition = nftContainer.anchoredPosition;
         }
@@ -103,7 +98,6 @@ namespace DCL.Backpack
             if (isHidden)
             {
                 emptySlot.SetActive(false);
-                tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
                 tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
                 hiddenByList.Add(hiddenBy);
@@ -112,13 +106,11 @@ namespace DCL.Backpack
             {
                 hiddenByList.Remove(hiddenBy);
                 tooltipHiddenText.gameObject.SetActive(false);
-                tooltipContainer.anchoredPosition = tooltipDefaultPosition;
                 emptySlot.SetActive(string.IsNullOrEmpty(model.imageUri));
 
                 if (hiddenByList.Count > 0)
                 {
                     emptySlot.SetActive(false);
-                    tooltipContainer.anchoredPosition = tooltipFullPosition;
                     tooltipHiddenText.gameObject.SetActive(true);
                     tooltipHiddenText.text = $"Hidden by: {hiddenByList.Last()}";
                 }
