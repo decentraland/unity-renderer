@@ -48,7 +48,7 @@ namespace DCL.Social.Friends
                               .Returns(callInfo =>
                                {
                                    MockSocialServerContext context = (MockSocialServerContext)callInfo[1];
-
+            
                                    return UniTaskAsyncEnumerable.Create<Users>(async (writer, token) =>
                                    {
                                        foreach (var users in context.userList)
