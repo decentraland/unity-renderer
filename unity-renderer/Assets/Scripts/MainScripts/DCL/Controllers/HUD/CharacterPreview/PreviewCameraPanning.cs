@@ -21,7 +21,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!Input.GetMouseButton(2))
+            if (!Input.GetMouseButton(2) && !Input.GetMouseButton(1))
                 return;
 
             lastMousePosition = Input.mousePosition;
@@ -30,7 +30,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!Input.GetMouseButton(2))
+            if (!Input.GetMouseButton(2) && !Input.GetMouseButton(1))
                 return;
 
             if (inertiaCoroutine != null)

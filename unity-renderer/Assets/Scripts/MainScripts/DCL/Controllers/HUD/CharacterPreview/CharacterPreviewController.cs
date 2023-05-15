@@ -60,7 +60,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private IAnimator animator;
         private Quaternion avatarContainerDefaultRotation;
         private Transform cameraTransform;
-        private (float? minZ, float? maxZ, float? minY, float? maxY, float? minX, float? maxX) cameraLimits;
+        private (float? minZ, float? maxZ, float? minY, float? maxY, float? minX, float? maxX, float? minOrthographicSize, float? maxOrthographicSize) cameraLimits;
 
         private void Awake()
         {
@@ -249,13 +249,26 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void ResetRotation() =>
             avatarContainer.transform.rotation = avatarContainerDefaultRotation;
 
-        public void MoveCamera(Vector3 delta, Space relativeTo)
+        public void MoveCamera(Vector3 positionDelta)
         {
-            cameraTransform.Translate(delta, relativeTo);
+            cameraTransform.Translate(positionDelta, Space.World);
             ApplyCameraLimits();
         }
 
-        public void SetCameraLimits(float? minX, float? maxX, float? minY, float? maxY, float? minZ, float? maxZ)
+        public void SetCameraProjection(bool isOrthographic) =>
+            camera.orthographic = isOrthographic;
+
+        public void SetCameraOrthographicSize(float orthographicSizeDelta)
+        {
+            camera.orthographicSize += orthographicSizeDelta;
+            ApplyCameraLimits();
+        }
+
+        public void SetCameraLimits(
+            float? minX, float? maxX,
+            float? minY, float? maxY,
+            float? minZ, float? maxZ,
+            float? minOrthographicSize, float? maxOrthographicSize)
         {
             cameraLimits.minX = minX;
             cameraLimits.maxX = maxX;
@@ -263,15 +276,19 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             cameraLimits.maxY = maxY;
             cameraLimits.minZ = minZ;
             cameraLimits.maxZ = maxZ;
+            cameraLimits.minOrthographicSize = minOrthographicSize;
+            cameraLimits.maxOrthographicSize = maxOrthographicSize;
         }
 
         private void ApplyCameraLimits()
         {
-            Vector3 pos = cameraTransform.localPosition;
-            pos.x = Mathf.Clamp(pos.x, cameraLimits.minX ?? float.MinValue, cameraLimits.maxX ?? float.MaxValue);
-            pos.y = Mathf.Clamp(pos.y, cameraLimits.minY ?? float.MinValue, cameraLimits.maxY ?? float.MaxValue);
-            pos.z = Mathf.Clamp(pos.z, cameraLimits.minZ ?? float.MinValue, cameraLimits.maxZ ?? float.MaxValue);
-            cameraTransform.localPosition = pos;
+            Vector3 clampedCameraPosition = cameraTransform.localPosition;
+            clampedCameraPosition.x = Mathf.Clamp(clampedCameraPosition.x, cameraLimits.minX ?? float.MinValue, cameraLimits.maxX ?? float.MaxValue);
+            clampedCameraPosition.y = Mathf.Clamp(clampedCameraPosition.y, cameraLimits.minY ?? float.MinValue, cameraLimits.maxY ?? float.MaxValue);
+            clampedCameraPosition.z = Mathf.Clamp(clampedCameraPosition.z, cameraLimits.minZ ?? float.MinValue, cameraLimits.maxZ ?? float.MaxValue);
+            cameraTransform.localPosition = clampedCameraPosition;
+
+            camera.orthographicSize = Mathf.Clamp(camera.orthographicSize, cameraLimits.minOrthographicSize ?? float.MinValue, cameraLimits.maxOrthographicSize?? float.MaxValue);
         }
 
         public void PlayEmote(string emoteId, long timestamp) =>

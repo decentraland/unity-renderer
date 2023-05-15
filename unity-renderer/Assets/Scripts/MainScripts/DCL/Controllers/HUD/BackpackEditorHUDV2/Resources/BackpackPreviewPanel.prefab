@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8592443274156419516}
   - component: {fileID: 1722018204688604907}
   - component: {fileID: 6304968292617268423}
-  - component: {fileID: 3538527811644390872}
+  - component: {fileID: 6515894078027362629}
   m_Layer: 5
   m_Name: CharacterPreview
   m_TagString: Untagged
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52af82d546e9b41d089ac247180bc813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationFactor: -15
+  rotationFactor: -30
   slowDownTime: 0.5
 --- !u!114 &6304968292617268423
 MonoBehaviour:
@@ -121,7 +121,7 @@ MonoBehaviour:
   allowVerticalPanning: 1
   allowHorizontalPanning: 0
   inertiaDuration: 0.5
---- !u!114 &3538527811644390872
+--- !u!114 &6515894078027362629
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,7 +133,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0d580ddc2cb4d63bfde008b284b2d63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoomSpeed: 1
+  zoomSpeed: 2
+  smoothness: 5
 --- !u!1 &5529394846407413599
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,7 +152,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7457319488306569927
 RectTransform:
   m_ObjectHideFlags: 0
@@ -227,7 +228,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4870753396318307737
 RectTransform:
   m_ObjectHideFlags: 0
@@ -383,7 +384,7 @@ MonoBehaviour:
   avatarPreviewPanel: {fileID: 7059152913108139601}
   avatarPreviewRotation: {fileID: 1722018204688604907}
   avatarPreviewPanning: {fileID: 6304968292617268423}
-  avatarPreviewZoom: {fileID: 3538527811644390872}
+  avatarPreviewOrthographicZoom: {fileID: 6515894078027362629}
   avatarPreviewImage: {fileID: 160430747983648423}
   avatarPreviewLoadingSpinner: {fileID: 9054132650566966005}
 --- !u!1001 &6759333177557949564

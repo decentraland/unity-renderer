@@ -14,7 +14,9 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void TakeSnapshots(CharacterPreviewController.OnSnapshotsReady onSuccess, Action onFailed);
         void Rotate(float rotationVelocity);
         void ResetRotation();
-        void MoveCamera(Vector3 delta, Space relativeTo);
-        void SetCameraLimits(float? minX, float? maxX, float? minY, float? maxY, float? minZ, float? maxZ);
+        void MoveCamera(Vector3 positionDelta);
+        void SetCameraLimits(float? minX, float? maxX, float? minY, float? maxY, float? minZ, float? maxZ, float? minOrthographicSize, float? maxOrthographicSize);
+        void SetCameraProjection(bool isOrthographic);
+        void SetCameraOrthographicSize(float size);
     }
 }
