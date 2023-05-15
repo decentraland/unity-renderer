@@ -330,10 +330,11 @@ namespace DCL.Backpack
 
                 model.wearables.Add(wearableId, wearable);
                 previewEquippedWearables.Add(wearableId);
-                foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
-                {
-                    UpdateOverrideHides(s,false);
-                }
+
+                if(wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
+                    foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
+                        UpdateOverrideHides(s,false);
+
                 avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.hidingOverrideMap);
                 wearableGridController.Equip(wearableId);
             }
@@ -381,10 +382,10 @@ namespace DCL.Backpack
             if (source != UnequipWearableSource.None)
                 backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
-            foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
-            {
-                UpdateOverrideHides(s,false);
-            }
+            if(wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
+                foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
+                    UpdateOverrideHides(s,false);
+
             avatarSlotsHUDController.UnEquip(wearable.data.category, model.hidingOverrideMap);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);

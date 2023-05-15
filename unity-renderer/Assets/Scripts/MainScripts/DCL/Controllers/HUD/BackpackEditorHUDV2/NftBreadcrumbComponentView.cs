@@ -85,7 +85,6 @@ namespace DCL.Backpack
 
         public void SetHideUnhideToggle(string category, bool isAlreadyToggled)
         {
-            Debug.Log($"{category} is toggled {isAlreadyToggled}");
             currentCategory = category;
             hideUnhide.gameObject.SetActive(!string.IsNullOrEmpty(category));
             hideUnhide.SetIsOnWithoutNotify(isAlreadyToggled);
