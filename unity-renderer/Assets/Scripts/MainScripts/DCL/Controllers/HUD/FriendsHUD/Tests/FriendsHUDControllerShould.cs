@@ -167,7 +167,7 @@ namespace DCl.Social.Friends
 
             friendsController
                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-               .Returns(UniTask.FromResult((IEnumerable<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
+               .Returns(UniTask.FromResult((IReadOnlyList<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
 
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
@@ -185,7 +185,7 @@ namespace DCl.Social.Friends
 
             friendsController
                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-               .Returns(UniTask.FromResult((IEnumerable<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
+               .Returns(UniTask.FromResult((IReadOnlyList<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
@@ -296,7 +296,7 @@ namespace DCl.Social.Friends
 
             friendsController
                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-               .Returns(UniTask.FromResult((IEnumerable<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
+               .Returns(UniTask.FromResult((IReadOnlyList<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
