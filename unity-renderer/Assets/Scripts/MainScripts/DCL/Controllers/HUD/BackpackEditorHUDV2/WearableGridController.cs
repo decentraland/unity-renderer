@@ -178,7 +178,7 @@ namespace DCL.Backpack
             var wearableBreadcrumbModel = new NftBreadcrumbModel
             {
                 Path = path.ToArray(),
-                Current = 0,
+                Current = path.Count - 1,
                 ResultCount = 0,
             };
 
