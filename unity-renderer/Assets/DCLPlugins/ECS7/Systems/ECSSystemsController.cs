@@ -31,12 +31,8 @@ public class ECSSystemsController : IDisposable
     private readonly ECS7System internalComponentMarkDirtySystem;
     private readonly ECS7System internalComponentRemoveDirtySystem;
     private readonly ECSScenesUiSystem uiSystem;
-    private readonly ECSBillboardSystem billboardSystem;
     private readonly ECSCameraEntitySystem cameraEntitySystem;
     private readonly ECSPlayerTransformSystem playerTransformSystem;
-    private readonly ECSVideoPlayerSystem videoPlayerSystem;
-    private readonly ECSUIInputSenderSystem uiInputSenderSystem;
-    private readonly ECSRaycastSystem raycastSystem;
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
@@ -66,8 +62,10 @@ public class ECSSystemsController : IDisposable
             CommonScriptableObjects.allUIHidden,
             DataStore.i.HUDs.isSceneUIEnabled);
 
-        billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
-        videoPlayerSystem = new ECSVideoPlayerSystem(
+
+        ECSBillboardSystem billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
+
+        ECSVideoPlayerSystem videoPlayerSystem = new ECSVideoPlayerSystem(
             context.internalEcsComponents.videoPlayerComponent,
             context.internalEcsComponents.videoMaterialComponent,
             context.componentWriter);
@@ -78,9 +76,9 @@ public class ECSSystemsController : IDisposable
         playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter, DataStore.i.ecs7.scenes,
             DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
-        uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
+        ECSUIInputSenderSystem uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
 
-        raycastSystem = new ECSRaycastSystem(
+        ECSRaycastSystem raycastSystem = new ECSRaycastSystem(
             context.internalEcsComponents.raycastComponent,
             context.internalEcsComponents.physicColliderComponent,
             context.internalEcsComponents.onPointerColliderComponent,
@@ -105,9 +103,20 @@ public class ECSSystemsController : IDisposable
             context.componentGroups.RegisteredUiPointerEventsWithUiRemoved,
             context.componentGroups.RegisteredUiPointerEventsWithPointerEventsRemoved);
 
+
+        ECSPointerInputSystem pointerInputSystem = new ECSPointerInputSystem(
+            context.internalEcsComponents.onPointerColliderComponent,
+            context.internalEcsComponents.inputEventResultsComponent,
+            context.internalEcsComponents.PointerEventsComponent,
+            interactionHoverCanvas,
+            Environment.i.world.state,
+            DataStore.i.ecs7,
+            DataStore.i.rpc.context.restrictedActions);
+
         GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
             context.componentWriter,
             context.internalEcsComponents.GltfContainerLoadingStateComponent);
+
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -120,14 +129,7 @@ public class ECSSystemsController : IDisposable
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
                 context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),
             uiSystem.Update,
-            ECSPointerInputSystem.CreateSystem(
-                context.internalEcsComponents.onPointerColliderComponent,
-                context.internalEcsComponents.inputEventResultsComponent,
-                context.internalEcsComponents.PointerEventsComponent,
-                interactionHoverCanvas,
-                Environment.i.world.state,
-                DataStore.i.ecs7,
-                DataStore.i.rpc.context.restrictedActions),
+            pointerInputSystem.Update,
             billboardSystem.Update,
             videoPlayerSystem.Update
         };

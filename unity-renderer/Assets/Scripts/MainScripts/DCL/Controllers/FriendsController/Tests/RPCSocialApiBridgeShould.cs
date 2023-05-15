@@ -26,6 +26,7 @@ namespace DCL.Social.Friends
     {
         private RPCSocialApiBridge rpcSocialApiBridge;
         private MockSocialServerContext context;
+        private IUserProfileBridge userProfileBridge;
 
         private const string OWN_ID = "My custom id";
         private const string ACCESS_TOKEN = "Token";
@@ -33,7 +34,7 @@ namespace DCL.Social.Friends
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            var userProfileBridge = Substitute.For<IUserProfileBridge>();
+            userProfileBridge = Substitute.For<IUserProfileBridge>();
 
             var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
             ownProfile.UpdateData(new UserProfileModel { userId = OWN_ID });
@@ -109,7 +110,23 @@ namespace DCL.Social.Friends
                     }
                 };
 
-                rpcSocialApiBridge.OnFriendAdded += friend => { friends.Add(friend.userId, friend); };
+                var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+                var userName = "A custom name";
+
+                userProfile.UpdateData(new UserProfileModel()
+                {
+                    name = userName,
+                });
+
+                rpcSocialApiBridge.OnFriendAdded += friend =>
+                {
+                    if (string.IsNullOrEmpty(friend.userName)) { throw new Exception("User should have a userName"); }
+
+                    friends.Add(friend.userId, friend);
+                };
+
+                userProfileBridge.RequestFullUserProfileAsync(Arg.Any<string>())
+                                 .Returns(new UniTask<UserProfile>(userProfile));
 
                 await rpcSocialApiBridge.GetInitializationInformationAsync(cancellationToken);
 

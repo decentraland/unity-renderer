@@ -1,22 +1,47 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
     public class UIContainerRect : UIShape<UIContainerRectReferencesContainer, UIContainerRect.Model>
     {
         [System.Serializable]
-        new public class Model : UIShape.Model
+        public new class Model : UIShape.Model
         {
-            public float thickness = 0f;
+            public float thickness;
             public Color color = Color.clear;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.UiContainerRect)
+                    return Utils.SafeUnimplemented<UIContainerRect, Model>(expected: ComponentBodyPayload.PayloadOneofCase.UiContainerRect, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.UiContainerRect.HasName) pb.name = pbModel.UiContainerRect.Name;
+                if (pbModel.UiContainerRect.HasParentComponent) pb.parentComponent = pbModel.UiContainerRect.ParentComponent;
+                if (pbModel.UiContainerRect.HasVisible) pb.visible = pbModel.UiContainerRect.Visible;
+                if (pbModel.UiContainerRect.HasOpacity) pb.opacity = pbModel.UiContainerRect.Opacity;
+                if (pbModel.UiContainerRect.HasHAlign) pb.hAlign = pbModel.UiContainerRect.HAlign;
+                if (pbModel.UiContainerRect.HasVAlign) pb.vAlign = pbModel.UiContainerRect.VAlign;
+                if (pbModel.UiContainerRect.Width != null) pb.width = SDK6DataMapExtensions.FromProtobuf(pb.width, pbModel.UiContainerRect.Width);
+                if (pbModel.UiContainerRect.Height != null) pb.height = SDK6DataMapExtensions.FromProtobuf(pb.height, pbModel.UiContainerRect.Height);
+                if (pbModel.UiContainerRect.PositionX != null) pb.positionX = SDK6DataMapExtensions.FromProtobuf(pb.positionX, pbModel.UiContainerRect.PositionX);
+                if (pbModel.UiContainerRect.PositionY != null) pb.positionY = SDK6DataMapExtensions.FromProtobuf(pb.positionY, pbModel.UiContainerRect.PositionY);
+                if (pbModel.UiContainerRect.HasIsPointerBlocker) pb.isPointerBlocker = pbModel.UiContainerRect.IsPointerBlocker;
+
+                if (pbModel.UiContainerRect.Color != null) pb.color = pbModel.UiContainerRect.Color.AsUnityColor();
+                if (pbModel.UiContainerRect.HasThickness) pb.thickness = pbModel.UiContainerRect.Thickness;
+
+                return pb;
+            }
         }
 
         public override string referencesContainerPrefabName => "UIContainerRect";

@@ -45,7 +45,6 @@ public class PlaceAndEventsCardsReloader : IDisposable
         if (!firstLoading)
             return reloadSubSection && !IsInCooldown();
 
-        firstLoading = false;
         reloadSubSection = true;
         lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
 

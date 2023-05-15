@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -14,9 +15,21 @@ namespace DCL.Components
         {
             public float distance = 10f;
 
-            public override BaseModel GetDataFromJSON(string json)
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
             {
-                return Utils.SafeFromJson<Model>(json);
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.UuidCallback)
+                    return Utils.SafeUnimplemented<OnPointerEvent, Model>(expected: ComponentBodyPayload.PayloadOneofCase.UuidCallback, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+
+                if (pbModel.UuidCallback.HasUuid) pb.uuid = pbModel.UuidCallback.Uuid;
+                if (pbModel.UuidCallback.HasType) pb.type = pbModel.UuidCallback.Type;
+                if (pbModel.UuidCallback.HasDistance) pb.distance = pbModel.UuidCallback.Distance;
+
+                return pb;
             }
         }
 

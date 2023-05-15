@@ -17,16 +17,16 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 6f75b5204ec5cfe4fa6d5321cd2b2d73
   m_SerializeEntries:
-  - m_GUID: 8d996c673bb3a10489e844b3bc3141c9
-    m_Address: shadervariants-selected
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: d32d7bccfd7609a4c923dcbf9c154a0e
     m_Address: MapDefault
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9fd4d3757b5f1c148ac6903817ed6c8a
     m_Address: MapDefaultEstates
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5ae7351c6eb2a5b4bb741327506abfc9
+    m_Address: ShaderVariantsData
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

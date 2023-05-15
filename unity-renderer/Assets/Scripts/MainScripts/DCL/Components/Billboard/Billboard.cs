@@ -4,6 +4,7 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL
 {
@@ -16,9 +17,19 @@ namespace DCL
             public bool y = true;
             public bool z = true;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
-        }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
 
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) =>
+                pbModel.PayloadCase == ComponentBodyPayload.PayloadOneofCase.Billboard
+                    ? new Model
+                    {
+                        x = pbModel.Billboard.X,
+                        y = pbModel.Billboard.Y,
+                        z = pbModel.Billboard.Z,
+                    }
+                    : Utils.SafeUnimplemented<Billboard, Model>(expected: ComponentBodyPayload.PayloadOneofCase.Billboard, actual: pbModel.PayloadCase);
+        }
 
         private const string COMPONENT_NAME = "billboard";
 

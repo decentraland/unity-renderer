@@ -1,20 +1,38 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
+using System.Linq;
 
 namespace DCL.Components
 {
     public class PlaneShape : ParametrizedShape<PlaneShape.Model>
     {
         [System.Serializable]
-        new public class Model : BaseShape.Model
+        public new class Model : BaseShape.Model
         {
             public float[] uvs;
             public float width = 1f; // Plane
             public float height = 1f; // Plane
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.PlaneShape)
+                    return Utils.SafeUnimplemented<PlaneShape, Model>(expected: ComponentBodyPayload.PayloadOneofCase.PlaneShape, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.PlaneShape.Uvs is { Count: > 0 }) pb.uvs = pbModel.PlaneShape.Uvs.ToArray();
+                if (pbModel.PlaneShape.HasHeight) pb.height = pbModel.PlaneShape.Height;
+                if (pbModel.PlaneShape.HasWidth) pb.width = pbModel.PlaneShape.Width;
+                if (pbModel.PlaneShape.HasVisible) pb.visible = pbModel.PlaneShape.Visible;
+                if (pbModel.PlaneShape.HasWithCollisions) pb.withCollisions = pbModel.PlaneShape.WithCollisions;
+                if (pbModel.PlaneShape.HasIsPointerBlocker) pb.isPointerBlocker = pbModel.PlaneShape.IsPointerBlocker;
+                
+                return pb;
+            }
         }
 
         public PlaneShape() { model = new Model(); }

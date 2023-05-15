@@ -3,6 +3,8 @@ using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 [Serializable]
 public class AvatarModel : BaseModel
@@ -26,9 +28,41 @@ public class AvatarModel : BaseModel
 
     public string expressionTriggerId = null;
     public long expressionTriggerTimestamp = -1;
-    public string stickerTriggerId = null;
-    public long stickerTriggerTimestamp = -1;
     public bool talking = false;
+
+    public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+    {
+        if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.AvatarShape)
+            return Utils.SafeUnimplemented<AvatarModel, AvatarModel>(expected: ComponentBodyPayload.PayloadOneofCase.AvatarShape, actual: pbModel.PayloadCase);
+
+        var model = new AvatarModel();
+        if (pbModel.AvatarShape.HasId) model.id = pbModel.AvatarShape.Id;
+        if (pbModel.AvatarShape.HasName) model.name = pbModel.AvatarShape.Name;
+        if (pbModel.AvatarShape.HasTalking) model.talking = pbModel.AvatarShape.Talking;
+        if (pbModel.AvatarShape.HasBodyShape) model.bodyShape = pbModel.AvatarShape.BodyShape;
+        if (pbModel.AvatarShape.EyeColor != null) model.eyeColor = pbModel.AvatarShape.EyeColor.AsUnityColor();
+        if (pbModel.AvatarShape.HairColor != null) model.hairColor = pbModel.AvatarShape.HairColor.AsUnityColor();
+        if (pbModel.AvatarShape.SkinColor != null) model.skinColor = pbModel.AvatarShape.SkinColor.AsUnityColor();
+        if (pbModel.AvatarShape.HasExpressionTriggerId) model.expressionTriggerId = pbModel.AvatarShape.ExpressionTriggerId;
+        if (pbModel.AvatarShape.HasExpressionTriggerTimestamp) model.expressionTriggerTimestamp = pbModel.AvatarShape.ExpressionTriggerTimestamp;
+        if (pbModel.AvatarShape.Wearables is { Count: > 0 }) model.wearables = pbModel.AvatarShape.Wearables.ToList();
+        if (pbModel.AvatarShape.Emotes is { Count: > 0 })
+        {
+            model.emotes = new List<AvatarEmoteEntry>(pbModel.AvatarShape.Emotes.Count);
+            for (var i = 0; i < pbModel.AvatarShape.Emotes.Count; i++)
+            {
+                if (pbModel.AvatarShape.Emotes[i] == null) continue;
+                AvatarEmoteEntry emote = new AvatarEmoteEntry();
+
+                if (pbModel.AvatarShape.Emotes[i].HasSlot) emote.slot = pbModel.AvatarShape.Emotes[i].Slot;
+                if (pbModel.AvatarShape.Emotes[i].HasUrn) emote.urn = pbModel.AvatarShape.Emotes[i].Urn;
+                model.emotes.Add(emote);
+            }
+        }
+
+        return model;
+
+    }
 
     public bool HaveSameWearablesAndColors(AvatarModel other)
     {
@@ -68,8 +102,7 @@ public class AvatarModel : BaseModel
     public bool HaveSameExpressions(AvatarModel other)
     {
         return expressionTriggerId == other.expressionTriggerId &&
-               expressionTriggerTimestamp == other.expressionTriggerTimestamp &&
-               stickerTriggerTimestamp == other.stickerTriggerTimestamp;
+               expressionTriggerTimestamp == other.expressionTriggerTimestamp;
     }
 
     public bool Equals(AvatarModel other)
@@ -88,7 +121,6 @@ public class AvatarModel : BaseModel
                eyeColor == other.eyeColor &&
                expressionTriggerId == other.expressionTriggerId &&
                expressionTriggerTimestamp == other.expressionTriggerTimestamp &&
-               stickerTriggerTimestamp == other.stickerTriggerTimestamp &&
                wearablesAreEqual;
     }
 
@@ -105,12 +137,12 @@ public class AvatarModel : BaseModel
         eyeColor = other.eyeColor;
         expressionTriggerId = other.expressionTriggerId;
         expressionTriggerTimestamp = other.expressionTriggerTimestamp;
-        stickerTriggerId = other.stickerTriggerId;
-        stickerTriggerTimestamp = other.stickerTriggerTimestamp;
         wearables = new List<string>(other.wearables);
         emotes = other.emotes.Select(x => new AvatarEmoteEntry() { slot = x.slot, urn = x.urn }).ToList();
     }
 
-    public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<AvatarModel>(json); }
+    public override BaseModel GetDataFromJSON(string json) =>
+        Utils.SafeFromJson<AvatarModel>(json);
+
 
 }

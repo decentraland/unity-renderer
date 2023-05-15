@@ -1,6 +1,8 @@
 using DCL;
+using DCL.Helpers;
 using System;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -94,7 +96,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
 
         if (!isDestroyed && gameObject)
-            Destroy(gameObject);
+            Utils.SafeDestroy(gameObject);
     }
 
     public virtual void Awake()
@@ -182,4 +184,9 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
         return buttonComponentView;
     }
+
+#if UNITY_EDITOR
+    public static T CreateUIComponentFromAssetDatabase<T>(string assetName) where T: BaseComponentView =>
+        Instantiate(AssetDatabase.LoadAssetAtPath<T>($"Assets/UIComponents/Prefabs/{assetName}.prefab"));
+#endif
 }
