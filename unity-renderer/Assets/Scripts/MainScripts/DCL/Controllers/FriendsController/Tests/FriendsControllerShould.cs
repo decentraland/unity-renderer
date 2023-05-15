@@ -341,8 +341,6 @@ namespace DCL.Social.Friends
         [Test]
         public void AllocateByUserIdWhenReceiveFriendRequestWithSocialClient()
         {
-            GameObject go = new GameObject();
-            var component = go.AddComponent<MatrixInitializationBridge>();
             var dataStore = new DataStore();
 
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
@@ -634,8 +632,6 @@ namespace DCL.Social.Friends
         public IEnumerator GetFriendsAsyncWithSocialService() =>
             UniTask.ToCoroutine(async () =>
             {
-                GameObject go = new GameObject();
-                var component = go.AddComponent<MatrixInitializationBridge>();
                 var dataStore = new DataStore();
 
                 dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
@@ -722,8 +718,6 @@ namespace DCL.Social.Friends
         public IEnumerator GetFriendRequestsAsyncWithSocialBridge() =>
             UniTask.ToCoroutine(async () =>
             {
-                GameObject go = new GameObject();
-                var component = go.AddComponent<MatrixInitializationBridge>();
                 var dataStore = new DataStore();
 
                 dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });

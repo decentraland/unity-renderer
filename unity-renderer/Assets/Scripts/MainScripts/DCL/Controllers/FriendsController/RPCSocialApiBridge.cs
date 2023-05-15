@@ -89,7 +89,7 @@ namespace DCL.Social.Friends
 
             initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
             await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
-            var friendshipInitializationMessage = await GetRequestEvents(cancellationToken);
+            var friendshipInitializationMessage = await GetFriendRequestsFromServer(cancellationToken);
 
             initializationInformationTask.TrySetResult(friendshipInitializationMessage);
 
@@ -98,7 +98,7 @@ namespace DCL.Social.Friends
             return await initializationInformationTask.Task.AttachExternalCancellation(cancellationToken);
         }
 
-        private async UniTask<FriendshipInitializationMessage> GetRequestEvents(CancellationToken cancellationToken = default)
+        private async UniTask<FriendshipInitializationMessage> GetFriendRequestsFromServer(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -107,7 +107,7 @@ namespace DCL.Social.Friends
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            await UniTask.SwitchToMainThread();
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             foreach (var friendRequest in requestEvents.Events.Incoming.Items)
             {

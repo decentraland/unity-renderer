@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,6 +12,7 @@ namespace DCL.Social.Friends
     public class FriendsController : IFriendsController
     {
         private const string USE_SOCIAL_CLIENT_FEATURE_FLAG = "use-social-client";
+        private static readonly Comparer<long> DESCENDING_LONG_COMPARER = Comparer<long>.Create((l, l1) => -l.CompareTo(l1));
 
         private readonly IFriendsApiBridge apiBridge;
         private readonly ISocialApiBridge socialApiBridge;
@@ -21,8 +21,8 @@ namespace DCL.Social.Friends
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
         private readonly Dictionary<string, FriendRequest> incomingFriendRequestsById = new ();
         private readonly Dictionary<string, FriendRequest> outgoingFriendRequestsById = new ();
-        private readonly SortedList<long, FriendRequest> incomingFriendRequestsByTimestamp = new ();
-        private readonly SortedList<long, FriendRequest> outgoingFriendRequestsByTimestamp = new ();
+        private readonly SortedList<long, FriendRequest> incomingFriendRequestsByTimestamp = new (DESCENDING_LONG_COMPARER);
+        private readonly SortedList<long, FriendRequest> outgoingFriendRequestsByTimestamp = new (DESCENDING_LONG_COMPARER);
         private readonly Dictionary<string, UserStatus> friends = new ();
         private readonly SortedList<string, UserStatus> friendsSortedByName = new ();
         private readonly DataStore dataStore;
@@ -374,7 +374,7 @@ namespace DCL.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public async UniTask<IEnumerable<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken)
+        public async UniTask<IReadOnlyList<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -385,24 +385,16 @@ namespace DCL.Social.Friends
 
                 List<FriendRequest> result = new List<FriendRequest>(sentCount - sentSkip + receivedCount - receivedSkip);
 
-                var index = 0;
-
-                foreach (var receivedRequest in incomingFriendRequestsByTimestamp.Values)
+                for (int i = receivedSkip; i < receivedSkip + receivedLimit && i < incomingFriendRequestsByTimestamp.Values.Count; i++)
                 {
-                    if (index >= receivedSkip && index < receivedSkip + receivedLimit) { result.Add(receivedRequest); }
-                    else if (index >= receivedSkip + receivedLimit) { break; }
-
-                    index++;
+                    var receivedRequest = incomingFriendRequestsByTimestamp.Values[i];
+                    result.Add(receivedRequest);
                 }
 
-                index = 0;
-
-                foreach (var sentRequest in outgoingFriendRequestsByTimestamp.Values)
+                for (int i = sentSkip; i < sentSkip + sentLimit && i < outgoingFriendRequestsByTimestamp.Values.Count; i++)
                 {
-                    if (index >= sentSkip && index < sentSkip + sentLimit) { result.Add(sentRequest); }
-                    else if (index >= sentSkip + sentLimit) { break; }
-
-                    index++;
+                    var sentRequest = outgoingFriendRequestsByTimestamp.Values[i];
+                    result.Add(sentRequest);
                 }
 
                 return result;
@@ -451,13 +443,11 @@ namespace DCL.Social.Friends
 
         public FriendRequest GetAllocatedFriendRequest(string friendRequestId)
         {
-            if (useSocialApiBridge)
-            {
-                return incomingFriendRequestsById.ContainsKey(friendRequestId) ? incomingFriendRequestsById[friendRequestId] :
-                    outgoingFriendRequestsById.ContainsKey(friendRequestId) ? outgoingFriendRequestsById[friendRequestId] : null;
-            }
+            if (!useSocialApiBridge) return friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
+            ;
 
-            return friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
+            return incomingFriendRequestsById.ContainsKey(friendRequestId) ? incomingFriendRequestsById[friendRequestId] :
+                outgoingFriendRequestsById.ContainsKey(friendRequestId) ? outgoingFriendRequestsById[friendRequestId] : null;
         }
 
         public FriendRequest GetAllocatedFriendRequestByUser(string userId)
@@ -473,14 +463,17 @@ namespace DCL.Social.Friends
                     if (request.Timestamp <= max) continue;
                     result = request;
                     max = request.Timestamp;
+                    break;
                 }
 
                 foreach (var request in outgoingFriendRequestsById.Values)
                 {
                     if (request.From != userId && request.To != userId) continue;
+
+                    // we do check for max here because within a single session there can be a
+                    // sent and a received request with the same user and we want to show the latest one
                     if (request.Timestamp <= max) continue;
-                    result = request;
-                    max = request.Timestamp;
+                    return request;
                 }
             }
             else
