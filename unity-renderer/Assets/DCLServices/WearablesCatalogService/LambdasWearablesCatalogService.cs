@@ -36,6 +36,9 @@ namespace DCLServices.WearablesCatalogService
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
 
+#if UNITY_EDITOR
+        private readonly DebugConfig debugConfig = DataStore.i.debugConfig;
+#endif
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog,
             ILambdasService lambdasService)
         {
@@ -132,9 +135,10 @@ namespace DCLServices.WearablesCatalogService
         {
 
 #if UNITY_EDITOR
-            DebugConfig debugConfig = DataStore.i.debugConfig;
-            if (!string.IsNullOrEmpty(debugConfig.overrideUserID))
-                userId = debugConfig.overrideUserID;
+            string debugUserId = debugConfig.overrideUserID;
+
+            if (!string.IsNullOrEmpty(debugUserId))
+                userId = debugUserId;
 #endif
 
             var createNewPointer = false;
