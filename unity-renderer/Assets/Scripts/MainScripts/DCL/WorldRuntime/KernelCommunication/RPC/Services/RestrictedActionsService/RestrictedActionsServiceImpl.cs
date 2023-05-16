@@ -21,6 +21,33 @@ namespace RPC.Services
             RestrictedActionsServiceCodeGen.RegisterService(port, new RestrictedActionsServiceImpl());
         }
 
+        public async UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request, RPCContext context, CancellationToken ct)
+        {
+            await UniTask.SwitchToMainThread(ct);
+            RestrictedActionsContext restrictedActions = context.restrictedActions;
+
+            int currentFrameCount = restrictedActions.GetCurrentFrameCount?.Invoke() ?? GetCurrentFrameCount();
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+                if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
+                {
+                    // LOGIC HERE
+                    // success = restrictedActions.OpenExternalUrlPrompt?.Invoke(request.Url, request.SceneNumber) ?? false;
+                }
+            }
+            catch (OperationCanceledException _)
+            { // ignored
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            return new TeleportToResponse();
+        }
+
         public async UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request, RPCContext context, CancellationToken ct)
         {
             await UniTask.SwitchToMainThread(ct);
