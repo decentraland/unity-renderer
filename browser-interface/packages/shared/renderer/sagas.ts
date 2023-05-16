@@ -245,16 +245,16 @@ function* initializeRenderer(action: InitializeRenderer) {
 
 function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   if (action.payload.isSignUp) {
+    const userId: string = yield select(getCurrentUserId)
     if(getFeatureFlagEnabled(store.getState(), 'seamless_login'))
     {
-      const userId: string = yield select(getCurrentUserId)
       yield put(sendProfileToRenderer(userId))
       store.dispatch(signUp('', 'testing-name'))
+      getUnityInstance().SetSignupFlow()
     }
     else
     {
-      getUnityInstance().ShowAvatarEditorInSignIn()
-      const userId: string = yield select(getCurrentUserId)
+      getUnityInstance().SetSignupFlow()
       yield put(sendProfileToRenderer(userId))
     }
 

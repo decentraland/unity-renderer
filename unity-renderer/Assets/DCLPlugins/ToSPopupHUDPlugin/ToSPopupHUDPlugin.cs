@@ -16,13 +16,15 @@ namespace DCLPlugins.ToSPopupHUDPlugin
         private async UniTaskVoid Initialize()
         {
             await Environment.WaitUntilInitialized();
-            IAddressableResourceProvider assetsProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
-
+            var assetsProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
             //var analytics = Environment.i.platform.serviceProviders.analytics;
             var hudsDataStore = DataStore.i.HUDs;
 
             var view = await assetsProvider.Instantiate<IToSPopupView>("ToSPopupHUD", "_ToSPopupHUD");
-            controller = new ToSPopupController(view, new ToSPopupHandler());
+            controller = new ToSPopupController(view, hudsDataStore.tosPopupVisible, new ToSPopupHandler(hudsDataStore.tosPopupVisible));
+
+            //Enable the popup, the plugin depens on the feature flag
+            hudsDataStore.tosPopupVisible.Set(true, true);
         }
 
         public void Dispose()

@@ -6,7 +6,7 @@ using System;
 public class ToSPopupControllerShould
 {
     private IToSPopupView mockView;
-    private BaseVariable<bool> mockTosPopupVisible;
+    private BaseVariable<bool> tosPopupVisible;
     private IToSPopupHandler mockHandler;
     private ToSPopupController controller;
 
@@ -14,8 +14,9 @@ public class ToSPopupControllerShould
     public void Setup()
     {
         mockView = Substitute.For<IToSPopupView>();
+        tosPopupVisible = new BaseVariable<bool>();
         mockHandler = Substitute.For<IToSPopupHandler>();
-        controller = new ToSPopupController(mockView, mockHandler);
+        controller = new ToSPopupController(mockView, tosPopupVisible, mockHandler);
     }
 
     [Test]
@@ -28,7 +29,15 @@ public class ToSPopupControllerShould
     [Test]
     public void OnToSPopupVisible_ShouldShowView_WhenCurrentIsTrue()
     {
+        controller.OnToSPopupVisible(true, false);
         mockView.Received().Show();
+    }
+
+    [Test]
+    public void OnToSPopupVisible_ShouldHideView_WhenCurrentIsFalse()
+    {
+        controller.OnToSPopupVisible(false, true);
+        mockView.Received().Hide();
     }
 
     [Test]
@@ -36,7 +45,6 @@ public class ToSPopupControllerShould
     {
         controller.HandleCancel();
         mockHandler.Received().Cancel();
-        mockView.Received().Dispose();
     }
 
     [Test]
@@ -44,7 +52,6 @@ public class ToSPopupControllerShould
     {
         controller.HandleAccept();
         mockHandler.Received().Accept();
-        mockView.Received().Dispose();
     }
 
     [Test]

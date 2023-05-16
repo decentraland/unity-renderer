@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using JetBrains.Annotations;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -73,10 +74,19 @@ public class HUDBridge : MonoBehaviour
 
     public void UpdateBalanceOfMANA(string balance) { HUDController.i.profileHud?.SetManaBalance(balance); }
 
+    [Obsolete("Old kernel might be using this call")]
     public void ShowAvatarEditorInSignUp()
     {
+        SetSignupFlow();
+    }
+
+    public void SetSignupFlow()
+    {
         DataStore.i.common.isSignUpFlow.Set(true);
-        DataStore.i.HUDs.avatarEditorVisible.Set(true, true);
+        if(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("seamless_login"))
+            DataStore.i.HUDs.tosPopupVisible.Set(true, true);
+        else
+            DataStore.i.HUDs.avatarEditorVisible.Set(true, true);
     }
 
     #endregion

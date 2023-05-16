@@ -12,6 +12,8 @@ public interface IToSPopupView : IDisposable
     event Action OnTermsOfServiceLinkPressed;
 
     void Show();
+
+    void Hide();
 }
 
 public class ToSPopupView : MonoBehaviour, IToSPopupView, IPointerClickHandler
@@ -45,6 +47,11 @@ public class ToSPopupView : MonoBehaviour, IToSPopupView, IPointerClickHandler
     public void Show()
     {
         gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
     }
 
     private void OnDestroy()

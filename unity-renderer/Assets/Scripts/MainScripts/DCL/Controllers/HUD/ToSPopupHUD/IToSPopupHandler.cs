@@ -14,9 +14,11 @@ public class ToSPopupHandler : IToSPopupHandler
     private const string VIEW_TOS_URL = "https://decentraland.org/terms";
     private const string CANCEL_TOS_URL = "https://play.decentraland.org";
 
+    private readonly BaseVariable<bool> toSPopupVisibleVariable;
 
-    public ToSPopupHandler()
+    public ToSPopupHandler(BaseVariable<bool> toSPopupVisibleVariable)
     {
+        this.toSPopupVisibleVariable = toSPopupVisibleVariable;
     }
 
     public void Accept()
@@ -25,6 +27,7 @@ public class ToSPopupHandler : IToSPopupHandler
 
     public void Cancel()
     {
+        toSPopupVisibleVariable.Set(false);
         WebInterface.OpenURL(CANCEL_TOS_URL);
     }
 
