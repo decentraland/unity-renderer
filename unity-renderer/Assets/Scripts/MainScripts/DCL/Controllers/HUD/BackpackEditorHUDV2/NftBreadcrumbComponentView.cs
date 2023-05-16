@@ -11,6 +11,7 @@ namespace DCL.Backpack
         [SerializeField] internal NftSubCategoryFilterComponentView prefab;
         [SerializeField] internal GameObject separatorPrefab;
         [SerializeField] internal RectTransform container;
+        [SerializeField] internal RectTransform layoutContainer;
         [SerializeField] internal NFTTypeIconsAndColors iconsByCategory;
 
         private readonly Dictionary<NftSubCategoryFilterComponentView, PoolableObject> pooledObjects = new ();
@@ -64,7 +65,7 @@ namespace DCL.Backpack
         {
             if (!isLayoutDirty) return;
             isLayoutDirty = false;
-            container.ForceUpdateLayout(false);
+            layoutContainer.ForceUpdateLayout(false);
         }
 
         private void CreateSeparator()
