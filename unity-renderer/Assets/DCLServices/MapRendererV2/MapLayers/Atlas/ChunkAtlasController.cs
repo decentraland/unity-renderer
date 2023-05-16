@@ -14,7 +14,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             Transform parent,
             CancellationToken ct);
 
-        public const int CHUNKS_CREATED_PER_BATCH = 10;
+        public const int CHUNKS_CREATED_PER_BATCH = 50;
 
         private readonly SpriteRenderer prefab;
         private readonly int chunkSize;
