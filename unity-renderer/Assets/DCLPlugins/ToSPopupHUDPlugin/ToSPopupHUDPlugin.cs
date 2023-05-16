@@ -23,9 +23,6 @@ namespace DCLPlugins.ToSPopupHUDPlugin
 
             var view = await assetsProvider.Instantiate<IToSPopupView>("ToSPopupHUD", "_ToSPopupHUD");
             controller = new ToSPopupController(view, new ToSPopupHandler());
-
-            //Enable the popup, the plugin depens on the feature flag
-            hudsDataStore.tosPopupVisible.Set(true, true);
         }
 
         public void Dispose()
