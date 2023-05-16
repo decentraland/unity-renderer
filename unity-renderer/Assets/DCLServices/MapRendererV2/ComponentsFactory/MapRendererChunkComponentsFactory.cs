@@ -109,7 +109,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 {
                     var chunk = new ChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
                     chunk.SetDrawOrder(MapRendererDrawOrder.ATLAS);
-                    await chunk.LoadImage(atlasChunkSize, parcelSize, coordsCenter, ct);
+                    await chunk.DownloadImage(atlasChunkSize, parcelSize, coordsCenter, ct);
                     return chunk;
                 }
 

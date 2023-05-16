@@ -72,6 +72,9 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
                 chunks.AddRange(await UniTask.WhenAll(chunksCreating));
                 chunksCreating.Clear();
             }
+
+            foreach (IChunkController chunk in chunks)
+                chunk.Initialize();
         }
 
         private void ClearCurrentChunks()
