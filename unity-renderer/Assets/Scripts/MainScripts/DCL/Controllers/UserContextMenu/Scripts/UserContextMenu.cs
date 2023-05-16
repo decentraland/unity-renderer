@@ -18,12 +18,14 @@ using Environment = DCL.Environment;
 /// Contextual menu with different options about an user.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
+
 // TODO: refactor into MVC
 public class UserContextMenu : MonoBehaviour
 {
-    private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
     private const string BLOCK_BTN_BLOCK_TEXT = "Block";
     private const string BLOCK_BTN_UNBLOCK_TEXT = "Unblock";
+    private const string OPEN_PASSPORT_NORMAL_SOURCE = "FriendsHUD";
+    private const string OPEN_PASSPORT_MENTION_SOURCE = "Mention";
     private const string DELETE_MSG_PATTERN = "Are you sure you want to delete {0} as a friend?";
 
     [Flags]
@@ -34,7 +36,8 @@ public class UserContextMenu : MonoBehaviour
         Message = 4,
         Passport = 8,
         Block = 16,
-        Report = 32
+        Report = 32,
+        Mention = 64,
     }
 
     const MenuConfigFlags headerFlags = MenuConfigFlags.Name | MenuConfigFlags.Friendship;
@@ -66,6 +69,7 @@ public class UserContextMenu : MonoBehaviour
     [SerializeField] internal Button cancelFriendButton;
     [SerializeField] internal Button deleteFriendButton;
     [SerializeField] internal Button messageButton;
+    [SerializeField] internal Button mentionButton;
 
     public static event Action<string> OnOpenPrivateChatRequest;
 
@@ -79,15 +83,28 @@ public class UserContextMenu : MonoBehaviour
     public event Action<string> OnUnfriend;
     public event Action OnHide;
 
-    private static StringVariable currentPlayerId;
+    private static BaseVariable<(string playerId, string source)> currentPlayerId;
     private string userId;
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
     private CancellationTokenSource friendOperationsCancellationToken = new ();
+    private bool isFreomMentionContextMenu = false;
     private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private bool isFriendsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
     internal ISocialAnalytics socialAnalytics;
+
+    private IFriendsController _friendsController;
+
+    private IFriendsController friendsController
+    {
+        get
+        {
+            if (_friendsController == null) { _friendsController = Environment.i.serviceLocator.Get<IFriendsController>(); }
+
+            return _friendsController;
+        }
+    }
 
     /// <summary>
     /// Show context menu
@@ -95,6 +112,9 @@ public class UserContextMenu : MonoBehaviour
     /// <param name="userId"> user id</param>
     public void Show(string userId)
     {
+        if (string.IsNullOrEmpty(userId))
+            return;
+
         Show(userId, menuConfigFlags);
     }
 
@@ -107,12 +127,39 @@ public class UserContextMenu : MonoBehaviour
     {
         this.userId = userId;
         ProcessActiveElements(configFlags);
-        Setup(userId, configFlags);
 
-        if (currentConfirmationDialog == null && confirmationDialog != null) { SetConfirmationDialog(confirmationDialog); }
+        if (!Setup(userId, configFlags))
+            return;
+
+        if (currentConfirmationDialog == null && confirmationDialog != null)
+            SetConfirmationDialog(confirmationDialog);
 
         gameObject.SetActive(true);
         OnShowMenu?.Invoke();
+    }
+
+    /// <summary>
+    /// Show context menu
+    /// </summary>
+    /// <param name="userName">User name</param>
+    public void ShowByUserName(string userName)
+    {
+        var userProfile = UserProfileController.userProfilesCatalog
+                                               .GetValues()
+                                               .FirstOrDefault(p => p.userName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+
+        if (userProfile != null)
+        {
+            if (!Setup(userProfile.userId, menuConfigFlags))
+            {
+                ShowUserNotificationError(userName);
+                return;
+            }
+
+            Show(userProfile.userId, currentConfigFlags);
+        }
+        else
+            ShowUserNotificationError(userName);
     }
 
     /// <summary>
@@ -140,11 +187,14 @@ public class UserContextMenu : MonoBehaviour
     public void SetFriendshipContentActive(bool isActive) =>
         friendshipContainer.SetActive(isActive);
 
+    public void SetPassportOpenSource(bool isFromMention)
+    {
+        isFreomMentionContextMenu = isFromMention;
+    }
+
     private void Awake()
     {
-        if (!currentPlayerId)
-            currentPlayerId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-
+        currentPlayerId = DataStore.i.HUDs.currentPlayerId;
         passportButton.onClick.AddListener(OnPassportButtonPressed);
         blockButton.onClick.AddListener(OnBlockUserButtonPressed);
         reportButton.onClick.AddListener(OnReportUserButtonPressed);
@@ -152,6 +202,9 @@ public class UserContextMenu : MonoBehaviour
         addFriendButton.onClick.AddListener(OnAddFriendButtonPressed);
         cancelFriendButton.onClick.AddListener(OnCancelFriendRequestButtonPressed);
         messageButton.onClick.AddListener(OnMessageButtonPressed);
+
+        if (mentionButton != null)
+            mentionButton.onClick.AddListener(OnMentionButtonPressed);
     }
 
     private void Update()
@@ -161,13 +214,13 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnDisable()
     {
-        FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
+        friendsController.OnUpdateFriendship -= OnFriendActionUpdate;
     }
 
     private void OnPassportButtonPressed()
     {
         OnPassport?.Invoke(userId);
-        currentPlayerId.Set(userId);
+        currentPlayerId.Set((userId, isFreomMentionContextMenu ? OPEN_PASSPORT_MENTION_SOURCE : OPEN_PASSPORT_NORMAL_SOURCE));
         Hide();
 
         AudioScriptableObjects.dialogOpen.Play(true);
@@ -187,7 +240,7 @@ public class UserContextMenu : MonoBehaviour
             UserProfileController.userProfilesCatalog.Get(userId)?.userName,
             () =>
             {
-                FriendsController.i.RemoveFriend(userId);
+                friendsController.RemoveFriend(userId);
                 OnUnfriend?.Invoke(userId);
             }), true);
 
@@ -211,7 +264,7 @@ public class UserContextMenu : MonoBehaviour
         }
         else
         {
-            FriendsController.i.RequestFriendship(userId);
+            friendsController.RequestFriendship(userId);
             GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
         }
     }
@@ -228,7 +281,7 @@ public class UserContextMenu : MonoBehaviour
         {
             try
             {
-                FriendRequest request = await FriendsController.i.CancelRequestByUserIdAsync(userId, cancellationToken);
+                FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
 
                 GetSocialAnalytics()
                    .SendFriendRequestCancelled(request.From, request.To,
@@ -237,14 +290,14 @@ public class UserContextMenu : MonoBehaviour
             catch (Exception e) when (e is not OperationCanceledException)
             {
                 e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.ProfileContextMenu.ToString(),
-                    FriendsController.i, socialAnalytics);
+                    friendsController, socialAnalytics);
 
                 throw;
             }
         }
         else
         {
-            FriendsController.i.CancelRequestByUserId(userId);
+            friendsController.CancelRequestByUserId(userId);
 
             GetSocialAnalytics()
                .SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId,
@@ -269,24 +322,25 @@ public class UserContextMenu : MonoBehaviour
                 () =>
                 {
                     WebInterface.SendBlockPlayer(userId);
-                    GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+                    GetSocialAnalytics().SendPlayerBlocked(friendsController.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
                     OnBlock?.Invoke(userId, blockUser);
                 }), true);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
-            GetSocialAnalytics().SendPlayerUnblocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
             OnBlock?.Invoke(userId, blockUser);
         }
 
         Hide();
     }
 
-    private void UpdateBlockButton()
+    private void OnMentionButtonPressed()
     {
-        blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
-        messageButton.gameObject.SetActive(!isBlocked && enableSendMessage);
+        DataStore.i.mentions.someoneMentionedFromContextMenu.Set($"@{userName.text}", true);
+        GetSocialAnalytics().SendMentionCreated(MentionCreationSource.ProfileContextMenu);
+        Hide();
     }
 
     private void HideIfClickedOutside()
@@ -307,24 +361,35 @@ public class UserContextMenu : MonoBehaviour
 
     private void ProcessActiveElements(MenuConfigFlags flags)
     {
+        bool isOwnUser = UserProfile.GetOwnUserProfile().userId == userId;
+
         headerContainer.SetActive((flags & headerFlags) != 0);
         userName.gameObject.SetActive((flags & MenuConfigFlags.Name) != 0);
-        friendshipContainer.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled);
-        deleteFriendButton.gameObject.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled);
+        friendshipContainer.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled && !isOwnUser);
+        deleteFriendButton.gameObject.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled && !isOwnUser);
         passportButton.gameObject.SetActive((flags & MenuConfigFlags.Passport) != 0);
-        blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0);
-        reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0);
-        messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && (!isBlocked && enableSendMessage));
+        blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0 && !isOwnUser);
+        reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0 && !isOwnUser);
+        messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && !isBlocked && enableSendMessage && !isOwnUser);
+
+        if (mentionButton != null)
+            mentionButton.gameObject.SetActive((flags & MenuConfigFlags.Mention) != 0 && DataStore.i.HUDs.chatInputVisible.Get());
     }
 
-    private void Setup(string userId, MenuConfigFlags configFlags)
+    private bool Setup(string userId, MenuConfigFlags configFlags)
     {
         this.userId = userId;
 
         UserProfile profile = UserProfileController.userProfilesCatalog.Get(userId);
-        bool userHasWallet = profile?.hasConnectedWeb3 ?? false;
 
-        if (!userHasWallet || !UserProfile.GetOwnUserProfile().hasConnectedWeb3) { configFlags &= ~usesFriendsApiFlags; }
+        if (profile == null)
+        {
+            ShowUserNotificationError(userId);
+            return false;
+        }
+
+        if (profile.isGuest || !UserProfile.GetOwnUserProfile().hasConnectedWeb3)
+            configFlags &= ~usesFriendsApiFlags;
 
         currentConfigFlags = configFlags;
         ProcessActiveElements(configFlags);
@@ -332,7 +397,7 @@ public class UserContextMenu : MonoBehaviour
         if ((configFlags & MenuConfigFlags.Block) != 0)
         {
             isBlocked = UserProfile.GetOwnUserProfile().blocked.Contains(userId);
-            UpdateBlockButton();
+            blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
         }
 
         if ((configFlags & MenuConfigFlags.Name) != 0)
@@ -343,11 +408,13 @@ public class UserContextMenu : MonoBehaviour
 
         if ((configFlags & usesFriendsApiFlags) != 0)
         {
-            UserStatus status = FriendsController.i.GetUserStatus(userId);
+            UserStatus status = friendsController.GetUserStatus(userId);
             SetupFriendship(status?.friendshipStatus ?? FriendshipStatus.NOT_FRIEND);
-            FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
-            FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
+            friendsController.OnUpdateFriendship -= OnFriendActionUpdate;
+            friendsController.OnUpdateFriendship += OnFriendActionUpdate;
         }
+
+        return true;
     }
 
     private void SetupFriendship(FriendshipStatus friendshipStatus)
@@ -424,6 +491,12 @@ public class UserContextMenu : MonoBehaviour
         }
 
         return socialAnalytics;
+    }
+
+    private static void ShowUserNotificationError(string userIdOrName)
+    {
+        DataStore.i.notifications.DefaultErrorNotification.Set("This user was not found.", true);
+        Debug.LogError($"User {userIdOrName} was not found in the catalog!");
     }
 
 #if UNITY_EDITOR

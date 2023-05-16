@@ -2,6 +2,7 @@ using DCL;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private const float COPY_TOAST_VISIBLE_TIME = 3;
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
+    private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] internal GameObject loadingSpinner;
@@ -80,11 +82,11 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private InputAction_Trigger.Triggered closeActionDelegate;
 
-    private Coroutine copyToastRoutine = null;
-    private UserProfile profile = null;
+    private Coroutine copyToastRoutine;
+    private UserProfile profile;
     private string description;
     private string userId;
-    private StringVariable currentPlayerId;
+    private BaseVariable<(string playerId, string source)> currentPlayerId;
 
     public event EventHandler ClaimNamePressed;
     public event EventHandler SignedUpPressed;
@@ -105,6 +107,69 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public RectTransform ExpandedMenu => mainRootLayout;
     public RectTransform TutorialReference => tutorialTooltipReference;
 
+    public override void Awake()
+    {
+        currentPlayerId = DataStore.i.HUDs.currentPlayerId;
+
+        buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
+        buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
+        buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
+
+        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
+        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
+        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
+        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
+
+        manaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
+        polygonManaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
+        manaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
+        polygonManaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
+
+        closeActionDelegate = (x) => Hide();
+
+        buttonToggleMenu.onClick.AddListener(OpenStartMenu);
+        buttonCopyAddress.onClick.AddListener(CopyAddress);
+        buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
+        buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
+        inputName.onValueChanged.AddListener(UpdateNameCharLimit);
+        inputName.onDeselect.AddListener((newName) =>
+        {
+            ActivateProfileNameEditionMode(false);
+            NameSubmitted?.Invoke(this, newName);
+        });
+
+        descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
+        descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
+        descriptionInputText.onTextSelection.AddListener((description, x, y) =>
+        {
+            descriptionInputText.text = profile.description;
+            SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(description);
+        });
+        descriptionInputText.onSelect.AddListener(x =>
+        {
+            descriptionInputText.text = profile.description;
+            SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(description);
+        });
+        descriptionInputText.onValueChanged.AddListener(UpdateDescriptionCharLimit);
+        descriptionInputText.onDeselect.AddListener(description =>
+        {
+            this.description = description;
+            DescriptionSubmitted?.Invoke(this, description);
+
+            SetDescriptionIsEditing(false);
+            UpdateLinksInformation(description);
+        });
+        SetDescriptionIsEditing(false);
+
+        copyToast.gameObject.SetActive(false);
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+
+        viewPassportButton.onClick.RemoveAllListeners();
+        viewPassportButton.onClick.AddListener(OpenPassport);
+        Show(false);
+    }
 
     public bool HasManaCounterView() => manaCounterView != null;
     public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
@@ -115,7 +180,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
     public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
     public override void RefreshControl() { }
-
 
     public void SetProfile(UserProfile userProfile)
     {
@@ -128,6 +192,25 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
 
         profile = userProfile;
+    }
+
+    public void ShowProfileIcon(bool show)
+    {
+        profilePicObject.SetActive(show);
+    }
+
+    public void ShowExpanded(bool show)
+    {
+        expandedObject.SetActive(show);
+        if (show && profile)
+            UpdateLayoutByProfile(profile);
+    }
+
+    public void SetDescriptionIsEditing(bool isEditing)
+    {
+        SetDescriptionCharLimitEnabled(isEditing);
+        descriptionStartEditingGo.SetActive(!isEditing);
+        descriptionIsEditingGo.SetActive(isEditing);
     }
 
     private void UpdateLayoutByProfile(UserProfile userProfile)
@@ -176,19 +259,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
     }
 
-    public void ShowProfileIcon(bool show)
-    {
-        profilePicObject.SetActive(show);
-    }
-
-    public void ShowExpanded(bool show)
-    {
-        expandedObject.SetActive(show);
-        if (show && profile)
-            UpdateLayoutByProfile(profile);
-    }
-
-    public void ActivateProfileNameEditionMode(bool activate)
+    private void ActivateProfileNameEditionMode(bool activate)
     {
         if (profile != null && profile.hasClaimedName)
             return;
@@ -203,78 +274,9 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
     }
 
-    public void SetDescriptionCharLiitEnabled(bool enabled)
+    private void SetDescriptionCharLimitEnabled(bool enabled)
     {
         charLimitDescriptionContainer.SetActive(enabled);
-    }
-
-    private void Awake()
-    {
-        if (currentPlayerId == null)
-            currentPlayerId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
-
-        buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
-        buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
-        buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
-
-        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
-
-        manaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
-        polygonManaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
-        manaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
-        polygonManaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
-
-        closeActionDelegate = (x) => Hide();
-
-        buttonToggleMenu.onClick.AddListener(OpenStartMenu);
-        buttonCopyAddress.onClick.AddListener(CopyAddress);
-        buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
-        buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
-        inputName.onValueChanged.AddListener(UpdateNameCharLimit);
-        inputName.onDeselect.AddListener((newName) =>
-        {
-            ActivateProfileNameEditionMode(false);
-            NameSubmitted?.Invoke(this, newName);
-        });
-
-        buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
-        buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
-        buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
-
-        descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
-        descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
-        descriptionInputText.onTextSelection.AddListener((description, x, y) =>
-        {
-            descriptionInputText.text = profile.description;
-            SetDescriptionIsEditing(true);
-            UpdateDescriptionCharLimit(description);
-        });
-        descriptionInputText.onSelect.AddListener(x =>
-        {
-            descriptionInputText.text = profile.description;
-            SetDescriptionIsEditing(true);
-            UpdateDescriptionCharLimit(description);
-        });
-        descriptionInputText.onValueChanged.AddListener(UpdateDescriptionCharLimit);
-        descriptionInputText.onDeselect.AddListener(description =>
-        {
-            this.description = description;
-            DescriptionSubmitted?.Invoke(this, description);
-
-            SetDescriptionIsEditing(false);
-            UpdateLinksInformation(description);
-        });
-        SetDescriptionIsEditing(false);
-
-        copyToast.gameObject.SetActive(false);
-        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
-
-        viewPassportButton.onClick.RemoveAllListeners();
-        viewPassportButton.onClick.AddListener(OpenPassport);
-        Show(false);
     }
 
     private void OpenPassport()
@@ -283,7 +285,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             return;
 
         ShowExpanded(false);
-        currentPlayerId.Set(userId);
+        currentPlayerId.Set((userId, OPEN_PASSPORT_SOURCE));
     }
 
     private void HandleProfileSnapshot(UserProfile userProfile)
@@ -367,13 +369,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         descriptionContainer.SetActive(enabled);
     }
 
-    public void SetDescriptionIsEditing(bool isEditing)
-    {
-        SetDescriptionCharLiitEnabled(isEditing);
-        descriptionStartEditingGo.SetActive(!isEditing);
-        descriptionIsEditingGo.SetActive(isEditing);
-    }
-
     private void UpdateDescriptionCharLimit(string description) =>
         textCharLimitDescription.text = $"{description.Length}/{descriptionInputText.characterLimit}";
 
@@ -432,11 +427,5 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         copyToast.Show();
         yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
         copyToast.Hide();
-    }
-
-    private IEnumerator EnableNextFrame(GameObject go, bool shouldEnable)
-    {
-        yield return null;
-        go.SetActive(shouldEnable);
     }
 }

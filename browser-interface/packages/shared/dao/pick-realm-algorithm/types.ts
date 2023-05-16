@@ -4,7 +4,10 @@ export enum AlgorithmLinkTypes {
   LARGE_LATENCY = 'LARGE_LATENCY',
   CLOSE_PEERS_SCORE = 'CLOSE_PEERS_SCORE',
   ALL_PEERS_SCORE = 'ALL_PEERS_SCORE',
-  LOAD_BALANCING = 'LOAD_BALANCING'
+  LOAD_BALANCING = 'LOAD_BALANCING',
+  VERSION_CATALYST = 'VERSION_CATALYST',
+  FORCE_CATALYST = 'FORCE_CATALYST',
+  OVERLOADED_CATALYST = 'OVERLOADED_CATALYST'
 }
 
 export type LargeLatencyConfig = {
@@ -81,8 +84,42 @@ export type AllPeersScoreConfig = {
   }
 }
 
+export type OverloadedCatalystConfig = {
+  type: AlgorithmLinkTypes.OVERLOADED_CATALYST
+}
+
 export type AllPeersScoreParameters = Required<AllPeersScoreConfig['config']> & {
   latencyDeductionsParameters: Required<LatencyDeductionsConfig>
+}
+
+export type VersionCatalystConfig = {
+  type: AlgorithmLinkTypes.VERSION_CATALYST
+  config?: VersionCatalystParameters
+}
+
+/**
+ * An object containing the minimum versions required
+ * to be selected.
+ *
+ * @property {string} [content] - Minimum content version required
+ * @property {string} [lambdas] - Minimum lambdas version required
+ * @property {string} [comms] - Minimum comms protocol version required
+ * @property {string} [bff] - Minimum bff version required
+ */
+export type VersionCatalystParameters = {
+  content?: string
+  lambdas?: string
+  comms?: string
+  bff?: string
+}
+
+export type ForceCatalystConfig = {
+  type: AlgorithmLinkTypes.FORCE_CATALYST
+  config: ForceCatalystParameters
+}
+
+export type ForceCatalystParameters = {
+  sortedOptions?: string[]
 }
 
 export type AlgorithmLinkConfig = (
@@ -90,6 +127,9 @@ export type AlgorithmLinkConfig = (
   | AllPeersScoreConfig
   | ClosePeersScoreConfig
   | LoadBalancingConfig
+  | VersionCatalystConfig
+  | ForceCatalystConfig
+  | OverloadedCatalystConfig
 ) & { name?: string }
 
 export type AlgorithmChainConfig = AlgorithmLinkConfig[]

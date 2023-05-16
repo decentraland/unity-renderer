@@ -1,8 +1,8 @@
-using System;
-using MainScripts.DCL.Utils;
+using DCL;
 using SocialFeaturesAnalytics;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using DCL.Helpers;
+
 
 namespace MainScripts.DCL.Controllers.HUD.Profile
 {
@@ -10,7 +10,7 @@ namespace MainScripts.DCL.Controllers.HUD.Profile
     {
         private ProfileHUDViewDesktop_V2 viewDesktop;
 
-        public ProfileHUDControllerDesktop(IUserProfileBridge userProfileBridge, ISocialAnalytics socialAnalytics) : base(userProfileBridge, socialAnalytics)
+        public ProfileHUDControllerDesktop(IUserProfileBridge userProfileBridge, ISocialAnalytics socialAnalytics, DataStore dataStore) : base(userProfileBridge, socialAnalytics, dataStore)
         {
             viewDesktop = (ProfileHUDViewDesktop_V2)view;
             viewDesktop.getButtonSignUp.onClick.RemoveAllListeners();
@@ -20,7 +20,7 @@ namespace MainScripts.DCL.Controllers.HUD.Profile
 
         private void OnExitButtonClick()
         {
-            DesktopUtils.Quit();
+            Utils.QuitApplication();
         }
 
         public new void Dispose()
@@ -36,3 +36,4 @@ namespace MainScripts.DCL.Controllers.HUD.Profile
         }
     }
 }
+

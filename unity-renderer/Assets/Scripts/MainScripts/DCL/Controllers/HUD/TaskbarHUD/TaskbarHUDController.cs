@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
 using DCL.Chat.HUD;
+using DCL.Interface;
 using DCL.Social.Friends;
 using System;
 using System.Threading;
@@ -11,6 +12,8 @@ using UnityEngine.EventSystems;
 
 public class TaskbarHUDController : IHUD
 {
+    private const string INTERCOM_URL = "https://intercom.decentraland.org/";
+
     private readonly IChatController chatController;
     private readonly IFriendsController friendsController;
 
@@ -91,6 +94,7 @@ public class TaskbarHUDController : IHUD
         view.OnEmotesToggle += HandleEmotesToggle;
         view.OnExperiencesToggle += HandleExperiencesToggle;
         view.OnVoiceChatToggle += HandleVoiceChatToggle;
+        view.OnIntercomPressed += OpenIntercom;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -128,6 +132,9 @@ public class TaskbarHUDController : IHUD
 
         openChat.OnChange += OpenChat;
     }
+
+    private void OpenIntercom() =>
+        WebInterface.OpenURL(INTERCOM_URL);
 
     private void HandleFriendsToggle(bool show)
     {
@@ -266,16 +273,24 @@ public class TaskbarHUDController : IHUD
         if (publicChatWindow.View.IsActive ||
             channelChatWindow.View.IsActive ||
             privateChatWindow.View.IsActive)
-            OpenChatList();
+        {
+            if (!DataStore.i.mentions.isMentionSuggestionVisible.Get())
+            {
+                publicChatWindow.SetVisibility(false);
+                privateChatWindow.SetVisibility(false);
+                channelChatWindow.SetVisibility(false);
+                OpenChatList();
+            }
+        }
         else
         {
+            publicChatWindow.SetVisibility(false);
+            privateChatWindow.SetVisibility(false);
+            channelChatWindow.SetVisibility(false);
             worldChatWindowHud.SetVisibility(false);
             view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
         }
 
-        publicChatWindow.SetVisibility(false);
-        privateChatWindow.SetVisibility(false);
-        channelChatWindow.SetVisibility(false);
         CloseFriendsWindow();
         CloseVoiceChatWindow();
         isEmotesVisible.Set(false);
@@ -385,6 +400,9 @@ public class TaskbarHUDController : IHUD
             ? ChatUtils.NEARBY_CHANNEL_ID
             : lastOpenedChat;
 
+        if (newChat == ChatUtils.CONVERSATION_LIST_ID)
+            newChat = ChatUtils.NEARBY_CHANNEL_ID;
+
         openChat.Set(newChat, true);
     }
 
@@ -471,7 +489,7 @@ public class TaskbarHUDController : IHUD
 
     private void CloseVoiceChatWindow()
     {
-        if(voiceChatHud.IsVisible)
+        if(voiceChatHud?.IsVisible ?? false)
         {
             voiceChatHud?.SetVisibility(false);
             view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);

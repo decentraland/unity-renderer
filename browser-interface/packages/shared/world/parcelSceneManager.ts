@@ -86,7 +86,7 @@ export async function loadParcelSceneWorker(loadableScene: LoadableScene, transp
     const rpcClient = getClient(store.getState())
     if (!rpcClient) throw new Error('Cannot create a scene because there is no rpcClient')
 
-    parcelSceneWorker = await SceneWorker.createSceneWorker(loadableScene, rpcClient, transport)
+    parcelSceneWorker = await SceneWorker.createSceneWorker(loadableScene, rpcClient, () => transport)
     setNewParcelScene(parcelSceneWorker)
     queueMicrotask(() => store.dispatch(scenesChanged()))
   }

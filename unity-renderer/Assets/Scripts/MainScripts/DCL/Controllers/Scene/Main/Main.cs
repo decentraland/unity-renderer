@@ -1,12 +1,16 @@
+using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Map;
+using DCL.Providers;
 using DCL.SettingsCommon;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using MainScripts.DCL.Controllers.HotScenes;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.FriendsController;
 using UnityEngine;
 #if UNITY_EDITOR
 using DG.Tweening;
@@ -22,7 +26,8 @@ namespace DCL
     {
         [SerializeField] private bool disableSceneDependencies;
 
-        public PoolableComponentFactory componentFactory;
+        private HotScenesController hotScenesController;
+
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         protected IKernelCommunication kernelCommunication;
 
@@ -44,29 +49,20 @@ namespace DCL
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
+
             // Prevent warning when starting on unity editor mode
             // TODO: Are we instantiating 500 different kinds of animations?
-            DOTween.SetTweensCapacity(500,50);
-            #endif
+            DOTween.SetTweensCapacity(500, 50);
+#endif
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
-                performanceMetricsController = new PerformanceMetricsController();
                 SetupServices();
-
-                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+                performanceMetricsController = new PerformanceMetricsController();
             }
-
-            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
-            WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = GetComponent<WebInterfaceFriendsApiBridge>();
-
-            FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(
-                webInterfaceFriendsApiBridge,
-                RPCFriendsApiBridge.CreateSharedInstance(Environment.i.serviceLocator.Get<IRPC>(), webInterfaceFriendsApiBridge),
-                DataStore.i));
 
 #if UNITY_STANDALONE || UNITY_EDITOR
             Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
@@ -115,16 +111,6 @@ namespace DCL
 #endif
         }
 
-        private void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
-        {
-            if (newVisibleValue)
-            {
-                // Prewarm shader variants
-                Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
-            }
-        }
-
         protected virtual void SetupPlugins()
         {
             pluginSystem = PluginSystemFactory.Create();
@@ -133,7 +119,9 @@ namespace DCL
 
         protected virtual void SetupServices()
         {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IHotScenesController>(() => hotScenesController);
+            Environment.Setup(serviceLocator);
         }
 
         [RuntimeInitializeOnLoadMethod]
@@ -152,8 +140,6 @@ namespace DCL
 
         protected virtual void Dispose()
         {
-            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
-
             DataStore.i.common.isApplicationQuitting.Set(true);
             Settings.i.SaveSettings();
 
@@ -173,7 +159,8 @@ namespace DCL
             gameObject.AddComponent<WebInterfaceMinimapApiBridge>();
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
-            gameObject.AddComponent<HotScenesController>();
+            hotScenesController = gameObject.AddComponent<HotScenesController>();
+            gameObject.AddComponent<MatrixInitializationBridge>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();
             gameObject.AddComponent<AssetCatalogBridge>();

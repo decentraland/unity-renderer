@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -64,7 +66,7 @@ namespace DCL
             return services[type] as T;
         }
 
-        public void Initialize()
+        public async UniTask Initialize(CancellationToken cancellationToken = default)
         {
             foreach ( var service in services )
             {
@@ -84,6 +86,8 @@ namespace DCL
             {
                 service.Value.Initialize();
             }
+
+            await UniTask.WhenAll(services.Select(s => s.Value.InitializeAsync(cancellationToken))).SuppressCancellationThrow();
         }
 
         public void Dispose()

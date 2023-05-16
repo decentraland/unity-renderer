@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using DCL;
+using DCL.Interface;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +26,7 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
     [SerializeField] internal RectTransform socialTooltipReference;
+    [SerializeField] internal Button intercomButton;
 
     private readonly Dictionary<TaskbarButtonType, TaskbarButton> buttonsByType =
         new Dictionary<TaskbarButtonType, TaskbarButton>();
@@ -35,6 +38,7 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnEmotesToggle;
     public event System.Action<bool> OnVoiceChatToggle;
     public event System.Action<bool> OnExperiencesToggle;
+    public event Action OnIntercomPressed;
 
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
@@ -45,7 +49,12 @@ public class TaskbarHUDView : MonoBehaviour
         return view;
     }
 
-    private void Awake() { hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
+    private void Awake()
+    {
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+        intercomButton.onClick.RemoveAllListeners();
+        intercomButton.onClick.AddListener(()=>OnIntercomPressed?.Invoke());
+    }
 
     private void Initialize()
     {

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using DCL.Helpers;
+using Decentraland.Sdk.Ecs6;
 
 public static class QuestsLiterals
 {
@@ -66,5 +67,9 @@ public class QuestModel : BaseModel
     public bool justProgressed => sections.Any(x => x.tasks.Any(y => y.status != QuestsLiterals.Status.BLOCKED && y.justProgressed));
     public float progress => sections.Average(x => x.progress);
 
-    public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<QuestModel>(json); }
+    public override BaseModel GetDataFromJSON(string json) =>
+        Utils.SafeFromJson<QuestModel>(json);
+
+    public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) =>
+        default;
 }

@@ -3,11 +3,11 @@ import { Authenticator } from '@dcl/crypto'
 import {
   FriendRequestInfo,
   FriendshipErrorCode
-} from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
+} from 'shared/protocol/decentraland/renderer/common/friend_request_common.gen'
 import {
   FriendshipStatus,
   GetFriendshipStatusRequest
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+} from 'shared/protocol/decentraland/renderer/kernel_services/friends_kernel.gen'
 import {
   AcceptFriendRequestPayload,
   AcceptFriendRequestReplyOk,
@@ -18,9 +18,9 @@ import {
   RejectFriendRequestReplyOk,
   SendFriendRequestPayload,
   SendFriendRequestReplyOk
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
-import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
-import { ReceiveFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
+} from 'shared/protocol/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import { GetMutualFriendsRequest } from 'shared/protocol/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
+import { ReceiveFriendRequestPayload } from 'shared/protocol/decentraland/renderer/renderer_services/friend_request_renderer.gen'
 import { Avatar, EthAddress } from '@dcl/schemas'
 import { CHANNEL_TO_JOIN_CONFIG_URL, DEBUG_KERNEL_LOG, ethereumConfigurations } from 'config'
 import {
@@ -641,6 +641,12 @@ function* refreshFriends() {
 
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
     yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
+
+    let token = client.getAccessToken()
+
+    if (token) {
+      getUnityInstance().InitializeMatrix(token)
+    }
 
     getUnityInstance().InitializeFriends(initFriendsMessage)
     getUnityInstance().InitializeChat(initChatMessage)
@@ -1552,11 +1558,11 @@ function getTotalFriendsAndSocialData(rootState: RootState, userId: string) {
   return {
     client,
     rendererModules,
-    friendsPromise: getFriendIds(client),
+    friendsPromise: () => getFriendIds(client),
     newFriendRequestFlow: isNewFriendRequestEnabled(rootState),
     state: getPrivateMessaging(rootState),
     socialData: findPrivateMessagingFriendsByUserId(rootState, userId),
-    conversationIdPromise: getConversationId(client, getUserIdFromMatrix(userId)),
+    conversationIdPromise: () => getConversationId(client, getUserIdFromMatrix(userId)),
     updateTotalFriendRequestsPayload: getTotalFriendRequests(rootState),
     totalFriends: getTotalFriends(rootState)
   }

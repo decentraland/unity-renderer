@@ -61,7 +61,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         canvas = GetComponent<Canvas>();
     }
 
-    public override void Start()
+    public void Start()
     {
         CreateSubSectionSelectorMappings();
         SetActive(false);

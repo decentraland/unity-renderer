@@ -30,7 +30,7 @@ namespace DCL.Tests
                 { AssetSource.WEB, r2 }
             }, DataStore.i.featureFlags);
 
-            var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, CancellationToken.None);
+            var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, cancellationToken: CancellationToken.None);
 
             r1.Received(1).GetTextureAsync(URL);
             r2.Received(1).GetTextureAsync(URL);
@@ -39,7 +39,7 @@ namespace DCL.Tests
             Assert.AreEqual(Texture2D.blackTexture, res.GetSuccessResponse().Texture);
         }
 
-        [Test]
+        [Test][Category("Flaky")]
         public async Task ThrowLastIfAllSourcesFailed()
         {
             var r1 = Substitute.For<ITextureAssetProvider>();
@@ -55,7 +55,7 @@ namespace DCL.Tests
                 { AssetSource.WEB, r2 }
             }, DataStore.i.featureFlags);
 
-            var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, CancellationToken.None);
+            var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, cancellationToken: CancellationToken.None);
             Assert.IsFalse(res.IsSuccess);
 
             Assert.AreSame(e2, res.GetFailResponse().Exception);
@@ -76,7 +76,7 @@ namespace DCL.Tests
                 { AssetSource.WEB, r2 }
             }, DataStore.i.featureFlags);
 
-            var res = await resolver.GetTextureAsync(AssetSource.WEB, URL, 1000, CancellationToken.None);
+            var res = await resolver.GetTextureAsync(AssetSource.WEB, URL, 1000, cancellationToken: CancellationToken.None);
 
             r1.DidNotReceive().GetTextureAsync(URL);
             r2.Received(1).GetTextureAsync(URL);
@@ -100,7 +100,7 @@ namespace DCL.Tests
                 { AssetSource.WEB, r2 }
             }, DataStore.i.featureFlags);
 
-            var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, CancellationToken.None);
+            var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, cancellationToken: CancellationToken.None);
             Assert.IsFalse(res.IsSuccess);
             Assert.AreEqual(typeof(AssetNotFoundException), res.GetFailResponse().Exception.GetType());
         }

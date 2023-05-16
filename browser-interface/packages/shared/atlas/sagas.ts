@@ -9,12 +9,12 @@ import { Vector2 } from 'lib/math/Vector2'
 import { waitFor } from 'lib/redux'
 import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { getPOIService } from 'shared/dao/selectors'
+import { getContentService, getPOIService } from 'shared/dao/selectors'
 import { SCENE_LOAD } from 'shared/loading/actions'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
-import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
+import { fetchActiveSceneInWorldContext, fetchScenesByLocation } from 'shared/scene-loader/sagas'
 import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
 import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
 import { getSceneDescriptionFromJsonData } from 'lib/decentraland/sceneJson/getSceneDescriptionFromJsonData'
@@ -38,11 +38,14 @@ import {
   sendHomeScene,
   SEND_HOME_SCENE_TO_UNITY,
   SetHomeScene,
-  SET_HOME_SCENE
+  SET_HOME_SCENE,
+  REPORT_SCENES_WORLD_CONTEXT,
+  ReportScenesWorldContext
 } from './actions'
 import { getPoiTiles, postProcessSceneName } from './selectors'
 import { RootAtlasState } from './types'
 import { homePointKey } from './utils'
+import { Entity } from '@dcl/schemas'
 
 export function* atlasSaga(): any {
   yield takeEvery(SCENE_LOAD, checkAndReportAround)
@@ -51,6 +54,7 @@ export function* atlasSaga(): any {
   yield takeLatest(PARCEL_LOADING_STARTED, reportPois)
 
   yield takeLatest(REPORT_SCENES_AROUND_PARCEL, reportScenesAroundParcelAction)
+  yield takeLatest(REPORT_SCENES_WORLD_CONTEXT, reportScenesWorldContext)
   yield takeEvery(REPORT_SCENES_FROM_TILES, reportScenesFromTilesAction)
   yield takeEvery(SET_HOME_SCENE, setHomeSceneAction)
   yield takeEvery(SEND_HOME_SCENE_TO_UNITY, sendHomeSceneToUnityAction)
@@ -91,6 +95,54 @@ function* reportPois() {
 function* reportScenesAroundParcelAction(action: ReportScenesAroundParcel) {
   const tilesAround = getTilesRectFromCenter(action.payload.parcelCoord, action.payload.scenesAround)
   yield put(reportScenesFromTiles(tilesAround))
+}
+
+function* reportScenesWorldContext(action: ReportScenesWorldContext) {
+  yield call(waitForPoiTilesInitialization)
+  const pois = yield select(getPoiTiles)
+
+  const scenesResponse: Array<Entity> = yield call(
+    fetchActiveSceneInWorldContext,
+    getTilesRectFromCenter(action.payload.parcelCoord, action.payload.scenesAround)
+  )
+  const minimapSceneInfoResult: MinimapSceneInfo[] = []
+  scenesResponse.forEach((scene) => {
+    const parcels: Vector2[] = []
+    let isPOI: boolean = false
+
+    const metadata: Scene | undefined = scene.metadata
+
+    if (metadata) {
+      let sceneName = metadata.display?.title || ''
+
+      metadata.scene.parcels.forEach((parcel) => {
+        const xy: Vector2 = parseParcelPosition(parcel)
+
+        if (pois.includes(parcel)) {
+          isPOI = true
+          sceneName = sceneName || metadata.scene.base
+        }
+
+        parcels.push(xy)
+      })
+
+      minimapSceneInfoResult.push({
+        name: postProcessSceneName(sceneName),
+        owner: getOwnerNameFromJsonData(metadata),
+        description: getSceneDescriptionFromJsonData(metadata),
+        previewImageUrl: getThumbnailUrlFromJsonDataAndContent(
+          metadata,
+          scene.content,
+          getContentService(store.getState()) + '/contents'
+        ),
+        // type is not used by renderer
+        type: undefined as any,
+        parcels,
+        isPOI
+      })
+    }
+  })
+  getUnityInstance().UpdateMinimapSceneInformationFromAWorld(minimapSceneInfoResult)
 }
 
 function* initializePois() {

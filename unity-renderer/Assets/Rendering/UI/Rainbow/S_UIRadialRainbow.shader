@@ -2,7 +2,7 @@ Shader "Unlit/S_UIRadialRainbow"
 {
     Properties
     {
-        [NoScaleOffset] _Mask("Mask", 2D) = "white" {}
+        [MainTexture][NoScaleOffset] _Mask("Mask", 2D) = "white" {}
         _FrameThickness("FrameThickness", Vector) = (1.1, 1.1, 0, 0)
         _InnerColor("InnerColor", Color) = (1, 1, 1, 1)
         [NoScaleOffset]_Ramp("Ramp", 2D) = "white" {}

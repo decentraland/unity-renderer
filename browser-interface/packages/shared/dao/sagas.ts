@@ -1,4 +1,9 @@
-import { ETHEREUM_NETWORK, PIN_CATALYST, PREVIEW, rootURLPreviewMode } from 'config'
+import {
+  ETHEREUM_NETWORK,
+  PIN_CATALYST,
+  PREVIEW,
+  rootURLPreviewMode
+} from 'config'
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 import defaultLogger from 'lib/logger'
 import { waitFor } from 'lib/redux'
@@ -12,10 +17,14 @@ import {
   getDisabledCatalystConfig,
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
-import { SET_REALM_ADAPTER } from 'shared/realm/actions'
+import { SET_REALM_ADAPTER, setOnboardingState } from 'shared/realm/actions'
 import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
-import { getFetchContentServerFromRealmAdapter, getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
-import { IRealmAdapter } from 'shared/realm/types'
+import {
+  getFetchContentServerFromRealmAdapter,
+  getOnboardingState,
+  getProfilesContentServerFromRealmAdapter
+} from 'shared/realm/selectors'
+import { IRealmAdapter, OnboardingState } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
@@ -35,6 +44,7 @@ import { createAlgorithm } from './pick-realm-algorithm/index'
 import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
 import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
 import { ask, ping } from './utils/ping'
+import { saveProfileDelta } from '../profiles/actions'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
@@ -153,7 +163,12 @@ function* selectRealm() {
     // cached in local storage
     (yield call(getRealmFromLocalStorage, network))
 
-  if (!realm) debugger
+  if (!realm) {
+    BringDownClientAndReportFatalError(
+      new Error('Could not connect to any catalyst servers. Please check your internet connection and try again.'),
+      'comms#init'
+    )
+  }
 
   console.log(`Trying to connect to realm `, realm)
 
@@ -215,6 +230,14 @@ function* cacheCatalystRealm() {
   // PRINT DEBUG INFO
   const dao: string = yield select((state) => state.dao)
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+  const onboardingInfo: OnboardingState = yield select(getOnboardingState)
+  if (
+    onboardingInfo.isInOnboarding &&
+    realmAdapter.about.configurations?.realmName !== onboardingInfo.onboardingRealm
+  ) {
+    yield put(saveProfileDelta({ tutorialStep: 256 }))
+    yield put(setOnboardingState({ isInOnboarding: false }))
+  }
 
   if (realmAdapter) {
     yield call(saveToPersistentStorage, getLastRealmCacheKey(network), realmAdapter.baseUrl)

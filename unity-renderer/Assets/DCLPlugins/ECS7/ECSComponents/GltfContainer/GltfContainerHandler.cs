@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -7,6 +5,8 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -16,6 +16,7 @@ namespace DCL.ECSComponents
     {
         private const string POINTER_COLLIDER_NAME = "OnPointerEventCollider";
         private const string FEATURE_GLTFAST = "gltfast";
+        private const string SMR_UPDATE_OFFSCREEN_FEATURE_FLAG = "smr_update_offscreen";
         private const StringComparison IGNORE_CASE = StringComparison.CurrentCultureIgnoreCase;
 
         internal RendereableAssetLoadHelper gltfLoader;
@@ -28,18 +29,23 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalColliders> pointerColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> physicColliderComponent;
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
+        private readonly IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent;
+
         private readonly DataStore_ECS7 dataStoreEcs7;
-        private DataStore_FeatureFlag featureFlags;
+        private readonly DataStore_FeatureFlag featureFlags;
 
         public GltfContainerHandler(IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicColliderComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
-            DataStore_ECS7 dataStoreEcs7, DataStore_FeatureFlag featureFlags)
+            IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent,
+            DataStore_ECS7 dataStoreEcs7,
+            DataStore_FeatureFlag featureFlags)
         {
             this.featureFlags = featureFlags;
             this.pointerColliderComponent = pointerColliderComponent;
             this.physicColliderComponent = physicColliderComponent;
             this.renderersComponent = renderersComponent;
+            this.gltfContainerLoadingStateComponent = gltfContainerLoadingStateComponent;
             this.dataStoreEcs7 = dataStoreEcs7;
         }
 
@@ -55,11 +61,13 @@ namespace DCL.ECSComponents
             gltfLoader.settings.forceGPUOnlyMesh = true;
             gltfLoader.settings.parent = transform;
             gltfLoader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
+            gltfLoader.settings.smrUpdateWhenOffScreen = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(SMR_UPDATE_OFFSCREEN_FEATURE_FLAG);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             CleanUp(scene, entity);
+            gltfContainerLoadingStateComponent.RemoveFor(scene, entity, new InternalGltfContainerLoadingState() { GltfContainerRemoved = true });
             Object.Destroy(gameObject);
         }
 
@@ -72,8 +80,10 @@ namespace DCL.ECSComponents
 
             CleanUp(scene, entity);
 
+            gltfContainerLoadingStateComponent.PutFor(scene, entity, new InternalGltfContainerLoadingState() { LoadingState = LoadingState.Loading });
+
             gltfLoader.OnSuccessEvent += rendereable => OnLoadSuccess(scene, entity, rendereable);
-            gltfLoader.OnFailEvent += exception => OnLoadFail(scene, exception);
+            gltfLoader.OnFailEvent += exception => OnLoadFail(scene, entity, exception);
 
             dataStoreEcs7.AddPendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
             gltfLoader.Load(model.Src);
@@ -89,17 +99,20 @@ namespace DCL.ECSComponents
             (pointerColliders, renderers) = SetUpPointerCollidersAndRenderers(rendereable.renderers);
 
             // set colliders and renderers
-            pointerColliderComponent.AddColliders(scene, entity, pointerColliders);
-            physicColliderComponent.AddColliders(scene, entity, physicColliders);
+            pointerColliderComponent.AddColliders(scene, entity, pointerColliders, (int)ColliderLayer.ClPointer);
+            physicColliderComponent.AddColliders(scene, entity, physicColliders, (int)ColliderLayer.ClPhysics);
             renderersComponent.AddRenderers(scene, entity, renderers);
+
+            gltfContainerLoadingStateComponent.PutFor(scene, entity, new InternalGltfContainerLoadingState() { LoadingState = LoadingState.Finished });
 
             // TODO: modify Animator component to remove `AddShapeReady` usage
             dataStoreEcs7.AddShapeReady(entity.entityId, gameObject);
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
         }
 
-        private void OnLoadFail(IParcelScene scene, Exception exception)
+        private void OnLoadFail(IParcelScene scene, IDCLEntity entity, Exception exception)
         {
+            gltfContainerLoadingStateComponent.PutFor(scene, entity, new InternalGltfContainerLoadingState() { LoadingState = LoadingState.FinishedWithError });
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
         }
 
@@ -188,13 +201,26 @@ namespace DCL.ECSComponents
                 if (alreadyHasCollider)
                     continue;
 
+                Mesh colliderMesh;
+
+                if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
+                {
+                    colliderMesh = skinnedMeshRenderer.sharedMesh;
+                }
+                else
+                {
+                    MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+                    colliderMesh = meshFilter?.sharedMesh;
+                }
+
+                if (!colliderMesh)
+                    continue;
+
                 GameObject colliderGo = new GameObject(POINTER_COLLIDER_NAME);
                 colliderGo.layer = PhysicsLayers.onPointerEventLayer;
                 MeshCollider collider = colliderGo.AddComponent<MeshCollider>();
-                MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
-                if (meshFilter == null) continue;
 
-                collider.sharedMesh = meshFilter.sharedMesh;
+                collider.sharedMesh = colliderMesh;
                 colliderGo.transform.SetParent(renderer.transform);
                 colliderGo.transform.ResetLocalTRS();
                 pointerColliders.Add(collider);

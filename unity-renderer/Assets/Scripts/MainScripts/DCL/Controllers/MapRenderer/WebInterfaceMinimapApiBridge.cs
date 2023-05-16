@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -25,20 +26,19 @@ namespace DCL.Map
         [PublicAPI]
         public void UpdateMinimapSceneInformation(string scenesInfoJson)
         {
-            var scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);
+            MinimapMetadataPayload payload = JsonUtility.FromJson<MinimapMetadataPayload>(scenesInfoJson);
 
-            foreach (var sceneInfo in scenesInfo)
-                minimapMetadata.AddSceneInfo(sceneInfo);
+            if(!string.IsNullOrEmpty(scenesInfoJson) && !payload.isWorldScene)
+                foreach (var sceneInfo in payload.scenesInfo)
+                    minimapMetadata.AddSceneInfo(sceneInfo);
 
             if (!pendingTasks.ContainsKey(GET_SCENES_INFO_ID)) return;
             var task = (UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTasks[GET_SCENES_INFO_ID];
             pendingTasks.Remove(GET_SCENES_INFO_ID);
-            task.TrySetResult(scenesInfo);
+            task.TrySetResult(payload.scenesInfo);
         }
 
-        public UniTask<MinimapMetadata.MinimapSceneInfo[]> GetScenesInformationAroundParcel(Vector2Int coordinate,
-            int areaSize,
-            CancellationToken cancellationToken)
+        public UniTask<MinimapMetadata.MinimapSceneInfo[]> GetScenesInformationAroundParcel(Vector2Int coordinate, int areaSize, CancellationToken cancellationToken)
         {
             if (pendingTasks.TryGetValue(GET_SCENES_INFO_ID, out var pendingTask))
                 return ((UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTask)
@@ -51,5 +51,12 @@ namespace DCL.Map
 
             return task.Task.AttachExternalCancellation(cancellationToken);
         }
+    }
+
+    [Serializable]
+    public class MinimapMetadataPayload
+    {
+        public bool isWorldScene;
+        public MinimapMetadata.MinimapSceneInfo[] scenesInfo;
     }
 }

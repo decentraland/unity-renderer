@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using NSubstitute;
@@ -12,6 +13,7 @@ public class ChannelMembersHUDControllerShould
     private IChannelMembersComponentView channelMembersComponentView;
     private IChatController chatController;
     private IUserProfileBridge userProfileBridge;
+    private DataStore_Channels dataStoreChannels;
 
     [SetUp]
     public void SetUp()
@@ -19,7 +21,8 @@ public class ChannelMembersHUDControllerShould
         channelMembersComponentView = Substitute.For<IChannelMembersComponentView>();
         chatController = Substitute.For<IChatController>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
-        channelMembersHUDController = new ChannelMembersHUDController(channelMembersComponentView, chatController, userProfileBridge);
+        dataStoreChannels = new DataStore_Channels();
+        channelMembersHUDController = new ChannelMembersHUDController(channelMembersComponentView, chatController, userProfileBridge, dataStoreChannels);
         channelMembersHUDController.SetMembersCount(100);
     }
 
@@ -118,7 +121,7 @@ public class ChannelMembersHUDControllerShould
     public void UpdateChannelMembersCorrectly()
     {
         const string testChannelId = "testChannelId";
-        
+
         // Arrange
         var testUserId1Profile = ScriptableObject.CreateInstance<UserProfile>();
         testUserId1Profile.UpdateData(new UserProfileModel
@@ -143,7 +146,7 @@ public class ChannelMembersHUDControllerShould
             }
         });
         userProfileBridge.Configure().Get("testUserId2").Returns(info => testUserId2Profile);
-        
+
         var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownProfile.UpdateData(new UserProfileModel{userId = "ownProfileId"});
         userProfileBridge.GetOwn().Returns(ownProfile);

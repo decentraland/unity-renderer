@@ -9,7 +9,7 @@ import { daoReducer } from 'shared/dao/reducer'
 import { metaReducer } from 'shared/meta/reducer'
 import { chatReducer } from 'shared/chat/reducer'
 import { commsReducer } from 'shared/comms/reducer'
-import { realmReducer } from 'shared/realm/reducer'
+import { onboardingReducer, realmReducer } from 'shared/realm/reducer'
 import { voiceChatReducer } from 'shared/voiceChat/reducer'
 import { friendsReducer } from 'shared/friends/reducer'
 import { sessionReducer } from 'shared/session/reducer'
@@ -37,5 +37,6 @@ export const reducers = combineReducers({
   wearablesPortableExperiences: wearablesPortableExperienceReducer,
   portableExperiences: portableExperienceReducer,
   sceneLoader: sceneLoaderReducer,
-  world: worldReducer
+  world: worldReducer,
+  onboarding: onboardingReducer
 })

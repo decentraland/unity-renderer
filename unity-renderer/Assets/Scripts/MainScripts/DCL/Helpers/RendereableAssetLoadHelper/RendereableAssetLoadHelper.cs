@@ -1,6 +1,8 @@
+using JetBrains.Annotations;
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
 using Sentry;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -10,6 +12,10 @@ namespace DCL.Components
     public class RendereableAssetLoadHelper
     {
         private const string NEW_CDN_FF = "ab-new-cdn";
+        private const string FAILED_GLTFAST_LOAD_EVENT = "failed_GLTFast_load";
+        private const string STARTED_GLTFAST_LOAD_EVENT = "started_GLTFast_load";
+        private const string SUCESS_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT = "success_GLTF_load_after_GLTFast_fail";
+        private const string FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT = "failed_GLTF_load_after_GLTFast_fail";
 
         public event Action<Rendereable> OnSuccessEvent;
         public event Action<Exception> OnFailEvent;
@@ -46,6 +52,7 @@ namespace DCL.Components
         private AssetPromise_AB_GameObject abPromise;
         private string currentLoadingSystem;
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
+        private string targetUrl;
 
         public bool isFinished
         {
@@ -93,6 +100,7 @@ namespace DCL.Components
 
         public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT)
         {
+            this.targetUrl = targetUrl;
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 #if UNITY_EDITOR
             loadStartTime = Time.realtimeSinceStartup;
@@ -123,15 +131,19 @@ namespace DCL.Components
         private void ProxyLoadGltf(string targetUrl, bool hasFallback)
         {
             if (IsGltFastEnabled())
-                LoadGLTFast(targetUrl, OnSuccessEvent, _ =>
-                {
-                    if (VERBOSE)
-                        Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
-
-                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
-                }, true);
+                LoadGLTFast(targetUrl, OnSuccessEvent, exception => { OnGLTFastLoadFail(targetUrl, hasFallback, exception); }, true);
             else
                 LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
+        }
+
+        private void OnGLTFastLoadFail(string targetUrl, bool hasFallback, Exception exception)
+        {
+            SendMetric(FAILED_GLTFAST_LOAD_EVENT, targetUrl, exception.Message);
+
+            if (VERBOSE)
+                Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
+
+            LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback, true);
         }
 
         public void Unload()
@@ -202,7 +214,6 @@ namespace DCL.Components
                 }
             }
 
-
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
 
@@ -236,7 +247,7 @@ namespace DCL.Components
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
-        void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
+        void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback, bool sendMetric = false)
         {
             currentLoadingSystem = GLTF_GO_NAME_PREFIX;
 
@@ -250,6 +261,9 @@ namespace DCL.Components
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
+                if (sendMetric)
+                    SendMetric(FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT, targetUrl, $"Content provider does not contains url {targetUrl}");
+
                 OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"), hasFallback);
                 return;
             }
@@ -279,16 +293,26 @@ namespace DCL.Components
                 foreach (var someRenderer in r.renderers)
                     someRenderer.tag = FROM_RAW_GLTF_TAG;
 
+                if (sendMetric)
+                    SendMetric(SUCESS_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT, targetUrl, "");
+
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            gltfPromise.OnFailEvent += (asset, exception) => OnFailWrapper(OnFail, exception, hasFallback);
+            gltfPromise.OnFailEvent += (asset, exception) =>
+            {
+                if (sendMetric)
+                    SendMetric(FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT, targetUrl, exception.Message);
+
+                OnFailWrapper(OnFail, exception, hasFallback);
+            };
 
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }
 
         private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
+            SendMetric(STARTED_GLTFAST_LOAD_EVENT, targetUrl, "");
             currentLoadingSystem = GLTFAST_GO_NAME_PREFIX;
 
             if (gltfastPromise != null)
@@ -332,16 +356,20 @@ namespace DCL.Components
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
 
+            if (exception is PromiseForgottenException or OperationCanceledException)
+            {
+                ClearEvents();
+                return;
+            }
+
             // If the entity is destroyed while loading, the exception is expected to be null and no error should be thrown
             if (exception != null)
             {
                 if (!hasFallback)
-                    Debug.LogException(exception);
+                    Debug.LogWarning("All fallbacks failed for " + targetUrl);
                 else if (VERBOSE)
-                {
-                    Debug.Log($"Load Fail Detected, trying to use a fallback, " +
-                              $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
-                }
+                    Debug.LogWarning($"Load Fail Detected, trying to use a fallback, " +
+                                     $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
             }
 
             OnFail?.Invoke(exception);
@@ -370,6 +398,11 @@ namespace DCL.Components
         {
             OnSuccessEvent = null;
             OnFailEvent = null;
+        }
+
+        private void SendMetric(string eventToSend, string targetUrl, string reason)
+        {
+            GenericAnalytics.SendAnalytic(eventToSend, new Dictionary<string, string> { { "targetUrl", targetUrl }, { "reason", reason }, { "platform", Application.platform.ToString() } });
         }
     }
 }

@@ -10,13 +10,14 @@ namespace DCL.Social.Friends
     public class SentFriendRequestHUDController
     {
         private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+        private const string OPEN_PASSPORT_SOURCE = "FriendRequest";
 
         private readonly ISentFriendRequestHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IFriendsController friendsController;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly StringVariable openPassportVariable;
+        private readonly BaseVariable<(string playerId, string source)> openPassportVariable;
 
         private CancellationTokenSource friendRequestOperationsCancellationToken = new ();
         private string friendRequestId;
@@ -26,15 +27,14 @@ namespace DCL.Social.Friends
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             IFriendsController friendsController,
-            ISocialAnalytics socialAnalytics,
-            StringVariable openPassportVariable)
+            ISocialAnalytics socialAnalytics)
         {
             this.view = view;
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.friendsController = friendsController;
             this.socialAnalytics = socialAnalytics;
-            this.openPassportVariable = openPassportVariable;
+            this.openPassportVariable = dataStore.HUDs.currentPlayerId;
 
             dataStore.HUDs.openSentFriendRequestDetail.OnChange += ShowOrHide;
             view.OnCancel += Cancel;
@@ -64,9 +64,9 @@ namespace DCL.Social.Friends
         private void Show(string friendRequestId)
         {
             this.friendRequestId = friendRequestId;
-            FriendRequest friendRequest = friendsController.GetAllocatedFriendRequest(this.friendRequestId);
+            bool wasFound = friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest);
 
-            if (friendRequest == null)
+            if (!wasFound)
             {
                 Debug.LogError($"Cannot display friend request {friendRequestId}, is not allocated");
                 return;
@@ -128,15 +128,15 @@ namespace DCL.Social.Friends
 
         private void OpenProfile()
         {
-            FriendRequest friendRequest = friendsController.GetAllocatedFriendRequest(friendRequestId);
+            bool wasFound = friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest);
 
-            if (friendRequest == null)
+            if (!wasFound)
             {
                 Debug.LogError($"Cannot open passport {friendRequestId}, is not allocated");
                 return;
             }
 
-            openPassportVariable.Set(friendRequest.To);
+            openPassportVariable.Set((friendRequest.To, OPEN_PASSPORT_SOURCE));
             view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
     }

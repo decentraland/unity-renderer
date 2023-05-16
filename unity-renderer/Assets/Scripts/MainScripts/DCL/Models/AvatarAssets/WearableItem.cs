@@ -1,8 +1,8 @@
+using DCL;
+using DCL.Emotes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
-using DCL.Emotes;
 using UnityEngine;
 
 [Serializable]
@@ -48,6 +48,8 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
+
+    public DateTime MostRecentTransferredDate { get; set; }
 
     private string thirdPartyCollectionId;
     public string ThirdPartyCollectionId
@@ -292,6 +294,13 @@ public class WearableItem
     }
 
     public bool IsEmote() { return emoteDataV0 != null; }
+
+    public NftInfo GetNftInfo() =>
+        new ()
+        {
+            Id = id,
+            Category = IsEmote() ? "emote" : data?.category,
+        };
 
     public virtual bool ShowInBackpack() { return true; }
 

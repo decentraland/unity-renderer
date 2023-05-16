@@ -5,6 +5,7 @@ using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.Models;
+using DCLServices.MapRendererV2;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using NSubstitute;
@@ -90,14 +91,14 @@ namespace Tests
                     IParcelScene scene = Environment.i.world.state.GetScene(SCENE_NUMBER);
                     Assert.NotNull(scene);
 
-                    CRDTMessage crdtCreateBoxMessage = new CRDTMessage()
-                    {
-                        type = CrdtMessageType.PUT_COMPONENT,
-                        entityId = ENTITY_ID,
-                        componentId = COMPONENT_ID,
-                        timestamp = 1,
-                        data = ProtoSerialization.Serialize(COMPONENT_DATA)
-                    };
+                    CrdtMessage crdtCreateBoxMessage = new CrdtMessage
+                    (
+                        type: CrdtMessageType.PUT_COMPONENT,
+                        entityId: ENTITY_ID,
+                        componentId: COMPONENT_ID,
+                        timestamp: 1,
+                        data: ProtoSerialization.Serialize(COMPONENT_DATA)
+                    );
 
                     await clientCrdtService.SendCrdt(new CRDTManyMessages()
                     {
@@ -120,14 +121,14 @@ namespace Tests
                     scene = Environment.i.world.state.GetScene(SCENE_NUMBER);
                     Assert.NotNull(scene);
 
-                    crdtCreateBoxMessage = new CRDTMessage()
-                    {
-                        type = CrdtMessageType.PUT_COMPONENT,
-                        entityId = ENTITY_ID,
-                        componentId = COMPONENT_ID,
-                        timestamp = 1,
-                        data = ProtoSerialization.Serialize(COMPONENT_DATA)
-                    };
+                    crdtCreateBoxMessage = new CrdtMessage
+                    (
+                        type: CrdtMessageType.PUT_COMPONENT,
+                        entityId: ENTITY_ID,
+                        componentId: COMPONENT_ID,
+                        timestamp: 1,
+                        data: ProtoSerialization.Serialize(COMPONENT_DATA)
+                    );
 
                     await clientCrdtService.SendCrdt(new CRDTManyMessages()
                     {
@@ -157,8 +158,8 @@ namespace Tests
         private static void LoadEnvironment()
         {
             ServiceLocator serviceLocator = ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
             Environment.Setup(serviceLocator);
-            serviceLocator.Initialize();
         }
 
         private static async UniTask LoadScene(int sceneNumber)
@@ -193,7 +194,7 @@ namespace Tests
             await UniTask.WaitWhile(() => Environment.i.messaging.manager.hasPendingMessages);
         }
 
-        private static byte[] CreateCRDTMessage(CRDTMessage message)
+        private static byte[] CreateCRDTMessage(CrdtMessage message)
         {
             using (MemoryStream msgStream = new MemoryStream())
             {

@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Providers;
 using NUnit.Framework;
 using SignupHUD;
@@ -8,20 +9,27 @@ namespace Tests.SignupHUD
 {
     public class SignupHUDViewShould
     {
+        private const string SIGNUP_HUD = "SignupHUD";
+
         private SignupHUDView hudView;
-        private HUDFactory factory;
+        private AddressableResourceProvider assetsProvider;
 
         [SetUp]
         public async Task SetUp()
         {
-            factory = new HUDFactory(new AddressableResourceProvider());
-            hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+            assetsProvider = new AddressableResourceProvider();
+            hudView = await GetView();
+        }
+
+        private async UniTask<SignupHUDView> GetView()
+        {
+            return (SignupHUDView) await assetsProvider.Instantiate<ISignupHUDView>(SIGNUP_HUD, $"_{SIGNUP_HUD}");
         }
 
         [TearDown]
         public void TearDown()
         {
-            factory.Dispose();
+            assetsProvider.Dispose();
 
             if (hudView != null)
                 Object.Destroy(hudView.gameObject);
@@ -33,7 +41,7 @@ namespace Tests.SignupHUD
         public async Task SetVisibilityProperly(bool visibility)
         {
             if(hudView == null)
-                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+                hudView = await GetView();
 
             hudView.SetVisibility(visibility);
             Assert.AreEqual(visibility, hudView.gameObject.activeSelf);
@@ -43,7 +51,7 @@ namespace Tests.SignupHUD
         public async Task ShowNameScreenProperly()
         {
             if(hudView == null)
-                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+                hudView = await GetView();
 
             hudView.nameAndEmailPanel.gameObject.SetActive(false);
             hudView.termsOfServicePanel.gameObject.SetActive(true);
@@ -58,7 +66,7 @@ namespace Tests.SignupHUD
         public async Task ShowTermsOfServiceScreenProperly()
         {
             if(hudView == null)
-                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+                hudView = await GetView();
 
             hudView.nameAndEmailPanel.gameObject.SetActive(true);
             hudView.termsOfServicePanel.gameObject.SetActive(false);
@@ -73,7 +81,7 @@ namespace Tests.SignupHUD
         public async Task DisableNextButtonWithShortName()
         {
             if(hudView == null)
-                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+                hudView = await GetView();
 
             hudView.nameAndEmailNextButton.interactable = true;
             hudView.nameInputField.text = "";
@@ -88,7 +96,7 @@ namespace Tests.SignupHUD
         public async Task EnableNextButtonWithValidName()
         {
             if(hudView == null)
-                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+                hudView = await GetView();
 
             hudView.nameAndEmailNextButton.interactable = false;
             hudView.nameInputField.text = "ValidName";
@@ -103,7 +111,7 @@ namespace Tests.SignupHUD
         public async Task DisableNextButtonWithInvalidEmail()
         {
             if(hudView == null)
-                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+                hudView = await GetView();
 
             hudView.nameAndEmailNextButton.interactable = true;
             hudView.nameInputField.text = "ValidName";
@@ -118,7 +126,7 @@ namespace Tests.SignupHUD
         public async Task EnableNextButtonWithValidEmail()
         {
             if(hudView == null)
-                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+                hudView = await GetView();
 
             hudView.nameAndEmailNextButton.interactable = true;
             hudView.nameInputField.text = "ValidName";

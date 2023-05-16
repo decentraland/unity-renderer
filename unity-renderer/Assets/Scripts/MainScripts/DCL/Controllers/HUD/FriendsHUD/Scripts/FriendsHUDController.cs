@@ -226,11 +226,6 @@ namespace DCL.Social.Friends
         {
             const int ITERATIONS_PER_FRAME = 10;
 
-            //NOTE(Brian): HashSet to check Contains quicker.
-            var allBlockedUsers = profile.blocked != null
-                ? new HashSet<string>(profile.blocked)
-                : new HashSet<string>();
-
             var iterations = 0;
 
             foreach (var friendPair in friends)
@@ -238,7 +233,7 @@ namespace DCL.Social.Friends
                 string friendId = friendPair.Key;
                 var model = friendPair.Value;
 
-                model.blocked = allBlockedUsers.Contains(friendId);
+                model.blocked = profile.blocked?.Contains(friendId) ?? false;
                 await UniTask.SwitchToMainThread();
                 View.UpdateBlockStatus(friendId, model.blocked);
 
@@ -682,7 +677,7 @@ namespace DCL.Social.Friends
             ShowOrHideMoreFriendRequestsToLoadHint();
         }
 
-        private void AddFriendRequests(List<FriendRequest> friendRequests)
+        private void AddFriendRequests(IEnumerable<FriendRequest> friendRequests)
         {
             if (friendRequests == null)
                 return;
@@ -785,11 +780,11 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            string[] friendsToAdd = await friendsController
+            IReadOnlyList<string> friendsToAdd = await friendsController
                                          .GetFriendsAsync(search, MAX_SEARCHED_FRIENDS, cancellationToken)
                                          .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
 
-            for (int i = 0; i < friendsToAdd.Length; i++)
+            for (int i = 0; i < friendsToAdd.Count; i++)
                 HandleFriendshipUpdated(friendsToAdd[i], FriendshipAction.APPROVED);
 
             View.EnableSearchMode();

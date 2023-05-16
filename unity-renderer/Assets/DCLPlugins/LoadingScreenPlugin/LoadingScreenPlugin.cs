@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.LoadingScreen;
 using DCL.Providers;
+using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System.Threading;
 using UnityEngine;
 
@@ -32,7 +33,7 @@ namespace DCLPlugins.LoadingScreenPlugin
             loadingScreenController = new LoadingScreenController(
                 CreateLoadingScreenView(),
                 Environment.i.world.sceneController, Environment.i.world.state, NotificationsController.i,
-                DataStore.i.player, DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm);
+                DataStore.i.player, DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm, new ShaderPrewarm(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()));
         }
 
         public void Dispose()

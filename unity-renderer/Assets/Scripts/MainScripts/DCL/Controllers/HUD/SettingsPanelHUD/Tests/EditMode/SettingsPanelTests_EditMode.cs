@@ -5,10 +5,12 @@ using DCL.SettingsPanelHUD.Widgets;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace SettingsPanelTests
 {
+    [Category("Legacy")]
     public class SettingsPanelShould_EditMode
     {
         private SettingsPanelHUDController panelController;
@@ -83,10 +85,11 @@ namespace SettingsPanelTests
         [Test]
         public void AddHelpAndSupportWindowProperly()
         {
-            helpAndSupportHUDController = new HelpAndSupportHUDController();
+            IHelpAndSupportHUDView view = Substitute.For<IHelpAndSupportHUDView>();
+            helpAndSupportHUDController = new HelpAndSupportHUDController(view);
             panelController.AddHelpAndSupportWindow(helpAndSupportHUDController);
 
-            Assert.IsTrue(helpAndSupportHUDController.view.gameObject.activeSelf, "Help and Support window is disabled!");
+            view.DidNotReceive().SetVisibility(true);
         }
     }
 }

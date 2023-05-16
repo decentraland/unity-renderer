@@ -1,45 +1,46 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Chat;
+using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
+using DCL.NotificationModel;
 using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
+using DCL.Social.Friends;
 using SignupHUD;
 using System;
 using System.Collections.Generic;
-using DCL.Chat.HUD;
-using DCL.Chat;
-using DCL.Social.Friends;
-using DCLServices.WearablesCatalogService;
 using System.Threading;
 using UnityEngine;
+using Environment = DCL.Environment;
+using Type = DCL.NotificationModel.Type;
 
 public class HUDController : IHUDController
 {
     private const string TOGGLE_UI_VISIBILITY_ASSET_NAME = "ToggleUIVisibility";
+    private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     static bool VERBOSE = false;
     public static HUDController i { get; private set; }
 
     public IHUDFactory hudFactory = null;
 
-    private readonly IWearablesCatalogService wearablesCatalogService;
     private InputAction_Trigger toggleUIVisibilityTrigger;
-    private DataStore_FeatureFlag featureFlags;
+    private DataStore dataStore;
 
-    private readonly DCL.NotificationModel.Model hiddenUINotification = new DCL.NotificationModel.Model()
+    private readonly Model hiddenUINotification = new Model()
     {
         timer = 3,
-        type = DCL.NotificationModel.Type.UI_HIDDEN,
+        type = Type.UI_HIDDEN,
         groupID = "UIHiddenNotification"
     };
 
-    public HUDController(IWearablesCatalogService wearablesCatalogService, DataStore_FeatureFlag featureFlags, IHUDFactory hudFactory = null)
+    public HUDController(DataStore dataStore, IHUDFactory hudFactory = null)
     {
-        this.wearablesCatalogService = wearablesCatalogService;
         this.hudFactory = hudFactory;
-        this.featureFlags = featureFlags;
+        this.dataStore = dataStore;
     }
 
     public void Initialize()
@@ -47,7 +48,7 @@ public class HUDController : IHUDController
         i = this;
 
         if (this.hudFactory == null)
-            this.hudFactory = DCL.Environment.i.hud.factory;
+            this.hudFactory = Environment.i.hud.factory;
 
         toggleUIVisibilityTrigger = Resources.Load<InputAction_Trigger>(TOGGLE_UI_VISIBILITY_ASSET_NAME);
         toggleUIVisibilityTrigger.OnTriggered += ToggleUIVisibility_OnTriggered;
@@ -66,14 +67,9 @@ public class HUDController : IHUDController
 
     public MinimapHUDController minimapHud => GetHUDElement(HUDElementID.MINIMAP) as MinimapHUDController;
 
-    public AvatarEditorHUDController avatarEditorHud =>
-        GetHUDElement(HUDElementID.AVATAR_EDITOR) as AvatarEditorHUDController;
-
     public SettingsPanelHUDController settingsPanelHud =>
         GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
-    public AirdroppingHUDController airdroppingHud =>
-        GetHUDElement(HUDElementID.AIRDROPPING) as AirdroppingHUDController;
 
     public TermsOfServiceHUDController termsOfServiceHud =>
         GetHUDElement(HUDElementID.TERMS_OF_SERVICE) as TermsOfServiceHUDController;
@@ -103,9 +99,6 @@ public class HUDController : IHUDController
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
-    public TeleportPromptHUDController teleportHud =>
-        GetHUDElement(HUDElementID.TELEPORT_DIALOG) as TeleportPromptHUDController;
-
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
     public HelpAndSupportHUDController helpAndSupportHud =>
@@ -122,12 +115,9 @@ public class HUDController : IHUDController
     public QuestsTrackerHUDController questsTrackerHUD =>
         GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
 
-    public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
-
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
-    private BaseDictionary<string, WearableItem> wearableCatalog => wearablesCatalogService.WearablesCatalog;
 
     private void ShowSettings()
     {
@@ -144,7 +134,7 @@ public class HUDController : IHUDController
         bool anyInputFieldIsSelected = InputProcessor.FocusIsInInputField();
 
         if (anyInputFieldIsSelected ||
-            DataStore.i.exploreV2.isOpen.Get() ||
+            dataStore.exploreV2.isOpen.Get() ||
             CommonScriptableObjects.tutorialActive)
             return;
 
@@ -173,6 +163,8 @@ public class HUDController : IHUDController
             case HUDElementID.MINIMAP:
                 if (minimapHud == null)
                 {
+                    // dependencies should be initialized
+                    await Environment.WaitUntilInitialized();
                     await CreateHudElement(configuration, hudElementId, cancellationToken);
                     minimapHud?.Initialize();
                 }
@@ -184,18 +176,11 @@ public class HUDController : IHUDController
             case HUDElementID.NOTIFICATION:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (NotificationsController.i != null)
-                    NotificationsController.i.Initialize(notificationHud, DataStore.i.notifications);
-                break;
-            case HUDElementID.AVATAR_EDITOR:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                avatarEditorHud?.Initialize(ownUserProfile, wearableCatalog);
+                    NotificationsController.i.Initialize(notificationHud, dataStore.notifications);
                 break;
             case HUDElementID.SETTINGS_PANEL:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 settingsPanelHud?.Initialize();
-                break;
-            case HUDElementID.AIRDROPPING:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.TERMS_OF_SERVICE:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
@@ -360,9 +345,6 @@ public class HUDController : IHUDController
             case HUDElementID.NFT_INFO_DIALOG:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
-            case HUDElementID.TELEPORT_DIALOG:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                break;
             case HUDElementID.CONTROLS_HUD:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
@@ -388,18 +370,6 @@ public class HUDController : IHUDController
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (configuration.active)
                     questsTrackerHUD.Initialize(QuestsController.i);
-                break;
-            case HUDElementID.SIGNUP:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                if (configuration.active)
-                {
-                    // Same race condition risks as with the ProfileHUD
-                    // TODO Refactor the way AvatarEditor sets its visibility to match our data driven pattern
-                    // Then this reference can be removed so we just work with a BaseVariable<bool>.
-                    // This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
-                    signupHUD.Initialize(avatarEditorHud);
-                }
-
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
@@ -468,7 +438,7 @@ public class HUDController : IHUDController
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"Failed to load HUD element resource {hudElements[id].GetType().Name}. Exception message: {e.Message}");
+                Debug.LogWarning($"Failed to load HUD element resource {id}. Exception message: {e.Message}");
             }
         }
     }
@@ -532,7 +502,7 @@ public class HUDController : IHUDController
 
     public static bool IsHUDElementDeprecated(HUDElementID element)
     {
-        Type enumType = typeof(HUDElementID);
+        System.Type enumType = typeof(HUDElementID);
         var enumName = enumType.GetEnumName(element);
         var fieldInfo = enumType.GetField(enumName);
         return Attribute.IsDefined(fieldInfo, typeof(ObsoleteAttribute));
@@ -555,7 +525,7 @@ public class HUDController : IHUDController
             "dcl://halloween_2019/bride_of_frankie_upper_body",
             "dcl://halloween_2019/creepy_nurse_upper_body",
         });
-        Resources.Load<StringVariable>("CurrentPlayerInfoCardId").Set(newModel.userId);
+        dataStore.HUDs.currentPlayerId.Set((newModel.userId, OPEN_PASSPORT_SOURCE));
     }
 #endif
     public void Dispose()

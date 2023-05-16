@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace DCL.LoadingScreen.Test
 {
+
     public class LoadingScreenViewTests
     {
         private LoadingScreenView loadingScreenView;
@@ -22,6 +23,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView.Dispose();
         }
 
+        [Category("EditModeCI")]
         [Test]
         public void LoadingPercentageCorrectly()
         {
@@ -47,6 +49,7 @@ namespace DCL.LoadingScreen.Test
             Assert.AreEqual(loadingScreenPercentageView.loadingPercentage.fillAmount, currentLoadingValue/100f);
         }
 
+        [Category("EditModeCI")]
         [Test]
         public void LoadingTipsUpdatedCorrectly()
         {

@@ -15,7 +15,7 @@ public class JpegPlayer : IVideoPlayer, IDisposable
         currentState = VideoState.LOADING;
         DownloadImage(url);
     }
-    
+
     public async UniTask DownloadImage(string url)
     {
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
@@ -33,7 +33,7 @@ public class JpegPlayer : IVideoPlayer, IDisposable
             }
         }
     }
-    
+
     public void Dispose() { GameObject.Destroy(image); }
 
     public void UpdateVideoTexture(){ }
@@ -60,7 +60,7 @@ public class JpegPlayer : IVideoPlayer, IDisposable
 
     public void SetVolume(float volume) { }
 
-    public VideoState GetCurrentState() 
+    public VideoState GetCurrentState()
     {
         return currentState;
     }

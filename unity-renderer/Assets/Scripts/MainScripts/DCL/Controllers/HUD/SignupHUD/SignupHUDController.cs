@@ -1,6 +1,6 @@
 using DCL;
 using DCL.Interface;
-using JetBrains.Annotations;
+using UnityEngine;
 
 namespace SignupHUD
 {
@@ -8,35 +8,29 @@ namespace SignupHUD
     {
         private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
         private readonly DataStore_LoadingScreen loadingScreenDataStore;
+        private readonly DataStore_HUDs dataStoreHUDs;
         internal readonly ISignupHUDView view;
 
         internal string name;
         internal string email;
         private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
-        internal IHUD avatarEditorHUD;
 
-        public SignupHUDController(ISignupHUDView view)
-        {
-            this.view = view;
-        }
-
-        public SignupHUDController(IAnalytics analytics, ISignupHUDView view, DataStore_LoadingScreen loadingScreenDataStore)
+        public SignupHUDController(IAnalytics analytics, ISignupHUDView view, DataStore_LoadingScreen loadingScreenDataStore,
+            DataStore_HUDs dataStoreHUDs)
         {
             newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
             this.view = view;
             this.loadingScreenDataStore = loadingScreenDataStore;
+            this.dataStoreHUDs = dataStoreHUDs;
             loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenAppear;
         }
 
-        public void Initialize(IHUD avatarEditorHUD)
+        public void Initialize()
         {
             if (view == null)
                 return;
 
-            this.avatarEditorHUD = avatarEditorHUD;
-
             signupVisible.OnChange += OnSignupVisibleChanged;
-            signupVisible.Set(false);
 
             view.OnNameScreenNext += OnNameScreenNext;
             view.OnEditAvatar += OnEditAvatar;
@@ -44,6 +38,7 @@ namespace SignupHUD
             view.OnTermsOfServiceBack += OnTermsOfServiceBack;
 
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnLoadingScreenAppear;
+            signupVisible.Set(signupVisible.Get(), true);
         }
         private void OnLoadingScreenAppear(bool current, bool previous)
         {
@@ -51,7 +46,10 @@ namespace SignupHUD
                 signupVisible.Set(false);
         }
 
-        private void OnSignupVisibleChanged(bool current, bool previous) { SetVisibility(current); }
+        private void OnSignupVisibleChanged(bool current, bool previous)
+        {
+            SetVisibility(current);
+        }
 
         internal void StartSignupProcess()
         {
@@ -70,7 +68,7 @@ namespace SignupHUD
         internal void OnEditAvatar()
         {
             signupVisible.Set(false);
-            avatarEditorHUD?.SetVisibility(true);
+            dataStoreHUDs.avatarEditorVisible.Set(true, true);
         }
 
         internal void OnTermsOfServiceAgreed()

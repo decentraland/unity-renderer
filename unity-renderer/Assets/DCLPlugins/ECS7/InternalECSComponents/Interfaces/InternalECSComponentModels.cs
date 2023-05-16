@@ -1,6 +1,6 @@
 using DCL.Components.Video.Plugin;
-using System.Collections.Generic;
 using DCL.ECSComponents;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
@@ -10,7 +10,7 @@ namespace DCL.ECS7.InternalComponents
     public class InternalComponent
     {
         public bool dirty => _dirty;
-        internal bool _dirty = true;
+        internal bool _dirty = false;
     }
 
     public class InternalTexturizable : InternalComponent
@@ -58,11 +58,12 @@ namespace DCL.ECS7.InternalComponents
 
         public WebVideoPlayer videoPlayer = null;
         public IList<MaterialAssigned> assignedMaterials;
+        public bool removed = false;
     }
 
     public class InternalColliders : InternalComponent
     {
-        public IList<Collider> colliders = new List<Collider>();
+        public KeyValueSet<Collider, uint> colliders = new KeyValueSet<Collider, uint>();
     }
 
     public class InternalRenderers : InternalComponent
@@ -81,8 +82,8 @@ namespace DCL.ECS7.InternalComponents
         public Bounds entityLocalMeshBounds = new Bounds();
         public bool meshesDirty = false;
         public IList<Renderer> renderers;
-        public IList<Collider> physicsColliders;
-        public IList<Collider> pointerColliders;
+        public KeyValueSet<Collider, uint> physicsColliders;
+        public KeyValueSet<Collider, uint> pointerColliders;
         public AudioSource audioSource;
     }
 
@@ -93,17 +94,14 @@ namespace DCL.ECS7.InternalComponents
 
     public class InternalInputEventResults : InternalComponent
     {
-        public class EventData
+        public struct EventData
         {
             public InputAction button;
             public RaycastHit hit;
             public PointerEventType type;
-            public int timestamp;
         }
 
-        public Queue<EventData> events;
-        public int lastTimestamp;
-        public long lastEntity;
+        public readonly IList<EventData> events = new List<EventData>(20);
     }
 
     public class InternalUiContainer : InternalComponent
@@ -119,5 +117,57 @@ namespace DCL.ECS7.InternalComponents
         {
             rootElement.name += $"(Id: {entityId})";
         }
+    }
+
+    public class InternalPointerEvents : InternalComponent
+    {
+        public readonly struct Entry
+        {
+            public readonly PointerEventType EventType;
+            public readonly Info EventInfo;
+
+            public Entry(PointerEventType eventType, Info eventInfo)
+            {
+                EventType = eventType;
+                EventInfo = eventInfo;
+            }
+        }
+
+        public readonly struct Info
+        {
+            public readonly InputAction Button;
+            public readonly string HoverText;
+            public readonly float MaxDistance;
+            public readonly bool ShowFeedback;
+
+            public Info(InputAction button, string hoverText, float maxDistance, bool showFeedback)
+            {
+                Button = button;
+                HoverText = hoverText;
+                MaxDistance = maxDistance;
+                ShowFeedback = showFeedback;
+            }
+        }
+
+        public readonly List<Entry> PointerEvents = new List<Entry>();
+    }
+
+    public class InternalRegisteredUiPointerEvents : InternalComponent
+    {
+        public EventCallback<PointerDownEvent> OnPointerDownCallback;
+        public EventCallback<PointerUpEvent> OnPointerUpCallback;
+        public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
+        public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
+    }
+
+    public class InternalRaycast : InternalComponent
+    {
+        public PBRaycast raycastModel;
+    }
+
+    public class InternalGltfContainerLoadingState : InternalComponent
+    {
+        public LoadingState LoadingState;
+        public bool GltfContainerRemoved;
     }
 }

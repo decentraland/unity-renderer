@@ -5,10 +5,10 @@ import { createLogger } from 'redux-logger'
 import { reducers } from './rootReducer'
 import { createRootSaga } from './rootSaga'
 import { DEBUG_REDUX } from 'config'
-import { ErrorContext, BringDownClientAndReportFatalError } from '../loading/ReportFatalError'
+import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import defaultLogger from 'lib/logger'
 import { setStore } from './isolatedStore'
-import { composeWithDevTools } from 'redux-devtools-extension'
+import { composeWithDevTools } from '@redux-devtools/extension'
 import { logTrace } from 'unity-interface/trace'
 
 export const sagaMiddleware = createSagaMiddleware({

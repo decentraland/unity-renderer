@@ -1,4 +1,5 @@
 using DCL.CameraTool;
+using DCL.Configuration;
 using DCL.Helpers;
 using DCL.UIElements.Structures;
 using Google.Protobuf.Collections;
@@ -15,8 +16,8 @@ namespace DCL.ECSComponents
         {
             var hit = new RaycastHit();
             hit.Length = rawHit.distance;
-            hit.Origin = UnityVectorToPBVector(ray.origin);
-            hit.EntityId = (int)entityId;
+            hit.GlobalOrigin = UnityVectorToPBVector(ray.origin);
+            hit.EntityId = (uint)entityId;
             hit.MeshName = meshName;
             hit.Position = UnityVectorToPBVector(rawHit.point);
             hit.NormalHit = UnityVectorToPBVector(rawHit.normal);
@@ -26,21 +27,18 @@ namespace DCL.ECSComponents
         }
 
         public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray,
-            float hitDistance, UnityEngine.Vector3 hitPoint, UnityEngine.Vector3 hitNormal, bool isValidEntity = true)
+            float hitDistance, UnityEngine.Vector3 hitPoint, UnityEngine.Vector3 hitNormal)
         {
             var ret = new RaycastHit
             {
                 Length = hitDistance,
-                Origin = UnityVectorToPBVector(ray.origin),
+                GlobalOrigin = UnityVectorToPBVector(ray.origin),
                 Position = UnityVectorToPBVector(hitPoint),
                 NormalHit = UnityVectorToPBVector(hitNormal),
-                Direction = UnityVectorToPBVector(ray.direction)
+                Direction = UnityVectorToPBVector(ray.direction),
+                EntityId = (uint)entityId
             };
 
-            if (isValidEntity)
-            {
-                ret.EntityId = entityId;
-            }
             if (!string.IsNullOrEmpty(meshName))
             {
                 ret.MeshName = meshName;

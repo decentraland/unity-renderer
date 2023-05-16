@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace DCL.SettingsCommon.Tests
 {
+    [Category("EditModeCI")]
     public class ProxySettingsRepositoryShould
     {
         [Test]
@@ -15,7 +16,7 @@ namespace DCL.SettingsCommon.Tests
 
             var settings = proxyRepository.Data;
             var latestRepositorySettings = latestRepository.Data;
-            
+
             Assert.AreEqual(GetDefaultSettings(), settings);
             ThenDataWasMigratedToLatestRepository(settings, latestRepositorySettings);
         }
@@ -29,7 +30,7 @@ namespace DCL.SettingsCommon.Tests
                 namesOpacity = 0.75f,
                 mouseSensitivity = 0.1f,
                 profanityChatFiltering = true,
-                scenesLoadRadius = 4
+                scenesLoadRadius = 3
             };
             var fallbackRepository = GivenSettingsRepositoryWithDataStored(editedSettings);
             var proxyRepository = new ProxySettingsRepository<GeneralSettings>(latestRepository,
@@ -37,7 +38,7 @@ namespace DCL.SettingsCommon.Tests
 
             var settings = proxyRepository.Data;
             var latestRepositorySettings = latestRepository.Data;
-            
+
             Assert.AreEqual(editedSettings, settings);
             ThenDataWasMigratedToLatestRepository(settings, latestRepositorySettings);
         }
@@ -63,9 +64,9 @@ namespace DCL.SettingsCommon.Tests
             var fallbackRepository = GivenSettingsRepositoryWithDataStored(fallbackEditedSettings);
             var proxyRepository = new ProxySettingsRepository<GeneralSettings>(latestRepository,
                 fallbackRepository);
-            
+
             var settings = proxyRepository.Data;
-            
+
             Assert.AreEqual(latestEditedSettings, settings);
         }
 
@@ -78,7 +79,7 @@ namespace DCL.SettingsCommon.Tests
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.VERIFIED_ONLY
             };
             var settingsByKey = GivenDataStoredInPrefs(latestEditedSettings);
-            
+
             GivenMissingBoolAttribute(settingsByKey, PlayerPrefsGeneralSettingsRepository.PROFANITY_CHAT_FILTERING);
             GivenMissingFloatAttribute(settingsByKey, PlayerPrefsGeneralSettingsRepository.SCENES_LOAD_RADIUS);
             var defaultSettings = GetDefaultSettings();
@@ -87,9 +88,9 @@ namespace DCL.SettingsCommon.Tests
             var fallbackRepository = GivenSettingsRepositoryWithNoData();
             var proxyRepository = new ProxySettingsRepository<GeneralSettings>(latestRepository,
                 fallbackRepository);
-            
+
             var settings = proxyRepository.Data;
-            
+
             Assert.AreEqual(latestEditedSettings.namesOpacity, settings.namesOpacity);
             Assert.AreEqual(latestEditedSettings.voiceChatAllow, settings.voiceChatAllow);
             Assert.AreEqual(defaultSettings.profanityChatFiltering, settings.profanityChatFiltering);

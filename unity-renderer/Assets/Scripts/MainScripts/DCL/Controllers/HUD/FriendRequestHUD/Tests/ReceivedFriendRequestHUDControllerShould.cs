@@ -21,7 +21,6 @@ namespace DCL.Social.Friends
         private IReceivedFriendRequestHUDView view;
         private IFriendsController friendsController;
         private IUserProfileBridge userProfileBridge;
-        private StringVariable openPassportVariable;
         private DataStore dataStore;
         private IFriendRequestHUDView friendRequestHUDView;
 
@@ -31,9 +30,13 @@ namespace DCL.Social.Friends
             view = Substitute.For<IReceivedFriendRequestHUDView>();
             friendsController = Substitute.For<IFriendsController>();
 
-            friendsController.GetAllocatedFriendRequest(FRIEND_REQUEST_ID)
+            friendsController.TryGetAllocatedFriendRequest(FRIEND_REQUEST_ID, out Arg.Any<FriendRequest>())
                              .Returns(
-                                  new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey"));
+                                  (args) =>
+                                  {
+                                      args[1] = new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey");
+                                      return true;
+                                  });
 
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -62,7 +65,6 @@ namespace DCL.Social.Friends
 
             userProfileBridge.GetOwn().Returns(ownProfile);
             userProfileBridge.Get(SENDER_ID).Returns(recipientProfile);
-            openPassportVariable = ScriptableObject.CreateInstance<StringVariable>();
             dataStore = new DataStore();
 
             friendRequestHUDView = Substitute.For<IFriendRequestHUDView>();
@@ -72,7 +74,6 @@ namespace DCL.Social.Friends
                 new FriendRequestHUDController(friendRequestHUDView),
                 friendsController,
                 userProfileBridge,
-                openPassportVariable,
                 Substitute.For<ISocialAnalytics>());
 
             view.ClearReceivedCalls();
@@ -123,13 +124,14 @@ namespace DCL.Social.Friends
 
             view.OnOpenProfile += Raise.Event<Action>();
 
-            Assert.AreEqual(SENDER_ID, openPassportVariable.Get());
+            Assert.AreEqual(SENDER_ID, dataStore.HUDs.currentPlayerId.Get().playerId);
         }
 
         [UnityTest]
         public IEnumerator RejectFriendRequest()
         {
             WhenShow();
+
             friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
@@ -173,6 +175,7 @@ namespace DCL.Social.Friends
             friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
+
             WhenShow();
             view.ClearReceivedCalls();
 

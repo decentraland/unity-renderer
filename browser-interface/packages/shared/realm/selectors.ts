@@ -1,7 +1,7 @@
 import { FETCH_CONTENT_SERVICE, UPDATE_CONTENT_SERVICE } from 'config'
 import { realmToConnectionString, urlWithProtocol } from './resolver'
 import type { IRealmAdapter, RootRealmState } from './types'
-import { OFFLINE_REALM } from './types'
+import { OFFLINE_REALM, OnboardingState } from './types'
 
 export const isWorldLoaderActive = (realmAdapter: IRealmAdapter) =>
   !!realmAdapter?.about.configurations?.scenesUrn?.length ||
@@ -19,7 +19,7 @@ export const getProfilesContentServerFromRealmAdapter = (adapter: IRealmAdapter)
   if (UPDATE_CONTENT_SERVICE) {
     return urlWithProtocol(UPDATE_CONTENT_SERVICE)
   }
-  const url = adapter.services.legacy.updateContentServer
+  const url = adapter.services.updateContentServer
   return urlWithProtocol(url)
 }
 
@@ -32,7 +32,7 @@ export const getFetchContentServerFromRealmAdapter = (adapter: IRealmAdapter) =>
   if (FETCH_CONTENT_SERVICE) {
     return urlWithProtocol(FETCH_CONTENT_SERVICE)
   }
-  return adapter.services.legacy.fetchContentServer
+  return adapter.services.fetchContentServer
 }
 
 /**
@@ -41,3 +41,5 @@ export const getFetchContentServerFromRealmAdapter = (adapter: IRealmAdapter) =>
 export const getFetchContentUrlPrefixFromRealmAdapter = (adapter: IRealmAdapter) => {
   return getFetchContentServerFromRealmAdapter(adapter) + '/contents/'
 }
+
+export const getOnboardingState = (state: RootRealmState): OnboardingState => state.onboarding

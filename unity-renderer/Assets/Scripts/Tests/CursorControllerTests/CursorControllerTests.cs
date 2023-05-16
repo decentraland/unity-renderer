@@ -43,7 +43,10 @@ namespace Tests
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
-                new PostWebRequestFactory()
+                new PostWebRequestFactory(),
+                new PutWebRequestFactory(),
+                new PatchWebRequestFactory(),
+                new DeleteWebRequestFactory()
             ) );
             return result;
         }

@@ -12,7 +12,7 @@ import { defaultLogger } from 'lib/logger'
 import { fetchENSOwner } from 'lib/web3/fetchENSOwner'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
-import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
+import { reportScenesAroundParcel, reportScenesWorldContext, setHomeScene } from 'shared/atlas/actions'
 import { emotesRequest, wearablesRequest } from 'shared/catalogs/actions'
 import { EmotesRequestFilters, WearablesRequestFilters } from 'shared/catalogs/types'
 import { notifyStatusThroughChat } from 'shared/chat'
@@ -54,7 +54,7 @@ import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions
 import { retrieveProfile } from 'shared/profiles/retrieveProfile'
 import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
-import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
 import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
@@ -665,7 +665,16 @@ export class BrowserInterface {
   }
 
   public RequestScenesInfoInArea(data: { parcel: { x: number; y: number }; scenesAround: number }) {
-    store.dispatch(reportScenesAroundParcel(data.parcel, data.scenesAround))
+    async function requestMapInfo() {
+      const adapter = await ensureRealmAdapter()
+      const isWorld = isWorldLoaderActive(adapter)
+      if (isWorld) {
+        store.dispatch(reportScenesWorldContext(data.parcel, data.scenesAround))
+      } else {
+        store.dispatch(reportScenesAroundParcel(data.parcel, data.scenesAround))
+      }
+    }
+    requestMapInfo().catch((err) => defaultLogger.log(err))
   }
 
   public SetAudioStream(data: { url: string; play: boolean; volume: number }) {
@@ -897,10 +906,6 @@ export class BrowserInterface {
         defaultLogger.error(e)
       }
     )
-  }
-
-  public async LoadingHUDReadyForTeleport(data: { x: number; y: number }) {
-    TeleportController.LoadingHUDReadyForTeleport(data)
   }
 
   public async UpdateMemoryUsage() {

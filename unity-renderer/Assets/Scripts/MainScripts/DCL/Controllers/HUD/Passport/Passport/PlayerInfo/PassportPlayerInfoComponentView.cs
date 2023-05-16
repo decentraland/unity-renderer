@@ -67,7 +67,7 @@ namespace DCL.Social.Passports
         private Dictionary<FriendshipStatus, GameObject> friendStatusButtonsMapping;
         private CancellationTokenSource cts;
 
-        public override void Start()
+        public void Start()
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
             usernameCopyButton.onClick.AddListener(CopyUsernameToClipboard);

@@ -43,7 +43,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         [SerializeField] private Transform previewTemplate;
 
         [SerializeField] private GameObject avatarContainer;
-        [SerializeField] private Transform avatarRevealContainer;
+        [SerializeField] private Transform baseAvatarContainer;
+        [SerializeField] private BaseAvatarReferences baseAvatarReferencesPrefab;
 
         private Service<IAvatarFactory> avatarFactory;
 
@@ -116,8 +117,12 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private IAvatar CreateAvatar() =>
             avatarFactory.Ref.CreateAvatar(avatarContainer, this.animator, NoLODs.i, new Visibility());
 
-        private IAvatar CreateAvatarWithHologram() =>
-            avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, avatarRevealContainer, avatarContainer, this.animator, NoLODs.i, new Visibility());
+        private IAvatar CreateAvatarWithHologram()
+        {
+            var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+
+            return avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), this.animator, NoLODs.i, new Visibility());
+        }
 
         private async UniTask UpdateModelAsync(AvatarModel newModel, CancellationToken ct)
         {

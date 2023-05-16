@@ -1,13 +1,20 @@
-﻿using System;
-using System.ComponentModel;
-using DCL.Controllers;
-using UnityEngine.SceneManagement;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Helpers;
+using System;
+using System.Threading;
 
 namespace DCL
 {
     public class Environment
     {
         public static Model i = new Model(new ServiceLocator());
+
+        private static CancellationTokenSource cancellationTokenSource;
+
+        private static bool initialized;
+
+        public static UniTask WaitUntilInitialized() =>
+            UniTaskUtils.WaitForBoolean(ref initialized, cancellationToken: cancellationTokenSource?.Token ?? CancellationToken.None);
 
         /// <summary>
         /// Setup the environment with the configured builder funcs.
@@ -16,7 +23,16 @@ namespace DCL
         {
             i.Dispose();
             i = new Model(serviceLocator);
-            serviceLocator.Initialize();
+            cancellationTokenSource = new CancellationTokenSource();
+            serviceLocator.Initialize(cancellationTokenSource.Token).ContinueWith(() => initialized = true).Forget();
+        }
+
+        public static UniTask SetupAsync(ServiceLocator serviceLocator)
+        {
+            i.Dispose();
+            i = new Model(serviceLocator);
+            cancellationTokenSource = new CancellationTokenSource();
+            return serviceLocator.Initialize(cancellationTokenSource.Token).ContinueWith(() => initialized = true);
         }
 
         /// <summary>
@@ -25,6 +41,15 @@ namespace DCL
         public static void Dispose()
         {
             i?.Dispose();
+
+            if (cancellationTokenSource != null)
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                cancellationTokenSource = null;
+            }
+
+            initialized = false;
         }
 
         public class Model : IDisposable

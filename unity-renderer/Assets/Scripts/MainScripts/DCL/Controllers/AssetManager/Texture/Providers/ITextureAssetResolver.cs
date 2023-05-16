@@ -8,7 +8,7 @@ namespace DCL
 {
     public interface ITextureAssetResolver : IService
     {
-        UniTask<TextureResponse> GetTextureAsync(AssetSource permittedSources, string url, int maxTextureSize, CancellationToken cancellationToken = default);
+        UniTask<TextureResponse> GetTextureAsync(AssetSource permittedSources, string url, int maxTextureSize, bool linear = false, bool useGPUCopy = false, CancellationToken cancellationToken = default);
 
         void IService.Initialize() { }
 

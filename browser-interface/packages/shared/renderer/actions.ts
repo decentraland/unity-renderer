@@ -1,8 +1,14 @@
 import { action } from 'typesafe-actions'
 
-import type { UnityGame } from '@dcl/unity-renderer/src/index'
+import type { UnityGame } from 'unity-interface/loader'
 
-import { RENDERER_INITIALIZED_CORRECTLY, PARCEL_LOADING_STARTED, RENDERER_INITIALIZE, RendererModules } from './types'
+import {
+  RENDERER_INITIALIZED_CORRECTLY,
+  PARCEL_LOADING_STARTED,
+  RENDERER_INITIALIZE,
+  RendererModules,
+  AVATAR_SCENE_INITIALIZED
+} from './types'
 import { RpcClient, RpcClientPort, Transport } from '@dcl/rpc'
 
 export const initializeRenderer = (
@@ -25,3 +31,6 @@ export type SignalParcelLoadingStarted = ReturnType<typeof signalParcelLoadingSt
 export const REGISTER_RPC_MODULES = 'REGISTER_RPC_MODULES'
 export const registerRendererModules = (modules: RendererModules) => action(REGISTER_RPC_MODULES, { modules })
 export type RegisterRendererModules = ReturnType<typeof registerRendererModules>
+
+export const avatarSceneInitialized = () => action(AVATAR_SCENE_INITIALIZED)
+export type SignalAvatarSceneInitialized = ReturnType<typeof avatarSceneInitialized>

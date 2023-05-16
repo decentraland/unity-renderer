@@ -51,7 +51,7 @@ function reducePrivateMessaging(state: State, action: UpdatePrivateMessagingStat
 
 function reduceUpdateUserData(state: State, action: UpdateUserData) {
   const socialData = state.socialInfo[action.payload.socialId]
-  if (socialData && deepEquals(socialData, action.payload)) {
+  if (socialDeepEquals(socialData, action.payload)) {
     // return state as is if user data exists and is equal
     return state
   }
@@ -65,6 +65,14 @@ function reduceUpdateUserData(state: State, action: UpdateUserData) {
   }
 }
 
-function deepEquals(a: SocialData, b: SocialData) {
-  return a.userId === b.userId && a.socialId === b.socialId && a.conversationId === b.conversationId
+function socialDeepEquals(a: SocialData, b: SocialData) {
+  return (
+    a &&
+    b &&
+    a.userId &&
+    b.userId &&
+    a.userId === b.userId &&
+    a.socialId === b.socialId &&
+    a.conversationId === b.conversationId
+  )
 }

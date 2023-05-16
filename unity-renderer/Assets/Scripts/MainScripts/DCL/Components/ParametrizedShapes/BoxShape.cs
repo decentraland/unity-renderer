@@ -1,18 +1,34 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
+using System.Linq;
 
 namespace DCL.Components
 {
     public class BoxShape : ParametrizedShape<BoxShape.Model>
     {
         [System.Serializable]
-        new public class Model : BaseShape.Model
+        public new class Model : BaseShape.Model
         {
             public float[] uvs;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.BoxShape)
+                    return Utils.SafeUnimplemented<BoxShape, Model>(expected: ComponentBodyPayload.PayloadOneofCase.BoxShape, actual: pbModel.PayloadCase);
+                
+                var pb = new Model();
+                if (pbModel.BoxShape.HasVisible) pb.visible = pbModel.BoxShape.Visible;
+                if (pbModel.BoxShape.HasWithCollisions) pb.withCollisions = pbModel.BoxShape.WithCollisions;
+                if (pbModel.BoxShape.HasIsPointerBlocker) pb.isPointerBlocker = pbModel.BoxShape.IsPointerBlocker;
+                if (pbModel.BoxShape.Uvs is { Count: > 0 }) pb.uvs = pbModel.BoxShape.Uvs.ToArray();
+                
+                return pb;
+            }
         }
 
         public BoxShape() { model = new Model(); }

@@ -11,6 +11,14 @@ import { globalObservable } from '../observables'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { store } from 'shared/store/isolatedStore'
 import defaultLogger from 'lib/logger'
+import { setRealmAdapter } from 'shared/realm/actions'
+import { setRoomConnection } from 'shared/comms/actions'
+
+export class UserError extends Error {
+  constructor(msg: string) {
+      super(msg);
+  }
+}
 
 export function BringDownClientAndShowError(event: ExecutionLifecycleEvent | string) {
   if (ExecutionLifecycleEventsList.includes(event as any)) {
@@ -21,11 +29,13 @@ export function BringDownClientAndShowError(event: ExecutionLifecycleEvent | str
     event === COMMS_COULD_NOT_BE_ESTABLISHED ? 'comms' : event === NETWORK_MISMATCH ? 'networkmismatch' : 'fatal'
 
   store.dispatch(fatalError(targetError))
+  store.dispatch(setRealmAdapter(undefined))
+  store.dispatch(setRoomConnection(undefined))
 
   globalObservable.emit('error', {
     error: new Error(event),
     code: targetError,
-    level: 'fatal'
+    level: 'warning'
   })
 }
 
@@ -105,6 +115,10 @@ export function BringDownClientAndReportFatalError(
     stack: getStack(error).slice(0, 10000),
     saga_stack: sagaStack
   })
+
+  store.dispatch(fatalError(error.message || 'fatal error'))
+  store.dispatch(setRealmAdapter(undefined))
+  store.dispatch(setRoomConnection(undefined))
 
   globalObservable.emit('error', {
     error,

@@ -10,9 +10,17 @@ namespace DCLServices.WearablesCatalogService
     {
         BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
-        UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct);
+        UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken);
+        UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
+            string userId, int pageNumber, int pageSize,
+            CancellationToken cancellationToken,
+            string category = null, NftRarity rarity = NftRarity.None,
+            NftCollectionType collectionTypeMask = NftCollectionType.All,
+            ICollection<string> thirdPartyCollectionIds = null,
+            string name = null, (NftOrderByOperation type, bool directionAscendent)? orderBy = null);
+        UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct);
         UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct);
-        UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct);
+        UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct);
         UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct);
         void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems);
         void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds);

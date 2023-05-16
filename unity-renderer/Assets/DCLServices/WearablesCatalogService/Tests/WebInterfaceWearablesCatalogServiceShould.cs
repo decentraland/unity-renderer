@@ -49,13 +49,13 @@ namespace DCLServices.WearablesCatalogService
                     GivenValidWearableItem("w3"),
                 });
 
-                IReadOnlyList<WearableItem> wearables = await service.RequestOwnedWearablesAsync(USER_ID, 0,
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) wearablesWithAmount = await service.RequestOwnedWearablesAsync(USER_ID, 0,
                     10, true, default(CancellationToken));
 
-                ThenWearableIsValid("w1", wearables[0]);
-                ThenWearableIsValid("w2", wearables[1]);
-                ThenWearableIsValid("w3", wearables[2]);
-                Assert.AreEqual(3, wearables.Count);
+                ThenWearableIsValid("w1", wearablesWithAmount.wearables[0]);
+                ThenWearableIsValid("w2", wearablesWithAmount.wearables[1]);
+                ThenWearableIsValid("w3", wearablesWithAmount.wearables[2]);
+                Assert.AreEqual(3, wearablesWithAmount.wearables.Count);
             });
 
         [UnityTest]
@@ -66,7 +66,7 @@ namespace DCLServices.WearablesCatalogService
 
                 try
                 {
-                    IReadOnlyList<WearableItem> wearables = await service.RequestOwnedWearablesAsync(USER_ID, 0,
+                    (IReadOnlyList<WearableItem> wearables, int totalAmount) wearables = await service.RequestOwnedWearablesAsync(USER_ID, 0,
                         10, true, default(CancellationToken));
 
                     Assert.Fail();
@@ -128,13 +128,13 @@ namespace DCLServices.WearablesCatalogService
                         GivenValidWearableItem("w3"),
                     });
 
-                IReadOnlyList<WearableItem> wearables = await service.RequestThirdPartyWearablesByCollectionAsync(USER_ID, "tpw-collection", 0, 20,
+                (IReadOnlyList<WearableItem> wearables, int totalAmount) wearables = await service.RequestThirdPartyWearablesByCollectionAsync(USER_ID, "tpw-collection", 0, 20,
                     true, default(CancellationToken));
 
-                ThenWearableIsValid("w1", wearables[0]);
-                ThenWearableIsValid("w2", wearables[1]);
-                ThenWearableIsValid("w3", wearables[2]);
-                Assert.AreEqual(3, wearables.Count);
+                ThenWearableIsValid("w1", wearables.wearables[0]);
+                ThenWearableIsValid("w2", wearables.wearables[1]);
+                ThenWearableIsValid("w3", wearables.wearables[2]);
+                Assert.AreEqual(3, wearables.wearables.Count);
             });
 
         [UnityTest]
@@ -145,7 +145,7 @@ namespace DCLServices.WearablesCatalogService
 
                 try
                 {
-                    IReadOnlyList<WearableItem> wearables = await service.RequestThirdPartyWearablesByCollectionAsync(USER_ID, "tpw-collection", 0, 20,
+                    (IReadOnlyList<WearableItem> wearables, int totalAmount) wearables = await service.RequestThirdPartyWearablesByCollectionAsync(USER_ID, "tpw-collection", 0, 20,
                         true, default(CancellationToken));
 
                     Assert.Fail();

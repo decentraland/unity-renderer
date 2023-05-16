@@ -1,0 +1,709 @@
+// WARNING: This protocol is deprecated, it only exists as a migration plan to the
+// new CRDT based protocol.
+
+syntax = "proto3";
+
+package decentraland.renderer;
+// option csharp_namespace = "DCL.Interface";
+
+
+import "google/protobuf/empty.proto";
+
+message PB_CreateEntity {
+  string id = 1;
+}
+
+message PB_RemoveEntity {
+  string id = 1;
+}
+
+message PB_SetEntityParent {
+  string entityId = 1;
+  string parentId = 2;
+}
+
+message PB_ComponentRemoved {
+  string entityId = 1;
+  string name = 2;
+}
+
+message PB_Component {
+  oneof model {
+    PB_Transform transform = 1;
+    PB_UUIDCallback uuidCallback = 8;
+
+    PB_BoxShape box = 16;
+    PB_SphereShape sphere = 17;
+    PB_PlaneShape plane = 18;
+    PB_ConeShape cone = 19;
+    PB_CylinderShape cylinder = 20;
+
+    PB_TextShape text = 21;
+
+    PB_NFTShape nft = 22;
+
+    PB_UIContainerRect containerRect = 25;
+    PB_UIContainerStack containerStack = 26;
+
+    PB_UITextShape uiTextShape = 27;
+    PB_UIInputText uiInputTextShape = 28;
+    PB_UIImage uiImageShape = 29;
+
+    PB_CircleShape circle = 31;
+    PB_Billboard billboard = 32;
+
+    PB_GLTFShape gltf = 54;
+    PB_OBJShape obj = 55;
+    PB_AvatarShape avatar = 56;
+
+    PB_BasicMaterial basicMaterial = 64;
+
+    PB_Texture texture = 68;
+    PB_AudioClip audioClip = 200;
+    PB_AudioSource audioSource = 201;
+  }
+}
+
+message PB_Color4 {
+  float r = 1;
+  float g = 2;
+  float b = 3;
+  float a = 4;
+}
+message PB_Color3 {
+  float r = 1;
+  float g = 2;
+  float b = 3;
+}
+
+message PB_TextShapeModel {
+  bool billboard = 1;
+  string value = 2;
+  PB_Color3 color = 3;
+  float opacity = 4;
+  float fontSize = 5;
+  bool fontAutoSize = 6;
+  string fontWeight = 7;
+  string hTextAlign = 8;
+  string vTextAlign = 9;
+  float width = 10;
+  float height = 11;
+  bool adaptWidth = 12;
+  bool adaptHeight = 13;
+  float paddingTop = 14;
+  float paddingRight = 15;
+  float paddingBottom = 16;
+  float paddingLeft = 17;
+  float lineSpacing = 18;
+  int32 lineCount = 19;
+  bool textWrapping = 20;
+  float shadowBlur = 21;
+  float shadowOffsetX = 22;
+  float shadowOffsetY = 23;
+  PB_Color3 shadowColor = 24;
+  float outlineWidth = 25;
+  PB_Color3 outlineColor = 26;
+}
+
+message PB_Vector3 {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message PB_Quaternion {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  double w = 4;
+}
+
+message PB_Transform {
+  PB_Vector3 position = 1;
+  PB_Quaternion rotation = 2;
+  PB_Vector3 scale = 3;
+}
+
+message PB_UpdateEntityComponent {
+  string entityId = 1;
+  int32 classId = 2;
+  string name = 3;
+  string data = 4;
+}
+
+message PB_ComponentCreated {
+  string id = 1;
+  int32 classid = 2;
+  string name = 3;
+}
+
+message PB_AttachEntityComponent {
+  string entityId = 1;
+  string name = 2;
+  string id = 3;
+}
+
+message PB_ComponentDisposed {
+  string id = 1;
+}
+
+message PB_ComponentUpdated {
+  string id = 1;
+  string json = 2;
+}
+
+message PB_Ray {
+  PB_Vector3 origin = 1;
+  PB_Vector3 direction = 2;
+  float distance = 3;
+}
+
+message PB_RayQuery {
+  string queryId = 1;
+  string queryType = 2;
+  PB_Ray ray = 3;
+}
+
+message PB_Query {
+  string queryId = 1;
+  string payload = 2;
+}
+
+message PB_SendSceneMessage {
+  string sceneId = 1;
+  string tag = 2;
+  oneof payload {
+    PB_CreateEntity createEntity = 3;
+    PB_RemoveEntity removeEntity = 4;
+    PB_SetEntityParent setEntityParent = 5;
+    PB_UpdateEntityComponent updateEntityComponent = 6;
+    PB_AttachEntityComponent attachEntityComponent = 7;
+    PB_ComponentCreated componentCreated = 8;
+    PB_ComponentDisposed componentDisposed = 9;
+    PB_ComponentRemoved componentRemoved = 10;
+    PB_ComponentUpdated componentUpdated = 11;
+    PB_Query query = 12;
+    google.protobuf.Empty sceneStarted = 13;
+    PB_OpenExternalUrl openExternalUrl = 14;
+    PB_OpenNFTDialog openNFTDialog = 15;
+  }
+  int32 sceneNumber = 99;
+}
+
+message PB_SetPosition {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message PB_ContentMapping {
+  string file = 1;
+  string hash = 2;
+}
+
+message PB_Position {
+  float x = 1;
+  float y = 2;
+}
+
+message PB_LoadParcelScenes {
+  string id = 1;
+  PB_Position basePosition = 2;
+  repeated PB_Position parcels = 3;
+  repeated PB_ContentMapping contents = 4;
+  string baseUrl = 5;
+  // ILand land = 6;
+  int32 sceneNumber = 99;
+}
+
+message PB_CreateUIScene {
+  string id = 1;
+  string baseUrl = 2;
+  int32 sceneNumber = 99;
+}
+
+message PB_UnloadScene {
+  string sceneId = 1;
+  int32 sceneNumber = 99;
+}
+
+message PB_DclMessage {
+  oneof message {
+    google.protobuf.Empty setDebug = 1;
+    google.protobuf.Empty setSceneDebugPanel = 2;
+    google.protobuf.Empty setEngineDebugPanel = 3;
+    PB_SendSceneMessage sendSceneMessage = 4;
+    PB_LoadParcelScenes loadParcelScenes = 5;
+    PB_UnloadScene unloadScene = 6;
+    PB_SetPosition setPosition = 7;
+    google.protobuf.Empty reset = 8;
+    PB_CreateUIScene createUIScene = 9;
+  }
+}
+
+message PB_AnimationState {
+  string clip = 1;
+  bool looping = 2;
+  float weight = 3;
+  bool playing = 4;
+  bool shouldReset = 5;
+  float speed = 6;
+}
+
+message PB_Animator {
+  bool withCollisions = 1;
+  bool visible = 2;
+}
+
+message PB_AudioClip {
+  string url = 1;
+  bool loop = 2;
+  float volume = 3;
+}
+
+message PB_AudioSource {
+  PB_AudioClip audioClip = 1;
+  string audioClipId = 2;
+  bool loop = 3;
+  float volume = 4;
+  bool playing = 5;
+  float pitch = 6;
+}
+
+message PB_AvatarShape {
+  string id = 1;
+  string baseUrl = 2;
+  string name = 3;
+  PB_Wearable bodyShape = 4;
+  repeated PB_Wearable wearables = 5;
+  PB_Skin skin = 6;
+  PB_Hair hair = 7;
+  PB_Eyes eyes = 8;
+  PB_Face eyebrows = 9;
+  PB_Face mouth = 10;
+  bool useDummyModel = 11;
+
+  string expressionTriggerId = 12;
+  uint64 expressionTriggerTimestamp = 14;
+
+  repeated string emotes = 15;
+}
+
+message PB_Wearable {
+  string categody = 1;
+  string contentName = 2;
+  repeated PB_ContentMapping contents = 3;
+}
+
+message PB_Face {
+  string texture = 1;
+}
+
+message PB_Eyes {
+  string texture = 1;
+  string mask = 2;
+  PB_Color4 color = 3;
+}
+
+message PB_Hair {
+  PB_Color4 color = 1;
+}
+
+message PB_Skin {
+  PB_Color4 color = 1;
+}
+
+message PB_BasicMaterial {
+  PB_Texture texture = 1;
+  float alphaTest = 2;
+}
+
+message PB_Billboard {
+  bool x = 1;
+  bool y = 2;
+  bool z = 3;
+}
+
+message PB_BoxShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  repeated float uvs = 3;
+}
+
+message PB_CircleShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  float segments = 3;
+  float arc = 4;
+}
+
+message PB_ConeShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  float radiusTop = 3;
+  float radiusBottom = 4;
+  float segmentsHeight = 5;
+  float segmentsRadial = 6;
+  bool openEnded = 7;
+  float radius = 8;
+  float arc = 9;
+}
+
+message PB_CylinderShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  float radiusTop = 3;
+  float radiusBottom = 4;
+  float segmentsHeight = 5;
+  float segmentsRadial = 6;
+  bool openEnded = 7;
+  float radius = 8;
+  float arc = 9;
+}
+
+message PB_GlobalPointerDown {}
+
+message PB_GlobalPointerUp {}
+
+message PB_GLTFShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  string src = 3;
+}
+
+message PB_Material {
+  float alpha = 1;
+  PB_Color3 albedoColor = 2;
+  PB_Color3 emissiveColor = 3;
+  float metallic = 4;
+  float roughness = 5;
+  PB_Color3 ambientColor = 6;
+  PB_Color3 reflectionColor = 7;
+  PB_Color3 reflectivityColor = 8;
+  float directIntensity = 9;
+  float microSurface = 10;
+  float emissiveIntensity = 11;
+  float environmentIntensity = 12;
+  float specularIntensity = 13;
+  PB_Texture albedoTexture = 14;
+  PB_Texture alphaTexture = 15;
+  PB_Texture emissiveTexture = 16;
+  PB_Texture bumpTexture = 17;
+  PB_Texture refractionTexture = 18;
+  bool disableLighting = 19;
+  float transparencyMode = 20;
+  bool hasAlpha = 21;
+}
+
+message PB_NFTShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  string src = 3;
+  PB_Color3 color = 4;
+}
+
+message PB_OBJShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  string src = 3;
+}
+
+message PB_PlaneShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  float width = 3;
+  float height = 4;
+  repeated float uvs = 5;
+}
+
+message PB_Shape {
+  bool withCollisions = 1;
+  bool visible = 2;
+}
+
+message PB_SphereShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+}
+
+message PB_TextShape {
+  bool withCollisions = 1;
+  bool visible = 2;
+  float outlineWidth = 3;
+  PB_Color3 outlineColor = 4;
+  PB_Color3 color = 5;
+  float fontSize = 6;
+  string fontWeight = 7;
+  float opacity = 8;
+  string value = 9;
+  string lineSpacing = 10;
+  float lineCount = 11;
+  bool resizeToFit = 12;
+  bool textWrapping = 13;
+  float shadowBlur = 14;
+  float shadowOffsetX = 15;
+  float shadowOffsetY = 16;
+  PB_Color3 shadowColor = 17;
+  float zIndex = 18;
+  string hTextAlign = 19;
+  string vTextAlign = 20;
+  float width = 21;
+  float height = 22;
+  float paddingTop = 23;
+  float paddingRight = 24;
+  float paddingBottom = 25;
+  float paddingLeft = 26;
+  bool isPickable = 27;
+  bool billboard = 28;
+}
+
+message PB_Texture {
+  string src = 1;
+  float samplingMode = 2;
+  float wrap = 3;
+  bool hasAlpha = 4;
+}
+
+message PB_UIButton {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+  float fontSize = 12;
+  string fontWeight = 13;
+  float thickness = 14;
+  float cornerRadius = 15;
+  PB_Color4 color = 16;
+  PB_Color4 background = 17;
+  float paddingTop = 18;
+  float paddingRight = 19;
+  float paddingBottom = 20;
+  float paddingLeft = 21;
+  float shadowBlur = 22;
+  float shadowOffsetX = 23;
+  float shadowOffsetY = 24;
+  PB_Color4 shadowColor = 25;
+  string text = 26;
+}
+
+message PB_UICanvas {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+}
+
+message PB_UIContainerRect {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+  bool adaptWidth = 12;
+  bool adaptHeight = 13;
+  float thickness = 14;
+  PB_Color4 color = 15;
+  bool alignmentUsesSize = 16;
+}
+
+message PB_UIContainerStack {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+  bool adaptWidth = 12;
+  bool adaptHeight = 13;
+  PB_Color4 color = 14;
+  PB_UIStackOrientation stackOrientation = 15;
+  float spacing = 16;
+}
+
+enum PB_UIStackOrientation {
+  VERTICAL = 0;
+  HORIZONTAL = 1;
+}
+
+message PB_UIImage {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+  float sourceLeft = 12;
+  float sourceTop = 13;
+  float sourceWidth = 14;
+  float sourceHeight = 15;
+  PB_Texture source = 16;
+  float paddingTop = 17;
+  float paddingRight = 18;
+  float paddingBottom = 19;
+  float paddingLeft = 20;
+  bool sizeInPixels = 21;
+  PB_UUIDCallback onClick = 22;
+}
+
+message PB_UUIDCallback {
+  string type = 1;
+  string uuid = 2;
+}
+
+message PB_UIInputText {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+  float outlineWidth = 12;
+  PB_Color4 outlineColor = 13;
+  PB_Color4 color = 14;
+  float thickness = 15;
+  float fontSize = 16;
+  string fontWeight = 17;
+  string value = 18;
+  PB_Color4 placeholderColor = 19;
+  string placeholder = 20;
+  float margin = 21;
+  float maxWidth = 22;
+  string hTextAlign = 23;
+  string vTextAlign = 24;
+  bool autoStretchWidth = 25;
+  PB_Color4 background = 26;
+  PB_Color4 focusedBackground = 27;
+  bool textWrapping = 28;
+  float shadowBlur = 29;
+  float shadowOffsetX = 30;
+  float shadowOffsetY = 31;
+  PB_Color4 shadowColor = 32;
+  float paddingTop = 33;
+  float paddingRight = 34;
+  float paddingBottom = 35;
+  float paddingLeft = 36;
+  PB_UUIDCallback onTextSubmit = 37;
+  PB_UUIDCallback onChanged = 38;
+  PB_UUIDCallback onFocus = 39;
+  PB_UUIDCallback onBlur = 40;
+}
+
+message PB_UIScrollRect {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+  float valueX = 12;
+  float valueY = 13;
+  PB_Color4 borderColor = 14;
+  PB_Color4 backgroundColor = 15;
+  bool isHorizontal = 16;
+  bool isVertical = 17;
+  float paddingTop = 18;
+  float paddingRight = 19;
+  float paddingBottom = 20;
+  float paddingLeft = 21;
+  PB_UUIDCallback onChanged = 22;
+}
+
+message PB_UIShape {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+}
+
+message PB_UITextShape {
+  string name = 1;
+  bool visible = 2;
+  float opacity = 3;
+  string hAlign = 4;
+  string vAlign = 5;
+  string width = 6;
+  string height = 7;
+  string positionX = 8;
+  string positionY = 9;
+  bool isPointerBlocker = 10;
+  PB_UIShape parent = 11;
+  float outlineWidth = 12;
+  PB_Color4 outlineColor = 13;
+  PB_Color4 color = 14;
+  float fontSize = 15;
+  bool fontAutoSize = 16;
+  string fontWeight = 17;
+  string value = 18;
+  float lineSpacing = 19;
+  float lineCount = 20;
+  bool adaptWidth = 21;
+  bool adaptHeight = 22;
+  bool textWrapping = 23;
+  float shadowBlur = 24;
+  float shadowOffsetX = 25;
+  float shadowOffsetY = 26;
+  PB_Color4 shadowColor = 27;
+  string hTextAlign = 28;
+  string vTextAlign = 29;
+  float paddingTop = 30;
+  float paddingRight = 31;
+  float paddingBottom = 32;
+  float paddingLeft = 33;
+}
+
+message PB_OpenExternalUrl {
+  string url = 1;
+}
+
+message PB_OpenNFTDialog {
+  string assetContractAddress = 1;
+  string tokenId = 2;
+  string comment = 3;
+}

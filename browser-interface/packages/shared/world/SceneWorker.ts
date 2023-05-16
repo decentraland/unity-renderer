@@ -1,47 +1,36 @@
 import { Quaternion, Vector3 } from '@dcl/ecs-math'
-import { EventDataType } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
-import { PermissionItem, permissionItemFromJSON } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
-import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
+import { EventDataType } from 'shared/protocol/decentraland/kernel/apis/engine_api.gen'
+import { PermissionItem, permissionItemFromJSON } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
+import { RpcSceneControllerServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/scene_controller.gen'
 import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { WebWorkerTransport } from '@dcl/rpc/dist/transports/WebWorker'
 import { Scene } from '@dcl/schemas'
-import {
-  DEBUG_SCENE_LOG,
-  ETHEREUM_NETWORK,
-  FORCE_SEND_MESSAGE,
-  getAssetBundlesBaseUrl,
-  playerHeight,
-  WSS_ENABLED
-} from 'config'
+import { DEBUG_SCENE_LOG, ETHEREUM_NETWORK, getAssetBundlesBaseUrl, PIPE_SCENE_CONSOLE, playerHeight } from 'config'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
-import defaultLogger, { createDummyLogger, createLogger, ILogger } from 'lib/logger'
+import defaultLogger, { createDummyLogger, createForwardedLogger, createLogger, ILogger } from 'lib/logger'
 import mitt from 'mitt'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
 import {
-  SceneFail,
   SceneLoad,
   SceneStart,
   SceneUnload,
-  SCENE_FAIL,
   SCENE_LOAD,
   SCENE_START,
   SCENE_UNLOAD,
-  signalSceneFail,
   signalSceneLoad,
   signalSceneStart,
   signalSceneUnload
 } from 'shared/loading/actions'
 import { incrementAvatarSceneMessages } from 'shared/session/getPerformanceInfo'
-import { EntityAction, LoadableScene } from 'shared/types'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
-import { protobufMsgBridge } from 'unity-interface/protobufMessagesBridge'
+import { LoadableScene } from 'shared/types'
 import { PositionReport } from './positionThings'
+import { EntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_interface_ecs6.gen'
+import { joinBuffers } from 'lib/javascript/uint8arrays'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -82,7 +71,6 @@ export type SceneLifeCycleStatusReport = { sceneId: string; status: SceneLifeCyc
 export const sceneEvents = mitt<{
   [SCENE_LOAD]: SceneLoad
   [SCENE_START]: SceneStart
-  [SCENE_FAIL]: SceneFail
   [SCENE_UNLOAD]: SceneUnload
 }>()
 
@@ -121,16 +109,20 @@ export class SceneWorker {
   private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
   private readonly startLoadingTime = performance.now()
   // this is the transport for the worker
-  public readonly transport: Transport
+  public transport?: Transport
 
   metadata: Scene
   logger: ILogger
 
-  static async createSceneWorker(loadableScene: Readonly<LoadableScene>, rpcClient: RpcClient, _transport?: Transport) {
+  static async createSceneWorker(
+    loadableScene: Readonly<LoadableScene>,
+    rpcClient: RpcClient,
+    transportBuilder: () => Transport | undefined
+  ) {
     ++globalSceneNumberCounter
     const sceneNumber = globalSceneNumberCounter
     const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
-    const worker = new SceneWorker(loadableScene, sceneNumber, scenePort, _transport)
+    const worker = new SceneWorker(loadableScene, sceneNumber, scenePort, transportBuilder)
     await worker.attachTransport()
     return worker
   }
@@ -139,7 +131,7 @@ export class SceneWorker {
     public readonly loadableScene: Readonly<LoadableScene>,
     sceneNumber: number,
     scenePort: RpcClientPort,
-    _transport?: Transport
+    private transportBuilder: () => Transport | undefined
   ) {
     const skipErrors = ['Transport closed while waiting the ACK']
 
@@ -147,7 +139,11 @@ export class SceneWorker {
 
     const loggerName = getSceneNameFromJsonData(this.metadata) || loadableScene.id
     const loggerPrefix = `scene: [${loggerName}]`
-    this.logger = DEBUG_SCENE_LOG ? createLogger(loggerPrefix) : createDummyLogger()
+    this.logger = DEBUG_SCENE_LOG
+      ? PIPE_SCENE_CONSOLE
+        ? createForwardedLogger('kernel', loggerPrefix)
+        : createLogger(loggerPrefix)
+      : createDummyLogger()
 
     if (!Scene.validate(loadableScene.entity.metadata)) {
       defaultLogger.error('Invalid scene metadata', loadableScene.entity.metadata, Scene.validate.errors)
@@ -157,8 +153,6 @@ export class SceneWorker {
       loadableScene.entity.metadata.runtimeVersion === '7' ||
       !!loadableScene.entity.metadata.ecs7 ||
       !!loadableScene.entity.metadata.sdk7
-
-    this.transport = _transport || buildWebWorkerTransport(this.loadableScene, IS_SDK7)
 
     const rpcSceneControllerService = codegen.loadService<any>(scenePort, RpcSceneControllerServiceDefinition)
 
@@ -190,7 +184,10 @@ export class SceneWorker {
       sendProtoSceneEvent: (e) => {
         this.rpcContext.events.push(e)
       },
-      sendBatch: this.sendBatch.bind(this)
+      sendBatch: this.sendBatch.bind(this),
+      readFile: this.readFile.bind(this),
+      initialEntitiesTick0: Uint8Array.of(),
+      hasMainCrdt: false
     }
 
     // if the scene metadata has a base parcel, then we set it as the position
@@ -226,6 +223,29 @@ export class SceneWorker {
     }
   }
 
+  async readFile(fileName: string) {
+    // filenames are lower cased as per https://adr.decentraland.org/adr/ADR-80
+    const normalized = fileName.toLowerCase()
+
+    // and we iterate over the entity content mappings to resolve the file hash
+    for (const { file, hash } of this.rpcContext.sceneData.entity.content) {
+      if (file.toLowerCase() === normalized) {
+        // fetch the actual content
+        const baseUrl = this.rpcContext.sceneData.baseUrl.endsWith('/')
+          ? this.rpcContext.sceneData.baseUrl
+          : this.rpcContext.sceneData.baseUrl + '/'
+        const url = baseUrl + hash
+        const response = await fetch(url)
+
+        if (!response.ok) throw new Error(`Error fetching file ${file} from ${url}`)
+
+        return { hash, content: new Uint8Array(await response.arrayBuffer()) }
+      }
+    }
+
+    throw new Error(`File ${fileName} not found`)
+  }
+
   dispose() {
     const disposingFlags =
       SceneWorkerReadyState.DISPOSING | SceneWorkerReadyState.SYSTEM_DISPOSED | SceneWorkerReadyState.DISPOSED
@@ -240,7 +260,7 @@ export class SceneWorker {
     if ((this.ready & disposingFlags) === 0) {
       this.ready |= SceneWorkerReadyState.DISPOSING
 
-      this.transport.close()
+      this.transport?.close()
     }
 
     this.ready |= SceneWorkerReadyState.DISPOSED
@@ -315,46 +335,32 @@ export class SceneWorker {
       sdk7: this.rpcContext.sdk7
     })
 
+    let mainCrdt = Uint8Array.of()
+
+    try {
+      if (this.rpcContext.sceneData.entity.content.some(($) => $.file.toLowerCase() === 'main.crdt')) {
+        const file = await this.readFile('main.crdt')
+        mainCrdt = file.content
+      }
+    } catch (err: any) {
+      this.logger.error(err)
+    }
+
+    // this is the tick#0 as specified in ADR-133 and ADR-148
+    const result = await this.rpcContext.rpcSceneControllerService.sendCrdt({ payload: mainCrdt })
+    this.rpcContext.initialEntitiesTick0 = joinBuffers(mainCrdt, result.payload)
+    this.rpcContext.hasMainCrdt = mainCrdt.length > 0
+
     // from now on, the sceneData object is read-only
     Object.freeze(this.rpcContext.sceneData)
+
+    this.transport = this.transportBuilder() || buildWebWorkerTransport(this.loadableScene, this.rpcContext.sdk7)
 
     this.rpcServer.setHandler(registerServices)
     this.rpcServer.attachTransport(this.transport, this.rpcContext)
     this.ready |= SceneWorkerReadyState.LOADED
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
-
-    const WORKER_TIMEOUT = 90_000 // ninety seconds to mars
-    setTimeout(() => this.onLoadTimeout(), WORKER_TIMEOUT)
-  }
-
-  private onLoadTimeout() {
-    if (!this.sceneStarted) {
-      this.ready |= SceneWorkerReadyState.LOADING_FAILED
-
-      const state: string[] = []
-
-      for (const i in SceneWorkerReadyState) {
-        if (!isNaN(i as any)) {
-          if (this.ready & (i as any)) {
-            state.push(SceneWorkerReadyState[i])
-          }
-        }
-      }
-
-      this.logger.warn('SceneTimedOut', state.join('+'))
-
-      this.sceneStarted = true
-      this.rpcContext.sendSceneEvent('sceneStart', {})
-
-      if (!(this.ready & SceneWorkerReadyState.INITIALIZED)) {
-        // this message should be sent upon failure to unlock the loading screen
-        // when a scene is malformed and never emits InitMessagesFinished
-        this.sendBatch([{ payload: {}, type: 'InitMessagesFinished' }])
-      }
-
-      sceneEvents.emit(SCENE_FAIL, signalSceneFail(this.loadableScene))
-    }
   }
 
   private sendBatch(actions: EntityAction[]): void {
@@ -367,70 +373,15 @@ export class SceneWorker {
     if (!(this.ready & SceneWorkerReadyState.INITIALIZED)) {
       let present = false
       for (const action of actions) {
-        if (action.type === 'InitMessagesFinished') {
+        if (action.payload?.payload?.$case === 'initMessagesFinished') {
           present = true
           break
         }
       }
       if (!present) {
-        actions.push({
-          payload: {},
-          type: 'InitMessagesFinished'
-        })
+        actions.push({ payload: { payload: { $case: 'initMessagesFinished', initMessagesFinished: {} } } })
       }
       this.ready |= SceneWorkerReadyState.INITIALIZED
-    }
-
-    if (WSS_ENABLED || FORCE_SEND_MESSAGE) {
-      this.sendBatchWss(actions)
-    } else {
-      this.sendBatchNative(actions)
-    }
-  }
-
-  private sendBatchWss(actions: EntityAction[]): void {
-    const sceneId = this.loadableScene.id
-    const sceneNumber = this.rpcContext.sceneData.sceneNumber
-    const messages: string[] = []
-    let len = 0
-
-    function flush() {
-      if (len) {
-        getUnityInstance().SendSceneMessage(messages.join('\n'))
-        messages.length = 0
-        len = 0
-      }
-    }
-
-    for (let i = 0; i < actions.length; i++) {
-      const action = actions[i]
-
-      // Check moved from SceneRuntime.ts->DecentralandInterface.componentUpdate() here until we remove base64 support.
-      // This way we can still initialize problematic scenes in the Editor, otherwise the protobuf encoding explodes with such messages.
-      if (action.payload.json?.length > 49000) {
-        this.logger.error('Component payload cannot exceed 49.000 bytes. Skipping message.')
-
-        continue
-      }
-
-      const part = protobufMsgBridge.encodeSceneMessage(sceneId, sceneNumber, action.type, action.payload, action.tag)
-      messages.push(part)
-      len += part.length
-
-      if (len > 1024 * 1024) {
-        flush()
-      }
-    }
-
-    flush()
-  }
-
-  private sendBatchNative(actions: EntityAction[]): void {
-    const sceneId = this.loadableScene.id
-    const sceneNumber = this.rpcContext.sceneData.sceneNumber
-    for (let i = 0; i < actions.length; i++) {
-      const action = actions[i]
-      nativeMsgBridge.SendNativeMessage(sceneId, sceneNumber, action)
     }
   }
 

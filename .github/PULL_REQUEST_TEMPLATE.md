@@ -21,3 +21,7 @@ At very least add the specific URL from which to test the build and add to it an
 ## Our Code Review Standards
 
 https://github.com/decentraland/unity-renderer/blob/master/docs/code-review-standards.md
+
+## Copilot summary
+
+copilot:summary

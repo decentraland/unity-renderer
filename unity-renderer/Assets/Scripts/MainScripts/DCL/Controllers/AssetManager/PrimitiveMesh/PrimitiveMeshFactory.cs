@@ -22,8 +22,13 @@ internal class PrimitiveMeshFactory
                 }
                 break;
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Sphere:
-                mesh = PrimitiveMeshBuilder.BuildSphere(1f);
+            {
+                if (meshModelModel.properties is PropertySphere sphereProps)
+                {
+                    mesh = PrimitiveMeshBuilder.BuildSphere(sphereProps.Radius, sphereProps.Longitude, sphereProps.Latitude);
+                }
                 break;
+            }
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Plane:
                 {
                     if (meshModelModel.properties is PropertyUvs modelWithUvs)
@@ -41,7 +46,7 @@ internal class PrimitiveMeshFactory
                     if (meshModelModel.properties is PropertyCylinder cylinder)
                     {
                         mesh = PrimitiveMeshBuilder.BuildCylinder(50, cylinder.radiusTop, cylinder.radiusBottom,
-                            2f, 0f, true, false);
+                            1f, 0f, true, false);
                     }
                 }
                 break;

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: shadervariants-dcl-urp
+  m_Shaders:
+  - first: {fileID: 4800000, guid: 84b0f0f6534d12f408714410ae176b61, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: _BLOOM_LQ _TONEMAP_ACES
+        passType: 0
+      - keywords: _TONEMAP_ACES
+        passType: 0
+  - first: {fileID: 4800000, guid: 861f58cc229a5f449b2494095122257f, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: FOG_LINEAR _ALPHATEST_ON
+        passType: 0
+      - keywords: 
+        passType: 13
+      - keywords: _ALPHATEST_ON
+        passType: 13

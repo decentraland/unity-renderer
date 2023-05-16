@@ -1,4 +1,5 @@
-﻿using DCL.Chat.HUD;
+﻿using DCL;
+using DCL.Chat.HUD;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -12,7 +13,7 @@ public class PrivateChatEntryShould
     {
         view = PrivateChatEntry.Create();
         userContextMenu = Substitute.ForPartsOf<UserContextMenu>();
-        view.Initialize(Substitute.For<IChatController>(), userContextMenu);
+        view.Initialize(Substitute.For<IChatController>(), userContextMenu, new DataStore_Mentions());
     }
 
     [TearDown]
@@ -66,7 +67,7 @@ public class PrivateChatEntryShould
 
         picture.Received(1).Configure(Arg.Is<ImageComponentModel>(im => im.uri == "someUrl"));
     }
-    
+
     [Test]
     public void DisableAvatarSnapshotFetching()
     {

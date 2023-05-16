@@ -82,6 +82,8 @@ Material:
     m_Floats:
     - Vector1_0df2ab10152b42e8bc1ff3769855795f: 0
     - Vector1_1e1d6744b98b44e6a58172cca5720d78: 0
+    - _QueueControl: 0
+    - _QueueOffset: 0
     - _RenderDistance_0: 3
     - _dayTime: 0
     - _fadeTime_0: 1

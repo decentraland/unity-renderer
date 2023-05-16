@@ -92,22 +92,20 @@ export class TeleportController {
   ): Promise<{ message: string; success: boolean }> {
     const tpMessage: string = teleportMessage ? teleportMessage : `Teleporting to ${x}, ${y}...`
     if (isInsideWorldLimits(x, y)) {
-      await changeToMostPopulatedRealm()
+      try {
+        await changeToMostPopulatedRealm()
 
-      store.dispatch(trackTeleportTriggered(tpMessage))
-      store.dispatch(teleportToAction({ position: gridToWorld(x, y) }))
+        store.dispatch(trackTeleportTriggered(tpMessage))
+        store.dispatch(teleportToAction({ position: gridToWorld(x, y) }))
 
-      return { message: tpMessage, success: true }
+        return { message: tpMessage, success: true }
+      } catch (e: any) {
+        return { message: e.message, success: false }
+      }
     } else {
       const errorMessage = `Coordinates are outside of the boundaries. Valid ranges are: ${descriptiveValidWorldRanges}.`
       return { message: errorMessage, success: false }
     }
-  }
-
-  public static LoadingHUDReadyForTeleport(_data: { x: number; y: number }) {
-    /// This doesn't work when the logic of activate/deactivate rendering is so tightly coupled with the loading
-    /// screen. The code needs rework
-    // store.dispatch(teleportToAction({ position: gridToWorld(data.x, data.y) }))
   }
 }
 

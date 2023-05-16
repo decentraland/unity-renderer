@@ -10,7 +10,7 @@ import { getUnityInstance } from './IUnityInterface'
 import { clientDebug, ClientDebug } from './ClientDebug'
 import { kernelConfigForRenderer } from './kernelConfigForRenderer'
 import { store } from 'shared/store/isolatedStore'
-import type { UnityGame } from '@dcl/unity-renderer/src'
+import type { UnityGame } from 'unity-interface/loader'
 import { traceDecoratorUnityGame } from './trace'
 import defaultLogger from 'lib/logger'
 import { ContentMapping, EntityType, Scene, sdk } from '@dcl/schemas'
@@ -19,7 +19,7 @@ import { reloadScenePortableExperience } from 'shared/portableExperiences/action
 import { wearableToSceneEntity } from 'shared/wearablesPortableExperience/sagas'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 import { sleep } from 'lib/javascript/sleep'
-import { signalRendererInitializedCorrectly } from 'shared/renderer/actions'
+import { avatarSceneInitialized, signalRendererInitializedCorrectly } from 'shared/renderer/actions'
 import { browserInterface } from './BrowserInterface'
 import { LoadableScene } from 'shared/types'
 
@@ -77,6 +77,8 @@ export async function initializeEngine(_gameInstance: UnityGame): Promise<void> 
   }
 
   await startGlobalScene('dcl-gs-avatars', 'Avatars', hudWorkerUrl)
+
+  store.dispatch(avatarSceneInitialized())
 }
 
 type GlobalSceneOptions = {

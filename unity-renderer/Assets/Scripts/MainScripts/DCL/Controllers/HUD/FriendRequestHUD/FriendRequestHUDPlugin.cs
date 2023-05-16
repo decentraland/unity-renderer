@@ -12,10 +12,9 @@ namespace DCL.Social.Friends
         public FriendRequestHUDPlugin()
         {
             var userProfileBridge = new UserProfileWebInterfaceBridge();
-            FriendsController friendsController = FriendsController.i;
+            var friendsController = Environment.i.serviceLocator.Get<IFriendsController>();
             DataStore dataStore = DataStore.i;
             var socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileBridge);
-            StringVariable openPassportVariable = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
 
             var receivedFriendRequestHUDComponentView = ReceivedFriendRequestHUDComponentView.Create();
 
@@ -25,7 +24,6 @@ namespace DCL.Social.Friends
                 new FriendRequestHUDController(receivedFriendRequestHUDComponentView),
                 friendsController,
                 userProfileBridge,
-                openPassportVariable,
                 socialAnalytics);
 
             var sendFriendRequestHUDComponentView = SendFriendRequestHUDComponentView.Create();
@@ -37,8 +35,7 @@ namespace DCL.Social.Friends
 
             sentFriendRequestHUDController = new SentFriendRequestHUDController(SentFriendRequestHUDComponentView.Create(),
                 dataStore, userProfileBridge, friendsController,
-                socialAnalytics,
-                openPassportVariable);
+                socialAnalytics);
         }
 
         public void Dispose()

@@ -1,8 +1,7 @@
-import { RpcClientModule } from '@dcl/rpc/dist/codegen'
+import { Vector3 } from 'lib/math/Vector3'
 import { Emitter } from 'mitt'
-import { CommsServiceDefinition } from '@dcl/protocol/out-ts/decentraland/bff/comms_service.gen'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
-import { IslandChangedMessage } from '@dcl/protocol/out-ts/decentraland/kernel/comms/v3/archipelago.gen'
+import { IslandChangedMessage } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 
 export const OFFLINE_REALM = 'offline'
 
@@ -11,8 +10,14 @@ export type RealmState = {
   previousAdapter: IRealmAdapter | undefined
 }
 
+export type OnboardingState = {
+  isInOnboarding: boolean
+  onboardingRealm: string | undefined
+}
+
 export type RootRealmState = {
   realm: RealmState
+  onboarding: OnboardingState
 }
 
 export type RealmConnectionEvents = {
@@ -29,15 +34,11 @@ export type LegacyServices = {
   poiService: string
 }
 
-export type BffServices<CallContext = any> = {
-  comms: RpcClientModule<CommsServiceDefinition, CallContext>
-  legacy: LegacyServices
-}
-
-export interface IRealmAdapter<CallContext = any> {
+export interface IRealmAdapter {
   readonly about: AboutResponse
   readonly baseUrl: string
   disconnect(error?: Error): Promise<void>
+  sendHeartbeat(p: Vector3): void
   events: Emitter<RealmConnectionEvents>
-  services: BffServices<CallContext>
+  services: LegacyServices
 }

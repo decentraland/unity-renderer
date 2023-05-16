@@ -1,4 +1,5 @@
 using DCL.Helpers;
+using MainScripts.DCL.Controllers.HotScenes;
 using NSubstitute;
 using NUnit.Framework;
 using System.Linq;
@@ -40,7 +41,10 @@ public class PlaceCardComponentViewTests
         PlaceCardComponentModel testModel = new PlaceCardComponentModel
         {
             coords = new Vector2Int(10, 10),
-            hotSceneInfo = new HotScenesController.HotSceneInfo(),
+            placeInfo = new IHotScenesController.PlaceInfo()
+            {
+                base_position = "10,10"
+            },
             numberOfUsers = 10,
             parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
             placeAuthor = "Test Author",

@@ -1,0 +1,20 @@
+{
+  "name": "RPC.Service.RestrictedActions",
+  "rootNamespace": "",
+  "references": [
+    "GUID:3c7b57a14671040bd8c549056adc04f5",
+    "GUID:f51ebe6a0ceec4240a699833d6309b23",
+    "GUID:32414f40c5c02494097836a15ff47eac",
+    "GUID:fd239a454d9a4039b164f90867ea3216",
+    "GUID:91b3e67997f21408dae5a247c35f91ad"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

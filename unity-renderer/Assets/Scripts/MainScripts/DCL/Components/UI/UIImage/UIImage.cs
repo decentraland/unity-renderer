@@ -1,17 +1,17 @@
-using DCL.Controllers;
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
     public class UIImage : UIShape<UIImageReferencesContainer, UIImage.Model>
     {
         [System.Serializable]
-        new public class Model : UIShape.Model
+        public new class Model : UIShape.Model
         {
             public string source;
             public float sourceLeft = 0f;
@@ -24,53 +24,88 @@ namespace DCL.Components
             public float paddingLeft = 0f;
             public bool sizeInPixels = true;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.UiImage)
+                    return Utils.SafeUnimplemented<UIImage, Model>(expected: ComponentBodyPayload.PayloadOneofCase.UiImage, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.UiImage.HasName) pb.name = pbModel.UiImage.Name;
+                if (pbModel.UiImage.HasParentComponent) pb.parentComponent = pbModel.UiImage.ParentComponent;
+                if (pbModel.UiImage.HasVisible) pb.visible = pbModel.UiImage.Visible;
+                if (pbModel.UiImage.HasOpacity) pb.opacity = pbModel.UiImage.Opacity;
+                if (pbModel.UiImage.HasHAlign) pb.hAlign = pbModel.UiImage.HAlign;
+                if (pbModel.UiImage.HasVAlign) pb.vAlign = pbModel.UiImage.VAlign;
+                if (pbModel.UiImage.Width != null) pb.width = SDK6DataMapExtensions.FromProtobuf(pb.width, pbModel.UiImage.Width);
+                if (pbModel.UiImage.Height != null) pb.height = SDK6DataMapExtensions.FromProtobuf(pb.height, pbModel.UiImage.Height);
+                if (pbModel.UiImage.PositionX != null) pb.positionX = SDK6DataMapExtensions.FromProtobuf(pb.positionX, pbModel.UiImage.PositionX);
+                if (pbModel.UiImage.PositionY != null) pb.positionY = SDK6DataMapExtensions.FromProtobuf(pb.positionY, pbModel.UiImage.PositionY);
+                if (pbModel.UiImage.HasIsPointerBlocker) pb.isPointerBlocker = pbModel.UiImage.IsPointerBlocker;
+
+                if (pbModel.UiImage.HasSource) pb.source = pbModel.UiImage.Source;
+                if (pbModel.UiImage.HasSourceLeft) pb.sourceLeft = pbModel.UiImage.SourceLeft;
+                if (pbModel.UiImage.HasSourceTop) pb.sourceTop = pbModel.UiImage.SourceTop;
+                if (pbModel.UiImage.HasSourceWidth) pb.sourceWidth = pbModel.UiImage.SourceWidth;
+                if (pbModel.UiImage.HasSourceHeight) pb.sourceHeight = pbModel.UiImage.SourceHeight;
+                if (pbModel.UiImage.HasPaddingTop) pb.paddingTop = pbModel.UiImage.PaddingTop;
+                if (pbModel.UiImage.HasPaddingRight) pb.paddingRight = pbModel.UiImage.PaddingRight;
+                if (pbModel.UiImage.HasPaddingBottom) pb.paddingBottom = pbModel.UiImage.PaddingBottom;
+                if (pbModel.UiImage.HasPaddingLeft) pb.paddingLeft = pbModel.UiImage.PaddingLeft;
+                if (pbModel.UiImage.HasSizeInPixels) pb.sizeInPixels = pbModel.UiImage.SizeInPixels;
+
+                if (pbModel.UiImage.HasOnClick) pb.onClick = pbModel.UiImage.OnClick;
+
+
+                return pb;
+            }
         }
 
         public override string referencesContainerPrefabName => "UIImage";
 
         DCLTexture dclTexture = null;
+        private readonly DCLTexture.Fetcher dclTextureFetcher = new DCLTexture.Fetcher();
+        private bool isDisposed;
 
         public UIImage()
         {
             model = new Model();
         }
 
-        public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
+        public override int GetClassId() =>
+            (int) CLASS_ID.UI_IMAGE_SHAPE;
 
-        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null) { Debug.LogError("Aborted UIImageShape attachment to an entity. UIShapes shouldn't be attached to entities."); }
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null) =>
+            Debug.LogError("Aborted UIImageShape attachment to an entity. UIShapes shouldn't be attached to entities.");
 
         public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
-        Coroutine fetchRoutine;
-
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
-
             // Fetch texture
             if (!string.IsNullOrEmpty(model.source))
             {
                 if (dclTexture == null || (dclTexture != null && dclTexture.id != model.source))
                 {
-                    if (fetchRoutine != null)
-                    {
-                        CoroutineStarter.Stop(fetchRoutine);
-                        fetchRoutine = null;
-                    }
+                    dclTextureFetcher.Fetch(scene, model.source,
+                                          fetchedDCLTexture =>
+                                          {
+                                              if (isDisposed)
+                                                  return false;
 
-                    IEnumerator fetchIEnum = DCLTexture.FetchTextureComponent(scene, model.source, (downloadedTexture) =>
-                    {
-                        referencesContainer.image.texture = downloadedTexture.texture;
-                        fetchRoutine = null;
-                        dclTexture?.DetachFrom(this);
-                        dclTexture = downloadedTexture;
-                        dclTexture.AttachTo(this);
+                                              referencesContainer.image.texture = fetchedDCLTexture.texture;
+                                              dclTexture?.DetachFrom(this);
+                                              dclTexture = fetchedDCLTexture;
+                                              dclTexture.AttachTo(this);
 
-                        ConfigureUVRect(parentRecTransform, dclTexture?.resizingFactor ?? 1);
-                    });
+                                              ConfigureImage();
+                                              return true;
+                                          })
+                                     .Forget();
 
-                    fetchRoutine = CoroutineStarter.Start(fetchIEnum);
+                    return null;
                 }
             }
             else
@@ -79,6 +114,16 @@ namespace DCL.Components
                 dclTexture?.DetachFrom(this);
                 dclTexture = null;
             }
+
+            ConfigureImage();
+            return null;
+        }
+
+        private void ConfigureImage()
+        {
+            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
+
+            ConfigureUVRect(parentRecTransform, dclTexture?.resizingFactor ?? 1);
 
             referencesContainer.image.enabled = model.visible;
             referencesContainer.image.color = Color.white;
@@ -92,7 +137,6 @@ namespace DCL.Components
             referencesContainer.paddingLayoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
 
             Utils.ForceRebuildLayoutImmediate(parentRecTransform);
-            return null;
         }
 
         private void ConfigureUVRect(RectTransform parentRecTransform, float resizingFactor)
@@ -119,11 +163,9 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            if (fetchRoutine != null)
-            {
-                CoroutineStarter.Stop(fetchRoutine);
-                fetchRoutine = null;
-            }
+            isDisposed = true;
+
+            dclTextureFetcher.Dispose();
 
             dclTexture?.DetachFrom(this);
 

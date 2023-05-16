@@ -1,10 +1,10 @@
-import type { UnityGame } from '@dcl/unity-renderer/src'
 import {
   incrementMessageFromKernelToRenderer,
   incrementMessageFromRendererToKernel
 } from 'shared/session/getPerformanceInfo'
-import { CommonRendererOptions } from 'kernel-web-interface/renderer'
+import { CommonRendererOptions } from 'unity-interface/loader'
 import defaultLogger from 'lib/logger'
+import { UnityGame } from 'unity-interface/loader'
 
 let pendingMessagesInTrace = 0
 const currentTrace: string[] = []

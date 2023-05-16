@@ -70,15 +70,31 @@ namespace DCLServices.WearablesCatalogService
             Destroy(this);
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct) =>
-            await RequestWearablesByContextAsync(userId, null, null, $"{OWNED_WEARABLES_CONTEXT}{userId}", false, ct);
+        public UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken) =>
+            throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
+
+        public UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
+            NftRarity rarity = NftRarity.None,
+            NftCollectionType collectionTypeMask = NftCollectionType.All,
+            ICollection<string> thirdPartyCollectionIds = null, string name = null,
+            (NftOrderByOperation type, bool directionAscendent)? orderBy = null) =>
+            throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
+
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
+        {
+            var wearables = await RequestWearablesByContextAsync(userId, null, null, $"{OWNED_WEARABLES_CONTEXT}{userId}", false, ct);
+            return (FilterWearablesByPage(wearables, pageNumber, pageSize), wearables.Count);
+
+        }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct) =>
             await RequestWearablesByContextAsync(null, null, new[] { BASE_WEARABLES_COLLECTION_ID }, BASE_WEARABLES_CONTEXT, false, ct);
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages,
-            CancellationToken ct) =>
-            await RequestWearablesByContextAsync(userId, null, new[] { collectionId }, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
+        {
+            var wearables = await RequestWearablesByContextAsync(userId, null, new[] { collectionId }, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
+            return (FilterWearablesByPage(wearables, pageNumber, pageSize), wearables.Count);
+        }
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
         {
@@ -371,6 +387,18 @@ namespace DCLServices.WearablesCatalogService
 
             awaitingWearablesByContextTasks.Remove(context);
             pendingWearablesByContextRequestedTimes.Remove(context);
+        }
+
+        // As kernel doesn't have pagination available, we apply a "local" pagination over the returned results
+        private static IReadOnlyList<WearableItem> FilterWearablesByPage(IReadOnlyCollection<WearableItem> wearables, int pageNumber, int pageSize)
+        {
+            int paginationIndex = pageNumber * pageSize;
+            int skippedWearables = Math.Min(paginationIndex - pageSize, wearables.Count);
+            int takenWearables = paginationIndex > wearables.Count ? paginationIndex - (paginationIndex - wearables.Count) : pageSize;
+            return wearables
+                  .Skip(skippedWearables)
+                  .Take(skippedWearables < wearables.Count ? takenWearables : 0)
+                  .ToArray();
         }
     }
 }

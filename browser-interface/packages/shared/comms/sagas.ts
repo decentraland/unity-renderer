@@ -1,6 +1,6 @@
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { IPFSv2 } from '@dcl/schemas'
 import type { Avatar, Snapshots } from '@dcl/schemas'
 import { genericAvatarSnapshots } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
@@ -28,7 +28,7 @@ import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
-import { getCurrentIdentity } from 'shared/session/selectors'
+import { getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import { store } from 'shared/store/isolatedStore'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
@@ -53,10 +53,9 @@ import { getConnectedPeerCount, processAvatarVisibility } from './peers'
 import { getCommsRoom, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
+import { getGlobalAudioStream } from './adapters/voice/loopback'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
-const CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS = 10_000
-
 // this interval should be fast because this will be the delay other people around
 // you will experience to fully show your avatar. i.e. if we set it to 10sec, people
 // in the genesis plaza will have to wait up to 10 seconds (if already connected) to
@@ -207,6 +206,12 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     yield apply(adapter, adapter.connect, [])
     yield put(setRoomConnection(adapter))
   } catch (error: any) {
+    commsLogger.error(error)
+    trackEvent('error', {
+      context: 'handleConnectToComms',
+      message: error.message,
+      stack: error.stack
+    })
     notifyStatusThroughChat('Error connecting to comms. Will try another realm')
 
     const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
@@ -297,7 +302,8 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         new LivekitAdapter({
           logger: commsLogger,
           url: theUrl.origin + theUrl.pathname,
-          token
+          token,
+          globalAudioStream: await getGlobalAudioStream()
         })
       )
     }
@@ -400,17 +406,16 @@ function stripSnapshots(profile: Avatar): Avatar {
  * This saga handle reconnections of comms contexts.
  */
 function* handleCommsReconnectionInterval() {
-  yield call(waitForMetaConfigurationInitialization)
-  const isUnexpectedDisconnectionCheckEnabled = yield select(getFeatureFlagEnabled, 'unexpected-disconnection-check')
-
   while (true) {
     const reason = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
       USER_AUTHENTICATED: take(USER_AUTHENTICATED),
-      timeout: isUnexpectedDisconnectionCheckEnabled ? delay(CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS) : undefined
+      timeout: delay(1000)
     })
-
+    // TODO: Why are we not doing `if (reason === undefined) continue`?
+    // The timeout makes no sense, except to avoid a logical error
+    // in the saga flow that leads to some race condition.
     const { commsConnection, realmAdapter, hasFatalError, identity } = yield select(reconnectionState)
 
     const shouldReconnect = !commsConnection && !hasFatalError && identity?.address && !realmAdapter
@@ -447,6 +452,9 @@ function* handleAnnounceProfile() {
 
     // skip this process when there is no local profile
     if (!profile) continue
+
+    // user is in the avatar creation screen
+    if (!(yield select(isLoginCompleted))) continue
 
     if (reason.sendProfileToRenderer && profile.userId !== reason.sendProfileToRenderer.payload.userId) {
       // skip this process when sendProfileToRenderer is called for a different avatar
@@ -501,6 +509,7 @@ export async function disconnectRoom(context: RoomConnection) {
 function* handleRoomDisconnectionSaga(action: HandleRoomDisconnection) {
   const room: RoomConnection = yield select(getCommsRoom)
 
+  // and only acts if the disconnected room is the current room
   if (room && room === action.payload.context) {
     // this also remove the context
     yield put(setRoomConnection(undefined))

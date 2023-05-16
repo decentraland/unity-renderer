@@ -227,7 +227,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5478977143504367126
 RectTransform:
   m_ObjectHideFlags: 0
@@ -407,7 +407,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2435194396389998009}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1179,7 +1179,7 @@ MonoBehaviour:
   infoVerticalLayout: {fileID: 8391442166639773757}
   cardAnimator: {fileID: 0}
   favoriteButton: {fileID: 5286154406900823186}
-  favoriteButtonContainer: {fileID: 1060877028049097989}
+  favoriteButtonContainer: {fileID: 0}
   defaultPicture: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61, type: 3}
   model:
     placePictureSprite: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
@@ -1192,6 +1192,7 @@ MonoBehaviour:
     numberOfUsers: 0
     coords: {x: 0, y: 0}
     parcels: []
+    isFavorite: 0
     hotSceneInfo:
       id: 
       name: 
@@ -1202,6 +1203,37 @@ MonoBehaviour:
       parcels: []
       usersTotalCount: 0
       realms: []
+    placeInfo:
+      id: 
+      title: 
+      description: 
+      image: 
+      owner: 
+      tags: []
+      positions: []
+      base_position: 
+      contact_name: 
+      contact_email: 
+      content_rating: 
+      disabled: 0
+      disabled_at: 
+      created_at: 
+      updated_at: 
+      favorites: 0
+      likes: 0
+      dislikes: 0
+      categories: []
+      like_rate: 0
+      highlighted: 0
+      highlighted_image: 
+      featured: 0
+      featured_image: 
+      user_favorite: 0
+      user_like: 0
+      user_dislike: 0
+      user_count: 0
+      user_visits: 0
+      realms_detail: []
 --- !u!1 &3371963031403288175
 GameObject:
   m_ObjectHideFlags: 0
@@ -1481,8 +1513,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8567034774270553982}
   - {fileID: 183228767106760727}
+  - {fileID: 8567034774270553982}
   m_Father: {fileID: 5478977143504367126}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2972,7 +3004,7 @@ PrefabInstance:
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -2997,12 +3029,12 @@ PrefabInstance:
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 21
+      value: 20.76
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 20
+      value: 17.9
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}

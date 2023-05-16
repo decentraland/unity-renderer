@@ -9,7 +9,7 @@ import { browserInterface } from 'unity-interface/BrowserInterface'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import type { PortContext } from './context'
 
-import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
+import { PermissionItem } from 'shared/protocol/decentraland/kernel/apis/permissions.gen'
 import type {
   ChangeRealmRequest,
   CommsAdapterRequest,
@@ -20,8 +20,8 @@ import type {
   TeleportToRequest,
   TriggerEmoteRequest,
   TriggerEmoteResponse
-} from '@dcl/protocol/out-ts/decentraland/kernel/apis/restricted_actions.gen'
-import { RestrictedActionsServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/restricted_actions.gen'
+} from 'shared/protocol/decentraland/kernel/apis/restricted_actions.gen'
+import { RestrictedActionsServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/restricted_actions.gen'
 import { changeRealm } from 'shared/dao'
 import defaultLogger from 'lib/logger'
 import { getRendererModules } from 'shared/renderer/selectors'
@@ -129,9 +129,11 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
         return { success: false }
       }
-      // TODO: implement this fn in renderer-protocol RPC
-      const success = false // await unity.openExternalUrl(sceneId, req.message, req.realm)
-      return { success }
+      const response = await getRendererModules(store.getState())?.restrictedActions?.openExternalUrl({
+        url: req.url,
+        sceneNumber: ctx.sceneData.sceneNumber
+      })
+      return { success: response?.success ?? false }
     },
     async openNftDialog(req: OpenNftDialogRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')
@@ -140,9 +142,8 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
         return { success: false }
       }
 
-      // TODO: implement this fn in renderer-protocol RPC
-      const success = false // await unity.openExternalUrl(sceneId, req.urn)
-      return { success }
+      const response = await getRendererModules(store.getState())?.restrictedActions?.openNftDialog({ urn: req.urn })
+      return { success: response?.success ?? false }
     },
     async setCommunicationsAdapter(req: CommsAdapterRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')

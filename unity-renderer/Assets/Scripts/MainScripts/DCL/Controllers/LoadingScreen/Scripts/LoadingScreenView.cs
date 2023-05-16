@@ -11,6 +11,7 @@ namespace DCL.LoadingScreen
     {
         [SerializeField] private LoadingScreenTipsView tipsView;
         [SerializeField] private LoadingScreenPercentageView percentageView;
+        [SerializeField] private LoadingScreenTimeoutView timeoutView;
         [SerializeField] private RawImage rawImage;
         [SerializeField] private GameObject betaTag;
         private RenderTexture renderTexture;
@@ -18,9 +19,8 @@ namespace DCL.LoadingScreen
 
         public event Action<ShowHideAnimator> OnFadeInFinish;
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
             showHideAnimator.OnWillFinishStart += FadeInFinish;
 
             betaTag.SetActive(!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer);
@@ -42,6 +42,9 @@ namespace DCL.LoadingScreen
         public LoadingScreenPercentageView GetPercentageView() =>
             percentageView;
 
+        public ILoadingScreenTimeoutView GetTimeoutView() =>
+            timeoutView;
+
         public void FadeIn(bool instant, bool blitTexture)
         {
             if (isVisible) return;
@@ -56,6 +59,7 @@ namespace DCL.LoadingScreen
         public void FadeOut()
         {
             if (!isVisible) return;
+            rawImage.gameObject.SetActive(false);
 
             Hide();
         }

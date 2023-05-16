@@ -18,13 +18,14 @@ namespace DCL.Social.Chat.Channels
     {
         const string TEST_CHANNEL_NAME = "TestId";
         const string CHANNEL_ID = "channelId";
+        private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
         private JoinChannelComponentController joinChannelComponentController;
         private IJoinChannelComponentView view;
         private IChatController chatController;
         private DataStore_Channels channelsDataStore;
         private DataStore dataStore;
-        private StringVariable currentPlayerInfoCardId;
+        private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
         private ISocialAnalytics socialAnalytics;
         private IChannelsFeatureFlagService channelsFeatureFlagService;
 
@@ -35,7 +36,7 @@ namespace DCL.Social.Chat.Channels
             chatController = Substitute.For<IChatController>();
             dataStore = new DataStore();
             channelsDataStore = dataStore.channels;
-            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
+            currentPlayerInfoCardId = dataStore.HUDs.currentPlayerId;
             socialAnalytics = Substitute.For<ISocialAnalytics>();
             channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
             channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
@@ -43,7 +44,6 @@ namespace DCL.Social.Chat.Channels
             joinChannelComponentController = new JoinChannelComponentController(view, chatController,
                 dataStore,
                 socialAnalytics,
-                currentPlayerInfoCardId,
                 channelsFeatureFlagService);
         }
 
@@ -218,7 +218,7 @@ namespace DCL.Social.Chat.Channels
             chatController.JoinOrCreateChannelAsync(CHANNEL_ID, Arg.Any<CancellationToken>())
                           .Returns(UniTask.FromResult(channel));
 
-            currentPlayerInfoCardId.Set("userId");
+            currentPlayerInfoCardId.Set(("userId", OPEN_PASSPORT_SOURCE));
             channelsDataStore.currentJoinChannelModal.Set(CHANNEL_ID, true);
             channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
 

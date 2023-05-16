@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cc1d7fa159bf4b749f2c4e3d450e03f, type: 3}
+  m_Name: NftRarityBackground
+  m_EditorClassIdentifier: 
+  rarityIcons:
+  - key: rare
+    value: {fileID: 21300000, guid: 48e6184f4d144486b8a4e6f6e965142e, type: 3}
+  - key: epic
+    value: {fileID: 21300000, guid: b54d69b54857f44d7acfdc7e428ca94e, type: 3}
+  - key: uncommon
+    value: {fileID: 21300000, guid: 6263fa4083e004ded9d5f76e9d971446, type: 3}
+  - key: legendary
+    value: {fileID: 21300000, guid: dc4d2567ba80d4226a9af5d3317c2470, type: 3}
+  - key: unique
+    value: {fileID: 21300000, guid: c83f9c57f0b364f2fab4e0e6d20a15b3, type: 3}
+  - key: common
+    value: {fileID: 21300000, guid: 14b14542e832343729c812d8e4c8cbae, type: 3}
+  - key: mythic
+    value: {fileID: 21300000, guid: 94d7328f5583d47d6b961ae666f6db88, type: 3}
+  - key: default
+    value: {fileID: 21300000, guid: 43c5d03f6ddc94dd59cebf176b48c9d8, type: 3}

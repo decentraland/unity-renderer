@@ -100,3 +100,13 @@ export function selectFirstBy(
 
   return context
 }
+
+export function isValidSemver(semver: string): boolean {
+  const semverPattern = /^\d+\.\d+\.\d+$/
+  return !!semver && semverPattern.test(semver)
+}
+
+export function isValidCommsProtocol(protocol: string): boolean {
+  const commsProtocolPattern = /^v\d+$/
+  return !!protocol && commsProtocolPattern.test(protocol)
+}

@@ -3,7 +3,6 @@ using DCL.Helpers;
 using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using UnityEditor;
@@ -53,7 +52,21 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                     Arg.Any<int>(),
                     Arg.Any<bool>(),
                     Arg.Any<CancellationToken>())
-               .Returns(_ => UniTask.FromResult<IReadOnlyList<WearableItem>>(new List<WearableItem>()));
+               .Returns(_ => UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
+
+            wearablesCatalogService
+               .RequestOwnedWearablesAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<int>(),
+                    Arg.Any<int>(),
+                    Arg.Any<CancellationToken>(),
+                    Arg.Any<string>(),
+                    Arg.Any<NftRarity>(),
+                    Arg.Any<NftCollectionType>(),
+                    Arg.Any<ICollection<string>>(),
+                    Arg.Any<string>(),
+                    Arg.Any<(NftOrderByOperation type, bool directionAscendent)>())
+               .ReturnsForAnyArgs(UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
 
             wearablesCatalogService
                .RequestBaseWearablesAsync(Arg.Any<CancellationToken>())
@@ -67,7 +80,7 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                     Arg.Any<int>(),
                     Arg.Any<bool>(),
                     Arg.Any<CancellationToken>())
-               .Returns(_ => UniTask.FromResult<IReadOnlyList<WearableItem>>(new List<WearableItem>()));
+               .Returns(_ => UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
 
             wearablesCatalogService
                .RequestWearableAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())

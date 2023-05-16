@@ -1,5 +1,5 @@
 import type { ETHEREUM_NETWORK } from 'config'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 
 export enum ServerConnectionStatus {
   OK,
@@ -19,6 +19,7 @@ type BaseCandidate = {
   protocol: string
   domain: string
   catalystName: string
+  version: { bff: string; comms: string; lambdas: string; content: string }
   elapsed: number
   status: ServerConnectionStatus
   lastConnectionAttempt?: number
@@ -26,6 +27,7 @@ type BaseCandidate = {
 
 export type Candidate = {
   usersCount: number
+  acceptingUsers: boolean
   usersParcels?: Parcel[]
   maxUsers?: number
 } & BaseCandidate

@@ -14,7 +14,7 @@ namespace DCLServices.WearablesCatalogService
         private const string FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF = "force_to_request_wearables_through_kernel";
 
         public BaseDictionary<string, WearableItem> WearablesCatalog =>
-            wearablesCatalogServiceInUse.WearablesCatalog;
+            wearablesCatalogServiceInUse?.WearablesCatalog;
 
         private IWearablesCatalogService wearablesCatalogServiceInUse;
         private readonly IWearablesCatalogService lambdasWearablesCatalogService;
@@ -54,7 +54,26 @@ namespace DCLServices.WearablesCatalogService
             wearablesCatalogServiceInUse?.Dispose();
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
+        public async UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken)
+        {
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+
+            return await lambdasWearablesCatalogService.GetThirdPartyCollectionsAsync(cancellationToken);
+        }
+
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
+            NftRarity rarity = NftRarity.None,
+            NftCollectionType collectionTypeMask = NftCollectionType.All,
+            ICollection<string> thirdPartyCollectionIds = null, string name = null,
+            (NftOrderByOperation type, bool directionAscendent)? orderBy = null)
+        {
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+
+            return await lambdasWearablesCatalogService.RequestOwnedWearablesAsync(userId, pageNumber, pageSize,
+                cancellationToken, category, rarity, collectionTypeMask, thirdPartyCollectionIds, name, orderBy);
+        }
+
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
             return await wearablesCatalogServiceInUse.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, cleanCachedPages, ct);
@@ -66,7 +85,7 @@ namespace DCLServices.WearablesCatalogService
             return await wearablesCatalogServiceInUse.RequestBaseWearablesAsync(ct);
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
             return await wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, pageNumber, pageSize, cleanCachedPages, ct);
@@ -105,20 +124,20 @@ namespace DCLServices.WearablesCatalogService
             {
                 var currentKernelConfig = kernelConfig.EnsureConfigInitialized();
                 await currentKernelConfig;
-                SetServiceInUse(debugMode: currentKernelConfig.value.urlParamsForWearablesDebug);
+                SetCurrentService(currentKernelConfig.value.urlParamsForWearablesDebug);
             }
 
             featureFlags.OnChange -= CheckFeatureFlag;
 
             if (currentFeatureFlags.IsFeatureEnabled(FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF))
-                SetServiceInUse(debugMode: true);
+                SetCurrentService(true);
             else
                 SetServiceInUseDependingOnKernelConfig().Forget();
         }
 
-        private void SetServiceInUse(bool debugMode)
+        private void SetCurrentService(bool useKernel)
         {
-            if (debugMode)
+            if (useKernel)
             {
                 webInterfaceWearablesCatalogService.Initialize(wearablesWebInterfaceBridge, wearablesCatalog);
                 wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;

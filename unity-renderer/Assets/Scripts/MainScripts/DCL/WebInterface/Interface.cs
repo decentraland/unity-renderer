@@ -36,7 +36,6 @@ namespace DCL.Interface
             /** Camera rotation */
             public Quaternion cameraRotation;
 
-            /** Camera height, relative to the feet of the avatar or ground */
             public float playerHeight;
 
             public Vector3 mousePosition;
@@ -1395,8 +1394,6 @@ namespace DCL.Interface
         public static void SendSaveUserDescription(string about) { SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about)); }
 
         public static void SendRequestUserProfile(string userId) { SendMessage("RequestUserProfile", new SendRequestUserProfilePayload() { value = userId }); }
-
-        public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
 
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 

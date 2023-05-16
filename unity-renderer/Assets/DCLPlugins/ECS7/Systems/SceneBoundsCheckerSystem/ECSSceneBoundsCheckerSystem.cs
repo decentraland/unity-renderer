@@ -4,6 +4,7 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ECSSystems.ECSSceneBoundsCheckerSystem
@@ -54,6 +55,10 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void OnSceneAdded(IParcelScene scene)
         {
+            // global scenes do not have boundaries to check
+            if (scene.isPersistent)
+                return;
+
             IReadOnlyList<Vector2Int> parcels = scene.sceneData.parcels;
             var sceneNumber = scene.sceneData.sceneNumber;
 
@@ -242,22 +247,20 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             if (physicsColliders != null)
             {
-                int physicsCollidersCount = physicsColliders.Count;
-
-                for (int i = 0; i < physicsCollidersCount; i++)
+                var pairs = physicsColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, physicsColliders[i].bounds))
+                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, pairs[i].key.bounds))
                         return false;
                 }
             }
 
             if (pointerColliders != null)
             {
-                int pointerCollidersCount = pointerColliders.Count;
-
-                for (int i = 0; i < pointerCollidersCount; i++)
+                var pairs = pointerColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, pointerColliders[i].bounds))
+                    if (!UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, pairs[i].key.bounds))
                         return false;
                 }
             }
@@ -266,7 +269,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         }
 
         private static bool WereColliderComponentRemoved(IParcelScene scene, IDCLEntity entity,
-            IList<Collider> sbcComponentColliders, IInternalECSComponent<InternalColliders> colliderComponent)
+            KeyValueSet<Collider, uint> sbcComponentColliders, IInternalECSComponent<InternalColliders> colliderComponent)
         {
             return sbcComponentColliders != null && colliderComponent.GetFor(scene, entity) == null;
         }
@@ -377,17 +380,19 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             if (sbcInternalComponentModel.physicsColliders != null)
             {
-                for (var i = 0; i < sbcInternalComponentModel.physicsColliders.Count; i++)
+                var pairs = sbcInternalComponentModel.physicsColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(sbcInternalComponentModel.physicsColliders[i]));
+                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(pairs[i].key));
                 }
             }
 
             if (sbcInternalComponentModel.pointerColliders != null)
             {
-                for (var i = 0; i < sbcInternalComponentModel.pointerColliders.Count; i++)
+                var pairs = sbcInternalComponentModel.pointerColliders.Pairs;
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(sbcInternalComponentModel.pointerColliders[i]));
+                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(pairs[i].key));
                 }
             }
 

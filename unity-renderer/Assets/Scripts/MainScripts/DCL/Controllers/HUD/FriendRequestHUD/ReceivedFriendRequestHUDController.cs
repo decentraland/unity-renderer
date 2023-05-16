@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -10,13 +11,14 @@ namespace DCL.Social.Friends
     public class ReceivedFriendRequestHUDController
     {
         private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+        private const string OPEN_PASSPORT_SOURCE = "FriendRequest";
 
         private readonly DataStore dataStore;
         private readonly IReceivedFriendRequestHUDView view;
         private readonly FriendRequestHUDController friendRequestHUDController;
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
-        private readonly StringVariable openPassportVariable;
+        private readonly BaseVariable<(string playerId, string source)> openPassportVariable;
         private readonly ISocialAnalytics socialAnalytics;
 
         private CancellationTokenSource showCancellationToken = new ();
@@ -28,7 +30,6 @@ namespace DCL.Social.Friends
             FriendRequestHUDController friendRequestHUDController,
             IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
-            StringVariable openPassportVariable,
             ISocialAnalytics socialAnalytics)
         {
             this.dataStore = dataStore;
@@ -36,7 +37,7 @@ namespace DCL.Social.Friends
             this.friendRequestHUDController = friendRequestHUDController;
             this.friendsController = friendsController;
             this.userProfileBridge = userProfileBridge;
-            this.openPassportVariable = openPassportVariable;
+            this.openPassportVariable = dataStore.HUDs.currentPlayerId;
             this.socialAnalytics = socialAnalytics;
 
             view.OnClose += Hide;
@@ -70,9 +71,9 @@ namespace DCL.Social.Friends
             {
                 this.friendRequestId = friendRequestId;
 
-                FriendRequest friendRequest = friendsController.GetAllocatedFriendRequest(this.friendRequestId);
+                bool wasFound = friendsController.TryGetAllocatedFriendRequest(this.friendRequestId, out FriendRequest friendRequest);
 
-                if (friendRequest == null)
+                if (!wasFound)
                 {
                     Debug.LogError($"Cannot display friend request {friendRequestId}, is not allocated");
                     return;
@@ -83,10 +84,7 @@ namespace DCL.Social.Friends
 
                 UserProfile recipientProfile = userProfileBridge.Get(friendRequest.From);
 
-                try
-                {
-                    recipientProfile ??= await userProfileBridge.RequestFullUserProfileAsync(friendRequest.From);
-                }
+                try { recipientProfile ??= await userProfileBridge.RequestFullUserProfileAsync(friendRequest.From, cancellationToken); }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
                     view.SetSenderName(friendRequest.From);
@@ -114,15 +112,13 @@ namespace DCL.Social.Friends
 
         private void OpenProfile()
         {
-            FriendRequest friendRequest = friendsController.GetAllocatedFriendRequest(friendRequestId);
-
-            if (friendRequest == null)
+            if (!friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest))
             {
                 Debug.LogError($"Cannot open passport {friendRequestId}, is not allocated");
                 return;
             }
 
-            openPassportVariable.Set(friendRequest.From);
+            openPassportVariable.Set((friendRequest.From, OPEN_PASSPORT_SOURCE));
             view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
 

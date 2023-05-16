@@ -6,23 +6,38 @@ using DCL.Models;
 using DCL.SettingsCommon;
 using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
     public class DCLAudioStream : BaseComponent, IOutOfSceneBoundariesHandler
     {
-        [System.Serializable]
+        [Serializable]
         public class Model : BaseModel
         {
             public string url;
-            public bool playing = false;
+            public bool playing;
             public float volume = 1;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.AudioStream)
+                    return Utils.SafeUnimplemented<DCLAudioStream, Model>(expected: ComponentBodyPayload.PayloadOneofCase.AudioStream, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.AudioStream.HasPlaying) pb.playing = pbModel.AudioStream.Playing;
+                if (pbModel.AudioStream.HasUrl) pb.url = pbModel.AudioStream.Url;
+                if (pbModel.AudioStream.HasVolume) pb.volume = pbModel.AudioStream.Volume;
+
+                return pb;
+            }
         }
 
         private void Awake() { model = new Model(); }
-        
+
         public override void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             base.Initialize(scene, entity);
@@ -84,7 +99,7 @@ namespace DCL.Components
 
             bool canPlayStream = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
             canPlayStream &= CommonScriptableObjects.rendererState;
-            
+
             Model model = (Model) this.model;
             bool shouldStopStream = (isPlaying && !model.playing) || (isPlaying && !canPlayStream);
             bool shouldStartStream = !isPlaying && canPlayStream && model.playing;

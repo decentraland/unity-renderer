@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using MainScripts.DCL.Controllers.HotScenes;
 
 [Serializable]
 public class PlaceCardComponentModel : BaseComponentModel
@@ -13,7 +14,8 @@ public class PlaceCardComponentModel : BaseComponentModel
     public int numberOfUsers;
     public Vector2Int coords;
     public Vector2Int[] parcels;
+    public bool isFavorite;
 
     [HideInInspector]
-    public HotScenesController.HotSceneInfo hotSceneInfo;
+    public IHotScenesController.PlaceInfo placeInfo;
 }

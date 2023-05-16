@@ -13,20 +13,30 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     private const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
     internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
+    internal const int INITIAL_NUMBER_OF_GOING_ROWS = 1;
     private const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
+    private const int SHOW_MORE_GOING_ROWS_INCREMENT = 2;
     private const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
 
     internal readonly IEventsSubSectionComponentView view;
     internal readonly IEventsAPIController eventsAPIApiController;
     private readonly DataStore dataStore;
     private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly IUserProfileBridge userProfileBridge;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
     internal List<EventFromAPIModel> eventsFromAPI = new ();
+    internal List<EventFromAPIModel> goingToEventsFromAPI = new ();
     internal int availableUISlots;
+    internal int availableUISlotsForGoing;
 
-    public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
+    public EventsSubSectionComponentController(
+        IEventsSubSectionComponentView view,
+        IEventsAPIController eventsAPI,
+        IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore,
+        IUserProfileBridge userProfileBridge)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
@@ -41,6 +51,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
 
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
+        this.view.OnShowMoreGoingEventsClicked += ShowMoreGoingEvents;
+        this.view.OnConnectWallet += ConnectWallet;
 
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
@@ -48,8 +60,14 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventsAPIApiController = eventsAPI;
 
         this.exploreV2Analytics = exploreV2Analytics;
+        this.userProfileBridge = userProfileBridge;
 
         view.ConfigurePools();
+    }
+
+    private void ConnectWallet()
+    {
+        dataStore.HUDs.connectWalletModalVisible.Set(true);
     }
 
     public void Dispose()
@@ -61,7 +79,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnSubscribeEventClicked -= SubscribeToEvent;
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
+        view.OnShowMoreGoingEventsClicked -= ShowMoreGoingEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
+        view.OnConnectWallet -= ConnectWallet;
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
@@ -76,10 +96,13 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal void RequestAllEvents()
     {
+        view.SetIsGuestUser(userProfileBridge.GetOwn().isGuest);
         if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
+            availableUISlotsForGoing = view.CurrentGoingTilesPerRow * INITIAL_NUMBER_OF_GOING_ROWS;
             view.SetShowMoreButtonActive(false);
+            view.SetShowMoreGoingButtonActive(false);
 
             cardsReloader.RequestAll();
         }
@@ -95,13 +118,15 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void OnRequestedEventsUpdated(List<EventFromAPIModel> eventList)
     {
         eventsFromAPI = eventList;
+        goingToEventsFromAPI = eventsFromAPI.Where(e => e.attending).ToList();
 
         view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
+        view.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterGoingEvents()));
         view.SetTrendingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents()));
         view.SetUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterUpcomingEvents()));
-        view.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterGoingEvents()));
 
         view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
+        view.SetShowMoreGoingEventsButtonActive(availableUISlotsForGoing < goingToEventsFromAPI.Count);
     }
 
     internal List<EventFromAPIModel> FilterFeaturedEvents()
@@ -115,7 +140,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     }
     internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
     internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
-    internal List<EventFromAPIModel> FilterGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
+    internal List<EventFromAPIModel> FilterGoingEvents() => goingToEventsFromAPI.Take(availableUISlotsForGoing).ToList();
 
     public void ShowMoreUpcomingEvents()
     {
@@ -135,6 +160,24 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
+    public void ShowMoreGoingEvents()
+    {
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlotsForGoing / view.currentGoingEventsPerRow) * view.currentGoingEventsPerRow) - availableUISlotsForGoing;
+        int numberOfItemsToAdd = (view.currentGoingEventsPerRow * SHOW_MORE_GOING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
+
+        List<EventFromAPIModel> eventsFiltered = availableUISlotsForGoing + numberOfItemsToAdd <= goingToEventsFromAPI.Count
+            ? goingToEventsFromAPI.GetRange(availableUISlotsForGoing, numberOfItemsToAdd)
+            : goingToEventsFromAPI.GetRange(availableUISlotsForGoing, goingToEventsFromAPI.Count - availableUISlotsForGoing);
+
+        view.AddGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsFiltered));
+
+        availableUISlotsForGoing += numberOfItemsToAdd;
+        if (availableUISlotsForGoing > goingToEventsFromAPI.Count)
+            availableUISlotsForGoing = goingToEventsFromAPI.Count;
+
+        view.SetShowMoreGoingEventsButtonActive(availableUISlotsForGoing < goingToEventsFromAPI.Count);
+    }
+
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
     {
         view.ShowEventModal(eventModel);
@@ -150,43 +193,16 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    public static void SubscribeToEvent(string eventId)
+    private void SubscribeToEvent(string eventId)
     {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
-
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    true,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
+        if (userProfileBridge.GetOwn().isGuest)
+            ConnectWallet();
+        else
+            eventsAPIApiController.RegisterParticipation(eventId);
     }
 
-    public static void UnsubscribeToEvent(string eventId)
-    {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
-
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    false,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
-    }
+    private void UnsubscribeToEvent(string eventId) =>
+        eventsAPIApiController.RemoveParticipation(eventId);
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {

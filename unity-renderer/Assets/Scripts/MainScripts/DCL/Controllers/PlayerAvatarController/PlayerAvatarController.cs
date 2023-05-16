@@ -21,11 +21,10 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
     private const string IN_HIDE_AREA = "IN_HIDE_AREA";
     private const string INSIDE_CAMERA = "INSIDE_CAMERA";
+    private const string OPEN_PASSPORT_SOURCE = "World";
 
     private CancellationTokenSource avatarLoadingCts;
     public GameObject avatarContainer;
-    public GameObject armatureContainer;
-    public Transform loadingAvatarContainer;
     public StickersController stickersControllers;
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
@@ -34,6 +33,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     public float cameraDistanceToDeactivate = 1.0f;
     [SerializeField] internal AvatarOnPointerDown onPointerDown;
     [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
+    [SerializeField] internal Transform baseAvatarContainer;
+    [SerializeField] internal BaseAvatarReferences baseAvatarReferencesPrefab;
 
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
     private bool repositioningWorld => DCLCharacterController.i.characterPosition.RepositionedWorldLastFrame();
@@ -44,7 +45,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
     private Service<IEmotesCatalogService> emotesCatalog;
     private ISocialAnalytics socialAnalytics;
-    private StringVariable currentPlayerInfoCardId;
+    private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
     private IAvatar avatar;
 
     private void Start()
@@ -70,7 +71,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
         mainCamera = Camera.main;
         currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
-        currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        currentPlayerInfoCardId = DataStore.i.HUDs.currentPlayerId;
 
         onPointerDown.OnPointerDownReport -= PlayerClicked;
         onPointerDown.OnPointerDownReport += PlayerClicked;
@@ -79,7 +80,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private void PlayerClicked()
     {
         if (currentAvatar == null) return;
-        currentPlayerInfoCardId.Set(currentAvatar.id);
+        currentPlayerInfoCardId.Set((currentAvatar.id, OPEN_PASSPORT_SOURCE));
     }
 
     private IAvatar GetStandardAvatar()
@@ -93,10 +94,11 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private IAvatar GetAvatarWithHologram()
     {
+        var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+
         return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatarWithHologram(
             avatarContainer,
-            loadingAvatarContainer,
-            armatureContainer,
+            new BaseAvatar(baseAvatarReferences),
             GetComponentInChildren<AvatarAnimatorLegacy>(),
             NoLODs.i,
             new Visibility());
@@ -228,12 +230,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
             }
         }
-        catch (OperationCanceledException ex)
-        {
-            Debug.LogException(ex);
-            return;
-        }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Debug.LogException(e);
 

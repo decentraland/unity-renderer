@@ -127,17 +127,17 @@ namespace DCL.Chat.HUD
             UpdateLayout();
         }
 
-        public void Initialize(IChatController chatController)
+        public void Initialize(
+            IChatController chatController,
+            DataStore_Mentions mentionsDataStore)
         {
-            directChatList.Initialize(chatController);
-            publicChannelList.Initialize(chatController);
-            searchResultsList.Initialize(chatController);
+            directChatList.Initialize(chatController, mentionsDataStore);
+            publicChannelList.Initialize(chatController, mentionsDataStore);
+            searchResultsList.Initialize(chatController, mentionsDataStore);
         }
 
-        public override void Update()
+        public void Update()
         {
-            base.Update();
-
             SetQueuedEntries();
 
             if (isSortingDirty)

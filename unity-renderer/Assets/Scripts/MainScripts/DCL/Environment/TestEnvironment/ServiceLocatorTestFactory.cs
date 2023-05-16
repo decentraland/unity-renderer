@@ -5,8 +5,12 @@ using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
+using MainScripts.DCL.Controllers.FriendsController;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
@@ -40,6 +44,7 @@ namespace DCL
                 subs.TrackWebRequest(default, default).Returns(new DisposableTransaction(Substitute.For<ISpan>()));
                 return subs;
             });
+
             result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
 
             result.Register<IServiceProviders>(
@@ -72,7 +77,7 @@ namespace DCL
                     mockedFactory.CreateAvatar(default(GameObject), default(IAnimator), default(ILOD), default(IVisibility))
                                  .ReturnsForAnyArgs(Substitute.For<IAvatar>());
 
-                    mockedFactory.CreateAvatarWithHologram(default(GameObject), default(Transform), default(GameObject), default(IAnimator),
+                    mockedFactory.CreateAvatarWithHologram(default(GameObject), Substitute.For<IBaseAvatar>(), default(IAnimator),
                                       default(ILOD), default(IVisibility))
                                  .ReturnsForAnyArgs(Substitute.For<IAvatar>());
 
@@ -115,6 +120,8 @@ namespace DCL
             result.Register<ISceneBoundsChecker>(() => Substitute.For<ISceneBoundsChecker>());
             result.Register<IWorldBlockersController>(() => Substitute.For<IWorldBlockersController>());
             result.Register<IRuntimeComponentFactory>(() => Substitute.For<IRuntimeComponentFactory>());
+            result.Register<IHotScenesFetcher>(() => Substitute.For<IHotScenesFetcher>());
+            result.Register<IHotScenesController>(() => Substitute.For<IHotScenesController>());
 
             result.Register<IChatController>(() =>
             {
@@ -125,6 +132,8 @@ namespace DCL
 
                 return chatController;
             });
+
+            result.Register<IFriendsController>(() => Substitute.For<IFriendsController>());
 
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());

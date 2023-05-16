@@ -175,13 +175,13 @@ namespace AssetPromiseKeeper_Mock_Tests
             prom1.idGenerator = id;
             keeper.Keep(prom1);
 
+            Assert.AreNotEqual(0, keeper.masterPromises.Count);
+
             yield return prom1;
 
             AssetPromise_Mock prom2 = new AssetPromise_Mock();
             prom2.idGenerator = id;
             keeper.Keep(prom2);
-
-            Assert.AreNotEqual(0, keeper.masterPromises.Count);
 
             yield return prom2;
 
@@ -209,10 +209,10 @@ namespace AssetPromiseKeeper_Mock_Tests
             lastPromise.idGenerator = id;
             keeper.Keep(lastPromise);
 
-            yield return firstPromise;
             keeper.Forget(masterPromise);
 
             Assert.AreNotEqual(0, keeper.masterPromises.Count);
+            yield break;
         }
     }
 }
