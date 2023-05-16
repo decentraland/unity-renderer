@@ -523,6 +523,11 @@ MonoBehaviour:
   exitButton: {fileID: 9077946215664595399}
   categoryName: {fileID: 7056146438816032565}
   icon: {fileID: 7834170530783117578}
+  backgroundImage: {fileID: 339297691544193653}
+  selectedBackgroundColor: {r: 1, g: 0.45490196, b: 0.22352941, a: 1}
+  selectedFontColor: {r: 0.9882353, g: 0.9882353, b: 0.9882353, a: 1}
+  unselectedBackgroundColor: {r: 0.9882353, g: 0.9882353, b: 0.9882353, a: 1}
+  unselectedFontColor: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 1}
 --- !u!114 &8913840404976563499
 MonoBehaviour:
   m_ObjectHideFlags: 0
