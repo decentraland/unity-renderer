@@ -308,8 +308,8 @@ namespace DCL.Social.Friends
                 friendRequestId = "fr1",
             });
 
-            FriendRequest request = controller.GetAllocatedFriendRequest("fr1");
-
+            bool wasFound = controller.TryGetAllocatedFriendRequest("fr1", out FriendRequest request);
+            Assert.True(wasFound);
             Assert.AreEqual("fr1", request.FriendRequestId);
             Assert.AreEqual("senderId", request.From);
             Assert.AreEqual("ownId", request.To);
@@ -422,8 +422,9 @@ namespace DCL.Social.Friends
                 FriendRequest request = await controller.CancelRequestAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
-                request = controller.GetAllocatedFriendRequest("fr");
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr", out request);
                 Assert.IsNull(request);
+                Assert.False(wasFound);
 
                 request = controller.GetAllocatedFriendRequestByUser("receiverId");
                 Assert.IsNull(request);
@@ -461,7 +462,9 @@ namespace DCL.Social.Friends
 
                 VerifyRequest(request);
 
-                request = controller.GetAllocatedFriendRequest("fr");
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr", out request);
+                Assert.IsNotNull(request);
+                Assert.True(wasFound);
                 VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequestByUser("receiverId");
@@ -497,8 +500,9 @@ namespace DCL.Social.Friends
                 FriendRequest request = await controller.AcceptFriendshipAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
-                request = controller.GetAllocatedFriendRequest("fr");
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr", out request);
                 Assert.IsNull(request);
+                Assert.False(wasFound);
 
                 request = controller.GetAllocatedFriendRequestByUser("receiverId");
                 Assert.IsNull(request);
@@ -533,8 +537,9 @@ namespace DCL.Social.Friends
                 FriendRequest request = await controller.RejectFriendshipAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
-                request = controller.GetAllocatedFriendRequest("fr");
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr", out request);
                 Assert.IsNull(request);
+                Assert.False(wasFound);
 
                 request = controller.GetAllocatedFriendRequestByUser("senderId");
                 Assert.IsNull(request);
@@ -610,14 +615,18 @@ namespace DCL.Social.Friends
                 Verify(requests[2], requestedTo[0]);
                 Verify(requests[3], requestedTo[1]);
 
-                FriendRequest request = controller.GetAllocatedFriendRequest("fr1");
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr1", out FriendRequest request);
                 Assert.IsNotNull(request);
-                request = controller.GetAllocatedFriendRequest("fr2");
+                Assert.True(wasFound);
+                wasFound = controller.TryGetAllocatedFriendRequest("fr2", out request);
                 Assert.IsNotNull(request);
-                request = controller.GetAllocatedFriendRequest("fr3");
+                Assert.True(wasFound);
+                wasFound = controller.TryGetAllocatedFriendRequest("fr3", out request);
                 Assert.IsNotNull(request);
-                request = controller.GetAllocatedFriendRequest("fr4");
+                Assert.True(wasFound);
+                wasFound = controller.TryGetAllocatedFriendRequest("fr4", out request);
                 Assert.IsNotNull(request);
+                Assert.True(wasFound);
                 request = controller.GetAllocatedFriendRequestByUser("usr1");
                 Assert.IsNotNull(request);
                 request = controller.GetAllocatedFriendRequestByUser("usr2");
@@ -763,7 +772,6 @@ namespace DCL.Social.Friends
                 }
 
                 var result = await controller.GetFriendRequestsAsync(100, 0, 100, 0, cancellationToken);
-
 
                 // the result should be reversed since the result should be sorted by timestamp
                 CollectionAssert.AreEqual(incomingFriendRequests.Reverse().Concat(outgoingFriendRequests.Reverse()), result);
