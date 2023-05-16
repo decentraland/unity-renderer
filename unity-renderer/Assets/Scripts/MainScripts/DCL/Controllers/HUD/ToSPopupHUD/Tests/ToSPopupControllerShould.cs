@@ -1,0 +1,57 @@
+using NSubstitute;
+using NUnit.Framework;
+using System;
+
+[Category("EditModeCI")]
+public class ToSPopupControllerShould
+{
+    private IToSPopupView mockView;
+    private BaseVariable<bool> mockTosPopupVisible;
+    private IToSPopupHandler mockHandler;
+    private ToSPopupController controller;
+
+    [SetUp]
+    public void Setup()
+    {
+        mockView = Substitute.For<IToSPopupView>();
+        mockHandler = Substitute.For<IToSPopupHandler>();
+        controller = new ToSPopupController(mockView, mockHandler);
+    }
+
+    [Test]
+    public void Constructor_ShouldSubscribeToEvents()
+    {
+        mockView.Received().OnAccept += Arg.Any<Action>();
+        mockView.Received().OnCancel += Arg.Any<Action>();
+    }
+
+    [Test]
+    public void OnToSPopupVisible_ShouldShowView_WhenCurrentIsTrue()
+    {
+        mockView.Received().Show();
+    }
+
+    [Test]
+    public void HandleCancel_ShouldCallHandlerCancel()
+    {
+        controller.HandleCancel();
+        mockHandler.Received().Cancel();
+        mockView.Received().Dispose();
+    }
+
+    [Test]
+    public void HandleAccept_ShouldCallHandlerAccept()
+    {
+        controller.HandleAccept();
+        mockHandler.Received().Accept();
+        mockView.Received().Dispose();
+    }
+
+    [Test]
+    public void Dispose_ShouldUnsubscribeFromEventsAndDisposeView()
+    {
+        controller.Dispose();
+        mockView.Received().OnAccept -= Arg.Any<Action>();
+        mockView.Received().Dispose();
+    }
+}
