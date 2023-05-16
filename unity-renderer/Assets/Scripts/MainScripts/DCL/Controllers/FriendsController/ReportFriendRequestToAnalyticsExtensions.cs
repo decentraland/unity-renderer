@@ -1,5 +1,6 @@
 using SocialFeaturesAnalytics;
 using System;
+using UnityEngine;
 
 namespace DCL.Social.Friends
 {
@@ -9,12 +10,26 @@ namespace DCL.Social.Friends
             string source,
             IFriendsController friendsController, ISocialAnalytics socialAnalytics)
         {
-            FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
-            socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+
+
+            var description = e is FriendshipException fe
+                ? fe.ErrorCode.ToString()
+                : FriendRequestErrorCodes.Unknown.ToString();
+
+            if (!friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest request))
+            {
+                Debug.LogError($"Cannot display friend request {friendRequestId}, is not allocated");
+
+                socialAnalytics.SendFriendRequestError(null, null,
+                    source,
+                    description);
+
+                return;
+            }
+
+            socialAnalytics.SendFriendRequestError(request.From, request.To,
                 source,
-                e is FriendshipException fe
-                    ? fe.ErrorCode.ToString()
-                    : FriendRequestErrorCodes.Unknown.ToString());
+                description);
         }
 
         public static void ReportFriendRequestErrorToAnalyticsByUserId(this Exception e, string userId,

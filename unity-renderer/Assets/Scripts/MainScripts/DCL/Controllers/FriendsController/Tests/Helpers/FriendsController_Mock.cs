@@ -78,8 +78,12 @@ public class FriendsController_Mock : IFriendsController
 
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit) { }
 
-    public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
-        null;
+    public bool TryGetAllocatedFriendRequest(string friendRequestId, out FriendRequest request)
+    {
+        request = null;
+        return false;
+    }
+
 
     public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
         null;
