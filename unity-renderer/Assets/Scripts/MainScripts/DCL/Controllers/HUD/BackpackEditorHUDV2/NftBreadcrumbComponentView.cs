@@ -15,8 +15,9 @@ namespace DCL.Backpack
 
         private readonly Dictionary<NftSubCategoryFilterComponentView, PoolableObject> pooledObjects = new ();
         private NftSubCategoryFilterComponentView[] categoriesByIndex = Array.Empty<NftSubCategoryFilterComponentView>();
-        private List<GameObject> separators = new ();
+        private readonly List<GameObject> separators = new ();
         private Pool pool;
+        private bool isLayoutDirty;
 
         internal NftBreadcrumbModel Model => model;
 
@@ -56,7 +57,14 @@ namespace DCL.Backpack
                     CreateSeparator();
             }
 
-            container.ForceUpdateLayout();
+            isLayoutDirty = true;
+        }
+
+        private void Update()
+        {
+            if (!isLayoutDirty) return;
+            isLayoutDirty = false;
+            container.ForceUpdateLayout(false);
         }
 
         private void CreateSeparator()

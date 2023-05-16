@@ -17,6 +17,8 @@ namespace DCL.Backpack
         [SerializeField] internal Color selectedFontColor;
         [SerializeField] internal Color unselectedBackgroundColor;
         [SerializeField] internal Color unselectedFontColor;
+        [SerializeField] internal Color selectedIconColor;
+        [SerializeField] internal Color unselectedIconColor;
 
         public event Action<NftSubCategoryFilterModel> OnNavigate;
         public event Action<NftSubCategoryFilterModel> OnExit;
@@ -45,6 +47,7 @@ namespace DCL.Backpack
 
             backgroundImage.color = model.IsSelected ? selectedBackgroundColor : unselectedBackgroundColor;
             categoryName.color = model.IsSelected ? selectedFontColor : unselectedFontColor;
+            icon.color = model.IsSelected ? selectedIconColor : unselectedIconColor;
         }
     }
 }
