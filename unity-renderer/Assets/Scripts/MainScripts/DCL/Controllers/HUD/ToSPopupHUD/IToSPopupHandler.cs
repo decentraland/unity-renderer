@@ -11,7 +11,7 @@ public interface IToSPopupHandler
 
 public class ToSPopupHandler : IToSPopupHandler
 {
-    private const string VIEW_TOS_URL = "https://decentraland.org/placeholderlink-shouldbereplaced-hitmeifyouseethis";
+    private const string VIEW_TOS_URL = "https://decentraland.org/terms";
     private const string CANCEL_TOS_URL = "https://play.decentraland.org";
 
 
