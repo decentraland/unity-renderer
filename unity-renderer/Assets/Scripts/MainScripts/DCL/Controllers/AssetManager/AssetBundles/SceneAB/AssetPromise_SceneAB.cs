@@ -2,6 +2,7 @@
 using DCL;
 using DCL.Helpers;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 
@@ -34,7 +35,10 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
         {
             // This case happens when loading worlds
             if (sceneId.StartsWith(URN_PREFIX))
+            {
                 sceneId = sceneId.Replace(URN_PREFIX, "");
+                sceneId = Regex.Replace(sceneId, "\\?.+", ""); // from "?" char onwards we delete everything
+            }
 
             return sceneId;
         }
@@ -57,6 +61,12 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
             {
                 id = hash,
             };
+
+            if (string.IsNullOrEmpty(contentUrl))
+            {
+                onSuccess();
+                return;
+            }
 
             var finalUrl = $"{contentUrl}manifest/{hash}.json";
 
