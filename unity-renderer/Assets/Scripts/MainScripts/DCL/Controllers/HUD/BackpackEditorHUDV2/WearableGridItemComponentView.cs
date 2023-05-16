@@ -1,12 +1,15 @@
 using System;
 using UIComponents.Scripts.Components;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
     public class WearableGridItemComponentView : BaseComponentView<WearableGridItemModel>
     {
+        private const float DOUBLE_CLICK_MAX_DELAY = 0.5f;
+
         [SerializeField] internal NftRarityBackgroundSO rarityNftBackgrounds;
         [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
         [SerializeField] internal Image nftBackground;
@@ -29,6 +32,9 @@ namespace DCL.Backpack
 
         public WearableGridItemModel Model => model;
 
+        private int clicked = 0;
+        private float clickTime = 0;
+
         public event Action<WearableGridItemModel> OnSelected;
         public event Action<WearableGridItemModel> OnEquipped;
         public event Action<WearableGridItemModel> OnUnequipped;
@@ -39,8 +45,19 @@ namespace DCL.Backpack
             image.OnLoaded += PlayLoadingSound;
             interactButton.onClick.AddListener(() =>
             {
-                if (model.IsSelected)
+                clicked++;
+
+                if (clicked == 1)
                 {
+                    clickTime = Time.time;
+                    OnSelected?.Invoke(model);
+                }
+
+                if (clicked > 1 && Time.time - clickTime < DOUBLE_CLICK_MAX_DELAY)
+                {
+                    clicked = 0;
+                    clickTime = 0;
+
                     if (model.IsEquipped)
                     {
                         if (!model.UnEquipAllowed)
@@ -51,9 +68,13 @@ namespace DCL.Backpack
                     else
                         OnEquipped?.Invoke(model);
                 }
-                else
-                    OnSelected?.Invoke(model);
             });
+        }
+
+        public void Update()
+        {
+            if (clicked > 0 && Time.time - clickTime > 1)
+                clicked = 0;
         }
 
         public override void Dispose()
@@ -78,10 +99,10 @@ namespace DCL.Backpack
         {
             selectedContainer.SetActive(model.IsSelected);
             equippedContainer.SetActive(model.IsEquipped);
-            hoverEquippedContainer.SetActive(!model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            hoverUnequippedContainer.SetActive(!model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            hoverSelectedUnequippedContainer.SetActive(model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            hoverSelectedEquippedContainer.SetActive(model.UnEquipAllowed && model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
+            //hoverEquippedContainer.SetActive(!model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
+            //hoverUnequippedContainer.SetActive(!model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
+            //hoverSelectedUnequippedContainer.SetActive(model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
+            //hoverSelectedEquippedContainer.SetActive(model.UnEquipAllowed && model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
             isNewContainer.SetActive(model.IsNew);
 
             // we gotta check for url changes, otherwise the image component will start a "loading" state, even if the url is the same
