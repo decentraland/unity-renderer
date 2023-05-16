@@ -12,12 +12,10 @@ namespace DCL.Backpack
     public class BackpackPreviewPanel : BaseComponentView
     {
         private const string RESET_PREVIEW_ANIMATION = "Idle";
-        private const float CAMERA_MIN_Y = 0.5f;
-        private const float CAMERA_MAX_Y = 1.9f;
-        private const float CAMERA_MIN_Z = 0.7f;
-        private const float CAMERA_MAX_Z = 3f;
         private const float CAMERA_MIN_ZOOM = 0.7f;
-        private const float CAMERA_MAX_ZOOM = 2.5f;
+        private const float CAMERA_MAX_ZOOM = 2f;
+        private const float CAMERA_MIN_Y_LIMIT = 50f;
+        private const float CAMERA_MAX_Y_LIMIT = 54f;
 
         [SerializeField] private RectTransform avatarPreviewPanel;
         [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
@@ -39,11 +37,7 @@ namespace DCL.Backpack
                 isVisible: false,
                 cameraFocus: CharacterPreviewController.CameraFocus.DefaultEditing,
                 isOrthographic: true);
-            characterPreviewController.SetCameraLimits(
-                null, null,
-                CAMERA_MIN_Y, CAMERA_MAX_Y,
-                CAMERA_MIN_Z, CAMERA_MAX_Z,
-                CAMERA_MIN_ZOOM, CAMERA_MAX_ZOOM);
+            characterPreviewController.SetOrthographicLimits(CAMERA_MIN_Y_LIMIT, CAMERA_MAX_Y_LIMIT);
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
             avatarPreviewRotation.OnHorizontalRotation += OnPreviewRotation;
             avatarPreviewPanning.OnPanning += OnPreviewPanning;
@@ -104,7 +98,7 @@ namespace DCL.Backpack
             characterPreviewController.MoveCamera(positionDelta);
 
         private void OnPreviewOrthographicZoom(float orthographicSizeDelta) =>
-            characterPreviewController.SetCameraOrthographicSize(orthographicSizeDelta);
+            characterPreviewController.SetCameraOrthographicSize(orthographicSizeDelta, CAMERA_MIN_ZOOM, CAMERA_MAX_ZOOM);
 
         // TODO: We have to investigate why we have to use this workaround to fix the preview rendering
         private void FixThePreviewRenderingSomehowRelatedToTheRenderScale(bool isEnabled)

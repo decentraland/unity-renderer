@@ -15,8 +15,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void Rotate(float rotationVelocity);
         void ResetRotation();
         void MoveCamera(Vector3 positionDelta);
-        void SetCameraLimits(float? minX, float? maxX, float? minY, float? maxY, float? minZ, float? maxZ, float? minOrthographicSize, float? maxOrthographicSize);
         void SetCameraProjection(bool isOrthographic);
-        void SetCameraOrthographicSize(float size);
+        void SetOrthographicLimits(float minY, float maxY);
+        void SetCameraOrthographicSize(float size, float minOrthographicSize, float maxOrthographicSize);
     }
 }

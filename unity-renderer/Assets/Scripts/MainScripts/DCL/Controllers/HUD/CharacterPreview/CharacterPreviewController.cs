@@ -6,10 +6,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
+    using UnityEngine;
+
     public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewController
     {
         private const int SNAPSHOT_BODY_WIDTH_RES = 256;
@@ -54,8 +55,9 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private IAnimator animator;
         private Quaternion avatarContainerDefaultRotation;
         private Transform cameraTransform;
-        private (float? minZ, float? maxZ, float? minY, float? maxY, float? minX, float? maxX, float? minOrthographicSize, float? maxOrthographicSize) cameraLimits;
         private float originalOrthographicSize;
+        private float maxYOrthographicPosition;
+        private float minYOrthographicPosition;
 
         private void Awake()
         {
@@ -253,43 +255,42 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void MoveCamera(Vector3 positionDelta)
         {
             cameraTransform.Translate(positionDelta, Space.World);
-            ApplyCameraLimits();
+            LimitCameraPositionDependingOnOrthographicSize();
         }
 
         public void SetCameraProjection(bool isOrthographic) =>
             camera.orthographic = isOrthographic;
 
-        public void SetCameraOrthographicSize(float orthographicSizeDelta)
+        public void SetOrthographicLimits(float minY, float maxY)
         {
-            camera.orthographicSize += orthographicSizeDelta;
-            ApplyCameraLimits();
+            minYOrthographicPosition = minY;
+            maxYOrthographicPosition = maxY;
         }
 
-        public void SetCameraLimits(
-            float? minX, float? maxX,
-            float? minY, float? maxY,
-            float? minZ, float? maxZ,
-            float? minOrthographicSize, float? maxOrthographicSize)
+        public void SetCameraOrthographicSize(float orthographicSizeDelta, float minOrthographicSize, float maxOrthographicSize)
         {
-            cameraLimits.minX = minX;
-            cameraLimits.maxX = maxX;
-            cameraLimits.minY = minY;
-            cameraLimits.maxY = maxY;
-            cameraLimits.minZ = minZ;
-            cameraLimits.maxZ = maxZ;
-            cameraLimits.minOrthographicSize = minOrthographicSize;
-            cameraLimits.maxOrthographicSize = maxOrthographicSize;
+            float orthographicSize = camera.orthographicSize;
+            orthographicSize = Mathf.Clamp(orthographicSize + orthographicSizeDelta, minOrthographicSize, maxOrthographicSize);
+            camera.orthographicSize = orthographicSize;
+            LimitCameraPositionDependingOnOrthographicSize();
         }
 
-        private void ApplyCameraLimits()
+        private void LimitCameraPositionDependingOnOrthographicSize()
         {
-            Vector3 clampedCameraPosition = cameraTransform.localPosition;
-            clampedCameraPosition.x = Mathf.Clamp(clampedCameraPosition.x, cameraLimits.minX ?? float.MinValue, cameraLimits.maxX ?? float.MaxValue);
-            clampedCameraPosition.y = Mathf.Clamp(clampedCameraPosition.y, cameraLimits.minY ?? float.MinValue, cameraLimits.maxY ?? float.MaxValue);
-            clampedCameraPosition.z = Mathf.Clamp(clampedCameraPosition.z, cameraLimits.minZ ?? float.MinValue, cameraLimits.maxZ ?? float.MaxValue);
-            cameraTransform.localPosition = clampedCameraPosition;
+            if (!camera.orthographic)
+                return;
 
-            camera.orthographicSize = Mathf.Clamp(camera.orthographicSize, cameraLimits.minOrthographicSize ?? float.MinValue, cameraLimits.maxOrthographicSize?? float.MaxValue);
+            Vector3 cameraPosition = cameraTransform.position;
+            float cameraProjectionHeight = camera.orthographicSize * 2f;
+            float topYProjectionPosition = cameraPosition.y + (cameraProjectionHeight * 0.5f);
+            float bottomYProjectionPosition = cameraPosition.y - (cameraProjectionHeight * 0.5f);
+
+            if (topYProjectionPosition > maxYOrthographicPosition)
+                cameraPosition.y = maxYOrthographicPosition - (cameraProjectionHeight * 0.5f);
+            else if (bottomYProjectionPosition < minYOrthographicPosition)
+                cameraPosition.y = minYOrthographicPosition + (cameraProjectionHeight * 0.5f);
+
+            cameraTransform.position = cameraPosition;
         }
 
         public void PlayEmote(string emoteId, long timestamp) =>
