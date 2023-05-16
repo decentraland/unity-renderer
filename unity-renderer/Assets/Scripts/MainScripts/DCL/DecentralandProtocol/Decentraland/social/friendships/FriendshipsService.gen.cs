@@ -12,9 +12,9 @@ namespace Decentraland.Social.Friendships {
 public interface IFriendshipsService<Context>
 {
 
-  IUniTaskAsyncEnumerable<Users> GetFriends(Payload request, Context context);
+  IUniTaskAsyncEnumerable<UsersResponse> GetFriends(Payload request, Context context);
 
-  UniTask<RequestEvents> GetRequestEvents(Payload request, Context context, CancellationToken ct);
+  UniTask<RequestEventsResponse> GetRequestEvents(Payload request, Context context, CancellationToken ct);
 
   UniTask<UpdateFriendshipResponse> UpdateFriendshipEvent(UpdateFriendshipPayload request, Context context, CancellationToken ct);
 
@@ -30,7 +30,7 @@ public static class FriendshipsServiceCodeGen
   {
     var result = new ServerModuleDefinition<Context>();
       
-    result.serverStreamDefinition.Add("GetFriends", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<Users>(service.GetFriends(Payload.Parser.ParseFrom(payload), context)); });
+    result.serverStreamDefinition.Add("GetFriends", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<UsersResponse>(service.GetFriends(Payload.Parser.ParseFrom(payload), context)); });
     result.definition.Add("GetRequestEvents", async (payload, context, ct) => { var res = await service.GetRequestEvents(Payload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("UpdateFriendshipEvent", async (payload, context, ct) => { var res = await service.UpdateFriendshipEvent(UpdateFriendshipPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.serverStreamDefinition.Add("SubscribeFriendshipEventsUpdates", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<SubscribeFriendshipEventsUpdatesResponse>(service.SubscribeFriendshipEventsUpdates(Payload.Parser.ParseFrom(payload), context)); });

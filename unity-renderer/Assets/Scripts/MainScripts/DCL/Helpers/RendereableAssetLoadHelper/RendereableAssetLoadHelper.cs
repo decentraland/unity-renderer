@@ -345,7 +345,17 @@ namespace DCL.Components
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            gltfastPromise.OnFailEvent += (asset, exception) => { OnFailWrapper(OnFail, exception, hasFallback); };
+            gltfastPromise.OnFailEvent += (asset, exception) =>
+            {
+                if (exception is PromiseForgottenException or OperationCanceledException)
+                {
+                    ClearEvents();
+                    return;
+                }
+
+                OnFailWrapper(OnFail, exception, hasFallback);
+
+            };
 
             AssetPromiseKeeper_GLTFast_Instance.i.Keep(gltfastPromise);
         }
@@ -355,12 +365,6 @@ namespace DCL.Components
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
-
-            if (exception is PromiseForgottenException or OperationCanceledException)
-            {
-                ClearEvents();
-                return;
-            }
 
             // If the entity is destroyed while loading, the exception is expected to be null and no error should be thrown
             if (exception != null)

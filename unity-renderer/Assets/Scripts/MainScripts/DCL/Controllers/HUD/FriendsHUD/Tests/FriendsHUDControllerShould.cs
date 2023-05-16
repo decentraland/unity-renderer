@@ -37,23 +37,25 @@ namespace DCl.Social.Friends
             socialAnalytics = Substitute.For<ISocialAnalytics>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             otherUserProfile = ScriptableObject.CreateInstance<UserProfile>();
-            otherUserProfile.UpdateData(new UserProfileModel {userId = OTHER_USER_ID, name = OTHER_USER_NAME});
+            otherUserProfile.UpdateData(new UserProfileModel { userId = OTHER_USER_ID, name = OTHER_USER_NAME });
             userProfileBridge.Get(OTHER_USER_ID).Returns(otherUserProfile);
             userProfileBridge.GetByName(OTHER_USER_NAME).Returns(otherUserProfile);
             ownProfile = ScriptableObject.CreateInstance<UserProfile>();
-            ownProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
+            ownProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID });
             userProfileBridge.GetOwn().Returns(ownProfile);
             friendsController = Substitute.For<IFriendsController>();
             friendsController.AllocatedFriendCount.Returns(FRIENDS_COUNT);
             friendsController.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(new string[0]));
-            friendsController.GetFriendsAsync(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult((IReadOnlyList<string>) Array.Empty<string>()));
+            friendsController.GetFriendsAsync(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult((IReadOnlyList<string>)Array.Empty<string>()));
             dataStore = new DataStore();
+
             controller = new FriendsHUDController(dataStore,
                 friendsController,
                 userProfileBridge,
                 socialAnalytics,
                 Substitute.For<IChatController>(),
                 Substitute.For<IMouseCatcher>());
+
             view = Substitute.For<IFriendsHUDComponentView>();
             view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
             controller.Initialize(view, isVisible: false);
@@ -78,7 +80,7 @@ namespace DCl.Social.Friends
             var pressedWhisper = false;
             controller.OnPressWhisper += x => pressedWhisper = x == id;
 
-            view.OnWhisper += Raise.Event<Action<FriendEntryModel>>(new FriendEntryModel {userId = id});
+            view.OnWhisper += Raise.Event<Action<FriendEntryModel>>(new FriendEntryModel { userId = id });
 
             Assert.IsTrue(pressedWhisper);
         }
@@ -97,13 +99,16 @@ namespace DCl.Social.Friends
             friendsController.RequestFriendshipAsync(OTHER_USER_NAME, "", Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(
                                   new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "")));
+
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_NAME);
 
             friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_NAME, "", Arg.Any<CancellationToken>());
+
             socialAnalytics.Received(1)
-                .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
+                           .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
+
             view.Received(1).ShowRequestSendSuccess();
         }
 
@@ -113,6 +118,7 @@ namespace DCl.Social.Friends
             friendsController.RequestFriendshipAsync(OTHER_USER_ID, "", Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(
                                   new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "")));
+
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);
@@ -158,14 +164,16 @@ namespace DCl.Social.Friends
             view.FriendRequestCount.Returns(5);
 
             friendsController.IsInitialized.Returns(true);
+
             friendsController
-                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
+               .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+               .Returns(UniTask.FromResult((IReadOnlyList<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
 
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
-            view.Received(1).Set(OTHER_USER_ID,
-                Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
+            view.Received(1)
+                .Set(OTHER_USER_ID,
+                     Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
         }
 
         [Test]
@@ -174,14 +182,16 @@ namespace DCl.Social.Friends
             view.FriendRequestCount.Returns(5);
 
             friendsController.IsInitialized.Returns(true);
+
             friendsController
-                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
+               .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+               .Returns(UniTask.FromResult((IReadOnlyList<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
-            view.Received(1).Set(OTHER_USER_ID,
-                Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
+            view.Received(1)
+                .Set(OTHER_USER_ID,
+                     Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
         }
 
         [TestCase("test-id-1", 43, 72, PresenceStatus.ONLINE, FriendshipStatus.FRIEND, "rl", "svn")]
@@ -190,25 +200,27 @@ namespace DCl.Social.Friends
             string realmLayer, string serverName)
         {
             var position = new Vector2(positionX, positionY);
+
             var status = new UserStatus
             {
                 position = position,
                 presence = presence,
                 friendshipStatus = friendshipStatus,
-                realm = new UserStatus.Realm {layer = realmLayer, serverName = serverName},
+                realm = new UserStatus.Realm { layer = realmLayer, serverName = serverName },
                 userId = userId
             };
 
             friendsController.OnUpdateUserStatus +=
                 Raise.Event<Action<string, UserStatus>>(userId, status);
 
-            view.Received(1).Set(userId,
-                Arg.Is<FriendEntryModel>(f => f.blocked == false
-                                              && f.coords.Equals(position)
-                                              && f.realm ==
-                                              $"{serverName.ToUpperFirst()} {realmLayer.ToUpperFirst()}"
-                                              && f.status == presence
-                                              && f.userId == userId));
+            view.Received(1)
+                .Set(userId,
+                     Arg.Is<FriendEntryModel>(f => f.blocked == false
+                                                   && f.coords.Equals(position)
+                                                   && f.realm ==
+                                                   $"{serverName.ToUpperFirst()} {realmLayer.ToUpperFirst()}"
+                                                   && f.status == presence
+                                                   && f.userId == userId));
         }
 
         [Test]
@@ -217,8 +229,9 @@ namespace DCl.Social.Friends
             friendsController.OnFriendRequestReceived +=
                 Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test"));
 
-            view.Received(1).Set(OTHER_USER_ID,
-                Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
+            view.Received(1)
+                .Set(OTHER_USER_ID,
+                     Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
         }
 
         [Test]
@@ -227,8 +240,9 @@ namespace DCl.Social.Friends
             friendsController.OnFriendRequestReceived +=
                 Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test"));
 
-            view.Received(1).Set(OTHER_USER_ID,
-                Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
+            view.Received(1)
+                .Set(OTHER_USER_ID,
+                     Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
         }
 
         [Test]
@@ -267,8 +281,9 @@ namespace DCl.Social.Friends
             friendsController.OnUpdateFriendship +=
                 Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
 
-            view.Received(1).Set(OTHER_USER_ID,
-                Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
+            view.Received(1)
+                .Set(OTHER_USER_ID,
+                     Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
         }
 
         [Test]
@@ -278,14 +293,16 @@ namespace DCl.Social.Friends
             view.FriendRequestCount.Returns(10000);
 
             friendsController.IsInitialized.Returns(true);
+
             friendsController
-                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
+               .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+               .Returns(UniTask.FromResult((IReadOnlyList<FriendRequest>)new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
-            view.Received(1).Set(OTHER_USER_ID,
-                Arg.Is<FriendRequestEntryModel>(f => f.userId == OTHER_USER_ID));
+            view.Received(1)
+                .Set(OTHER_USER_ID,
+                     Arg.Is<FriendRequestEntryModel>(f => f.userId == OTHER_USER_ID));
         }
 
         [Test]
@@ -305,8 +322,9 @@ namespace DCl.Social.Friends
             friendsController.OnUpdateUserStatus +=
                 Raise.Event<Action<string, UserStatus>>(OTHER_USER_ID, status);
 
-            view.Received(1).Set(OTHER_USER_ID,
-                Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
+            view.Received(1)
+                .Set(OTHER_USER_ID,
+                     Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
         }
 
         [Test]
@@ -320,7 +338,7 @@ namespace DCl.Social.Friends
             ownProfile.UpdateData(new UserProfileModel
             {
                 userId = OWN_USER_ID,
-                blocked = new List<string> {OTHER_USER_ID}
+                blocked = new List<string> { OTHER_USER_ID }
             });
 
             view.Received(1).UpdateBlockStatus(OTHER_USER_ID, true);
@@ -339,11 +357,13 @@ namespace DCl.Social.Friends
         [Test]
         public void DisplayFriendProfileChanges()
         {
-            friendsController.GetUserStatus(OTHER_USER_ID).Returns(new UserStatus
-            {
-                userId = OTHER_USER_ID,
-                friendshipStatus = FriendshipStatus.FRIEND
-            });
+            friendsController.GetUserStatus(OTHER_USER_ID)
+                             .Returns(new UserStatus
+                              {
+                                  userId = OTHER_USER_ID,
+                                  friendshipStatus = FriendshipStatus.FRIEND
+                              });
+
             friendsController.OnUpdateFriendship +=
                 Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
 
@@ -498,11 +518,13 @@ namespace DCl.Social.Friends
         [TestCase(OTHER_USER_NAME, 1)]
         public void SearchFriends(string searchText, int expectedCount)
         {
-            friendsController.GetUserStatus(OTHER_USER_ID).Returns(new UserStatus
-            {
-                friendshipStatus = FriendshipStatus.FRIEND,
-                userId = OTHER_USER_ID
-            });
+            friendsController.GetUserStatus(OTHER_USER_ID)
+                             .Returns(new UserStatus
+                              {
+                                  friendshipStatus = FriendshipStatus.FRIEND,
+                                  userId = OTHER_USER_ID
+                              });
+
             friendsController.OnUpdateFriendship +=
                 Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
 

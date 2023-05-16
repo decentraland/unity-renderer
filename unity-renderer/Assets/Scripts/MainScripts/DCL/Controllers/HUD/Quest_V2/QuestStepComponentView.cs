@@ -18,12 +18,6 @@ namespace DCL.Quests
 
         public event Action<Vector2Int> OnJumpIn;
 
-        public override void Awake()
-        {
-            jumpInButton.onClick.RemoveAllListeners();
-            jumpInButton.onClick.AddListener(() => OnJumpIn?.Invoke(model.coordinates));
-        }
-
         public override void RefreshControl()
         {
             if (model == null)
@@ -31,6 +25,8 @@ namespace DCL.Quests
 
             SetIsCompleted(model.isCompleted);
             SetQuestStepText(model.text);
+            SetSupportsJumpIn(model.supportsJumpIn);
+            SetCoordinates(model.coordinates);
         }
 
         public void SetIsCompleted(bool isCompleted)
@@ -49,8 +45,13 @@ namespace DCL.Quests
             questStepText.text = stepText;
         }
 
-        public void SetCoordinates(Vector2Int coordinates) =>
+        public void SetCoordinates(Vector2Int coordinates)
+        {
             model.coordinates = coordinates;
+
+            jumpInButton.onClick.RemoveAllListeners();
+            jumpInButton.onClick.AddListener(()=>OnJumpIn?.Invoke(model.coordinates));
+        }
 
         public void SetSupportsJumpIn(bool supportsJumpIn)
         {
