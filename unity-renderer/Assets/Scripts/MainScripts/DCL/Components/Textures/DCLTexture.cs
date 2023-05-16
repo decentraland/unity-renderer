@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Decentraland.Sdk.Ecs6;
 using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -21,11 +22,21 @@ namespace DCL
             public string src;
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
-            public bool hasAlpha = false;
 
-            public override BaseModel GetDataFromJSON(string json)
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
             {
-                return Utils.SafeFromJson<Model>(json);
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.Texture)
+                    return Utils.SafeUnimplemented<DCLTexture, Model>(expected: ComponentBodyPayload.PayloadOneofCase.Texture, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.Texture.HasSrc) pb.src = pbModel.Texture.Src;
+                if (pbModel.Texture.HasWrap) pb.wrap = (BabylonWrapMode)pbModel.Texture.Wrap;
+                if (pbModel.Texture.HasSamplingMode) pb.samplingMode = (FilterMode)pbModel.Texture.SamplingMode;
+                
+                return pb;
             }
         }
 
@@ -36,7 +47,7 @@ namespace DCL
             MIRROR
         }
 
-        AssetPromise_Texture texturePromise = null;
+        AssetPromise_Texture texturePromise;
 
         protected Dictionary<ISharedComponent, HashSet<long>> attachedEntitiesByComponent =
             new Dictionary<ISharedComponent, HashSet<long>>();
@@ -50,10 +61,8 @@ namespace DCL
 
         public float resizingFactor => texturePromise?.asset.resizingFactor ?? 1;
 
-        public override int GetClassId()
-        {
-            return (int)CLASS_ID.TEXTURE;
-        }
+        public override int GetClassId() =>
+            (int)CLASS_ID.TEXTURE;
 
         public DCLTexture()
         {
@@ -95,15 +104,9 @@ namespace DCL
                     string base64Data = model.src.Substring(model.src.IndexOf(',') + 1);
 
                     // The used texture variable can't be null for the ImageConversion.LoadImage to work
-                    if (texture == null)
-                    {
-                        texture = new Texture2D(1, 1);
-                    }
+                    if (texture == null) { texture = new Texture2D(1, 1); }
 
-                    if (!ImageConversion.LoadImage(texture, Convert.FromBase64String(base64Data)))
-                    {
-                        Debug.LogError($"DCLTexture with id {id} couldn't parse its base64 image data.");
-                    }
+                    if (!ImageConversion.LoadImage(texture, Convert.FromBase64String(base64Data))) { Debug.LogError($"DCLTexture with id {id} couldn't parse its base64 image data."); }
 
                     if (texture != null)
                     {
@@ -182,10 +185,7 @@ namespace DCL
             if (!attachedEntitiesByComponent.ContainsKey(component))
                 return false;
 
-            foreach (var entityId in attachedEntitiesByComponent[component])
-            {
-                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.sceneNumber, entityId, texture);
-            }
+            foreach (var entityId in attachedEntitiesByComponent[component]) { DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.sceneNumber, entityId, texture); }
 
             return attachedEntitiesByComponent.Remove(component);
         }
@@ -197,10 +197,7 @@ namespace DCL
 
             isDisposed = true;
 
-            while (attachedEntitiesByComponent.Count > 0)
-            {
-                RemoveReference(attachedEntitiesByComponent.First().Key);
-            }
+            while (attachedEntitiesByComponent.Count > 0) { RemoveReference(attachedEntitiesByComponent.First().Key); }
 
             DisposeTexture();
 

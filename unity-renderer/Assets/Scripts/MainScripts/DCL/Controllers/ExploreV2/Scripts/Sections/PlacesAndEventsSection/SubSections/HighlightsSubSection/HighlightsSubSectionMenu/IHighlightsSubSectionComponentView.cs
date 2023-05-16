@@ -28,7 +28,7 @@ public interface IHighlightsSubSectionComponentView: IPlacesAndEventsSubSectionC
     /// <summary>
     /// It will be triggered when the place JumpIn button is clicked.
     /// </summary>
-    event Action<IHotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
+    event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
 
     /// <summary>
     /// It will be triggered when the place favorite button is clicked.

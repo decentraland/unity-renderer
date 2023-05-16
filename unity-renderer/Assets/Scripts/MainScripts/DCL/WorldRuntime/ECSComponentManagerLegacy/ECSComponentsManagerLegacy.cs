@@ -7,6 +7,7 @@ using DCL.Helpers;
 using DCL.Models;
 using DCL.Rendering;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL
 {
@@ -427,17 +428,25 @@ namespace DCL
 
                     targetComponent.Initialize(scene, entity);
 
-                    if (data is string json)
-                        targetComponent.UpdateFromJSON(json);
-                    else
-                        targetComponent.UpdateFromModel(data as BaseModel);
+                    switch (data)
+                    {
+                        case string json:
+                            targetComponent.UpdateFromJSON(json);
+                            break;
+                        case ComponentBodyPayload payload:
+                            targetComponent.UpdateFromPb(payload);
+                            break;
+                        default:
+                            targetComponent.UpdateFromModel(data as BaseModel);
+                            break;
+                    }
 
                     wasCreated = true;
                 }
             }
             else
             {
-                targetComponent = EntityComponentUpdate(entity, classId, data as string);
+                targetComponent = EntityComponentUpdate(entity, classId, data);
             }
 
             var isTransform = classId == CLASS_ID_COMPONENT.TRANSFORM;
@@ -453,7 +462,7 @@ namespace DCL
         }
 
         public IEntityComponent EntityComponentUpdate(IDCLEntity entity, CLASS_ID_COMPONENT classId,
-            string componentJson)
+            object data)
         {
             if (entity == null)
             {
@@ -468,7 +477,12 @@ namespace DCL
             }
 
             var targetComponent = GetComponent(entity, classId);
-            targetComponent.UpdateFromJSON(componentJson);
+            if (data is string json)
+                targetComponent.UpdateFromJSON(json);
+            else if (data is Decentraland.Sdk.Ecs6.ComponentBodyPayload payload)
+                targetComponent.UpdateFromPb(payload);
+            else
+                targetComponent.UpdateFromModel(data as BaseModel);
 
             return targetComponent;
         }
@@ -502,6 +516,14 @@ namespace DCL
             }
 
             return null;
+        }
+
+        public ISharedComponent SceneSharedComponentUpdate(string id, ComponentBodyPayload payload)
+        {
+            if (!disposableComponents.TryGetValue(id, out ISharedComponent disposableComponent)) return null;
+
+            disposableComponent.UpdateFromPb(payload);
+            return disposableComponent;
         }
 
         public void EntityComponentRemove(long entityId, string componentName)

@@ -26,6 +26,7 @@ namespace DCL.Backpack
         private readonly IBrowserBridge browserBridge;
         private readonly BackpackFiltersController backpackFiltersController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
+        private readonly IBackpackAnalyticsController backpackAnalyticsController;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
@@ -36,8 +37,9 @@ namespace DCL.Backpack
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
         private NftCollectionType collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
 
-        public event Action<string> OnWearableEquipped;
-        public event Action<string> OnWearableUnequipped;
+        public event Action<string> OnWearableSelected;
+        public event Action<string, EquipWearableSource> OnWearableEquipped;
+        public event Action<string, UnequipWearableSource> OnWearableUnequipped;
 
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
@@ -45,7 +47,8 @@ namespace DCL.Backpack
             DataStore_BackpackV2 dataStoreBackpackV2,
             IBrowserBridge browserBridge,
             BackpackFiltersController backpackFiltersController,
-            AvatarSlotsHUDController avatarSlotsHUDController)
+            AvatarSlotsHUDController avatarSlotsHUDController,
+            IBackpackAnalyticsController backpackAnalyticsController)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
@@ -54,6 +57,7 @@ namespace DCL.Backpack
             this.browserBridge = browserBridge;
             this.backpackFiltersController = backpackFiltersController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
+            this.backpackAnalyticsController = backpackAnalyticsController;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
@@ -259,13 +263,15 @@ namespace DCL.Backpack
                 removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
             });
+
+            OnWearableSelected?.Invoke(wearableId);
         }
 
-        private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem) =>
-            OnWearableUnequipped?.Invoke(wearableGridItem.WearableId);
+        private void HandleWearableUnequipped(WearableGridItemModel wearableGridItem, UnequipWearableSource source) =>
+            OnWearableUnequipped?.Invoke(wearableGridItem.WearableId, source);
 
-        private void HandleWearableEquipped(WearableGridItemModel wearableGridItem) =>
-            OnWearableEquipped?.Invoke(wearableGridItem.WearableId);
+        private void HandleWearableEquipped(WearableGridItemModel wearableGridItem, EquipWearableSource source) =>
+            OnWearableEquipped?.Invoke(wearableGridItem.WearableId, source);
 
         private void FilterWearablesFromReferencePath(string referencePath)
         {

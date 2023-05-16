@@ -5,7 +5,9 @@ using MainScripts.DCL.Controllers.FriendsController;
 using rpc_csharp;
 using rpc_csharp.transport;
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 using Payload = Decentraland.Social.Friendships.Payload;
 
 namespace DCL.Social.Friends
@@ -107,11 +109,24 @@ namespace DCL.Social.Friends
             var friendsStream = socialClient.GetFriends(new Payload
                 { SynapseToken = accessToken });
 
+            List<UniTask> tasks = new List<UniTask>();
+
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
-                foreach (var friend in friends.Users_)
-                    OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address });
+                tasks.AddRange(friends.Users_.Select(async friend =>
+                {
+                    try
+                    {
+                        var profile = await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friend.Address, cancellationToken);
+                        OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address, userName = profile.userName });
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception e) { Debug.LogException(e); }
+                }));
             }
+
+            // Forgetting this since it would otherwise compromise the startup time of the explorer
+            UniTask.WhenAll(tasks).Forget();
 
             cancellationToken.ThrowIfCancellationRequested();
         }

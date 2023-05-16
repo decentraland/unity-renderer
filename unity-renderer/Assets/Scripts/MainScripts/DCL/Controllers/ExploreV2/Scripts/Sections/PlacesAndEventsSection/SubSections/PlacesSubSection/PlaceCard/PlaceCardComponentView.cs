@@ -128,7 +128,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton != null ? jumpinButton.onClick : new Button.ButtonClickedEvent();
     public Button.ButtonClickedEvent onInfoClick => infoButton != null ? infoButton.onClick : new Button.ButtonClickedEvent();
 
-    public event Action<string, bool> onFavoriteClick;
+    public event Action<string, bool> OnFavoriteChanged;
 
     private bool thumbnailFromMarketPlaceRequested;
     public event Action<string, bool> OnFavoritePlaceChange;
@@ -162,7 +162,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         InitializeFriendsTracker();
 
         if (mapInfoHandler != null)
-            mapInfoHandler.SetMinimapSceneInfo(model.hotSceneInfo);
+            mapInfoHandler.SetMinimapSceneInfo(model.placeInfo);
 
         RefreshControl();
     }
@@ -190,7 +190,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceAuthor(model.placeAuthor);
         SetNumberOfUsers(model.numberOfUsers);
         SetCoords(model.coords);
-        SetFavoriteButton();
+        SetFavoriteButton(model.isFavorite, model.placeInfo.id);
 
         //Temporary untill the release of the functionality
         if (!DataStore.i.HUDs.enableFavoritePlaces.Get())
@@ -202,23 +202,25 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         RebuildCardLayouts();
     }
 
-    private void SetFavoriteButton()
+    private void SetFavoriteButton(bool isFavorite, string placeId)
     {
         if (favoriteButton == null)
             return;
-
+        favoriteButton.gameObject.SetActive(true);
         favoriteButton.Configure(new FavoriteButtonComponentModel()
         {
-            isFavorite = true,
-            placeUUID = ""
+            isFavorite = isFavorite,
+            placeUUID = placeId
         });
+        ShowFavoriteButton(isFavorite);
 
+        favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
         favoriteButton.OnFavoriteChange += FavoriteValueChanged;
     }
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
     {
-        onFavoriteClick?.Invoke(placeUUID, isFavorite);
+        OnFavoriteChanged?.Invoke(placeUUID, isFavorite);
     }
 
     public override void OnFocus()
@@ -228,7 +230,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(true);
 
-        cardAnimator?.Focus();
+        ShowFavoriteButton(true);
+
+        if(cardAnimator != null)
+            cardAnimator.Focus();
     }
 
     public override void OnLoseFocus()
@@ -238,7 +243,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(false);
 
-        cardAnimator?.Idle();
+        ShowFavoriteButton(false);
+
+        if(cardAnimator != null)
+            cardAnimator.Idle();
     }
 
     public override void Show(bool instant = false)
@@ -285,6 +293,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if(favoriteButton != null)
             favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
+    }
+
+    private void ShowFavoriteButton(bool show)
+    {
+        if(favoriteButton != null && !favoriteButton.IsFavorite())
+            favoriteButton.gameObject.SetActive(show);
     }
 
     public void SetPlacePicture(Sprite sprite)

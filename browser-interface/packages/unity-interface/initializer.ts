@@ -10,7 +10,8 @@ import { traceDecoratorRendererOptions } from './trace'
 import {
   BringDownClientAndShowError,
   ErrorContext,
-  ReportFatalErrorWithUnityPayloadAsync
+  ReportFatalErrorWithUnityPayloadAsync,
+  UserError
 } from 'shared/loading/ReportFatalError'
 import { store } from 'shared/store/isolatedStore'
 import defaultLogger from 'lib/logger'
@@ -66,7 +67,7 @@ async function loadInjectedUnityDelegate(
   if (debug_ext) {
     const renderer = ctx.getParameter(debug_ext.UNMASKED_RENDERER_WEBGL)
     if (renderer.indexOf('SwiftShader') >= 0 && !ALLOW_SWIFT_SHADER) {
-      throw new Error(
+      throw new UserError(
         'Your browser is using an emulated software renderer (SwiftShader). This prevents Decentraland from working. This is usually fixed by restarting the computer. In any case, we recommend you to use the Desktop Client instead for a better overall experience. You can find it in https://decentraland.org/download'
       )
     }

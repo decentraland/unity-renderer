@@ -5,14 +5,14 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
-public class ModalComponentShould 
+public class ModalComponentShould
 {
     private ModalComponentView modalComponent;
     private GameObject modelContent;
     [SetUp]
     public void SetUp()
     {
-        modalComponent = BaseComponentView.Create<ModalComponentView>("Modal");
+        modalComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<ModalComponentView>("Modal");
     }
 
     [TearDown]
@@ -20,11 +20,11 @@ public class ModalComponentShould
     {
         modalComponent.Dispose();
         GameObject.Destroy(modalComponent.gameObject);
-        
+
         if(modelContent != null)
             GameObject.Destroy(modelContent);
     }
-    
+
     [Test]
     public void CreateContentCorrectly()
     {
@@ -32,21 +32,21 @@ public class ModalComponentShould
         ModalComponentModel model = new ModalComponentModel();
         modelContent = new GameObject("TestGameObject");
         model.content = modelContent;
-        
+
         // Act
         modalComponent.Configure(model);
 
         // Assert
         Assert.NotNull(modalComponent.content);
     }
-    
+
     [Test]
     public void SendEventCloseButtonCorrectly()
     {
         //Arrange
         bool eventCalled = false;
         modalComponent.OnCloseAction +=() => eventCalled = true;
-        
+
         // Act
         modalComponent.CloseButtonClicked();
 

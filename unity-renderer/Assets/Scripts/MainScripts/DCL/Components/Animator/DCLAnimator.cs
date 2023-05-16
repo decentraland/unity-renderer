@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
-using DCL.Controllers;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -27,12 +27,40 @@ namespace DCL.Components
                 public bool looping = true;
                 public bool shouldReset = false;
 
-                public DCLAnimationState Clone() { return (DCLAnimationState) this.MemberwiseClone(); }
+                public DCLAnimationState Clone() =>
+                    (DCLAnimationState) this.MemberwiseClone();
             }
 
             public DCLAnimationState[] states;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.Animator)
+                    return Utils.SafeUnimplemented<DCLAnimator, Model>(expected: ComponentBodyPayload.PayloadOneofCase.Animator, actual: pbModel.PayloadCase);
+
+                if (pbModel.Animator.States.Count == 0)
+                    return new Model();
+
+                var model = new Model { states = new DCLAnimationState[pbModel.Animator.States.Count] };
+
+                for (var i = 0; i < pbModel.Animator.States.Count; i++)
+                {
+                    model.states[i] = new DCLAnimationState();
+
+                    if (pbModel.Animator.States[i].HasName) model.states[i].name = pbModel.Animator.States[i].Name;
+                    if (pbModel.Animator.States[i].HasClip) model.states[i].clip = pbModel.Animator.States[i].Clip;
+                    if (pbModel.Animator.States[i].HasPlaying) model.states[i].playing = pbModel.Animator.States[i].Playing;
+                    if (pbModel.Animator.States[i].HasWeight) model.states[i].weight = pbModel.Animator.States[i].Weight;
+                    if (pbModel.Animator.States[i].HasSpeed) model.states[i].speed = pbModel.Animator.States[i].Speed;
+                    if (pbModel.Animator.States[i].HasLooping) model.states[i].looping = pbModel.Animator.States[i].Looping;
+                    if (pbModel.Animator.States[i].HasShouldReset) model.states[i].shouldReset = pbModel.Animator.States[i].ShouldReset;
+                }
+
+                return model;
+            }
         }
 
         [System.NonSerialized]
@@ -45,7 +73,10 @@ namespace DCL.Components
 
         public override string componentName => "animator";
 
-        private void Awake() { model = new Model(); }
+        private void Awake()
+        {
+            model = new Model();
+        }
 
         private void OnDestroy()
         {
@@ -180,7 +211,7 @@ namespace DCL.Components
                     if (state.shouldReset)
                         ResetAnimation(state);
 
-                    
+
                     if (state.playing && !animComponent.IsPlaying(state.clip))
                     {
                         animComponent.Play(state.clip);

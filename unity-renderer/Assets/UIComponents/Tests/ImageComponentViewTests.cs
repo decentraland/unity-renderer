@@ -14,7 +14,7 @@ public class ImageComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        imageComponent = BaseComponentView.Create<ImageComponentView>("Image");
+        imageComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<ImageComponentView>("Image");
         imageComponent.imageObserver = Substitute.For<ILazyTextureObserver>();
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);

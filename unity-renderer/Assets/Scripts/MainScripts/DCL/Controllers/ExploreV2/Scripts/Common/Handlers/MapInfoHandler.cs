@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -12,13 +13,13 @@ public class MapInfoHandler : IMapDataView
 
     public Vector2Int[] parcels { private set; get; }
 
-    public void SetMinimapSceneInfo(IHotScenesController.HotSceneInfo sceneInfo)
+    public void SetMinimapSceneInfo(IHotScenesController.PlaceInfo sceneInfo)
     {
-        baseCoord = sceneInfo.baseCoords;
-        name = sceneInfo.name;
-        creator = sceneInfo.creator;
+        baseCoord = Utils.ConvertStringToVector(sceneInfo.base_position);
+        name = sceneInfo.title;
+        creator = sceneInfo.owner;
         description = sceneInfo.description;
-        parcels = sceneInfo.parcels;
+        parcels = sceneInfo.positions;
     }
 
     public bool ContainCoords(Vector2Int coords)

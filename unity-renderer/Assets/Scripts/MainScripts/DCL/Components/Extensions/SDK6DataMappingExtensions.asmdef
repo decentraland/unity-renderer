@@ -1,0 +1,17 @@
+{
+    "name": "SDK6DataMappingExtensions",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3c7b57a14671040bd8c549056adc04f5",
+        "GUID:0b167d3fa6c88454ea3eb69cbabe4eb7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

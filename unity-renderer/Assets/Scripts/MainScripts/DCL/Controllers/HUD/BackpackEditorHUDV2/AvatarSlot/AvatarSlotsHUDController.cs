@@ -12,13 +12,13 @@ namespace DCL.Backpack
         private string lastSelectedSlot;
         internal AvatarSlotsDefinitionSO avatarSlotsDefinition;
 
-        public event Action<string> OnUnequipFromSlot;
+        public event Action<string, UnequipWearableSource> OnUnequipFromSlot;
 
         public AvatarSlotsHUDController(IAvatarSlotsView avatarSlotsView)
         {
             this.avatarSlotsView = avatarSlotsView;
             avatarSlotsView.OnToggleAvatarSlot += ToggleSlot;
-            avatarSlotsView.OnUnequipFromSlot += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
+            avatarSlotsView.OnUnequipFromSlot += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId, UnequipWearableSource.AvatarSlot);
             avatarSlotsDefinition = Resources.Load<AvatarSlotsDefinitionSO>("AvatarSlotsDefinition");
         }
 

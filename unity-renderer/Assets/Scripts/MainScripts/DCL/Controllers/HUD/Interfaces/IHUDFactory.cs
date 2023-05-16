@@ -40,7 +40,7 @@ namespace DCL
         QUESTS_PANEL = 26,
         QUESTS_TRACKER = 27,
 
-        [Obsolete("Deprecated HUD Element")]
+        [Obsolete("Deprecated HUD Element, ported to Plugin System")]
         SIGNUP = 29,
         [Obsolete("Deprecated HUD Element")]
         LOADING = 30,

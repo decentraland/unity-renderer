@@ -1,18 +1,17 @@
 using Cysharp.Threading.Tasks;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
     public class UIImage : UIShape<UIImageReferencesContainer, UIImage.Model>
     {
         [System.Serializable]
-        new public class Model : UIShape.Model
+        public new class Model : UIShape.Model
         {
             public string source;
             public float sourceLeft = 0f;
@@ -25,7 +24,43 @@ namespace DCL.Components
             public float paddingLeft = 0f;
             public bool sizeInPixels = true;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.UiImage)
+                    return Utils.SafeUnimplemented<UIImage, Model>(expected: ComponentBodyPayload.PayloadOneofCase.UiImage, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.UiImage.HasName) pb.name = pbModel.UiImage.Name;
+                if (pbModel.UiImage.HasParentComponent) pb.parentComponent = pbModel.UiImage.ParentComponent;
+                if (pbModel.UiImage.HasVisible) pb.visible = pbModel.UiImage.Visible;
+                if (pbModel.UiImage.HasOpacity) pb.opacity = pbModel.UiImage.Opacity;
+                if (pbModel.UiImage.HasHAlign) pb.hAlign = pbModel.UiImage.HAlign;
+                if (pbModel.UiImage.HasVAlign) pb.vAlign = pbModel.UiImage.VAlign;
+                if (pbModel.UiImage.Width != null) pb.width = SDK6DataMapExtensions.FromProtobuf(pb.width, pbModel.UiImage.Width);
+                if (pbModel.UiImage.Height != null) pb.height = SDK6DataMapExtensions.FromProtobuf(pb.height, pbModel.UiImage.Height);
+                if (pbModel.UiImage.PositionX != null) pb.positionX = SDK6DataMapExtensions.FromProtobuf(pb.positionX, pbModel.UiImage.PositionX);
+                if (pbModel.UiImage.PositionY != null) pb.positionY = SDK6DataMapExtensions.FromProtobuf(pb.positionY, pbModel.UiImage.PositionY);
+                if (pbModel.UiImage.HasIsPointerBlocker) pb.isPointerBlocker = pbModel.UiImage.IsPointerBlocker;
+
+                if (pbModel.UiImage.HasSource) pb.source = pbModel.UiImage.Source;
+                if (pbModel.UiImage.HasSourceLeft) pb.sourceLeft = pbModel.UiImage.SourceLeft;
+                if (pbModel.UiImage.HasSourceTop) pb.sourceTop = pbModel.UiImage.SourceTop;
+                if (pbModel.UiImage.HasSourceWidth) pb.sourceWidth = pbModel.UiImage.SourceWidth;
+                if (pbModel.UiImage.HasSourceHeight) pb.sourceHeight = pbModel.UiImage.SourceHeight;
+                if (pbModel.UiImage.HasPaddingTop) pb.paddingTop = pbModel.UiImage.PaddingTop;
+                if (pbModel.UiImage.HasPaddingRight) pb.paddingRight = pbModel.UiImage.PaddingRight;
+                if (pbModel.UiImage.HasPaddingBottom) pb.paddingBottom = pbModel.UiImage.PaddingBottom;
+                if (pbModel.UiImage.HasPaddingLeft) pb.paddingLeft = pbModel.UiImage.PaddingLeft;
+                if (pbModel.UiImage.HasSizeInPixels) pb.sizeInPixels = pbModel.UiImage.SizeInPixels;
+
+                if (pbModel.UiImage.HasOnClick) pb.onClick = pbModel.UiImage.OnClick;
+
+
+                return pb;
+            }
         }
 
         public override string referencesContainerPrefabName => "UIImage";
@@ -39,9 +74,11 @@ namespace DCL.Components
             model = new Model();
         }
 
-        public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
+        public override int GetClassId() =>
+            (int) CLASS_ID.UI_IMAGE_SHAPE;
 
-        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null) { Debug.LogError("Aborted UIImageShape attachment to an entity. UIShapes shouldn't be attached to entities."); }
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null) =>
+            Debug.LogError("Aborted UIImageShape attachment to an entity. UIShapes shouldn't be attached to entities.");
 
         public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
