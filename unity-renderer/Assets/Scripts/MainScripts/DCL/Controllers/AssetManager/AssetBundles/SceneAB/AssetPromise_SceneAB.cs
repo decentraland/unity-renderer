@@ -34,10 +34,7 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
         {
             // This case happens when loading worlds
             if (sceneId.StartsWith(URN_PREFIX))
-            {
-                int prefixLength = URN_PREFIX.Length;
-                return sceneId.Substring(prefixLength, sceneId.IndexOf("?", StringComparison.Ordinal) - prefixLength);
-            }
+                sceneId = sceneId.Replace(URN_PREFIX, "");
 
             return sceneId;
         }
