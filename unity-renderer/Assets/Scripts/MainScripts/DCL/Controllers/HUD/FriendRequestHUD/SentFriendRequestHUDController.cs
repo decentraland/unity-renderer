@@ -64,9 +64,9 @@ namespace DCL.Social.Friends
         private void Show(string friendRequestId)
         {
             this.friendRequestId = friendRequestId;
-            FriendRequest friendRequest = friendsController.GetAllocatedFriendRequest(this.friendRequestId);
+            bool wasFound = friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest);
 
-            if (friendRequest == null)
+            if (!wasFound)
             {
                 Debug.LogError($"Cannot display friend request {friendRequestId}, is not allocated");
                 return;
@@ -128,9 +128,9 @@ namespace DCL.Social.Friends
 
         private void OpenProfile()
         {
-            FriendRequest friendRequest = friendsController.GetAllocatedFriendRequest(friendRequestId);
+            bool wasFound = friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest);
 
-            if (friendRequest == null)
+            if (!wasFound)
             {
                 Debug.LogError($"Cannot open passport {friendRequestId}, is not allocated");
                 return;
