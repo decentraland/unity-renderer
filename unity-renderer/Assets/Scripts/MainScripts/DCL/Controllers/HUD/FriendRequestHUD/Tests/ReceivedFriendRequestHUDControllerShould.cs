@@ -30,9 +30,13 @@ namespace DCL.Social.Friends
             view = Substitute.For<IReceivedFriendRequestHUDView>();
             friendsController = Substitute.For<IFriendsController>();
 
-            friendsController.GetAllocatedFriendRequest(FRIEND_REQUEST_ID)
+            friendsController.TryGetAllocatedFriendRequest(FRIEND_REQUEST_ID, out Arg.Any<FriendRequest>())
                              .Returns(
-                                  new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey"));
+                                  (args) =>
+                                  {
+                                      args[1] = new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey");
+                                      return true;
+                                  });
 
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -127,6 +131,7 @@ namespace DCL.Social.Friends
         public IEnumerator RejectFriendRequest()
         {
             WhenShow();
+
             friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
@@ -170,6 +175,7 @@ namespace DCL.Social.Friends
             friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
+
             WhenShow();
             view.ClearReceivedCalls();
 

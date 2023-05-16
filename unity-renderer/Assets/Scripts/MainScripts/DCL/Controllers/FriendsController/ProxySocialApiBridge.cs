@@ -18,6 +18,18 @@ namespace DCL.Social.Friends
 
         private bool useSocialApiBridge => featureFlags.IsFeatureEnabled("use-social-client");
 
+        public event Action<FriendRequest> OnIncomingFriendRequestAdded
+        {
+            add => socialApiBridge.OnIncomingFriendRequestAdded += value;
+            remove => socialApiBridge.OnIncomingFriendRequestAdded -= value;
+        }
+
+        public event Action<FriendRequest> OnOutgoingFriendRequestAdded
+        {
+            add => socialApiBridge.OnOutgoingFriendRequestAdded += value;
+            remove => socialApiBridge.OnOutgoingFriendRequestAdded -= value;
+        }
+
         public event Action<UserStatus> OnFriendAdded
         {
             add => socialApiBridge.OnFriendAdded += value;

@@ -30,8 +30,13 @@ namespace DCL.Social.Friends
             dataStore = new DataStore();
 
             friendsController = Substitute.For<IFriendsController>();
-            friendsController.GetAllocatedFriendRequest(FRIEND_REQ_ID)
-                             .Returns(new FriendRequest(FRIEND_REQ_ID, 100, OWN_ID, RECIPIENT_ID, "hey"));
+
+            friendsController.TryGetAllocatedFriendRequest(FRIEND_REQ_ID, out Arg.Any<FriendRequest>())
+                             .Returns((args) =>
+                              {
+                                  args[1] = new FriendRequest(FRIEND_REQ_ID, 100, OWN_ID, RECIPIENT_ID, "hey");
+                                  return true;
+                              });
 
             IUserProfileBridge userProfileBridge = Substitute.For<IUserProfileBridge>();
             var recipientProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -95,6 +100,7 @@ namespace DCL.Social.Friends
             friendsController.CancelRequestAsync(FRIEND_REQ_ID, Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(
                                   new FriendRequest("friendReqId", 200, OWN_ID, RECIPIENT_ID, "woah")));
+
             WhenRequestedToShow();
             view.OnCancel += Raise.Event<Action>();
 
@@ -107,8 +113,10 @@ namespace DCL.Social.Friends
         public void ShowFailWhenTimeout()
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
+
             friendsController.CancelRequestAsync(FRIEND_REQ_ID, Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromException<FriendRequest>(new TimeoutException()));
+
             WhenRequestedToShow();
             view.OnCancel += Raise.Event<Action>();
 
