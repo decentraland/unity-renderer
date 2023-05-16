@@ -291,10 +291,10 @@ namespace RPC.Services
 
             try
             {
-                for (var i = 0; i < request.Actions.Count; i++)
+                RendererManyEntityActions sceneRequest = RendererManyEntityActions.Parser.ParseFrom(request.Payload);
+                for (var i = 0; i < sceneRequest.Actions.Count; i++)
                 {
-                    EntityAction action = request.Actions[i];
-
+                    EntityAction action = sceneRequest.Actions[i];
                     context.crdt.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene
                     {
                         type = QueuedSceneMessage.Type.SCENE_MESSAGE,

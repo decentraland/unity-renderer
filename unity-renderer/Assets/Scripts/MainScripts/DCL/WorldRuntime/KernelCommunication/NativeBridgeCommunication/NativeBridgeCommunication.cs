@@ -2,12 +2,19 @@ using System;
 using System.Runtime.InteropServices;
 using DCL;
 using DCL.Models;
+using Decentraland.Renderer.RendererServices;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
+using System.IO;
+using UnityEngine;
+using Ray = DCL.Models.Ray;
 
 public class NativeBridgeCommunication : IKernelCommunication
 {
     private static string currentEntityId;
     private static int currentSceneNumber;
     private static string currentTag;
+    private static byte[] preallocatedReaderBuffer = new byte[88388608];
 
     private static IMessageQueueHandler queueHandler;
 
@@ -53,11 +60,12 @@ public class NativeBridgeCommunication : IKernelCommunication
         SetCallback_OpenNftDialog(OpenNftDialog);
 
         SetCallback_Query(Query);
+        SetCallback_Sdk6BinaryMessage(Sdk6BinaryMessage);
 #endif
     }
     public void Dispose()
     {
-        
+
     }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VSSS))]
@@ -322,6 +330,131 @@ public class NativeBridgeCommunication : IKernelCommunication
         return message;
     }
 
+    [MonoPInvokeCallback(typeof(JS_Delegate_VII))]
+    internal static unsafe void Sdk6BinaryMessage(int intPtr, int length)
+    {
+        IntPtr ptr = new IntPtr(intPtr);
+        
+        var readonlySpan = new ReadOnlySpan<byte>(ptr.ToPointer(), length);
+        readonlySpan.CopyTo(preallocatedReaderBuffer);
+
+        try
+        {
+            RendererManyEntityActions sceneRequest = RendererManyEntityActions.Parser.ParseFrom(preallocatedReaderBuffer, 0, length);
+            foreach(var action in sceneRequest.Actions)
+                queueHandler.EnqueueSceneMessage(new QueuedSceneMessage_Scene
+                {
+                    type = QueuedSceneMessage.Type.SCENE_MESSAGE,
+                    method = MapMessagingMethodType(action),
+                    sceneNumber = currentSceneNumber,
+                    payload = ExtractPayload(from: action),
+                    tag = action.Tag,
+                });
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
+    }
+
+
+    private static object ExtractPayload(EntityAction from)
+    {
+        return from.Payload.PayloadCase switch
+               {
+                   EntityActionPayload.PayloadOneofCase.InitMessagesFinished => new Protocol.SceneReady(),
+                   EntityActionPayload.PayloadOneofCase.OpenExternalUrl => new Protocol.OpenExternalUrl { url = from.Payload.OpenExternalUrl.Url },
+                   EntityActionPayload.PayloadOneofCase.OpenNftDialog => new Protocol.OpenNftDialog
+                   {
+                       contactAddress = from.Payload.OpenNftDialog.AssetContractAddress,
+                       comment = from.Payload.OpenNftDialog.Comment,
+                       tokenId = from.Payload.OpenNftDialog.TokenId
+                   },
+                   EntityActionPayload.PayloadOneofCase.CreateEntity => new Protocol.CreateEntity { entityId = from.Payload.CreateEntity.Id },
+                   EntityActionPayload.PayloadOneofCase.RemoveEntity => new Protocol.RemoveEntity { entityId = from.Payload.RemoveEntity.Id },
+                   EntityActionPayload.PayloadOneofCase.AttachEntityComponent => new Protocol.SharedComponentAttach
+                   {
+                       entityId = from.Payload.AttachEntityComponent.EntityId,
+                       id = from.Payload.AttachEntityComponent.Id,
+                       name = from.Payload.AttachEntityComponent.Name
+                   },
+                   EntityActionPayload.PayloadOneofCase.ComponentRemoved => new Protocol.EntityComponentDestroy()
+                   {
+                       entityId = from.Payload.ComponentRemoved.EntityId,
+                       name = from.Payload.ComponentRemoved.Name
+                   },
+                   EntityActionPayload.PayloadOneofCase.SetEntityParent => new Protocol.SetEntityParent()
+                   {
+                       entityId = from.Payload.SetEntityParent.EntityId,
+                       parentId = from.Payload.SetEntityParent.ParentId
+                   },
+                   EntityActionPayload.PayloadOneofCase.Query => new QueryMessage { payload = CreateRaycastPayload(from) },
+                   EntityActionPayload.PayloadOneofCase.ComponentCreated => new Protocol.SharedComponentCreate
+                   {
+                       id = from.Payload.ComponentCreated.Id,
+                       classId = from.Payload.ComponentCreated.ClassId,
+                       name = from.Payload.ComponentCreated.Name,
+                   },
+                   EntityActionPayload.PayloadOneofCase.ComponentDisposed => new Protocol.SharedComponentDispose { id = from.Payload.ComponentDisposed.Id },
+
+                   //--- NEW FLOW!
+                   EntityActionPayload.PayloadOneofCase.ComponentUpdated => from.Payload.ComponentUpdated,
+                   EntityActionPayload.PayloadOneofCase.UpdateEntityComponent => from.Payload.UpdateEntityComponent,
+
+                   EntityActionPayload.PayloadOneofCase.None => null,
+                   _ => throw new ArgumentOutOfRangeException(),
+               };
+    }
+
+    private static RaycastQuery CreateRaycastPayload(EntityAction action)
+    {
+        var raycastType = action.Payload.Query.Payload.QueryType switch
+            {
+                "HitFirst" => RaycastType.HIT_FIRST,
+                "HitAll" => RaycastType.HIT_ALL,
+                "HitFirstAvatar" => RaycastType.HIT_FIRST_AVATAR,
+                "HitAllAvatars" => RaycastType.HIT_ALL_AVATARS,
+                _ => RaycastType.NONE,
+            };
+
+        var ray = new Ray
+        {
+            origin = action.Payload.Query.Payload.Ray.Origin.AsUnityVector3(),
+            direction =  action.Payload.Query.Payload.Ray.Direction.AsUnityVector3(),
+            distance = action.Payload.Query.Payload.Ray.Distance
+        };
+
+        return new RaycastQuery
+        {
+            id = action.Payload.Query.Payload.QueryId,
+            raycastType = raycastType,
+            ray = ray,
+            sceneNumber = currentSceneNumber,
+        };
+    }
+
+    private static string MapMessagingMethodType(EntityAction action) =>
+        action.Payload.PayloadCase switch
+        {
+            EntityActionPayload.PayloadOneofCase.InitMessagesFinished => MessagingTypes.INIT_DONE,
+            EntityActionPayload.PayloadOneofCase.OpenExternalUrl => MessagingTypes.OPEN_EXTERNAL_URL,
+            EntityActionPayload.PayloadOneofCase.OpenNftDialog => MessagingTypes.OPEN_NFT_DIALOG,
+            EntityActionPayload.PayloadOneofCase.CreateEntity => MessagingTypes.ENTITY_CREATE,
+            EntityActionPayload.PayloadOneofCase.RemoveEntity => MessagingTypes.ENTITY_DESTROY,
+            EntityActionPayload.PayloadOneofCase.AttachEntityComponent => MessagingTypes.SHARED_COMPONENT_ATTACH,
+            EntityActionPayload.PayloadOneofCase.ComponentRemoved => MessagingTypes.ENTITY_COMPONENT_DESTROY,
+            EntityActionPayload.PayloadOneofCase.SetEntityParent => MessagingTypes.ENTITY_REPARENT,
+            EntityActionPayload.PayloadOneofCase.Query => MessagingTypes.QUERY,
+            EntityActionPayload.PayloadOneofCase.ComponentCreated => MessagingTypes.SHARED_COMPONENT_CREATE,
+            EntityActionPayload.PayloadOneofCase.ComponentDisposed => MessagingTypes.SHARED_COMPONENT_DISPOSE,
+            EntityActionPayload.PayloadOneofCase.UpdateEntityComponent => MessagingTypes.PB_ENTITY_COMPONENT_CREATE_OR_UPDATE,  //--- NEW FLOW!
+            EntityActionPayload.PayloadOneofCase.ComponentUpdated => MessagingTypes.PB_SHARED_COMPONENT_UPDATE,
+            EntityActionPayload.PayloadOneofCase.None => null,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+
+
+
     [DllImport("__Internal")]
     private static extern void SetCallback_CreateEntity(JS_Delegate_V callback);
 
@@ -373,4 +506,10 @@ public class NativeBridgeCommunication : IKernelCommunication
 
     [DllImport("__Internal")]
     private static extern void SetCallback_Query(JS_Delegate_Query callback);
+
+    // TODO: this is repeatead
+    delegate void JS_Delegate_VII(int a, int b);
+
+    [DllImport("__Internal")]
+    private static extern void SetCallback_Sdk6BinaryMessage(JS_Delegate_VII callback);
 }
