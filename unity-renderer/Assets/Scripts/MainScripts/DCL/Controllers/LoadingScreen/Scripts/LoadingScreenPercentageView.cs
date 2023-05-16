@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,11 +32,12 @@ namespace DCL.LoadingScreen
         public void SetPlayerLoadingMessage() =>
             currentMessage = LOADING_AVATAR_MESSAGE;
 
-        public void SetShaderCompilingMessage(float progress)
+        public void SetShaderCompilingMessage(string name, int shaderCount, int variantCount, float progress)
         {
-            loadingMessage.text = COMPILING_SHADERS_MESSAGE;
+            var message = COMPILING_SHADERS_MESSAGE;
+            message += $" ({name}-{shaderCount}-{variantCount})";
+            loadingMessage.text = message;
             loadingPercentage.fillAmount = progress;
         }
-
     }
 }

@@ -197,9 +197,9 @@ namespace DCL.LoadingScreen
             isFadingOut = false;
         }
 
-        private void OnShaderPrewarmProgress(float progress)
+        private void OnShaderPrewarmProgress(ShaderVariantCollection shaderVariant, float progress)
         {
-            percentageController.SetShaderCompilingMessage(progress);
+            percentageController.SetShaderCompilingMessage(shaderVariant.name, shaderVariant.shaderCount, shaderVariant.variantCount, progress);
         }
 
         private void ShowRandomPositionNotification()

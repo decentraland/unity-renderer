@@ -19,7 +19,7 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
             this.addressables = addressables;
         }
 
-        public async UniTask PrewarmAsync(Action<float> progressCallback, CancellationToken cancellationToken)
+        public async UniTask PrewarmAsync(Action<ShaderVariantCollection, float> progressCallback, CancellationToken cancellationToken)
         {
             if (areShadersPrewarm) return;
 
@@ -32,11 +32,11 @@ namespace MainScripts.DCL.Controllers.ShaderPrewarm
             for (var i = 0; i < length; i++)
             {
                 ShaderVariantCollection collection = variantsData.collections[i];
-
-                progressCallback.Invoke(i / (float)length);
+                progressCallback.Invoke(collection, i / (float)length);
                 await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken);
 
-                collection.WarmUp();
+                if (!collection.isWarmedUp)
+                    collection.WarmUp();
             }
 
             areShadersPrewarm = true;

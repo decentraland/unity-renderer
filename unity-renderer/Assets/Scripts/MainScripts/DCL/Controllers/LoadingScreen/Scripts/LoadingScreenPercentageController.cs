@@ -80,7 +80,10 @@ namespace DCL.LoadingScreen
         public void SetAvatarLoadingMessage() =>
             loadingScreenPercentageView.SetPlayerLoadingMessage();
 
-        public void SetShaderCompilingMessage(float progress) =>
-            loadingScreenPercentageView.SetShaderCompilingMessage(progress);
+        public void SetShaderCompilingMessage(string name, int shaderCount, int variantCount, float progress)
+        {
+            loadingScreenPercentageView.SetShaderCompilingMessage(name, shaderCount, variantCount, progress);
+
+        }
     }
 }

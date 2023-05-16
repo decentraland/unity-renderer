@@ -1,11 +1,12 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
+using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.ShaderPrewarm
 {
     public interface IShaderPrewarm
     {
-        UniTask PrewarmAsync(Action<float> progressCallback, CancellationToken cancellationToken);
+        UniTask PrewarmAsync(Action<ShaderVariantCollection, float> progressCallback, CancellationToken cancellationToken);
     }
 }
