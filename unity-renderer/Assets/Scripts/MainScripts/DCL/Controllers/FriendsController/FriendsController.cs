@@ -441,7 +441,7 @@ namespace DCL.Social.Friends
         public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
             apiBridge.GetFriendsWithDirectMessages(userNameOrId, limit, 0);
 
-        public bool GetAllocatedFriendRequest(string friendRequestId, out FriendRequest result)
+        public bool TryGetAllocatedFriendRequest(string friendRequestId, out FriendRequest result)
         {
             if (!useSocialApiBridge) { return friendRequests.TryGetValue(friendRequestId, out result); }
 

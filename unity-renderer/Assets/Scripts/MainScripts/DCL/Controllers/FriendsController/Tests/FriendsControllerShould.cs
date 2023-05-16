@@ -308,7 +308,7 @@ namespace DCL.Social.Friends
                 friendRequestId = "fr1",
             });
 
-            bool wasFound = controller.GetAllocatedFriendRequest("fr1", out FriendRequest request);
+            bool wasFound = controller.TryGetAllocatedFriendRequest("fr1", out FriendRequest request);
             Assert.True(wasFound);
             Assert.AreEqual("fr1", request.FriendRequestId);
             Assert.AreEqual("senderId", request.From);
@@ -422,7 +422,7 @@ namespace DCL.Social.Friends
                 FriendRequest request = await controller.CancelRequestAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
-                bool wasFound = controller.GetAllocatedFriendRequest("fr", out request);
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr", out request);
                 Assert.IsNull(request);
                 Assert.False(wasFound);
 
@@ -462,7 +462,7 @@ namespace DCL.Social.Friends
 
                 VerifyRequest(request);
 
-                bool wasFound = controller.GetAllocatedFriendRequest("fr", out request);
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr", out request);
                 Assert.IsNotNull(request);
                 Assert.True(wasFound);
                 VerifyRequest(request);
@@ -500,7 +500,7 @@ namespace DCL.Social.Friends
                 FriendRequest request = await controller.AcceptFriendshipAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
-                bool wasFound = controller.GetAllocatedFriendRequest("fr", out request);
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr", out request);
                 Assert.IsNull(request);
                 Assert.False(wasFound);
 
@@ -537,7 +537,7 @@ namespace DCL.Social.Friends
                 FriendRequest request = await controller.RejectFriendshipAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
-                bool wasFound = controller.GetAllocatedFriendRequest("fr", out request);
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr", out request);
                 Assert.IsNull(request);
                 Assert.False(wasFound);
 
@@ -615,16 +615,16 @@ namespace DCL.Social.Friends
                 Verify(requests[2], requestedTo[0]);
                 Verify(requests[3], requestedTo[1]);
 
-                bool wasFound = controller.GetAllocatedFriendRequest("fr1", out FriendRequest request);
+                bool wasFound = controller.TryGetAllocatedFriendRequest("fr1", out FriendRequest request);
                 Assert.IsNotNull(request);
                 Assert.True(wasFound);
-                wasFound = controller.GetAllocatedFriendRequest("fr2", out request);
+                wasFound = controller.TryGetAllocatedFriendRequest("fr2", out request);
                 Assert.IsNotNull(request);
                 Assert.True(wasFound);
-                wasFound = controller.GetAllocatedFriendRequest("fr3", out request);
+                wasFound = controller.TryGetAllocatedFriendRequest("fr3", out request);
                 Assert.IsNotNull(request);
                 Assert.True(wasFound);
-                wasFound = controller.GetAllocatedFriendRequest("fr4", out request);
+                wasFound = controller.TryGetAllocatedFriendRequest("fr4", out request);
                 Assert.IsNotNull(request);
                 Assert.True(wasFound);
                 request = controller.GetAllocatedFriendRequestByUser("usr1");

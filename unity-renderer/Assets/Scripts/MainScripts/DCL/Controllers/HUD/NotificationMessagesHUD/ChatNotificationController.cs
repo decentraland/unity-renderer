@@ -326,7 +326,7 @@ namespace DCL.Chat.Notifications
         {
             if (string.IsNullOrEmpty(friendRequestId)) return;
 
-            bool wasFound = friendsController.GetAllocatedFriendRequest(friendRequestId, out FriendRequest _);
+            bool wasFound = friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest _);
 
             bool isFriend = friendsController.IsFriend(userId);
 

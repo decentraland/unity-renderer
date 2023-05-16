@@ -30,7 +30,7 @@ namespace DCL.Social.Friends
             view = Substitute.For<IReceivedFriendRequestHUDView>();
             friendsController = Substitute.For<IFriendsController>();
 
-            friendsController.GetAllocatedFriendRequest(FRIEND_REQUEST_ID, out Arg.Any<FriendRequest>())
+            friendsController.TryGetAllocatedFriendRequest(FRIEND_REQUEST_ID, out Arg.Any<FriendRequest>())
                              .Returns(
                                   (args) =>
                                   {

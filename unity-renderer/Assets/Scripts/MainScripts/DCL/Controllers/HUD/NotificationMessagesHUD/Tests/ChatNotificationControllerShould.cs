@@ -454,7 +454,7 @@ namespace DCL.Chat.Notifications
         [Test]
         public void OpenChatWhenClickOnAnApprovedFriendRequest()
         {
-            friendsController.GetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
+            friendsController.TryGetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
                              .Returns((args) =>
                               {
                                   args[1] = new FriendRequest("fr", 100, "sender", "receiver", "");
@@ -470,7 +470,7 @@ namespace DCL.Chat.Notifications
         [Test]
         public void OpenFriendRequestWhenClickOnAnPendingFriendRequest()
         {
-            friendsController.GetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
+            friendsController.TryGetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
                              .Returns((args) =>
                               {
                                   args[1] = new FriendRequest("fr", 100, "sender", "receiver", "");

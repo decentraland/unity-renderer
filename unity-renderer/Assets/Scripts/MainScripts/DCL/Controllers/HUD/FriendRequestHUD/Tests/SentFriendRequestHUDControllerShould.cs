@@ -31,7 +31,7 @@ namespace DCL.Social.Friends
 
             friendsController = Substitute.For<IFriendsController>();
 
-            friendsController.GetAllocatedFriendRequest(FRIEND_REQ_ID, out Arg.Any<FriendRequest>())
+            friendsController.TryGetAllocatedFriendRequest(FRIEND_REQ_ID, out Arg.Any<FriendRequest>())
                              .Returns((args) =>
                               {
                                   args[1] = new FriendRequest(FRIEND_REQ_ID, 100, OWN_ID, RECIPIENT_ID, "hey");

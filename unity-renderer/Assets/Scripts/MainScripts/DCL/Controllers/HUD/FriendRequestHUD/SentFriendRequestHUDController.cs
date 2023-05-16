@@ -64,7 +64,7 @@ namespace DCL.Social.Friends
         private void Show(string friendRequestId)
         {
             this.friendRequestId = friendRequestId;
-            bool wasFound = friendsController.GetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest);
+            bool wasFound = friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest);
 
             if (!wasFound)
             {
@@ -128,7 +128,7 @@ namespace DCL.Social.Friends
 
         private void OpenProfile()
         {
-            bool wasFound = friendsController.GetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest);
+            bool wasFound = friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest friendRequest);
 
             if (!wasFound)
             {

@@ -72,7 +72,7 @@ namespace DCL.Social.Friends
 
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
 
-        public bool GetAllocatedFriendRequest(string friendRequestId, out FriendRequest result);
+        public bool TryGetAllocatedFriendRequest(string friendRequestId, out FriendRequest result);
 
         SocialFriendRequest GetAllocatedFriendRequestByUser(string userId);
 

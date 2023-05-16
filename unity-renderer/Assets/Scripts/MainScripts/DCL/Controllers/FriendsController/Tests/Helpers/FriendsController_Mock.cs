@@ -78,7 +78,7 @@ public class FriendsController_Mock : IFriendsController
 
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit) { }
 
-    public bool GetAllocatedFriendRequest(string friendRequestId, out FriendRequest request)
+    public bool TryGetAllocatedFriendRequest(string friendRequestId, out FriendRequest request)
     {
         request = null;
         return false;

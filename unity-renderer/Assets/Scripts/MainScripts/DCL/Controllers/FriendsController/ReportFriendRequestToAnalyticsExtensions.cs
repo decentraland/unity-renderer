@@ -10,13 +10,13 @@ namespace DCL.Social.Friends
             string source,
             IFriendsController friendsController, ISocialAnalytics socialAnalytics)
         {
-            bool wasFound = friendsController.GetAllocatedFriendRequest(friendRequestId, out FriendRequest request);
+
 
             var description = e is FriendshipException fe
                 ? fe.ErrorCode.ToString()
                 : FriendRequestErrorCodes.Unknown.ToString();
 
-            if (!wasFound)
+            if (!friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest request))
             {
                 Debug.LogError($"Cannot display friend request {friendRequestId}, is not allocated");
 
