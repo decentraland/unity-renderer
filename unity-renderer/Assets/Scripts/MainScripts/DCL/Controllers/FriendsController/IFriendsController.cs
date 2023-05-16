@@ -49,7 +49,7 @@ namespace DCL.Social.Friends
         UniTask<IReadOnlyList<string>> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default);
         [Obsolete("Old API. Use GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) instead")]
         void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-        UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken = default);
+        UniTask<IReadOnlyList<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken = default);
         void GetFriendsWithDirectMessages(int limit, int skip);
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
         SocialFriendRequest GetAllocatedFriendRequest(string friendRequestId);
