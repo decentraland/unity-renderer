@@ -7,6 +7,7 @@ using NSubstitute;
 using NUnit.Framework;
 using rpc_csharp.transport;
 using System.Collections;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -16,7 +17,7 @@ namespace DCL.Social.Friends
     public class FriendsControllerShould
     {
         private IFriendsApiBridge apiBridge;
-        private RPCSocialApiBridge rpcSocialApiBridge;
+        private ISocialApiBridge rpcSocialApiBridge;
         private FriendsController controller;
 
         [SetUp]
@@ -28,12 +29,12 @@ namespace DCL.Social.Friends
             var dataStore = new DataStore();
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
 
-            controller = new FriendsController(apiBridge, new RPCSocialApiBridge(component, new UserProfileWebInterfaceBridge(),
-                () => Substitute.For<ITransport>()), dataStore);
+            rpcSocialApiBridge = Substitute.For<ISocialApiBridge>();
+
+            controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
 
             dataStore.featureFlags.flags.Get().SetAsInitialized();
             controller.Initialize();
-
         }
 
         [Test]
@@ -570,6 +571,94 @@ namespace DCL.Social.Friends
                 Assert.IsNotNull(request);
                 request = controller.GetAllocatedFriendRequestByUser("usr4");
                 Assert.IsNotNull(request);
+            });
+
+        [UnityTest]
+        public IEnumerator GetFriendsAsyncWithSocialService() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                GameObject go = new GameObject();
+                var component = go.AddComponent<MatrixInitializationBridge>();
+                var dataStore = new DataStore();
+
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+
+                var cancellationToken = default(CancellationToken);
+
+                var initializationResponse = UniTask.FromResult(new FriendshipInitializationMessage()
+                {
+                    totalReceivedRequests = 0,
+                });
+
+                rpcSocialApiBridge.GetInitializationInformationAsync(cancellationToken)
+                                  .Returns(initializationResponse);
+
+                controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
+
+                dataStore.featureFlags.flags.Get().SetAsInitialized();
+                controller.Initialize();
+
+                await controller.InitializeAsync(cancellationToken);
+
+                var firstUserId = "userId";
+                var secondUserId = "userId2";
+                var thirdUserId = "userId3";
+                var fourthdUserId = "userId4";
+
+                var firstUser = new UserStatus()
+                {
+                    userId = firstUserId,
+                    userName = "aUserName1",
+                };
+
+                var secondUser = new UserStatus()
+                {
+                    userId = secondUserId,
+                    userName = "aUserName2",
+                };
+
+                var thirdUser = new UserStatus()
+                {
+                    userId = thirdUserId,
+                    userName = "searchText",
+                };
+
+                var fourthUser = new UserStatus()
+                {
+                    userId = fourthdUserId,
+                    userName = "searchText2",
+                };
+
+                // insert unsorted
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(fourthUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(thirdUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(secondUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(firstUser);
+
+                IReadOnlyList<string> response = await controller.GetFriendsAsync(100, 0, cancellationToken);
+                string[] expected = { firstUserId, secondUserId, thirdUserId, fourthdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync(1, 0, cancellationToken);
+                expected = new[] { firstUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync(2, 1, cancellationToken);
+                expected = new[] { secondUserId, thirdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync("search", 10, cancellationToken);
+                expected = new[] { thirdUserId, fourthdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
+
+                response = await controller.GetFriendsAsync("search", 1, cancellationToken);
+                expected = new[] { thirdUserId };
+
+                CollectionAssert.AreEqual(response, expected);
             });
     }
 }

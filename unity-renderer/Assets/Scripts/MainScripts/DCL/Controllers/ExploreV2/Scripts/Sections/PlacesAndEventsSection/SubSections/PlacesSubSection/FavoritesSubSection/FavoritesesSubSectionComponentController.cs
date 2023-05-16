@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
@@ -7,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComponentController, IPlacesAndEventsAPIRequester
@@ -27,7 +29,14 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
     internal List<PlaceInfo> favoritesFromAPI = new ();
     internal int availableUISlots;
 
-    public FavoritesesSubSectionComponentController(IFavoritesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
+    private CancellationTokenSource cts = new ();
+
+    public FavoritesesSubSectionComponentController(
+        IFavoritesSubSectionComponentView view,
+        IPlacesAPIController placesAPI,
+        IFriendsController friendsController,
+        IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore)
     {
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
@@ -40,10 +49,28 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         this.view.OnJumpInClicked += OnJumpInToPlace;
         this.view.OnShowMoreFavoritesClicked += ShowMoreFavorites;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
+        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         view.ConfigurePools();
+    }
+
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    {
+        if (isFavorite)
+        {
+            exploreV2Analytics.AddFavorite(placeUUID);
+        }
+        else
+        {
+            exploreV2Analytics.RemoveFavorite(placeUUID);
+        }
+
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
     }
 
     public void Dispose()
@@ -58,6 +85,9 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
         cardsReloader.Dispose();
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
     }
 
     private void FirstLoading()
@@ -79,8 +109,10 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllFavorites(
-            OnCompleted: OnRequestedEventsUpdated);
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.GetAllFavorites(OnCompleted: OnRequestedEventsUpdated, cts.Token);
     }
 
     private void OnRequestedEventsUpdated(List<PlaceInfo> placeList)
@@ -89,43 +121,12 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
         favoritesFromAPI = placeList;
 
-        view.SetFavorites(ConvertPlacesToModels(TakeAllForAvailableSlots(placeList)));
+        view.SetFavorites(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(TakeAllForAvailableSlots(placeList)));
         view.SetShowMoreFavoritesButtonActive(availableUISlots < favoritesFromAPI.Count);
     }
 
-    private List<PlaceCardComponentModel> ConvertPlacesToModels(List<PlaceInfo> placeInfo)
-    {
-        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
-
-        foreach (var place in placeInfo)
-        {
-            modelsList.Add(
-                new PlaceCardComponentModel()
-                {
-                    placePictureUri = place.image,
-                    placeName = place.title,
-                    placeDescription = place.description,
-                    placeAuthor = place.contact_name,
-                    numberOfUsers = place.user_count,
-                    coords = new Vector2Int(),
-                    parcels = new Vector2Int[1]
-                });
-        }
-
-        return modelsList;
-    }
-
     internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI)
-    {
-        List<PlaceInfo> placeInfos = new List<PlaceInfo>();
-        for (int i = 0; i < availableUISlots; i++)
-        {
-            placeInfos.Add(modelsFromAPI[i]);
-        }
-
-        return placeInfos;
-    }
-
+        => modelsFromAPI.Take(availableUISlots).ToList();
 
     internal void ShowMoreFavorites()
     {
@@ -136,7 +137,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
             ? favoritesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : favoritesFromAPI.GetRange(availableUISlots, favoritesFromAPI.Count - availableUISlots);
 
-        view.AddFavorites(ConvertPlacesToModels(placesFiltered));
+        view.AddFavorites(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFiltered));
 
         availableUISlots += numberOfItemsToAdd;
 
@@ -149,18 +150,44 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName);
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void OnJumpInToPlace(PlaceInfo placeFromAPI)
     {
+        JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        //TODO define if this will be integrated and how
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, Utils.ConvertStringToVector(placeFromAPI.base_position));
+        exploreV2Analytics.TeleportToPlaceFromFavorite(placeFromAPI.id, placeFromAPI.title);
+    }
+
+    public static void JumpInToPlace(PlaceInfo placeFromAPI)
+    {
+        PlaceInfo.Realm realm = new PlaceInfo.Realm() { layer = null, serverName = null };
+        placeFromAPI.realms_detail = placeFromAPI.realms_detail.OrderByDescending(x => x.usersCount).ToArray();
+
+        for (int i = 0; i < placeFromAPI.realms_detail.Length; i++)
+        {
+            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms_detail[i].layer);
+
+            if (isArchipelagoRealm || placeFromAPI.realms_detail[i].usersCount < placeFromAPI.realms_detail[i].maxUsers)
+            {
+                realm = placeFromAPI.realms_detail[i];
+                break;
+            }
+        }
+
+        Vector2Int position = Utils.ConvertStringToVector(placeFromAPI.base_position);
+
+        if (string.IsNullOrEmpty(realm.serverName))
+            Environment.i.world.teleportController.Teleport(position.x, position.y);
+        else
+            Environment.i.world.teleportController.JumpIn(position.x, position.y, realm.serverName, realm.layer);
     }
 
     private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>

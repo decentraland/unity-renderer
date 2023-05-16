@@ -39,7 +39,8 @@ namespace DCL.Backpack
         public event Action<string, bool> OnHideUnhidePressed;
 
         private bool isSelected = false;
-        private HashSet<string> hiddenByList = new HashSet<string>();
+
+        private readonly HashSet<string> hiddenByList = new HashSet<string>();
         private Vector2 tooltipDefaultPosition;
         private Vector2 tooltipFullPosition;
         private Vector2 nftContainerDefaultPosition;
@@ -75,9 +76,6 @@ namespace DCL.Backpack
         private void InitializeTooltipPositions()
         {
             tooltipContainer.gameObject.SetActive(true);
-            tooltipDefaultPosition = new Vector2(30, 120);
-            tooltipFullPosition = new Vector2(30, 150);
-            tooltipContainer.anchoredPosition = tooltipDefaultPosition;
             tooltipContainer.gameObject.SetActive(false);
             nftContainerDefaultPosition = nftContainer.anchoredPosition;
         }

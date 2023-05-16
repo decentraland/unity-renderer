@@ -128,7 +128,8 @@ namespace DCL.Backpack
             if (!currentWearables.TryGetValue(wearableId, out WearableGridItemModel wearableGridModel))
                 return;
 
-            view.SetWearable(wearableGridModel with { IsEquipped = true });
+            wearableGridModel.IsEquipped = true;
+            view.SetWearable(wearableGridModel);
         }
 
         public void UnEquip(string wearableId)
@@ -136,7 +137,8 @@ namespace DCL.Backpack
             if (!currentWearables.TryGetValue(wearableId, out WearableGridItemModel wearableGridModel))
                 return;
 
-            view.SetWearable(wearableGridModel with { IsEquipped = false });
+            wearableGridModel.IsEquipped = false;
+            view.SetWearable(wearableGridModel);
         }
 
         public void UpdateBodyShapeCompatibility(string bodyShapeId)
@@ -145,7 +147,8 @@ namespace DCL.Backpack
             {
                 if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable)) continue;
                 bool isCompatibleWithBodyShape = IsCompatibleWithBodyShape(bodyShapeId, wearable);
-                view.SetWearable(model with { IsCompatibleWithBodyShape = isCompatibleWithBodyShape });
+                model.IsCompatibleWithBodyShape = isCompatibleWithBodyShape;
+                view.SetWearable(model);
             }
         }
 
@@ -176,7 +179,7 @@ namespace DCL.Backpack
             var wearableBreadcrumbModel = new NftBreadcrumbModel
             {
                 Path = path.ToArray(),
-                Current = 0,
+                Current = path.Count - 1,
                 ResultCount = 0,
             };
 

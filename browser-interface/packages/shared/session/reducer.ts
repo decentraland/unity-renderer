@@ -10,7 +10,7 @@ import {
   AuthenticateAction,
   ChangeLoginStateAction
 } from './actions'
-import { LoginState } from 'kernel-web-interface'
+import { LoginState } from '@dcl/kernel-interface'
 
 const INITIAL_STATE: SessionState = {
   identity: undefined,

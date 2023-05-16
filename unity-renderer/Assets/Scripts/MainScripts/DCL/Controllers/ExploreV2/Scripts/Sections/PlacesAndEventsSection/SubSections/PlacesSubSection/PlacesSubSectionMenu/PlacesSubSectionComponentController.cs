@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 using Environment = DCL.Environment;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
@@ -24,8 +26,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<HotSceneInfo> placesFromAPI = new ();
+    internal List<PlaceInfo> placesFromAPI = new ();
     internal int availableUISlots;
+    private CancellationTokenSource cts;
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
@@ -37,6 +40,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += OnJumpInToPlace;
+        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
 
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
 
@@ -59,6 +63,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowPlaceDetailedInfo;
         view.OnJumpInClicked -= OnJumpInToPlace;
+        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
@@ -66,6 +71,23 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
         cardsReloader.Dispose();
+    }
+
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    {
+        if (isFavorite)
+        {
+            exploreV2Analytics.AddFavorite(placeUUID);
+        }
+        else
+        {
+            exploreV2Analytics.RemoveFavorite(placeUUID);
+        }
+
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
     }
 
     private void FirstLoading()
@@ -87,59 +109,57 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllPlaces(
-            OnCompleted: OnRequestedEventsUpdated);
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnRequestedEventsUpdated, 0, 20, cts.Token);
     }
 
-    private void OnRequestedEventsUpdated(List<HotSceneInfo> placeList)
+    private void OnRequestedEventsUpdated(List<PlaceInfo> placeList, int total)
     {
         friendsTrackerController.RemoveAllHandlers();
 
         placesFromAPI = placeList;
 
-        view.SetPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards((TakeAllForAvailableSlots(placeList))));
+        view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(TakeAllForAvailableSlots(placeList)));
 
-        view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
+        view.SetShowMorePlacesButtonActive(placesFromAPI.Count < total);
     }
 
-    internal List<HotSceneInfo> TakeAllForAvailableSlots(List<HotSceneInfo> modelsFromAPI) =>
+    internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI) =>
         modelsFromAPI.Take(availableUISlots).ToList();
 
     internal void ShowMorePlaces()
     {
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentPlacesPerRow) * view.currentPlacesPerRow) - availableUISlots;
-        int numberOfItemsToAdd = (view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnadditionalPageUpdated, placesFromAPI.Count, 8, cts.Token);
+    }
 
-        List<HotSceneInfo> placesFiltered = availableUISlots + numberOfItemsToAdd <= placesFromAPI.Count
-            ? placesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
-            : placesFromAPI.GetRange(availableUISlots, placesFromAPI.Count - availableUISlots);
-
-        view.AddPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(placesFiltered));
-
-        availableUISlots += numberOfItemsToAdd;
-
-        if (availableUISlots > placesFromAPI.Count)
-            availableUISlots = placesFromAPI.Count;
-
-        view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
+    private void OnadditionalPageUpdated(List<PlaceInfo> places, int total)
+    {
+        placesFromAPI.AddRange(places);
+        view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(places));
+        view.SetShowMorePlacesButtonActive(placesFromAPI.Count < total);
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName);
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void OnJumpInToPlace(PlaceInfo placeFromAPI)
     {
         JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, Utils.ConvertStringToVector(placeFromAPI.base_position));
     }
 
     private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
@@ -159,25 +179,27 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     /// Makes a jump in to the place defined by the given place data from API.
     /// </summary>
     /// <param name="placeFromAPI">Place data from API.</param>
-    public static void JumpInToPlace(HotSceneInfo placeFromAPI)
+    public static void JumpInToPlace(PlaceInfo placeFromAPI)
     {
-        HotSceneInfo.Realm realm = new HotSceneInfo.Realm() { layer = null, serverName = null };
-        placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
+        PlaceInfo.Realm realm = new PlaceInfo.Realm() { layer = null, serverName = null };
+        placeFromAPI.realms_detail = placeFromAPI.realms_detail.OrderByDescending(x => x.usersCount).ToArray();
 
-        for (int i = 0; i < placeFromAPI.realms.Length; i++)
+        for (int i = 0; i < placeFromAPI.realms_detail.Length; i++)
         {
-            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms[i].layer);
+            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms_detail[i].layer);
 
-            if (isArchipelagoRealm || placeFromAPI.realms[i].usersCount < placeFromAPI.realms[i].maxUsers)
+            if (isArchipelagoRealm || placeFromAPI.realms_detail[i].usersCount < placeFromAPI.realms_detail[i].maxUsers)
             {
-                realm = placeFromAPI.realms[i];
+                realm = placeFromAPI.realms_detail[i];
                 break;
             }
         }
 
+        Vector2Int position = Utils.ConvertStringToVector(placeFromAPI.base_position);
+
         if (string.IsNullOrEmpty(realm.serverName))
-            Environment.i.world.teleportController.Teleport(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
+            Environment.i.world.teleportController.Teleport(position.x, position.y);
         else
-            Environment.i.world.teleportController.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
+            Environment.i.world.teleportController.JumpIn(position.x, position.y, realm.serverName, realm.layer);
     }
 }

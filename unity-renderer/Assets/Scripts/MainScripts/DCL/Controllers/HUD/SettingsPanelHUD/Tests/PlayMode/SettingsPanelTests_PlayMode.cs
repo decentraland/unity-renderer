@@ -1,7 +1,9 @@
 using DCL.SettingsPanelHUD;
 using DCL.SettingsPanelHUD.Sections;
 using NSubstitute;
+using SettingsSectionTests;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -9,8 +11,8 @@ namespace SettingsPanelTests
 {
     public class SettingsPanelShould_PlayMode
     {
-        private const string SECTION_VIEW_PREFAB_PATH = "Sections/DefaultSettingsSectionTemplate";
-        private const string MENU_BUTTON_PREFAB_PATH = "Sections/DefaultSettingsMenuButtonTemplate";
+        private const string SECTION_VIEW_PREFAB_PATH = SettingsSectionShould_PlayMode.SECTION_VIEW_PREFAB_PATH;
+        private const string MENU_BUTTON_PREFAB_PATH = "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SettingsPanelHUD/Sections/DefaultSettingsMenuButtonTemplate.prefab";
 
         private SettingsPanelHUDView panelView;
         private IHUD hudController;
@@ -45,8 +47,8 @@ namespace SettingsPanelTests
         public IEnumerator GenerateSectionsIntoThePanelViewCorrectly()
         {
             // Arrange
-            SettingsSectionView sectionViewPrefab = ((GameObject)Resources.Load(SECTION_VIEW_PREFAB_PATH)).GetComponent<SettingsSectionView>();
-            SettingsButtonEntry menuButtonPrefab = ((GameObject)Resources.Load(MENU_BUTTON_PREFAB_PATH)).GetComponent<SettingsButtonEntry>();
+            SettingsSectionView sectionViewPrefab = AssetDatabase.LoadAssetAtPath<SettingsSectionView>(SECTION_VIEW_PREFAB_PATH);
+            SettingsButtonEntry menuButtonPrefab = AssetDatabase.LoadAssetAtPath<SettingsButtonEntry>(MENU_BUTTON_PREFAB_PATH);
 
             SettingsSectionModel newSectionConfig = ScriptableObject.CreateInstance<SettingsSectionModel>();
             newSectionConfig.icon = Sprite.Create(new Texture2D(10, 10), new Rect(), new Vector2());
