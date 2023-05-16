@@ -677,7 +677,7 @@ namespace DCL.Social.Friends
             ShowOrHideMoreFriendRequestsToLoadHint();
         }
 
-        private void AddFriendRequests(List<FriendRequest> friendRequests)
+        private void AddFriendRequests(IEnumerable<FriendRequest> friendRequests)
         {
             if (friendRequests == null)
                 return;
