@@ -3,7 +3,6 @@ import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
-import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import { browserInterface } from 'unity-interface/BrowserInterface'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -13,8 +12,6 @@ import { PermissionItem } from 'shared/protocol/decentraland/kernel/apis/permiss
 import type {
   ChangeRealmRequest,
   CommsAdapterRequest,
-  MovePlayerToRequest,
-  MovePlayerToResponse,
   OpenExternalUrlRequest,
   OpenNftDialogRequest,
   TeleportToRequest,
@@ -27,48 +24,6 @@ import defaultLogger from 'lib/logger'
 import { getRendererModules } from 'shared/renderer/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { assertHasPermission } from './Permissions'
-
-export function movePlayerTo(req: MovePlayerToRequest, ctx: PortContext): MovePlayerToResponse {
-  //   checks permissions
-  assertHasPermission(PermissionItem.PI_ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE, ctx)
-
-  if (!ctx.sceneData) return {}
-
-  const base = parseParcelPosition(ctx.sceneData.entity.metadata.scene?.base || '0,0')
-  const basePosition = new Vector3()
-  gridToWorld(base.x, base.y, basePosition)
-
-  // newRelativePosition is the position relative to the scene in meters
-  // newAbsolutePosition is the absolute position in the world in meters
-  const newAbsolutePosition = basePosition.add(req.newRelativePosition!)
-
-  // validate new position is inside one of the scene's parcels
-  if (!isPositionValid(newAbsolutePosition, ctx)) {
-    ctx.logger.error('Error: Position is out of scene', newAbsolutePosition)
-    return {}
-  }
-  if (!isPositionValid(lastPlayerPosition, ctx)) {
-    ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
-    return {}
-  }
-
-  getUnityInstance().Teleport(
-    {
-      position: newAbsolutePosition,
-      cameraTarget: req.cameraTarget ? basePosition.add(req.cameraTarget) : undefined
-    },
-    false
-  )
-
-  // Get ahead of the position report that will be done automatically later and report
-  // position right now, also marked as an immediate update (last bool in Position structure)
-  browserInterface.ReportPosition({
-    position: newAbsolutePosition,
-    rotation: Quaternion.Identity,
-    immediate: true
-  })
-  return {}
-}
 
 export function triggerEmote(req: TriggerEmoteRequest, ctx: PortContext): TriggerEmoteResponse {
   // checks permissions
@@ -98,9 +53,6 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
   codegen.registerService(port, RestrictedActionsServiceDefinition, async () => ({
     async triggerEmote(req: TriggerEmoteRequest, ctx: PortContext) {
       return triggerEmote(req, ctx)
-    },
-    async movePlayerTo(req: MovePlayerToRequest, ctx: PortContext) {
-      return movePlayerTo(req, ctx)
     },
     async changeRealm(req: ChangeRealmRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')
@@ -165,15 +117,15 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
     },
     async teleportTo(req: TeleportToRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')
-      if (!isPositionValid(lastPlayerPosition, ctx) || !req.worldPosition) {
+      if (!isPositionValid(lastPlayerPosition, ctx) || !req.worldCoordinates) {
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
         return { success: false }
       }
 
+      const absoluteWorldPosition = gridToWorld(req.worldCoordinates.x, req.worldCoordinates.y)
       getUnityInstance().Teleport(
         {
-          position: req.worldPosition,
-          cameraTarget: req.cameraTarget
+          position: absoluteWorldPosition
         },
         false
       )
@@ -181,7 +133,7 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
       // Get ahead of the position report that will be done automatically later and report
       // position right now, also marked as an immediate update (last bool in Position structure)
       browserInterface.ReportPosition({
-        position: req.worldPosition,
+        position: absoluteWorldPosition,
         rotation: Quaternion.Identity,
         immediate: true
       })

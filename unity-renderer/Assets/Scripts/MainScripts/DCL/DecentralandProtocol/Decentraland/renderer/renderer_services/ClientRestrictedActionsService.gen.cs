@@ -9,7 +9,7 @@ using rpc_csharp;
 namespace Decentraland.Renderer.RendererServices {
 public interface IClientRestrictedActionsService
 {
-  UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request);
+  UniTask<OpenModalResponse> TeleportTo(TeleportToRequest request);
 
   UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request);
 
@@ -26,9 +26,9 @@ public class ClientRestrictedActionsService : IClientRestrictedActionsService
   }
 
   
-  public UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request)
+  public UniTask<OpenModalResponse> TeleportTo(TeleportToRequest request)
   {
-      return module.CallUnaryProcedure<TeleportToResponse>("TeleportTo", request);
+      return module.CallUnaryProcedure<OpenModalResponse>("TeleportTo", request);
   }
 
   public UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request)

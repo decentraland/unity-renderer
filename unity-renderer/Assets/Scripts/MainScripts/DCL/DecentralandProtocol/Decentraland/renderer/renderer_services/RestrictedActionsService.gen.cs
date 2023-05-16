@@ -12,7 +12,7 @@ namespace Decentraland.Renderer.RendererServices {
 public interface IRestrictedActionsService<Context>
 {
 
-  UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request, Context context, CancellationToken ct);
+  UniTask<OpenModalResponse> TeleportTo(TeleportToRequest request, Context context, CancellationToken ct);
 
   UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request, Context context, CancellationToken ct);
 

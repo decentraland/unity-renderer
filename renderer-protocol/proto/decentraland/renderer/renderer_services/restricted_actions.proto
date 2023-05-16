@@ -5,7 +5,6 @@ import "decentraland/common/vectors.proto";
 
 message TeleportToRequest {
   decentraland.common.Vector2 world_coordinates = 1;
-  optional decentraland.common.Vector3 camera_target = 2;
 }
 
 message OpenExternalUrlRequest {
@@ -17,15 +16,13 @@ message OpenNftDialogRequest {
   string urn = 1;
 }
 
-message TeleportToResponse { }
-
 message OpenModalResponse {
   bool success = 1;
 }
 
 service RestrictedActionsService {
   // TeleportTo will move the user to the specified world LAND parcel coordinates
-  rpc TeleportTo(TeleportToRequest) returns (TeleportToResponse) {}
+  rpc TeleportTo(TeleportToRequest) returns (OpenModalResponse) {}
 
   // OpenExternalUrl prompts the user to open an external link
   rpc OpenExternalUrl(OpenExternalUrlRequest) returns (OpenModalResponse) {}
