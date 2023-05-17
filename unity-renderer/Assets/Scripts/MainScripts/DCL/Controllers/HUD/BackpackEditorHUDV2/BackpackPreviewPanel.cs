@@ -36,7 +36,8 @@ namespace DCL.Backpack
                 renderTexture: (RenderTexture) avatarPreviewImage.texture,
                 isVisible: false,
                 cameraFocus: CharacterPreviewController.CameraFocus.DefaultEditing,
-                isOrthographic: true);
+                isOrthographic: true,
+                isAvatarShadowActive: true);
             characterPreviewController.SetOrthographicLimits(CAMERA_MIN_Y_LIMIT, CAMERA_MAX_Y_LIMIT);
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
             avatarPreviewRotation.OnHorizontalRotation += OnPreviewRotation;

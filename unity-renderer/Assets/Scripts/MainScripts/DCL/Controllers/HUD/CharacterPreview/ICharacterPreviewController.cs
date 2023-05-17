@@ -18,5 +18,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void SetCameraProjection(bool isOrthographic);
         void SetOrthographicLimits(float minY, float maxY);
         void SetCameraOrthographicSize(float size, float minOrthographicSize, float maxOrthographicSize);
+        void SetCharacterShadowActive(bool isActive);
     }
 }

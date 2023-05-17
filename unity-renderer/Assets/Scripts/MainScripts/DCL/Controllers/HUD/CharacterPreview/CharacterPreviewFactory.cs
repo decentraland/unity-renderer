@@ -14,8 +14,13 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private CharacterPreviewController prefab;
 
-        public ICharacterPreviewController Create(CharacterPreviewMode loadingMode, RenderTexture renderTexture, bool isVisible,
-            CharacterPreviewController.CameraFocus cameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing, bool isOrthographic = false)
+        public ICharacterPreviewController Create(
+            CharacterPreviewMode loadingMode,
+            RenderTexture renderTexture,
+            bool isVisible,
+            CharacterPreviewController.CameraFocus cameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing,
+            bool isOrthographic = false,
+            bool isAvatarShadowActive = false)
         {
             var instance = Object.Instantiate(prefab);
             instance.transform.position = COORDS_TO_START + (VECTOR_BETWEEN_INSTANCES * controllersCount);
@@ -24,6 +29,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
             characterPreviewController.Initialize(loadingMode, renderTexture);
             characterPreviewController.SetEnabled(isVisible);
+            characterPreviewController.SetCharacterShadowActive(isAvatarShadowActive);
             characterPreviewController.SetCameraProjection(isOrthographic);
             characterPreviewController.SetFocus(cameraFocus, null, false);
 

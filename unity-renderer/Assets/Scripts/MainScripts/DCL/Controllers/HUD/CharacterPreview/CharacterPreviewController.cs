@@ -44,6 +44,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         [SerializeField] private Transform previewTemplate;
 
         [SerializeField] private GameObject avatarContainer;
+        [SerializeField] private GameObject avatarShadow;
         [SerializeField] private Transform baseAvatarContainer;
         [SerializeField] private BaseAvatarReferences baseAvatarReferencesPrefab;
 
@@ -274,6 +275,9 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             camera.orthographicSize = orthographicSize;
             LimitCameraPositionDependingOnOrthographicSize();
         }
+
+        public void SetCharacterShadowActive(bool isActive) =>
+            avatarShadow.SetActive(isActive);
 
         private void LimitCameraPositionDependingOnOrthographicSize()
         {
