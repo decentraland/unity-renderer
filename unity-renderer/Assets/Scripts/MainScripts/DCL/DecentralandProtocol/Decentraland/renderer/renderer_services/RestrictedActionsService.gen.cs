@@ -12,6 +12,8 @@ namespace Decentraland.Renderer.RendererServices {
 public interface IRestrictedActionsService<Context>
 {
 
+  UniTask<MovePlayerToResponse> MovePlayerTo(MovePlayerToRequest request, Context context, CancellationToken ct);
+
   UniTask<OpenModalResponse> TeleportTo(TeleportToRequest request, Context context, CancellationToken ct);
 
   UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request, Context context, CancellationToken ct);
@@ -28,6 +30,7 @@ public static class RestrictedActionsServiceCodeGen
   {
     var result = new ServerModuleDefinition<Context>();
       
+    result.definition.Add("MovePlayerTo", async (payload, context, ct) => { var res = await service.MovePlayerTo(MovePlayerToRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("TeleportTo", async (payload, context, ct) => { var res = await service.TeleportTo(TeleportToRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("OpenExternalUrl", async (payload, context, ct) => { var res = await service.OpenExternalUrl(OpenExternalUrlRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("OpenNftDialog", async (payload, context, ct) => { var res = await service.OpenNftDialog(OpenNftDialogRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });

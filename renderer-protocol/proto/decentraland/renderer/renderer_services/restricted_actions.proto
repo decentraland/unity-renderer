@@ -3,6 +3,11 @@ package decentraland.renderer.renderer_services;
 
 import "decentraland/common/vectors.proto";
 
+message MovePlayerToRequest {
+  decentraland.common.Vector3 new_relative_position = 1;
+  optional decentraland.common.Vector3 camera_target = 2;
+}
+
 message TeleportToRequest {
   decentraland.common.Vector2 world_coordinates = 1;
 }
@@ -20,7 +25,12 @@ message OpenModalResponse {
   bool success = 1;
 }
 
+message MovePlayerToResponse { }
+
 service RestrictedActionsService {
+  // MovePlayerTo will move the player in a position relative to the current scene
+  rpc MovePlayerTo(MovePlayerToRequest) returns (MovePlayerToResponse) {}
+
   // TeleportTo will move the user to the specified world LAND parcel coordinates
   rpc TeleportTo(TeleportToRequest) returns (OpenModalResponse) {}
 

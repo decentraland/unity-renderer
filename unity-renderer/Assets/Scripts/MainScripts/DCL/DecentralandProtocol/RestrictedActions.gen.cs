@@ -27,35 +27,288 @@ namespace Decentraland.Renderer.RendererServices {
             "CkBkZWNlbnRyYWxhbmQvcmVuZGVyZXIvcmVuZGVyZXJfc2VydmljZXMvcmVz",
             "dHJpY3RlZF9hY3Rpb25zLnByb3RvEidkZWNlbnRyYWxhbmQucmVuZGVyZXIu",
             "cmVuZGVyZXJfc2VydmljZXMaIWRlY2VudHJhbGFuZC9jb21tb24vdmVjdG9y",
-            "cy5wcm90byJMChFUZWxlcG9ydFRvUmVxdWVzdBI3ChF3b3JsZF9jb29yZGlu",
-            "YXRlcxgBIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMiI7ChZP",
-            "cGVuRXh0ZXJuYWxVcmxSZXF1ZXN0EgsKA3VybBgBIAEoCRIUCgxzY2VuZV9u",
-            "dW1iZXIYAiABKAUiIwoUT3Blbk5mdERpYWxvZ1JlcXVlc3QSCwoDdXJuGAEg",
-            "ASgJIiQKEU9wZW5Nb2RhbFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgyxQMK",
-            "GFJlc3RyaWN0ZWRBY3Rpb25zU2VydmljZRKGAQoKVGVsZXBvcnRUbxI6LmRl",
-            "Y2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5UZWxlcG9y",
-            "dFRvUmVxdWVzdBo6LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9z",
-            "ZXJ2aWNlcy5PcGVuTW9kYWxSZXNwb25zZSIAEpABCg9PcGVuRXh0ZXJuYWxV",
-            "cmwSPy5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMu",
-            "T3BlbkV4dGVybmFsVXJsUmVxdWVzdBo6LmRlY2VudHJhbGFuZC5yZW5kZXJl",
-            "ci5yZW5kZXJlcl9zZXJ2aWNlcy5PcGVuTW9kYWxSZXNwb25zZSIAEowBCg1P",
-            "cGVuTmZ0RGlhbG9nEj0uZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVy",
-            "X3NlcnZpY2VzLk9wZW5OZnREaWFsb2dSZXF1ZXN0GjouZGVjZW50cmFsYW5k",
-            "LnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2VzLk9wZW5Nb2RhbFJlc3BvbnNl",
-            "IgBiBnByb3RvMw=="));
+            "cy5wcm90byKeAQoTTW92ZVBsYXllclRvUmVxdWVzdBI7ChVuZXdfcmVsYXRp",
+            "dmVfcG9zaXRpb24YASABKAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlZlY3Rv",
+            "cjMSOAoNY2FtZXJhX3RhcmdldBgCIAEoCzIcLmRlY2VudHJhbGFuZC5jb21t",
+            "b24uVmVjdG9yM0gAiAEBQhAKDl9jYW1lcmFfdGFyZ2V0IkwKEVRlbGVwb3J0",
+            "VG9SZXF1ZXN0EjcKEXdvcmxkX2Nvb3JkaW5hdGVzGAEgASgLMhwuZGVjZW50",
+            "cmFsYW5kLmNvbW1vbi5WZWN0b3IyIjsKFk9wZW5FeHRlcm5hbFVybFJlcXVl",
+            "c3QSCwoDdXJsGAEgASgJEhQKDHNjZW5lX251bWJlchgCIAEoBSIjChRPcGVu",
+            "TmZ0RGlhbG9nUmVxdWVzdBILCgN1cm4YASABKAkiJAoRT3Blbk1vZGFsUmVz",
+            "cG9uc2USDwoHc3VjY2VzcxgBIAEoCCIWChRNb3ZlUGxheWVyVG9SZXNwb25z",
+            "ZTLVBAoYUmVzdHJpY3RlZEFjdGlvbnNTZXJ2aWNlEo0BCgxNb3ZlUGxheWVy",
+            "VG8SPC5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMu",
+            "TW92ZVBsYXllclRvUmVxdWVzdBo9LmRlY2VudHJhbGFuZC5yZW5kZXJlci5y",
+            "ZW5kZXJlcl9zZXJ2aWNlcy5Nb3ZlUGxheWVyVG9SZXNwb25zZSIAEoYBCgpU",
+            "ZWxlcG9ydFRvEjouZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3Nl",
+            "cnZpY2VzLlRlbGVwb3J0VG9SZXF1ZXN0GjouZGVjZW50cmFsYW5kLnJlbmRl",
+            "cmVyLnJlbmRlcmVyX3NlcnZpY2VzLk9wZW5Nb2RhbFJlc3BvbnNlIgASkAEK",
+            "D09wZW5FeHRlcm5hbFVybBI/LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5k",
+            "ZXJlcl9zZXJ2aWNlcy5PcGVuRXh0ZXJuYWxVcmxSZXF1ZXN0GjouZGVjZW50",
+            "cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2VzLk9wZW5Nb2RhbFJl",
+            "c3BvbnNlIgASjAEKDU9wZW5OZnREaWFsb2cSPS5kZWNlbnRyYWxhbmQucmVu",
+            "ZGVyZXIucmVuZGVyZXJfc2VydmljZXMuT3Blbk5mdERpYWxvZ1JlcXVlc3Qa",
+            "Oi5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMuT3Bl",
+            "bk1vZGFsUmVzcG9uc2UiAGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.MovePlayerToRequest), global::Decentraland.Renderer.RendererServices.MovePlayerToRequest.Parser, new[]{ "NewRelativePosition", "CameraTarget" }, new[]{ "CameraTarget" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.TeleportToRequest), global::Decentraland.Renderer.RendererServices.TeleportToRequest.Parser, new[]{ "WorldCoordinates" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenExternalUrlRequest), global::Decentraland.Renderer.RendererServices.OpenExternalUrlRequest.Parser, new[]{ "Url", "SceneNumber" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenNftDialogRequest), global::Decentraland.Renderer.RendererServices.OpenNftDialogRequest.Parser, new[]{ "Urn" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenModalResponse), global::Decentraland.Renderer.RendererServices.OpenModalResponse.Parser, new[]{ "Success" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenModalResponse), global::Decentraland.Renderer.RendererServices.OpenModalResponse.Parser, new[]{ "Success" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.MovePlayerToResponse), global::Decentraland.Renderer.RendererServices.MovePlayerToResponse.Parser, null, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
+  public sealed partial class MovePlayerToRequest : pb::IMessage<MovePlayerToRequest>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<MovePlayerToRequest> _parser = new pb::MessageParser<MovePlayerToRequest>(() => new MovePlayerToRequest());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<MovePlayerToRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[0]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MovePlayerToRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MovePlayerToRequest(MovePlayerToRequest other) : this() {
+      newRelativePosition_ = other.newRelativePosition_ != null ? other.newRelativePosition_.Clone() : null;
+      cameraTarget_ = other.cameraTarget_ != null ? other.cameraTarget_.Clone() : null;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MovePlayerToRequest Clone() {
+      return new MovePlayerToRequest(this);
+    }
+
+    /// <summary>Field number for the "new_relative_position" field.</summary>
+    public const int NewRelativePositionFieldNumber = 1;
+    private global::Decentraland.Common.Vector3 newRelativePosition_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Vector3 NewRelativePosition {
+      get { return newRelativePosition_; }
+      set {
+        newRelativePosition_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "camera_target" field.</summary>
+    public const int CameraTargetFieldNumber = 2;
+    private global::Decentraland.Common.Vector3 cameraTarget_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Vector3 CameraTarget {
+      get { return cameraTarget_; }
+      set {
+        cameraTarget_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as MovePlayerToRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(MovePlayerToRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(NewRelativePosition, other.NewRelativePosition)) return false;
+      if (!object.Equals(CameraTarget, other.CameraTarget)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (newRelativePosition_ != null) hash ^= NewRelativePosition.GetHashCode();
+      if (cameraTarget_ != null) hash ^= CameraTarget.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (newRelativePosition_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(NewRelativePosition);
+      }
+      if (cameraTarget_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(CameraTarget);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (newRelativePosition_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(NewRelativePosition);
+      }
+      if (cameraTarget_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(CameraTarget);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (newRelativePosition_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(NewRelativePosition);
+      }
+      if (cameraTarget_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CameraTarget);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(MovePlayerToRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.newRelativePosition_ != null) {
+        if (newRelativePosition_ == null) {
+          NewRelativePosition = new global::Decentraland.Common.Vector3();
+        }
+        NewRelativePosition.MergeFrom(other.NewRelativePosition);
+      }
+      if (other.cameraTarget_ != null) {
+        if (cameraTarget_ == null) {
+          CameraTarget = new global::Decentraland.Common.Vector3();
+        }
+        CameraTarget.MergeFrom(other.CameraTarget);
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            if (newRelativePosition_ == null) {
+              NewRelativePosition = new global::Decentraland.Common.Vector3();
+            }
+            input.ReadMessage(NewRelativePosition);
+            break;
+          }
+          case 18: {
+            if (cameraTarget_ == null) {
+              CameraTarget = new global::Decentraland.Common.Vector3();
+            }
+            input.ReadMessage(CameraTarget);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (newRelativePosition_ == null) {
+              NewRelativePosition = new global::Decentraland.Common.Vector3();
+            }
+            input.ReadMessage(NewRelativePosition);
+            break;
+          }
+          case 18: {
+            if (cameraTarget_ == null) {
+              CameraTarget = new global::Decentraland.Common.Vector3();
+            }
+            input.ReadMessage(CameraTarget);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
   public sealed partial class TeleportToRequest : pb::IMessage<TeleportToRequest>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -70,7 +323,7 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -268,7 +521,7 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -494,7 +747,7 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -683,7 +936,7 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -851,6 +1104,158 @@ namespace Decentraland.Renderer.RendererServices {
             Success = input.ReadBool();
             break;
           }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class MovePlayerToResponse : pb::IMessage<MovePlayerToResponse>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<MovePlayerToResponse> _parser = new pb::MessageParser<MovePlayerToResponse>(() => new MovePlayerToResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<MovePlayerToResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Renderer.RendererServices.RestrictedActionsReflection.Descriptor.MessageTypes[5]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MovePlayerToResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MovePlayerToResponse(MovePlayerToResponse other) : this() {
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MovePlayerToResponse Clone() {
+      return new MovePlayerToResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as MovePlayerToResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(MovePlayerToResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(MovePlayerToResponse other) {
+      if (other == null) {
+        return;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
         }
       }
     }
