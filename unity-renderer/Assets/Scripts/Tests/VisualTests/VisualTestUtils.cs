@@ -358,7 +358,7 @@ namespace DCL.Helpers
 
         public static void SetTestingRenderSettings()
         {
-            RenderSettings.customReflection = Resources.Load<Cubemap>("VisualTest Reflection");
+            RenderSettings.customReflection = AssetDatabase.LoadAssetAtPath<Cubemap>("Assets/Scripts/Tests/VisualTests/Textures/VisualTest Reflection.png");
             RenderSettings.ambientMode = AmbientMode.Trilight;
 
             RenderSettings.skybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/Scripts/Tests/VisualTests/VisualTest Skybox.mat");

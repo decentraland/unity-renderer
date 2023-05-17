@@ -26,7 +26,7 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CitkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbmZ0X3NoYXBlLnByb3Rv",
             "EhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMaIGRlY2VudHJhbGFuZC9j",
-            "b21tb24vY29sb3JzLnByb3RvIp0BCgpQQk5mdFNoYXBlEgsKA3NyYxgBIAEo",
+            "b21tb24vY29sb3JzLnByb3RvIp0BCgpQQk5mdFNoYXBlEgsKA3VybhgBIAEo",
             "CRI9CgVzdHlsZRgCIAEoDjIpLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50",
             "cy5OZnRGcmFtZVR5cGVIAIgBARIvCgVjb2xvchgDIAEoCzIbLmRlY2VudHJh",
             "bGFuZC5jb21tb24uQ29sb3IzSAGIAQFCCAoGX3N0eWxlQggKBl9jb2xvcirY",
@@ -45,7 +45,7 @@ namespace DCL.ECSComponents {
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.NftFrameType), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNftShape), global::DCL.ECSComponents.PBNftShape.Parser, new[]{ "Src", "Style", "Color" }, new[]{ "Style", "Color" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNftShape), global::DCL.ECSComponents.PBNftShape.Parser, new[]{ "Urn", "Style", "Color" }, new[]{ "Style", "Color" }, null, null, null)
           }));
     }
     #endregion
@@ -87,8 +87,8 @@ namespace DCL.ECSComponents {
   /// <summary>
   /// The NftShape component renders a framed picture from an NFT. It supports PNG, JPEG and GIF files.
   ///
-  /// The `src` field is the URI of the NFT, which includes its parent contract and index, using
-  /// the `https:` or `ethereum:` schemes.
+  /// The `urn` field is the URI of the NFT, and must follow the format 'urn:decentraland:&lt;CHAIN>:&lt;CONTRACT_STANDARD>:&lt;CONTRACT_ADDRESS>:&lt;TOKEN_ID>'
+  /// Example: 'urn:decentraland:ethereum:erc721:0x00000000:123'
   ///
   /// The picture frame can have several different styles, plus a background color for images that have
   /// transparent pixels.
@@ -129,7 +129,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBNftShape(PBNftShape other) : this() {
       _hasBits0 = other._hasBits0;
-      src_ = other.src_;
+      urn_ = other.urn_;
       style_ = other.style_;
       color_ = other.color_ != null ? other.color_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -141,18 +141,18 @@ namespace DCL.ECSComponents {
       return new PBNftShape(this);
     }
 
-    /// <summary>Field number for the "src" field.</summary>
-    public const int SrcFieldNumber = 1;
-    private string src_ = "";
+    /// <summary>Field number for the "urn" field.</summary>
+    public const int UrnFieldNumber = 1;
+    private string urn_ = "";
     /// <summary>
     /// the URI of the NFT
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Src {
-      get { return src_; }
+    public string Urn {
+      get { return urn_; }
       set {
-        src_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        urn_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -214,7 +214,7 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Src != other.Src) return false;
+      if (Urn != other.Urn) return false;
       if (Style != other.Style) return false;
       if (!object.Equals(Color, other.Color)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -224,7 +224,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Src.Length != 0) hash ^= Src.GetHashCode();
+      if (Urn.Length != 0) hash ^= Urn.GetHashCode();
       if (HasStyle) hash ^= Style.GetHashCode();
       if (color_ != null) hash ^= Color.GetHashCode();
       if (_unknownFields != null) {
@@ -245,9 +245,9 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Src.Length != 0) {
+      if (Urn.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(Src);
+        output.WriteString(Urn);
       }
       if (HasStyle) {
         output.WriteRawTag(16);
@@ -267,9 +267,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Src.Length != 0) {
+      if (Urn.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(Src);
+        output.WriteString(Urn);
       }
       if (HasStyle) {
         output.WriteRawTag(16);
@@ -289,8 +289,8 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Src.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Src);
+      if (Urn.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Urn);
       }
       if (HasStyle) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Style);
@@ -310,8 +310,8 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Src.Length != 0) {
-        Src = other.Src;
+      if (other.Urn.Length != 0) {
+        Urn = other.Urn;
       }
       if (other.HasStyle) {
         Style = other.Style;
@@ -338,7 +338,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            Src = input.ReadString();
+            Urn = input.ReadString();
             break;
           }
           case 16: {
@@ -368,7 +368,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            Src = input.ReadString();
+            Urn = input.ReadString();
             break;
           }
           case 16: {

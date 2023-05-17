@@ -5,6 +5,7 @@ using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
@@ -326,7 +327,9 @@ public class DefaultChatEntryShould
 
     private void GivenEntryChat(string prefabName)
     {
-        entry = Object.Instantiate(Resources.Load<DefaultChatEntry>($"SocialBarV1/{prefabName}"),
+        entry = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<DefaultChatEntry>(
+                $"Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/{prefabName}.prefab"),
             canvas.transform, false);
         entry.LocalTimeConverterStrategy = localTimeConverter;
     }

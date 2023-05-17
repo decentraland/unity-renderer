@@ -454,8 +454,12 @@ namespace DCL.Chat.Notifications
         [Test]
         public void OpenChatWhenClickOnAnApprovedFriendRequest()
         {
-            friendsController.GetAllocatedFriendRequest("fr")
-                             .Returns(new FriendRequest("fr", 100, "sender", "receiver", ""));
+            friendsController.TryGetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
+                             .Returns((args) =>
+                              {
+                                  args[1] = new FriendRequest("fr", 100, "sender", "receiver", "");
+                                  return true;
+                              });
 
             friendsController.IsFriend("sender").Returns(true);
             mainNotificationsView.OnClickedFriendRequest += Raise.Event<IMainChatNotificationsComponentView.ClickedNotificationDelegate>("fr", "sender", true);
@@ -466,8 +470,12 @@ namespace DCL.Chat.Notifications
         [Test]
         public void OpenFriendRequestWhenClickOnAnPendingFriendRequest()
         {
-            friendsController.GetAllocatedFriendRequest("fr")
-                             .Returns(new FriendRequest("fr", 100, "sender", "receiver", ""));
+            friendsController.TryGetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
+                             .Returns((args) =>
+                              {
+                                  args[1] = new FriendRequest("fr", 100, "sender", "receiver", "");
+                                  return true;
+                              });
 
             friendsController.IsFriend("sender").Returns(false);
             mainNotificationsView.OnClickedFriendRequest += Raise.Event<IMainChatNotificationsComponentView.ClickedNotificationDelegate>("fr", "sender", false);
