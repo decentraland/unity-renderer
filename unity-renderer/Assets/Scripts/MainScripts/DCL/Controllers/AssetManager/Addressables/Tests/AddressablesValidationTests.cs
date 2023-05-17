@@ -13,7 +13,7 @@ public class AddressablesValidationTests
     private const string NO_ISSUES_FOUND = "No issues found";
     private static readonly string[] EXCLUDED_FILE_TYPES = { }; // "shader", "png", "jpg"
 
-    // [TestCase("Scripts/MainScripts/DCL/Controllers/HUD/NotificationHUD")]
+    [TestCase("Scripts/MainScripts/DCL/Controllers/HUD/NotificationHUD")]
     public void ValidateFolderDoesNotHaveResourcesFolderInside(string folderName)
     {
         string folderPath = Application.dataPath + $"/{folderName}";
