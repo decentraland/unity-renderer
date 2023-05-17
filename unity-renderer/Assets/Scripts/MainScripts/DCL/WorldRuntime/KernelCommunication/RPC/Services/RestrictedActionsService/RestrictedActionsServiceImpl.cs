@@ -15,10 +15,40 @@ namespace RPC.Services
 
         private static readonly OpenModalResponse SUCCESS_RESPONSE = new OpenModalResponse() { Success = true };
         private static readonly OpenModalResponse FAIL_RESPONSE = new OpenModalResponse() { Success = false };
+        private static readonly MovePlayerToResponse MOVE_PLAYER_TO_RESPONSE = new MovePlayerToResponse() {};
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
             RestrictedActionsServiceCodeGen.RegisterService(port, new RestrictedActionsServiceImpl());
+        }
+
+        public async UniTask<MovePlayerToResponse> MovePlayerTo(MovePlayerToRequest request, RPCContext context, CancellationToken ct)
+        {
+            await UniTask.SwitchToMainThread(ct);
+            RestrictedActionsContext restrictedActions = context.restrictedActions;
+
+            // bool success = false;
+            int currentFrameCount = restrictedActions.GetCurrentFrameCount?.Invoke() ?? GetCurrentFrameCount();
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+                if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
+                {
+                    // LOGIC HERE
+                    Debug.Log("MovePlayerTo - CALLED!");
+
+                }
+            }
+            catch (OperationCanceledException _)
+            { // ignored
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            return MOVE_PLAYER_TO_RESPONSE;
         }
 
         public async UniTask<OpenModalResponse> TeleportTo(TeleportToRequest request, RPCContext context, CancellationToken ct)
@@ -65,6 +95,8 @@ namespace RPC.Services
 
                 if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
                 {
+                    Debug.Log("OpenExternalUrl - CALLED!");
+
                     success = restrictedActions.OpenExternalUrlPrompt?.Invoke(request.Url, request.SceneNumber) ?? false;
                 }
             }
@@ -93,6 +125,7 @@ namespace RPC.Services
 
                 if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
                 {
+                    Debug.Log("OpenNftDialog - CALLED!");
                     if (NFTUtils.TryParseUrn(request.Urn, out string contractAddress, out string tokenId))
                     {
                         restrictedActions.OpenNftPrompt?.Invoke(contractAddress, tokenId);
