@@ -15,39 +15,40 @@ namespace DCL.Controllers.LoadingScreenV2
         public string source { get; }
         public SourceTag sourceTag { get; }
 
-        public SceneHintRequestSource(string sceneJson, SourceTag sourceTag)
+        private Vector2Int currentDestination;
+        private readonly ISceneController sceneController;
+        private IParcelScene currentSceneBeingLoaded;
+
+        public SceneHintRequestSource(string sceneJson, SourceTag sourceTag, ISceneController sceneController, Vector2Int currentDestination)
         {
-            source = sceneJson;
-            sourceTag = sourceTag;
-            loading_hints = new List<IHint>();
+            this.source = sceneJson;
+            this.sourceTag = sourceTag;
+            this.loading_hints = new List<IHint>();
 
-            // TODO:: Parse the JSON
-            // var sceneData2 = JsonUtility.FromJson<DataStore_WorldObjects.SceneData>(sceneJson);
-            var sceneData = JsonUtility.FromJson<SceneDataTemp>(sceneJson);
+            this.sceneController = sceneController;
+            this.currentDestination = currentDestination;
 
-            if (sceneData == null || sceneData.loading_hints == null) return;
-
-            foreach (var hint in sceneData.loading_hints)
-            {
-                loading_hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
-            }
+            sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
         }
 
         public UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
         {
-            return UniTask.FromResult(loading_hints);
+            return UniTask.FromResult(currentSceneBeingLoaded.sceneData.loadingScreenHints);
+        }
+
+        private void SceneController_OnNewSceneAdded(IParcelScene scene)
+        {
+            if (scene != null && Environment.i.world.state.GetSceneNumberByCoords(currentDestination).Equals(scene.sceneData.sceneNumber))
+            {
+                currentSceneBeingLoaded = scene;
+            }
         }
 
         public void Dispose()
         {
+            sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
             loading_hints.Clear();
         }
-    }
-
-    // TODO::FD:: temporary class to make the code compile
-    public class SceneDataTemp
-    {
-        public List<IHint> loading_hints;
     }
 }
 

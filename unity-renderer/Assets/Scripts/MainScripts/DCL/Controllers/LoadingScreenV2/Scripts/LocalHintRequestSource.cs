@@ -25,11 +25,11 @@ namespace DCL.Controllers.LoadingScreenV2
 
             // TODO:: Parse the JSON
             // var sceneData2 = JsonUtility.FromJson<DataStore_WorldObjects.SceneData>(sceneJson);
-            var sceneData = JsonUtility.FromJson<SceneDataTemp>(sourceJson);
+            IParcelScene parcelScene = JsonUtility.FromJson<IParcelScene>(sourceJson);
 
-            if (sceneData == null || sceneData.loading_hints == null) return;
+            if (parcelScene == null || parcelScene.sceneData.loadingScreenHints == null) return;
 
-            foreach (var hint in sceneData.loading_hints)
+            foreach (var hint in parcelScene.sceneData.loadingScreenHints)
             {
                 loading_hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
             }

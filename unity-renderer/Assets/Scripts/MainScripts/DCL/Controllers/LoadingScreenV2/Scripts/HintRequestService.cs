@@ -8,14 +8,6 @@ using UnityEngine.Networking;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
-    public struct HintsRules
-    {
-        public int HintsAmount;
-        public float ScenePercentage;
-        public float EventPercentage;
-        public float DclPercentage;
-    }
-
     /// <summary>
     /// HintRequestService should request hints from different sources IHintRequestSource which can be local or remote.
     /// All IHintRequestSource will yield multiple IHint, unless the request fails, they should return an empty list.
@@ -38,13 +30,17 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private Dictionary<IHint, Texture2D> selectedHints;
 
-        public HintRequestService(List<IHintRequestSource> hintRequestSources)
+        private readonly ISceneController sceneController;
+
+        public HintRequestService(List<IHintRequestSource> hintRequestSources, ISceneController sceneController)
         {
             this.hintRequestSources = hintRequestSources;
-            hintsDictionary = new Dictionary<SourceTag, List<IHint>>();
-            selectedHints = new Dictionary<IHint, Texture2D>();
-            orderedSourceTags = new[] { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
+            this.hintsDictionary = new Dictionary<SourceTag, List<IHint>>();
+            this.selectedHints = new Dictionary<IHint, Texture2D>();
+            this.orderedSourceTags = new[] { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
             this.textureRequest = new HintTextureRequest();
+
+            this.sceneController = sceneController;
         }
 
         public async UniTask<Dictionary<IHint, Texture2D>> RequestHintsFromSources(CancellationToken ctx, int totalHints)
