@@ -28,11 +28,11 @@ namespace DCL.Social.Friends
         public event Action<FriendRequest> OnIncomingFriendRequestAdded;
         public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
         public event Action<string> OnFriendRemoved;
-        public event Action<FriendRequest> OnFriendRequestAdded;
         public event Action<string> OnFriendRequestRemoved;
-        public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
-        public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
-        public event Action<FriendRequestPayload> OnFriendRequestReceived;
+        public event Action<string, UserProfile> OnFriendRequestAccepted;
+        public event Action<string> OnFriendRequestRejected;
+        public event Action<string> OnFriendRequestCanceled;
+        public event Action<string> OnFriendDeleted;
 
         public RPCSocialApiBridge(IMatrixInitializationBridge matrixInitializationBridge,
             IUserProfileBridge userProfileWebInterfaceBridge,
@@ -80,7 +80,8 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // TODO: start listening to streams
+            // start listening to streams
+            UniTask.WhenAll(SubscribeToFriendshipEvents(cancellationToken));
         }
 
         public async UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default)
@@ -216,6 +217,89 @@ namespace DCL.Social.Friends
             await UpdateFriendship(updateFriendshipPayload, cancellationToken);
 
             return new FriendRequest(GetFriendRequestId(friendUserId, createdAt), createdAt, userProfileWebInterfaceBridge.GetOwn().userId, friendUserId, messageBody);
+        }
+
+        private async UniTask SubscribeToFriendshipEvents(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await foreach (var friendshipEventResponse in socialClient.SubscribeFriendshipEventsUpdates(new Payload() { SynapseToken = accessToken }))
+            {
+                switch (friendshipEventResponse.ResponseCase)
+                {
+                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.InternalServerError:
+                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.UnauthorizedError:
+                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.ForbiddenError:
+                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.TooManyRequestsError:
+                        ProcessAndLogSubscriptionError(friendshipEventResponse);
+                        break;
+                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.Events:
+                        await ProcessFriendshipEventResponse(friendshipEventResponse.Events, cancellationToken);
+                        break;
+                    default:
+                    {
+                        Debug.LogErrorFormat("Subscription to friendship events got invalid response {0}", friendshipEventResponse);
+                        throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+        }
+
+        private async UniTask ProcessFriendshipEventResponse(FriendshipEventResponses friendshipEventsUpdatesResponse, CancellationToken cancellationToken = default)
+        {
+            foreach (var friendshipEvent in friendshipEventsUpdatesResponse.Responses)
+            {
+                switch (friendshipEvent.BodyCase)
+                {
+                    case FriendshipEventResponse.BodyOneofCase.Request:
+                        OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
+                            GetFriendRequestId(friendshipEvent.Request.User.Address, friendshipEvent.Request.CreatedAt),
+                            friendshipEvent.Request.CreatedAt,
+                            friendshipEvent.Request.User.Address,
+                            userProfileWebInterfaceBridge.GetOwn().userId,
+                            friendshipEvent.Request.Message));
+
+                        break;
+                    case FriendshipEventResponse.BodyOneofCase.Accept:
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var profile = await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friendshipEvent.Accept.User.Address, cancellationToken);
+                        OnFriendRequestAccepted?.Invoke(friendshipEvent.Accept.User.Address, profile);
+
+                        break;
+                    case FriendshipEventResponse.BodyOneofCase.Reject:
+                        OnFriendRequestRejected?.Invoke(friendshipEvent.Reject.User.Address);
+                        break;
+                    case FriendshipEventResponse.BodyOneofCase.Delete:
+                        OnFriendDeleted?.Invoke(friendshipEvent.Delete.User.Address);
+                        break;
+                    case FriendshipEventResponse.BodyOneofCase.Cancel:
+                        OnFriendRequestCanceled?.Invoke(friendshipEvent.Cancel.User.Address);
+                        break;
+                    default:
+                        Debug.LogErrorFormat("Invalid friendship event {0}", friendshipEvent);
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private void ProcessAndLogSubscriptionError(SubscribeFriendshipEventsUpdatesResponse error)
+        {
+            switch (error.ResponseCase)
+            {
+                case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.InternalServerError:
+                    Debug.LogErrorFormat("Subscription to friendship events got internal server error {0}", error.InternalServerError.Message);
+                    break;
+                case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.UnauthorizedError:
+                    Debug.LogErrorFormat("Subscription to friendship events got Unauthorized error {0}", error.UnauthorizedError.Message);
+                    break;
+                case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.ForbiddenError:
+                    Debug.LogErrorFormat("Subscription to friendship events got Forbidden error {0}", error.ForbiddenError.Message);
+                    break;
+                case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.TooManyRequestsError:
+                    Debug.LogErrorFormat("Subscription to friendship events got Too many requests error {0}", error.TooManyRequestsError.Message);
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(error), error, null);
+            }
         }
 
         private static string GetUserIdFromFriendRequestId(string friendRequestId)

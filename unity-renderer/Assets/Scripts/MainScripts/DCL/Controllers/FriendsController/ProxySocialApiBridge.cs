@@ -42,34 +42,34 @@ namespace DCL.Social.Friends
             remove => socialApiBridge.OnFriendRemoved -= value;
         }
 
-        public event Action<FriendRequest> OnFriendRequestAdded
-        {
-            add => socialApiBridge.OnFriendRequestAdded += value;
-            remove => socialApiBridge.OnFriendRequestAdded -= value;
-        }
-
         public event Action<string> OnFriendRequestRemoved
         {
             add => socialApiBridge.OnFriendRequestRemoved += value;
             remove => socialApiBridge.OnFriendRequestRemoved -= value;
         }
 
-        public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded
+        public event Action<string, UserProfile> OnFriendRequestAccepted
         {
-            add => socialApiBridge.OnFriendRequestsAdded += value;
-            remove => socialApiBridge.OnFriendRequestsAdded -= value;
+            add => socialApiBridge.OnFriendRequestAccepted += value;
+            remove => socialApiBridge.OnFriendRequestAccepted -= value;
         }
 
-        public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated
+        public event Action<string> OnFriendRequestRejected
         {
-            add => socialApiBridge.OnFriendshipStatusUpdated += value;
-            remove => socialApiBridge.OnFriendshipStatusUpdated -= value;
+            add => socialApiBridge.OnFriendRequestRejected += value;
+            remove => socialApiBridge.OnFriendRequestRejected -= value;
         }
 
-        public event Action<FriendRequestPayload> OnFriendRequestReceived
+        public event Action<string> OnFriendRequestCanceled
         {
-            add => socialApiBridge.OnFriendRequestReceived += value;
-            remove => socialApiBridge.OnFriendRequestReceived -= value;
+            add => socialApiBridge.OnFriendRequestCanceled += value;
+            remove => socialApiBridge.OnFriendRequestCanceled -= value;
+        }
+
+        public event Action<string> OnFriendDeleted
+        {
+            add => socialApiBridge.OnFriendDeleted += value;
+            remove => socialApiBridge.OnFriendDeleted -= value;
         }
 
         public ProxySocialApiBridge(RPCSocialApiBridge socialApiBridge,
