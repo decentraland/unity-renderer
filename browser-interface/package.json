@@ -64,7 +64,7 @@
     "@dcl/legacy-ecs": "^6.11.11",
     "@dcl/protocol": "1.0.0-4984397350.commit-6fe3e1b",
     "@dcl/rpc": "^1.1.1",
-    "@dcl/scene-runtime": "https://sdk-team-cdn.decentraland.org/@dcl/scene-runtime/branch/refactor/sdk6-component-serialization-with-transport-v2/dcl-scene-runtime-7.0.6-20230516104541.commit-5850e4d.tgz",
+    "@dcl/scene-runtime": "7.0.6-20230517142408.commit-fe0386b",
     "@dcl/schemas": "^6.11.1",
     "@dcl/urn-resolver": "^2.0.3",
     "@types/mocha": "^10.0.1",
