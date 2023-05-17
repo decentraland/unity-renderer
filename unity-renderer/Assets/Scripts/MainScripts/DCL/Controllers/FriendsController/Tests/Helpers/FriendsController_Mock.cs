@@ -64,22 +64,26 @@ public class FriendsController_Mock : IFriendsController
         UniTask.FromResult(new string[0]);
 
     public UniTask<IReadOnlyList<string>> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default) =>
-        UniTask.FromResult((IReadOnlyList<string>) Array.Empty<string>());
+        UniTask.FromResult((IReadOnlyList<string>)Array.Empty<string>());
 
     public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) { }
 
-    public UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip,
+    public UniTask<IReadOnlyList<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip,
         CancellationToken cancellationToken)
     {
-        return UniTask.FromResult(new List<FriendRequest>());
+        return UniTask.FromResult((IReadOnlyList<FriendRequest>)new List<FriendRequest>());
     }
 
     public void GetFriendsWithDirectMessages(int limit, int skip) { }
 
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit) { }
 
-    public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
-        null;
+    public bool TryGetAllocatedFriendRequest(string friendRequestId, out FriendRequest request)
+    {
+        request = null;
+        return false;
+    }
+
 
     public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
         null;

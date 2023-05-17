@@ -7,6 +7,8 @@ namespace DCL.Social.Friends
 {
     public interface ISocialApiBridge : IService
     {
+        public event Action<FriendRequest> OnIncomingFriendRequestAdded;
+        public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
         event Action<UserStatus> OnFriendAdded;
         event Action<string> OnFriendRemoved;
         event Action<FriendRequest> OnFriendRequestAdded;
