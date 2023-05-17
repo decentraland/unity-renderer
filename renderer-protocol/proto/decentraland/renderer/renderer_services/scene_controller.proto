@@ -1,5 +1,7 @@
 syntax = "proto3";
+
 package decentraland.renderer.renderer_services;
+
 import "decentraland/common/entity.proto";
 import "decentraland/sdk/ecs6/engine_interface_ecs6.proto";
 
@@ -32,16 +34,19 @@ message UnloadSceneMessage {}
 message UnloadSceneResult {}
 
 message CRDTSceneMessage {
-  bytes	payload = 1;
+  bytes payload = 1;
 }
 
 message CRDTSceneCurrentState {
   bool has_own_entities = 1;
-  bytes	payload = 2;
+  bytes payload = 2;
 }
 
-
 message SendBatchRequest {
+  bytes payload = 1;
+}
+
+message RendererManyEntityActions {
   repeated decentraland.sdk.ecs6.EntityAction actions = 1;
 }
 
@@ -51,9 +56,9 @@ message SendBatchResponse {}
 // port and thus, rpcContext and its lifecycle is controlled by the SceneController.
 service RpcSceneControllerService {
   // creates a scene in the renderer
-  rpc LoadScene(LoadSceneMessage) returns (LoadSceneResult){}
+  rpc LoadScene(LoadSceneMessage) returns (LoadSceneResult) {}
   // unloads the scene and releases its resources
-  rpc UnloadScene(UnloadSceneMessage) returns (UnloadSceneResult){}
+  rpc UnloadScene(UnloadSceneMessage) returns (UnloadSceneResult) {}
   // back and forth of CRDT messages
   rpc SendCrdt(CRDTSceneMessage) returns (CRDTSceneMessage) {}
   // back and forth of CRDT messages

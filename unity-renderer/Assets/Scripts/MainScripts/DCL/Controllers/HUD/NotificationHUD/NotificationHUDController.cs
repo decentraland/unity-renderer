@@ -5,19 +5,29 @@ public class NotificationHUDController : IHUD, INotificationHUDController
     [System.Serializable]
     public class Model
     {
-        public List<INotification> notifications = new List<INotification>();
+        public List<INotification> notifications = new();
     }
 
-    public NotificationHUDView view { get; private set; }
-    public Model model { get; private set; }
+    public NotificationHUDView view { get; }
+    public Model model { get; }
 
-    public NotificationHUDController() : this(new Model()) { }
+    public NotificationHUDController(NotificationHUDView view) : this(new Model(), view) { }
 
-    public NotificationHUDController(Model model)
+    public NotificationHUDController(Model model, NotificationHUDView view)
     {
         this.model = model;
-        view = NotificationHUDView.Create();
+        this.view = view;
+
         view.OnNotificationDismissedEvent += OnNotificationDismissed;
+    }
+
+    public void Dispose()
+    {
+        if (view != null)
+        {
+            UnityEngine.Object.Destroy(view.gameObject);
+            view.OnNotificationDismissedEvent -= OnNotificationDismissed;
+        }
     }
 
     public void ShowNotification(INotification notification)
@@ -61,15 +71,7 @@ public class NotificationHUDController : IHUD, INotificationHUDController
 
     public void SetActive(bool active) { view.SetActive(active); }
 
-    public void Dispose()
-    {
-        if (view != null)
-        {
-            UnityEngine.Object.Destroy(view.gameObject);
-        }
 
-        view.OnNotificationDismissedEvent -= OnNotificationDismissed;
-    }
 
     public void SetVisibility(bool visible) { SetActive(visible); }
 
