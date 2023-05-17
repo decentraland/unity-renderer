@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8592443274156419516}
   - component: {fileID: 1722018204688604907}
   - component: {fileID: 7736615635108696803}
-  - component: {fileID: 78700046622926509}
+  - component: {fileID: 5642037097663683387}
   m_Layer: 5
   m_Name: CharacterPreview
   m_TagString: Untagged
@@ -121,7 +121,7 @@ MonoBehaviour:
   allowVerticalPanning: 1
   allowHorizontalPanning: 0
   inertiaDuration: 0.5
---- !u!114 &78700046622926509
+--- !u!114 &5642037097663683387
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -130,11 +130,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2584397978103117796}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0d580ddc2cb4d63bfde008b284b2d63, type: 3}
+  m_Script: {fileID: 11500000, guid: 70266ae604f646e9906b0e2ec4f42b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoomSpeed: 2
-  smoothness: 5
+  zoomSpeed: 5
+  smoothTime: 0.2
 --- !u!1 &5320515772113639614
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,7 +307,7 @@ MonoBehaviour:
   avatarPreviewPanel: {fileID: 7059152913108139601}
   avatarPreviewRotation: {fileID: 1722018204688604907}
   avatarPreviewPanning: {fileID: 7736615635108696803}
-  avatarPreviewOrthographicZoom: {fileID: 78700046622926509}
+  avatarPreviewZoom: {fileID: 5642037097663683387}
   avatarPreviewImage: {fileID: 160430747983648423}
   avatarPreviewLoadingSpinner: {fileID: 9054132650566966005}
 --- !u!1001 &6759333177557949564

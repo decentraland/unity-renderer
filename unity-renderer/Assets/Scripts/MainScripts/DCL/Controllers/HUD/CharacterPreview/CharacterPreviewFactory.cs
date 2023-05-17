@@ -19,7 +19,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             RenderTexture renderTexture,
             bool isVisible,
             CharacterPreviewController.CameraFocus cameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing,
-            bool isOrthographic = false,
             bool isAvatarShadowActive = false)
         {
             var instance = Object.Instantiate(prefab);
@@ -30,8 +29,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             characterPreviewController.Initialize(loadingMode, renderTexture);
             characterPreviewController.SetEnabled(isVisible);
             characterPreviewController.SetCharacterShadowActive(isAvatarShadowActive);
-            characterPreviewController.SetCameraProjection(isOrthographic);
-            characterPreviewController.SetFocus(cameraFocus, null, false);
+            characterPreviewController.SetFocus(cameraFocus, false);
 
             controllersCount++;
 

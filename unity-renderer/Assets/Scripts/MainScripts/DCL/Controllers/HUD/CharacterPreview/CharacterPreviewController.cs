@@ -56,9 +56,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private IAnimator animator;
         private Quaternion avatarContainerDefaultRotation;
         private Transform cameraTransform;
-        private float originalOrthographicSize;
-        private float maxYOrthographicPosition;
-        private float minYOrthographicPosition;
+        private (float minZ, float maxZ, float minY, float maxY, float minX, float maxX) cameraLimits;
+        private (float verticalCenterRef, float bottomMaxOffset, float topMaxOffset) zoomConfig;
 
         private void Awake()
         {
@@ -74,7 +73,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             this.animator = GetComponentInChildren<IAnimator>();
             avatarContainerDefaultRotation = avatarContainer.transform.rotation;
             cameraTransform = camera.transform;
-            originalOrthographicSize = camera.orthographicSize;
         }
 
         public void SetEnabled(bool isEnabled)
@@ -171,17 +169,17 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             camera.targetTexture = null;
             var avatarAnimator = avatarContainer.gameObject.GetComponentInChildren<AvatarAnimatorLegacy>();
 
-            SetFocus(CameraFocus.FaceSnapshot, null, false);
+            SetFocus(CameraFocus.FaceSnapshot, false);
             avatarAnimator.Reset();
             yield return null;
             Texture2D face256 = Snapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
 
-            SetFocus(CameraFocus.BodySnapshot, null, false);
+            SetFocus(CameraFocus.BodySnapshot, false);
             avatarAnimator.Reset();
             yield return null;
             Texture2D body = Snapshot(SNAPSHOT_BODY_WIDTH_RES, SNAPSHOT_BODY_HEIGHT_RES);
 
-            SetFocus(CameraFocus.DefaultEditing, null, false);
+            SetFocus(CameraFocus.DefaultEditing, false);
 
             camera.targetTexture = current;
 
@@ -204,22 +202,19 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private Coroutine cameraTransitionCoroutine;
 
-        public void SetFocus(CameraFocus focus, float? orthographicSize = null, bool useTransition = true) =>
-            SetFocus(cameraFocusLookUp[focus], orthographicSize, useTransition);
+        public void SetFocus(CameraFocus focus, bool useTransition = true) =>
+            SetFocus(cameraFocusLookUp[focus], useTransition);
 
-        private void SetFocus(Transform transformToMove, float? orthographicSize = null, bool useTransition = true)
+        private void SetFocus(Transform transformToMove, bool useTransition = true)
         {
             if (cameraTransitionCoroutine != null) { StopCoroutine(cameraTransitionCoroutine); }
 
             if (useTransition && gameObject.activeInHierarchy)
             {
-                float currentCameraOrthographicSize = camera.orthographicSize;
-
                 cameraTransitionCoroutine = StartCoroutine(
                     CameraTransition(
                         cameraTransform.position, transformToMove.position,
                         cameraTransform.rotation, transformToMove.rotation,
-                        currentCameraOrthographicSize, orthographicSize ?? originalOrthographicSize,
                         CAMERA_TRANSITION_TIME));
             }
             else
@@ -229,7 +224,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             }
         }
 
-        private IEnumerator CameraTransition(Vector3 initPos, Vector3 endPos, Quaternion initRotation, Quaternion endRotation, float initOrthographicSize, float endOrthographicSize, float time)
+        private IEnumerator CameraTransition(Vector3 initPos, Vector3 endPos, Quaternion initRotation, Quaternion endRotation, float time)
         {
             float currentTime = 0;
 
@@ -240,7 +235,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 currentTime = Mathf.Clamp(currentTime + Time.deltaTime, 0, time);
                 cameraTransform.position = Vector3.Lerp(initPos, endPos, currentTime * inverseTime);
                 cameraTransform.rotation = Quaternion.Lerp(initRotation, endRotation, currentTime * inverseTime);
-                camera.orthographicSize = Mathf.Lerp(initOrthographicSize, endOrthographicSize, currentTime * inverseTime);
                 yield return null;
             }
 
@@ -253,49 +247,60 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void ResetRotation() =>
             avatarContainer.transform.rotation = avatarContainerDefaultRotation;
 
-        public void MoveCamera(Vector3 positionDelta)
+        public void MoveCamera(Vector3 positionDelta, bool changeYLimitsDependingOnZPosition)
         {
             cameraTransform.Translate(positionDelta, Space.World);
-            LimitCameraPositionDependingOnOrthographicSize();
+            ApplyCameraLimits(changeYLimitsDependingOnZPosition);
         }
 
-        public void SetCameraProjection(bool isOrthographic) =>
-            camera.orthographic = isOrthographic;
-
-        public void SetOrthographicLimits(float minY, float maxY)
+        public void SetCameraLimits(float minX, float maxX, float minY, float maxY, float minZ, float maxZ)
         {
-            minYOrthographicPosition = minY;
-            maxYOrthographicPosition = maxY;
+            cameraLimits.minX = minX;
+            cameraLimits.maxX = maxX;
+            cameraLimits.minY = minY;
+            cameraLimits.maxY = maxY;
+            cameraLimits.minZ = minZ;
+            cameraLimits.maxZ = maxZ;
         }
 
-        public void SetCameraOrthographicSize(float orthographicSizeDelta, float minOrthographicSize, float maxOrthographicSize)
+        public void ConfigureZoom(float verticalCenterRef, float bottomMaxOffset, float topMaxOffset)
         {
-            float orthographicSize = camera.orthographicSize;
-            orthographicSize = Mathf.Clamp(orthographicSize + orthographicSizeDelta, minOrthographicSize, maxOrthographicSize);
-            camera.orthographicSize = orthographicSize;
-            LimitCameraPositionDependingOnOrthographicSize();
+            zoomConfig.verticalCenterRef = verticalCenterRef;
+            zoomConfig.bottomMaxOffset = bottomMaxOffset;
+            zoomConfig.topMaxOffset = topMaxOffset;
+        }
+
+        private void ApplyCameraLimits(bool changeYLimitsDependingOnZPosition)
+        {
+            Vector3 pos = cameraTransform.localPosition;
+            pos.x = Mathf.Clamp(pos.x, cameraLimits.minX, cameraLimits.maxX);
+            pos.z = Mathf.Clamp(pos.z, cameraLimits.minZ, cameraLimits.maxZ);
+
+            pos.y = changeYLimitsDependingOnZPosition ?
+                GetCameraYPositionBasedOnZPosition() :
+                Mathf.Clamp(pos.y, cameraLimits.minY, cameraLimits.maxY);
+
+            cameraTransform.localPosition = pos;
+        }
+
+        private float GetCameraYPositionBasedOnZPosition()
+        {
+            Vector3 cameraPosition = cameraTransform.localPosition;
+            float minY = zoomConfig.verticalCenterRef - GetOffsetBasedOnZLimits(cameraPosition.z, zoomConfig.bottomMaxOffset);
+            float maxY = zoomConfig.verticalCenterRef + GetOffsetBasedOnZLimits(cameraPosition.z, zoomConfig.topMaxOffset);
+            return Mathf.Clamp(cameraPosition.y, minY, maxY);
+        }
+
+        private float GetOffsetBasedOnZLimits(float zValue, float maxOffset)
+        {
+            if (zValue >= cameraLimits.maxZ) return 0f;
+            if (zValue <= cameraLimits.minZ) return maxOffset;
+            float progress = (zValue - cameraLimits.minZ) / (cameraLimits.maxZ - cameraLimits.minZ);
+            return maxOffset - (progress * maxOffset);
         }
 
         public void SetCharacterShadowActive(bool isActive) =>
             avatarShadow.SetActive(isActive);
-
-        private void LimitCameraPositionDependingOnOrthographicSize()
-        {
-            if (!camera.orthographic)
-                return;
-
-            Vector3 cameraPosition = cameraTransform.position;
-            float cameraProjectionHeight = camera.orthographicSize * 2f;
-            float topYProjectionPosition = cameraPosition.y + (cameraProjectionHeight * 0.5f);
-            float bottomYProjectionPosition = cameraPosition.y - (cameraProjectionHeight * 0.5f);
-
-            if (topYProjectionPosition > maxYOrthographicPosition)
-                cameraPosition.y = maxYOrthographicPosition - (cameraProjectionHeight * 0.5f);
-            else if (bottomYProjectionPosition < minYOrthographicPosition)
-                cameraPosition.y = minYOrthographicPosition + (cameraProjectionHeight * 0.5f);
-
-            cameraTransform.position = cameraPosition;
-        }
 
         public void PlayEmote(string emoteId, long timestamp) =>
             avatar.PlayEmote(emoteId, timestamp);

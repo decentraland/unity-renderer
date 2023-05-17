@@ -430,7 +430,7 @@ namespace DCL.Backpack
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
-        private void ToggleSlot(string slotCategory, bool supportColor, CharacterPreviewController.CameraFocus previewCameraFocus, float? orthographicSize, bool isSelected)
+        private void ToggleSlot(string slotCategory, bool supportColor, CharacterPreviewController.CameraFocus previewCameraFocus, bool isSelected)
         {
             currentSlotSelected = isSelected ? slotCategory : null;
             view.SetColorPickerVisibility(isSelected && supportColor);
@@ -451,9 +451,7 @@ namespace DCL.Backpack
                     break;
             }
 
-            view.SetAvatarPreviewFocus(
-                currentSlotSelected != null ? previewCameraFocus : CharacterPreviewController.CameraFocus.DefaultEditing,
-                currentSlotSelected != null ? orthographicSize : null);
+            view.SetAvatarPreviewFocus(currentSlotSelected != null ? previewCameraFocus : CharacterPreviewController.CameraFocus.DefaultEditing);
         }
 
         private void OnWearableColorChanged(Color newColor)

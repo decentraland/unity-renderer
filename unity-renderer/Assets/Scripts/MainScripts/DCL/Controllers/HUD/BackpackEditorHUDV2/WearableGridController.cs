@@ -377,7 +377,7 @@ namespace DCL.Backpack
             view.SetInfoCardVisible(false);
         }
 
-        private void SetCategory(string category, bool supportColor, CharacterPreviewController.CameraFocus previewCameraFocus, float? orthographicSize, bool isSelected)
+        private void SetCategory(string category, bool supportColor, CharacterPreviewController.CameraFocus previewCameraFocus, bool isSelected)
         {
             categoryFilter = isSelected ? category : null;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();

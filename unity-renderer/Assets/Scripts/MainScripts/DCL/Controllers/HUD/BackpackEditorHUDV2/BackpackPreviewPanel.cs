@@ -12,15 +12,20 @@ namespace DCL.Backpack
     public class BackpackPreviewPanel : BaseComponentView
     {
         private const string RESET_PREVIEW_ANIMATION = "Idle";
-        private const float CAMERA_MIN_ZOOM = 0.7f;
-        private const float CAMERA_MAX_ZOOM = 2f;
-        private const float CAMERA_MIN_Y_LIMIT = 50f;
-        private const float CAMERA_MAX_Y_LIMIT = 54f;
+        private const float CAMERA_MIN_X_LIMIT = 0f;
+        private const float CAMERA_MAX_X_LIMIT = 0f;
+        private const float CAMERA_MIN_Y_LIMIT = 0f;
+        private const float CAMERA_MAX_Y_LIMIT = 1.7f;
+        private const float CAMERA_MIN_Z_LIMIT = 1.3f;
+        private const float CAMERA_MAX_Z_LIMIT = 3.5f;
+        private const float CAMERA_ZOOM_CENTER = 1.4f;
+        private const float CAMERA_ZOOM_BOTTOM_MAX_OFFSET = 1.3f;
+        private const float CAMERA_ZOOM_TOP_MAX_OFFSET = 0.3f;
 
         [SerializeField] private RectTransform avatarPreviewPanel;
         [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
         [SerializeField] private PreviewCameraPanning avatarPreviewPanning;
-        [SerializeField] private PreviewCameraOrthographicZoom avatarPreviewOrthographicZoom;
+        [SerializeField] private PreviewCameraZoom avatarPreviewZoom;
         [SerializeField] private RawImage avatarPreviewImage;
         [SerializeField] internal GameObject avatarPreviewLoadingSpinner;
 
@@ -36,13 +41,17 @@ namespace DCL.Backpack
                 renderTexture: (RenderTexture) avatarPreviewImage.texture,
                 isVisible: false,
                 cameraFocus: CharacterPreviewController.CameraFocus.DefaultEditing,
-                isOrthographic: true,
                 isAvatarShadowActive: true);
-            characterPreviewController.SetOrthographicLimits(CAMERA_MIN_Y_LIMIT, CAMERA_MAX_Y_LIMIT);
+            characterPreviewController.SetCameraLimits(
+                CAMERA_MIN_X_LIMIT, CAMERA_MAX_X_LIMIT,
+                CAMERA_MIN_Y_LIMIT, CAMERA_MAX_Y_LIMIT,
+                CAMERA_MIN_Z_LIMIT, CAMERA_MAX_Z_LIMIT);
+            characterPreviewController.ConfigureZoom(
+                CAMERA_ZOOM_CENTER, CAMERA_ZOOM_BOTTOM_MAX_OFFSET, CAMERA_ZOOM_TOP_MAX_OFFSET);
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
             avatarPreviewRotation.OnHorizontalRotation += OnPreviewRotation;
             avatarPreviewPanning.OnPanning += OnPreviewPanning;
-            avatarPreviewOrthographicZoom.OnZoom += OnPreviewOrthographicZoom;
+            avatarPreviewZoom.OnZoom += OnPreviewZoom;
         }
 
         public override void Dispose()
@@ -52,7 +61,7 @@ namespace DCL.Backpack
             characterPreviewController.Dispose();
             avatarPreviewRotation.OnHorizontalRotation -= OnPreviewRotation;
             avatarPreviewPanning.OnPanning -= OnPreviewPanning;
-            avatarPreviewOrthographicZoom.OnZoom -= OnPreviewOrthographicZoom;
+            avatarPreviewZoom.OnZoom -= OnPreviewZoom;
         }
 
         public override void RefreshControl() { }
@@ -89,17 +98,17 @@ namespace DCL.Backpack
                 (face256, body) => onSuccess?.Invoke(face256, body),
                 () => onFailed?.Invoke());
 
-        public void SetFocus(CharacterPreviewController.CameraFocus focus, float? orthographicSize, bool useTransition = true) =>
-            characterPreviewController.SetFocus(focus, orthographicSize, useTransition);
+        public void SetFocus(CharacterPreviewController.CameraFocus focus, bool useTransition = true) =>
+            characterPreviewController.SetFocus(focus, useTransition);
 
         private void OnPreviewRotation(float angularVelocity) =>
             characterPreviewController.Rotate(angularVelocity);
 
         private void OnPreviewPanning(Vector3 positionDelta) =>
-            characterPreviewController.MoveCamera(positionDelta);
+            characterPreviewController.MoveCamera(positionDelta, true);
 
-        private void OnPreviewOrthographicZoom(float orthographicSizeDelta) =>
-            characterPreviewController.SetCameraOrthographicSize(orthographicSizeDelta, CAMERA_MIN_ZOOM, CAMERA_MAX_ZOOM);
+        private void OnPreviewZoom(Vector3 delta) =>
+            characterPreviewController.MoveCamera(delta, true);
 
         // TODO: We have to investigate why we have to use this workaround to fix the preview rendering
         private void FixThePreviewRenderingSomehowRelatedToTheRenderScale(bool isEnabled)

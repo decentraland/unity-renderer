@@ -16,6 +16,5 @@ namespace DCL.Backpack
         public string[] hidesList;
         public bool unEquipAllowed = true;
         public CharacterPreviewController.CameraFocus previewCameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing;
-        public float? previewCameraOrthographicSize;
     }
 }
