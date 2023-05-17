@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using System;
@@ -487,7 +486,7 @@ namespace DCL.Social.Passports
                 maxPrewarmCount: MAX_NFT_ICON_ENTRIES,
                 isPersistent: true);
 
-            pool.PrewarmAsync(1).Forget();
+            pool.ForcePrewarm();
 
             return pool;
         }
@@ -503,7 +502,7 @@ namespace DCL.Social.Passports
                 maxPrewarmCount: MAX_NFT_PAGES_ENTRIES,
                 isPersistent: true);
 
-            pool.PrewarmAsync(1).Forget();
+            pool.ForcePrewarm();
 
             return pool;
         }

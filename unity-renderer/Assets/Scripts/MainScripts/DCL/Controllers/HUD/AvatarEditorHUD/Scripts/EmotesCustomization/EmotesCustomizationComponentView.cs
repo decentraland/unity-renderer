@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -194,7 +193,7 @@ namespace DCL.EmotesCustomization
                     maxPrewarmCount: EMOTE_CARDS_POOL_PREWARM,
                     isPersistent: true);
 
-                emoteCardsPool.PrewarmAsync(1).Forget();
+                emoteCardsPool.ForcePrewarm();
             }
         }
 
