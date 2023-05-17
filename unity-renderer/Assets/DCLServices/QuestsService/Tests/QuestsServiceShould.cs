@@ -38,19 +38,25 @@ namespace DCLServices.QuestsService.Tests
 
             channel.Writer.TryWrite(new UserUpdate()
             {
-                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
-                QuestState = new QuestStateUpdate
+                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
+                QuestStateUpdate = new QuestStateUpdate
                 {
-                    QuestInstanceId = "0"
+                    QuestData = new QuestStateWithData()
+                    {
+                        QuestInstanceId = "0",
+                    },
                 },
             });
 
             channel.Writer.TryWrite(new UserUpdate()
             {
-                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
-                QuestState = new QuestStateUpdate
+                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
+                QuestStateUpdate = new QuestStateUpdate
                 {
-                    QuestInstanceId = "1"
+                    QuestData = new QuestStateWithData()
+                    {
+                        QuestInstanceId = "1",
+                    },
                 },
             });
 
@@ -67,14 +73,18 @@ namespace DCLServices.QuestsService.Tests
             questsService.OnQuestUpdated += (x) => questsUpdated++;
 
             questsService.SetUserId("user");
+
             for (int i = 0; i < count; i++)
             {
                 channel.Writer.TryWrite(new UserUpdate()
                 {
-                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
-                    QuestState = new QuestStateUpdate
+                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
+                    QuestStateUpdate = new QuestStateUpdate
                     {
-                        QuestInstanceId = i.ToString()
+                        QuestData = new QuestStateWithData()
+                        {
+                            QuestInstanceId = i.ToString()
+                        },
                     },
                 });
             }
@@ -88,22 +98,26 @@ namespace DCLServices.QuestsService.Tests
         [TestCase((uint)10)]
         public void UpdateCurrentStateIfSameQuestIsUpdated(uint updates)
         {
-            QuestStateUpdate latestUpdate = null;
+            QuestStateWithData latestUpdate = null;
             questsService.OnQuestUpdated += (x) => { latestUpdate = x; };
 
             questsService.SetUserId("user");
+
             for (uint i = 0; i < updates; i++)
             {
                 channel.Writer.TryWrite(new UserUpdate()
                 {
-                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
-                    QuestState = new QuestStateUpdate
+                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
+                    QuestStateUpdate = new QuestStateUpdate
                     {
-                        QuestInstanceId = "quest_id",
-                        QuestState = new QuestState
+                        QuestData = new QuestStateWithData()
                         {
-                            StepsLeft = (updates-1) - i,
-                        },
+                            QuestInstanceId = "quest_id",
+                            QuestState = new QuestState
+                            {
+                                StepsLeft = (updates - 1) - i,
+                            },
+                        }
                     },
                 });
             }
@@ -116,17 +130,22 @@ namespace DCLServices.QuestsService.Tests
         [Test]
         public void KeepCurrentStateUpdated()
         {
-            var questStateUpdate = new QuestStateUpdate() { QuestInstanceId = "questInstanceId", };
+            var questStateUpdate = new QuestStateUpdate()
+            {
+                QuestData = new QuestStateWithData
+                {
+                    QuestInstanceId = "questInstanceId",
+                }
+            };
 
             questsService.SetUserId("user");
-            channel.Writer.TryWrite(new UserUpdate()
+            channel.Writer.TryWrite(new UserUpdate
             {
-                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
-                QuestState = questStateUpdate,
+                QuestStateUpdate = questStateUpdate,
             });
 
             Assert.AreEqual(1, questsService.CurrentState.Count);
-            Assert.AreEqual(questStateUpdate, questsService.CurrentState["questInstanceId"]);
+            Assert.AreEqual(questStateUpdate.QuestData, questsService.CurrentState["questInstanceId"]);
         }
 
         [Test]
@@ -158,10 +177,11 @@ namespace DCLServices.QuestsService.Tests
             questsService.OnQuestUpdated += (x) => questUpdated = true;
 
             questsService.Dispose();
+
             channel.Writer.TryWrite(new UserUpdate()
             {
-                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
-                QuestState = new QuestStateUpdate(),
+                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
+                QuestStateUpdate = new QuestStateUpdate(),
             });
 
             Assert.IsFalse(questUpdated);

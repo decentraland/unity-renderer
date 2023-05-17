@@ -2,6 +2,19 @@
 syntax = "proto3";
 package decentraland.quests;
 
+// Errors 
+message InvalidQuest {}
+
+message NotUUID {}
+
+message InternalServerError {}
+
+message NotFoundQuestInstance {}
+
+message NotOwner {}
+
+message IgnoredEvent {}
+
 message UserAddress {
   string user_address = 1;
 }
@@ -17,7 +30,13 @@ message StartQuestResponse {
   *  - Quest is deactivated (the owner deleted it)
   *  - User already started the quest
   *  - Internal errors (DB connection failed or something like that) */
-  bool accepted = 1;
+  message Accepted {}
+  oneof response {
+    Accepted accepted = 1;
+    InvalidQuest invalid_quest = 2;
+    NotUUID not_uuid_error = 3;
+    InternalServerError internal_server_error = 4;
+  }
 }
 
 message AbortQuestRequest {
@@ -31,21 +50,33 @@ message AbortQuestResponse {
   *  - Quest instance is from another user 
   *  - Quest instance already aborted
   *  - Internal errors (DB connection failed or something like that) */
-  bool accepted = 1;
-}
-
-message QuestDefinitionRequest {
-  string quest_id = 1;
+  message Accepted {}
+  oneof response {
+    Accepted accepted = 1;
+    NotFoundQuestInstance not_found_quest_instance = 2;
+    NotUUID not_uuid_error = 3;
+    NotOwner not_owner = 4;
+    InternalServerError internal_server_error = 5;
+  }
 }
 
 message Event {
+  string id = 1;
+  string address = 2;
+  Action action = 3;
+}
+
+message EventRequest {
   string address = 1;
   Action action = 2;
 }
 
 message EventResponse {
-  fixed32 event_id = 1;
-  bool accepted = 2;
+  oneof response {
+    string accepted_event_id = 1;
+    IgnoredEvent ignored_event = 2;
+    InternalServerError internal_server_error = 3;
+  }
 }
 
 message QuestDefinition {
@@ -87,17 +118,23 @@ message QuestState {
   repeated string required_steps = 5;
 }
 
-message QuestStateUpdate {
+message QuestStateWithData {
   string quest_instance_id = 1;
   string name = 2;
   string description = 3;
   QuestState quest_state = 4;
 }
 
+message QuestStateUpdate {
+  QuestStateWithData quest_data = 1;
+  string event_id = 2;
+}
+
 message UserUpdate {
   oneof message {
-    QuestStateUpdate quest_state = 1;
-    fixed32 event_ignored = 2;
+    QuestStateUpdate quest_state_update = 1;
+    QuestStateWithData new_quest_started = 2;
+    fixed32 event_ignored = 4;
   }
 }
 
@@ -105,15 +142,33 @@ message Quests {
   repeated QuestInstance quests = 1;
 }
 
-message ProtoQuest {
+message GetAllQuestsResponse {
+  oneof response {
+    Quests quests = 1;
+    InternalServerError internal_server_error = 2;
+  }
+}
+
+message Quest {
   string name = 1;
   string description = 2;
   QuestDefinition definition = 3;
 }
 
+message GetQuestDefinitionRequest {
+  string quest_id = 1;
+}
+
+message GetQuestDefinitionResponse {
+  oneof response {
+    Quest quest = 1;
+    InternalServerError internal_server_error = 2;
+  }
+}
+
 message QuestInstance {
   string instance_id = 1;
-  ProtoQuest quest = 2;
+  Quest quest = 2;
   QuestState state = 3;
 }
 
@@ -121,12 +176,12 @@ service QuestsService {
   // User actions
   rpc StartQuest(StartQuestRequest) returns (StartQuestResponse) {}
   rpc AbortQuest(AbortQuestRequest) returns (AbortQuestResponse) {}
-  rpc SendEvent(Event) returns (EventResponse) {}
+  rpc SendEvent(EventRequest) returns (EventResponse) {}
 
   // Listen to changes in quest states and event processing updates
   rpc Subscribe(UserAddress) returns (stream UserUpdate) {}
 
   // Query quest information
-  rpc GetAllQuests(UserAddress) returns (Quests) {}
-  rpc GetQuestDefinition(QuestDefinitionRequest) returns (ProtoQuest) {}
+  rpc GetAllQuests(UserAddress) returns (GetAllQuestsResponse) {}
+  rpc GetQuestDefinition(GetQuestDefinitionRequest) returns (GetQuestDefinitionResponse) {}
 }
