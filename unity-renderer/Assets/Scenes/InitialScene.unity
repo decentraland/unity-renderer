@@ -248,7 +248,7 @@ MonoBehaviour:
   debugPanelMode: 0
   disableGLTFDownloadThrottle: 0
   multithreaded: 0
-  runPerformanceMeterToolDuringLoading: 0
+  runPerformanceMeterToolDuringLoading: 1
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0
