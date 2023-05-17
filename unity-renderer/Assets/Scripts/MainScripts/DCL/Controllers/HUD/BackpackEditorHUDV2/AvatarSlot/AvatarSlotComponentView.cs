@@ -146,7 +146,7 @@ namespace DCL.Backpack
         public void SetRarity(string rarity)
         {
             model.rarity = rarity;
-            backgroundRarityImage.sprite = string.IsNullOrEmpty(rarity) ? null : rarityBackgrounds.GetRarityImage(rarity);
+            backgroundRarityImage.sprite = rarityBackgrounds.GetRarityImage(rarity);
         }
 
         public void SetWearableId(string wearableId)
