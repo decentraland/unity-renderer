@@ -14,43 +14,36 @@ namespace DCLServices.QuestsService.TestScene
         public static string PATH_UPDATES => Application.dataPath + "/../../updates.txt";
         public static string PATH_DEFINITIONS => Application.dataPath + "/../../definitions.txt";
 
-
         public int QuestStateUpdatesCount => questStateUpdates.Count;
-        private Queue<QuestStateUpdate> questStateUpdates = new Queue<QuestStateUpdate>();
-        private Dictionary<string, ProtoQuest> questDefinitions = new Dictionary<string, ProtoQuest>();
+        private Queue<UserUpdate> questStateUpdates = new ();
+        private Dictionary<string, Quest> questDefinitions = new ();
         private Channel<UserUpdate> userUpdateChannel = Channel.CreateSingleConsumerUnbounded<UserUpdate>();
-
 
         private void Awake()
         {
             string[] updates = File.ReadAllLines(PATH_UPDATES);
+
             foreach (string update in updates)
             {
-                questStateUpdates.Enqueue(QuestStateUpdate.Parser.ParseJson(update));
-                Debug.Log($"enqueued: {questStateUpdates.Last().Name}");
+                questStateUpdates.Enqueue(UserUpdate.Parser.ParseJson(update));
             }
         }
 
-        public async UniTask<ProtoQuest> GetQuestDefinition(QuestDefinitionRequest request) => questDefinitions[request.QuestId];
-
+        public async UniTask<Quest> GetQuestDefinition(GetQuestDefinitionRequest request) =>
+            questDefinitions[request.QuestId];
 
         public IUniTaskAsyncEnumerable<UserUpdate> Subscribe(UserAddress request) =>
             userUpdateChannel.Reader.ReadAllAsync();
 
         public void EnqueueChanges(int amount)
         {
-            Debug.Log($"Enqueueing {amount}");
-            for(int i = 0; i < amount && questStateUpdates.Count > 0; i++)
+            for (int i = 0; i < amount && questStateUpdates.Count > 0; i++)
             {
-                userUpdateChannel.Writer.TryWrite(new UserUpdate
-                {
-                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestState,
-                    QuestState = questStateUpdates.Dequeue()
-                });
+                userUpdateChannel.Writer.TryWrite(questStateUpdates.Dequeue());
             }
         }
 
-#region not needed for the mock
+        #region not needed for the mock
         // Not needed for the mock
         public UniTask<StartQuestResponse> StartQuest(StartQuestRequest request) =>
             throw new NotImplementedException();
@@ -60,11 +53,14 @@ namespace DCLServices.QuestsService.TestScene
             throw new NotImplementedException();
 
         // Not needed for the mock
-        public UniTask<EventResponse> SendEvent(Event request) =>
+        public UniTask<EventResponse> SendEvent(EventRequest request) =>
             throw new NotImplementedException();
 
         // Not needed for the mock
-        public UniTask<Quests> GetAllQuests(UserAddress request) =>
+        public UniTask<GetAllQuestsResponse> GetAllQuests(UserAddress request) =>
+            throw new NotImplementedException();
+
+        UniTask<GetQuestDefinitionResponse> IClientQuestsService.GetQuestDefinition(GetQuestDefinitionRequest request) =>
             throw new NotImplementedException();
 #endregion
     }
