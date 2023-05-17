@@ -69,6 +69,7 @@ export class NativeMessagesBridge {
   private callUnloadParcelScene!: (sceneId: string) => void
 
   private callBinaryMessage!: (ptr: number, length: number, sceneId: string) => void
+  private callSdk6BinaryMessage!: (ptr: number, length: number) => void
 
   private currentSceneId: string = ''
   private currentTag: string = ''
@@ -78,6 +79,7 @@ export class NativeMessagesBridge {
 
   private queryMemBlockPtr: number = 0
   private binaryMessageMemBlockPtr: number = 0
+  private binarySdk6MessageMemBlockPtr: number = 0
   private currentSceneNumber: number = 0
 
   public initNativeMessages(gameInstance: UnityGame) {
@@ -93,6 +95,9 @@ export class NativeMessagesBridge {
 
     const BINARY_MSG_MEM_SIZE = 8388608
     this.binaryMessageMemBlockPtr = this.unityModule._malloc(BINARY_MSG_MEM_SIZE)
+
+    const SDK6_BINARY_MSG_MEM_SIZE = 8388608
+    this.binarySdk6MessageMemBlockPtr = this.unityModule._malloc(SDK6_BINARY_MSG_MEM_SIZE)
 
     this.callSetEntityId = this.unityModule.cwrap('call_SetEntityId', null, ['string'])
     this.callSetSceneId = this.unityModule.cwrap('call_SetSceneId', null, ['string'])
@@ -121,6 +126,7 @@ export class NativeMessagesBridge {
     this.callRemoveEntity = this.unityModule.cwrap('call_RemoveEntity', null, [])
     this.callSceneReady = this.unityModule.cwrap('call_SceneReady', null, [])
     this.callBinaryMessage = this.unityModule.cwrap('call_BinaryMessage', null, ['number', 'number', 'string'])
+    this.callSdk6BinaryMessage = this.unityModule.cwrap('call_Sdk6BinaryMessage', null, ['number', 'number', 'string'])
   }
 
   public optimizeSendMessage() {
@@ -305,6 +311,13 @@ export class NativeMessagesBridge {
     const ptr = this.binaryMessageMemBlockPtr
     this.unityModule.HEAPU8.set(message, ptr)
     this.callBinaryMessage(ptr, messageLength, sceneId)
+  }
+
+  public sdk6BinaryMessage(sceneNumber: number, message: Uint8Array, messageLength: number) {
+    const ptr = this.binarySdk6MessageMemBlockPtr
+    this.unityModule.HEAPU8.set(message, ptr)
+    this.setSceneNumber(sceneNumber)
+    this.callSdk6BinaryMessage(ptr, messageLength)
   }
 }
 
