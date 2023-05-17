@@ -84,7 +84,7 @@ namespace DCL.Backpack
 
             view.SetModel(new NftSubCategoryFilterModel
             {
-                Name = subCategory.Name,
+                Name = subCategory.Name.Replace("_", " "),
                 Filter = subCategory.Filter,
                 ResultCount = model.ResultCount,
                 ShowResultCount = isLastItem,
