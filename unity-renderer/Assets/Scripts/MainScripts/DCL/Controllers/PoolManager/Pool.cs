@@ -72,7 +72,7 @@ namespace DCL
             int objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount);
 
             for (int i = 0; i < objectsToInstantiate; i++)
-                Instantiate();
+                Instantiate(false);
         }
 
         public async UniTask PrewarmAsync(int createPerFrame, CancellationToken cancellationToken)
@@ -133,9 +133,9 @@ namespace DCL
             return po;
         }
 
-        private void Instantiate()
+        private void Instantiate(bool isActive = true)
         {
-            var gameObject = InstantiateAsOriginal(false);
+            var gameObject = InstantiateAsOriginal(isActive);
 
             SetupPoolableObject(gameObject);
         }
