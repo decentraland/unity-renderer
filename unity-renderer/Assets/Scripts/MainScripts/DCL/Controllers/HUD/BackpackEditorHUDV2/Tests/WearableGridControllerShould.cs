@@ -569,7 +569,7 @@ namespace DCL.Backpack
             view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
                      n.ResultCount == 50
-                     && n.Current == 0
+                     && n.Current == 2
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"
                      && n.Path[0].Removable == false
@@ -609,7 +609,7 @@ namespace DCL.Backpack
             view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
                      n.ResultCount == 50
-                     && n.Current == 0
+                     && n.Current == 1
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"
                      && n.Path[0].Removable == false
@@ -646,7 +646,7 @@ namespace DCL.Backpack
             view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
                      n.ResultCount == 50
-                     && n.Current == 0
+                     && n.Current == 1
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"
                      && n.Path[0].Removable == false

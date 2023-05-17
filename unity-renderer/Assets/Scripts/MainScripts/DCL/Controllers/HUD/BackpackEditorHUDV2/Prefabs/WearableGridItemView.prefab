@@ -1884,6 +1884,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2293051074121960227}
   - component: {fileID: 5451991589991224328}
+  - component: {fileID: 6979477567029031272}
   m_Layer: 5
   m_Name: WearableGridItemView
   m_TagString: Untagged
@@ -1954,6 +1955,21 @@ MonoBehaviour:
   grayScaleMaterial: {fileID: 2100000, guid: ae7a50fe785304bc4b38cafd6ad212f3, type: 2}
   incompatibleContainer: {fileID: 3198579703257594712}
   incompatibleTooltip: {fileID: 4852417723843484900}
+--- !u!114 &6979477567029031272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7749435104889507474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30b4ce08e6854094b8461fdea1282aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRectTransform: {fileID: 2293051074121960227}
+  hoverScale: 1.1
+  normalScale: 1
 --- !u!1 &8157210884129312552
 GameObject:
   m_ObjectHideFlags: 0

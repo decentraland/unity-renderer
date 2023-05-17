@@ -192,13 +192,13 @@ namespace DCL.Backpack
 
         private void HandleNewPageRequested(int page)
         {
-            AudioScriptableObjects.listItemAppear.ResetPitch();
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
             RequestWearablesAndShowThem(page, requestWearablesCancellationToken.Token).Forget();
         }
 
         private async UniTask<int> RequestWearablesAndShowThem(int page, CancellationToken cancellationToken)
         {
+            AudioScriptableObjects.listItemAppear.ResetPitch();
             UserProfile ownUserProfile = userProfileBridge.GetOwn();
             string ownUserId = ownUserProfile.userId;
 
