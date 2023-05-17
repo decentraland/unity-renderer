@@ -65,11 +65,13 @@ namespace DCL.Backpack
         {
             base.OnFocus();
             RefreshControl();
+            selectedContainer.SetActive(true);
         }
 
         public override void OnLoseFocus()
         {
             base.OnLoseFocus();
+            selectedContainer.SetActive(false);
             RefreshControl();
             incompatibleTooltip.SetActive(false);
         }
