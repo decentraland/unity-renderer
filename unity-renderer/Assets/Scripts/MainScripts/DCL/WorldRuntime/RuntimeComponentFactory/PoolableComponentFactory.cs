@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using DCL.Components;
 using DCL.Models;
 using System.Collections.Generic;
@@ -75,7 +76,7 @@ namespace DCL
                 if (item.usePool)
                 {
                     EnsurePoolForItem(item);
-                    GetPoolForItem(item).ForcePrewarm();
+                    GetPoolForItem(item).PrewarmAsync(1).Forget();
                 }
             }
         }

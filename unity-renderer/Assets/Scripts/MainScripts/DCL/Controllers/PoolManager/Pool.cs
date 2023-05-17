@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Configuration;
 using UnityEngine;
 using DCL.Helpers;
+using Unity.Profiling;
 using UnityEngine.Assertions;
 
 namespace DCL
@@ -74,7 +75,7 @@ namespace DCL
             for (int i = 0; i < objectsToInstantiate; i++) { Instantiate(); }
         }
 
-        public async UniTask PrewarmAsync(int createPerFrame, CancellationToken cancellationToken)
+        public async UniTask PrewarmAsync(int createPerFrame, CancellationToken cancellationToken = default)
         {
             int objectsToInstantiate;
 

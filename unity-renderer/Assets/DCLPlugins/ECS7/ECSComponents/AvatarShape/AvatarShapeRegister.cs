@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using DCL.ECSRuntime;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.ECSComponents
 {
@@ -44,10 +46,10 @@ namespace DCL.ECSComponents
 
             pool = PoolManager.i.AddPool(
                 AVATAR_POOL_NAME,
-                GameObject.Instantiate(prefab).gameObject,
+                Object.Instantiate(prefab).gameObject,
                 isPersistent: true);
 
-            pool.ForcePrewarm();
+            pool.PrewarmAsync(1).Forget();
         }
     }
 }
