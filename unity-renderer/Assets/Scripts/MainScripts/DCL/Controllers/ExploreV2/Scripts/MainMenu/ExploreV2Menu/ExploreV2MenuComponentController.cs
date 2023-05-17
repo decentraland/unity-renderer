@@ -59,6 +59,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     public void Initialize()
     {
         DataStore.i.Quests.isInitialized.Set(true);
+        DataStore.i.HUDs.questsPanelVisible.Set(true);
         sectionsVariables = new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
         {
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized, placesAndEventsVisible) },

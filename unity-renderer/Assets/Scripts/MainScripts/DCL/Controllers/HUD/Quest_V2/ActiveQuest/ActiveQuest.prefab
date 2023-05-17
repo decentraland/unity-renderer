@@ -861,7 +861,8 @@ MonoBehaviour:
   pinnedIcon: {fileID: 3261236996376990718}
   focusOutline: {fileID: 1921251067693670875}
   selectedOutline: {fileID: 7645475464720699265}
-  background: {fileID: 4472876402795006251}
+  background: {fileID: 1615146274383542417}
+  imageBackground: {fileID: 4472876402795006251}
   backgroundImage: {fileID: 5671349472727418851}
   deselectedNameColor: {r: 0.9882353, g: 0.9882353, b: 0.9882353, a: 1}
   selectedNameColor: {r: 0, g: 0, b: 0, a: 1}
@@ -869,6 +870,7 @@ MonoBehaviour:
   selectedCreatorColor: {r: 0.44313726, g: 0.41960785, b: 0.4862745, a: 1}
   selectedBackgroundColor: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 1}
   deselectedBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  deselectedBackgroundColorTransparent: {r: 0, g: 0, b: 0, a: 0.14901961}
 --- !u!1001 &735823675655482092
 PrefabInstance:
   m_ObjectHideFlags: 0

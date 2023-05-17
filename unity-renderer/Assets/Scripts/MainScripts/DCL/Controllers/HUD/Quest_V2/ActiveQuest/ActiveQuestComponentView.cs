@@ -15,6 +15,7 @@ namespace DCL.Quests
         [SerializeField] internal GameObject focusOutline;
         [SerializeField] internal GameObject selectedOutline;
         [SerializeField] internal Image background;
+        [SerializeField] internal Image imageBackground;
         [SerializeField] internal ImageComponentView backgroundImage;
 
         [SerializeField] internal Color deselectedNameColor;
@@ -23,6 +24,7 @@ namespace DCL.Quests
         [SerializeField] internal Color selectedCreatorColor;
         [SerializeField] internal Color selectedBackgroundColor;
         [SerializeField] internal Color deselectedBackgroundColor;
+        [SerializeField] internal Color deselectedBackgroundColorTransparent;
 
         public event Action<string> OnActiveQuestSelected;
 
@@ -71,7 +73,8 @@ namespace DCL.Quests
             selectedOutline.SetActive(false);
             questName.color = deselectedNameColor;
             questCreator.color = deselectedCreatorColor;
-            background.color = deselectedBackgroundColor;
+            background.color = deselectedBackgroundColorTransparent;
+            imageBackground.color = deselectedBackgroundColor;
         }
 
         public override void OnFocus()
@@ -93,6 +96,7 @@ namespace DCL.Quests
             questName.color = selectedNameColor;
             questCreator.color = selectedCreatorColor;
             background.color = selectedBackgroundColor;
+            imageBackground.color = selectedBackgroundColor;
         }
     }
 }
