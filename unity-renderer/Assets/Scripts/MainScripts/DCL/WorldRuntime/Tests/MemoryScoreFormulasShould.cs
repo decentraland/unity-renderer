@@ -5,7 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.TestTools;
-using UnityGLTF;
 
 public class MemoryScoreFormulasShould
 {
@@ -32,7 +31,7 @@ public class MemoryScoreFormulasShould
         Object.Destroy(audioClip);
     }
 
-    [UnityTest]
+    /*[UnityTest]
     public IEnumerator OvershootAnimationClipMemoryWhenScoreIsComputed()
     {
         AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
@@ -95,5 +94,5 @@ public class MemoryScoreFormulasShould
         Assert.That(meshesEstimatedSize, Is.GreaterThan(meshesRealSize));
 
         keeper.Cleanup();
-    }
+    }*/
 }

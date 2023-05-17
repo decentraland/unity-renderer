@@ -29,13 +29,11 @@ public class AvatarMeshCombinerUtilsCan
         parentMock2.transform.localScale = new Vector3(0.5f, 2, 0.5f);
         parentMock2.transform.parent = parentMock.transform;
 
-        var keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.enabled = false;
+        var keeper = new AssetPromiseKeeper_GLTFast_Instance();
 
         string url = TestAssetsUtils.GetPath() + "/Avatar/Assets/BaseMale.glb";
         WebRequestController webRequestController = WebRequestController.Create();
-        AssetPromise_GLTF prom = new AssetPromise_GLTF(url, webRequestController);
-        prom.settings.parent = parentMock2.transform;
+        AssetPromise_GLTFast_Instance prom = new AssetPromise_GLTFast_Instance("", url, webRequestController);
         keeper.Keep(prom);
         yield return prom;
 

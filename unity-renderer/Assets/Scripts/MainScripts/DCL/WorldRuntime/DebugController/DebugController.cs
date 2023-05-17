@@ -15,7 +15,6 @@ namespace DCL
 
         public DebugView debugView;
 
-        public readonly CrashPayloadPositionTracker positionTracker;
         private BaseVariable<bool> isFPSPanelVisible;
         private PreviewSceneLimitsWarning previewSceneLimitsWarning;
 
@@ -23,7 +22,6 @@ namespace DCL
 
         public DebugController(IBotsController botsController)
         {
-            positionTracker = new CrashPayloadPositionTracker();
             isFPSPanelVisible = DataStore.i.debugConfig.isFPSPanelVisible;
             isFPSPanelVisible.OnChange += OnFPSPanelToggle;
             GameObject view = Object.Instantiate(Resources.Load("DebugView")) as GameObject;
@@ -83,7 +81,7 @@ namespace DCL
         {
             isFPSPanelVisible.Set(true);
         }
-        
+
         public void ToggleFPSPanel()
         {
             isFPSPanelVisible.Set(!isFPSPanelVisible.Get());
@@ -167,26 +165,14 @@ namespace DCL
         {
             botsController.ClearBots();
         }
-
-        public List<Vector3> GetTrackedTeleportPositions()
-        {
-            return positionTracker.teleportPositions;
-        }
-
-        public List<Vector3> GetTrackedMovements()
-        {
-            return positionTracker.movePositions;
-        }
-
         public void SetAnimationCulling(bool enabled)
         {
             Environment.i.platform.cullingController.SetAnimationCulling(enabled);
         }
-       
+
 
         public void Dispose()
         {
-            positionTracker.Dispose();
             previewSceneLimitsWarning?.Dispose();
             debugConfig.isDebugMode.OnChange -= OnToggleDebugMode;
             isFPSPanelVisible.OnChange -= OnFPSPanelToggle;

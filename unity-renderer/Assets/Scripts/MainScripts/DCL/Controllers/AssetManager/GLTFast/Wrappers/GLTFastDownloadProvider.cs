@@ -13,6 +13,8 @@ namespace DCL.GLTFast.Wrappers
     /// </summary>
     internal class GltFastDownloadProvider : IDownloadProvider, IDisposable
     {
+        public delegate bool AssetIdConverter(string uri, out string id);
+
         private readonly IWebRequestController webRequestController;
         private readonly AssetIdConverter fileToUrl;
         private readonly AssetPromiseKeeper_Texture texturePromiseKeeper;

@@ -12,10 +12,6 @@ namespace DCL.Components
     public class RendereableAssetLoadHelper
     {
         private const string NEW_CDN_FF = "ab-new-cdn";
-        private const string FAILED_GLTFAST_LOAD_EVENT = "failed_GLTFast_load";
-        private const string STARTED_GLTFAST_LOAD_EVENT = "started_GLTFast_load";
-        private const string SUCESS_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT = "success_GLTF_load_after_GLTFast_fail";
-        private const string FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT = "failed_GLTF_load_after_GLTFast_fail";
 
         public event Action<Rendereable> OnSuccessEvent;
         public event Action<Exception> OnFailEvent;
@@ -23,15 +19,12 @@ namespace DCL.Components
         public enum LoadingType
         {
             ASSET_BUNDLE_WITH_GLTF_FALLBACK,
-            ASSET_BUNDLE_WITH_OLD_GLTF_FALLBACK,
             ASSET_BUNDLE_ONLY,
             GLTF_ONLY,
-            OLD_GLTF,
             DEFAULT
         }
 
         private const string AB_GO_NAME_PREFIX = "AB:";
-        private const string GLTF_GO_NAME_PREFIX = "GLTF:";
         private const string GLTFAST_GO_NAME_PREFIX = "GLTFast:";
         private const string FROM_ASSET_BUNDLE_TAG = "FromAssetBundle";
         private const string FROM_RAW_GLTF_TAG = "FromRawGLTF";
@@ -47,7 +40,6 @@ namespace DCL.Components
         private readonly string bundlesContentUrl;
         private readonly Func<bool> IsGltFastEnabled;
         private readonly ContentProvider contentProvider;
-        private AssetPromise_GLTF gltfPromise;
         private AssetPromise_GLTFast_Instance gltfastPromise;
         private AssetPromise_AB_GameObject abPromise;
         private string currentLoadingSystem;
@@ -58,9 +50,6 @@ namespace DCL.Components
         {
             get
             {
-                if (gltfPromise != null)
-                    return gltfPromise.state == AssetPromiseState.FINISHED;
-
                 if (abPromise != null)
                     return abPromise.state == AssetPromiseState.FINISHED;
 
@@ -74,13 +63,6 @@ namespace DCL.Components
             float loadTime = Mathf.Min(loadFinishTime, Time.realtimeSinceStartup) - loadStartTime;
 
             string result = "not loading";
-
-            if (gltfPromise != null)
-            {
-                result = $"GLTF -> promise state = {gltfPromise.state} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_GLTF.i.waitingPromisesCount}";
-
-                if (gltfPromise.state == AssetPromiseState.WAITING) { result += $"\nmaster promise state... is blocked... {AssetPromiseKeeper_GLTF.i.GetMasterState(gltfPromise)}"; }
-            }
 
             if (abPromise != null) { result = $"ASSET BUNDLE -> promise state = {abPromise.ToString()} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_AB.i.waitingPromisesCount}"; }
 
@@ -113,54 +95,24 @@ namespace DCL.Components
                     LoadAssetBundle(targetUrl, OnSuccessEvent, OnFailEvent, false);
                     break;
                 case LoadingType.GLTF_ONLY:
-                    ProxyLoadGltf(targetUrl, false);
-                    break;
-                case LoadingType.OLD_GLTF:
-                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, false);
+                    LoadGLTFast(targetUrl, OnSuccessEvent, OnFailEvent, false);
                     break;
                 case LoadingType.DEFAULT:
                 case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => ProxyLoadGltf(targetUrl, false), true);
-                    break;
-                case LoadingType.ASSET_BUNDLE_WITH_OLD_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, false), true);
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGLTFast(targetUrl, OnSuccessEvent, OnFailEvent, false), true);
                     break;
             }
-        }
-
-        private void ProxyLoadGltf(string targetUrl, bool hasFallback)
-        {
-            if (IsGltFastEnabled())
-                LoadGLTFast(targetUrl, OnSuccessEvent, exception => { OnGLTFastLoadFail(targetUrl, hasFallback, exception); }, true);
-            else
-                LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
-        }
-
-        private void OnGLTFastLoadFail(string targetUrl, bool hasFallback, Exception exception)
-        {
-            SendMetric(FAILED_GLTFAST_LOAD_EVENT, targetUrl, exception.Message);
-
-            if (VERBOSE)
-                Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
-
-            LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback, true);
         }
 
         public void Unload()
         {
             UnloadAB();
-            UnloadGLTF();
             UnloadGLTFast();
         }
 
         void UnloadAB()
         {
             if (abPromise != null) { AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise); }
-        }
-
-        void UnloadGLTF()
-        {
-            if (gltfPromise != null) { AssetPromiseKeeper_GLTF.i.Forget(gltfPromise); }
         }
 
         void UnloadGLTFast()
@@ -247,72 +199,8 @@ namespace DCL.Components
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
-        void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback, bool sendMetric = false)
-        {
-            currentLoadingSystem = GLTF_GO_NAME_PREFIX;
-
-            if (gltfPromise != null)
-            {
-                UnloadGLTF();
-
-                if (VERBOSE)
-                    Debug.Log("Forgetting not null promise... " + targetUrl);
-            }
-
-            if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
-            {
-                if (sendMetric)
-                    SendMetric(FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT, targetUrl, $"Content provider does not contains url {targetUrl}");
-
-                OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"), hasFallback);
-                return;
-            }
-
-            gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
-            gltfPromise.settings = settings;
-
-            gltfPromise.OnSuccessEvent += (Asset_GLTF x) =>
-            {
-#if UNITY_EDITOR
-                x.container.name = GLTF_GO_NAME_PREFIX + x.container.name;
-#endif
-                var r = new Rendereable
-                {
-                    container = x.container,
-                    totalTriangleCount = x.totalTriangleCount,
-                    meshes = x.meshes,
-                    renderers = x.renderers,
-                    materials = x.materials,
-                    textures = x.textures,
-                    meshToTriangleCount = x.meshToTriangleCount,
-                    animationClipSize = x.animationClipSize,
-                    meshDataSize = x.meshDataSize,
-                    animationClips = x.animationClips
-                };
-
-                foreach (var someRenderer in r.renderers)
-                    someRenderer.tag = FROM_RAW_GLTF_TAG;
-
-                if (sendMetric)
-                    SendMetric(SUCESS_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT, targetUrl, "");
-
-                OnSuccessWrapper(r, OnSuccess);
-            };
-
-            gltfPromise.OnFailEvent += (asset, exception) =>
-            {
-                if (sendMetric)
-                    SendMetric(FAIL_GLTF_LOAD_AFTER_GLTFAST_FAIL_EVENT, targetUrl, exception.Message);
-
-                OnFailWrapper(OnFail, exception, hasFallback);
-            };
-
-            AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
-        }
-
         private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
-            SendMetric(STARTED_GLTFAST_LOAD_EVENT, targetUrl, "");
             currentLoadingSystem = GLTFAST_GO_NAME_PREFIX;
 
             if (gltfastPromise != null)
@@ -380,8 +268,8 @@ namespace DCL.Components
 #endif
             if (VERBOSE)
             {
-                if (gltfPromise != null)
-                    Debug.Log($"GLTF Load(): target URL -> {gltfPromise.GetId()}. Success!");
+                if (gltfastPromise != null)
+                    Debug.Log($"GLTF Load(): target URL -> {gltfastPromise.GetId()}. Success!");
                 else
                     Debug.Log($"AB Load(): target URL -> {abPromise.hash}. Success!");
             }

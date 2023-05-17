@@ -5,6 +5,7 @@ using DCL.GLTFast.Wrappers;
 using GLTFast;
 using GLTFast.Logging;
 using GLTFast.Materials;
+using System.IO;
 using UnityEngine;
 
 // Disable async call not being awaited warning
@@ -33,7 +34,7 @@ namespace DCL
             : base(contentUrl, hash)
         {
             this.contentProvider = contentProvider;
-            assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
+            assetDirectoryPath = GetDirectoryName(contentUrl);
 
             if (staticDeferAgent == null)
             {
@@ -46,6 +47,12 @@ namespace DCL
             cancellationSource = new CancellationTokenSource();
             gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
             consoleLogger = new ConsoleLogger();
+        }
+
+        private static string GetDirectoryName(string fullPath)
+        {
+            var fileName = Path.GetFileName(fullPath);
+            return fullPath.Substring(0, fullPath.Length - fileName.Length);
         }
 
         protected override void OnBeforeLoadOrReuse() { }

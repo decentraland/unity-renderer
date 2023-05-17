@@ -19,8 +19,6 @@ namespace DCL
         void StopBotsMovement();
         public void RemoveBot(long targetEntityId);
         public void ClearBots();
-        List<Vector3> GetTrackedTeleportPositions();
-        List<Vector3> GetTrackedMovements();
         void ShowInfoPanel(string network, string realm);
         void SetRealm(string realm);
         void SetAnimationCulling(bool enabled);

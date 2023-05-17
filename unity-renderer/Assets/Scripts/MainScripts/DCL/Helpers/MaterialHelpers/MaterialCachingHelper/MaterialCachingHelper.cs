@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityGLTF.Cache;
 
 namespace DCL.Helpers
 {
@@ -38,7 +37,7 @@ namespace DCL.Helpers
 
         public static Material ProcessSingleMaterial(Material mat, Mode cachingFlags = Mode.CACHE_EVERYTHING)
         {
-            if ((cachingFlags & Mode.CACHE_SHADERS) != 0)
+            /*if ((cachingFlags & Mode.CACHE_SHADERS) != 0)
             {
                 string shaderHash = mat.shader.name;
 
@@ -73,9 +72,9 @@ namespace DCL.Helpers
                 refCountedMat = PersistentAssetCache.MaterialCacheByCRC[hash];
                 refCountedMat.IncreaseRefCount();
                 return refCountedMat.material;
-            }
+            }*/
 
-            return materialCopy;
+            return mat;
         }
 
         public static IEnumerator Process(List<Renderer> renderers, bool enableRenderers = true, Mode cachingFlags = Mode.CACHE_EVERYTHING)

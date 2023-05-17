@@ -35,7 +35,7 @@ namespace Tests
         {
             var entity = TestUtils.CreateSceneEntity(scene);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -216,7 +216,7 @@ namespace Tests
         {
             var entity = TestUtils.CreateSceneEntity(scene);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -270,7 +270,7 @@ namespace Tests
             // GLTFShape without DCLAnimator
             var entity = TestUtils.CreateSceneEntity(scene);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -290,7 +290,7 @@ namespace Tests
             // GLTFShape with DCLAnimator
             var entity2 = TestUtils.CreateSceneEntity(scene);
 
-            Assert.IsTrue(entity2.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity2.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -333,7 +333,7 @@ namespace Tests
 
             TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 8), Quaternion.identity, Vector3.one);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
