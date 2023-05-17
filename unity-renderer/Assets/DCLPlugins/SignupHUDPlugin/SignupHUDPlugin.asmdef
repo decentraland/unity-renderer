@@ -1,0 +1,24 @@
+{
+    "name": "SignupHUDPlugin",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fd3745cf152e6934d99eadd24f220eba",
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:dffbb581f2650ea4990781f603ac258a",
+        "GUID:0663fad624d836944b40ae27c3414652",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

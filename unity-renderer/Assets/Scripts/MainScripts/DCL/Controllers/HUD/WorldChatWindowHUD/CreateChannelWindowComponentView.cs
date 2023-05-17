@@ -20,7 +20,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_Text channelNameLengthLabel;
         [SerializeField] internal GameObject inputFieldErrorBevel;
         [SerializeField] internal Color errorColor;
-        
+
         private Color lengthLabelOriginalColor;
 
         public event Action<string> OnChannelNameUpdated;
@@ -28,15 +28,10 @@ namespace DCL.Chat.HUD
         public event Action OnClose;
         public event Action OnJoinChannel;
 
-        public static CreateChannelWindowComponentView Create()
-        {
-            return Instantiate(Resources.Load<CreateChannelWindowComponentView>("SocialBarV1/ChannelCreationHUD"));
-        }
-
         public override void Awake()
         {
             base.Awake();
-            
+
             createButton.onClick.AddListener(() => OnCreateSubmit?.Invoke());
             channelNameInput.onValueChanged.AddListener(text =>
             {
@@ -59,7 +54,7 @@ namespace DCL.Chat.HUD
         }
 
         public RectTransform Transform => (RectTransform) transform;
-        
+
         public void Show() => gameObject.SetActive(true);
 
         public void Hide() => gameObject.SetActive(false);
@@ -93,9 +88,9 @@ namespace DCL.Chat.HUD
         public void EnableCreateButton() => createButton.interactable = true;
 
         public void ClearInputText() => channelNameInput.text = "";
-        
+
         public void FocusInputField() => channelNameInput.Select();
-        
+
         public void ShowWrongFormatError()
         {
             channelExistsContainer.SetActive(false);

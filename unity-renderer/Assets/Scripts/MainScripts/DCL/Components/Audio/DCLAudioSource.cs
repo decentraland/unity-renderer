@@ -5,6 +5,7 @@ using UnityEngine;
 using DCL.Models;
 using DCL.SettingsCommon;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -14,13 +15,30 @@ namespace DCL.Components
         public class Model : BaseModel
         {
             public string audioClipId;
-            public bool playing = false;
+            public bool playing;
             public float volume = 1f;
-            public bool loop = false;
+            public bool loop;
             public float pitch = 1f;
-            public long playedAtTimestamp = 0;
+            public long playedAtTimestamp;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.AudioSource)
+                    return Utils.SafeUnimplemented<DCLAudioSource, Model>(expected: ComponentBodyPayload.PayloadOneofCase.AudioSource, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.AudioSource.HasLoop) pb.loop = pbModel.AudioSource.Loop;
+                if (pbModel.AudioSource.HasPitch) pb.pitch = pbModel.AudioSource.Pitch;
+                if (pbModel.AudioSource.HasPlaying) pb.playing = pbModel.AudioSource.Playing;
+                if (pbModel.AudioSource.HasVolume) pb.volume = pbModel.AudioSource.Volume;
+                if (pbModel.AudioSource.HasAudioClipId) pb.audioClipId = pbModel.AudioSource.AudioClipId;
+                if (pbModel.AudioSource.HasPlayedAtTimestamp) pb.playedAtTimestamp = pbModel.AudioSource.PlayedAtTimestamp;
+
+                return pb;
+            }
         }
 
         public float playTime => audioSource.time;
@@ -40,13 +58,14 @@ namespace DCL.Components
 
             if (Settings.i != null)
                 Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
-    
+
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
         public override void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             base.Initialize(scene, entity);
+            isOutOfBoundaries = !entity.isInsideSceneBoundaries;
             DataStore.i.sceneBoundariesChecker.Add(entity,this);
         }
 
@@ -139,7 +158,7 @@ namespace DCL.Components
         private void UpdateAudioSourceVolume()
         {
             float newVolume = 0;
-            
+
             // isOutOfBoundaries will always be false for global scenes.
             if (!isOutOfBoundaries)
             {
@@ -181,7 +200,7 @@ namespace DCL.Components
 
             if (Settings.i != null)
                 Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
-            
+
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             DataStore.i.sceneBoundariesChecker.Remove(entity,this);
 

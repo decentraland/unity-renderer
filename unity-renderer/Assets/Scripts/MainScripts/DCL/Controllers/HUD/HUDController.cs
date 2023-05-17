@@ -9,12 +9,12 @@ using DCL.NotificationModel;
 using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Friends;
-using SignupHUD;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Environment = DCL.Environment;
+using Object = UnityEngine.Object;
 using Type = DCL.NotificationModel.Type;
 
 public class HUDController : IHUDController
@@ -115,8 +115,6 @@ public class HUDController : IHUDController
     public QuestsTrackerHUDController questsTrackerHUD =>
         GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
 
-    public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
-
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -194,7 +192,9 @@ public class HUDController : IHUDController
 
                     if (worldChatWindowHud != null)
                     {
-                        worldChatWindowHud.Initialize(WorldChatWindowComponentView.Create());
+                        worldChatWindowHud.Initialize(
+                            await hudFactory.CreateHUDView<WorldChatWindowComponentView>("ConversationListHUD", cancellationToken));
+
                         worldChatWindowHud.SetVisibility(false);
                         worldChatWindowHud.OnOpenPrivateChat -= OpenPrivateChatWindow;
                         worldChatWindowHud.OnOpenPrivateChat += OpenPrivateChatWindow;
@@ -217,7 +217,9 @@ public class HUDController : IHUDController
 
                     if (PublicChatWindowHud != null)
                     {
-                        PublicChatWindowHud.Initialize();
+                        PublicChatWindowHud.Initialize(
+                                await hudFactory.CreateHUDView<PublicChatWindowComponentView>("NearbyChatChannelHUD", cancellationToken));
+
                         PublicChatWindowHud.Setup(ChatUtils.NEARBY_CHANNEL_ID);
                         PublicChatWindowHud.SetVisibility(false);
                         PublicChatWindowHud.OnBack -= HandlePublicChatChannelBacked;
@@ -236,7 +238,9 @@ public class HUDController : IHUDController
 
                     if (PrivateChatWindow != null)
                     {
-                        PrivateChatWindow.Initialize();
+                        PrivateChatWindow.Initialize(
+                            await hudFactory.CreateHUDView<PrivateChatWindowComponentView>("PrivateChatHUD", cancellationToken));
+
                         PrivateChatWindow.SetVisibility(false);
                         PrivateChatWindow.OnBack -= PrivateChatWindowHud_OnPressBack;
                         PrivateChatWindow.OnBack += PrivateChatWindowHud_OnPressBack;
@@ -252,7 +256,9 @@ public class HUDController : IHUDController
 
                     if (chatChannelHud != null)
                     {
-                        chatChannelHud.Initialize();
+                        chatChannelHud.Initialize(
+                            await hudFactory.CreateHUDView<ChatChannelComponentView>("ChatChannelHUD", cancellationToken));
+
                         chatChannelHud.SetVisibility(false);
                         chatChannelHud.OnPressBack -= HandleChannelBacked;
                         chatChannelHud.OnPressBack += HandleChannelBacked;
@@ -267,7 +273,8 @@ public class HUDController : IHUDController
 
                     if (channelSearchHud != null)
                     {
-                        channelSearchHud.Initialize(SearchChannelsWindowComponentView.Create());
+                        channelSearchHud.Initialize(
+                            await hudFactory.CreateHUDView<SearchChannelsWindowComponentView>("ChannelSearchHUD", cancellationToken));
                         channelSearchHud.SetVisibility(false);
                         taskbarHud?.AddChannelSearch(channelSearchHud);
                     }
@@ -279,7 +286,8 @@ public class HUDController : IHUDController
 
                     if (channelCreateHud != null)
                     {
-                        channelCreateHud.Initialize(CreateChannelWindowComponentView.Create());
+                        channelCreateHud.Initialize(
+                            await hudFactory.CreateHUDView<CreateChannelWindowComponentView>("ChannelCreationHUD", cancellationToken));
                         channelCreateHud.SetVisibility(false);
                         taskbarHud?.AddChannelCreation(channelCreateHud);
                     }
@@ -291,7 +299,8 @@ public class HUDController : IHUDController
 
                     if (channelLeaveHud != null)
                     {
-                        channelLeaveHud.Initialize(LeaveChannelConfirmationWindowComponentView.Create());
+                        channelLeaveHud.Initialize(
+                            await hudFactory.CreateHUDView<LeaveChannelConfirmationWindowComponentView>("LeaveChannelConfirmationHUD", cancellationToken));
                         channelLeaveHud.SetVisibility(false);
                         taskbarHud?.AddChannelLeaveConfirmation(channelLeaveHud);
                     }
@@ -305,7 +314,8 @@ public class HUDController : IHUDController
 
                     if (friendsHud != null)
                     {
-                        friendsHud.Initialize(FriendsHUDComponentView.Create());
+                        friendsHud.Initialize(
+                            await hudFactory.CreateHUDView<FriendsHUDComponentView>("FriendsHUD", cancellationToken));
                         friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
                         friendsHud.OnPressWhisper += OpenPrivateChatWindow;
 
@@ -372,11 +382,6 @@ public class HUDController : IHUDController
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (configuration.active)
                     questsTrackerHUD.Initialize(QuestsController.i);
-                break;
-            case HUDElementID.SIGNUP:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                if (configuration.active)
-                    signupHUD.Initialize();
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message

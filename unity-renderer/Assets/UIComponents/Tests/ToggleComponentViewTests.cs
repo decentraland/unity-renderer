@@ -8,7 +8,7 @@ public class ToggleComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        toggleComponent = BaseComponentView.Create<ToggleComponentView>("Toggle_Capsule");
+        toggleComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<ToggleComponentView>("Toggle_Capsule");
     }
 
     [TearDown]
@@ -94,7 +94,7 @@ public class ToggleComponentViewTests
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void SetTextActive(bool isTextActive) 
+    public void SetTextActive(bool isTextActive)
     {
         // Act
         toggleComponent.SetTextActive(isTextActive);

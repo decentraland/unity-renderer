@@ -1,19 +1,14 @@
-using DCL.Components;
-using DCL.Controllers;
-using DCL.Models;
 using System;
 using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections.Generic;
-using DCL;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
     public class DCLAvatarTexture : DCLTexture
     {
-
         [System.Serializable]
         public class ProfileRequestData
         {
@@ -40,25 +35,44 @@ namespace DCL.Components
         }
 
         [System.Serializable]
-        public class AvatarModel : DCLTexture.Model
+        public class AvatarModel : Model
         {
             public string userId;
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<AvatarModel>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<AvatarModel>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel) {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.AvatarTexture)
+                    return Utils.SafeUnimplemented<DCLTexture, Model>(expected: ComponentBodyPayload.PayloadOneofCase.AvatarTexture, actual: pbModel.PayloadCase);
+
+                var pb = new AvatarModel();
+                if (pbModel.AvatarTexture.HasWrap) pb.wrap = (BabylonWrapMode)pbModel.AvatarTexture.Wrap;
+                if (pbModel.AvatarTexture.HasSamplingMode) pb.samplingMode = (FilterMode)pbModel.AvatarTexture.SamplingMode;
+                if (pbModel.AvatarTexture.HasUserId)
+                {
+                    pb.src = pbModel.AvatarTexture.UserId;
+                    pb.userId = pbModel.AvatarTexture.UserId;
+                }
+                
+                return pb;
+
+            }
         }
 
-        public DCLAvatarTexture() { 
-            model = new AvatarModel(); 
+        public DCLAvatarTexture()
+        {
+            model = new AvatarModel();
         }
-        
+
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
-            
+
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
             if (isDisposed)
                 yield break;
-            
+
             AvatarModel model = (AvatarModel) newModel;
 
             if (texture == null && !string.IsNullOrEmpty(model.userId))
@@ -72,13 +86,13 @@ namespace DCL.Components
                 //      avatars[0] has the avatar and we have to access to
                 //      avatars[0].avatar.snapshots, and the links are
                 //      face,face128,face256 and body
-                
+
                 // TODO: check if this user data already exists to avoid this fetch.
                 yield return GetAvatarUrls(sourceUrl, (faceUrl) =>
                 {
                     textureUrl = faceUrl;
                 });
-                
+
                 if (!string.IsNullOrEmpty(textureUrl))
                 {
                     model.src = textureUrl;

@@ -60,9 +60,8 @@ namespace DCL.Chat.HUD
             this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
         }
 
-        public void Initialize(IChatChannelWindowView view = null, bool isVisible = true)
+        public void Initialize(IChatChannelWindowView view, bool isVisible = true)
         {
-            view ??= ChatChannelComponentView.Create();
             View = view;
             view.OnBack -= HandlePressBack;
             view.OnBack += HandlePressBack;

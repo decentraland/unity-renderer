@@ -1,6 +1,8 @@
 using DCL;
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
@@ -34,7 +36,7 @@ public static class PlacesAndEventsCardsFactory
     public static EventCardComponentView CreateConfiguredEventCard(Pool pool, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked) =>
         EventsCardsConfigurator.Configure(pool.Get<EventCardComponentView>(), eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
 
-    public static PlaceCardComponentView CreateConfiguredPlaceCard(Pool pool, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<HotSceneInfo> OnPlaceJumpInClicked, Action<string, bool> OnFavoriteClicked) =>
+    public static PlaceCardComponentView CreateConfiguredPlaceCard(Pool pool, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool> OnFavoriteClicked) =>
         PlacesCardsConfigurator.Configure(pool.Get<PlaceCardComponentView>(), placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnFavoriteClicked);
 
     /// <summary>
@@ -72,13 +74,29 @@ public static class PlacesAndEventsCardsFactory
         return modal;
     }
 
-    /// <summary>
-    /// Returns a place card model from the given API data.
-    /// </summary>
-    /// <param name="filteredPlaces">Data received from the API.</param>
-    /// <returns>A place card model.</returns>
-    public static List<PlaceCardComponentModel> CreatePlacesCards(List<HotSceneInfo> filteredPlaces) =>
-        CreateModelsListFromAPI<PlaceCardComponentModel, HotSceneInfo>(filteredPlaces, PlacesCardsConfigurator.ConfigureFromAPIData);
+    public static List<PlaceCardComponentModel> ConvertPlaceResponseToModel(List<PlaceInfo> placeInfo)
+    {
+        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
+
+                foreach (var place in placeInfo)
+                {
+                    modelsList.Add(
+                        new PlaceCardComponentModel()
+                        {
+                            placePictureUri = place.image,
+                            placeName = place.title,
+                            placeDescription = place.description,
+                            placeAuthor = place.contact_name,
+                            numberOfUsers = place.user_count,
+                            coords = Utils.ConvertStringToVector(place.base_position),
+                            parcels = place.positions,
+                            isFavorite = place.user_favorite,
+                            placeInfo = place
+                        });
+                }
+
+                return modelsList;
+    }
 
     /// <summary>
     /// Returns a event card model from the given API data.

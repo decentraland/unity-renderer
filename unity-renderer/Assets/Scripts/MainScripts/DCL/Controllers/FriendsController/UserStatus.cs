@@ -21,6 +21,7 @@ public class UserStatus
         }
     }
 
+    public string userName;
     public Realm realm;
     public Vector2 position;
     public string userId;

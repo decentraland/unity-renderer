@@ -1,5 +1,5 @@
 ﻿import { RootState } from '../store/rootTypes'
-import { LoginState } from 'kernel-web-interface'
+import { LoginState } from '@dcl/kernel-interface'
 import { isSignupInProgress } from '../session/selectors'
 
 /**

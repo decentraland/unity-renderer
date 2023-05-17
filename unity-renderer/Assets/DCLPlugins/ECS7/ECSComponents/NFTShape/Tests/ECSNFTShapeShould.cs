@@ -65,20 +65,23 @@ namespace Tests
         [Test]
         public void UpdateImageCorrectly()
         {
-            infoRetriever.FetchNFTInfo(Arg.Any<string>()).Returns(UniTask.FromResult(new NFTInfo()));
+            infoRetriever.FetchNFTInfoAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(UniTask.FromResult(new NFTInfo()));
             assetRetriever.LoadNFTAsset(Arg.Any<string>()).Returns(UniTask.FromResult(Substitute.For<INFTAsset>()));
 
             PBNftShape model = new PBNftShape()
             {
-                Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722"
+                Urn = "urn:decentraland:ethereum:erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d:1540722"
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            infoRetriever.Received(1).FetchNFTInfo(model.Src);
+            NFTUtils.TryParseUrn(model.Urn, out string contractAddress, out string tokenID);
+            infoRetriever.Received(1).FetchNFTInfoAsync(contractAddress, tokenID);
 
-            model.Src = "ethereum://0x8eaa9ae1ac89b1c8c8a8104d08c045f78aadb42d/450";
+            model.Urn = "urn:decentraland:ethereum:erc721:0x8eaa9ae1ac89b1c8c8a8104d08c045f78aadb42d:450";
+
             handler.OnComponentModelUpdated(scene, entity, model);
-            infoRetriever.Received(1).FetchNFTInfo(model.Src);
+            NFTUtils.TryParseUrn(model.Urn, out contractAddress, out tokenID);
+            infoRetriever.Received(1).FetchNFTInfoAsync(contractAddress, tokenID);
 
             handler.OnComponentRemoved(scene, entity);
         }
