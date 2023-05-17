@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SocialBarV1
+  m_EditorClassIdentifier: 
+  m_GroupName: SocialBarV1
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 2b1f88a9fd850f545a366115c797b541
+  m_SerializeEntries:
+  - m_GUID: 53b68107a7217479f9c5e3bd289c69e2
+    m_Address: ChannelCreationHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 63913bde040b7402abf70d859f679839
+    m_Address: ChannelJoinErrorModal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4a2d1514412dc4b63ad02a63685bff05
+    m_Address: ChannelLeaveErrorModal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0c78d3a776b3648a294c3beb8060628a
+    m_Address: ChannelLimitReachedModal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c1fcdc0dc181943d6827d6aa0e70aef3
+    m_Address: ChannelSearchHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 422a5852529acb04e985f81783ef4d80
+    m_Address: ChatChannelHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4b6abe05a96fd42bd91c9444398a7aad
+    m_Address: ChatNotificationHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4c6a5e58413d748459904b4cdfba8a3a
+    m_Address: ConversationListHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ce99cfb0b948c4ba88038c52dd4e5569
+    m_Address: FriendsHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1f2b11f27d6cb134a9bc43deeedf5616
+    m_Address: LeaveChannelConfirmationHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c426a7224f613824ea86318d55bcc3e1
+    m_Address: NearbyChatChannelHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f6c9ffc30c00b3f4b9334ea363f4e3ed
+    m_Address: PrivateChatHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 37655642f5765b341bdc2035cdd61bca
+    m_Address: PromoteChannelsHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 74dfded3d908e4dc2857d8b17a129e79
+    m_Address: TopNotificationHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 05fc9966f7646c046938515ae26bbc11, type: 2}
+    - {fileID: 11400000, guid: 228ba5a3b46467b43b243b46a38d1ec4, type: 2}

@@ -169,7 +169,7 @@ public class HUDFactory : IHUDFactory
         return null;
     }
 
-    protected async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default) where T:IDisposable
+    public async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default, string name = null) where T:IDisposable
     {
         var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}", cancellationToken);
         disposableViews.Add(view);

@@ -55,11 +55,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => isFocused;
 
-    public static PrivateChatWindowComponentView Create()
-    {
-        return Instantiate(Resources.Load<PrivateChatWindowComponentView>("SocialBarV1/PrivateChatHUD"));
-    }
-
     public override void Awake()
     {
         base.Awake();
