@@ -39,7 +39,16 @@ namespace DCL.Controllers.LoadingScreenV2
             this.selectedHints = new Dictionary<IHint, Texture2D>();
             this.orderedSourceTags = new[] { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
             this.textureRequest = new HintTextureRequest();
+            this.sceneController = sceneController;
+        }
 
+        public HintRequestService(List<IHintRequestSource> hintRequestSources, ISceneController sceneController, HintTextureRequest textureRequest)
+        {
+            this.hintRequestSources = hintRequestSources;
+            this.hintsDictionary = new Dictionary<SourceTag, List<IHint>>();
+            this.selectedHints = new Dictionary<IHint, Texture2D>();
+            this.orderedSourceTags = new[] { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
+            this.textureRequest = textureRequest;
             this.sceneController = sceneController;
         }
 
@@ -51,13 +60,10 @@ namespace DCL.Controllers.LoadingScreenV2
                 {
                     return selectedHints;
                 }
-
                 // Step 1: Get Hints
                 var hints = await GetHintsAsync(ctx);
-
                 // Step 2: Select optimal hints
                 hints = SelectOptimalHints(hints, totalHints);
-
                 // Step 3: Download textures
                 await DownloadTextures(hints, ctx);
             }
@@ -93,11 +99,13 @@ namespace DCL.Controllers.LoadingScreenV2
                     catch (Exception ex)
                     {
                         Debug.LogException(ex);
+                        throw;
                     }
                 }
             }
             return hints;
         }
+
 
         private List<IHint> SelectOptimalHints(List<IHint> hints, int totalHints)
         {

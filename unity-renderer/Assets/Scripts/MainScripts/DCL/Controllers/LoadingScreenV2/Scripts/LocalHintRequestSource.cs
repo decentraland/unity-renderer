@@ -1,44 +1,63 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
-    /// <summary>
-    /// We should fetch and parse the hint list from a local file
-    /// If fetch fails, we return an empty list.
-    /// </summary>
     public class LocalHintRequestSource : IHintRequestSource
     {
         public string source { get; }
         public SourceTag sourceTag { get; }
-        public List<IHint> loading_hints { get; private set; }
 
-        private static readonly string LOCAL_HINTS_PATH = "LoadingScreenV2/LocalHintsFallback";
+        private UniTaskCompletionSource<bool> hintsLoadedCompletionSource;
+        public List<IHint> loading_hints { get; private set; }
 
         public LocalHintRequestSource(string sourceJson, SourceTag sourceTag)
         {
-            source = sourceJson;
-            sourceTag = sourceTag;
-            loading_hints = new List<IHint>();
+            this.source = sourceJson;
+            this.sourceTag = sourceTag;
+            this.loading_hints = new List<IHint>();
+            this.hintsLoadedCompletionSource = new UniTaskCompletionSource<bool>();
 
-            // TODO:: Parse the JSON
-            // var sceneData2 = JsonUtility.FromJson<DataStore_WorldObjects.SceneData>(sceneJson);
-            IParcelScene parcelScene = JsonUtility.FromJson<IParcelScene>(sourceJson);
+            // Load the hints in a separate thread to avoid blocking
+            UniTask.Run(() => LoadHints(sourceJson)).Forget();
+        }
 
-            if (parcelScene == null || parcelScene.sceneData.loadingScreenHints == null) return;
-
-            foreach (var hint in parcelScene.sceneData.loadingScreenHints)
+        private void LoadHints(string sourceJson)
+        {
+            try
             {
-                loading_hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
+                IParcelScene parcelScene = JsonUtility.FromJson<IParcelScene>(sourceJson);
+
+                if (parcelScene != null && parcelScene.sceneData?.loadingScreenHints != null)
+                {
+                    foreach (var hint in parcelScene.sceneData.loadingScreenHints)
+                    {
+                        loading_hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
+                    }
+                }
+
+                hintsLoadedCompletionSource.TrySetResult(true);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Exception in LocalHintRequestSource.LoadHints: {ex.Message}\n{ex.StackTrace}");
+                hintsLoadedCompletionSource.TrySetResult(false);
             }
         }
 
         public UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
         {
+            // If cancellation is requested, return an empty list
+            if (ctx.IsCancellationRequested)
+                return UniTask.FromResult(new List<IHint>());
+
+            // Otherwise, return the loading_hints directly
             return UniTask.FromResult(loading_hints);
         }
+
 
         public void Dispose()
         {
@@ -46,4 +65,3 @@ namespace DCL.Controllers.LoadingScreenV2
         }
     }
 }
-

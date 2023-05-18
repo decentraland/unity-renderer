@@ -9,7 +9,7 @@ namespace DCL.Controllers.LoadingScreenV2
 {
     public class HintTextureRequest
     {
-        public async UniTask<Texture2D> DownloadTexture(string url, CancellationToken ctx)
+        public async UniTask<Texture2D> DownloadTexture(string url, CancellationToken ctx, int timeout = 2)
         {
             using UnityWebRequest www = UnityWebRequest.Get(url);
 
@@ -17,13 +17,27 @@ namespace DCL.Controllers.LoadingScreenV2
             {
                 wrapMode = TextureWrapMode.Clamp,
             };
+
             if (ctx.IsCancellationRequested)
             {
                 return tex;
             }
 
-            await www.SendWebRequest();
-            if (www.error != null)
+            www.timeout = timeout;
+
+            var operation = www.SendWebRequest();
+
+            while (!operation.isDone)
+            {
+                await UniTask.Yield();
+                if (ctx.IsCancellationRequested)
+                {
+                    www.Abort();
+                    return tex;
+                }
+            }
+
+            if (www.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogException(new Exception(www.error));
                 return tex;
