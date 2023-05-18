@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using UnityEngine;
 
 namespace DCLServices.StableDiffusionService
@@ -7,7 +8,7 @@ namespace DCLServices.StableDiffusionService
     {
         public string prompt;
         public string negativePrompt;
-        public string seed;
+        public int seed;
         public int width;
         public int height;
         public int samplingSteps;
@@ -18,7 +19,7 @@ namespace DCLServices.StableDiffusionService
     {
         public string prompt;
         public string negativePrompt;
-        public string seed;
+        public int seed;
         public int width;
         public int height;
         public float cfgScale;
@@ -26,7 +27,7 @@ namespace DCLServices.StableDiffusionService
         public float denoisingStrength;
     }
 
-    public interface IStableDiffusionService
+    public interface IStableDiffusionService : IService
     {
         UniTask<Texture2D> GetTexture(TextToImageConfig config);
 

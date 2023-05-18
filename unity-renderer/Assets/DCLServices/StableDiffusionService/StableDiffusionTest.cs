@@ -14,14 +14,26 @@ namespace DCLServices.StableDiffusionService
 
         private void Start()
         {
-            service = new StableDiffusionService(WebRequestController.Create(), JObject.Parse(jsonFile.text), null);
+            service = new StableDiffusionService(JObject.Parse(jsonFile.text), null);
         }
 
         [ContextMenu("Generate")]
         private async void Generate()
         {
-            service = new StableDiffusionService(WebRequestController.Create(), JObject.Parse(jsonFile.text), null);
-            var result = await service.GetTexture(new TextToImageConfig());
+            service = new StableDiffusionService(JObject.Parse(jsonFile.text), null);
+
+            var result = await service.GetTexture(new TextToImageConfig()
+                {
+                    cfgScale = 4,
+                    height = 512,
+                    width = 512,
+                    samplingSteps = 20,
+                    negativePrompt = "",
+                    prompt = "A beautiful landscape",
+                    seed = -1,
+                }
+            );
+
             targetImage.texture = result;
         }
     }

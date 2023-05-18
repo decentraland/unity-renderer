@@ -14,6 +14,7 @@ using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
+using DCLServices.StableDiffusionService;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -21,9 +22,11 @@ using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
+using Newtonsoft.Json.Linq;
 using rpc_csharp.transport;
 using RPC.Transports;
 using System.Collections.Generic;
+using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -61,6 +64,10 @@ namespace DCL
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             ));
+
+            result.Register<IStableDiffusionService>(() => new StableDiffusionService(
+                JObject.Parse(Resources.Load<TextAsset>("StableDiffusionConfig").text)
+              , null));
 
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
