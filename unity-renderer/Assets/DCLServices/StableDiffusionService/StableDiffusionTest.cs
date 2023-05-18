@@ -14,6 +14,8 @@ namespace DCLServices.StableDiffusionService
         [SerializeField] private string positivePrompt = "A beautiful landscape, two suns";
         [SerializeField] private string negativePrompt = "humans, animals";
         [SerializeField] private Texture2D texturePrompt;
+        [SerializeField] private float denoise = 0.5f;
+        [SerializeField] private float scale = 7;
         private StableDiffusionService service;
 
         [ContextMenu("Generate From Text")]
@@ -39,7 +41,7 @@ namespace DCLServices.StableDiffusionService
         private TextToImageConfig GetTextToImageConfig() =>
             new ()
             {
-                cfgScale = 4,
+                cfgScale = scale,
                 height = 512,
                 width = 512,
                 samplingSteps = 20,
@@ -51,14 +53,14 @@ namespace DCLServices.StableDiffusionService
         private ImageToImageConfig GetImageToImageConfig() =>
             new ()
             {
-                cfgScale = 15,
+                cfgScale = scale,
                 height = 512,
                 width = 512,
                 samplingSteps = 40,
                 negativePrompt = negativePrompt,
                 prompt = positivePrompt,
                 seed = -1,
-                denoisingStrength = 0f,
+                denoisingStrength = denoise,
             };
     }
 }
