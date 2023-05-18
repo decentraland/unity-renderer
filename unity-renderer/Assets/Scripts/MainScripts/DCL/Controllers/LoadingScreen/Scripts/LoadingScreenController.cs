@@ -125,7 +125,7 @@ namespace DCL.LoadingScreen
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
                 //This is probably going to change with the integration of WORLDS loading screen
                 //Temporarily removing tips until V2
-                tipsController.StartTips();
+                tipsController.StartTips(currentDestinationCandidate);
                 percentageController.StartLoading(currentDestination);
                 timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
@@ -188,6 +188,7 @@ namespace DCL.LoadingScreen
             timeoutController.StopTimeout();
 
             await shaderPrewarm.PrewarmAsync(OnShaderPrewarmProgress, cancellationToken);
+            await UniTask.Delay(20000, cancellationToken: cancellationToken);
 
             view.FadeOut();
             tipsController.StopTips();

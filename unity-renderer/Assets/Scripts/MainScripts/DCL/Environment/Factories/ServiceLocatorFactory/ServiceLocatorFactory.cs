@@ -67,7 +67,7 @@ namespace DCL
 
             result.Register<IStableDiffusionService>(() => new StableDiffusionService(
                 JObject.Parse(Resources.Load<TextAsset>("txt2imgTemplate").text)
-              , null));
+              , JObject.Parse(Resources.Load<TextAsset>("img2imgTemplate").text)));
 
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCLServices.StableDiffusionService;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -24,6 +25,7 @@ namespace DCL.LoadingScreen
 
         private readonly LoadingScreenTipsView tipsView;
         private CancellationTokenSource disposeCts;
+        private Vector2Int currentDestination;
 
 
         public LoadingScreenTipsController(LoadingScreenTipsView tipsView, IStableDiffusionService stableDiffusionService = null)
@@ -35,14 +37,30 @@ namespace DCL.LoadingScreen
             defaultLoadingTips = tipsView.defaultTips;
             currentRandomIndex = Random.Range(0, defaultLoadingTips.Count);
             this.stableDiffusionService = stableDiffusionService;
-            StartTips();
+            currentSceneLoadingTips = new Queue<LoadingTip>();
+            GenerateNewImages();
+            IterateTipsAsync();
         }
 
         private async UniTask GenerateNewImages()
         {
             async UniTask GenerateNewImage()
             {
-                Texture2D newImage = await stableDiffusionService.GetTexture(new TextToImageConfig());
+                string currentSceneDescription = "";
+                MinimapMetadata.MinimapSceneInfo minimapSceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(currentDestination.x, currentDestination.y);
+                if (minimapSceneInfo != null)
+                    currentSceneDescription = minimapSceneInfo.description;
+
+                Texture2D newImage = await stableDiffusionService.GetTexture(new TextToImageConfig()
+                {
+                    cfgScale = 7,
+                    height = 512,
+                    width = 512,
+                    samplingSteps = 20,
+                    negativePrompt = "underexposed, overexposed, bad art, beginner, amateur, distorted face, animals, humans",
+                    prompt =  "a valley in Decentraland with (((two suns))), centered, symmetry, painted, intricate, volumetric lighting, beautiful, rich deep colors masterpiece, sharp focus, ultra detailed, in the style of dan mumford and marc simonetti, astrophotography ",
+                    seed = -1,
+                });
                 currentSceneLoadingTips.Enqueue(new LoadingTip("Generated Image", newImage));
             }
 
@@ -87,32 +105,24 @@ namespace DCL.LoadingScreen
         {
             while (true)
             {
-                tipsView.ShowTip(currentSceneLoadingTips.Count > 0 ? GetNextSceneLoadingTip() : GetNextLoadingTip());
+                await UniTask.WaitUntil(() => tipScreenOn);
+                await UniTask.WaitUntil(() => currentSceneLoadingTips.Count > 0);
+                tipsView.ShowTip(GetNextSceneLoadingTip());
                 await UniTask.Delay(SHOWING_TIME_TIPS, cancellationToken: disposeCts.Token);
             }
         }
 
+        private bool tipScreenOn;
+
         public void StopTips()
         {
-            //This means that tips have been already stopped once. We only show them once, so we return and ignore this function
-            if (disposeCts ==  null) return;
-
-            tipsView.gameObject.SetActive(false);
-            currentSceneLoadingTips = null;
-            disposeCts.Cancel();
-            disposeCts.Dispose();
-            disposeCts = null;
+            tipScreenOn = false;
         }
 
-        public void StartTips()
+        public void StartTips(Vector2Int currentDestination)
         {
-            if (disposeCts != null) return;
-
-            disposeCts = new CancellationTokenSource();
-            currentSceneLoadingTips = new Queue<LoadingTip>();
-            currentSceneLoadingImage = 0;
-            IterateTipsAsync();
-            GenerateNewImages();
+            tipScreenOn = true;
+            this.currentDestination = currentDestination;
         }
     }
 

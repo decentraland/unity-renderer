@@ -11,5 +11,6 @@
   "width": 512,
   "height": 512,
   "negative_prompt": "string",
-  "sampler_index": "Euler"
+  "sampler_index": "Euler",
+  "restore_faces" : true
 }
