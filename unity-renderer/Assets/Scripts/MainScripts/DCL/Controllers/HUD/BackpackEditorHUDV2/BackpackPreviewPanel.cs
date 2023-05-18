@@ -19,7 +19,7 @@ namespace DCL.Backpack
         private const float CAMERA_MIN_Z_LIMIT = 1.3f;
         private const float CAMERA_MAX_Z_LIMIT = 3.5f;
         private const float CAMERA_ZOOM_CENTER = 1.4f;
-        private const float CAMERA_ZOOM_BOTTOM_MAX_OFFSET = 1.3f;
+        private const float CAMERA_ZOOM_BOTTOM_MAX_OFFSET = 1.1f;
         private const float CAMERA_ZOOM_TOP_MAX_OFFSET = 0.3f;
 
         [SerializeField] private RectTransform avatarPreviewPanel;

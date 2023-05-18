@@ -20,7 +20,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private const int SNAPSHOT_FACE_256_HEIGHT_RES = 256;
 
         private const int SUPERSAMPLING = 1;
-        private const float CAMERA_TRANSITION_TIME = 0.5f;
+        private const float CAMERA_TRANSITION_TIME = 0.3f;
 
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
