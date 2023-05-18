@@ -27,12 +27,14 @@ message OpenModalResponse {
 
 message MovePlayerToResponse { }
 
+message TeleportToResponse { }
+
 service RestrictedActionsService {
   // MovePlayerTo will move the player in a position relative to the current scene
   rpc MovePlayerTo(MovePlayerToRequest) returns (MovePlayerToResponse) {}
 
   // TeleportTo will move the user to the specified world LAND parcel coordinates
-  rpc TeleportTo(TeleportToRequest) returns (OpenModalResponse) {}
+  rpc TeleportTo(TeleportToRequest) returns (TeleportToResponse) {}
 
   // OpenExternalUrl prompts the user to open an external link
   rpc OpenExternalUrl(OpenExternalUrlRequest) returns (OpenModalResponse) {}

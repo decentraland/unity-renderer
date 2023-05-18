@@ -11,7 +11,7 @@ public interface IClientRestrictedActionsService
 {
   UniTask<MovePlayerToResponse> MovePlayerTo(MovePlayerToRequest request);
 
-  UniTask<OpenModalResponse> TeleportTo(TeleportToRequest request);
+  UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request);
 
   UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request);
 
@@ -33,9 +33,9 @@ public class ClientRestrictedActionsService : IClientRestrictedActionsService
       return module.CallUnaryProcedure<MovePlayerToResponse>("MovePlayerTo", request);
   }
 
-  public UniTask<OpenModalResponse> TeleportTo(TeleportToRequest request)
+  public UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request)
   {
-      return module.CallUnaryProcedure<OpenModalResponse>("TeleportTo", request);
+      return module.CallUnaryProcedure<TeleportToResponse>("TeleportTo", request);
   }
 
   public UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request)

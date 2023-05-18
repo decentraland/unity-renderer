@@ -14,7 +14,7 @@ public interface IRestrictedActionsService<Context>
 
   UniTask<MovePlayerToResponse> MovePlayerTo(MovePlayerToRequest request, Context context, CancellationToken ct);
 
-  UniTask<OpenModalResponse> TeleportTo(TeleportToRequest request, Context context, CancellationToken ct);
+  UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request, Context context, CancellationToken ct);
 
   UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request, Context context, CancellationToken ct);
 

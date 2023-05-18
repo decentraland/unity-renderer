@@ -165,14 +165,13 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
     },
     async teleportTo(req: TeleportToRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')
-      if (!isPositionValid(lastPlayerPosition, ctx) || !req.worldCoordinates) {
-        ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
-        return { success: false }
-      }
-      const response = await getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates })
 
-      // TODO: response is no longer needed since teleport is triggered from renderer
-      return { success: response?.success ?? false }
+      if (!isPositionValid(lastPlayerPosition, ctx) || !req.worldCoordinates)
+        ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
+      else
+        getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates })
+
+      return {}
     }
   }))
 }
