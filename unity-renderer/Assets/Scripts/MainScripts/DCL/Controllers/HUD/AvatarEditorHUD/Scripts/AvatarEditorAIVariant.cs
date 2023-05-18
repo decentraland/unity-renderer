@@ -45,18 +45,17 @@ public class AvatarEditorAIVariant : MonoBehaviour
         spinner.gameObject.SetActive(true);
 
         Texture2D bodysnapshot = await bodySnapshotRetriever.Invoke();
-        //var texture = await Environment.i.serviceLocator.Get<IStableDiffusionService>().GetTexture(bodysnapshot, new ImageToImageConfig() { });
-        var texture = await Environment.i.serviceLocator.Get<IStableDiffusionService>()
-                                       .GetTexture(new TextToImageConfig()
-                                            {
-                                                cfgScale = 4,
-                                                height = 512,
-                                                width = 512,
-                                                samplingSteps = 20,
-                                                negativePrompt = "",
-                                                prompt = "A beautiful landscape",
-                                                seed = -1,
-                                            });
+        var texture = await Environment.i.serviceLocator.Get<IStableDiffusionService>().GetTexture(bodysnapshot, new ImageToImageConfig()
+        {
+            cfgScale = 4,
+            height = 512,
+            width = 512,
+            samplingSteps = 20,
+            negativePrompt = "",
+            prompt = "An avatar of decentraland, beautiful",
+            denoisingStrength = 5,
+            seed = -1,
+        });
 
         avatarImage.texture = texture;
 
