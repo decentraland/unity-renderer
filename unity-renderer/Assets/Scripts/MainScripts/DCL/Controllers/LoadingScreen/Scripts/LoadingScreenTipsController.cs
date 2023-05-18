@@ -24,7 +24,6 @@ namespace DCL.LoadingScreen
         private int currentSceneLoadingImage;
 
         private readonly LoadingScreenTipsView tipsView;
-        private CancellationTokenSource disposeCts;
         private Vector2Int currentDestination;
 
 
@@ -68,7 +67,7 @@ namespace DCL.LoadingScreen
             {
                 while (currentSceneLoadingTips.Count < 4)
                     await GenerateNewImage();
-                await UniTask.Delay(1000, cancellationToken: disposeCts.Token);
+                await UniTask.Delay(1000);
             }
         }
 
@@ -108,7 +107,7 @@ namespace DCL.LoadingScreen
                 await UniTask.WaitUntil(() => tipScreenOn);
                 await UniTask.WaitUntil(() => currentSceneLoadingTips.Count > 0);
                 tipsView.ShowTip(GetNextSceneLoadingTip());
-                await UniTask.Delay(SHOWING_TIME_TIPS, cancellationToken: disposeCts.Token);
+                await UniTask.Delay(SHOWING_TIME_TIPS);
             }
         }
 
