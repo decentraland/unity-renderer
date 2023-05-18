@@ -18,5 +18,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void SetCameraLimits(float minX, float maxX, float minY, float maxY, float minZ, float maxZ);
         void ConfigureZoom(float verticalCenterRef, float bottomMaxOffset, float topMaxOffset);
         void SetCharacterShadowActive(bool isActive);
+        void SetAvatarLightActive(bool isActive);
     }
 }

@@ -112,6 +112,7 @@ namespace DCL.Backpack
                 if (visible)
                 {
                     avatarIsDirty = false;
+                    dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
                     backpackEmotesSectionController.RestoreEmoteSlots();
                     backpackEmotesSectionController.LoadEmotes();
                     wearableGridController.LoadWearables();
@@ -155,6 +156,7 @@ namespace DCL.Backpack
         {
             view.Hide();
             view.ResetPreviewEmote();
+            dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld);
         }
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>

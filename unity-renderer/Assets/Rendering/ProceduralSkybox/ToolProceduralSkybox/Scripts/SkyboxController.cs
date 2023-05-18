@@ -79,6 +79,7 @@ namespace DCL.Skybox
 
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
+            DataStore.i.skyboxConfig.avatarMatProfile.OnChange += OnAvatarMatProfileOnChange;
 
             DoAsyncInitializations();
         }
@@ -543,6 +544,7 @@ namespace DCL.Skybox
 
             CommonScriptableObjects.isLoadingHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
+            DataStore.i.skyboxConfig.avatarMatProfile.OnChange -= OnAvatarMatProfileOnChange;
 
             timeReporter.Dispose();
             DisposeCT();
@@ -623,6 +625,9 @@ namespace DCL.Skybox
                 configuration.ApplyEditorAvatarColor();
             }
         }
+
+        private void OnAvatarMatProfileOnChange(AvatarMaterialProfile current, AvatarMaterialProfile previous) =>
+            ApplyAvatarColor(SkyboxUtils.GetNormalizedDayTime(timeOfTheDay));
 
         public SkyboxElements GetSkyboxElements() { return skyboxElements; }
 
