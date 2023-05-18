@@ -15,41 +15,11 @@ namespace RPC.Services
 
         private static readonly OpenModalResponse OPEN_MODAL_SUCCESS_RESPONSE = new OpenModalResponse() { Success = true };
         private static readonly OpenModalResponse OPEN_MODAL_FAIL_RESPONSE = new OpenModalResponse() { Success = false };
-        private static readonly MovePlayerToResponse MOVE_PLAYER_TO_RESPONSE = new MovePlayerToResponse() {};
         private static readonly TeleportToResponse TELEPORT_TO_RESPONSE = new TeleportToResponse() {};
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
             RestrictedActionsServiceCodeGen.RegisterService(port, new RestrictedActionsServiceImpl());
-        }
-
-        public async UniTask<MovePlayerToResponse> MovePlayerTo(MovePlayerToRequest request, RPCContext context, CancellationToken ct)
-        {
-            await UniTask.SwitchToMainThread(ct);
-            RestrictedActionsContext restrictedActions = context.restrictedActions;
-
-            // bool success = false;
-            int currentFrameCount = restrictedActions.GetCurrentFrameCount?.Invoke() ?? GetCurrentFrameCount();
-            try
-            {
-                ct.ThrowIfCancellationRequested();
-
-                if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
-                {
-                    // LOGIC HERE
-                    Debug.Log("MovePlayerTo - CALLED!");
-
-                }
-            }
-            catch (OperationCanceledException _)
-            { // ignored
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
-
-            return MOVE_PLAYER_TO_RESPONSE;
         }
 
         public async UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request, RPCContext context, CancellationToken ct)
