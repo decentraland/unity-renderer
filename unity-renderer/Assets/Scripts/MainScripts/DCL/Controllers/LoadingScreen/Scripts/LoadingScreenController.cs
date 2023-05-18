@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.NotificationModel;
+using DCLServices.StableDiffusionService;
 using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System;
 using System.Threading;
@@ -51,7 +52,7 @@ namespace DCL.LoadingScreen
             this.realmDataStore = realmDataStore;
             this.notificationsController = notificationsController;
 
-            tipsController = new LoadingScreenTipsController(view.GetTipsView());
+            tipsController = new LoadingScreenTipsController(view.GetTipsView(), Environment.i.serviceLocator.Get<IStableDiffusionService>());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
             timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView(), worldState, this);
 
@@ -124,7 +125,7 @@ namespace DCL.LoadingScreen
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
                 //This is probably going to change with the integration of WORLDS loading screen
                 //Temporarily removing tips until V2
-                //tipsController.StopTips();
+                tipsController.StartTips();
                 percentageController.StartLoading(currentDestination);
                 timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
@@ -188,7 +189,8 @@ namespace DCL.LoadingScreen
 
             await shaderPrewarm.PrewarmAsync(OnShaderPrewarmProgress, cancellationToken);
 
-            view.FadeOut();
+            //view.FadeOut();
+            //tipsController.StopTips();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
 
             if (showRandomPositionNotification)
