@@ -189,8 +189,8 @@ namespace DCL.LoadingScreen
 
             await shaderPrewarm.PrewarmAsync(OnShaderPrewarmProgress, cancellationToken);
 
-            //view.FadeOut();
-            //tipsController.StopTips();
+            view.FadeOut();
+            tipsController.StopTips();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
 
             if (showRandomPositionNotification)

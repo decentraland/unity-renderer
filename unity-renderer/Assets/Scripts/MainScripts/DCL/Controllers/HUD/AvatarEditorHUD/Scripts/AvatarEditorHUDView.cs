@@ -133,6 +133,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     [SerializeField] internal UIHelper_ClickBlocker clickBlocker;
     [SerializeField] internal Notification noItemInCollectionWarning;
 
+    [SerializeField] internal AvatarEditorAIVariant aiVariant;
+
+
     private Service<ICharacterPreviewFactory> characterPreviewFactory;
 
     private AvatarEditorHUDController controller;
@@ -185,6 +188,21 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
             wearableGridPairs[i].selector.OnItemClicked += OnWearablesSelectorsClicked;
         }
         collectiblesItemSelector.OnItemClicked += OnWearablesSelectorsClicked;
+
+        aiVariant.Initialize(() =>
+        {
+            var snapshotCompletionSource = new UniTaskCompletionSource<Texture2D>();
+            CharacterPreview.TakeSnapshots((face, body) =>
+            {
+                snapshotCompletionSource.TrySetResult(body);
+            }, () =>
+            {
+
+                snapshotCompletionSource.TrySetCanceled();
+            });
+
+            return snapshotCompletionSource.Task;
+        });
 
         ConfigureSectionSelector();
     }

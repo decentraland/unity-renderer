@@ -66,7 +66,7 @@ namespace DCL
             ));
 
             result.Register<IStableDiffusionService>(() => new StableDiffusionService(
-                JObject.Parse(Resources.Load<TextAsset>("StableDiffusionConfig").text)
+                JObject.Parse(Resources.Load<TextAsset>("txt2imgTemplate").text)
               , null));
 
             result.Register<IServiceProviders>(() => new ServiceProviders());
