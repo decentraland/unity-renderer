@@ -22,8 +22,8 @@ namespace DCLServices.StableDiffusionService
         public int seed;
         public int width;
         public int height;
-        public float cfgScale;
         public int samplingSteps;
+        public float cfgScale;
         public float denoisingStrength;
     }
 

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -27,8 +28,20 @@ namespace DCLServices.StableDiffusionService
         public async UniTask<Texture2D> GetTexture(TextToImageConfig config)
         {
             string payload = GenerateText2ImgPayload(config);
+            Texture2D tex = await RequestAndCreateTexture(payload, URL_TXT2IMG);
+            return tex;
+        }
 
-            var request = new UnityWebRequest(URL_TXT2IMG, "POST");
+        public async UniTask<Texture2D> GetTexture(Texture2D sourceImg, ImageToImageConfig config)
+        {
+            string payload = GenerateImg2ImgPayload(sourceImg, config);
+            Texture2D tex = await RequestAndCreateTexture(payload, URL_IMG2IMG);
+            return tex;
+        }
+
+        private static async Task<Texture2D> RequestAndCreateTexture(string payload, string url)
+        {
+            var request = new UnityWebRequest(url, "POST");
             byte[] bodyRaw = Encoding.UTF8.GetBytes(payload);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -48,9 +61,6 @@ namespace DCLServices.StableDiffusionService
             return tex;
         }
 
-        public UniTask<Texture2D> GetTexture(Texture2D sourceImg, ImageToImageConfig config) =>
-            throw new NotImplementedException();
-
         private string GenerateText2ImgPayload(TextToImageConfig config)
         {
             var clone = txt2ImgConfig.DeepClone();
@@ -66,12 +76,17 @@ namespace DCLServices.StableDiffusionService
             return JsonConvert.SerializeObject(clone, Formatting.Indented);
         }
 
-        private string GenerateImg2ImgPayload(Texture2D text, ImageToImageConfig config)
+        private string GenerateImg2ImgPayload(Texture2D img, ImageToImageConfig config)
         {
-            var clone = txt2ImgConfig.DeepClone();
+            var clone = img2ImgConfig.DeepClone();
 
-            clone["init_images"] = new JArray { Convert.ToBase64String(text.EncodeToPNG()) };
+            string base64String = Convert.ToBase64String(img.EncodeToPNG());
+
+            clone["init_images"] = new JArray {
+                base64String
+            };
             clone["cfg_scale"] = config.cfgScale;
+            clone["image_cfg_scale"] = config.cfgScale;
             clone["width"] = config.width;
             clone["height"] = config.height;
             clone["seed"] = config.seed;
