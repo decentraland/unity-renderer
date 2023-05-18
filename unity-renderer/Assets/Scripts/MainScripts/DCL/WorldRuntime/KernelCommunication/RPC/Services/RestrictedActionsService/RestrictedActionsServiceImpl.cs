@@ -62,13 +62,8 @@ namespace RPC.Services
             try
             {
                 ct.ThrowIfCancellationRequested();
-
                 if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
-                {
-                    Debug.Log("TeleportTo - CALLED!");
-                    // LOGIC HERE
-                    // success = restrictedActions.OpenExternalUrlPrompt?.Invoke(request.Url, request.SceneNumber) ?? false;
-                }
+                    success = restrictedActions.TeleportToPrompt?.Invoke((int)request.WorldCoordinates.X, (int)request.WorldCoordinates.Y) ?? false;
             }
             catch (OperationCanceledException _)
             { // ignored
@@ -94,11 +89,7 @@ namespace RPC.Services
                 ct.ThrowIfCancellationRequested();
 
                 if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
-                {
-                    Debug.Log("OpenExternalUrl - CALLED!");
-
                     success = restrictedActions.OpenExternalUrlPrompt?.Invoke(request.Url, request.SceneNumber) ?? false;
-                }
             }
             catch (OperationCanceledException _)
             { // ignored
@@ -125,7 +116,6 @@ namespace RPC.Services
 
                 if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
                 {
-                    Debug.Log("OpenNftDialog - CALLED!");
                     if (NFTUtils.TryParseUrn(request.Urn, out string contractAddress, out string tokenId))
                     {
                         restrictedActions.OpenNftPrompt?.Invoke(contractAddress, tokenId);

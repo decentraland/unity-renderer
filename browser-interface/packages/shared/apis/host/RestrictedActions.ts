@@ -169,24 +169,10 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
         return { success: false }
       }
+      const response = await getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates })
 
-      const absoluteWorldPosition = gridToWorld(req.worldCoordinates.x, req.worldCoordinates.y)
-      getUnityInstance().Teleport(
-        {
-          position: absoluteWorldPosition
-        },
-        false
-      )
-
-      // Get ahead of the position report that will be done automatically later and report
-      // position right now, also marked as an immediate update (last bool in Position structure)
-      browserInterface.ReportPosition({
-        position: absoluteWorldPosition,
-        rotation: Quaternion.Identity,
-        immediate: true
-      })
-
-      return { success: true }
+      // TODO: response is no longer needed since teleport is triggered from renderer
+      return { success: response?.success ?? false }
     }
   }))
 }
