@@ -100,7 +100,8 @@ namespace DCL.Backpack
             {
                 emptySlot.SetActive(false);
                 tooltipHiddenText.gameObject.SetActive(true);
-                tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
+                string readableCategory = hiddenBy.Replace("_", " ");
+                tooltipHiddenText.text = $"Hidden by: {readableCategory[0].ToString().ToUpper() + readableCategory[1..]}";
                 hiddenByList.Add(hiddenBy);
             }
             else
@@ -113,7 +114,8 @@ namespace DCL.Backpack
                 {
                     emptySlot.SetActive(false);
                     tooltipHiddenText.gameObject.SetActive(true);
-                    tooltipHiddenText.text = $"Hidden by: {hiddenByList.Last()}";
+                    string readableCategory = hiddenByList.Last().Replace("_", " ");
+                    tooltipHiddenText.text = $"Hidden by: {readableCategory[0].ToString().ToUpper() + readableCategory[1..]}";
                 }
             }
         }
