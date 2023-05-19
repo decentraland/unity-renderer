@@ -193,15 +193,66 @@ namespace DCL.Social.Friends
                     }
             };
 
-            await this.UpdateFriendship(updateFriendshipPayload, cancellationToken);
+            await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
+        }
 
-            OnFriendRequestRemoved?.Invoke(userId);
+        public async UniTask CancelFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+        {
+            string userId = GetUserIdFromFriendRequestId(friendRequestId);
+
+            var updateFriendshipPayload = new UpdateFriendshipPayload()
+            {
+                Event =
+                    new FriendshipEventPayload()
+                    {
+                        Cancel = new CancelPayload()
+                        {
+                            User = new User() { Address = userId }
+                        }
+                    }
+            };
+
+            await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
+        }
+
+        public async UniTask AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+        {
+            string userId = GetUserIdFromFriendRequestId(friendRequestId);
+
+            var updateFriendshipPayload = new UpdateFriendshipPayload()
+            {
+                Event =
+                    new FriendshipEventPayload()
+                    {
+                        Accept = new AcceptPayload()
+                        {
+                            User = new User() { Address = userId }
+                        }
+                    }
+            };
+
+            await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
+        }
+
+        public async UniTask DeleteFriendshipAsync(string friendId, CancellationToken cancellationToken = default)
+        {
+            var updateFriendshipPayload = new UpdateFriendshipPayload()
+            {
+                Event =
+                    new FriendshipEventPayload()
+                    {
+                        Delete = new DeletePayload()
+                        {
+                            User = new User() { Address = friendId }
+                        }
+                    }
+            };
+
+            await this.UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
         }
 
         public async UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody, CancellationToken cancellationToken = default)
         {
-            long createdAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-
             var updateFriendshipPayload = new UpdateFriendshipPayload()
             {
                 Event = new FriendshipEventPayload()
@@ -214,9 +265,7 @@ namespace DCL.Social.Friends
                 }
             };
 
-            await UpdateFriendship(updateFriendshipPayload, cancellationToken);
-
-            return new FriendRequest(GetFriendRequestId(friendUserId, createdAt), createdAt, userProfileWebInterfaceBridge.GetOwn().userId, friendUserId, messageBody);
+            return await UpdateFriendship(updateFriendshipPayload, friendUserId, cancellationToken);
         }
 
         private async UniTask SubscribeToFriendshipEvents(CancellationToken cancellationToken = default)
@@ -264,7 +313,6 @@ namespace DCL.Social.Friends
                         cancellationToken.ThrowIfCancellationRequested();
                         var profile = await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friendshipEvent.Accept.User.Address, cancellationToken);
                         OnFriendRequestAccepted?.Invoke(friendshipEvent.Accept.User.Address, profile);
-
                         break;
                     case FriendshipEventResponse.BodyOneofCase.Reject:
                         OnFriendRequestRejected?.Invoke(friendshipEvent.Reject.User.Address);
@@ -311,7 +359,7 @@ namespace DCL.Social.Friends
         private static string GetFriendRequestId(string userId, long createdAt) =>
             $"{userId}-{createdAt}";
 
-        private async UniTask UpdateFriendship(UpdateFriendshipPayload updateFriendshipPayload, CancellationToken cancellationToken = default)
+        private async UniTask<FriendRequest> UpdateFriendship(UpdateFriendshipPayload updateFriendshipPayload, string friendId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -322,11 +370,64 @@ namespace DCL.Social.Friends
                                     .UpdateFriendshipEvent(updateFriendshipPayload)
                                     .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
-                cancellationToken.ThrowIfCancellationRequested();
-
-                await UniTask.SwitchToMainThread(cancellationToken);
+                switch (response.ResponseCase)
+                {
+                    case UpdateFriendshipResponse.ResponseOneofCase.Event:
+                        return ProcessUpdateFriendshipEventResponse(response.Event, cancellationToken);
+                    case UpdateFriendshipResponse.ResponseOneofCase.InternalServerError:
+                    case UpdateFriendshipResponse.ResponseOneofCase.UnauthorizedError:
+                    case UpdateFriendshipResponse.ResponseOneofCase.ForbiddenError:
+                    case UpdateFriendshipResponse.ResponseOneofCase.TooManyRequestsError:
+                    case UpdateFriendshipResponse.ResponseOneofCase.BadRequestError:
+                        ProcessAndLogUpdateFriendshipErrorError(response, friendId);
+                        return null;
+                    default: throw new ArgumentOutOfRangeException();
+                }
             }
             finally { await UniTask.SwitchToMainThread(); }
+        }
+
+        private FriendRequest ProcessUpdateFriendshipEventResponse(FriendshipEventResponse friendshipUpdate, CancellationToken cancellationToken = default)
+        {
+            switch (friendshipUpdate.BodyCase)
+            {
+                case FriendshipEventResponse.BodyOneofCase.Request:
+                    return new FriendRequest(
+                        GetFriendRequestId(friendshipUpdate.Request.User.Address, friendshipUpdate.Request.CreatedAt),
+                        friendshipUpdate.Request.CreatedAt,
+                        userProfileWebInterfaceBridge.GetOwn().userId,
+                        friendshipUpdate.Request.User.Address,
+                        friendshipUpdate.Request.Message
+                    );
+                case FriendshipEventResponse.BodyOneofCase.Accept:
+                case FriendshipEventResponse.BodyOneofCase.Reject:
+                case FriendshipEventResponse.BodyOneofCase.Delete:
+                case FriendshipEventResponse.BodyOneofCase.Cancel:
+                    return null;
+                default:
+                    Debug.LogErrorFormat("Invalid friendship event {0}", friendshipUpdate);
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void ProcessAndLogUpdateFriendshipErrorError(UpdateFriendshipResponse error, string friendId)
+        {
+            switch (error.ResponseCase)
+            {
+                case UpdateFriendshipResponse.ResponseOneofCase.InternalServerError:
+                    Debug.LogErrorFormat("Got internal server error while trying to update friendship {0} {1}", friendId, error.InternalServerError.Message);
+                    break;
+                case UpdateFriendshipResponse.ResponseOneofCase.UnauthorizedError:
+                    Debug.LogErrorFormat("Got Unauthorized error while trying to update friendship {0} {1}", friendId, error.UnauthorizedError.Message);
+                    break;
+                case UpdateFriendshipResponse.ResponseOneofCase.ForbiddenError:
+                    Debug.LogErrorFormat("Got Forbidden error while trying to update friendship {0} {1}", friendId, error.ForbiddenError.Message);
+                    break;
+                case UpdateFriendshipResponse.ResponseOneofCase.TooManyRequestsError:
+                    Debug.LogErrorFormat("Got Too many requests error {0} {1} while trying to update friendship", friendId, error.TooManyRequestsError.Message);
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(error), error, null);
+            }
         }
     }
 }

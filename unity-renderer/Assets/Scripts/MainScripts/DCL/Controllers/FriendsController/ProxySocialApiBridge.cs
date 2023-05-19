@@ -138,6 +138,29 @@ namespace DCL.Social.Friends
             return UniTask.Never<FriendRequest>(cancellationToken);
         }
 
+        public UniTask CancelFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+        {
+            if (useSocialApiBridge)
+                return socialApiBridge.CancelFriendshipAsync(friendRequestId, cancellationToken);
+
+            return UniTask.Never<FriendRequest>(cancellationToken);
+        }
+
+        public UniTask AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+        {
+            if (useSocialApiBridge)
+                return socialApiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
+
+            return UniTask.Never<FriendRequest>(cancellationToken);
+        }
+        public UniTask DeleteFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+        {
+            if (useSocialApiBridge)
+                return socialApiBridge.DeleteFriendshipAsync(friendRequestId, cancellationToken);
+
+            return UniTask.Never<FriendRequest>(cancellationToken);
+        }
+
         private async UniTask WaitForFeatureFlagsToBeInitialized(CancellationToken cancellationToken)
         {
             if (featureFlagsInitializedTask == null)

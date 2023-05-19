@@ -20,6 +20,9 @@ namespace DCL.Social.Friends
         UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default);
 
         UniTask RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
+        UniTask CancelFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
+        UniTask AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
+        UniTask DeleteFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
 
         UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody, CancellationToken cancellationToken = default);
     }

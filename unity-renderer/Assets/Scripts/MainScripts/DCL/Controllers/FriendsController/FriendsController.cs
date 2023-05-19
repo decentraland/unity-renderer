@@ -89,7 +89,6 @@ namespace DCL.Social.Friends
             apiBridge.OnFriendNotFound += FriendNotFound;
             apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
-            apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
 
             void SubscribeToCorrespondingBridgeEvents()
             {
@@ -100,8 +99,8 @@ namespace DCL.Social.Friends
                     socialApiBridge.OnOutgoingFriendRequestAdded += AddOutgoingFriendRequest;
                     socialApiBridge.OnFriendRemoved += RemoveDeletedFriend;
                     socialApiBridge.OnFriendRequestAccepted += AcceptedFriendRequest;
-                    socialApiBridge.OnFriendRequestRejected += FriendRequestRejected;
-                    socialApiBridge.OnFriendRequestCanceled += FriendRequestCancelled;
+                    socialApiBridge.OnFriendRequestRejected += (userId) => RemoveFriendRequest(userId, false, FriendshipAction.REJECTED);
+                    socialApiBridge.OnFriendRequestCanceled += (userId) => RemoveFriendRequest(userId, false, FriendshipAction.CANCELLED);
                 }
                 else
                 {
@@ -146,37 +145,28 @@ namespace DCL.Social.Friends
             });
         }
 
-        private void FriendRequestRejected(string userId)
+        private void RemoveFriendRequest(string userId, bool incoming, FriendshipAction newFriendshipAction)
         {
             var friendRequest = GetAllocatedFriendRequestByUser(userId);
 
             if (friendRequest != null)
             {
-                outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                if (incoming)
+                {
+                    incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                    incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                }
+                else
+                {
+                    outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                    outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                }
             }
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
             {
                 userId = userId,
-                action = FriendshipAction.REJECTED
-            });
-        }
-
-        private void FriendRequestCancelled(string userId)
-        {
-            var friendRequest = GetAllocatedFriendRequestByUser(userId);
-
-            if (friendRequest != null)
-            {
-                incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
-            }
-
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-            {
-                userId = userId,
-                action = FriendshipAction.CANCELLED
+                action = newFriendshipAction
             });
         }
 
@@ -317,10 +307,22 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            FriendRequest request;
+
+            if (useSocialApiBridge)
+            {
+                request = incomingFriendRequestsById[friendRequestId];
+                await socialApiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
+
+                RemoveFriendRequest(request.From, true, FriendshipAction.REJECTED);
+
+                return request;
+            }
+
             AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
 
             FriendRequestPayload requestPayload = payload.FriendRequest;
-            var request = ToFriendRequest(requestPayload);
+            request = ToFriendRequest(requestPayload);
             friendRequests.Remove(request.FriendRequestId);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
@@ -343,15 +345,15 @@ namespace DCL.Social.Friends
                 friendRequest = incomingFriendRequestsById[friendRequestId];
 
                 await socialApiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
+                RemoveFriendRequest(friendRequest.From, true, FriendshipAction.REJECTED);
+                return friendRequest;
             }
-            else
-            {
-                RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
 
-                FriendRequestPayload requestPayload = payload.FriendRequestPayload;
-                friendRequest = ToFriendRequest(requestPayload);
-                friendRequests.Remove(friendRequest.FriendRequestId);
-            }
+            RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
+
+            FriendRequestPayload requestPayload = payload.FriendRequestPayload;
+            friendRequest = ToFriendRequest(requestPayload);
+            friendRequests.Remove(friendRequest.FriendRequestId);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REJECTED, userId = friendRequest.From });
@@ -567,12 +569,21 @@ namespace DCL.Social.Friends
 
             if (request != null)
             {
-                await apiBridge.CancelRequestAsync(request.FriendRequestId, cancellationToken);
+                if (useSocialApiBridge)
+                {
+                    await socialApiBridge.CancelFriendshipAsync(request.FriendRequestId, cancellationToken);
 
-                friendRequests.Remove(request.FriendRequestId);
+                    if (TryGetAllocatedFriendRequest(request.FriendRequestId, out request)) { RemoveFriendRequest(request.To, false, FriendshipAction.CANCELLED); }
+                }
+                else
+                {
+                    await apiBridge.CancelRequestAsync(request.FriendRequestId, cancellationToken);
 
-                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                    { action = FriendshipAction.CANCELLED, userId = friendUserId });
+                    friendRequests.Remove(request.FriendRequestId);
+
+                    UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                        { action = FriendshipAction.CANCELLED, userId = friendUserId });
+                }
 
                 return request;
             }
@@ -592,15 +603,25 @@ namespace DCL.Social.Friends
         public async UniTask<FriendRequest> CancelRequestAsync(string friendRequestId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            FriendRequest friendRequest;
 
-            CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequestAsync(friendRequestId, cancellationToken);
+            if (useSocialApiBridge)
+            {
+                await socialApiBridge.CancelFriendshipAsync(friendRequestId, cancellationToken);
 
-            var friendRequest = ToFriendRequest(payload.friendRequest);
+                if (TryGetAllocatedFriendRequest(friendRequestId, out friendRequest)) { RemoveFriendRequest(friendRequest.To, false, FriendshipAction.CANCELLED); }
+            }
+            else
+            {
+                CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequestAsync(friendRequestId, cancellationToken);
 
-            friendRequests.Remove(friendRequest.FriendRequestId);
+                friendRequest = ToFriendRequest(payload.friendRequest);
 
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.CANCELLED, userId = friendRequest.To });
+                friendRequests.Remove(friendRequest.FriendRequestId);
+
+                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                    { action = FriendshipAction.CANCELLED, userId = friendRequest.To });
+            }
 
             return friendRequest;
         }
