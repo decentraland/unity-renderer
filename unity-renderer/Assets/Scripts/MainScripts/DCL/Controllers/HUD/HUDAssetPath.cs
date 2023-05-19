@@ -5,5 +5,7 @@
         public const string SIGNUP_HUD = "SignupHUD";
         public const string QUESTS_TRACKER_HUD = "QuestsTrackerHUD";
         public const string HELP_AND_SUPPORT_HUD = "HelpAndSupportHUD";
+
+        public const string VIEW_PATH = "NotificationHUD";
     }
 }
