@@ -18,6 +18,7 @@ namespace DCL.Backpack
         void Hide(bool instant = false);
         void SetAsFullScreenMenuMode(Transform parentTransform);
         void PlayPreviewEmote(string emoteId);
+        void PlayPreviewEmote(string emoteId, long timestamp);
         void ResetPreviewEmote();
         void UpdateAvatarPreview(AvatarModel avatarModel);
         void SetAvatarPreviewFocus(CharacterPreviewController.CameraFocus focus, bool useTransition = true);

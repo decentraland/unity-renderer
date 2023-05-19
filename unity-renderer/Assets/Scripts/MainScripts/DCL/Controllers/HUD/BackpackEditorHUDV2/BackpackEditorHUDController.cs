@@ -32,6 +32,8 @@ namespace DCL.Backpack
         private readonly BackpackEditorHUDModel model = new ();
         private readonly BackpackEditorHUDModel preEquipModel = new ();
 
+        private int currentAnimationIndexShown;
+
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
             DataStore dataStore,
@@ -385,7 +387,10 @@ namespace DCL.Backpack
                 backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
             if (updateAvatarPreview)
+            {
                 view.UpdateAvatarPreview(model.ToAvatarModel());
+                PlayEquipAnimation(wearable.data.category);
+            }
         }
 
         private void UnEquipCurrentBodyShape(bool setAsDirty = true)
@@ -481,6 +486,40 @@ namespace DCL.Backpack
 
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
+        }
+
+        private void PlayEquipAnimation(string category)
+        {
+            view.PlayPreviewEmote(
+                GetEquipEmoteByCategory(category),
+                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        }
+
+        private string GetEquipEmoteByCategory(string category)
+        {
+            string equipEmote = category switch
+                                {
+                                    WearableLiterals.Categories.FEET => GetRandomizedName("Outfit_Shoes_v0", 2),
+                                    WearableLiterals.Categories.LOWER_BODY => GetRandomizedName("Outfit_Lower_v0", 3),
+                                    WearableLiterals.Categories.UPPER_BODY => GetRandomizedName("Outfit_Upper_v0", 3),
+                                    "eyewear" => GetRandomizedName("Outfit_Accessories_v0", 3),
+                                    "tiara" => GetRandomizedName("Outfit_Accessories_v0", 3),
+                                    "earring" => GetRandomizedName("Outfit_Accessories_v0", 3),
+                                    "hat" => GetRandomizedName("Outfit_Accessories_v0", 3),
+                                    "top_head" => GetRandomizedName("Outfit_Accessories_v0", 3),
+                                    "helmet" => GetRandomizedName("Outfit_Accessories_v0", 3),
+                                    "mask" => GetRandomizedName("Outfit_Accessories_v0", 3),
+                                    "skin" => GetRandomizedName("Outfit_Upper_v0", 3),
+                                    _ => string.Empty,
+                                };
+
+            return equipEmote;
+        }
+
+        private string GetRandomizedName(string baseString, int limit)
+        {
+            currentAnimationIndexShown = (currentAnimationIndexShown + 1) % limit;
+            return baseString + (currentAnimationIndexShown + 1);
         }
     }
 }

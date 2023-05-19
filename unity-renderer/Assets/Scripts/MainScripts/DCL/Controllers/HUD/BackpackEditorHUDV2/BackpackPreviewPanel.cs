@@ -76,6 +76,9 @@ namespace DCL.Backpack
         public void PlayPreviewEmote(string emoteId) =>
             characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup);
 
+        public void PlayPreviewEmote(string emoteId, long timestamp) =>
+            characterPreviewController.PlayEmote(emoteId, timestamp);
+
         public void ResetPreviewEmote() =>
             PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
 
