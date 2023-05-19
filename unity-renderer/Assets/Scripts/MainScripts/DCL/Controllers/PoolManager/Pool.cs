@@ -148,8 +148,7 @@ namespace DCL
                 ? instantiator.Instantiate(original)
                 : Object.Instantiate(original);
 
-            if(gameObject.activeSelf != isActive)
-                gameObject.SetActive(isActive);
+            gameObject.SetActive(isActive);
 
             return gameObject;
         }
