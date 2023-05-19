@@ -74,7 +74,6 @@ namespace DCLServices.StableDiffusionService
             clone["prompt"] = config.prompt;
             clone["steps"] = config.samplingSteps;
 
-            File.WriteAllText("StableDiffusionJson.txt", clone.ToString());
             return JsonConvert.SerializeObject(clone, Formatting.Indented);
         }
 
@@ -96,7 +95,6 @@ namespace DCLServices.StableDiffusionService
             clone["steps"] = config.samplingSteps;
             clone["denoising_strength"] = config.denoisingStrength;
 
-           File.WriteAllText("StableDiffusionJson.txt", clone.ToString());
             return JsonConvert.SerializeObject(clone, Formatting.Indented);
         }
 
