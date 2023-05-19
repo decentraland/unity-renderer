@@ -60,5 +60,7 @@ namespace DCL
     public interface IHUDFactory : IService
     {
         UniTask<IHUD> CreateHUD(HUDElementID elementID, CancellationToken cancellationToken = default);
+
+        UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default, string name = null) where T:IDisposable;
     }
 }

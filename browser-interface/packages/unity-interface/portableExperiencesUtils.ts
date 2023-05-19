@@ -100,16 +100,13 @@ async function spawnPortableExperience(spawnData: LoadableScene): Promise<Portab
   }
   if (!sceneId) debugger
 
-  const scene = await loadParcelSceneWorker(
-    {
-      ...spawnData,
-      isPortableExperience: true,
-      isGlobalScene: true,
-      // portable experiences have no FPS limit
-      useFPSThrottling: false
-    },
-    undefined
-  )
+  const scene = await loadParcelSceneWorker({
+    ...spawnData,
+    isPortableExperience: true,
+    isGlobalScene: true,
+    // portable experiences have no FPS limit
+    useFPSThrottling: false
+  })
   // add default permissions for portable experience based scenes
   defaultPortableExperiencePermissions.forEach(($) => scene.rpcContext.permissionGranted.add($))
 

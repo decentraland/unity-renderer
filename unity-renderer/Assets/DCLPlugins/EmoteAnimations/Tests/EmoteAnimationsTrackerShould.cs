@@ -7,6 +7,7 @@ using NSubstitute.Extensions;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -92,7 +93,8 @@ namespace DCL.Emotes
         public void ReactToEquipEmotesReferenceSetTo0()
         {
             string bodyshapeId = WearableLiterals.BodyShapes.FEMALE;
-            var tikAnim = Resources.Load<AnimationClip>("tik");
+
+            var tikAnim = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Scripts/MainScripts/DCL/Components/Avatar/Animations/Addressables/tik.anim");
             dataStore.animations.Add((bodyshapeId, "emote0"), new EmoteClipData(tikAnim));
             IEmoteAnimationLoader loader = Substitute.For<IEmoteAnimationLoader>();
             tracker.loaders.Add((bodyshapeId, "emote0"), loader);

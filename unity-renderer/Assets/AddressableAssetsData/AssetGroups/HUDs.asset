@@ -29,6 +29,10 @@ MonoBehaviour:
     m_Address: HelpAndSupportHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 987f12680f06c40d0a902d4004a36e3c
+    m_Address: NotificationHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
