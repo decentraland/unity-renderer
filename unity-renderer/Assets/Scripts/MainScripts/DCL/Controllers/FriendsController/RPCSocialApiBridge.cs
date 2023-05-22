@@ -190,7 +190,11 @@ namespace DCL.Social.Friends
                         {
                             User = new User() { Address = userId }
                         }
-                    }
+                    },
+                AuthToken = new Payload()
+                {
+                    SynapseToken = accessToken
+                }
             };
 
             await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
@@ -209,7 +213,11 @@ namespace DCL.Social.Friends
                         {
                             User = new User() { Address = userId }
                         }
-                    }
+                    },
+                AuthToken = new Payload()
+                {
+                    SynapseToken = accessToken
+                }
             };
 
             await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
@@ -228,7 +236,11 @@ namespace DCL.Social.Friends
                         {
                             User = new User() { Address = userId }
                         }
-                    }
+                    },
+                AuthToken = new Payload()
+                {
+                    SynapseToken = accessToken
+                }
             };
 
             await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
@@ -245,7 +257,11 @@ namespace DCL.Social.Friends
                         {
                             User = new User() { Address = friendId }
                         }
-                    }
+                    },
+                AuthToken = new Payload()
+                {
+                    SynapseToken = accessToken
+                }
             };
 
             await this.UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
@@ -262,6 +278,10 @@ namespace DCL.Social.Friends
                         Message = messageBody,
                         User = new User() { Address = friendUserId },
                     }
+                },
+                AuthToken = new Payload()
+                {
+                    SynapseToken = accessToken
                 }
             };
 
@@ -272,26 +292,30 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await foreach (var friendshipEventResponse in socialClient.SubscribeFriendshipEventsUpdates(new Payload() { SynapseToken = accessToken }))
+            try
             {
-                switch (friendshipEventResponse.ResponseCase)
+                await foreach (var friendshipEventResponse in socialClient.SubscribeFriendshipEventsUpdates(new Payload() { SynapseToken = accessToken }))
                 {
-                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.InternalServerError:
-                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.UnauthorizedError:
-                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.ForbiddenError:
-                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.TooManyRequestsError:
-                        ProcessAndLogSubscriptionError(friendshipEventResponse);
-                        break;
-                    case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.Events:
-                        await ProcessFriendshipEventResponse(friendshipEventResponse.Events, cancellationToken);
-                        break;
-                    default:
+                    switch (friendshipEventResponse.ResponseCase)
                     {
-                        Debug.LogErrorFormat("Subscription to friendship events got invalid response {0}", friendshipEventResponse);
-                        throw new ArgumentOutOfRangeException();
+                        case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.InternalServerError:
+                        case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.UnauthorizedError:
+                        case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.ForbiddenError:
+                        case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.TooManyRequestsError:
+                            ProcessAndLogSubscriptionError(friendshipEventResponse);
+                            break;
+                        case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.Events:
+                            await ProcessFriendshipEventResponse(friendshipEventResponse.Events, cancellationToken);
+                            break;
+                        default:
+                        {
+                            Debug.LogErrorFormat("Subscription to friendship events got invalid response {0}", friendshipEventResponse);
+                            throw new ArgumentOutOfRangeException();
+                        }
                     }
                 }
             }
+            catch (Exception ex) { Debug.Log($"Got exception {ex.Message}"); }
         }
 
         private async UniTask ProcessFriendshipEventResponse(FriendshipEventResponses friendshipEventsUpdatesResponse, CancellationToken cancellationToken = default)

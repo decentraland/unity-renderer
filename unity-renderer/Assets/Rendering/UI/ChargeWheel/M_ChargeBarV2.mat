@@ -51,8 +51,8 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _fillHead: 0.000114941344
-    - _fillTail: 0
+    - _fillHead: 1
+    - _fillTail: 0.036796708
     - _fillTails: 0.5
     m_Colors:
     - Color_80b3604e6ba44946a43c678e0e7394af: {r: 1, g: 0, b: 0.26052088, a: 1}

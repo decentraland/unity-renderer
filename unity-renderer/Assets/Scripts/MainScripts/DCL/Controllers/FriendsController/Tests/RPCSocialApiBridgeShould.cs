@@ -237,6 +237,8 @@ namespace DCL.Social.Friends
             });
         }
 
+
+
         private static FriendshipEventResponse CreateRejectFriendshipResponse()
         {
             return new FriendshipEventResponse()
