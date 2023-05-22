@@ -8,6 +8,8 @@ declare const globalThis: { analytics: any; delighted: any }
 
 let timer: ReturnType<typeof setTimeout> | null = null
 
+;(globalThis as any).setDelightedSurveyEnabled = setDelightedSurveyEnabled
+
 export function setDelightedSurveyEnabled(enabled: boolean) {
   if (enabled && !timer) {
     timer = setTimeout(delightedSurvey, TIMEOUT_MS)

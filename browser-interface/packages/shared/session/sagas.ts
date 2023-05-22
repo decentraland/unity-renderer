@@ -51,6 +51,7 @@ import { changeRealm } from '../dao'
 import { SET_SCENE_LOADER } from '../scene-loader/actions'
 import { WorldConfig } from '../meta/types'
 import { getUnityInstance } from '../../unity-interface/IUnityInterface'
+import { setDelightedSurveyEnabled } from 'unity-interface/delightedSurvey'
 
 const TOS_KEY = 'tos'
 const logger = DEBUG_KERNEL_LOG ? createLogger('session: ') : createDummyLogger()
@@ -163,6 +164,7 @@ function* SetupTutorial() {
         yield call(changeRealm, realm, true)
         //The scene loader change is not instant, so we wait for it to be done using a take of the SET_SCENE_LOADER action
         yield take(SET_SCENE_LOADER)
+        setDelightedSurveyEnabled(true)
       } else {
         logger.warn('No realm was provided for the onboarding experience.')
       }
