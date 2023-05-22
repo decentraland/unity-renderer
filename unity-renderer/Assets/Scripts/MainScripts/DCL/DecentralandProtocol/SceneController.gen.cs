@@ -38,25 +38,26 @@ namespace Decentraland.Renderer.RendererServices {
             "ZU1lc3NhZ2UiEwoRVW5sb2FkU2NlbmVSZXN1bHQiIwoQQ1JEVFNjZW5lTWVz",
             "c2FnZRIPCgdwYXlsb2FkGAEgASgMIkIKFUNSRFRTY2VuZUN1cnJlbnRTdGF0",
             "ZRIYChBoYXNfb3duX2VudGl0aWVzGAEgASgIEg8KB3BheWxvYWQYAiABKAwi",
-            "SAoQU2VuZEJhdGNoUmVxdWVzdBI0CgdhY3Rpb25zGAEgAygLMiMuZGVjZW50",
-            "cmFsYW5kLnNkay5lY3M2LkVudGl0eUFjdGlvbiITChFTZW5kQmF0Y2hSZXNw",
-            "b25zZTLOBQoZUnBjU2NlbmVDb250cm9sbGVyU2VydmljZRKCAQoJTG9hZFNj",
-            "ZW5lEjkuZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2Vz",
-            "LkxvYWRTY2VuZU1lc3NhZ2UaOC5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVu",
-            "ZGVyZXJfc2VydmljZXMuTG9hZFNjZW5lUmVzdWx0IgASiAEKC1VubG9hZFNj",
-            "ZW5lEjsuZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2Vz",
-            "LlVubG9hZFNjZW5lTWVzc2FnZRo6LmRlY2VudHJhbGFuZC5yZW5kZXJlci5y",
-            "ZW5kZXJlcl9zZXJ2aWNlcy5VbmxvYWRTY2VuZVJlc3VsdCIAEoIBCghTZW5k",
-            "Q3JkdBI5LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNl",
-            "cy5DUkRUU2NlbmVNZXNzYWdlGjkuZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJl",
-            "bmRlcmVyX3NlcnZpY2VzLkNSRFRTY2VuZU1lc3NhZ2UiABKUAQoPR2V0Q3Vy",
-            "cmVudFN0YXRlEj8uZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3Nl",
-            "cnZpY2VzLkdldEN1cnJlbnRTdGF0ZU1lc3NhZ2UaPi5kZWNlbnRyYWxhbmQu",
-            "cmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMuQ1JEVFNjZW5lQ3VycmVudFN0",
-            "YXRlIgAShAEKCVNlbmRCYXRjaBI5LmRlY2VudHJhbGFuZC5yZW5kZXJlci5y",
-            "ZW5kZXJlcl9zZXJ2aWNlcy5TZW5kQmF0Y2hSZXF1ZXN0GjouZGVjZW50cmFs",
-            "YW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2VzLlNlbmRCYXRjaFJlc3Bv",
-            "bnNlIgBiBnByb3RvMw=="));
+            "IwoQU2VuZEJhdGNoUmVxdWVzdBIPCgdwYXlsb2FkGAEgASgMIlEKGVJlbmRl",
+            "cmVyTWFueUVudGl0eUFjdGlvbnMSNAoHYWN0aW9ucxgBIAMoCzIjLmRlY2Vu",
+            "dHJhbGFuZC5zZGsuZWNzNi5FbnRpdHlBY3Rpb24iEwoRU2VuZEJhdGNoUmVz",
+            "cG9uc2UyzgUKGVJwY1NjZW5lQ29udHJvbGxlclNlcnZpY2USggEKCUxvYWRT",
+            "Y2VuZRI5LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNl",
+            "cy5Mb2FkU2NlbmVNZXNzYWdlGjguZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJl",
+            "bmRlcmVyX3NlcnZpY2VzLkxvYWRTY2VuZVJlc3VsdCIAEogBCgtVbmxvYWRT",
+            "Y2VuZRI7LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNl",
+            "cy5VbmxvYWRTY2VuZU1lc3NhZ2UaOi5kZWNlbnRyYWxhbmQucmVuZGVyZXIu",
+            "cmVuZGVyZXJfc2VydmljZXMuVW5sb2FkU2NlbmVSZXN1bHQiABKCAQoIU2Vu",
+            "ZENyZHQSOS5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2Vydmlj",
+            "ZXMuQ1JEVFNjZW5lTWVzc2FnZRo5LmRlY2VudHJhbGFuZC5yZW5kZXJlci5y",
+            "ZW5kZXJlcl9zZXJ2aWNlcy5DUkRUU2NlbmVNZXNzYWdlIgASlAEKD0dldEN1",
+            "cnJlbnRTdGF0ZRI/LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9z",
+            "ZXJ2aWNlcy5HZXRDdXJyZW50U3RhdGVNZXNzYWdlGj4uZGVjZW50cmFsYW5k",
+            "LnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2VzLkNSRFRTY2VuZUN1cnJlbnRT",
+            "dGF0ZSIAEoQBCglTZW5kQmF0Y2gSOS5kZWNlbnRyYWxhbmQucmVuZGVyZXIu",
+            "cmVuZGVyZXJfc2VydmljZXMuU2VuZEJhdGNoUmVxdWVzdBo6LmRlY2VudHJh",
+            "bGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5TZW5kQmF0Y2hSZXNw",
+            "b25zZSIAYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.EntityReflection.Descriptor, global::Decentraland.Sdk.Ecs6.EngineInterfaceEcs6Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -67,7 +68,8 @@ namespace Decentraland.Renderer.RendererServices {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.UnloadSceneResult), global::Decentraland.Renderer.RendererServices.UnloadSceneResult.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.CRDTSceneMessage), global::Decentraland.Renderer.RendererServices.CRDTSceneMessage.Parser, new[]{ "Payload" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.CRDTSceneCurrentState), global::Decentraland.Renderer.RendererServices.CRDTSceneCurrentState.Parser, new[]{ "HasOwnEntities", "Payload" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.SendBatchRequest), global::Decentraland.Renderer.RendererServices.SendBatchRequest.Parser, new[]{ "Actions" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.SendBatchRequest), global::Decentraland.Renderer.RendererServices.SendBatchRequest.Parser, new[]{ "Payload" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.RendererManyEntityActions), global::Decentraland.Renderer.RendererServices.RendererManyEntityActions.Parser, new[]{ "Actions" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.SendBatchResponse), global::Decentraland.Renderer.RendererServices.SendBatchResponse.Parser, null, null, null, null, null)
           }));
     }
@@ -1653,7 +1655,7 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SendBatchRequest(SendBatchRequest other) : this() {
-      actions_ = other.actions_.Clone();
+      payload_ = other.payload_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1661,6 +1663,195 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SendBatchRequest Clone() {
       return new SendBatchRequest(this);
+    }
+
+    /// <summary>Field number for the "payload" field.</summary>
+    public const int PayloadFieldNumber = 1;
+    private pb::ByteString payload_ = pb::ByteString.Empty;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pb::ByteString Payload {
+      get { return payload_; }
+      set {
+        payload_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as SendBatchRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(SendBatchRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Payload != other.Payload) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Payload.Length != 0) hash ^= Payload.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Payload.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Payload);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Payload.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Payload);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Payload.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Payload);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(SendBatchRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Payload.Length != 0) {
+        Payload = other.Payload;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Payload = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Payload = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class RendererManyEntityActions : pb::IMessage<RendererManyEntityActions>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<RendererManyEntityActions> _parser = new pb::MessageParser<RendererManyEntityActions>(() => new RendererManyEntityActions());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<RendererManyEntityActions> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Renderer.RendererServices.SceneControllerReflection.Descriptor.MessageTypes[8]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public RendererManyEntityActions() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public RendererManyEntityActions(RendererManyEntityActions other) : this() {
+      actions_ = other.actions_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public RendererManyEntityActions Clone() {
+      return new RendererManyEntityActions(this);
     }
 
     /// <summary>Field number for the "actions" field.</summary>
@@ -1677,12 +1868,12 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as SendBatchRequest);
+      return Equals(other as RendererManyEntityActions);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(SendBatchRequest other) {
+    public bool Equals(RendererManyEntityActions other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -1747,7 +1938,7 @@ namespace Decentraland.Renderer.RendererServices {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(SendBatchRequest other) {
+    public void MergeFrom(RendererManyEntityActions other) {
       if (other == null) {
         return;
       }
@@ -1811,7 +2002,7 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.RendererServices.SceneControllerReflection.Descriptor.MessageTypes[8]; }
+      get { return global::Decentraland.Renderer.RendererServices.SceneControllerReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

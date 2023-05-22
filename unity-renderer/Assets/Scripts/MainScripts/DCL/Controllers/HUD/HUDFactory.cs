@@ -64,7 +64,7 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()),
                     DataStore.i);
             case HUDElementID.NOTIFICATION:
-                return new NotificationHUDController();
+                return new NotificationHUDController( await CreateHUDView<NotificationHUDView>(VIEW_PATH, cancellationToken));
             case HUDElementID.SETTINGS_PANEL:
                 return new SettingsPanelHUDController();
             case HUDElementID.TERMS_OF_SERVICE:
@@ -169,7 +169,7 @@ public class HUDFactory : IHUDFactory
         return null;
     }
 
-    protected async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default) where T:IDisposable
+    public async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default, string name = null) where T:IDisposable
     {
         var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}", cancellationToken);
         disposableViews.Add(view);

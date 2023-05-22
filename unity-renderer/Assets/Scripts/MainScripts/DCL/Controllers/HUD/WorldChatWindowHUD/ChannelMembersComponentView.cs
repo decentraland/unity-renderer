@@ -180,10 +180,5 @@ namespace DCL.Chat.HUD
             if (emptyStateForSearch != null)
                 emptyStateForSearch.SetActive(isActive);
         }
-
-        public static ChannelMembersComponentView Create()
-        {
-            return Instantiate(Resources.Load<ChannelMembersComponentView>("SocialBarV1/ChannelMembersHUD"));
-        }
     }
 }

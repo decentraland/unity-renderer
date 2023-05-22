@@ -7,16 +7,17 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Build.AnalyzeRules;
 using UnityEngine;
 
+[Category("EditModeCI")]
 public class AddressablesValidationTests
 {
-    private static readonly string[] EXCLUDED_FILE_TYPES = { }; // "shader", "png", "jpg"
     private const string NO_ISSUES_FOUND = "No issues found";
+    private static readonly string[] EXCLUDED_FILE_TYPES = { }; // "shader", "png", "jpg"
 
-    [TestCase("Rendering")]
+    [TestCase("Scripts/MainScripts/DCL/Controllers/HUD/NotificationHUD")]
     public void ValidateFolderDoesNotHaveResourcesFolderInside(string folderName)
     {
         string folderPath = Application.dataPath + $"/{folderName}";
-        DirectoryInfo directory = new DirectoryInfo(folderPath);
+        var directory = new DirectoryInfo(folderPath);
 
         if (!directory.Exists)
             Assert.Fail($"{folderName} does not exist");
@@ -25,30 +26,29 @@ public class AddressablesValidationTests
         Assert.IsFalse(hasResourcesFolder, $"{folderName} folder or its sub-folders contain Resources folder");
     }
 
-
-    [Test][Category("EditModeCI")]
+    [Test]
     public void ValidateDuplicateBundleDependencies()
     {
-        CheckBundleDupeDependencies rule = new CheckBundleDupeDependencies();
+        var rule = new CheckBundleDupeDependencies();
         List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
         if (duplicates[0].resultName == NO_ISSUES_FOUND)
             return;
 
-        Dictionary<string, List<string>> bundlesByAsset = GroupBundlesByDuplicatedAssets(duplicates, isCustomGroupsRule: true);
+        Dictionary<string, (List<string>, List<string> assets)> bundlesByAsset = GroupBundlesByDuplicatedAssets(duplicates, isCustomGroupsRule: true);
         string msg = CreateDuplicatesMessage(bundlesByAsset, EXCLUDED_FILE_TYPES);
 
         Assert.That(msg, Is.Empty,
-            message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies in Addressables->Analyze tool")); 
+            message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies in Addressables->Analyze tool"));
     }
 
-    [Test][Category("EditModeCI")]
+    [Test]
     public void ValidateScenesToAddressableDuplicateDependencies()
     {
-        CheckSceneDupeDependencies rule = new CheckSceneDupeDependencies();
+        var rule = new CheckSceneDupeDependencies();
         List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-        if (duplicates[0].resultName.Contains(NO_ISSUES_FOUND)) 
+        if (duplicates[0].resultName.Contains(NO_ISSUES_FOUND))
             return;
 
         Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset = GroupScenesAndBundlesByDuplicatedAsset(duplicates);
@@ -58,36 +58,50 @@ public class AddressablesValidationTests
             message: ComposeAssertMessage(msg, analyzeRule: "Check Scene to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
     }
 
-    [Test][Category("ToFix")]
-    public void ValidateResourcesToAddressableDuplicateDependencies()
+    [TestCase(7f)]
+    public void ValidateResourcesToAddressableDuplicateDependencies(float maxAssetSize)
     {
         var rule = new CheckResourcesDupeDependencies();
-        var duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
+        List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
         if (duplicates.Count == 0 || duplicates[0].resultName == NO_ISSUES_FOUND) return;
 
-        var bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
-        var msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES);
+        Dictionary<string, (List<string>, List<string> assets)> bundlesByResource = GroupBundlesByDuplicatedAssets(duplicates);
 
-        Assert.That(msg, Is.Empty,
-            message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool"));
+        string msg = CreateDuplicatesMessage(bundlesByResource, EXCLUDED_FILE_TYPES, maxAssetSize * 1_000_000);
+        Assert.That(msg, Is.Empty, message: ComposeAssertMessage(msg, analyzeRule: "Check Resources to Addressable Duplicate Dependencies in Addressables->Analyze tool \n"));
     }
 
-    private static Dictionary<string, List<string>> GroupBundlesByDuplicatedAssets(List<AnalyzeRule.AnalyzeResult> duplicates, bool isCustomGroupsRule = false)
+    private static long GetAssetSize(string asset)
     {
-        Dictionary<string, List<string>> bundlesByAsset = new ();
+        if (!asset.Contains("Assets")) return 0;
+
+        string path = Application.dataPath + asset.Remove(0, "Assets".Length);
+        return new FileInfo(path).Length;
+    }
+
+    private static Dictionary<string, (List<string> bundles, List<string> assets)> GroupBundlesByDuplicatedAssets(List<AnalyzeRule.AnalyzeResult> duplicates, bool isCustomGroupsRule = false)
+    {
+        Dictionary<string, (List<string> bundles, List<string> assets)> bundlesByAsset = new ();
 
         foreach (AnalyzeRule.AnalyzeResult duplicate in duplicates)
         {
             string[] dSplit = duplicate.resultName.Split(':');
 
-            string dAsset = isCustomGroupsRule && Application.isBatchMode ? dSplit[^1] : dSplit[0];
+            string dResource = isCustomGroupsRule && Application.isBatchMode ? dSplit[^1] : dSplit[0];
             string dBundle = dSplit[1];
+            string dAsset = isCustomGroupsRule && Application.isBatchMode ? dSplit[0] : dSplit[^1];
 
-            if (!bundlesByAsset.ContainsKey(dAsset))
-                bundlesByAsset.Add(dAsset, new List<string> { dBundle });
-            else if (!bundlesByAsset[dAsset].Contains(dBundle))
-                bundlesByAsset[dAsset].Add(dBundle);
+            if (!bundlesByAsset.ContainsKey(dResource))
+                bundlesByAsset.Add(dResource, (new List<string> { dBundle }, new List<string> { dAsset }));
+            else
+            {
+                if (!bundlesByAsset[dResource].bundles.Contains(dBundle))
+                    bundlesByAsset[dResource].bundles.Add(dBundle);
+
+                if (!bundlesByAsset[dResource].assets.Contains(dAsset))
+                    bundlesByAsset[dResource].assets.Add(dAsset);
+            }
         }
 
         return bundlesByAsset;
@@ -120,18 +134,23 @@ public class AddressablesValidationTests
         return scenesAndBundlesByAsset;
     }
 
-    private static string CreateDuplicatesMessage(Dictionary<string, List<string>> bundlesByAsset, string[] excludedFileTypesFilter)
+    private static string CreateDuplicatesMessage(Dictionary<string, (List<string>, List<string> assets)> bundlesByAsset, string[] excludedFileTypesFilter, float minDuplicatesSize = 0)
     {
-        StringBuilder message = new StringBuilder();
+        var message = new StringBuilder();
 
-        foreach (var keyValuePair in bundlesByAsset
+        foreach (KeyValuePair<string, (List<string>, List<string> assets)> keyValuePair in bundlesByAsset
                     .Where(keyValuePair => !excludedFileTypesFilter.Contains(keyValuePair.Key.Split('.')[^1])))
         {
+            long size = keyValuePair.Value.assets.Sum(GetAssetSize);
+            if (size <= minDuplicatesSize)
+                continue;
+
             message.Append("ASSET: " + keyValuePair.Key);
+            message.Append(" - SIZE: " + size);
+            message.Append(" - COUNT: " + keyValuePair.Value.assets.Count);
 
             message.Append(" - BUNDLES: ");
-
-            foreach (string bundle in keyValuePair.Value)
+            foreach (string bundle in keyValuePair.Value.Item1)
                 message.Append(bundle.Split('.')[0] + ", ");
 
             message.Remove(message.Length - 2, 2);
@@ -143,9 +162,9 @@ public class AddressablesValidationTests
 
     private static string CreateScenesDuplicatesMessage(Dictionary<string, (List<string> Scenes, List<string> Bundles)> scenesAndBundlesByAsset, string[] excludedFileTypesFilter)
     {
-        StringBuilder message = new StringBuilder();
+        var message = new StringBuilder();
 
-        foreach (var keyValuePair in scenesAndBundlesByAsset
+        foreach (KeyValuePair<string, (List<string> Scenes, List<string> Bundles)> keyValuePair in scenesAndBundlesByAsset
                     .Where(keyValuePair => !excludedFileTypesFilter.Contains(keyValuePair.Key.Split('.')[^1])))
         {
             message.Append("ASSET: " + keyValuePair.Key);

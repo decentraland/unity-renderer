@@ -1,5 +1,6 @@
 using NSubstitute;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -12,9 +13,12 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            conversationList = Object.Instantiate(Resources.Load<WorldChatWindowComponentView>("SocialBarV1/ConversationListHUD"));
+            conversationList = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<WorldChatWindowComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/ConversationListHUD.prefab"));
+
             view = conversationList.searchResultsList;
-             view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
+            view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
         }
 
         [TearDown]
