@@ -33,7 +33,7 @@ namespace AvatarSystem
         /// <summary>
         /// Hiding override
         /// </summary>
-        public HashSet<string> hidingOverrideMapping;
+        public HashSet<string> hideOverrides;
     }
 
 }

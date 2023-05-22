@@ -57,13 +57,13 @@ namespace DCL.Backpack
             avatarSlotsView.RecalculateHideList(hideOverrides);
         }
 
-        public void Equip(WearableItem wearableItem, string bodyShape, HashSet<string> hidingOverride)
+        public void Equip(WearableItem wearableItem, string bodyShape, HashSet<string> hideOverrides)
         {
-            avatarSlotsView.SetSlotContent(wearableItem.data.category, wearableItem, bodyShape, hidingOverride);
+            avatarSlotsView.SetSlotContent(wearableItem.data.category, wearableItem, bodyShape, hideOverrides);
         }
 
-        public void UnEquip(string category, HashSet<string> hidingOverride) =>
-            avatarSlotsView.ResetCategorySlot(category, hidingOverride);
+        public void UnEquip(string category, HashSet<string> hideOverrides) =>
+            avatarSlotsView.ResetCategorySlot(category, hideOverrides);
 
         public void ClearSlotSelection(string category)
         {

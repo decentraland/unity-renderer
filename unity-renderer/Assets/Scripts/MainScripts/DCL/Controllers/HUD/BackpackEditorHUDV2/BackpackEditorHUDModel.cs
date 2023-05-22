@@ -11,7 +11,7 @@ namespace DCL.Backpack
         public Color hairColor;
         public Color skinColor;
         public Color eyesColor;
-        public HashSet<string> hidingOverrideMap = new ();
+        public HashSet<string> hideOverrides = new ();
 
         public AvatarModel ToAvatarModel()
         {
@@ -22,7 +22,7 @@ namespace DCL.Backpack
                 hairColor = hairColor,
                 skinColor = skinColor,
                 eyeColor = eyesColor,
-                hidingOverrideMapping = hidingOverrideMap
+                hideOverrides = hideOverrides
             };
         }
 

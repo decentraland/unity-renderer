@@ -105,12 +105,12 @@ namespace DCL.Backpack
         private void UpdateOverrideHides(string category, bool toggleOn)
         {
             if (toggleOn)
-                model.hidingOverrideMap.Add(category);
+                model.hideOverrides.Add(category);
             else
-                model.hidingOverrideMap.Remove(category);
+                model.hideOverrides.Remove(category);
 
             avatarIsDirty = true;
-            avatarSlotsHUDController.Recalculate(model.hidingOverrideMap);
+            avatarSlotsHUDController.Recalculate(model.hideOverrides);
             UpdateAvatarPreview();
         }
 
@@ -249,7 +249,7 @@ namespace DCL.Backpack
 
             model.bodyShape = bodyShape;
             dataStore.backpackV2.previewBodyShape.Set(bodyShape.id);
-            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id, model.hidingOverrideMap);
+            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id, model.hideOverrides);
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
             wearableGridController.Equip(bodyShape.id);
             wearableGridController.UpdateBodyShapeCompatibility(bodyShape.id);
@@ -374,7 +374,7 @@ namespace DCL.Backpack
                     foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
                         UpdateOverrideHides(s,false);
 
-                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.hidingOverrideMap);
+                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.hideOverrides);
                 wearableGridController.Equip(wearableId);
             }
 
@@ -425,7 +425,7 @@ namespace DCL.Backpack
                 foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
                     UpdateOverrideHides(s,false);
 
-            avatarSlotsHUDController.UnEquip(wearable.data.category, model.hidingOverrideMap);
+            avatarSlotsHUDController.UnEquip(wearable.data.category, model.hideOverrides);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
             wearableGridController.UnEquip(wearableId);
@@ -439,7 +439,7 @@ namespace DCL.Backpack
         private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             currentSlotSelected = isSelected ? slotCategory : null;
-            view.UpdateHideUnhideStatus(currentSlotSelected, model.hidingOverrideMap);
+            view.UpdateHideUnhideStatus(currentSlotSelected, model.hideOverrides);
             view.SetColorPickerVisibility(isSelected && supportColor);
 
             if (isSelected && supportColor)

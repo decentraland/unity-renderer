@@ -23,7 +23,7 @@ public class AvatarModel : BaseModel
     public Color hairColor;
     public Color eyeColor;
     public List<string> wearables = new List<string>();
-    public HashSet<string> hidingOverrideMapping = new ();
+    public HashSet<string> hideOverrides = new ();
 
     public List<AvatarEmoteEntry> emotes = new List<AvatarEmoteEntry>();
 
@@ -76,7 +76,7 @@ public class AvatarModel : BaseModel
               && other.wearables.All(wearables.Contains)))
             return false;
 
-        if (!hidingOverrideMapping.Equals(other.hidingOverrideMapping))
+        if (!hideOverrides.Equals(other.hideOverrides))
             return false;
 
         //emotes are the same
