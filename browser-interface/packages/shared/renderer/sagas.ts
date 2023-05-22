@@ -256,6 +256,7 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
         style: 'capital',
       }
       const randomName = uniqueNamesGenerator(config);
+      trackEvent('seamless_login tos accepted', { })
       store.dispatch(signUp('', randomName))
       getUnityInstance().ShowAvatarEditorInSignIn()
     }

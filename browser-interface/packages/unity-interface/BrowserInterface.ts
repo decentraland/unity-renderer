@@ -1132,8 +1132,21 @@ export class BrowserInterface {
         break
     }
   }
+
+  //Seamless login, after A/B testing remove this methods and implement a browser-interface<>renderer service
   public ToSPopupAccepted() {
+    trackEvent('seamless_login tos accepted', { })
     store.dispatch(tosPopupAccepted())
+  }
+
+  public ToSPopupRejected() {
+    trackEvent('seamless_login tos rejected', { })
+    window.location.href = 'https://decentraland.org'
+  }
+
+  public ToSPopupGoToToS() {
+    trackEvent('seamless_login go to tos', { })
+    globalObservable.emit('openUrl', { url: 'https://decentraland.org/terms' })
   }
 }
 

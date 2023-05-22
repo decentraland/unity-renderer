@@ -1925,9 +1925,21 @@ namespace DCL.Interface
             });
         }
 
+
+        // After A/B test seamless login this should be removed and implement a proper renderer<>browser-interface service
         public static void SendToSPopupAccepted()
         {
             SendMessage("ToSPopupAccepted");
+        }
+
+        public static void SendToSPopupRejected()
+        {
+            SendMessage("ToSPopupRejected");
+        }
+
+        public static void SendGoToTos()
+        {
+            SendMessage("ToSPopupGoToToS");
         }
     }
 }
