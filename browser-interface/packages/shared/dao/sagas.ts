@@ -45,6 +45,7 @@ import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selec
 import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
 import { ask, ping } from './utils/ping'
 import { saveProfileDelta } from '../profiles/actions'
+import { setDelightedSurveyEnabled } from 'unity-interface/delightedSurvey'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
@@ -237,6 +238,7 @@ function* cacheCatalystRealm() {
   ) {
     yield put(saveProfileDelta({ tutorialStep: 256 }))
     yield put(setOnboardingState({ isInOnboarding: false }))
+    setDelightedSurveyEnabled(true)
   }
 
   if (realmAdapter) {
