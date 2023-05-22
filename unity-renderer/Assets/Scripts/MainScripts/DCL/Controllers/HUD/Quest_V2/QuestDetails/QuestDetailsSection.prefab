@@ -1080,7 +1080,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &5674188681382852263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1150,6 +1150,7 @@ MonoBehaviour:
   abandonButton: {fileID: 5285632930822995178}
   rewardsSection: {fileID: 2111371425988300921}
   guestSection: {fileID: 5884143121228627897}
+  footer: {fileID: 2082874048097011954}
   rewardPrefab: {fileID: 5656798287975932091, guid: abaa562bf9c674359b69b21f405fe692,
     type: 3}
   stepPrefab: {fileID: 9194670887751839170, guid: 3ce1537ea99a7409797cc21ac18809c7,

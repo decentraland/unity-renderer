@@ -12,6 +12,8 @@ namespace DCL.Quests
     {
         private const int MAX_REWARDS_COUNT = 5;
         private const int MAX_STEPS_COUNT = 10;
+        private const string COMPLETED_PANEL = "CompletedQuests";
+        private const string PROGRESS_PANEL = "InProgressQuests";
 
         [SerializeField] internal TMP_Text questName;
         [SerializeField] internal TMP_Text questCreator;
@@ -23,6 +25,7 @@ namespace DCL.Quests
         [SerializeField] internal Button abandonButton;
         [SerializeField] internal GameObject rewardsSection;
         [SerializeField] internal GameObject guestSection;
+        [SerializeField] internal GameObject footer;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
         [SerializeField] internal QuestStepComponentView stepPrefab;
@@ -149,6 +152,12 @@ namespace DCL.Quests
 
         public void SetIsGuest(bool isGuest) =>
             guestSection.SetActive(isGuest);
+
+        public void SetPanel(string panelName)
+        {
+            footer.SetActive(panelName.Equals(PROGRESS_PANEL));
+            footer.SetActive(panelName.Equals(COMPLETED_PANEL));
+        }
 
         private void InvokeJumpIn(Vector2Int coordinates) =>
             OnJumpIn?.Invoke(coordinates);
