@@ -20,8 +20,6 @@ namespace DCLServices.WearablesCatalogService
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
         private const string ASSET_BUNDLES_URL_ORG = "https://content-assets-as-bundle.decentraland.org/";
-        // TODO: this is a specific node url and we should not hardcode-it in the client. Instead we should use catalyst.contentUrl
-        private const string TEXTURES_URL_ORG = "https://interconnected.online/content/contents/";
         private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
@@ -435,7 +433,6 @@ namespace DCLServices.WearablesCatalogService
                             replaces = metadata.data.replaces,
                             tags = metadata.data.tags,
                         },
-                        // baseUrl = TEXTURES_URL_ORG,
                         baseUrl = $"{catalyst.contentUrl}/contents/",
                         baseUrlBundles = ASSET_BUNDLES_URL_ORG,
                         emoteDataV0 = null,
@@ -483,7 +480,7 @@ namespace DCLServices.WearablesCatalogService
             return wearables;
         }
 
-        private static void MapLambdasDataIntoWearableItem(IList<WearableItem> wearablesFromLambdas)
+        private void MapLambdasDataIntoWearableItem(IList<WearableItem> wearablesFromLambdas)
         {
             var invalidWearablesIndices = ListPool<int>.Get();
 
@@ -510,7 +507,7 @@ namespace DCLServices.WearablesCatalogService
                     string newThumbnail = thumbnail[(index + 1)..];
                     string newBaseUrl = thumbnail[..(index + 1)];
                     wearable.thumbnail = newThumbnail;
-                    wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
+                    wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? $"{catalyst.contentUrl}/contents/" : newBaseUrl;
                     wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
                     wearable.emoteDataV0 = null;
                 }
