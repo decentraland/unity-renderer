@@ -56,7 +56,7 @@ import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
-import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
+import {logout, redirectToSignUp, signUp, signUpCancel, tosPopupAccepted} from 'shared/session/actions'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
@@ -1131,6 +1131,9 @@ export class BrowserInterface {
         logger.log(data.message)
         break
     }
+  }
+  public ToSPopupAccepted(data: AvatarRendererMessage) {
+    store.dispatch(tosPopupAccepted())
   }
 }
 
