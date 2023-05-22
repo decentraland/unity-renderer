@@ -20,6 +20,7 @@ namespace DCLServices.WearablesCatalogService
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
         private const string ASSET_BUNDLES_URL_ORG = "https://content-assets-as-bundle.decentraland.org/";
+        // TODO: this is a specific node url and we should not hardcode-it in the client. Instead we should use catalyst.contentUrl
         private const string TEXTURES_URL_ORG = "https://interconnected.online/content/contents/";
         private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
@@ -434,7 +435,8 @@ namespace DCLServices.WearablesCatalogService
                             replaces = metadata.data.replaces,
                             tags = metadata.data.tags,
                         },
-                        baseUrl = TEXTURES_URL_ORG,
+                        // baseUrl = TEXTURES_URL_ORG,
+                        baseUrl = $"{catalyst.contentUrl}/contents/",
                         baseUrlBundles = ASSET_BUNDLES_URL_ORG,
                         emoteDataV0 = null,
                         description = metadata.description,
