@@ -120,7 +120,9 @@ namespace DCL.Backpack
 
         public void PlayPreviewEmote(string emoteId, long timestamp)
         {
-            avatarModelToUpdate.expressionTriggerTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            if (avatarModelToUpdate != null)
+                avatarModelToUpdate.expressionTriggerTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
             backpackPreviewPanel.PlayPreviewEmote(emoteId, timestamp);
         }
 

@@ -107,10 +107,14 @@ namespace DCL.Backpack
         [Test]
         public void ShowBackpackCorrectly()
         {
+            // Arrange
+            dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld, false);
+
             // Act
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
             // Assert
+            Assert.AreEqual(AvatarMaterialProfile.InEditor, dataStore.skyboxConfig.avatarMatProfile.Get());
             backpackEmotesSectionController.Received(1).RestoreEmoteSlots();
             backpackEmotesSectionController.Received(1).LoadEmotes();
             view.Received(1).Show();
@@ -120,6 +124,7 @@ namespace DCL.Backpack
         public void EquipAndSaveCorrectly()
         {
             // Arrange
+            dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor, false);
             userProfile.avatar.wearables.Clear();
             wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" }, EquipWearableSource.Wearable);
             wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" }, EquipWearableSource.Wearable);
@@ -133,6 +138,7 @@ namespace DCL.Backpack
             dataStore.HUDs.avatarEditorVisible.Set(false, true);
 
             // Assert
+            Assert.AreEqual(AvatarMaterialProfile.InWorld, dataStore.skyboxConfig.avatarMatProfile.Get());
             Assert.IsTrue(userProfile.avatar.wearables.Count > 0);
             Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_eyebrows_01"));
             Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:bear_slippers"));

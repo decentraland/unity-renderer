@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using UnityEngine.Serialization;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {

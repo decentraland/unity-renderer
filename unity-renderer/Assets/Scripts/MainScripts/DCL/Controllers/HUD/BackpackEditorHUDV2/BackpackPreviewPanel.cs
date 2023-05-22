@@ -95,7 +95,7 @@ namespace DCL.Backpack
         }
 
         public void SetLoadingActive(bool isActive) =>
-            avatarPreviewLoadingSpinner.SetActive(false);
+            avatarPreviewLoadingSpinner.SetActive(isActive);
 
         public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed) =>
             characterPreviewController.TakeSnapshots(
