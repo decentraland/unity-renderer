@@ -58,7 +58,6 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
-            Debug.Log("Cancel!");
             if (loadingCoroutine != null)
             {
                 PerformanceAnalytics.GLTFTracker.TrackCancelled();
@@ -79,6 +78,8 @@ namespace DCL
             else
                 return $"subPromise == null? state = {state}";
         }
+
+        public override bool keepWaiting => loadingCoroutine != null;
 
         private IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
@@ -114,7 +115,7 @@ namespace DCL
                 }
                 else
                 {
-                    yield return subPromise.asset.InstantiateAsync(asset.container.transform).ToCoroutine();
+                    yield return subPromise.asset.InstantiateAsync(asset.container.transform).ToCoroutine(e => throw e);
                     yield return RemoveCollidersFromRenderers(asset.container.transform);
                 }
             }

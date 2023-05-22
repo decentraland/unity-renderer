@@ -29,6 +29,7 @@ namespace DCL
         private readonly ConsoleLogger consoleLogger;
 
         private static IDeferAgent staticDeferAgent;
+        private bool isLoading = false;
 
         public AssetPromise_GLTFast_Loader(string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null)
             : base(contentUrl, hash)
@@ -84,14 +85,17 @@ namespace DCL
 
         protected override void OnLoad(Action onSuccess, Action<Exception> onFail)
         {
+            isLoading = true;
             ImportGltfAsync(onSuccess, onFail, cancellationSource.Token);
         }
 
         internal override void Unload()
         {
-            base.Unload();
             gltFastDownloadProvider.Dispose();
+            base.Unload();
         }
+
+        public override bool keepWaiting => isLoading;
 
         private async UniTaskVoid ImportGltfAsync(Action onSuccess, Action<Exception> onFail, CancellationToken cancellationSourceToken)
         {
@@ -116,6 +120,7 @@ namespace DCL
                     cancellationSourceToken.ThrowIfCancellationRequested();
                 }
 
+
                 if (!success)
                     onFail?.Invoke(new GltFastLoadException($"[GLTFast] Load failed: {consoleLogger.LastErrorCode}"));
                 else
@@ -131,6 +136,10 @@ namespace DCL
 
                 Debug.LogError("[GltFast] Failed to load: " + e);
                 onFail?.Invoke(e);
+            }
+            finally
+            {
+                isLoading = false;
             }
         }
 

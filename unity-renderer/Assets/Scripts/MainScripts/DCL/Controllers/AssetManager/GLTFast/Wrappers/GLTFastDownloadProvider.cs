@@ -117,9 +117,8 @@ namespace DCL.GLTFast.Wrappers
         public void Dispose()
         {
             foreach (IDisposable disposable in disposables) { disposable.Dispose(); }
-
+            disposables.Clear();
             isDisposed = true;
-            disposables = null;
         }
     }
 }

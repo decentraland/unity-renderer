@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
 using Sentry;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -38,7 +39,6 @@ namespace DCL.Components
         public Rendereable loadedAsset { get; protected set; }
 
         private readonly string bundlesContentUrl;
-        private readonly Func<bool> IsGltFastEnabled;
         private readonly ContentProvider contentProvider;
         private AssetPromise_GLTFast_Instance gltfastPromise;
         private AssetPromise_AB_GameObject abPromise;
@@ -46,14 +46,31 @@ namespace DCL.Components
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
         private string targetUrl;
 
-        public bool isFinished
+        public IEnumerator Promise
         {
             get
             {
-                if (abPromise != null)
-                    return abPromise.state == AssetPromiseState.FINISHED;
+                if (gltfastPromise != null)
+                    yield return gltfastPromise;
 
-                return true;
+                if (abPromise != null)
+                    yield return  abPromise;
+
+                yield return null;
+            }
+        }
+
+        public bool IsFinished
+        {
+            get
+            {
+                if (gltfastPromise != null)
+                    return gltfastPromise.state == AssetPromiseState.FINISHED;
+
+                if (abPromise != null)
+                    return  abPromise.state == AssetPromiseState.FINISHED;
+
+                return false;
             }
         }
 
@@ -77,7 +94,6 @@ namespace DCL.Components
         {
             this.contentProvider = contentProvider;
             this.bundlesContentUrl = bundlesContentUrl;
-            this.IsGltFastEnabled = isGltFastEnabled;
         }
 
         public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT)
