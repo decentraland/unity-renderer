@@ -299,29 +299,26 @@ public class WearableItem
 
     public static HashSet<string> ComposeHiddenCategoriesOrdered(string bodyShapeId, HashSet<string> hideOverrides, List<WearableItem> wearables)
     {
-        HashSet<string> result = new HashSet<string>();
-        Dictionary<string, WearableItem> wearablesByCategory = wearables.ToDictionary(w => w.data.category);
-        Dictionary<string, HashSet<string>> previouslyHidden = new Dictionary<string, HashSet<string>>();
-
-        for (var i = 0; i < CATEGORIES_PRIORITY.Count; i++)
-        {
-            previouslyHidden.Add(CATEGORIES_PRIORITY[i], new HashSet<string>());
-        }
+        var result = new HashSet<string>();
+        var wearablesByCategory = wearables.ToDictionary(w => w.data.category);
+        var previouslyHidden = new Dictionary<string, HashSet<string>>();
 
         foreach (var priorityCategory in CATEGORIES_PRIORITY)
         {
-            if (!wearablesByCategory.ContainsKey(priorityCategory) || wearablesByCategory[priorityCategory].GetHidesList(bodyShapeId) == null)
+            previouslyHidden[priorityCategory] = new HashSet<string>();
+
+            if (!wearablesByCategory.TryGetValue(priorityCategory, out var wearable) || wearable.GetHidesList(bodyShapeId) == null)
                 continue;
 
-            foreach (string categoryToHide in wearablesByCategory[priorityCategory].GetHidesList(bodyShapeId))
+            foreach (var categoryToHide in wearable.GetHidesList(bodyShapeId))
             {
-                //If higher priority hides this category, skip
-                if (previouslyHidden.ContainsKey(categoryToHide) && previouslyHidden[categoryToHide].Contains(priorityCategory)) continue;
+                if (previouslyHidden.TryGetValue(categoryToHide, out var hiddenCategories) && hiddenCategories.Contains(priorityCategory))
+                    continue;
 
-                if(previouslyHidden.ContainsKey(priorityCategory))
-                    previouslyHidden[priorityCategory].Add(categoryToHide);
+                previouslyHidden[priorityCategory].Add(categoryToHide);
 
-                if (hideOverrides != null && hideOverrides.Contains(categoryToHide)) continue;
+                if (hideOverrides != null && hideOverrides.Contains(categoryToHide))
+                    continue;
 
                 result.Add(categoryToHide);
             }

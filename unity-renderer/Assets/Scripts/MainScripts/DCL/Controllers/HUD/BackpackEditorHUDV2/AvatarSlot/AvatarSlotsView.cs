@@ -73,43 +73,45 @@ namespace DCL.Backpack
 
         public void RecalculateHideList(HashSet<string> hideOverrides)
         {
+            foreach (var avatarSlotComponentView in avatarSlots)
+            {
+                bool isHidden = hideOverrides.Contains(avatarSlotComponentView.Key);
+                avatarSlotComponentView.Value.SetOverrideHide(isHidden);
+            }
+
             Dictionary<string, HashSet<string>> previouslyHidden = new Dictionary<string, HashSet<string>>();
 
-            foreach (var avatarSlotComponentView in avatarSlots)
-                avatarSlotComponentView.Value.SetOverrideHide(hideOverrides.Contains(avatarSlotComponentView.Key));
-
-            for (var i = 0; i < WearableItem.CATEGORIES_PRIORITY.Count; i++)
-                previouslyHidden.Add(WearableItem.CATEGORIES_PRIORITY[i], new HashSet<string>());
+            foreach (string category in WearableItem.CATEGORIES_PRIORITY)
+                previouslyHidden.Add(category, new HashSet<string>());
 
             foreach (string priorityCategory in WearableItem.CATEGORIES_PRIORITY)
             {
-                if (avatarSlots.ContainsKey(priorityCategory) && avatarSlots[priorityCategory].GetHideList() != null)
+                if (!avatarSlots.ContainsKey(priorityCategory) || avatarSlots[priorityCategory].GetHideList() == null)
+                    continue;
+
+                foreach (string categoryToHide in avatarSlots[priorityCategory].GetHideList())
                 {
-                    //avatarSlots[priorityCategory].ResetHidden();
-                    foreach (string categoryToHide in avatarSlots[priorityCategory].GetHideList())
+                    //if it hides a slot that doesn't exist, avoid processing hides
+                    if (!avatarSlots.ContainsKey(categoryToHide))
+                        continue;
+
+                    //if category has already been processed, avoid processing hides
+                    if (previouslyHidden.ContainsKey(categoryToHide) && previouslyHidden[categoryToHide].Contains(priorityCategory))
                     {
-                        //if it hides a slot that doesn't exist, avoid processing hides
-                        if (!avatarSlots.ContainsKey(categoryToHide)) continue;
-
-                        //if category has already been processed, avoid processing hides
-                        if (previouslyHidden.ContainsKey(categoryToHide) && previouslyHidden[categoryToHide].Contains(priorityCategory))
-                        {
-                            avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
-                            continue;
-                        }
-
-                        if(previouslyHidden.ContainsKey(priorityCategory))
-                            previouslyHidden[priorityCategory].Add(categoryToHide);
-
-                        if (hideOverrides != null && hideOverrides.Contains(categoryToHide))
-                        {
-                            avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
-                            avatarSlots[categoryToHide].SetHideVisible(true);
-                            continue;
-                        }
-
-                        avatarSlots[categoryToHide].SetIsHidden(true, priorityCategory);
+                        avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
+                        continue;
                     }
+
+                    previouslyHidden[priorityCategory].Add(categoryToHide);
+
+                    if (hideOverrides != null && hideOverrides.Contains(categoryToHide))
+                    {
+                        avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
+                        avatarSlots[categoryToHide].SetHideVisible(true);
+                        continue;
+                    }
+
+                    avatarSlots[categoryToHide].SetIsHidden(true, priorityCategory);
                 }
             }
         }
