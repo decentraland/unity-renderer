@@ -58,6 +58,7 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
+            Debug.Log("Cancel!");
             if (loadingCoroutine != null)
             {
                 PerformanceAnalytics.GLTFTracker.TrackCancelled();
@@ -106,7 +107,11 @@ namespace DCL
 
             if (success)
             {
-                if (asset.container == null) { Debug.LogError("this should not happen"); }
+                if (asset.container == null)
+                {
+                    OnFail?.Invoke(new Exception("Object was destroyed during loading"));
+                    yield break;
+                }
                 else
                 {
                     yield return subPromise.asset.InstantiateAsync(asset.container.transform).ToCoroutine();

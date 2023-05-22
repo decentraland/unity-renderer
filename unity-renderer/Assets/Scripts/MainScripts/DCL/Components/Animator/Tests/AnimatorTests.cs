@@ -51,7 +51,7 @@ namespace Tests
                     new DCLAnimator.Model.DCLAnimationState
                     {
                         name = "clip01",
-                        clip = "animation:0",
+                        clip = "Clip_0",
                         playing = true,
                         weight = 1,
                         speed = 1
@@ -225,10 +225,10 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
-            string clipName = "animation:0";
+            string clipName = "Clip_0";
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
             {
-                states = new DCLAnimator.Model.DCLAnimationState[]
+                states = new[]
                 {
                     new DCLAnimator.Model.DCLAnimationState
                     {
@@ -247,6 +247,7 @@ namespace Tests
             LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
 
+            Debug.Log("At this point should be enabled");
             Assert.IsTrue(animator.animComponent.isPlaying);
             Assert.AreEqual(animator.animComponent.clip.name, clipName);
             Assert.IsFalse(animator.animComponent.clip.wrapMode == WrapMode.Loop);
@@ -299,7 +300,7 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
-            string clipName = "animation:0";
+            string clipName = "Clip_0";
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
             {
                 states = new DCLAnimator.Model.DCLAnimationState[]

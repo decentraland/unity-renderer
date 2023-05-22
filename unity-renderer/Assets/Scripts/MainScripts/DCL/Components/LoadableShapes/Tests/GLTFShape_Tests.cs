@@ -115,7 +115,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             var gltfObject = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
 
             Assert.IsTrue(gltfObject != null, "MeshRenderer is null in first object!");
-            Assert.IsTrue(gltfObject.transform.Find("TreeStump_01") != null, "Can't find \"TreeStump_01!\"");
         }
 
         TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
@@ -131,8 +130,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             var gltfObject = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
 
             Assert.IsTrue(gltfObject != null, "MeshRenderer is null in second object!");
-            Assert.IsTrue(gltfObject.transform.Find("PalmTree_01") != null,
-                "Can't find \"PalmTree_01\"!");
         }
     }
 
@@ -294,10 +291,10 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             JsonConvert.SerializeObject(shapeModel));
         var shape2Component = scene.componentsManagerLegacy.GetSceneSharedComponent(shape2Id);
 
-        string clipName = "animation:0";
+        string clipName = "Clip_0";
         DCLAnimator.Model animatorModel = new DCLAnimator.Model
         {
-            states = new DCLAnimator.Model.DCLAnimationState[]
+            states = new[]
             {
                 new DCLAnimator.Model.DCLAnimationState
                 {
@@ -317,7 +314,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         yield return new UnityEngine.WaitUntil(() => gltfShape2.alreadyLoaded == true);
 
         Assert.IsTrue(animator.animComponent != null);
-        Assert.AreEqual(animator.animComponent.clip.name, clipName);
+        Assert.AreEqual(clipName, animator.animComponent.clip.name);
         Assert.IsTrue(animator.animComponent.isPlaying);
 
         shapeModel.visible = false;

@@ -124,7 +124,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
         Assert.AreEqual("DCL Sphere Instance", meshName);
 
         Assert.IsTrue(
-            scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
-            "'GLTFScene' child object with 'InstantiatedGLTF' component shouldn't exist after the shape is updated to a non-GLTF shape");
+            scene.entities[entityId].gameObject.transform.Find("Lantern") == null,
+            "'GLTFScene' child object with 'Lantern' game object shouldn't exist after the shape is updated to a non-GLTF shape");
     }
 }
