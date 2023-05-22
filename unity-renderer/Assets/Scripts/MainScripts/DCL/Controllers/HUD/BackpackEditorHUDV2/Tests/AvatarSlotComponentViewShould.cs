@@ -131,7 +131,7 @@ namespace DCL.Backpack
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
-            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: hiding category1");
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: Hiding category1");
         }
 
         [Test]
@@ -147,19 +147,19 @@ namespace DCL.Backpack
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
             Assert.True(avatarSlot.hiddenSlot.activeSelf);
-            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: hiding category1");
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: Hiding category1");
 
             //Set second hiding category that should hide the first one
             avatarSlot.SetIsHidden(true, "hiding category2");
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
-            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: hiding category2");
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: Hiding category2");
 
             //Remove the first hiding category that should leave the second one as hiding
             avatarSlot.SetIsHidden(false, "hiding category1");
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, $"{TEST_CATEGORY}");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
-            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: hiding category2");
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: Hiding category2");
 
             //Remove the first hiding category that should remove all hiding constrains
             avatarSlot.SetIsHidden(false, "hiding category2");
