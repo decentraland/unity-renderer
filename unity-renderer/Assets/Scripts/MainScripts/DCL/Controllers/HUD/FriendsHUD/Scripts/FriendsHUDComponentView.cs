@@ -91,13 +91,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     public bool IsFriendListActive => friendsTab.gameObject.activeInHierarchy;
     public bool IsRequestListActive => friendRequestsTab.gameObject.activeInHierarchy;
 
-    public static FriendsHUDComponentView Create()
-    {
-        var view = Instantiate(Resources.Load<GameObject>("SocialBarV1/FriendsHUD"))
-            .GetComponent<FriendsHUDComponentView>();
-        return view;
-    }
-
     public void Initialize(IChatController chatController,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics)

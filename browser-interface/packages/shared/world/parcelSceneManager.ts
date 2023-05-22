@@ -5,7 +5,6 @@ import { store } from 'shared/store/isolatedStore'
 import { Observable } from 'mz-observable'
 import { ParcelSceneLoadingState } from './types'
 import { getFeatureFlagVariantValue } from 'shared/meta/selectors'
-import { Transport } from '@dcl/rpc'
 import { defaultParcelPermissions } from 'shared/apis/host/Permissions'
 import { getClient } from 'shared/renderer/selectors'
 
@@ -78,7 +77,7 @@ export function getLoadedParcelSceneByParcel(parcelPosition: string) {
 /**
  * Creates a worker for the ParcelSceneAPI
  */
-export async function loadParcelSceneWorker(loadableScene: LoadableScene, transport?: Transport) {
+export async function loadParcelSceneWorker(loadableScene: LoadableScene) {
   const sceneId = loadableScene.id
   let parcelSceneWorker = loadedSceneWorkers.get(sceneId)
 
@@ -86,7 +85,7 @@ export async function loadParcelSceneWorker(loadableScene: LoadableScene, transp
     const rpcClient = getClient(store.getState())
     if (!rpcClient) throw new Error('Cannot create a scene because there is no rpcClient')
 
-    parcelSceneWorker = await SceneWorker.createSceneWorker(loadableScene, rpcClient, () => transport)
+    parcelSceneWorker = await SceneWorker.createSceneWorker(loadableScene, rpcClient)
     setNewParcelScene(parcelSceneWorker)
     queueMicrotask(() => store.dispatch(scenesChanged()))
   }

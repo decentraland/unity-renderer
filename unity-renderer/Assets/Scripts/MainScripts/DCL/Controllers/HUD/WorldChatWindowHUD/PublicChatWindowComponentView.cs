@@ -48,11 +48,6 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     private float collapsableAreaOriginalWidth;
     private Color targetGraphicColor;
 
-    public static PublicChatWindowComponentView Create()
-    {
-        return Instantiate(Resources.Load<PublicChatWindowComponentView>("SocialBarV1/NearbyChatChannelHUD"));
-    }
-
     public override void Awake()
     {
         base.Awake();

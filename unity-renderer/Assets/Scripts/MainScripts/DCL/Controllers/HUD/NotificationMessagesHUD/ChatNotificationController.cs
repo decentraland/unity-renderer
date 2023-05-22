@@ -326,10 +326,11 @@ namespace DCL.Chat.Notifications
         {
             if (string.IsNullOrEmpty(friendRequestId)) return;
 
-            FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
+            bool wasFound = friendsController.TryGetAllocatedFriendRequest(friendRequestId, out FriendRequest _);
+
             bool isFriend = friendsController.IsFriend(userId);
 
-            if (request != null && !isFriend && !isAcceptedFromPeer)
+            if (wasFound && !isFriend && !isAcceptedFromPeer)
                 dataStore.HUDs.openReceivedFriendRequestDetail.Set(friendRequestId, true);
             else if (isFriend)
                 OpenChat(userId);

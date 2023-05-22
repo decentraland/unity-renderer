@@ -1,16 +1,32 @@
+using DCL.Providers;
+using System.Threading;
+
 namespace DCL.Chat.HUD
 {
     public class ChannelLimitReachedWindowPlugin : IPlugin
     {
-        private readonly ChannelLimitReachedWindowController channelLimitReachedWindow;
+        private readonly CancellationTokenSource cts = new ();
+
+        private ChannelLimitReachedWindowController channelLimitReachedWindow;
 
         public ChannelLimitReachedWindowPlugin()
         {
-            channelLimitReachedWindow = new ChannelLimitReachedWindowController(
-                ChannelLimitReachedWindowComponentView.Create(),
-                DataStore.i);
+            Initialize(cts.Token);
         }
         
-        public void Dispose() => channelLimitReachedWindow.Dispose();
+        private async void Initialize(CancellationToken ct)
+        {
+            var view = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                        .Instantiate<ChannelLimitReachedWindowComponentView>("ChannelLimitReachedModal", cancellationToken: ct);
+
+            channelLimitReachedWindow = new ChannelLimitReachedWindowController(view, DataStore.i);
+        }
+
+        public void Dispose()
+        {
+            cts.Cancel();
+            cts.Dispose();
+            channelLimitReachedWindow.Dispose();
+        }
     }
 }
