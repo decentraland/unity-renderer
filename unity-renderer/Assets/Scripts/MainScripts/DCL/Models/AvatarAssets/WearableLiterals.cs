@@ -30,6 +30,13 @@ public static class WearableLiterals
         public const string HAIR = "hair";
         public const string SKIN = "skin";
         public const string FACIAL_HAIR = "facial_hair";
+        public const string EYEWEAR = "eyewear";
+        public const string TIARA = "tiara";
+        public const string EARRING = "earring";
+        public const string HAT = "hat";
+        public const string TOP_HEAD = "top_head";
+        public const string HELMET = "helmet";
+        public const string MASK = "mask";
 
         //TODO: Implement an IReadOnlyCollection for HashSet to make them immutable
         public static readonly HashSet<string> ALL  = new HashSet<string>
