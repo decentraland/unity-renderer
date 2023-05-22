@@ -38,27 +38,28 @@ namespace DCL.GLTFast.Wrappers
 
             string finalUrl = GetFinalUrl(uri, false);
 
-            WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
+            var asyncOp = await webRequestController.GetAsync(
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 30,
-                disposeOnCompleted: false,
                 requestAttemps: 3);
 
             GltfDownloaderWrapper wrapper = new GltfDownloaderWrapper(asyncOp);
             disposables.Add(wrapper);
 
-            while (wrapper.MoveNext()) { await Task.Yield(); }
-
-            if (!wrapper.Success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}"); }
+            if (!wrapper.Success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.url} {asyncOp.error}"); }
 
             return wrapper;
         }
 
         private string GetFinalUrl(Uri uri, bool isTexture)
         {
-            var originalString = uri.OriginalString;
-            var fileName = originalString.Replace(baseUrl, "");
+            string fileName = uri.OriginalString;
+
+            if (string.IsNullOrEmpty(baseUrl))
+                return fileName;
+
+            fileName = fileName.Replace(baseUrl, "");
 
             // this can return false and the url is valid, only happens with asset with hash as a name ( mostly gltf )
             if (fileToUrl(fileName, out string finalUrl))
@@ -67,7 +68,7 @@ namespace DCL.GLTFast.Wrappers
             if (isTexture)
                 throw new Exception($"File not found in scene {finalUrl}");
 
-            return originalString;
+            return uri.OriginalString;
         }
 
         public async Task<ITextureDownload> RequestTexture(Uri uri, bool nonReadable, bool forceLinear)
