@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCLServices.Lambdas;
 using NSubstitute;
 using NUnit.Framework;
@@ -20,6 +21,7 @@ namespace DCLServices.WearablesCatalogService
         private LambdasWearablesCatalogService service;
         private ILambdasService lambdasService;
         private BaseDictionary<string, WearableItem> initialCatalog;
+        private IServiceProviders serviceProviders;
 
         [SetUp]
         public void SetUp()
@@ -40,21 +42,22 @@ namespace DCLServices.WearablesCatalogService
                 });
 
             GivenPaginatedCollectionInLambdas(TPW_COLLECTION_ID,
-                new List<WearableDefinition>
+                new List<WearableElementV1Dto>
                 {
                     new () { definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"), },
                     new () { definition = GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) },
                 });
 
-            GivenPaginatedWearableInLambdas(new List<WearableDefinition>
+            GivenPaginatedWearableInLambdas(new List<WearableElementV1Dto>
             {
                 new () { definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail") },
                 new () { definition = GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) },
             });
 
             initialCatalog = new BaseDictionary<string, WearableItem>();
+            serviceProviders = Substitute.For<IServiceProviders>();
 
-            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService);
+            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders);
             service.Initialize();
         }
 
@@ -396,7 +399,7 @@ namespace DCLServices.WearablesCatalogService
                                Arg.Any<CancellationToken>(),
                                Arg.Any<(string paramName, string paramValue)[]>())
                           .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
-                               (new WearableWithDefinitionResponse(new List<WearableDefinition>
+                               (new WearableWithDefinitionResponse(new List<WearableElementV1Dto>
                                {
                                    new ()
                                    {
@@ -435,7 +438,7 @@ namespace DCLServices.WearablesCatalogService
                                }, true)));
         }
 
-        private void GivenPaginatedCollectionInLambdas(string collectionId, List<WearableDefinition> wearables)
+        private void GivenPaginatedCollectionInLambdas(string collectionId, List<WearableElementV1Dto> wearables)
         {
             lambdasService.Get<WearableWithDefinitionResponse>(Arg.Any<string>(),
                                $"users/{USER_ID}/third-party-wearables/{collectionId}",
@@ -452,7 +455,7 @@ namespace DCLServices.WearablesCatalogService
                                }, true)));
         }
 
-        private void GivenPaginatedWearableInLambdas(List<WearableDefinition> wearables)
+        private void GivenPaginatedWearableInLambdas(List<WearableElementV1Dto> wearables)
         {
             lambdasService.Get<WearableWithDefinitionResponse>(Arg.Any<string>(),
                                $"users/{USER_ID}/wearables",

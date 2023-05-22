@@ -29,26 +29,31 @@ namespace DCLServices.WearablesCatalogService
         private const int MAX_WEARABLES_PER_REQUEST = 200;
 
         private readonly ILambdasService lambdasService;
+        private readonly IServiceProviders serviceProviders;
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
         private readonly Dictionary<(string userId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string userId, string collectionId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
+        private ICatalyst catalyst;
 
 #if UNITY_EDITOR
         private readonly DebugConfig debugConfig = DataStore.i.debugConfig;
 #endif
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog,
-            ILambdasService lambdasService)
+            ILambdasService lambdasService,
+            IServiceProviders serviceProviders)
         {
             this.lambdasService = lambdasService;
+            this.serviceProviders = serviceProviders;
             WearablesCatalog = wearablesCatalog;
         }
 
         public void Initialize()
         {
             serviceCts = serviceCts.SafeRestart();
+            catalyst = serviceProviders.catalyst;
         }
 
         public void Dispose()
@@ -107,7 +112,7 @@ namespace DCLServices.WearablesCatalogService
             if ((collectionTypeMask & NftCollectionType.ThirdParty) != 0)
                 queryParams.Add(("collectionType", "third-party"));
 
-            if (thirdPartyCollectionIds != null )
+            if (thirdPartyCollectionIds != null)
                 foreach (string collectionId in thirdPartyCollectionIds)
                     queryParams.Add(("thirdPartyCollectionId", collectionId));
 
@@ -139,10 +144,8 @@ namespace DCLServices.WearablesCatalogService
 #endif
 
             var createNewPointer = false;
-            if (!ownerWearablesPagePointers.TryGetValue((userId, pageSize), out var pagePointer))
-            {
-                createNewPointer = true;
-            }
+
+            if (!ownerWearablesPagePointers.TryGetValue((userId, pageSize), out var pagePointer)) { createNewPointer = true; }
             else if (cleanCachedPages)
             {
                 pagePointer.Dispose();
@@ -187,13 +190,12 @@ namespace DCLServices.WearablesCatalogService
             return serviceResponse.response.wearables;
         }
 
-        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages,
+            CancellationToken ct)
         {
             var createNewPointer = false;
-            if (!thirdPartyCollectionPagePointers.TryGetValue((userId, collectionId, pageSize), out var pagePointer))
-            {
-                createNewPointer = true;
-            }
+
+            if (!thirdPartyCollectionPagePointers.TryGetValue((userId, collectionId, pageSize), out var pagePointer)) { createNewPointer = true; }
             else if (cleanCachedPages)
             {
                 pagePointer.Dispose();
@@ -348,11 +350,13 @@ namespace DCLServices.WearablesCatalogService
                 int numberOfPartialRequests = (wearableIds.Count + MAX_WEARABLES_PER_REQUEST - 1) / MAX_WEARABLES_PER_REQUEST;
                 var awaitingPartialTasksPool = PoolUtils.RentList<(UniTask<(WearableWithoutDefinitionResponse response, bool success)> task, IEnumerable<string> wearablesRequested)>();
                 var awaitingPartialTasks = awaitingPartialTasksPool.GetList();
+
                 for (var i = 0; i < numberOfPartialRequests; i++)
                 {
                     int numberOfWearablesToRequest = wearableIds.Count < MAX_WEARABLES_PER_REQUEST
                         ? wearableIds.Count
                         : MAX_WEARABLES_PER_REQUEST;
+
                     var wearablesToRequest = wearableIds.Take(numberOfWearablesToRequest).ToList();
 
                     var partialTask = lambdasService.Get<WearableWithoutDefinitionResponse>(
@@ -406,42 +410,72 @@ namespace DCLServices.WearablesCatalogService
             return result.FirstOrDefault(x => x.id == newWearableId);
         }
 
-        private static List<WearableItem> ValidateWearables(IEnumerable<WearableElementDto> wearablesFromLambdas)
+        private List<WearableItem> ValidateWearables(IEnumerable<WearableWithEntityResponseDto.ElementDto> wearableElements)
         {
             List<WearableItem> wearables = new ();
 
-            foreach (var item in wearablesFromLambdas)
+            foreach (var item in wearableElements)
             {
-                var definition = item.entity.metadata;
+                WearableWithEntityResponseDto.ElementDto.EntityDto entity = item.entity;
+                WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto metadata = entity.metadata;
 
-                if (FilterInvalidWearableItem(definition))
+                if (IsInvalidWearable(metadata))
                     continue;
 
                 try
                 {
-                    foreach (var representation in definition.data.representations)
+                    WearableItem wearable = new WearableItem
                     {
-                        foreach (var representationContent in representation.contents)
-                            representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
+                        data = new WearableItem.Data
+                        {
+                            representations = new WearableItem.Representation[metadata.data.representations.Length],
+                            category = metadata.data.category,
+                            hides = metadata.data.hides,
+                            replaces = metadata.data.replaces,
+                            tags = metadata.data.tags,
+                        },
+                        baseUrl = TEXTURES_URL_ORG,
+                        baseUrlBundles = ASSET_BUNDLES_URL_ORG,
+                        emoteDataV0 = null,
+                        description = metadata.description,
+                        i18n = metadata.i18n,
+                        id = metadata.id,
+                        rarity = metadata.rarity,
+                        thumbnail = entity.GetContentHashByFileName(metadata.thumbnail),
+                        MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(item.GetMostRecentTransferTimestamp())
+                                                                  .DateTime,
+                    };
+
+                    for (var i = 0; i < metadata.data.representations.Length; i++)
+                    {
+                        WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto.Representation representation = metadata.data.representations[i];
+
+                        wearable.data.representations[i] = new WearableItem.Representation
+                        {
+                            bodyShapes = representation.bodyShapes,
+                            mainFile = representation.mainFile,
+                            overrideHides = representation.overrideHides,
+                            overrideReplaces = representation.overrideReplaces,
+                            contents = new WearableItem.MappingPair[representation.contents.Length],
+                        };
+
+                        for (var z = 0; z < representation.contents.Length; z++)
+                        {
+                            string fileName = representation.contents[z];
+                            string hash = entity.GetContentHashByFileName(fileName);
+
+                            wearable.data.representations[i].contents[z] = new WearableItem.MappingPair
+                            {
+                                url = $"{catalyst.contentUrl}/contents/{hash}",
+                                hash = hash,
+                                key = fileName,
+                            };
+                        }
                     }
 
-                    string thumbnail = definition.thumbnail ?? "";
-                    int index = thumbnail.LastIndexOf('/');
-                    string newThumbnail = thumbnail[(index + 1)..];
-                    string newBaseUrl = thumbnail[..(index + 1)];
-                    definition.thumbnail = newThumbnail;
-                    definition.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
-                    definition.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
-                    definition.emoteDataV0 = null;
-                    definition.MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(item.GetMostRecentTransferTimestamp())
-                                                                         .DateTime;
-
-                    wearables.Add(definition);
+                    wearables.Add(wearable);
                 }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                catch (Exception e) { Debug.LogException(e); }
             }
 
             return wearables;
@@ -455,7 +489,7 @@ namespace DCLServices.WearablesCatalogService
             {
                 var wearable = wearablesFromLambdas[i];
 
-                if (FilterInvalidWearableItem(wearable))
+                if (IsInvalidWearable(wearable))
                 {
                     invalidWearablesIndices.Add(i);
                     continue;
@@ -494,10 +528,7 @@ namespace DCLServices.WearablesCatalogService
             ListPool<int>.Release(invalidWearablesIndices);
         }
 
-        /// <summary>
-        /// Filters wearables in a managed way
-        /// </summary>
-        private static bool FilterInvalidWearableItem(WearableItem item)
+        private static bool IsInvalidWearable(WearableItem item)
         {
             if (string.IsNullOrEmpty(item.id))
             {
@@ -526,32 +557,27 @@ namespace DCLServices.WearablesCatalogService
             return false;
         }
 
-        private static bool FilterInvalidWearableItem(WearableDefinition item, int index, List<int> invalidItemsIndices)
+        private bool IsInvalidWearable(WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto metadata)
         {
-            WearableItem definition = item.definition;
-
-            if (string.IsNullOrEmpty(definition.id))
+            if (string.IsNullOrEmpty(metadata.id))
             {
-                Debug.LogError($"Wearable is invalid: id is null. Urn: {item.urn}");
-                invalidItemsIndices.Add(index);
+                Debug.LogError("Wearable is invalid: id is null");
                 return true;
             }
 
-            if (definition.data.representations == null)
+            if (metadata.data.representations == null)
             {
-                Debug.LogError($"Wearable ${definition.id} is invalid: data.representation is null");
-                invalidItemsIndices.Add(index);
+                Debug.LogError($"Wearable ${metadata.id} is invalid: data.representation is null");
                 return true;
             }
 
-            foreach (var dataRepresentation in definition.data.representations)
+            foreach (var representation in metadata.data.representations)
             {
-                foreach (var representationContent in dataRepresentation.contents)
+                foreach (string content in representation.contents)
                 {
-                    if (string.IsNullOrEmpty(representationContent.url))
+                    if (string.IsNullOrEmpty(content))
                     {
                         Debug.LogError("Wearable is invalid: representation content URL is null");
-                        invalidItemsIndices.Add(index);
                         return true;
                     }
                 }

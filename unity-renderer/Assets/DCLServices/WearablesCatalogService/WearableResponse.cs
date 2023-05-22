@@ -13,9 +13,9 @@ namespace DCLServices.WearablesCatalogService
     [Serializable]
     public class WearableWithDefinitionResponse : PaginatedResponse
     {
-        public List<WearableDefinition> elements;
+        public List<WearableElementV1Dto> elements;
 
-        public WearableWithDefinitionResponse(List<WearableDefinition> elements,
+        public WearableWithDefinitionResponse(List<WearableElementV1Dto> elements,
             int pageNum, int pageSize, int totalAmount)
         {
             this.elements = elements;
@@ -24,13 +24,12 @@ namespace DCLServices.WearablesCatalogService
             this.totalAmount = totalAmount;
         }
 
-        public WearableWithDefinitionResponse()
-        {
-        }
+        public WearableWithDefinitionResponse() { }
     }
 
     [Serializable]
-    public class WearableDefinition
+    [Obsolete("Deprecated. Use WearableElementV2Dto instead")]
+    public class WearableElementV1Dto
     {
         public string urn;
         public long maxTransferredAt;
@@ -38,49 +37,98 @@ namespace DCLServices.WearablesCatalogService
     }
 
     [Serializable]
-    public class WearableElementDto
-    {
-        public string urn;
-        public WearableIndividualDataDto[] individualData;
-        public WearableEntityDto entity;
-
-        public long GetMostRecentTransferTimestamp()
-        {
-            long max = 0;
-
-            foreach (WearableIndividualDataDto dto in individualData)
-            {
-                var transferredAt = long.Parse(dto.transferredAt);
-
-                if (transferredAt > max)
-                    max = transferredAt;
-            }
-
-            return max;
-        }
-    }
-
-    [Serializable]
-    public class WearableEntityDto
-    {
-        public WearableItem metadata;
-    }
-
-    [Serializable]
-    public class WearableIndividualDataDto
-    {
-        public string id;
-        public string tokenId;
-        public string transferredAt;
-        public string price;
-    }
-
-    [Serializable]
     public class WearableWithEntityResponseDto : PaginatedResponse
     {
-        public List<WearableElementDto> elements;
+        [Serializable]
+        public class ElementDto
+        {
+            [Serializable]
+            public class IndividualDataDto
+            {
+                public string id;
+                public string tokenId;
+                public string transferredAt;
+                public string price;
+            }
 
-        public WearableWithEntityResponseDto(List<WearableElementDto> elements,
+            [Serializable]
+            public class EntityDto
+            {
+                [Serializable]
+                public class ContentDto
+                {
+                    public string file;
+                    public string hash;
+                }
+
+                [Serializable]
+                public class MetadataDto
+                {
+                    [Serializable]
+                    public class Representation
+                    {
+                        public string[] bodyShapes;
+                        public string mainFile;
+                        public string[] contents;
+                        public string[] overrideHides;
+                        public string[] overrideReplaces;
+                    }
+
+                    [Serializable]
+                    public class DataDto
+                    {
+                        public Representation[] representations;
+                        public string category;
+                        public string[] tags;
+                        public string[] replaces;
+                        public string[] hides;
+                    }
+
+                    public DataDto data;
+                    public string id;
+
+                    public i18n[] i18n;
+                    public string thumbnail;
+
+                    public string rarity;
+                    public string description;
+                }
+
+                public MetadataDto metadata;
+                public ContentDto[] content;
+
+                public string GetContentHashByFileName(string fileName)
+                {
+                    foreach (ContentDto dto in content)
+                        if (dto.file == fileName)
+                            return dto.hash;
+                    return null;
+                }
+            }
+
+            public string urn;
+            public IndividualDataDto[] individualData;
+            public EntityDto entity;
+
+            public long GetMostRecentTransferTimestamp()
+            {
+                long max = 0;
+
+                foreach (IndividualDataDto dto in individualData)
+                {
+                    var transferredAt = long.Parse(dto.transferredAt);
+
+                    if (transferredAt > max)
+                        max = transferredAt;
+                }
+
+                return max;
+            }
+        }
+
+        public List<ElementDto> elements;
+
+        public WearableWithEntityResponseDto(List<ElementDto> elements,
             int pageNum, int pageSize, int totalAmount)
         {
             this.elements = elements;
@@ -89,8 +137,6 @@ namespace DCLServices.WearablesCatalogService
             this.totalAmount = totalAmount;
         }
 
-        public WearableWithEntityResponseDto()
-        {
-        }
+        public WearableWithEntityResponseDto() { }
     }
 }
