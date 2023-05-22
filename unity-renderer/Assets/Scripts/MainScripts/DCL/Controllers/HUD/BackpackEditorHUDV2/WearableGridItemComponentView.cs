@@ -17,10 +17,6 @@ namespace DCL.Backpack
         [SerializeField] internal Image categoryBackground;
         [SerializeField] internal GameObject selectedContainer;
         [SerializeField] internal GameObject equippedContainer;
-        [SerializeField] internal GameObject hoverUnequippedContainer;
-        [SerializeField] internal GameObject hoverEquippedContainer;
-        [SerializeField] internal GameObject hoverSelectedUnequippedContainer;
-        [SerializeField] internal GameObject hoverSelectedEquippedContainer;
         [SerializeField] internal GameObject isNewContainer;
         [SerializeField] internal ImageComponentView image;
         [SerializeField] internal Button interactButton;
@@ -101,10 +97,6 @@ namespace DCL.Backpack
         {
             selectedContainer.SetActive(model.IsSelected);
             equippedContainer.SetActive(model.IsEquipped);
-            //hoverEquippedContainer.SetActive(!model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            //hoverUnequippedContainer.SetActive(!model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            //hoverSelectedUnequippedContainer.SetActive(model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            //hoverSelectedEquippedContainer.SetActive(model.UnEquipAllowed && model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
             isNewContainer.SetActive(model.IsNew);
 
             // we gotta check for url changes, otherwise the image component will start a "loading" state, even if the url is the same

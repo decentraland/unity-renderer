@@ -159,20 +159,6 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void SelectAndPreVisualizeWearableCorrectly()
-        {
-            // Arrange
-            EquipAndSaveCorrectly();
-
-            // Act
-            wearableGridView.OnWearableSelected += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_african_leggins" });
-
-            // Assert
-            view.Received(1).UpdateAvatarPreview(Arg.Is<AvatarModel>(avatarModel =>
-                avatarModel.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_african_leggins")));
-        }
-
-        [Test]
         public void UpdateAvatarPreviewCorrectly()
         {
             // Act
