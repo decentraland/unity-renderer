@@ -112,6 +112,8 @@ namespace DCLServices.WearablesCatalogService
 
             public long GetMostRecentTransferTimestamp()
             {
+                if (individualData == null) return 0;
+
                 long max = 0;
 
                 foreach (IndividualDataDto dto in individualData)
