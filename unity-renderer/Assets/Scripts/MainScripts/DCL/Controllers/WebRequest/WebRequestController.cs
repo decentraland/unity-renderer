@@ -18,6 +18,8 @@ namespace DCL
         private IWebRequestTextureFactory textureFactory;
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
+        private IPutWebRequestFactory putWebRequestFactory;
+        private IPatchWebRequestFactory patchWebRequestFactory;
         private IDeleteWebRequestFactory deleteWebRequestFactory;
         private readonly IRPCSignRequest rpcSignRequest;
 
@@ -29,6 +31,8 @@ namespace DCL
             IWebRequestTextureFactory textureFactory,
             IWebRequestAudioFactory audioClipWebRequestFactory,
             IPostWebRequestFactory postWebRequestFactory,
+            IPutWebRequestFactory putWebRequestFactory,
+            IPatchWebRequestFactory patchWebRequestFactory,
             IDeleteWebRequestFactory deleteWebRequestFactory,
             IRPCSignRequest rpcSignRequest = null
         )
@@ -38,6 +42,8 @@ namespace DCL
             this.textureFactory = textureFactory;
             this.audioClipWebRequestFactory = audioClipWebRequestFactory;
             this.postWebRequestFactory = postWebRequestFactory;
+            this.putWebRequestFactory = putWebRequestFactory;
+            this.patchWebRequestFactory = patchWebRequestFactory;
             this.deleteWebRequestFactory = deleteWebRequestFactory;
             this.rpcSignRequest = rpcSignRequest;
         }
@@ -52,6 +58,8 @@ namespace DCL
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
+                new PutWebRequestFactory(),
+                new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory()
             );
 
@@ -82,6 +90,23 @@ namespace DCL
             bool isSigned = false)
         {
             return await SendWebRequest(getWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
+                timeout, cancellationToken, headers, isSigned);
+        }
+
+        public async UniTask<UnityWebRequest> PatchAsync(
+            string url,
+            string patchData,
+            DownloadHandler downloadHandler = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            CancellationToken cancellationToken = default,
+            Dictionary<string, string> headers = null,
+            bool isSigned = false)
+        {
+            patchWebRequestFactory.SetBody(patchData);
+            return await SendWebRequest(patchWebRequestFactory, url, downloadHandler, onSuccess, onFail, requestAttemps,
                 timeout, cancellationToken, headers, isSigned);
         }
 

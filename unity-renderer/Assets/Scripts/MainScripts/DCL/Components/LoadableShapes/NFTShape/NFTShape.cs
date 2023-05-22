@@ -1,7 +1,8 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
@@ -10,10 +11,27 @@ namespace DCL.Components
         [System.Serializable]
         public new class Model : LoadableShape.Model
         {
-            public Color color = new Color(0.6404918f, 0.611472f, 0.8584906f); // "light purple" default, same as in explorer
-            public int style = 0;
+            public Color color = new (0.6404918f, 0.611472f, 0.8584906f); // "light purple" default, same as in explorer
+            public int style;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.NftShape)
+                    return Utils.SafeUnimplemented<NFTShape, Model>(expected: ComponentBodyPayload.PayloadOneofCase.NftShape, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.NftShape.Color != null) pb.color = pbModel.NftShape.Color.AsUnityColor();
+                if (pbModel.NftShape.HasStyle) pb.style = (int)pbModel.NftShape.Style;
+                if (pbModel.NftShape.HasSrc) pb.src = pbModel.NftShape.Src;
+                if (pbModel.NftShape.HasVisible) pb.visible = pbModel.NftShape.Visible;
+                if (pbModel.NftShape.HasWithCollisions) pb.withCollisions = pbModel.NftShape.WithCollisions;
+                if (pbModel.NftShape.HasIsPointerBlocker) pb.isPointerBlocker = pbModel.NftShape.IsPointerBlocker;
+
+                return pb;
+            }
         }
 
         public override string componentName => "NFT Shape";
@@ -50,14 +68,14 @@ namespace DCL.Components
             var loaderController = entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>();
 
             if (loaderController)
-                loaderController.Initialize(infoRetriever, assetRetriever);    
-            
+                loaderController.Initialize(infoRetriever, assetRetriever);
+
             entity.OnShapeUpdated += UpdateBackgroundColor;
 
             var loadableShape = Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
 
             loadableShape.entity = entity;
-            
+
             bool initialVisibility = model.visible;
             if (!DataStore.i.debugConfig.isDebugMode.Get())
                 initialVisibility &= entity.isInsideSceneBoundaries;

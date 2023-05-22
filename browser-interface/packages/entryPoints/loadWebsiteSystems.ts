@@ -1,4 +1,4 @@
-import type { KernelOptions } from 'kernel-web-interface'
+import type { KernelOptions } from '@dcl/kernel-interface'
 import { realmInitialized } from 'shared/dao'
 import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'

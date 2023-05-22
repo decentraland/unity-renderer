@@ -49,12 +49,12 @@ namespace DCL.Quests
 
         private void ShowQuestOffer(QuestStateUpdate quest)
         {
-            questOfferComponentView.SetQuestTitle(quest.Name);
-            questOfferComponentView.SetQuestDescription(quest.Description);
+            questOfferComponentView.SetQuestTitle(quest.QuestData.Name);
+            questOfferComponentView.SetQuestDescription(quest.QuestData.Description);
             questOfferComponentView.SetIsGuest(ownUserProfile.isGuest);
         }
 
-        private void UpdateQuestTracker(QuestStateUpdate questStateUpdate)
+        private void UpdateQuestTracker(QuestStateWithData questStateUpdate)
         {
             //if(questStateUpdate.QuestState.StepsLeft == 0 && questStateUpdate.QuestState.CurrentSteps.Values)
 

@@ -5,7 +5,9 @@ using MainScripts.DCL.Controllers.FriendsController;
 using rpc_csharp;
 using rpc_csharp.transport;
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 using Payload = Decentraland.Social.Friendships.Payload;
 
 namespace DCL.Social.Friends
@@ -23,6 +25,8 @@ namespace DCL.Social.Friends
         private UniTaskCompletionSource<FriendshipInitializationMessage> initializationInformationTask;
 
         public event Action<UserStatus> OnFriendAdded;
+        public event Action<FriendRequest> OnIncomingFriendRequestAdded;
+        public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
         public event Action<string> OnFriendRemoved;
         public event Action<FriendRequest> OnFriendRequestAdded;
         public event Action<string> OnFriendRequestRemoved;
@@ -85,15 +89,50 @@ namespace DCL.Social.Friends
 
             initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
             await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
+            var friendshipInitializationMessage = await GetFriendRequestsFromServer(cancellationToken);
 
-            initializationInformationTask.TrySetResult(new FriendshipInitializationMessage
-            {
-                totalReceivedRequests = 0,
-            });
+            initializationInformationTask.TrySetResult(friendshipInitializationMessage);
 
             await UniTask.SwitchToMainThread(cancellationToken);
 
             return await initializationInformationTask.Task.AttachExternalCancellation(cancellationToken);
+        }
+
+        private async UniTask<FriendshipInitializationMessage> GetFriendRequestsFromServer(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var requestEvents = await socialClient.GetRequestEvents(new Payload
+                { SynapseToken = accessToken });
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await UniTask.SwitchToMainThread(cancellationToken);
+
+            foreach (var friendRequest in requestEvents.Events.Incoming.Items)
+            {
+                OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
+                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
+                    friendRequest.CreatedAt,
+                    friendRequest.User.Address,
+                    userProfileWebInterfaceBridge.GetOwn().userId,
+                    friendRequest.Message));
+            }
+
+            foreach (var friendRequest in requestEvents.Events.Outgoing.Items)
+            {
+                OnOutgoingFriendRequestAdded?.Invoke(new FriendRequest(
+                    GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
+                    friendRequest.CreatedAt,
+                    userProfileWebInterfaceBridge.GetOwn().userId,
+                    friendRequest.User.Address,
+                    friendRequest.Message));
+            }
+
+            return new FriendshipInitializationMessage()
+            {
+                totalReceivedRequests = requestEvents.Events.Incoming.Items.Count
+            };
         }
 
         private async UniTask InitializeMatrixTokenThenRetrieveAllFriends(CancellationToken cancellationToken)
@@ -107,11 +146,24 @@ namespace DCL.Social.Friends
             var friendsStream = socialClient.GetFriends(new Payload
                 { SynapseToken = accessToken });
 
+            List<UniTask> tasks = new List<UniTask>();
+
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
-                foreach (var friend in friends.Users_)
-                    OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address });
+                tasks.AddRange(friends.Users.Users_.Select(async friend =>
+                {
+                    try
+                    {
+                        var profile = await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friend.Address, cancellationToken);
+                        OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address, userName = profile.userName });
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception e) { Debug.LogException(e); }
+                }));
             }
+
+            // Forgetting this since it would otherwise compromise the startup time of the explorer
+            UniTask.WhenAll(tasks).Forget();
 
             cancellationToken.ThrowIfCancellationRequested();
         }

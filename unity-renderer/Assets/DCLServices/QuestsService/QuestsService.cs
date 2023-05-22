@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Castle.Core.Internal;
+using Cysharp.Threading.Tasks;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,16 @@ namespace DCLServices.QuestsService
         All these requirements are only needed to launch quests,
         in the meantime the service is ready to be tested by mocking a ClientQuestService (look at the test scene)
      */
-    public class QuestsService: IQuestsService
+    public class QuestsService : IQuestsService
     {
-        public event Action<QuestStateUpdate> OnQuestUpdated;
-        public IReadOnlyDictionary<string, QuestStateUpdate> CurrentState => stateCache;
-        internal readonly Dictionary<string, QuestStateUpdate> stateCache = new ();
+        public event Action<QuestStateWithData> OnQuestStarted;
+        public event Action<QuestStateWithData> OnQuestUpdated;
+        public IReadOnlyDictionary<string, QuestStateWithData> CurrentState => stateCache;
+        internal readonly Dictionary<string, QuestStateWithData> stateCache = new ();
 
         internal readonly IClientQuestsService clientQuestsService;
         internal string userId = null;
-        internal readonly Dictionary<string, UniTaskCompletionSource<ProtoQuest>> definitionCache = new ();
+        internal readonly Dictionary<string, UniTaskCompletionSource<Quest>> definitionCache = new ();
         internal CancellationTokenSource userSubscribeCt = null;
 
         public QuestsService(IClientQuestsService clientQuestsService)
@@ -41,7 +43,7 @@ namespace DCLServices.QuestsService
             userSubscribeCt?.Dispose();
             userSubscribeCt = null;
 
-            if (!string.IsNullOrEmpty(userId))
+            if (!userId.IsNullOrEmpty())
             {
                 userSubscribeCt = new CancellationTokenSource();
                 Subscribe(userSubscribeCt.Token).Forget();
@@ -56,11 +58,18 @@ namespace DCLServices.QuestsService
                 while (await enumerator.MoveNextAsync())
                 {
                     var userUpdate = enumerator.Current;
-                    if(userUpdate.MessageCase != UserUpdate.MessageOneofCase.QuestState)
-                        continue;
 
-                    stateCache[userUpdate.QuestState.QuestInstanceId] = userUpdate.QuestState;
-                    OnQuestUpdated?.Invoke(userUpdate.QuestState);
+                    switch (userUpdate.MessageCase)
+                    {
+                        case UserUpdate.MessageOneofCase.QuestStateUpdate:
+                            stateCache[userUpdate.QuestStateUpdate.QuestData.QuestInstanceId] = userUpdate.QuestStateUpdate.QuestData;
+                            OnQuestUpdated?.Invoke(userUpdate.QuestStateUpdate.QuestData);
+                            break;
+                        case UserUpdate.MessageOneofCase.NewQuestStarted:
+                            stateCache[userUpdate.NewQuestStarted.QuestInstanceId] = userUpdate.NewQuestStarted;
+                            OnQuestStarted?.Invoke(userUpdate.NewQuestStarted);
+                            break;
+                    }
                 }
             }
             finally
@@ -71,7 +80,7 @@ namespace DCLServices.QuestsService
 
         public async UniTask<StartQuestResponse> StartQuest(string questId)
         {
-            if(string.IsNullOrEmpty(userId))
+            if(userId.IsNullOrEmpty())
                 throw new UserIdNotSetException();
 
             return await clientQuestsService.StartQuest(new StartQuestRequest { QuestId = questId, UserAddress = userId });
@@ -79,25 +88,25 @@ namespace DCLServices.QuestsService
 
         public async UniTask<AbortQuestResponse> AbortQuest(string questInstanceId)
         {
-            if(string.IsNullOrEmpty(userId))
+            if(userId.IsNullOrEmpty())
                 throw new UserIdNotSetException();
 
             return await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId, UserAddress = userId });
         }
 
-        public async UniTask<ProtoQuest> GetDefinition(string questId, CancellationToken cancellationToken = default)
+        public async UniTask<Quest> GetDefinition(string questId, CancellationToken cancellationToken = default)
         {
-            UniTaskCompletionSource<ProtoQuest> definitionCompletionSource;
-            async UniTask<ProtoQuest> RetrieveTask()
+            UniTaskCompletionSource<Quest> definitionCompletionSource;
+            async UniTask<Quest> RetrieveTask()
             {
-                var definition = await clientQuestsService.GetQuestDefinition(new QuestDefinitionRequest{QuestId = questId});
-                definitionCompletionSource.TrySetResult(definition);
-                return definition;
+                GetQuestDefinitionResponse definition = await clientQuestsService.GetQuestDefinition(new GetQuestDefinitionRequest{QuestId = questId});
+                definitionCompletionSource.TrySetResult(definition.Quest);
+                return definition.Quest;
             }
 
             if (!definitionCache.TryGetValue(questId, out definitionCompletionSource))
             {
-                definitionCompletionSource = new UniTaskCompletionSource<ProtoQuest>();
+                definitionCompletionSource = new UniTaskCompletionSource<Quest>();
                 definitionCache[questId] = definitionCompletionSource;
                 RetrieveTask().Forget();
             }

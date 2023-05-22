@@ -1,16 +1,20 @@
 using DCL;
 using DCL.Components.Video.Plugin;
 using DCL.CRDT;
+using DCL.ECS7;
 using System;
 using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Shaders;
 using ECSSystems.VideoPlayerSystem;
+using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using VideoState = DCL.Components.Video.Plugin.VideoState;
 
 namespace Tests
 {
@@ -22,23 +26,27 @@ namespace Tests
         private ECS7TestUtilsScenesAndEntities testUtils;
         private Action systemsUpdate;
         private WebVideoPlayer videoPlayer;
+        private IECSComponentWriter componentWriter;
 
         [SetUp]
         public void SetUp()
         {
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            componentWriter = Substitute.For<IECSComponentWriter>();
             var executors = new Dictionary<int, ICRDTExecutor>();
 
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-
-            var videoPlayerSystem = new ECSVideoPlayerSystem(internalEcsComponents.videoPlayerComponent,
-                internalEcsComponents.videoMaterialComponent);
+            var videoPlayerSystem = new ECSVideoPlayerSystem(
+                internalEcsComponents.videoPlayerComponent,
+                internalEcsComponents.videoMaterialComponent,
+                componentWriter);
 
             systemsUpdate = () =>
             {
-                videoPlayerSystem.Update();
                 internalEcsComponents.MarkDirtyComponentsUpdate();
+                videoPlayerSystem.Update();
+                internalEcsComponents.ResetDirtyComponentsUpdate();
             };
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
@@ -106,6 +114,77 @@ namespace Tests
             Assert.True(ReferenceEquals(videoMaterial00.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
             Assert.True(ReferenceEquals(videoMaterial01.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
             Assert.False(ReferenceEquals(videoMaterial10.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
+        }
+
+        [UnityTest]
+        public IEnumerator UpdateVideoEventComponentWithVideoState()
+        {
+            ECS7TestEntity entity = scene0.CreateEntity(100);
+
+            // This internal component normally gets automatically added by the VideoPlayerHandler
+            internalEcsComponents.videoPlayerComponent.PutFor(scene0, entity, new InternalVideoPlayer()
+            {
+                videoPlayer = videoPlayer
+            });
+
+            systemsUpdate();
+
+            componentWriter.Received(1).AppendComponent(
+                Arg.Is<int>(val => val == scene0.sceneData.sceneNumber),
+                Arg.Is<long>(val => val == entity.entityId),
+                Arg.Is<int>(val => val == ComponentID.VIDEO_EVENT),
+                Arg.Is<PBVideoEvent>(val =>
+                    val.State == DCL.ECSComponents.VideoState.VsLoading && val.Timestamp == 1),
+                Arg.Is<ECSComponentWriteType>(val => val == (ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY))
+                );
+
+            yield return new WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
+            systemsUpdate();
+
+            componentWriter.Received(1).AppendComponent(
+                Arg.Is<int>(val => val == scene0.sceneData.sceneNumber),
+                Arg.Is<long>(val => val == entity.entityId),
+                Arg.Is<int>(val => val == ComponentID.VIDEO_EVENT),
+                Arg.Is<PBVideoEvent>(val =>
+                    val.State == DCL.ECSComponents.VideoState.VsReady && val.Timestamp == 2),
+                Arg.Is<ECSComponentWriteType>(val => val == (ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY))
+            );
+        }
+
+        [Test]
+        public void RemoveVideoEventComponent()
+        {
+            ECS7TestEntity entity = scene0.CreateEntity(100);
+
+            // This internal component normally gets automatically added by the VideoPlayerHandler
+            internalEcsComponents.videoPlayerComponent.PutFor(scene0, entity, new InternalVideoPlayer()
+            {
+                videoPlayer = videoPlayer
+            });
+
+            systemsUpdate();
+
+            componentWriter.Received(1).AppendComponent(
+                Arg.Is<int>(val => val == scene0.sceneData.sceneNumber),
+                Arg.Is<long>(val => val == entity.entityId),
+                Arg.Is<int>(val => val == ComponentID.VIDEO_EVENT),
+                Arg.Is<PBVideoEvent>(val =>
+                    val.State == DCL.ECSComponents.VideoState.VsLoading && val.Timestamp == 1),
+                Arg.Is<ECSComponentWriteType>(val => val == (ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY))
+            );
+
+            // remove video player
+            internalEcsComponents.videoPlayerComponent.PutFor(scene0, entity, new InternalVideoPlayer()
+            {
+                removed = true
+            });
+            systemsUpdate();
+
+            componentWriter.Received(1).RemoveComponent(
+                Arg.Is<int>(val => val == scene0.sceneData.sceneNumber),
+                Arg.Is<long>(val => val == entity.entityId),
+                Arg.Is<int>(val => val == ComponentID.VIDEO_EVENT)
+            );
         }
     }
 }

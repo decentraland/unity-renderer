@@ -1,4 +1,9 @@
+using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
+using DCL.ECSRuntime;
+using DCL.Models;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -6,17 +11,27 @@ namespace ECSSystems.VideoPlayerSystem
 {
     public class ECSVideoPlayerSystem
     {
-        public readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
-        public readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
+        private struct VideoEventData
+        {
+            public VideoState videoState;
+            public uint timeStamp;
+        }
+
+        private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
+        private readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
+        private readonly IECSComponentWriter componentWriter;
+        private Dictionary<IDCLEntity, VideoEventData> videoEvents = new Dictionary<IDCLEntity, VideoEventData>();
 
         private static readonly Vector2 VIDEO_TEXTURE_SCALE = new Vector2(1, -1);
 
         public ECSVideoPlayerSystem(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent,
-            IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent)
+            IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent,
+            IECSComponentWriter componentWriter)
         {
             this.videoPlayerComponent = videoPlayerComponent;
             this.videoMaterialComponent = videoMaterialComponent;
+            this.componentWriter = componentWriter;
         }
 
         public void Update()
@@ -28,39 +43,88 @@ namespace ECSSystems.VideoPlayerSystem
                 var playerComponentData = playerComponents[i].value;
                 var playerModel = playerComponentData.model;
 
-                playerModel.videoPlayer.Update();
+                playerModel.videoPlayer?.Update();
+
+                UpdateVideoEvent(playerModel, playerComponentData);
             }
 
             var allMaterialComponent = videoMaterialComponent.GetForAll();
-
             for (int i = allMaterialComponent.Count - 1; i >= 0; --i)
             {
                 var materialComponentData = allMaterialComponent[i].value;
-                var model = materialComponentData.model;
-                var texturesData = model.videoTextureDatas;
+                UpdateVideoMaterial(materialComponentData, materialComponentData.model, materialComponentData.model.videoTextureDatas);
+            }
+        }
 
-                for (int j = texturesData.Count - 1; j >= 0; --j)
+        private void UpdateVideoEvent(InternalVideoPlayer videoPlayerModel, ECSComponentData<InternalVideoPlayer> videoPlayerComponentData)
+        {
+            if (videoPlayerModel.removed)
+            {
+                componentWriter.RemoveComponent(videoPlayerComponentData.scene.sceneData.sceneNumber, videoPlayerComponentData.entity.entityId, ComponentID.VIDEO_EVENT);
+                videoEvents.Remove(videoPlayerComponentData.entity);
+                return;
+            }
+
+            bool videoEventExists = videoEvents.TryGetValue(videoPlayerComponentData.entity, out VideoEventData videoEvent);
+            if (!videoEventExists)
+            {
+                videoEvent = new VideoEventData()
                 {
-                    var textureData = texturesData[j];
-                    var playerComponent = videoPlayerComponent.GetFor(materialComponentData.scene, textureData.videoId);
+                    videoState = VideoState.VsNone,
+                    timeStamp = 0
+                };
+            }
 
-                    if (playerComponent != null)
+            int previousVideoState = videoEventExists ? (int)videoEvent.videoState : -1;
+            int currentVideoState = (int)videoPlayerModel.videoPlayer.GetState();
+            if (previousVideoState != currentVideoState)
+            {
+                videoEvent.timeStamp++;
+                videoEvent.videoState = (VideoState)currentVideoState;
+
+                // save video event updated data
+                videoEvents[videoPlayerComponentData.entity] = videoEvent;
+
+                // Update GrowOnlyValueSet VideoEvent component for the video player entity
+                componentWriter.AppendComponent(
+                    videoPlayerComponentData.scene.sceneData.sceneNumber,
+                    videoPlayerComponentData.entity.entityId,
+                    ComponentID.VIDEO_EVENT,
+                    new PBVideoEvent()
                     {
-                        var playerModel = playerComponent.model;
-                        var videoTexture = playerModel.videoPlayer.texture;
+                        State = videoEvent.videoState,
+                        CurrentOffset = videoPlayerModel.videoPlayer.GetTime(),
+                        VideoLength = videoPlayerModel.videoPlayer.GetDuration(),
+                        Timestamp = videoEvent.timeStamp
+                    },
+                    ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
+                );
+            }
+        }
 
-                        if (!IsMaterialAssigned(playerModel, model, textureData.textureType) && videoTexture != null)
-                        {
-                            model.material.SetTexture(textureData.textureType, videoTexture);
+        private void UpdateVideoMaterial( ECSComponentData<InternalVideoMaterial> materialComponentData, InternalVideoMaterial model,  IList<InternalVideoMaterial.VideoTextureData> texturesData)
+        {
+            for (int j = texturesData.Count - 1; j >= 0; --j)
+            {
+                var textureData = texturesData[j];
+                var playerComponent = videoPlayerComponent.GetFor(materialComponentData.scene, textureData.videoId);
 
-                            // Video textures are vertically flipped since natively the buffer is read from
-                            // bottom to top, we are scaling the texture in the material to fix that and avoiding the performance cost
-                            // of flipping the texture by code
-                            model.material.SetTextureScale(textureData.textureType, VIDEO_TEXTURE_SCALE);
+                if (playerComponent != null)
+                {
+                    var playerModel = playerComponent.model;
+                    var videoTexture = playerModel.videoPlayer.texture;
 
-                            playerModel.assignedMaterials.Add(
-                                new InternalVideoPlayer.MaterialAssigned(model.material, textureData.textureType));
-                        }
+                    if (!IsMaterialAssigned(playerModel, model, textureData.textureType) && videoTexture != null)
+                    {
+                        model.material.SetTexture(textureData.textureType, videoTexture);
+
+                        // Video textures are vertically flipped since natively the buffer is read from
+                        // bottom to top, we are scaling the texture in the material to fix that and avoiding the performance cost
+                        // of flipping the texture by code
+                        model.material.SetTextureScale(textureData.textureType, VIDEO_TEXTURE_SCALE);
+
+                        playerModel.assignedMaterials.Add(
+                            new InternalVideoPlayer.MaterialAssigned(model.material, textureData.textureType));
                     }
                 }
             }

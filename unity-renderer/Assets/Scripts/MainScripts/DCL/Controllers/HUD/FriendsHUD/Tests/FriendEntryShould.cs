@@ -1,19 +1,19 @@
 using DCL.Helpers;
 using DCL.Social.Friends;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 public class FriendEntryShould
 {
-    private const string FRIEND_ENTRY_RESOURCE_NAME = "SocialBarV1/FriendEntry";
-
     FriendEntry entry;
 
     [SetUp]
     public void SetUp()
     {
-        GameObject go = Object.Instantiate((GameObject)Resources.Load(FRIEND_ENTRY_RESOURCE_NAME));
-        entry = go.GetComponent<FriendEntry>();
+        entry = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<FriendEntry>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/FriendEntry.prefab"));
     }
 
     [TearDown]

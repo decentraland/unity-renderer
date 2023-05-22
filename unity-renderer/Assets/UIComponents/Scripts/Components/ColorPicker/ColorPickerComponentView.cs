@@ -1,8 +1,8 @@
+using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig<ColorPickerComponentModel>
@@ -20,6 +20,10 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
 
     [Header("Configuration")]
     [SerializeField] internal ColorPickerComponentModel model;
+
+    public bool IsShowingOnlyPresetColors => model.showOnlyPresetColors;
+    public List<Color> ColorList => model.colorList;
+    public Color CurrentSelectedColor { get; private set; }
 
     public event Action<Color> OnColorChanged;
 
@@ -57,10 +61,14 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
 
         SetColorList(model.colorList);
         SetIncrementAmount(model.incrementAmount);
+        SetShowOnlyPresetColors(model.showOnlyPresetColors);
     }
 
-    public void SetColorSelector(Color newColor) =>
+    public void SetColorSelector(Color newColor)
+    {
         colorSelector.Select(newColor);
+        CurrentSelectedColor = newColor;
+    }
 
     public void SetColorList(List<Color> colorList)
     {
@@ -147,6 +155,9 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
 
         if (arrowDownMark != null)
             arrowDownMark.SetActive(!isActive);
+
+        if (isActive)
+            RebuildLayout();
     }
 
     public override void Dispose()
@@ -157,4 +168,18 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
 
     public void SetIncrementAmount(float amount) =>
         model.incrementAmount = amount;
+
+    public void SetShowOnlyPresetColors(bool showOnlyPresetColors)
+    {
+        model.showOnlyPresetColors = showOnlyPresetColors;
+
+        sliderHue.gameObject.SetActive(!showOnlyPresetColors);
+        sliderSaturation.gameObject.SetActive(!showOnlyPresetColors);
+        sliderValue.gameObject.SetActive(!showOnlyPresetColors);
+
+        RebuildLayout();
+    }
+
+    private void RebuildLayout() =>
+        Utils.ForceRebuildLayoutImmediate(transform as RectTransform);
 }

@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
+using System.Threading;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public class HighlightsSubSectionComponentController : IHighlightsSubSectionComponentController, IPlacesAndEventsAPIRequester
@@ -26,8 +28,9 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<HotSceneInfo> placesFromAPI = new ();
+    internal List<PlaceInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
+    private CancellationTokenSource cts = new ();
 
     public HighlightsSubSectionComponentController(
         IHighlightsSubSectionComponentView view,
@@ -45,7 +48,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         this.view.OnPlaceInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnPlaceJumpInClicked += JumpInToPlace;
-        this.view.OnFavoriteClicked += FavoritePlace;
+        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
 
         this.view.OnEventInfoClicked += ShowEventDetailedInfo;
         this.view.OnEventJumpInClicked += JumpInToEvent;
@@ -70,11 +73,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.ConfigurePools();
     }
 
-    private void FavoritePlace(string placeUUID, bool isFavorite)
-    {
-        //TODO: wire add/remove favorite request when places API is ready
-    }
-
     public void Dispose()
     {
         view.OnReady -= FirstLoading;
@@ -84,6 +82,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         view.OnPlaceJumpInClicked -= JumpInToPlace;
         view.OnEventJumpInClicked -= JumpInToEvent;
+        this.view.OnFavoriteClicked -= View_OnFavoritesClicked;
 
         view.OnEventSubscribeEventClicked -= SubscribeToEvent;
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
@@ -95,6 +94,26 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
         cardsReloader.Dispose();
+
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+    }
+
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    {
+        if (isFavorite)
+        {
+            exploreV2Analytics.AddFavorite(placeUUID);
+        }
+        else
+        {
+            exploreV2Analytics.RemoveFavorite(placeUUID);
+        }
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
     }
 
     private void FirstLoading()
@@ -111,8 +130,11 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     public void RequestAllFromAPI()
     {
-        placesAPIApiController.GetAllPlaces(
-            OnCompleted: placeList =>
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        placesAPIApiController.GetAllPlacesFromPlacesAPI(
+            OnCompleted: (placeList, total) =>
             {
                 placesFromAPI = placeList;
 
@@ -127,27 +149,27 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
                         OnRequestedPlacesAndEventsUpdated();
                         Debug.LogError($"Error receiving events from the API: {error}");
                     });
-            });
+            }, 0, 20, cts.Token);
     }
 
     internal void OnRequestedPlacesAndEventsUpdated()
     {
         friendsTrackerController.RemoveAllHandlers();
 
-        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.CreatePlacesCards(FilterTrendingPlaces());
+        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(FilterTrendingPlaces());
         List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents(trendingPlaces.Count));
         view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
 
-        view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(FilterFeaturedPlaces()));
+        view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(FilterFeaturedPlaces()));
         view.SetLiveEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterLiveEvents()));
     }
 
-    internal List<HotSceneInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
+    internal List<PlaceInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
     internal List<EventFromAPIModel> FilterLiveEvents() => eventsFromAPI.Where(x => x.live).Take(DEFAULT_NUMBER_OF_LIVE_EVENTS).ToList();
     internal List<EventFromAPIModel> FilterTrendingEvents(int amount) => eventsFromAPI.Where(e => e.highlighted).Take(amount).ToList();
-    internal List<HotSceneInfo> FilterFeaturedPlaces()
+    internal List<PlaceInfo> FilterFeaturedPlaces()
     {
-        List<HotSceneInfo> featuredPlaces;
+        List<PlaceInfo> featuredPlaces;
 
         if (placesFromAPI.Count >= DEFAULT_NUMBER_OF_TRENDING_PLACES)
         {
@@ -162,7 +184,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         else if (placesFromAPI.Count > 0)
             featuredPlaces = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList();
         else
-            featuredPlaces = new List<HotSceneInfo>();
+            featuredPlaces = new List<PlaceInfo>();
 
         return featuredPlaces;
     }
@@ -173,7 +195,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName);
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
@@ -184,14 +206,14 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Events);
     }
 
-    internal void JumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void JumpInToPlace(PlaceInfo placeFromAPI)
     {
         PlacesSubSectionComponentController.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, Utils.ConvertStringToVector(placeFromAPI.base_position));
     }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)

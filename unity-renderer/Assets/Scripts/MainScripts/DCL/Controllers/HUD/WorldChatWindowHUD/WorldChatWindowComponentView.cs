@@ -85,11 +85,6 @@ namespace DCL.Chat.HUD
         public RectTransform Transform => (RectTransform) transform;
         public bool IsActive => gameObject.activeInHierarchy;
 
-        public static WorldChatWindowComponentView Create()
-        {
-            return Instantiate(Resources.Load<WorldChatWindowComponentView>("SocialBarV1/ConversationListHUD"));
-        }
-
         public override void Awake()
         {
             base.Awake();

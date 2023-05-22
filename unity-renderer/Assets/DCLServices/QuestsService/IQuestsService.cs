@@ -8,8 +8,9 @@ namespace DCLServices.QuestsService
 {
     public interface IQuestsService : IDisposable
     {
-        event Action<QuestStateUpdate> OnQuestUpdated;
-        IReadOnlyDictionary<string, QuestStateUpdate> CurrentState { get; }
+        event Action<QuestStateWithData> OnQuestStarted;
+        event Action<QuestStateWithData> OnQuestUpdated;
+        IReadOnlyDictionary<string, QuestStateWithData> CurrentState { get; }
 
         void SetUserId(string userId);
 
@@ -17,6 +18,6 @@ namespace DCLServices.QuestsService
 
         UniTask<AbortQuestResponse> AbortQuest(string questInstanceId);
 
-        UniTask<ProtoQuest> GetDefinition(string questId, CancellationToken cancellationToken = default);
+        UniTask<Quest> GetDefinition(string questId, CancellationToken cancellationToken = default);
     }
 }

@@ -18,5 +18,8 @@ namespace DCL
         public const string QUERY = "Query";
         public const string OPEN_EXTERNAL_URL = "OpenExternalUrl";
         public const string OPEN_NFT_DIALOG = "OpenNFTDialog";
+
+        public const string PB_SHARED_COMPONENT_UPDATE = "PBComponentUpdated";
+        public const string PB_ENTITY_COMPONENT_CREATE_OR_UPDATE = "PBUpdateEntityComponent";
     }
 }

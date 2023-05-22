@@ -68,7 +68,8 @@ namespace DCL.Backpack
                 dataStore.backpackV2,
                 Substitute.For<IBrowserBridge>(),
                 backpackFiltersController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                Substitute.For<IBackpackAnalyticsController>());
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
@@ -119,9 +120,9 @@ namespace DCL.Backpack
         {
             // Arrange
             userProfile.avatar.wearables.Clear();
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" }, EquipWearableSource.Wearable);
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" }, EquipWearableSource.Wearable);
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" }, EquipWearableSource.Wearable);
 
             view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
                 Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
@@ -142,10 +143,9 @@ namespace DCL.Backpack
         {
             // Arrange
             EquipAndSaveCorrectly();
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" });
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" });
-            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" });
-
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" }, UnequipWearableSource.None);
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" }, UnequipWearableSource.None);
+            wearableGridView.OnWearableUnequipped += Raise.Event<Action<WearableGridItemModel, UnequipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bee_t_shirt" }, UnequipWearableSource.None);
 
             view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
                 Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
@@ -200,7 +200,7 @@ namespace DCL.Backpack
         [TestCase("hair")]
         [TestCase("eyebrows")]
         [TestCase("facial_hair")]
-        [TestCase("bodyshape")]
+        [TestCase("body_shape")]
         [TestCase("non_existing_category")]
         public void ToggleSlotCorrectly(string slotCategory)
         {
@@ -209,6 +209,7 @@ namespace DCL.Backpack
 
             // Assert
             view.Received(1).SetColorPickerVisibility(true);
+            view.Received(1).SetColorPickerAsSkinMode(slotCategory == "body_shape");
 
             if (slotCategory == "non_existing_category")
             {
@@ -224,7 +225,7 @@ namespace DCL.Backpack
                 case "hair" or "eyebrows" or "facial_hair":
                     view.Received(1).SetColorPickerValue(userProfile.avatar.hairColor);
                     break;
-                case "bodyshape":
+                case "body_shape":
                     view.Received(1).SetColorPickerValue(userProfile.avatar.skinColor);
                     break;
             }
@@ -259,10 +260,10 @@ namespace DCL.Backpack
                 Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
                 Arg.Any<Action>());
 
-            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel
             {
                 WearableId = bodyShapeId,
-            });
+            }, EquipWearableSource.Wearable);
 
             Assert.IsFalse(userProfile.avatar.wearables.Contains(bodyShapeId));
             Assert.IsTrue(dataStore.backpackV2.previewEquippedWearables.Contains(bodyShapeId));

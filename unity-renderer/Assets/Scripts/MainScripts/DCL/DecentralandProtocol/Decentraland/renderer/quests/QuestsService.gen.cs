@@ -16,13 +16,13 @@ public interface IQuestsService<Context>
 
   UniTask<AbortQuestResponse> AbortQuest(AbortQuestRequest request, Context context, CancellationToken ct);
 
-  UniTask<EventResponse> SendEvent(Event request, Context context, CancellationToken ct);
+  UniTask<EventResponse> SendEvent(EventRequest request, Context context, CancellationToken ct);
 
   IUniTaskAsyncEnumerable<UserUpdate> Subscribe(UserAddress request, Context context);
 
-  UniTask<Quests> GetAllQuests(UserAddress request, Context context, CancellationToken ct);
+  UniTask<GetAllQuestsResponse> GetAllQuests(UserAddress request, Context context, CancellationToken ct);
 
-  UniTask<ProtoQuest> GetQuestDefinition(QuestDefinitionRequest request, Context context, CancellationToken ct);
+  UniTask<GetQuestDefinitionResponse> GetQuestDefinition(GetQuestDefinitionRequest request, Context context, CancellationToken ct);
 
 }
 
@@ -36,10 +36,10 @@ public static class QuestsServiceCodeGen
       
     result.definition.Add("StartQuest", async (payload, context, ct) => { var res = await service.StartQuest(StartQuestRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("AbortQuest", async (payload, context, ct) => { var res = await service.AbortQuest(AbortQuestRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
-    result.definition.Add("SendEvent", async (payload, context, ct) => { var res = await service.SendEvent(Event.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("SendEvent", async (payload, context, ct) => { var res = await service.SendEvent(EventRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.serverStreamDefinition.Add("Subscribe", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<UserUpdate>(service.Subscribe(UserAddress.Parser.ParseFrom(payload), context)); });
     result.definition.Add("GetAllQuests", async (payload, context, ct) => { var res = await service.GetAllQuests(UserAddress.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
-    result.definition.Add("GetQuestDefinition", async (payload, context, ct) => { var res = await service.GetQuestDefinition(QuestDefinitionRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("GetQuestDefinition", async (payload, context, ct) => { var res = await service.GetQuestDefinition(GetQuestDefinitionRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }

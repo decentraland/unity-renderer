@@ -13,7 +13,7 @@ public class ProfileCardComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        profileCardComponent = BaseComponentView.Create<ProfileCardComponentView>("ProfileCard");
+        profileCardComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<ProfileCardComponentView>("ProfileCard");
         profileCardComponent.profileImage.imageObserver = Substitute.For<ILazyTextureObserver>();
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);

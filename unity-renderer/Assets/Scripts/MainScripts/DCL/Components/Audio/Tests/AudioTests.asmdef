@@ -1,37 +1,38 @@
 {
-  "name": "AudioTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:a881b57670b1d2747a6d7f9e32b63230",
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
-    "GUID:1dd0780aa6be12b428c8005d0bee46b8",
-    "GUID:b308ae946900fa04080222d7daf47d9a",
-    "GUID:97d8897529779cb49bebd400c7f402a6",
-    "GUID:44a9db8f655ab05409802e5476cf9dd3",
-    "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
-    "GUID:fbcc413e192ef9048811d47ab0aca0c0",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-    "GUID:6fe88ed11deba994da7c1eac6bd9aa10",
-    "GUID:9a16a75a9de4ba2458b50ed374f1b28f"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll",
-    "Newtonsoft.Json.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "AudioTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:b308ae946900fa04080222d7daf47d9a",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:44a9db8f655ab05409802e5476cf9dd3",
+        "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:6fe88ed11deba994da7c1eac6bd9aa10",
+        "GUID:9a16a75a9de4ba2458b50ed374f1b28f",
+        "GUID:3c7b57a14671040bd8c549056adc04f5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

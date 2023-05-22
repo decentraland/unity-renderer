@@ -4,6 +4,7 @@ using DCL.Chat.HUD;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -14,7 +15,10 @@ public class WorldChatWindowComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        view = WorldChatWindowComponentView.Create();
+        view = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<WorldChatWindowComponentView>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/ConversationListHUD.prefab"));
+
         view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
     }
 

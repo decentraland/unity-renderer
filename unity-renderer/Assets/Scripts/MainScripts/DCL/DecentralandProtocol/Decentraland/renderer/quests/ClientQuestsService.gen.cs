@@ -13,13 +13,13 @@ public interface IClientQuestsService
 
   UniTask<AbortQuestResponse> AbortQuest(AbortQuestRequest request);
 
-  UniTask<EventResponse> SendEvent(Event request);
+  UniTask<EventResponse> SendEvent(EventRequest request);
 
   IUniTaskAsyncEnumerable<UserUpdate> Subscribe(UserAddress request);
 
-  UniTask<Quests> GetAllQuests(UserAddress request);
+  UniTask<GetAllQuestsResponse> GetAllQuests(UserAddress request);
 
-  UniTask<ProtoQuest> GetQuestDefinition(QuestDefinitionRequest request);
+  UniTask<GetQuestDefinitionResponse> GetQuestDefinition(GetQuestDefinitionRequest request);
 }
 
 public class ClientQuestsService : IClientQuestsService
@@ -42,7 +42,7 @@ public class ClientQuestsService : IClientQuestsService
       return module.CallUnaryProcedure<AbortQuestResponse>("AbortQuest", request);
   }
 
-  public UniTask<EventResponse> SendEvent(Event request)
+  public UniTask<EventResponse> SendEvent(EventRequest request)
   {
       return module.CallUnaryProcedure<EventResponse>("SendEvent", request);
   }
@@ -52,14 +52,14 @@ public class ClientQuestsService : IClientQuestsService
       return module.CallServerStream<UserUpdate>("Subscribe", request);
   }
 
-  public UniTask<Quests> GetAllQuests(UserAddress request)
+  public UniTask<GetAllQuestsResponse> GetAllQuests(UserAddress request)
   {
-      return module.CallUnaryProcedure<Quests>("GetAllQuests", request);
+      return module.CallUnaryProcedure<GetAllQuestsResponse>("GetAllQuests", request);
   }
 
-  public UniTask<ProtoQuest> GetQuestDefinition(QuestDefinitionRequest request)
+  public UniTask<GetQuestDefinitionResponse> GetQuestDefinition(GetQuestDefinitionRequest request)
   {
-      return module.CallUnaryProcedure<ProtoQuest>("GetQuestDefinition", request);
+      return module.CallUnaryProcedure<GetQuestDefinitionResponse>("GetQuestDefinition", request);
   }
 
 }

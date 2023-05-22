@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using TMPro;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
@@ -28,7 +29,6 @@ namespace DCL.Components
 
             [Header("Text box properties")]
             public string hTextAlign = "bottom";
-
             public string vTextAlign = "left";
             public float width = 1f;
             public float height = 0.2f;
@@ -42,7 +42,6 @@ namespace DCL.Components
 
             [Header("Text shadow properties")]
             public float shadowBlur = 0f;
-
             public float shadowOffsetX = 0f;
             public float shadowOffsetY = 0f;
             public Color shadowColor = new Color(1, 1, 1);
@@ -53,6 +52,49 @@ namespace DCL.Components
             public Color outlineColor = Color.white;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.TextShape)
+                    return Utils.SafeUnimplemented<TextShape, Model>(expected: ComponentBodyPayload.PayloadOneofCase.TextShape, actual: pbModel.PayloadCase);
+
+                var model = new Model();
+
+                try {
+                    if (pbModel.TextShape.HasBillboard) model.billboard = pbModel.TextShape.Billboard;
+                    if (pbModel.TextShape.Color != null) model.color = pbModel.TextShape.Color.AsUnityColor();
+                    if (pbModel.TextShape.HasFont) model.font = pbModel.TextShape.Font;
+                    if (pbModel.TextShape.HasHeight) model.height = pbModel.TextShape.Height;
+                    if (pbModel.TextShape.HasOpacity) model.opacity = pbModel.TextShape.Opacity;
+                    if (pbModel.TextShape.HasValue) model.value = pbModel.TextShape.Value;
+                    if (pbModel.TextShape.HasVisible) model.visible = pbModel.TextShape.Visible;
+                    if (pbModel.TextShape.HasWidth) model.width = pbModel.TextShape.Width;
+                    if (pbModel.TextShape.HasLineCount) model.lineCount = pbModel.TextShape.LineCount;
+                    if (pbModel.TextShape.OutlineColor != null) model.outlineColor = pbModel.TextShape.OutlineColor.AsUnityColor();
+                    if (pbModel.TextShape.HasOutlineWidth) model.outlineWidth = pbModel.TextShape.OutlineWidth;
+                    if (pbModel.TextShape.HasPaddingBottom ) model.paddingBottom = pbModel.TextShape.PaddingBottom;
+                    if (pbModel.TextShape.HasPaddingLeft) model.paddingLeft = pbModel.TextShape.PaddingLeft;
+                    if (pbModel.TextShape.HasPaddingRight) model.paddingRight = pbModel.TextShape.PaddingRight;
+                    if (pbModel.TextShape.HasPaddingTop) model.paddingTop = pbModel.TextShape.PaddingTop;
+                    if (pbModel.TextShape.HasShadowBlur) model.shadowBlur = pbModel.TextShape.ShadowBlur;
+                    if (pbModel.TextShape.ShadowColor != null) model.shadowColor = pbModel.TextShape.ShadowColor.AsUnityColor();
+                    if (pbModel.TextShape.HasShadowOffsetX) model.shadowOffsetX = pbModel.TextShape.ShadowOffsetX;
+                    if (pbModel.TextShape.HasShadowOffsetY) model.shadowOffsetY = pbModel.TextShape.ShadowOffsetY;
+                    if (pbModel.TextShape.HasTextWrapping) model.textWrapping = pbModel.TextShape.TextWrapping;
+                    if (pbModel.TextShape.HasVTextAlign) model.vTextAlign = pbModel.TextShape.VTextAlign;
+                    if (pbModel.TextShape.HasHTextAlign) model.hTextAlign = pbModel.TextShape.HTextAlign;
+                    if (pbModel.TextShape.HasFontSize) model.fontAutoSize = pbModel.TextShape.FontSize == 0;
+                    if (pbModel.TextShape.HasFontSize) model.fontSize = pbModel.TextShape.FontSize;
+                    // if (pbModel.TextShape.HasLineSpacing) model.lineSpacing = float.Parse(pbModel.TextShape.LineSpacing[..^2]); // TODO [SDK6_REFACTOR] revise this, is failing
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+
+                return model;
+            }
+
         }
 
         public MeshRenderer meshRenderer;

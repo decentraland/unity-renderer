@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -10,7 +11,9 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view = Object.Instantiate(Resources.Load<ChannelContextualMenu>("SocialBarV1/ChannelOptionsContextualMenu"));
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<ChannelContextualMenu>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/ChannelOptionsContextualMenu.prefab"));
         }
 
         [TearDown]
@@ -24,9 +27,9 @@ namespace DCL.Chat.HUD
         {
             var called = false;
             view.OnLeave += () => called = true;
-            
+
             view.leaveButton.onClick.Invoke();
-            
+
             Assert.IsTrue(called);
         }
 
@@ -35,7 +38,7 @@ namespace DCL.Chat.HUD
         public void SetTitle(string title)
         {
             view.SetHeaderTitle(title);
-            
+
             Assert.AreEqual(title, view.headerTiler.text);
         }
 
@@ -43,7 +46,7 @@ namespace DCL.Chat.HUD
         public void Hide()
         {
             view.closeButton.onClick.Invoke();
-            
+
             Assert.IsFalse(view.gameObject.activeSelf);
         }
     }

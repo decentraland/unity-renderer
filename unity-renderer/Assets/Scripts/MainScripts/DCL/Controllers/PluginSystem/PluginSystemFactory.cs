@@ -18,6 +18,7 @@ using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
 using DCLPlugins.SentryPlugin;
+using DCLPlugins.SignupHUDPlugin;
 using DCLPlugins.UIRefresherPlugin;
 
 namespace DCL
@@ -60,6 +61,7 @@ namespace DCL
             pluginSystem.Register<FallbackFontsLoaderPlugin>(() => new FallbackFontsLoaderPlugin());
             pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
             pluginSystem.Register<LoadingScreenPlugin>(() => new LoadingScreenPlugin());
+            pluginSystem.Register<SignupHUDPlugin>(() => new SignupHUDPlugin());
 
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
