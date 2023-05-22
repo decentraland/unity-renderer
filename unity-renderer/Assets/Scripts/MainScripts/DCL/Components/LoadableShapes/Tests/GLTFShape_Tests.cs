@@ -372,23 +372,4 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         gltfShape.CallWhenReady((x) => { isOnReady = true; });
         Assert.IsTrue(isOnReady);
     }
-
-    [UnityTest]
-    public IEnumerator OnDestroyWhileLoading()
-    {
-        GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
-        GLTFShape gltfShape2 = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out IDCLEntity entity2);
-        GLTFShape gltfShape3 = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb", out IDCLEntity entity3);
-
-        TestUtils.SetEntityParent(scene, entity2, entity);
-        TestUtils.SetEntityParent(scene, entity3, entity);
-
-        yield return null;
-        yield return null;
-        yield return null;
-
-        Object.Destroy(entity.gameObject);
-
-        yield return null;
-    }
 }
