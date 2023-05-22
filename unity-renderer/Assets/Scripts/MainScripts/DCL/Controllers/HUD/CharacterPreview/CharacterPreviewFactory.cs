@@ -19,8 +19,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             RenderTexture renderTexture,
             bool isVisible,
             CharacterPreviewController.CameraFocus cameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing,
-            bool isAvatarShadowActive = false,
-            bool isAvatarLightActive = false)
+            bool isAvatarShadowActive = false)
         {
             var instance = Object.Instantiate(prefab);
             instance.transform.position = COORDS_TO_START + (VECTOR_BETWEEN_INSTANCES * controllersCount);
@@ -30,7 +29,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             characterPreviewController.Initialize(loadingMode, renderTexture);
             characterPreviewController.SetEnabled(isVisible);
             characterPreviewController.SetCharacterShadowActive(isAvatarShadowActive);
-            characterPreviewController.SetAvatarLightActive(isAvatarLightActive);
             characterPreviewController.SetFocus(cameraFocus, false);
 
             controllersCount++;

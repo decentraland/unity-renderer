@@ -27,7 +27,6 @@ namespace DCL.Backpack
                 Arg.Any<RenderTexture>(),
                 Arg.Any<bool>(),
                 Arg.Any<CharacterPreviewController.CameraFocus>(),
-                Arg.Any<bool>(),
                 Arg.Any<bool>()).Returns(characterPreviewController);
 
 

@@ -41,8 +41,7 @@ namespace DCL.Backpack
                 renderTexture: (RenderTexture) avatarPreviewImage.texture,
                 isVisible: false,
                 cameraFocus: CharacterPreviewController.CameraFocus.DefaultEditing,
-                isAvatarShadowActive: true,
-                isAvatarLightActive: true);
+                isAvatarShadowActive: true);
             characterPreviewController.SetCameraLimits(
                 CAMERA_MIN_X_LIMIT, CAMERA_MAX_X_LIMIT,
                 CAMERA_MIN_Y_LIMIT, CAMERA_MAX_Y_LIMIT,

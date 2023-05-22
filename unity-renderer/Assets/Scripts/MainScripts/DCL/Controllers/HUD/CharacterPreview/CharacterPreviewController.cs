@@ -48,7 +48,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         [SerializeField] private BaseAvatarReferences baseAvatarReferencesPrefab;
 
         [SerializeField] private GameObject avatarShadow;
-        [SerializeField] private Light avatarLight;
 
         private Service<IAvatarFactory> avatarFactory;
 
@@ -303,9 +302,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public void SetCharacterShadowActive(bool isActive) =>
             avatarShadow.SetActive(isActive);
-
-        public void SetAvatarLightActive(bool isActive) =>
-            avatarLight.enabled = isActive;
 
         public void PlayEmote(string emoteId, long timestamp) =>
             avatar.PlayEmote(emoteId, timestamp);

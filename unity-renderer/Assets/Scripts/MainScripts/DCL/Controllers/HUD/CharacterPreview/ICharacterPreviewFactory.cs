@@ -10,7 +10,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             RenderTexture renderTexture,
             bool isVisible,
             CharacterPreviewController.CameraFocus cameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing,
-            bool isAvatarShadowActive = false,
-            bool isAvatarLightActive = false);
+            bool isAvatarShadowActive = false);
     }
 }
