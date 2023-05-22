@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NftTypePreviewCameraFocus", menuName = "Variables/NftTypePreviewCameraFocus")]
-public class NftTypePreviewCameraFocusSO : ScriptableObject
+public class NftTypePreviewCameraFocusConfig : ScriptableObject
 {
     [Serializable]
     public class NftTypePreviewCameraFocus

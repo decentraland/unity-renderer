@@ -16,7 +16,7 @@ namespace DCL.Backpack
         private NftTypeIconSO nftTypeIconMapping;
         private NftRarityBackgroundSO nftRarityBackgroundMapping;
         private NftTypeColorSupportingSO nftTypeColorSupporting;
-        private NftTypePreviewCameraFocusSO nftTypePreviewCameraFocus;
+        private NftTypePreviewCameraFocusConfig nftTypePreviewCameraFocus;
 
         [SetUp]
         public void SetUp()
@@ -26,7 +26,7 @@ namespace DCL.Backpack
             nftTypeIconMapping = ScriptableObject.CreateInstance<NftTypeIconSO>();
             nftRarityBackgroundMapping = ScriptableObject.CreateInstance<NftRarityBackgroundSO>();
             nftTypeColorSupporting = ScriptableObject.CreateInstance<NftTypeColorSupportingSO>();
-            nftTypePreviewCameraFocus = ScriptableObject.CreateInstance<NftTypePreviewCameraFocusSO>();
+            nftTypePreviewCameraFocus = ScriptableObject.CreateInstance<NftTypePreviewCameraFocusConfig>();
 
             nftTypeIconMapping.nftIcons = new SerializableKeyValuePair<string, Sprite>[1];
             nftTypeIconMapping.nftIcons[0] = new SerializableKeyValuePair<string, Sprite>
@@ -42,8 +42,8 @@ namespace DCL.Backpack
                 value = true
             };
 
-            nftTypePreviewCameraFocus.previewCameraFocusByNftType = new NftTypePreviewCameraFocusSO.NftTypePreviewCameraFocus[1];
-            nftTypePreviewCameraFocus.previewCameraFocusByNftType[0] = new NftTypePreviewCameraFocusSO.NftTypePreviewCameraFocus
+            nftTypePreviewCameraFocus.previewCameraFocusByNftType = new NftTypePreviewCameraFocusConfig.NftTypePreviewCameraFocus[1];
+            nftTypePreviewCameraFocus.previewCameraFocusByNftType[0] = new NftTypePreviewCameraFocusConfig.NftTypePreviewCameraFocus
             {
                 nftType = TEST_CATEGORY,
                 cameraFocus = CharacterPreviewController.CameraFocus.FaceEditing,

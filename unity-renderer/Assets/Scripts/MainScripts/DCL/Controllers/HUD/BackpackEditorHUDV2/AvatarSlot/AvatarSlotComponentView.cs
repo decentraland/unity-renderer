@@ -15,7 +15,7 @@ namespace DCL.Backpack
         private const float SHAKE_ANIMATION_TIME = 0.75f;
 
         [SerializeField] internal NftTypeColorSupportingSO typeColorSupporting;
-        [SerializeField] internal NftTypePreviewCameraFocusSO previewCameraFocus;
+        [SerializeField] internal NftTypePreviewCameraFocusConfig previewCameraFocus;
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal RectTransform nftContainer;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
