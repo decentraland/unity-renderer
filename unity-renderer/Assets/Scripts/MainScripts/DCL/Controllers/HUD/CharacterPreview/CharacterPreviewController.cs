@@ -57,7 +57,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private IAnimator animator;
         private Quaternion avatarContainerDefaultRotation;
         private Transform cameraTransform;
-        private (float minZ, float maxZ, float minY, float maxY, float minX, float maxX) cameraLimits;
+        private Bounds cameraLimits;
         private (float verticalCenterRef, float bottomMaxOffset, float topMaxOffset) zoomConfig;
 
         private void Awake()
@@ -254,15 +254,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             ApplyCameraLimits(changeYLimitsDependingOnZPosition);
         }
 
-        public void SetCameraLimits(float minX, float maxX, float minY, float maxY, float minZ, float maxZ)
-        {
-            cameraLimits.minX = minX;
-            cameraLimits.maxX = maxX;
-            cameraLimits.minY = minY;
-            cameraLimits.maxY = maxY;
-            cameraLimits.minZ = minZ;
-            cameraLimits.maxZ = maxZ;
-        }
+        public void SetCameraLimits(Bounds limits) =>
+            cameraLimits = limits;
 
         public void ConfigureZoom(float verticalCenterRef, float bottomMaxOffset, float topMaxOffset)
         {
@@ -274,12 +267,12 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private void ApplyCameraLimits(bool changeYLimitsDependingOnZPosition)
         {
             Vector3 pos = cameraTransform.localPosition;
-            pos.x = Mathf.Clamp(pos.x, cameraLimits.minX, cameraLimits.maxX);
-            pos.z = Mathf.Clamp(pos.z, cameraLimits.minZ, cameraLimits.maxZ);
+            pos.x = Mathf.Clamp(pos.x, cameraLimits.min.x, cameraLimits.max.x);
+            pos.z = Mathf.Clamp(pos.z, cameraLimits.min.z, cameraLimits.max.z);
 
             pos.y = changeYLimitsDependingOnZPosition ?
                 GetCameraYPositionBasedOnZPosition() :
-                Mathf.Clamp(pos.y, cameraLimits.minY, cameraLimits.maxY);
+                Mathf.Clamp(pos.y, cameraLimits.min.y, cameraLimits.max.y);
 
             cameraTransform.localPosition = pos;
         }
@@ -294,9 +287,9 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private float GetOffsetBasedOnZLimits(float zValue, float maxOffset)
         {
-            if (zValue >= cameraLimits.maxZ) return 0f;
-            if (zValue <= cameraLimits.minZ) return maxOffset;
-            float progress = (zValue - cameraLimits.minZ) / (cameraLimits.maxZ - cameraLimits.minZ);
+            if (zValue >= cameraLimits.max.z) return 0f;
+            if (zValue <= cameraLimits.min.z) return maxOffset;
+            float progress = (zValue - cameraLimits.min.z) / (cameraLimits.max.z - cameraLimits.min.z);
             return maxOffset - (progress * maxOffset);
         }
 

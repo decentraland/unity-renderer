@@ -12,12 +12,10 @@ namespace DCL.Backpack
     public class BackpackPreviewPanel : BaseComponentView
     {
         private const string RESET_PREVIEW_ANIMATION = "Idle";
-        private const float CAMERA_MIN_X_LIMIT = 0f;
-        private const float CAMERA_MAX_X_LIMIT = 0f;
-        private const float CAMERA_MIN_Y_LIMIT = 0f;
-        private const float CAMERA_MAX_Y_LIMIT = 1.7f;
-        private const float CAMERA_MIN_Z_LIMIT = 1.3f;
-        private const float CAMERA_MAX_Z_LIMIT = 3.5f;
+        private static readonly Bounds CAMERA_LIMITS = new (
+            new Vector3(0f, 0.85f, 2.4f),
+            new Vector3(0f, 1.7f, 2.2f)
+        );
         private const float CAMERA_ZOOM_CENTER = 1.4f;
         private const float CAMERA_ZOOM_BOTTOM_MAX_OFFSET = 1.1f;
         private const float CAMERA_ZOOM_TOP_MAX_OFFSET = 0.3f;
@@ -42,10 +40,7 @@ namespace DCL.Backpack
                 isVisible: false,
                 cameraFocus: CharacterPreviewController.CameraFocus.DefaultEditing,
                 isAvatarShadowActive: true);
-            characterPreviewController.SetCameraLimits(
-                CAMERA_MIN_X_LIMIT, CAMERA_MAX_X_LIMIT,
-                CAMERA_MIN_Y_LIMIT, CAMERA_MAX_Y_LIMIT,
-                CAMERA_MIN_Z_LIMIT, CAMERA_MAX_Z_LIMIT);
+            characterPreviewController.SetCameraLimits(CAMERA_LIMITS);
             characterPreviewController.ConfigureZoom(
                 CAMERA_ZOOM_CENTER, CAMERA_ZOOM_BOTTOM_MAX_OFFSET, CAMERA_ZOOM_TOP_MAX_OFFSET);
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);

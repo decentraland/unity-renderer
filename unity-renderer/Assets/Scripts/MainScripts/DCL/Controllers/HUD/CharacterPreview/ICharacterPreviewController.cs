@@ -15,7 +15,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void Rotate(float rotationVelocity);
         void ResetRotation();
         void MoveCamera(Vector3 positionDelta, bool changeYLimitsDependingOnZPosition);
-        void SetCameraLimits(float minX, float maxX, float minY, float maxY, float minZ, float maxZ);
+        void SetCameraLimits(Bounds limits);
         void ConfigureZoom(float verticalCenterRef, float bottomMaxOffset, float topMaxOffset);
         void SetCharacterShadowActive(bool isActive);
     }
