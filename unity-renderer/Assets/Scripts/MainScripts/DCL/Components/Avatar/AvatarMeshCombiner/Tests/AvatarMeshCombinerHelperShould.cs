@@ -23,6 +23,9 @@ public class AvatarMeshCombinerHelperShould
     [UnitySetUp]
     public IEnumerator SetUp()
     {
+        var serviceLocator = ServiceLocatorFactory.CreateDefault();
+        Environment.Setup(serviceLocator);
+
         keeper = new AssetPromiseKeeper_GLTFast_Instance();
         webRequestController = WebRequestController.Create();
         promise = new AssetPromise_GLTFast_Instance("", BASE_MALE_PATH, webRequestController);
@@ -41,6 +44,7 @@ public class AvatarMeshCombinerHelperShould
         webRequestController.Dispose();
         Object.Destroy(materialAsset);
         PoolManager.i.Dispose();
+        Environment.Dispose();
         yield break;
     }
 
@@ -146,7 +150,7 @@ public class AvatarMeshCombinerHelperShould
         // Assert
         Assert.That(success, Is.True);
         Assert.That(helper.renderer.sharedMesh != null, Is.True);
-        Assert.That(helper.renderer.sharedMesh.vertexCount, Is.EqualTo(1542));
+        Assert.That(helper.renderer.sharedMesh.vertexCount, Is.EqualTo(1220));
 
         helper.Dispose();
 

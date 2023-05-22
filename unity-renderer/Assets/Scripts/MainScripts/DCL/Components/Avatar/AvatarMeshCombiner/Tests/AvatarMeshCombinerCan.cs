@@ -12,6 +12,19 @@ public class AvatarMeshCombinerCan
 {
     private static string BASE_MALE_PATH = TestAssetsUtils.GetPath() + "/Avatar/Assets/BaseMale.glb";
 
+    [SetUp]
+    public void SetUp()
+    {
+        var serviceLocator = ServiceLocatorFactory.CreateDefault();
+        Environment.Setup(serviceLocator);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Environment.Dispose();
+    }
+
     [UnityTest]
     public IEnumerator CombineSkinnedMeshes()
     {

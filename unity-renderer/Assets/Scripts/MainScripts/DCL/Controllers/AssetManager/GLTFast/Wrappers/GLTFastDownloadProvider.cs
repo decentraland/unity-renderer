@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GLTFast.Loading;
+using MainScripts.DCL.Controllers.AssetManager;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -88,7 +89,8 @@ namespace DCL.GLTFast.Wrappers
 #else
                 false
 #endif
-              , linear: forceLinear
+              , linear: forceLinear,
+                permittedSources: AssetSource.ALL
             );
 
             var wrapper = new GLTFastTexturePromiseWrapper(texturePromiseKeeper, promise);

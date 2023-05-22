@@ -12,11 +12,26 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 using Material = UnityEngine.Material;
 using SkinnedMeshRenderer = UnityEngine.SkinnedMeshRenderer;
 
 public class AvatarMeshCombinerUtilsCan
 {
+
+    [SetUp]
+    public void SetUp()
+    {
+        var serviceLocator = ServiceLocatorFactory.CreateDefault();
+        Environment.Setup(serviceLocator);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Environment.Dispose();
+    }
+
     [UnityTest]
     public IEnumerator ResetBones()
     {
