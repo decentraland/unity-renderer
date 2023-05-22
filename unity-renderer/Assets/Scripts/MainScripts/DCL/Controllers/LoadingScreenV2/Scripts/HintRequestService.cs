@@ -26,7 +26,7 @@ namespace DCL.Controllers.LoadingScreenV2
         private readonly List<IHintRequestSource> hintRequestSources;
         private readonly Dictionary<SourceTag, List<IHint>> hintsDictionary;
         private readonly SourceTag[] orderedSourceTags;
-        private readonly HintTextureRequest textureRequest;
+        private readonly HintTextureRequestHandler textureRequestHandler;
 
         private Dictionary<IHint, Texture2D> selectedHints;
 
@@ -38,17 +38,17 @@ namespace DCL.Controllers.LoadingScreenV2
             this.hintsDictionary = new Dictionary<SourceTag, List<IHint>>();
             this.selectedHints = new Dictionary<IHint, Texture2D>();
             this.orderedSourceTags = new[] { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
-            this.textureRequest = new HintTextureRequest();
+            this.textureRequestHandler = new HintTextureRequestHandler();
             this.sceneController = sceneController;
         }
 
-        public HintRequestService(List<IHintRequestSource> hintRequestSources, ISceneController sceneController, HintTextureRequest textureRequest)
+        public HintRequestService(List<IHintRequestSource> hintRequestSources, ISceneController sceneController, HintTextureRequestHandler textureRequestHandler)
         {
             this.hintRequestSources = hintRequestSources;
             this.hintsDictionary = new Dictionary<SourceTag, List<IHint>>();
             this.selectedHints = new Dictionary<IHint, Texture2D>();
             this.orderedSourceTags = new[] { SourceTag.Scene, SourceTag.Event, SourceTag.Dcl };
-            this.textureRequest = textureRequest;
+            this.textureRequestHandler = textureRequestHandler;
             this.sceneController = sceneController;
         }
 
@@ -79,6 +79,7 @@ namespace DCL.Controllers.LoadingScreenV2
             var hints = new List<IHint>();
             foreach (var source in hintRequestSources)
             {
+                Debug.Log($"FD:: Requesting hints from {source.source}");
                 if (!ctx.IsCancellationRequested)
                 {
                     try
@@ -86,6 +87,7 @@ namespace DCL.Controllers.LoadingScreenV2
                         var sourceHints = await source.GetHintsAsync(ctx);
                         hints.AddRange(sourceHints);
 
+                        Debug.Log($"FD:: Received {sourceHints.Count} hints from {source.source}");
                         foreach (var hint in sourceHints)
                         {
                             if (!hintsDictionary.TryGetValue(hint.SourceTag, out var hintList))
@@ -109,6 +111,7 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private List<IHint> SelectOptimalHints(List<IHint> hints, int totalHints)
         {
+            Debug.Log($"FD:: Selecting {totalHints} hints from {hints.Count} hints");
             var optimalHints = new List<IHint>();
             var allAvailableHints = new List<IHint>(hints);
 
@@ -145,6 +148,7 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private async UniTask DownloadTextures(List<IHint> finalHints, CancellationToken ctx)
         {
+            Debug.Log($"FD:: Downloading {finalHints.Count} textures");
             foreach (var hint in finalHints)
             {
                 if (ctx.IsCancellationRequested)
@@ -153,7 +157,7 @@ namespace DCL.Controllers.LoadingScreenV2
                 }
                 try
                 {
-                    selectedHints.Add(hint, await textureRequest.DownloadTexture(hint.TextureUrl, ctx));
+                    selectedHints.Add(hint, await textureRequestHandler.DownloadTexture(hint.TextureUrl, ctx));
                 }
                 catch (Exception ex)
                 {

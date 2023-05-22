@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,12 +13,14 @@ namespace DCL.Controllers.LoadingScreenV2
         public string source { get; }
         public SourceTag sourceTag { get; }
         public List<IHint> loading_hints { get; private set; }
+        public ISourceWebRequestHandler webRequestHandler { get; }
 
-        public RemoteHintRequestSource(string sourceUrlJson, SourceTag sourceTag)
+        public RemoteHintRequestSource(string sourceUrlJson, SourceTag sourceTag, ISourceWebRequestHandler webRequestHandler)
         {
             this.source = sourceUrlJson;
             this.sourceTag = sourceTag;
             this.loading_hints = new List<IHint>();
+            this.webRequestHandler = webRequestHandler;
         }
 
         public async UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
@@ -30,7 +33,9 @@ namespace DCL.Controllers.LoadingScreenV2
                     return loading_hints;
                 }
 
-                string json = await FetchDataFromUrl(source, ctx);
+                string json = await webRequestHandler.Get(source);
+
+                Debug.Log($"FD:: RemoteHintRequestSource.GetHintsAsync: {json}");
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -47,13 +52,13 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private List<IHint> ParseJsonToHints(string json)
         {
-            List<IHint> hints = new List<IHint>();
+            var hints = new List<IHint>();
 
-            var hintList = JsonUtility.FromJson<List<BaseHint>>(json);
+            var sceneJson = JsonUtility.FromJson<LoadParcelScenesMessage.UnityParcelScene>(json);
 
-            if (hintList != null)
+            if (sceneJson != null && sceneJson.loadingScreenHints != null)
             {
-                foreach (var hint in hintList)
+                foreach (var hint in sceneJson.loadingScreenHints)
                 {
                     hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
                 }
@@ -66,37 +71,6 @@ namespace DCL.Controllers.LoadingScreenV2
         {
             loading_hints.Clear();
         }
-
-        private async UniTask<string> FetchDataFromUrl(string url, CancellationToken ctx)
-        {
-            using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
-            {
-                var ucs = new UniTaskCompletionSource<string>();
-
-                ctx.Register(() =>
-                {
-                    webRequest.Abort();
-                    ucs.TrySetCanceled();
-                });
-
-                webRequest.SendWebRequest();
-
-                while (!webRequest.isDone)
-                {
-                    await UniTask.Yield(PlayerLoopTiming.Update, ctx);
-                }
-
-                if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
-                {
-                    Debug.LogError($"Error in RemoteHintRequestSource.FetchDataFromUrl: {webRequest.error}");
-                    ucs.TrySetResult(string.Empty);
-                }
-                else
-                {
-                    ucs.TrySetResult(webRequest.downloadHandler.text);
-                }
-                return await ucs.Task;
-            }
-        }
     }
+
 }

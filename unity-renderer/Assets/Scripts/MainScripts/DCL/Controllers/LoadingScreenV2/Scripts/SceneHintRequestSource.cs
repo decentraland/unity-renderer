@@ -12,7 +12,6 @@ namespace DCL.Controllers.LoadingScreenV2
     /// </summary>
     public class SceneHintRequestSource : IHintRequestSource
     {
-        // public List<IHint> loading_hints { get; }
         public string source { get; }
         public SourceTag sourceTag { get; }
         public List<IHint> loading_hints { get; private set; }
@@ -50,7 +49,13 @@ namespace DCL.Controllers.LoadingScreenV2
 
                 if (sceneLoaded && currentSceneBeingLoaded?.sceneData?.loadingScreenHints != null && currentSceneBeingLoaded.sceneData.loadingScreenHints.Count > 0)
                 {
-                    loading_hints = currentSceneBeingLoaded.sceneData.loadingScreenHints;
+                    foreach (var basehint in currentSceneBeingLoaded.sceneData.loadingScreenHints)
+                    {
+                        if (basehint is IHint hint)
+                        {
+                            loading_hints.Add(hint);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
