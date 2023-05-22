@@ -1924,5 +1924,10 @@ namespace DCL.Interface
                 deviceId = inputDeviceId
             });
         }
+
+        public static void SendToSPopupAccepted()
+        {
+            SendMessage("ToSPopupAccepted");
+        }
     }
 }

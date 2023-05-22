@@ -52,6 +52,7 @@ import { InitializeRenderer, registerRendererModules, registerRendererPort, REGI
 import { waitForRendererInstance } from './sagas-helper'
 import { getClientPort } from './selectors'
 import { RendererModules, RENDERER_INITIALIZE } from './types'
+import {adjectives, animals, colors, Config, uniqueNamesGenerator} from "unique-names-generator";
 
 export function* rendererSaga() {
   yield takeEvery(SEND_PROFILE_TO_RENDERER_REQUEST, handleSubmitProfileToRenderer)
@@ -245,20 +246,25 @@ function* initializeRenderer(action: InitializeRenderer) {
 
 function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   if (action.payload.isSignUp) {
-    const userId: string = yield select(getCurrentUserId)
     if(getFeatureFlagEnabled(store.getState(), 'seamless_login'))
     {
+      const userId: string = yield select(getCurrentUserId)
       yield put(sendProfileToRenderer(userId))
-      store.dispatch(signUp('', 'testing-name'))
-      getUnityInstance().SetSignupFlow()
+      const config: Config = {
+        dictionaries: [adjectives, colors, animals],
+        separator: '-',
+        style: 'capital',
+      }
+      const randomName = uniqueNamesGenerator(config);
+      store.dispatch(signUp('', randomName))
+      getUnityInstance().ShowAvatarEditorInSignIn()
     }
     else
     {
-      getUnityInstance().SetSignupFlow()
+      getUnityInstance().ShowAvatarEditorInSignIn()
+      const userId: string = yield select(getCurrentUserId)
       yield put(sendProfileToRenderer(userId))
     }
-
-
   }
 }
 

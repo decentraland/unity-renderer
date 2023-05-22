@@ -209,7 +209,7 @@ export interface IUnityInterface {
   UpdateBalanceOfMANA(balance: string): void
   RequestWeb3ApiUse(requestType: string, payload: any): IFuture<boolean>
   SetPlayerTalking(talking: boolean): void
-  SetSignupFlow(): void
+  ShowAvatarEditorInSignIn(): void
   SetUserTalking(userId: string, talking: boolean): void
   SetUsersMuted(usersId: string[], muted: boolean): void
   SetVoiceChatEnabledByScene(enabled: boolean): void

@@ -76,8 +76,7 @@ export function* sessionSaga(): any {
     logger.log(`User ${action.payload.identity.address} logged in isGuest=` + action.payload.isGuest)
   })
 
-  yield takeLatest(TOS_POPUP_ACCEPTED, async function* () {
-    console.log('TOS_POPUP_ACCEPTED')
+  yield takeLatest(TOS_POPUP_ACCEPTED, function* () {
     yield call(saveToPersistentStorage, 'tos_popup_accepted', true)
   })
 
@@ -140,14 +139,11 @@ function* authenticate(action: AuthenticateAction) {
 
   // 3. continue with signin/signup (only not in preview)
   let isSignUp = avatar.version <= 0 && !PREVIEW
-  console.log("before seamless_login check")
   if(getFeatureFlagEnabled(store.getState(), 'seamless_login'))
   {
-    const tosAccepted = (yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean
-    isSignUp = tosAccepted && !PREVIEW
-    console.log('seamless_login is enabled, tosAccepted = ' + tosAccepted)
+    const tosAccepted : boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
+    isSignUp = !tosAccepted && !PREVIEW
   }
-  console.log("after seamless_login check")
 
   if (isSignUp) {
     yield put(signUpSetIsSignUp(isSignUp))

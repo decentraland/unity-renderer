@@ -15,6 +15,7 @@ public class ToSPopupHandler : IToSPopupHandler
     public void Accept()
     {
         toSPopupVisibleVariable.Set(false);
+        WebInterface.SendToSPopupAccepted();
     }
 
     public void Cancel()

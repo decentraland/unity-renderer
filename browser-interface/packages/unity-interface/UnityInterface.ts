@@ -550,8 +550,8 @@ export class UnityInterface implements IUnityInterface {
     this.SendMessageToUnity('HUDController', 'SetPlayerTalking', JSON.stringify(talking))
   }
 
-  public SetSignupFlow() {
-    this.SendMessageToUnity('HUDController', 'SetSignupFlow')
+  public ShowAvatarEditorInSignIn() {
+    this.SendMessageToUnity('HUDController', 'ShowAvatarEditorInSignUp')
     this.SendMessageToUnity('Main', 'ForceActivateRendering')
   }
 

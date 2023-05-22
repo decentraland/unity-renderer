@@ -1132,7 +1132,7 @@ export class BrowserInterface {
         break
     }
   }
-  public ToSPopupAccepted(data: AvatarRendererMessage) {
+  public ToSPopupAccepted() {
     store.dispatch(tosPopupAccepted())
   }
 }
