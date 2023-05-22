@@ -228,7 +228,7 @@ public class TeleportPromptHUDController : IHUD
         public Vector2Int? coordinates;
 
         public Vector2Int GetCoordinates() =>
-            (coordinates ?? new Vector2Int(int.TryParse(destination.Split(',')[0], out int x) ? x : 0,
+            (coordinates ??= new Vector2Int(int.TryParse(destination.Split(',')[0], out int x) ? x : 0,
                 int.TryParse(destination.Split(',')[1], out int y) ? y : 0));
 
         public string destination = "";
