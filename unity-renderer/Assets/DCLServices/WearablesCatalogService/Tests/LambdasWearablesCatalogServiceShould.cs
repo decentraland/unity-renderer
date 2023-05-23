@@ -17,7 +17,9 @@ namespace DCLServices.WearablesCatalogService
         private const string WEARABLE_WITHOUT_THUMBNAIL = "wearableWithoutThumbnail";
         private const string BASE_WEARABLES_COLLECTION = "urn:decentraland:off-chain:base-avatars";
         private const string TPW_COLLECTION_ID = "tpwCollection";
-        private const string CONTENT_URL = "http://content.url";
+        private const string CONTENT_URL = "http://catalyst.url/content/";
+        private const string LAMBDAS_URL = "http://catalyst.url/lambdas/";
+        private const string EXPLORER_URL = "http://catalyst.url/explorer/";
 
         private LambdasWearablesCatalogService service;
         private ILambdasService lambdasService;
@@ -59,6 +61,7 @@ namespace DCLServices.WearablesCatalogService
             serviceProviders = Substitute.For<IServiceProviders>();
             ICatalyst catalyst = Substitute.For<ICatalyst>();
             catalyst.contentUrl.Returns(CONTENT_URL);
+            catalyst.lambdasUrl.Returns(LAMBDAS_URL);
             serviceProviders.catalyst.Returns(catalyst);
 
             service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders);
@@ -282,8 +285,8 @@ namespace DCLServices.WearablesCatalogService
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithEntityResponseDto>(
-                                   "https://peer-testing-2.decentraland.org/explorer/:userId/wearables",
-                                   $"https://peer-testing-2.decentraland.org/explorer/{USER_ID}/wearables",
+                                   $"{EXPLORER_URL}/:userId/wearables",
+                                   $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
@@ -325,8 +328,8 @@ namespace DCLServices.WearablesCatalogService
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithEntityResponseDto>(
-                                   "https://peer-testing-2.decentraland.org/explorer/:userId/wearables",
-                                   $"https://peer-testing-2.decentraland.org/explorer/{USER_ID}/wearables",
+                                   $"{EXPLORER_URL}/:userId/wearables",
+                                   $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
@@ -355,8 +358,8 @@ namespace DCLServices.WearablesCatalogService
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableWithEntityResponseDto>(
-                                   "https://peer-testing-2.decentraland.org/explorer/:userId/wearables",
-                                   $"https://peer-testing-2.decentraland.org/explorer/{USER_ID}/wearables",
+                                   $"{EXPLORER_URL}/:userId/wearables",
+                                   $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>

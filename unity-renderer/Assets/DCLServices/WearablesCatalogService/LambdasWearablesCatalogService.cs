@@ -115,17 +115,20 @@ namespace DCLServices.WearablesCatalogService
                 foreach (string collectionId in thirdPartyCollectionIds)
                     queryParams.Add(("thirdPartyCollectionId", collectionId));
 
-            // TODO: remove the hardcoded url once the lambda is deployed to the catalysts and becomes part of the protocol
+            string explorerUrl = catalyst.lambdasUrl.Replace("/lambdas/", "/explorer/");
+
             (WearableWithEntityResponseDto response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(
-                "https://peer-testing-2.decentraland.org/explorer/:userId/wearables",
-                $"https://peer-testing-2.decentraland.org/explorer/{userId}/wearables",
+                $"{explorerUrl}/:userId/wearables",
+                $"{explorerUrl}/{userId}/wearables",
                 cancellationToken: cancellationToken,
                 urlEncodedParams: queryParams.ToArray());
 
             if (!success)
                 throw new Exception($"The request of wearables for '{userId}' failed!");
 
-            List<WearableItem> wearables = ValidateWearables(response.elements);
+            List<WearableItem> wearables = ValidateWearables(response.elements,
+                $"{catalyst.contentUrl}/contents/",
+                ASSET_BUNDLES_URL_ORG);
 
             AddWearablesToCatalog(wearables);
 
@@ -409,7 +412,10 @@ namespace DCLServices.WearablesCatalogService
             return result.FirstOrDefault(x => x.id == newWearableId);
         }
 
-        private List<WearableItem> ValidateWearables(IEnumerable<WearableWithEntityResponseDto.ElementDto> wearableElements)
+        private List<WearableItem> ValidateWearables(
+            IEnumerable<WearableWithEntityResponseDto.ElementDto> wearableElements,
+            string contentBaseUrl,
+            string bundlesBaseUrl)
         {
             List<WearableItem> wearables = new ();
 
@@ -423,8 +429,7 @@ namespace DCLServices.WearablesCatalogService
 
                 try
                 {
-                    WearableItem wearable = item.ToWearableItem($"{catalyst.contentUrl}/contents/",
-                        ASSET_BUNDLES_URL_ORG);
+                    WearableItem wearable = item.ToWearableItem(contentBaseUrl, bundlesBaseUrl);
                     wearables.Add(wearable);
                 }
                 catch (Exception e) { Debug.LogException(e); }
