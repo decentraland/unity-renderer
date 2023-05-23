@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SocialBarV1 vs HUD Duplicates
+  m_EditorClassIdentifier: 
+  m_GroupName: SocialBarV1 vs HUD Duplicates
+  m_Data:
+    m_SerializedData: []
+  m_GUID: fa6eb18916e85624aab91f2237830136
+  m_SerializeEntries:
+  - m_GUID: 665522fd810d78f4c91dd7e9a0ce6e3b
+    m_Address: Assets/Textures/UI/StartMenuButton/Ellipse128Stroke.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 86780cce6a4bf43baa01544437461386
+    m_Address: Assets/Textures/UI/StartMenuButton/StartMenuButton.spriteatlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8be7de606f9c7ca4cbc9d31a3a82dfd5
+    m_Address: Assets/Textures/UI/StartMenuButton/DclLogoBg.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 193e9383359b56b4da3f682336ed6cec
+    m_Address: Assets/Textures/UI/StartMenuButton/DclLogoMountain.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 51517794ebfef5b49b08d321c661cee2
+    m_Address: Assets/Textures/UI/StartMenuButton/DclLogoCircle.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3bdf32a4d196e1d429119d1477906987
+    m_Address: Assets/Textures/UI/StartMenuButton/DclLogoLine3.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b24c28e9e04cdb24aa579e22a738c402
+    m_Address: Assets/Textures/UI/StartMenuButton/DclLogoLine2.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5e3b705ca4d7f6b45ba6ea1b7cf43785
+    m_Address: Assets/Textures/UI/StartMenuButton/DclLogoLine1.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 35f76850a3901c041bcf17809d25d115, type: 2}
+    - {fileID: 11400000, guid: e53f1c7189ccd644eb8a35d1dafb3f3c, type: 2}

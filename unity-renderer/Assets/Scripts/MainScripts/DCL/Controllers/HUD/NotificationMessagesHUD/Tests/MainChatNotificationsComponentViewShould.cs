@@ -1,5 +1,6 @@
 using DCL.Interface;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Chat.Notifications
@@ -11,7 +12,9 @@ namespace DCL.Chat.Notifications
         [SetUp]
         public void SetUp()
         {
-            view = MainChatNotificationsComponentView.Create();
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<MainChatNotificationsComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/ChatNotificationHUD.prefab"));
         }
 
         [TearDown]

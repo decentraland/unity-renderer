@@ -1,7 +1,10 @@
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.SettingsCommon;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
+using System.Threading;
+using UnityEngine;
 
 namespace DCL.Chat.Notifications
 {
@@ -10,19 +13,28 @@ namespace DCL.Chat.Notifications
     /// </summary>
     public class ChatNotificationsFeature : IPlugin
     {
-        private readonly ChatNotificationController chatNotificationController;
+        private readonly CancellationTokenSource cts = new ();
+
+        private ChatNotificationController chatNotificationController;
 
         public ChatNotificationsFeature()
         {
-            chatNotificationController = CreateController();
+            Initialize(cts.Token);
         }
 
-        private ChatNotificationController CreateController()
+        private async void Initialize(CancellationToken ct)
         {
             ServiceLocator serviceLocator = Environment.i.serviceLocator;
 
-            return new ChatNotificationController(DataStore.i,
-                MainChatNotificationsComponentView.Create(), TopNotificationComponentView.Create(),
+            var chatView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                        .Instantiate<MainChatNotificationsComponentView>("ChatNotificationHUD", cancellationToken: ct);
+
+            var notificationView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                         .Instantiate<TopNotificationComponentView>("TopNotificationHUD", cancellationToken: ct);
+
+            chatNotificationController = new ChatNotificationController(DataStore.i,
+                chatView,
+                notificationView,
                 serviceLocator.Get<IChatController>(),
                 serviceLocator.Get<IFriendsController>(),
                 new UserProfileWebInterfaceBridge(),
@@ -32,6 +44,8 @@ namespace DCL.Chat.Notifications
 
         public void Dispose()
         {
+            cts.Cancel();
+            cts.Dispose();
             chatNotificationController.Dispose();
         }
     }

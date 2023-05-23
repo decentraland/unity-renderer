@@ -27,11 +27,6 @@ namespace DCL.Chat.HUD
 
         public event Action<PrivateChatEntry> OnOpenChat;
 
-        public static PrivateChatEntry Create()
-        {
-            return Instantiate(Resources.Load<PrivateChatEntry>("SocialBarV1/WhisperChannelElement"));
-        }
-
         public override void Awake()
         {
             base.Awake();
