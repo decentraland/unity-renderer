@@ -14,7 +14,7 @@ public class ToSPopupViewShould
         var prefab = new GameObject("ToSPopupView");
 
         view = Object.Instantiate(AssetDatabase
-                         .LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/ToSPopupHUD/Prefabs/ToSPopupHUD.prefab")
+                         .LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/ToSPopupHUD/ToSPopupHUD.prefab")
                       )
                      .GetComponentInChildren<ToSPopupView>();
     }
