@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Tasks;
-using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
