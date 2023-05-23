@@ -17,6 +17,7 @@ namespace DCLServices.WearablesCatalogService
         private const string WEARABLE_WITHOUT_THUMBNAIL = "wearableWithoutThumbnail";
         private const string BASE_WEARABLES_COLLECTION = "urn:decentraland:off-chain:base-avatars";
         private const string TPW_COLLECTION_ID = "tpwCollection";
+        private const string CONTENT_URL = "http://content.url";
 
         private LambdasWearablesCatalogService service;
         private ILambdasService lambdasService;
@@ -56,6 +57,9 @@ namespace DCLServices.WearablesCatalogService
 
             initialCatalog = new BaseDictionary<string, WearableItem>();
             serviceProviders = Substitute.For<IServiceProviders>();
+            ICatalyst catalyst = Substitute.For<ICatalyst>();
+            catalyst.contentUrl.Returns(CONTENT_URL);
+            serviceProviders.catalyst.Returns(catalyst);
 
             service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders);
             service.Initialize();
@@ -127,7 +131,7 @@ namespace DCLServices.WearablesCatalogService
                                    cancellationToken: Arg.Any<CancellationToken>());
 
                 WearableItem resultantWearable = service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL];
-                Assert.AreEqual("https://interconnected.online/content/contents/", resultantWearable.baseUrl);
+                Assert.AreEqual($"{CONTENT_URL}/contents/", resultantWearable.baseUrl);
             });
 
         [Test]
@@ -178,7 +182,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("rare", secondWearable.rarity);
                 Assert.AreEqual("hash", secondWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual(string.Empty, secondWearable.thumbnail);
-                Assert.AreEqual("https://interconnected.online/content/contents/", secondWearable.baseUrl);
+                Assert.AreEqual($"{CONTENT_URL}/contents/", secondWearable.baseUrl);
                 Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", secondWearable.baseUrlBundles);
                 Assert.IsNull(secondWearable.emoteDataV0);
                 Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);
@@ -218,7 +222,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("rare", secondWearable.rarity);
                 Assert.AreEqual("hash", secondWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual(string.Empty, secondWearable.thumbnail);
-                Assert.AreEqual("https://interconnected.online/content/contents/", secondWearable.baseUrl);
+                Assert.AreEqual($"{CONTENT_URL}/contents/", secondWearable.baseUrl);
                 Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", secondWearable.baseUrlBundles);
                 Assert.IsNull(secondWearable.emoteDataV0);
                 Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);
@@ -257,7 +261,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("rare", secondWearable.rarity);
                 Assert.AreEqual("hash", secondWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual(string.Empty, secondWearable.thumbnail);
-                Assert.AreEqual("https://interconnected.online/content/contents/", secondWearable.baseUrl);
+                Assert.AreEqual($"{CONTENT_URL}/contents/", secondWearable.baseUrl);
                 Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", secondWearable.baseUrlBundles);
                 Assert.IsNull(secondWearable.emoteDataV0);
                 Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);

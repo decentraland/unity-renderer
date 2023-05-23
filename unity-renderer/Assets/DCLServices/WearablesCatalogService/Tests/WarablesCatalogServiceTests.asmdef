@@ -10,7 +10,8 @@
         "LambdasService",
         "UniTask",
         "IService",
-        "ServiceProvidersInterfaces"
+        "ServiceProvidersInterfaces",
+        "CatalystInterfaces"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
