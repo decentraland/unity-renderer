@@ -59,6 +59,24 @@ namespace Test.AvatarSystem
         public void TearDown() { curator.Dispose(); }
 
         [UnityTest]
+        public IEnumerator CurateFollowingHideOrder() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                (WearableItem bodyshape,
+                        WearableItem eyes,
+                        WearableItem eyebrows,
+                        WearableItem mouth,
+                        List<WearableItem> wearables,
+                        List<WearableItem> emotes)
+                    = await curator.Curate(
+                        new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE},
+                        new[] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id", "helmet_id", "mask_id" }, new string[] { });
+
+                Assert.IsFalse(wearables.Contains(catalog["mask_id"]));
+                Assert.IsTrue(wearables.Contains(catalog["helmet_id"]));
+            });
+
+        [UnityTest]
         public IEnumerator CurateWithHideOverrides() =>
             UniTask.ToCoroutine(async () =>
             {
@@ -192,6 +210,8 @@ namespace Test.AvatarSystem
             catalog.Add("eyebrows_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.EYEBROWS));
             catalog.Add("mouth_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.MOUTH));
             catalog.Add("top_head_id", GetWearableForFemaleBodyshapeWithHides("top_head_id", "top_head", "tiara"));
+            catalog.Add("helmet_id", GetWearableForFemaleBodyshapeWithHides("helmet_id", "helmet", "mask"));
+            catalog.Add("mask_id", GetWearableForFemaleBodyshapeWithHides("mask_id", "mask", "helmet"));
             catalog.Add("tiara_id", GetWearableForFemaleBodyshape("ubody", "tiara"));
             catalog.Add("feet_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.FEET));
             catalog.Add("hair_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.HAIR));
