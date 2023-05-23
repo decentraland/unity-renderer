@@ -16,7 +16,7 @@ namespace DCL.Social.Friends
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
-        private bool useSocialApiBridge => true;//featureFlags.IsFeatureEnabled("use-social-client");
+        private bool useSocialApiBridge => featureFlags.IsFeatureEnabled("use-social-client");
 
         public event Action<FriendRequest> OnIncomingFriendRequestAdded
         {
@@ -66,10 +66,10 @@ namespace DCL.Social.Friends
             remove => socialApiBridge.OnFriendRequestCanceled -= value;
         }
 
-        public event Action<string> OnFriendDeleted
+        public event Action<string> OnDeletedByFriend
         {
-            add => socialApiBridge.OnFriendDeleted += value;
-            remove => socialApiBridge.OnFriendDeleted -= value;
+            add => socialApiBridge.OnDeletedByFriend += value;
+            remove => socialApiBridge.OnDeletedByFriend -= value;
         }
 
         public ProxySocialApiBridge(RPCSocialApiBridge socialApiBridge,

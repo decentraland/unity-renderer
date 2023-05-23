@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Decentraland.Renderer.Common;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
 using rpc_csharp;
@@ -32,7 +31,7 @@ namespace DCL.Social.Friends
         public event Action<string, UserProfile> OnFriendRequestAccepted;
         public event Action<string> OnFriendRequestRejected;
         public event Action<string> OnFriendRequestCanceled;
-        public event Action<string> OnFriendDeleted;
+        public event Action<string> OnDeletedByFriend;
 
         public RPCSocialApiBridge(IMatrixInitializationBridge matrixInitializationBridge,
             IUserProfileBridge userProfileWebInterfaceBridge,
@@ -320,38 +319,66 @@ namespace DCL.Social.Friends
 
         private async UniTask ProcessFriendshipEventResponse(FriendshipEventResponses friendshipEventsUpdatesResponse, CancellationToken cancellationToken = default)
         {
-            foreach (var friendshipEvent in friendshipEventsUpdatesResponse.Responses)
-            {
-                switch (friendshipEvent.BodyCase)
-                {
-                    case FriendshipEventResponse.BodyOneofCase.Request:
-                        OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
-                            GetFriendRequestId(friendshipEvent.Request.User.Address, friendshipEvent.Request.CreatedAt),
-                            friendshipEvent.Request.CreatedAt,
-                            friendshipEvent.Request.User.Address,
-                            userProfileWebInterfaceBridge.GetOwn().userId,
-                            friendshipEvent.Request.Message));
+            foreach (var friendshipEvent in friendshipEventsUpdatesResponse.Responses) { await ProcessFriendshipEvent(friendshipEvent, ProcessIncomingFriendRequestEvent, cancellationToken); }
+        }
 
-                        break;
-                    case FriendshipEventResponse.BodyOneofCase.Accept:
-                        cancellationToken.ThrowIfCancellationRequested();
-                        var profile = await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friendshipEvent.Accept.User.Address, cancellationToken);
-                        OnFriendRequestAccepted?.Invoke(friendshipEvent.Accept.User.Address, profile);
-                        break;
-                    case FriendshipEventResponse.BodyOneofCase.Reject:
-                        OnFriendRequestRejected?.Invoke(friendshipEvent.Reject.User.Address);
-                        break;
-                    case FriendshipEventResponse.BodyOneofCase.Delete:
-                        OnFriendDeleted?.Invoke(friendshipEvent.Delete.User.Address);
-                        break;
-                    case FriendshipEventResponse.BodyOneofCase.Cancel:
-                        OnFriendRequestCanceled?.Invoke(friendshipEvent.Cancel.User.Address);
-                        break;
-                    default:
-                        Debug.LogErrorFormat("Invalid friendship event {0}", friendshipEvent);
-                        throw new ArgumentOutOfRangeException();
-                }
+        private FriendRequest ProcessIncomingFriendRequestEvent(RequestResponse requestResponse)
+        {
+            var request = new FriendRequest(
+                GetFriendRequestId(requestResponse.User.Address, requestResponse.CreatedAt),
+                requestResponse.CreatedAt,
+                requestResponse.User.Address,
+                userProfileWebInterfaceBridge.GetOwn().userId,
+                requestResponse.Message);
+
+            OnIncomingFriendRequestAdded?.Invoke(request);
+            return request;
+        }
+
+        private FriendRequest ProcessOutgoingFriendRequestEvent(RequestResponse requestResponse)
+        {
+            var request = new FriendRequest(
+                GetFriendRequestId(requestResponse.User.Address, requestResponse.CreatedAt),
+                requestResponse.CreatedAt,
+                userProfileWebInterfaceBridge.GetOwn().userId,
+                requestResponse.User.Address,
+                requestResponse.Message);
+
+            OnOutgoingFriendRequestAdded?.Invoke(request);
+
+            return request;
+        }
+
+        private async UniTask<FriendRequest> ProcessFriendshipEvent(FriendshipEventResponse friendshipEvent, Func<RequestResponse, FriendRequest> onRequest, CancellationToken cancellationToken)
+        {
+            switch (friendshipEvent.BodyCase)
+            {
+                case FriendshipEventResponse.BodyOneofCase.Request:
+                    return onRequest(friendshipEvent.Request);
+                case FriendshipEventResponse.BodyOneofCase.Accept:
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var profile =
+                        await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friendshipEvent.Accept.User.Address,
+                            cancellationToken);
+
+                    OnFriendRequestAccepted?.Invoke(friendshipEvent.Accept.User.Address, profile);
+                    break;
+                case FriendshipEventResponse.BodyOneofCase.Reject:
+                    OnFriendRequestRejected?.Invoke(friendshipEvent.Reject.User.Address);
+                    break;
+                case FriendshipEventResponse.BodyOneofCase.Delete:
+                    OnDeletedByFriend?.Invoke(friendshipEvent.Delete.User.Address);
+                    break;
+                case FriendshipEventResponse.BodyOneofCase.Cancel:
+                    OnFriendRequestCanceled?.Invoke(friendshipEvent.Cancel.User.Address);
+                    break;
+                default:
+                    Debug.LogErrorFormat("Invalid friendship event {0}", friendshipEvent);
+                    throw new ArgumentOutOfRangeException();
             }
+
+            return null;
         }
 
         private void ProcessAndLogSubscriptionError(SubscribeFriendshipEventsUpdatesResponse error)
@@ -397,7 +424,7 @@ namespace DCL.Social.Friends
                 switch (response.ResponseCase)
                 {
                     case UpdateFriendshipResponse.ResponseOneofCase.Event:
-                        return ProcessUpdateFriendshipEventResponse(response.Event, cancellationToken);
+                        return await ProcessFriendshipEvent(response.Event, ProcessOutgoingFriendRequestEvent, cancellationToken);
                     case UpdateFriendshipResponse.ResponseOneofCase.InternalServerError:
                     case UpdateFriendshipResponse.ResponseOneofCase.UnauthorizedError:
                     case UpdateFriendshipResponse.ResponseOneofCase.ForbiddenError:
@@ -409,29 +436,6 @@ namespace DCL.Social.Friends
                 }
             }
             finally { await UniTask.SwitchToMainThread(); }
-        }
-
-        private FriendRequest ProcessUpdateFriendshipEventResponse(FriendshipEventResponse friendshipUpdate, CancellationToken cancellationToken = default)
-        {
-            switch (friendshipUpdate.BodyCase)
-            {
-                case FriendshipEventResponse.BodyOneofCase.Request:
-                    return new FriendRequest(
-                        GetFriendRequestId(friendshipUpdate.Request.User.Address, friendshipUpdate.Request.CreatedAt),
-                        friendshipUpdate.Request.CreatedAt,
-                        userProfileWebInterfaceBridge.GetOwn().userId,
-                        friendshipUpdate.Request.User.Address,
-                        friendshipUpdate.Request.Message
-                    );
-                case FriendshipEventResponse.BodyOneofCase.Accept:
-                case FriendshipEventResponse.BodyOneofCase.Reject:
-                case FriendshipEventResponse.BodyOneofCase.Delete:
-                case FriendshipEventResponse.BodyOneofCase.Cancel:
-                    return null;
-                default:
-                    Debug.LogErrorFormat("Invalid friendship event {0}", friendshipUpdate);
-                    throw new ArgumentOutOfRangeException();
-            }
         }
 
         private void ProcessAndLogUpdateFriendshipErrorError(UpdateFriendshipResponse error, string friendId)

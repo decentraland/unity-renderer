@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Tasks;
+using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,8 +37,7 @@ namespace DCL.Social.Friends
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
-        private bool useSocialApiBridge => true;
-        // private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
+        private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
@@ -100,6 +100,7 @@ namespace DCL.Social.Friends
                     socialApiBridge.OnOutgoingFriendRequestAdded += AddOutgoingFriendRequest;
                     socialApiBridge.OnFriendRemoved += RemoveDeletedFriend;
                     socialApiBridge.OnFriendRequestAccepted += AcceptedFriendRequest;
+                    socialApiBridge.OnDeletedByFriend += DeletedByFriend;
                     socialApiBridge.OnFriendRequestRejected += (userId) => RemoveFriendRequest(userId, false, FriendshipAction.REJECTED);
                     socialApiBridge.OnFriendRequestCanceled += (userId) => RemoveFriendRequest(userId, false, FriendshipAction.CANCELLED);
                 }
@@ -123,6 +124,15 @@ namespace DCL.Social.Friends
                    .Forget();
         }
 
+        private void DeletedByFriend(string friendId)
+        {
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
+            {
+                userId = friendId,
+                action = FriendshipAction.DELETED
+            });
+        }
+
         private void AcceptedFriendRequest(string friendId, UserProfile profile)
         {
             var status = new UserStatus()
@@ -139,11 +149,7 @@ namespace DCL.Social.Friends
                 incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
             }
 
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-            {
-                userId = friendId,
-                action = FriendshipAction.APPROVED
-            });
+            OnUpdateFriendship?.Invoke(friendId, FriendshipAction.APPROVED);
         }
 
         private void RemoveFriendRequest(string userId, bool incoming, FriendshipAction newFriendshipAction)

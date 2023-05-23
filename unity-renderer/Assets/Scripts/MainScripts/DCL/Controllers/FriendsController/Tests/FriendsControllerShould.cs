@@ -5,7 +5,6 @@ using DCl.Social.Friends;
 using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
 using NUnit.Framework;
-using rpc_csharp.transport;
 using System.Collections;
 using System.Linq;
 using System.Threading;
@@ -775,6 +774,33 @@ namespace DCL.Social.Friends
 
                 // the result should be reversed since the result should be sorted by timestamp
                 CollectionAssert.AreEqual(incomingFriendRequests.Reverse().Concat(outgoingFriendRequests.Reverse()), result);
+            });
+
+        [UnityTest]
+        public IEnumerator AcceptedFriendRequestWithSocialBridge() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                var dataStore = new DataStore();
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+                var friendsUpdated = new Dictionary<string, FriendshipAction>();
+
+                controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
+
+                dataStore.featureFlags.flags.Get().SetAsInitialized();
+                controller.Initialize();
+
+                var friendId = "FriendId";
+                var profile = ScriptableObject.CreateInstance<UserProfile>();
+                profile.UpdateData(new UserProfileModel() { userId = friendId, name = "FriendName" });
+
+                controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
+
+                rpcSocialApiBridge.OnFriendRequestAccepted += Raise.Event<Action<string, UserProfile>>(friendId, profile);
+
+                var friends = await controller.GetFriendsAsync(100, 0);
+
+                Assert.AreEqual(FriendshipAction.APPROVED, friendsUpdated[friendId]);
+                CollectionAssert.AreEqual(friends, new List<string>() { friendId });
             });
     }
 }
