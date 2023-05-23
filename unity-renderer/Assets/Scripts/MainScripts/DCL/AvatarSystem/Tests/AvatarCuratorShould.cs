@@ -9,6 +9,7 @@ using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 using DefaultWearables = WearableLiterals.DefaultWearables;
 
@@ -56,6 +57,35 @@ namespace Test.AvatarSystem
 
         [TearDown]
         public void TearDown() { curator.Dispose(); }
+
+        [UnityTest]
+        public IEnumerator CurateWithHideOverrides() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                (WearableItem bodyshape,
+                        WearableItem eyes,
+                        WearableItem eyebrows,
+                        WearableItem mouth,
+                        List<WearableItem> wearables,
+                        List<WearableItem> emotes)
+                    = await curator.Curate(
+                        new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE},
+                        new[] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id", "tiara_id", "top_head_id" }, new string[] { });
+
+                Assert.IsFalse(wearables.Contains(catalog["tiara_id"]));
+
+                (WearableItem bodyshape2,
+                        WearableItem eyes2,
+                        WearableItem eyebrows2,
+                        WearableItem mouth2,
+                        List<WearableItem> wearables2,
+                        List<WearableItem> emotes2)
+                    = await curator.Curate(
+                        new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE, hideOverrides = new HashSet<string>() {"tiara"} },
+                        new[] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id", "tiara_id", "top_head_id" }, new string[] { });
+
+                Assert.IsTrue(wearables2.Contains(catalog["tiara_id"]));
+            });
 
         [UnityTest]
         public IEnumerator CurateAProperConstructedModel() => UniTask.ToCoroutine(async () =>
@@ -161,7 +191,8 @@ namespace Test.AvatarSystem
             catalog.Add("eyes_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.EYES));
             catalog.Add("eyebrows_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.EYEBROWS));
             catalog.Add("mouth_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.MOUTH));
-
+            catalog.Add("top_head_id", GetWearableForFemaleBodyshapeWithHides("top_head_id", "top_head", "tiara"));
+            catalog.Add("tiara_id", GetWearableForFemaleBodyshape("ubody", "tiara"));
             catalog.Add("feet_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.FEET));
             catalog.Add("hair_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.HAIR));
 
@@ -187,6 +218,26 @@ namespace Test.AvatarSystem
                             bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
                         }
                     },
+                }
+            };
+        }
+
+        private WearableItem GetWearableForFemaleBodyshapeWithHides(string id, string category, string hide)
+        {
+            return new WearableItem
+            {
+                id = id,
+                data = new WearableItem.Data
+                {
+                    category = category,
+                    representations = new []
+                    {
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
+                        }
+                    },
+                    hides = new []{hide}
                 }
             };
         }

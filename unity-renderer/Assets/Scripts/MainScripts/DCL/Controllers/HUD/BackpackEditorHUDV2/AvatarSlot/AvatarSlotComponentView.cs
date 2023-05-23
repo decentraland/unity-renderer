@@ -125,7 +125,7 @@ namespace DCL.Backpack
                 hiddenByList.Remove(hiddenBy);
 
             List<string> sortedList1 = hiddenByList.OrderBy(x => WearableItem.CATEGORIES_PRIORITY.IndexOf(x)).ToList();
-            Debug.Log("sortedList1.Count: " + sortedList1.Count);
+
             if (sortedList1.Count > 0)
             {
                 hiddenSlot.SetActive(true);
