@@ -26,7 +26,6 @@ namespace DCL.Social.Friends
         public event Action<UserStatus> OnFriendAdded;
         public event Action<FriendRequest> OnIncomingFriendRequestAdded;
         public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
-        public event Action<string> OnFriendRemoved;
         public event Action<string> OnFriendRequestRemoved;
         public event Action<string, UserProfile> OnFriendRequestAccepted;
         public event Action<string> OnFriendRequestRejected;
@@ -222,7 +221,7 @@ namespace DCL.Social.Friends
             await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
         }
 
-        public async UniTask AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+        public async UniTask<UserProfile> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
         {
             string userId = GetUserIdFromFriendRequestId(friendRequestId);
 
@@ -243,6 +242,8 @@ namespace DCL.Social.Friends
             };
 
             await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
+
+            return await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(userId, cancellationToken);
         }
 
         public async UniTask DeleteFriendshipAsync(string friendId, CancellationToken cancellationToken = default)

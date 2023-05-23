@@ -97,7 +97,6 @@ namespace DCL.Social.Friends
                     socialApiBridge.OnFriendAdded += AddFriend;
                     socialApiBridge.OnIncomingFriendRequestAdded += AddIncomingFriendRequest;
                     socialApiBridge.OnOutgoingFriendRequestAdded += AddOutgoingFriendRequest;
-                    socialApiBridge.OnFriendRemoved += RemoveDeletedFriend;
                     socialApiBridge.OnFriendRequestAccepted += AcceptedFriendRequest;
                     socialApiBridge.OnDeletedByFriend += DeletedByFriend;
                     socialApiBridge.OnFriendRequestRejected += (userId) => RemoveFriendRequest(userId, false, FriendshipAction.REJECTED);
@@ -124,6 +123,28 @@ namespace DCL.Social.Friends
                    .Forget();
         }
 
+        public void Dispose()
+        {
+            controllerCancellationTokenSource.SafeCancelAndDispose();
+
+            socialApiBridge.OnFriendAdded -= AddFriend;
+            socialApiBridge.OnFriendRequestRemoved -= RemoveFriendRequest;
+            socialApiBridge.OnIncomingFriendRequestAdded -= AddIncomingFriendRequest;
+            socialApiBridge.OnOutgoingFriendRequestAdded -= AddOutgoingFriendRequest;
+
+            apiBridge.OnInitialized -= InitializeFriendships;
+
+            // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+            apiBridge.OnFriendRequestsAdded -= AddFriendRequests;
+            apiBridge.OnFriendRequestReceived -= ReceiveFriendRequest;
+            apiBridge.OnFriendNotFound -= FriendNotFound;
+            apiBridge.OnFriendWithDirectMessagesAdded -= AddFriendsWithDirectMessages;
+            apiBridge.OnUserPresenceUpdated -= UpdateUserPresence;
+            apiBridge.OnFriendshipStatusUpdated -= HandleUpdateFriendshipStatus;
+            apiBridge.OnTotalFriendRequestCountUpdated -= UpdateTotalFriendRequests;
+            apiBridge.OnTotalFriendCountUpdated -= UpdateTotalFriends;
+        }
+
         private void DeletedByFriend(string friendId)
         {
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
@@ -145,8 +166,8 @@ namespace DCL.Social.Friends
 
             if (friendRequest != null)
             {
-                incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
             }
 
             OnUpdateFriendship?.Invoke(friendId, FriendshipAction.APPROVED);
@@ -189,40 +210,9 @@ namespace DCL.Social.Friends
             }
         }
 
-        public void Dispose()
-        {
-            controllerCancellationTokenSource.SafeCancelAndDispose();
-
-            socialApiBridge.OnFriendAdded -= AddFriend;
-            socialApiBridge.OnFriendRemoved -= RemoveDeletedFriend;
-            socialApiBridge.OnFriendRequestRemoved -= RemoveFriendRequest;
-            socialApiBridge.OnIncomingFriendRequestAdded -= AddIncomingFriendRequest;
-            socialApiBridge.OnOutgoingFriendRequestAdded -= AddOutgoingFriendRequest;
-
-            apiBridge.OnInitialized -= InitializeFriendships;
-
-            // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-            apiBridge.OnFriendRequestsAdded -= AddFriendRequests;
-            apiBridge.OnFriendRequestReceived -= ReceiveFriendRequest;
-            apiBridge.OnFriendNotFound -= FriendNotFound;
-            apiBridge.OnFriendWithDirectMessagesAdded -= AddFriendsWithDirectMessages;
-            apiBridge.OnUserPresenceUpdated -= UpdateUserPresence;
-            apiBridge.OnFriendshipStatusUpdated -= HandleUpdateFriendshipStatus;
-            apiBridge.OnTotalFriendRequestCountUpdated -= UpdateTotalFriendRequests;
-            apiBridge.OnTotalFriendCountUpdated -= UpdateTotalFriends;
-        }
-
         private void RemoveFriendRequest(string userId)
         {
-            // TODO: FIX
             this.friendRequests.Remove(userId);
-        }
-
-        // TODO (Joni): Replace by AddFriendRequests, this is just for successful compilation
-        private void AddFriendRequest(FriendRequest friendRequest)
-        {
-            // TODO: FIX
-            this.friendRequests[friendRequest.FriendRequestId] = friendRequest;
         }
 
         private void AddFriend(UserStatus friend)
@@ -242,6 +232,7 @@ namespace DCL.Social.Friends
             var friend = this.friends[userId];
             this.friends.Remove(userId);
             this.friendsSortedByName.Remove(friend.userName);
+            OnUpdateFriendship?.Invoke(userId, FriendshipAction.DELETED);
         }
 
         private void InitializeFriendships(FriendshipInitializationMessage msg)
@@ -282,6 +273,8 @@ namespace DCL.Social.Friends
 
                 // it's impossible to have duplicated timestamps for two different correctly created friend requests
                 outgoingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
+
+                OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.REQUESTED_TO);
             }
             else
             {
@@ -319,9 +312,25 @@ namespace DCL.Social.Friends
             if (useSocialApiBridge)
             {
                 request = incomingFriendRequestsById[friendRequestId];
-                await socialApiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
+                var profile = await socialApiBridge.AcceptFriendshipAsync(request.From, cancellationToken);
 
-                RemoveFriendRequest(request.From, true, FriendshipAction.REJECTED);
+                RemoveFriendRequest(request.From, true, FriendshipAction.APPROVED);
+
+                var status = new UserStatus()
+                    { userId = request.From, userName = profile.userName, friendshipStatus = FriendshipStatus.FRIEND };
+
+                friends[profile.userId] = status;
+                friendsSortedByName[profile.userName] = status;
+
+                var friendRequest = GetAllocatedFriendRequestByUser(profile.userId);
+
+                if (friendRequest != null)
+                {
+                    incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                    incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                }
+
+                OnUpdateFriendship?.Invoke(profile.userId, FriendshipAction.APPROVED);
 
                 return request;
             }
@@ -375,8 +384,8 @@ namespace DCL.Social.Friends
         {
             if (useSocialApiBridge)
             {
-                // TODO: try await Call for social api bridge
-                RemoveDeletedFriend(friendId);
+                // TODO: refactor this function and dependencies to be async/await and wait for the social response
+                socialApiBridge.DeleteFriendshipAsync(friendId).ContinueWith(() => RemoveDeletedFriend(friendId));
                 return;
             }
 

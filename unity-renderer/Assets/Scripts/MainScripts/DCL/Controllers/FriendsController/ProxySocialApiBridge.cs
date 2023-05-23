@@ -36,12 +36,6 @@ namespace DCL.Social.Friends
             remove => socialApiBridge.OnFriendAdded -= value;
         }
 
-        public event Action<string> OnFriendRemoved
-        {
-            add => socialApiBridge.OnFriendRemoved += value;
-            remove => socialApiBridge.OnFriendRemoved -= value;
-        }
-
         public event Action<string> OnFriendRequestRemoved
         {
             add => socialApiBridge.OnFriendRequestRemoved += value;
@@ -143,22 +137,23 @@ namespace DCL.Social.Friends
             if (useSocialApiBridge)
                 return socialApiBridge.CancelFriendshipAsync(friendRequestId, cancellationToken);
 
-            return UniTask.Never<FriendRequest>(cancellationToken);
+            return UniTask.Never(cancellationToken);
         }
 
-        public UniTask AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+        public UniTask<UserProfile> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
         {
             if (useSocialApiBridge)
                 return socialApiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
 
-            return UniTask.Never<FriendRequest>(cancellationToken);
+            return UniTask.Never<UserProfile>(cancellationToken);
         }
-        public UniTask DeleteFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+
+        public UniTask DeleteFriendshipAsync(string friendId, CancellationToken cancellationToken = default)
         {
             if (useSocialApiBridge)
-                return socialApiBridge.DeleteFriendshipAsync(friendRequestId, cancellationToken);
+                return socialApiBridge.DeleteFriendshipAsync(friendId, cancellationToken);
 
-            return UniTask.Never<FriendRequest>(cancellationToken);
+            return UniTask.Never(cancellationToken);
         }
 
         private async UniTask WaitForFeatureFlagsToBeInitialized(CancellationToken cancellationToken)
