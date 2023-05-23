@@ -423,55 +423,8 @@ namespace DCLServices.WearablesCatalogService
 
                 try
                 {
-                    WearableItem wearable = new WearableItem
-                    {
-                        data = new WearableItem.Data
-                        {
-                            representations = new WearableItem.Representation[metadata.data.representations.Length],
-                            category = metadata.data.category,
-                            hides = metadata.data.hides,
-                            replaces = metadata.data.replaces,
-                            tags = metadata.data.tags,
-                        },
-                        baseUrl = $"{catalyst.contentUrl}/contents/",
-                        baseUrlBundles = ASSET_BUNDLES_URL_ORG,
-                        emoteDataV0 = null,
-                        description = metadata.description,
-                        i18n = metadata.i18n,
-                        id = metadata.id,
-                        rarity = metadata.rarity ?? item.rarity,
-                        thumbnail = entity.GetContentHashByFileName(metadata.thumbnail),
-                        MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(item.GetMostRecentTransferTimestamp())
-                                                                  .DateTime,
-                    };
-
-                    for (var i = 0; i < metadata.data.representations.Length; i++)
-                    {
-                        WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto.Representation representation = metadata.data.representations[i];
-
-                        wearable.data.representations[i] = new WearableItem.Representation
-                        {
-                            bodyShapes = representation.bodyShapes,
-                            mainFile = representation.mainFile,
-                            overrideHides = representation.overrideHides,
-                            overrideReplaces = representation.overrideReplaces,
-                            contents = new WearableItem.MappingPair[representation.contents.Length],
-                        };
-
-                        for (var z = 0; z < representation.contents.Length; z++)
-                        {
-                            string fileName = representation.contents[z];
-                            string hash = entity.GetContentHashByFileName(fileName);
-
-                            wearable.data.representations[i].contents[z] = new WearableItem.MappingPair
-                            {
-                                url = $"{catalyst.contentUrl}/contents/{hash}",
-                                hash = hash,
-                                key = fileName,
-                            };
-                        }
-                    }
-
+                    WearableItem wearable = item.ToWearableItem($"{catalyst.contentUrl}/contents/",
+                        ASSET_BUNDLES_URL_ORG);
                     wearables.Add(wearable);
                 }
                 catch (Exception e) { Debug.LogException(e); }
