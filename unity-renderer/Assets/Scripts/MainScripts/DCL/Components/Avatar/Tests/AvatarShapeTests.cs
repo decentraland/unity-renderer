@@ -21,9 +21,15 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+
+            // we do a re-setup of the service locator to override the wearablesCatalogService
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            ServiceLocator serviceLocator = InitializeServiceLocator();
+            serviceLocator.Register<IWearablesCatalogService>(() => wearablesCatalogService);
+            Environment.Setup(serviceLocator);
+
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
-            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
         protected override IEnumerator TearDown()
@@ -45,7 +51,7 @@ namespace Tests
                 for (int i1 = 0; i1 < renderer.sharedMaterials.Length; i1++)
                 {
                     Material material = renderer.sharedMaterials[i1];
-                    Assert.IsTrue(!material.shader.name.Contains("Lit"), $"Material must not be LWRP Lit. found {material.shader.name} instead!");
+                    Assert.IsTrue(material.shader.name.Contains("DCL"), $"Material must be from DCL. found {material.shader.name} instead!");
                 }
             }
         }
@@ -94,8 +100,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit("Test too slow")]
         public IEnumerator InterpolatePosition()
         {
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortitus", "TestAvatar.json");
@@ -118,8 +122,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit("Test too slow")]
         public IEnumerator MaterialsSetCorrectly()
         {
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Joan Darteis", "TestAvatar.json");
@@ -129,8 +131,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit("Test too slow")]
         public IEnumerator WhenTwoAvatarsLoadAtTheSameTimeTheyHaveProperMaterials()
         {
             //NOTE(Brian): Avatars must be equal to share their meshes.
