@@ -113,6 +113,7 @@ namespace DCL.Social.Friends
                     apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
                     apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
                     apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
+                    apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
                 }
             }
 
