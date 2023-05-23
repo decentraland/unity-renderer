@@ -4,9 +4,8 @@ import { PermissionItem, permissionItemFromJSON } from 'shared/protocol/decentra
 import { RpcSceneControllerServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/scene_controller.gen'
 import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { WebWorkerTransport } from '@dcl/rpc/dist/transports/WebWorker'
 import { Scene } from '@dcl/schemas'
-import { DEBUG_SCENE_LOG, ETHEREUM_NETWORK, getAssetBundlesBaseUrl, PIPE_SCENE_CONSOLE, playerHeight } from 'config'
+import { DEBUG_SCENE_LOG, ETHEREUM_NETWORK, FORCE_SEND_MESSAGE, getAssetBundlesBaseUrl, PIPE_SCENE_CONSOLE, playerHeight, WSS_ENABLED } from 'config'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
@@ -15,6 +14,7 @@ import mitt from 'mitt'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
+import { WebWorkerTransportV2 } from 'shared/world/RpcTransportWebWorkerV2'
 import {
   SceneLoad,
   SceneStart,
@@ -31,6 +31,7 @@ import { LoadableScene } from 'shared/types'
 import { PositionReport } from './positionThings'
 import { EntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_interface_ecs6.gen'
 import { joinBuffers } from 'lib/javascript/uint8arrays'
+import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -74,7 +75,7 @@ export const sceneEvents = mitt<{
   [SCENE_UNLOAD]: SceneUnload
 }>()
 
-function buildWebWorkerTransport(loadableScene: LoadableScene, sdk7: boolean): Transport {
+function buildWebWorkerTransport(loadableScene: LoadableScene, sdk7: boolean) {
   const loggerName = getSceneNameFromJsonData(loadableScene.entity.metadata) || loadableScene.id
 
   const workerName = sdk7 ? 'SDK7' : 'LegacyScene'
@@ -91,7 +92,7 @@ function buildWebWorkerTransport(loadableScene: LoadableScene, sdk7: boolean): T
     })
   })
 
-  return WebWorkerTransport(worker)
+  return { transport: WebWorkerTransportV2(worker), worker }
 }
 
 let globalSceneNumberCounter = 0
@@ -114,15 +115,11 @@ export class SceneWorker {
   metadata: Scene
   logger: ILogger
 
-  static async createSceneWorker(
-    loadableScene: Readonly<LoadableScene>,
-    rpcClient: RpcClient,
-    transportBuilder: () => Transport | undefined
-  ) {
+  static async createSceneWorker(loadableScene: Readonly<LoadableScene>, rpcClient: RpcClient) {
     ++globalSceneNumberCounter
     const sceneNumber = globalSceneNumberCounter
     const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
-    const worker = new SceneWorker(loadableScene, sceneNumber, scenePort, transportBuilder)
+    const worker = new SceneWorker(loadableScene, sceneNumber, scenePort)
     await worker.attachTransport()
     return worker
   }
@@ -130,8 +127,7 @@ export class SceneWorker {
   protected constructor(
     public readonly loadableScene: Readonly<LoadableScene>,
     sceneNumber: number,
-    scenePort: RpcClientPort,
-    private transportBuilder: () => Transport | undefined
+    scenePort: RpcClientPort
   ) {
     const skipErrors = ['Transport closed while waiting the ACK']
 
@@ -354,11 +350,36 @@ export class SceneWorker {
     // from now on, the sceneData object is read-only
     Object.freeze(this.rpcContext.sceneData)
 
-    this.transport = this.transportBuilder() || buildWebWorkerTransport(this.loadableScene, this.rpcContext.sdk7)
+    const { transport, worker } = buildWebWorkerTransport(this.loadableScene, this.rpcContext.sdk7)
+    this.transport = transport
 
     this.rpcServer.setHandler(registerServices)
     this.rpcServer.attachTransport(this.transport, this.rpcContext)
     this.ready |= SceneWorkerReadyState.LOADED
+
+    worker.addEventListener('message', (event) => {
+      if (event.data?.type === 'actions') {
+        if (event.data.bytes?.length > 50e3) {
+          this.logger.log(`Received actions > 50k: ${event.data.bytes?.length} bytes`)
+        }
+        if (WSS_ENABLED || FORCE_SEND_MESSAGE) {
+          this.rpcContext.rpcSceneControllerService.sendBatch({ payload: event.data.bytes }).catch((err) => {
+            this.logger.error('Error sending binary actions from Worker to Renderer', err)
+          })
+        } else {
+          nativeMsgBridge.sdk6BinaryMessage(
+            this.rpcContext.sceneData.sceneNumber,
+            event.data.bytes,
+            event.data.bytes.length
+          )
+        }
+
+        this.ready |= SceneWorkerReadyState.RECEIVED_MESSAGES
+        if (!(this.ready & SceneWorkerReadyState.INITIALIZED)) {
+          this.ready |= SceneWorkerReadyState.INITIALIZED
+        }
+      }
+    })
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
   }

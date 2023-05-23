@@ -59,13 +59,5 @@ namespace DCL.Chat.HUD
         public override void Show(bool instant = false) => gameObject.SetActive(true);
 
         public override void Hide(bool instant = false) => gameObject.SetActive(false);
-
-        public static LeaveChannelConfirmationWindowComponentView Create()
-        {
-            LeaveChannelConfirmationWindowComponentView leaveChannelComponenView = Instantiate(Resources.Load<GameObject>("SocialBarV1/LeaveChannelConfirmationHUD")).GetComponent<LeaveChannelConfirmationWindowComponentView>();
-            leaveChannelComponenView.name = "_LeaveChannelConfirmationHUD";
-
-            return leaveChannelComponenView;
-        }
     }
 }

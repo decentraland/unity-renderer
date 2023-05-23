@@ -9,18 +9,12 @@ namespace DCL.ECSComponents
 {
     public class ECSTransformHandler : IECSComponentHandler<ECSTransform>
     {
-        private readonly IWorldState worldState;
-        private readonly IBaseVariable<Vector3> playerTeleportVariable;
-
         private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
 
-        public ECSTransformHandler(IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
+        public ECSTransformHandler(IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
         {
             ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(100);
             this.sbcInternalComponent = sbcInternalComponent;
-
-            this.worldState = worldState;
-            this.playerTeleportVariable = playerTeleportVariable;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -73,13 +67,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
         {
-            // From SDK `PLAYER_ENTITY` entity's transform can be modified to
-            // move character across the scene
-            if (entity.entityId == SpecialEntityId.PLAYER_ENTITY)
-            {
-                TryMoveCharacter(scene, model.position, worldState, playerTeleportVariable);
-                return;
-            }
+            if (entity.entityId == SpecialEntityId.PLAYER_ENTITY) return;
 
             Transform transform = entity.gameObject.transform;
             bool positionChange = transform.localPosition != model.position;
@@ -126,30 +114,6 @@ namespace DCL.ECSComponents
 
             // add as orphan so system can parent it
             ECSTransformUtils.orphanEntities[entity] = new ECSTransformUtils.OrphanEntity(scene, entity, parentId);
-        }
-
-        private static bool TryMoveCharacter(IParcelScene scene, Vector3 localPosition,
-            IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable)
-        {
-            // If player is not at the scene that triggered this event
-            // we'll ignore it
-            if (scene.sceneData.sceneNumber != worldState.GetCurrentSceneNumber() && !scene.isPersistent)
-            {
-                return false;
-            }
-
-            Vector2Int targetCoords = scene.sceneData.basePosition + Utils.WorldToGridPosition(localPosition);
-
-            // If target coordinates are outside the scene we'll ignore it
-            if (!ECSTransformUtils.IsInsideSceneBoundaries(scene, targetCoords))
-            {
-                return false;
-            }
-
-            playerTeleportVariable.Set(Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y)
-                                       + localPosition, true);
-
-            return true;
         }
     }
 }

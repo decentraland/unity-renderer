@@ -2,6 +2,7 @@ using DCL.Providers;
 using DCLPlugins.LoadingScreenPlugin;
 using NUnit.Framework;
 using System.Threading;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.LoadingScreen.Test
@@ -55,7 +56,9 @@ namespace DCL.LoadingScreen.Test
         {
             //Arrange
             LoadingScreenTipsView loadingScreenTipsView = loadingScreenView.GetTipsView();
-            Sprite testSprite = Resources.Load<Sprite>("TipsImgs/BuilderImg");
+
+            Sprite testSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/LoadingScreen/Sprites/BuilderImg.png");
             LoadingTip newLoadingTip = new LoadingTip("LoadingTest", testSprite);
 
             //Act

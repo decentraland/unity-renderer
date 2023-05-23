@@ -6,12 +6,12 @@ using System.Collections;
 using DCL;
 using DCL.Social.Friends;
 using NSubstitute.ReceivedExtensions;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
 public class JumpInButtonShould : IntegrationTestSuite_Legacy
 {
-    private const string JUMP_IN_BUTTON_RESOURCE_NAME = "JumpInButton";
     private const string TEST_USER_ID = "testFriend";
     private const string TEST_SERVER_NAME = "test server name";
     private const string TEST_LAYER_NAME = "test layer name";
@@ -25,7 +25,7 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
         // This is need to sue the TeleportController
         ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
         DCL.Environment.Setup(serviceLocator);
-        
+
         Vector2 testCoords = new Vector2(5, 20);
 
         friendsController = new FriendsController_Mock();
@@ -42,8 +42,10 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
             }
         });
 
-        GameObject go = Object.Instantiate((GameObject)Resources.Load(JUMP_IN_BUTTON_RESOURCE_NAME));
-        jumpInButton = go.GetComponent<JumpInButton>();
+        jumpInButton =  Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<JumpInButton>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/JumpInButton.prefab"));
+
         jumpInButton.Initialize(friendsController, TEST_USER_ID, Substitute.For<ISocialAnalytics>());
 
         Assert.AreEqual(testCoords, jumpInButton.currentCoords, "Position coords should match with [testCoords]");
