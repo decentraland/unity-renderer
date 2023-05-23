@@ -120,7 +120,6 @@ namespace DCL
                     cancellationSourceToken.ThrowIfCancellationRequested();
                 }
 
-
                 if (!success)
                     onFail?.Invoke(new GltFastLoadException($"[GLTFast] Load failed: {consoleLogger.LastErrorCode}"));
                 else
@@ -137,10 +136,7 @@ namespace DCL
                 Debug.LogError("[GltFast] Failed to load: " + e);
                 onFail?.Invoke(e);
             }
-            finally
-            {
-                isLoading = false;
-            }
+            finally { isLoading = false; }
         }
 
         private bool FileToUrl(string fileName, out string fileHash) =>

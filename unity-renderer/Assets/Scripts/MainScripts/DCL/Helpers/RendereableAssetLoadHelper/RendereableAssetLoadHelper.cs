@@ -54,7 +54,7 @@ namespace DCL.Components
                     yield return gltfastPromise;
 
                 if (abPromise != null)
-                    yield return  abPromise;
+                    yield return abPromise;
 
                 yield return null;
             }
@@ -68,7 +68,7 @@ namespace DCL.Components
                     return gltfastPromise.state == AssetPromiseState.FINISHED;
 
                 if (abPromise != null)
-                    return  abPromise.state == AssetPromiseState.FINISHED;
+                    return abPromise.state == AssetPromiseState.FINISHED;
 
                 return false;
             }

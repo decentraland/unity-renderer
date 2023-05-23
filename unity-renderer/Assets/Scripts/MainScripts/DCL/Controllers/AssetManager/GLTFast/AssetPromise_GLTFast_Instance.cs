@@ -159,11 +159,12 @@ namespace DCL
         {
             Utils.InverseTransformChildTraversal<Renderer>(renderer =>
             {
-                if (IsCollider(renderer.transform)) { Object.Destroy(renderer); }
+                if (IsCollider(renderer.transform))
+                    Utils.SafeDestroy(renderer);
             }, rootGameObject.transform);
 
             // we wait a single frame until the collider renderers are deleted because some systems might be able to get a reference to them before this is done and we dont want that
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
 
         private static bool IsCollider(Transform transform)
@@ -174,7 +175,8 @@ namespace DCL
             return parentName || transformName;
         }
 
-        protected override Asset_GLTFast_Instance GetAsset(object id) => settings.forceNewInstance ? ((AssetLibrary_GLTFast_Instance)library).GetCopyFromOriginal(id) : base.GetAsset(id);
+        protected override Asset_GLTFast_Instance GetAsset(object id) =>
+            settings.forceNewInstance ? ((AssetLibrary_GLTFast_Instance)library).GetCopyFromOriginal(id) : base.GetAsset(id);
 
         public void OverrideInitialPosition(Vector3 pos)
         {
