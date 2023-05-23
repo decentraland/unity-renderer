@@ -109,6 +109,7 @@ namespace DCLServices.WearablesCatalogService
             public string urn;
             public IndividualDataDto[] individualData;
             public EntityDto entity;
+            public string rarity;
 
             public long GetMostRecentTransferTimestamp()
             {
@@ -118,7 +119,8 @@ namespace DCLServices.WearablesCatalogService
 
                 foreach (IndividualDataDto dto in individualData)
                 {
-                    var transferredAt = long.Parse(dto.transferredAt);
+                    if (!long.TryParse(dto.transferredAt, out long transferredAt))
+                        continue;
 
                     if (transferredAt > max)
                         max = transferredAt;

@@ -439,7 +439,7 @@ namespace DCLServices.WearablesCatalogService
                         description = metadata.description,
                         i18n = metadata.i18n,
                         id = metadata.id,
-                        rarity = metadata.rarity,
+                        rarity = metadata.rarity ?? item.rarity,
                         thumbnail = entity.GetContentHashByFileName(metadata.thumbnail),
                         MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(item.GetMostRecentTransferTimestamp())
                                                                   .DateTime,
