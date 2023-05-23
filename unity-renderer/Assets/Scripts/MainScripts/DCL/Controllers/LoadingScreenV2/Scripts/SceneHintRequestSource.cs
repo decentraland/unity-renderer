@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -18,7 +19,7 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private Vector2Int currentDestination;
         private readonly ISceneController sceneController;
-        private IParcelScene currentSceneBeingLoaded;
+        private LoadParcelScenesMessage.UnityParcelScene currentSceneBeingLoaded;
         private UniTaskCompletionSource<bool> sceneLoadedCompletionSource;
 
         private const int MAX_WAIT_FOR_SCENE = 1;
@@ -47,9 +48,9 @@ namespace DCL.Controllers.LoadingScreenV2
 
                 bool sceneLoaded = sceneLoadedCompletionSource.Task.Status == UniTaskStatus.Succeeded;
 
-                if (sceneLoaded && currentSceneBeingLoaded?.sceneData?.loadingScreenHints != null && currentSceneBeingLoaded.sceneData.loadingScreenHints.Count > 0)
+                if (sceneLoaded && currentSceneBeingLoaded?.loadingScreenHints != null && currentSceneBeingLoaded.loadingScreenHints.Count > 0)
                 {
-                    foreach (var basehint in currentSceneBeingLoaded.sceneData.loadingScreenHints)
+                    foreach (var basehint in currentSceneBeingLoaded.loadingScreenHints)
                     {
                         if (basehint is IHint hint)
                         {
@@ -68,14 +69,19 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private void SceneController_OnNewSceneAdded(IParcelScene scene)
         {
-            if (scene != null && Environment.i.world.state.GetSceneNumberByCoords(currentDestination).Equals(scene.sceneData.sceneNumber))
+            if (scene != null && CheckTargetSceneWithCoords (scene))
             {
-                currentSceneBeingLoaded = scene;
+                currentSceneBeingLoaded = scene.sceneData;
                 sceneLoadedCompletionSource.TrySetResult(true);
 
                 // Recreate the UniTaskCompletionSource to avoid InvalidOperationException on next scene load
                 sceneLoadedCompletionSource = new UniTaskCompletionSource<bool>();
             }
+        }
+
+        public bool CheckTargetSceneWithCoords (IParcelScene scene)
+        {
+            return Environment.i.world.state.GetSceneNumberByCoords(currentDestination).Equals(scene.sceneData.sceneNumber);
         }
 
         public void Dispose()

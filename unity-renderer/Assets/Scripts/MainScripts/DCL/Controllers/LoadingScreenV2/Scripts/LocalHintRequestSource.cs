@@ -1,4 +1,6 @@
 using Cysharp.Threading.Tasks;
+using DCL.Models;
+using DCL.Providers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,45 +10,46 @@ namespace DCL.Controllers.LoadingScreenV2
 {
     public class LocalHintRequestSource : IHintRequestSource
     {
+        private const string LOCAL_HINTS_JSON_SOURCE = "LoadingScreenV2LocalHintsJsonSource";
+
+        private IAddressableResourceProvider addressablesProvider;
         public string source { get; }
         public SourceTag sourceTag { get; }
-
-        private UniTaskCompletionSource<bool> hintsLoadedCompletionSource;
         public List<IHint> loading_hints { get; private set; }
 
-        public LocalHintRequestSource(string sourceJson, SourceTag sourceTag)
+        public LocalHintRequestSource(string sourceAddressableSceneJson, SourceTag sourceTag, IAddressableResourceProvider addressablesProvider)
         {
-            this.source = sourceJson;
+            this.source = sourceAddressableSceneJson;
             this.sourceTag = sourceTag;
             this.loading_hints = new List<IHint>();
-            this.hintsLoadedCompletionSource = new UniTaskCompletionSource<bool>();
-
-            // Load the hints in a separate thread to avoid blocking
-            UniTask.Run(() => LoadHints(sourceJson)).Forget();
+            this.addressablesProvider = addressablesProvider;
         }
 
-        private void LoadHints(string sourceJson)
+        internal async UniTask<List<IHint>> LoadHintsFromAddressable(string addressableSourceKey, CancellationToken ctx)
         {
             try
             {
-                IParcelScene parcelScene = JsonUtility.FromJson<IParcelScene>(sourceJson);
+                if (ctx.IsCancellationRequested)
+                    return loading_hints;
 
-                if (parcelScene != null && parcelScene.sceneData?.loadingScreenHints != null)
+                var containerSceneAddressable = await addressablesProvider.GetAddressable<TextAsset>(addressableSourceKey, ctx);
+
+                if (containerSceneAddressable == null)
                 {
-                    foreach (var hint in parcelScene.sceneData.loadingScreenHints)
-                    {
-                        loading_hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
-                    }
+                    throw new Exception("Failed to load the addressable asset");
                 }
 
-                hintsLoadedCompletionSource.TrySetResult(true);
+                loading_hints = HintSceneParser.ParseJsonToHints(containerSceneAddressable.text);
+                return loading_hints;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Exception in LocalHintRequestSource.LoadHints: {ex.Message}\n{ex.StackTrace}");
-                hintsLoadedCompletionSource.TrySetResult(false);
+                Debug.LogError($"Failed to load hints from addressable: {ex.Message}");
+
+                return loading_hints;
             }
         }
+
 
         public UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
         {
@@ -54,8 +57,8 @@ namespace DCL.Controllers.LoadingScreenV2
             if (ctx.IsCancellationRequested)
                 return UniTask.FromResult(new List<IHint>());
 
-            // Otherwise, return the loading_hints directly
-            return UniTask.FromResult(loading_hints);
+            // Otherwise, return hints when they are loaded from the addressable
+            return LoadHintsFromAddressable(source, ctx);
         }
 
 

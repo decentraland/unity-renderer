@@ -35,11 +35,9 @@ namespace DCL.Controllers.LoadingScreenV2
 
                 string json = await webRequestHandler.Get(source);
 
-                Debug.Log($"FD:: RemoteHintRequestSource.GetHintsAsync: {json}");
-
                 if (!string.IsNullOrEmpty(json))
                 {
-                    loading_hints = ParseJsonToHints(json);
+                    loading_hints = HintSceneParser.ParseJsonToHints(json);
                 }
             }
             catch (Exception ex)
@@ -48,23 +46,6 @@ namespace DCL.Controllers.LoadingScreenV2
             }
 
             return loading_hints;
-        }
-
-        private List<IHint> ParseJsonToHints(string json)
-        {
-            var hints = new List<IHint>();
-
-            var sceneJson = JsonUtility.FromJson<LoadParcelScenesMessage.UnityParcelScene>(json);
-
-            if (sceneJson != null && sceneJson.loadingScreenHints != null)
-            {
-                foreach (var hint in sceneJson.loadingScreenHints)
-                {
-                    hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
-                }
-            }
-
-            return hints;
         }
 
         public void Dispose()

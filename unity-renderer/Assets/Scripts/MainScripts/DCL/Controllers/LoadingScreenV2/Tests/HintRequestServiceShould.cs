@@ -1,7 +1,9 @@
 using Cysharp.Threading.Tasks;
 using DCL.Models;
+using DCL.Providers;
 using NSubstitute;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -20,6 +22,7 @@ namespace DCL.Controllers.LoadingScreenV2
          private HintTextureRequestHandler hintTextureRequestHandler;
          private CancellationToken _cancellationToken;
          private Texture2D _preMadeTexture;
+         private BaseHint _premadeHint;
 
          [SetUp]
          public void Setup()
@@ -32,6 +35,9 @@ namespace DCL.Controllers.LoadingScreenV2
 
              _preMadeTexture = new Texture2D(2, 2);
              // _hintTextureRequest.DownloadTexture(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(_preMadeTexture));
+
+             // mock premade hint for scene response
+             _premadeHint = new BaseHint("https://example.com/image.png", "title", "body", SourceTag.Event);
          }
 
          [TearDown]
@@ -56,11 +62,11 @@ namespace DCL.Controllers.LoadingScreenV2
              // Arrange
              var sourceUrlJson = "http://remote_source_url";
              var mockWebRequestHandler = Substitute.For<ISourceWebRequestHandler>();
-             var expectedHint = new BaseHint("url", "title", "body", SourceTag.Event);
              var mockSceneRensponse = new LoadParcelScenesMessage.UnityParcelScene
              {
-                 loadingScreenHints = new List<BaseHint> { expectedHint }
+                 loadingScreenHints = new List<BaseHint> { _premadeHint },
              };
+             Debug.Log ("FD:: mockSceneRensponse: " + mockSceneRensponse);
              string mockJsonResponse = JsonUtility.ToJson(mockSceneRensponse);
              mockWebRequestHandler.Get(Arg.Any<string>()).Returns(UniTask.FromResult(mockJsonResponse));
 
@@ -70,56 +76,63 @@ namespace DCL.Controllers.LoadingScreenV2
              // Act
              var result = await _hintRequestService.RequestHintsFromSources(_cancellationToken, 5);
 
-             Debug.Log($"FD:: result.Count: {result.Count}");
+             // Assert
+             Assert.AreEqual(1, result.Count);
+             Assert.AreEqual(_premadeHint.Title, result.Keys.ToArray()[0].Title);
+             Assert.AreEqual(_premadeHint.Body, result.Keys.ToArray()[0].Body);
+         }
+
+         [Test]
+         public async Task RequestHintsFromLocalSource()
+         {
+             // Arrange
+             var sourceSceneAddressable = "LoadingScreenV2LocalHintsJsonSource";
+             IAddressableResourceProvider  addressableProvider = new AddressableResourceProvider();
+             var remoteHintSource = new LocalHintRequestSource(sourceSceneAddressable, SourceTag.Dcl, addressableProvider);
+             _hintRequestSources.Add(remoteHintSource);
+
+             // Act
+             var result = await _hintRequestService.RequestHintsFromSources(_cancellationToken, 5);
 
              // Assert
              Assert.AreEqual(1, result.Count);
-             Assert.AreEqual(expectedHint.Title, result.Keys.ToArray()[0].Title);
-             Assert.AreEqual(expectedHint.Body, result.Keys.ToArray()[0].Body);
          }
 
+         [Test] // FD:: TODO: This test is failing because of the Environment requirement in SceneHintRequestSource
+         public async Task ShouldRequestHintsFromSceneSource()
+         {
+             // Arrange
+             string sceneJson = "scene.json";
+             var mockSceneController = Substitute.For<ISceneController>();
+             var mockScene = Substitute.For<IParcelScene>();
+             var mockSceneRensponse = new LoadParcelScenesMessage.UnityParcelScene
+             {
+                 loadingScreenHints = new List<BaseHint> { _premadeHint },
+             };
+             mockScene.sceneData.Returns(mockSceneRensponse);
+             var sourceTag = SourceTag.Event;
+             var currentDestination = new Vector2Int(1, 1);
 
+             mockSceneController
+                .When(controller => controller.OnNewSceneAdded += Arg.Any<Action<IParcelScene>>())
+                .Do(info =>
+                 {
+                     var handler = info.Arg<Action<IParcelScene>>();
+                     handler(mockScene);
+                 });
 
+             // var sceneHintSource = new SceneHintRequestSource(sceneJson, sourceTag, mockSceneController, currentDestination);
+             var sceneHintSource = Substitute.For<SceneHintRequestSource>(sceneJson, sourceTag, mockSceneController, currentDestination);
+             sceneHintSource.CheckTargetSceneWithCoords(Arg.Any<IParcelScene>()).Returns(true);
 
-         // [Test]
-         // public async UniTask RequestHintsWithOneSource()
-         // {
-         //     // Arrange
-         //     var mockSource = Substitute.For<LocalHintRequestSource>();
-         //     var mockHint = Substitute.For<IHint>();
-         //     mockHint.TextureUrl.Returns("https://example.com/image.png");
-         //     mockHint.SourceTag.Returns(SourceTag.Dcl);
-         //     var hintList = new List<IHint> { mockHint };
-         //     // mockSource.GetHintsAsync(_cancellationToken).Returns(UniTask.FromResult(hintList));
-         //     _hintRequestSources.Add(mockSource);
-         //
-         //     // Act
-         //     var result = await _hintRequestService.RequestHintsFromSources(_cancellationToken, 5);
-         //
-         //     // Assert
-         //     Assert.IsTrue(result.Count == 1);
-         // }
+             // Act
+             var result = await sceneHintSource.GetHintsAsync(_cancellationToken);
 
-         // [Test]
-         // public async UniTask RequestHintsFromSources_HintSourceReturnsList_ReturnsHintDictionary()
-         // {
-         //     // Arrange
-         //     var mockSource = Substitute.For<IHintRequestSource>();
-         //     var mockHint = Substitute.For<IHint>();
-         //     mockHint.TextureUrl.Returns("https://example.com/image.png");
-         //     mockHint.SourceTag.Returns(SourceTag.Scene);
-         //     var hintList = new List<IHint> { mockHint };
-         //     mockSource.GetHintsAsync(_cancellationToken).Returns(UniTask.FromResult(hintList));
-         //     _hintRequestSources.Add(mockSource);
-         //
-         //     // Act
-         //     var result = await _hintRequestService.RequestHintsFromSources(_cancellationToken, 5);
-         //
-         //     // Assert
-         //     Assert.AreEqual(5, result.Count);
-         //     Assert.IsTrue(result.ContainsKey(mockHint));
-         //     Assert.AreEqual(_preMadeTexture, result[mockHint]);
-         // }
+             // Assert
+             Assert.AreEqual(1, result.Count);
+             Assert.AreEqual(_premadeHint.Title, result[0].Title);
+             Assert.AreEqual(_premadeHint.Body, result[0].Body);
+         }
 
         // TODO: Add more test cases for texture handling, handling exceptions, ordering of hints, etc.
     }
