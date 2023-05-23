@@ -30,12 +30,19 @@ public class ToSPopupView : MonoBehaviour, IToSPopupView, IPointerClickHandler
 
     private void Awake()
     {
+        Initialize();
+    }
+
+    internal void Initialize()
+    {
+        Debug.Log("Adding listeners");
         agreeButton.onClick.AddListener(OnAcceptPressed);
         cancelButton.onClick.AddListener(OnCancelPressed);
     }
 
     private void OnAcceptPressed()
     {
+        Debug.Log("On Accept");
         OnAccept?.Invoke();
     }
 

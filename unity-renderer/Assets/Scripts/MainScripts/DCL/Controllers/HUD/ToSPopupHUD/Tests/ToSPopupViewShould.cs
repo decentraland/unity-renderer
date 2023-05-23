@@ -11,12 +11,11 @@ public class ToSPopupViewShould
     [SetUp]
     public void SetUp()
     {
-        var prefab = new GameObject("ToSPopupView");
-
         view = Object.Instantiate(AssetDatabase
                          .LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/ToSPopupHUD/ToSPopupHUD.prefab")
                       )
                      .GetComponentInChildren<ToSPopupView>();
+        view.Initialize();
     }
 
     [TearDown]
