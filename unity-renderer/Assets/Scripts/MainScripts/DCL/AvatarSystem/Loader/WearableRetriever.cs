@@ -28,7 +28,6 @@ namespace AvatarSystem
                 loaderAssetHelper.settings.forceNewInstance = false;
                 // TODO Review this hardcoded offset and try to solve it by offseting the Avatar container
                 loaderAssetHelper.settings.initialLocalPosition = Vector3.up * AvatarSystemUtils.AVATAR_Y_OFFSET;
-                loaderAssetHelper.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_SHADERS;
                 loaderAssetHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
                 loaderAssetHelper.settings.parent = container.transform;
                 loaderAssetHelper.settings.layer = container.layer;

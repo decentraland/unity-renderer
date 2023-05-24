@@ -158,9 +158,6 @@ namespace DCL
                 UploadMeshesToGPU(MeshesInfoUtils.ExtractUniqueMeshes(asset.renderers));
                 asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
 
-                //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
-                //yield return MaterialCachingHelper.Process(asset.renderers.ToList(), enableRenderers: false, settings.cachingFlags);
-
                 var animators = MeshesInfoUtils.ExtractUniqueAnimations(assetBundleModelGO);
                 asset.animationClipSize = subPromise.asset.metrics.animationsEstimatedSize;
                 asset.meshDataSize = subPromise.asset.metrics.meshesEstimatedSize;
