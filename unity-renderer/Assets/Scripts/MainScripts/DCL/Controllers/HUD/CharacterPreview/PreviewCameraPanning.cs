@@ -1,5 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
+using System;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Vector3 = UnityEngine.Vector3;
@@ -17,13 +19,14 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private Vector3 lastMousePosition;
         private Vector3 lastPanningDeltaBeforeEndDrag;
-        private Coroutine inertiaCoroutine;
+        private CancellationTokenSource cts;
 
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (!Input.GetMouseButton(2) && !Input.GetMouseButton(1))
                 return;
 
+            cts = cts.SafeRestart();
             lastMousePosition = Input.mousePosition;
             AudioScriptableObjects.buttonClick.Play(true);
         }
@@ -32,12 +35,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             if (!Input.GetMouseButton(2) && !Input.GetMouseButton(1))
                 return;
-
-            if (inertiaCoroutine != null)
-            {
-                StopCoroutine(inertiaCoroutine);
-                inertiaCoroutine = null;
-            }
 
             var panningDelta = Input.mousePosition - lastMousePosition;
             panningDelta.y *= -1;
@@ -58,12 +55,12 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void OnEndDrag(PointerEventData eventData)
         {
             if (lastPanningDeltaBeforeEndDrag.magnitude >= 0.01f)
-                inertiaCoroutine ??= StartCoroutine(InertiaCoroutine());
+                InertiaAsync(cts.Token).Forget();
 
             AudioScriptableObjects.buttonRelease.Play(true);
         }
 
-        private IEnumerator InertiaCoroutine()
+        private async UniTask InertiaAsync(CancellationToken ct)
         {
             float inverseTimer = 1f / inertiaDuration;
             float timeLeft = inertiaDuration;
@@ -72,8 +69,11 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             {
                 timeLeft -= Time.deltaTime;
                 OnPanning?.Invoke(Vector3.Lerp(lastPanningDeltaBeforeEndDrag, Vector3.zero, 1 - (timeLeft * inverseTimer)));
-                yield return null;
+                await UniTask.NextFrame(ct);
             }
         }
+
+        private void OnDestroy() =>
+            cts.SafeCancelAndDispose();
     }
 }

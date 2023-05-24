@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using System;
-using System.Collections;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,7 +17,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private float currentHorizontalRotationVelocity;
         private float slowDownVelocity;
-        private Coroutine slowDownCoroutine;
+        private CancellationTokenSource cts;
         private float timer;
         private DateTime startDragDateTime;
 
@@ -24,6 +26,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             if (!Input.GetMouseButton(0))
                 return;
 
+            cts = cts.SafeRestart();
             startDragDateTime = DateTime.Now;
             AudioScriptableObjects.buttonClick.Play(true);
         }
@@ -33,12 +36,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             if (!Input.GetMouseButton(0))
                 return;
 
-            if (slowDownCoroutine != null)
-            {
-                StopCoroutine(slowDownCoroutine);
-                slowDownCoroutine = null;
-            }
-
             currentHorizontalRotationVelocity = rotationFactor * eventData.delta.x;
             OnHorizontalRotation?.Invoke(currentHorizontalRotationVelocity);
         }
@@ -47,12 +44,12 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             timer = slowDownTime;
             slowDownVelocity = currentHorizontalRotationVelocity;
-            slowDownCoroutine ??= StartCoroutine(SlowDown());
+            SlowDownAsync(cts.Token).Forget();
             OnEndDragEvent?.Invoke((DateTime.Now - startDragDateTime).TotalMilliseconds);
             AudioScriptableObjects.buttonRelease.Play(true);
         }
 
-        private IEnumerator SlowDown()
+        private async UniTask SlowDownAsync(CancellationToken ct)
         {
             float inverseTimer = 1f / slowDownTime;
 
@@ -61,8 +58,11 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 timer -= Time.deltaTime;
                 currentHorizontalRotationVelocity  = Mathf.Lerp(slowDownVelocity, 0, 1 - (timer * inverseTimer));
                 OnHorizontalRotation?.Invoke(currentHorizontalRotationVelocity);
-                yield return null;
+                await UniTask.NextFrame(ct);
             }
         }
+
+        private void OnDestroy() =>
+            cts.SafeCancelAndDispose();
     }
 }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
+using System;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,30 +14,36 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         [SerializeField] private float zoomSpeed = 2.0f;
         [SerializeField] private float smoothTime = 0.2f;
 
-        private bool isFocused;
         private Vector3 currentZoomDelta;
         private Vector3 currentZoomVelocity;
+        private CancellationTokenSource cts = new ();
 
         public void OnPointerEnter(PointerEventData eventData) =>
-            isFocused = true;
+            ZoomAsync(cts.Token).Forget();
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            isFocused = false;
+            cts = cts.SafeRestart();
             currentZoomDelta = Vector3.zero;
         }
 
-        private void Update()
+        private async UniTask ZoomAsync(CancellationToken ct)
         {
-            if (!isFocused)
-                return;
+            while (!ct.IsCancellationRequested)
+            {
+                Vector3 newZoomDelta = Vector3.forward * (-Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);
 
-            Vector3 newZoomDelta = Vector3.forward * (-Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);
-            if (currentZoomDelta == newZoomDelta)
-                return;
+                if (currentZoomDelta != newZoomDelta)
+                {
+                    currentZoomDelta = Vector3.SmoothDamp(currentZoomDelta, newZoomDelta, ref currentZoomVelocity, smoothTime);
+                    OnZoom?.Invoke(currentZoomDelta);
+                }
 
-            currentZoomDelta = Vector3.SmoothDamp(currentZoomDelta, newZoomDelta, ref currentZoomVelocity, smoothTime);
-            OnZoom?.Invoke(currentZoomDelta);
+                await UniTask.NextFrame(ct);
+            }
         }
+
+        private void OnDestroy() =>
+            cts.SafeCancelAndDispose();
     }
 }
