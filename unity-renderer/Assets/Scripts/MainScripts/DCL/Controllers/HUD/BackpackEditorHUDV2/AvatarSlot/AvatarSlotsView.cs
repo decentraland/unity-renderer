@@ -45,7 +45,7 @@ namespace DCL.Backpack
             avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, isToggled);
             avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
             avatarSlot.OnFocusHiddenBy += (hiddenBy) => avatarSlots[hiddenBy].ShakeAnimation();
-            avatarSlot.OnHideUnhidePressed += (s, b) => OnHideUnhidePressed?.Invoke(s,b);
+            avatarSlot.OnHideUnhidePressed += (category, isOverridden) => OnHideUnhidePressed?.Invoke(category,isOverridden);
         }
 
         public void DisablePreviousSlot(string category) =>
