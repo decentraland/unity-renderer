@@ -140,8 +140,7 @@ namespace AvatarSystem
 
                 string name = "";
 
-                // Note (Kinerius) Since GLTFast builds the GLTF differently, we use the renderer name instead
-                name = rendereable.isGLTFast ? renderer.name.ToLower() : renderer.transform.parent.name.ToLower();
+                name = renderer.name.ToLower();
 
                 if (name.Contains("head"))
                     head = renderer;

@@ -90,7 +90,7 @@ namespace DCL.Components
         float loadFinishTime = float.MaxValue;
 #endif
 
-        public RendereableAssetLoadHelper(ContentProvider contentProvider, string bundlesContentUrl, Func<bool> isGltFastEnabled)
+        public RendereableAssetLoadHelper(ContentProvider contentProvider, string bundlesContentUrl)
         {
             this.contentProvider = contentProvider;
             this.bundlesContentUrl = bundlesContentUrl;
