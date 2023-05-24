@@ -197,10 +197,7 @@ namespace DCL.Backpack
                 backpackPreviewPanel.AnchorPreviewPanel(false);
 
                 if (isSelected)
-                {
-                    ResetPreviewEmote();
-                    SetAvatarPreviewFocus(CharacterPreviewController.CameraFocus.DefaultEditing, false);
-                }
+                    ResetPreviewPanel();
             });
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
@@ -208,11 +205,14 @@ namespace DCL.Backpack
                 backpackPreviewPanel.AnchorPreviewPanel(true);
 
                 if (isSelected)
-                {
-                    ResetPreviewEmote();
-                    SetAvatarPreviewFocus(CharacterPreviewController.CameraFocus.DefaultEditing, false);
-                }
+                    ResetPreviewPanel();
             });
+        }
+
+        private void ResetPreviewPanel()
+        {
+            ResetPreviewEmote();
+            SetAvatarPreviewFocus(CharacterPreviewController.CameraFocus.DefaultEditing, false);
         }
 
         private void UpdateAvatarModelWhenNeeded()
