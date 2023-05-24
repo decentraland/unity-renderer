@@ -151,9 +151,8 @@ namespace Test.AvatarSystem
             Assert.NotNull(eyes);
             Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.EYES)], eyes);
 
-            Assert.NotNull(eyebrows);
-            Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.EYEBROWS)], eyebrows);
-
+            Assert.Null(eyebrows);
+            
             Assert.NotNull(mouth);
             Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.MOUTH)], mouth);
 
