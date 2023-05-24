@@ -3,11 +3,11 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -24,7 +24,21 @@ namespace DCL.Components
 
             public bool castShadows = true;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.BasicMaterial)
+                    return Utils.SafeUnimplemented<BasicMaterial, Model>(expected: ComponentBodyPayload.PayloadOneofCase.BasicMaterial, actual: pbModel.PayloadCase);
+                
+                var pb = new Model();
+                if (pbModel.BasicMaterial.HasTexture) pb.texture = pbModel.BasicMaterial.Texture;
+                if (pbModel.BasicMaterial.HasAlphaTest) pb.alphaTest = pbModel.BasicMaterial.AlphaTest;
+                if (pbModel.BasicMaterial.HasCastShadows) pb.castShadows = pbModel.BasicMaterial.CastShadows;
+                
+                return pb;
+            }
         }
 
         public Material material;

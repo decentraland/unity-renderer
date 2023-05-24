@@ -49,5 +49,5 @@ MonoBehaviour:
     value: 0
   - key: emote
     value: 0
-  - key: bodyshape
+  - key: body_shape
     value: 1

@@ -9,6 +9,7 @@ using DCL.Interface;
 using DCL.SettingsCommon;
 using UnityEngine.Assertions;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -23,7 +24,7 @@ namespace DCL.Components
         public static System.Func<IVideoPluginWrapper> videoPluginWrapperBuilder = () => new VideoPluginWrapper_WebGL();
 
         [System.Serializable]
-        new public class Model : BaseModel
+        public new class Model : BaseModel
         {
             public string videoClipId;
             public bool playing = false;
@@ -34,9 +35,25 @@ namespace DCL.Components
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
 
-            public override BaseModel GetDataFromJSON(string json)
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
             {
-                return Utils.SafeFromJson<Model>(json);
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.VideoTexture)
+                    return Utils.SafeUnimplemented<DCLVideoTexture, Model>(expected: ComponentBodyPayload.PayloadOneofCase.VideoTexture, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.VideoTexture.HasVideoClipId) pb.videoClipId = pbModel.VideoTexture.VideoClipId;
+                if (pbModel.VideoTexture.HasPlaying) pb.playing = pbModel.VideoTexture.Playing;
+                if (pbModel.VideoTexture.HasVolume) pb.volume = pbModel.VideoTexture.Volume;
+                if (pbModel.VideoTexture.HasPlaybackRate) pb.playbackRate = pbModel.VideoTexture.PlaybackRate;
+                if (pbModel.VideoTexture.HasLoop) pb.loop = pbModel.VideoTexture.Loop;
+                if (pbModel.VideoTexture.HasSeek) pb.seek = pbModel.VideoTexture.Seek;
+                if (pbModel.VideoTexture.HasWrap) pb.wrap = (BabylonWrapMode)pbModel.VideoTexture.Wrap;
+                if (pbModel.VideoTexture.HasSamplingMode) pb.samplingMode = (FilterMode)pbModel.VideoTexture.SamplingMode;
+                
+                return pb;
             }
         }
 

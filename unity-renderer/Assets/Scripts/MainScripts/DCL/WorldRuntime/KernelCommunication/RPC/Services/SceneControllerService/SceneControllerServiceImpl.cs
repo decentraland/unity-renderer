@@ -14,6 +14,9 @@ using System.IO;
 using System.Threading;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
+using Ray = DCL.Models.Ray;
 
 namespace RPC.Services
 {
@@ -22,6 +25,8 @@ namespace RPC.Services
         // HACK: Until we fix the code generator, we must replace all 'Decentraland.Common.Entity' for 'DCL.ECSComponents.Entity' in RpcSceneController.gen.cs
         // to be able to access request.Entity properties.
         private static readonly UnloadSceneResult defaultUnloadSceneResult = new UnloadSceneResult();
+
+        private static readonly SendBatchResponse defaultSendBatchResult = new SendBatchResponse();
 
         private const string REQUIRED_PORT_ID_START = "scene-";
 
@@ -278,6 +283,28 @@ namespace RPC.Services
             }
 
             return result;
+        }
+
+        public async UniTask<SendBatchResponse> SendBatch(SendBatchRequest request, RPCContext context, CancellationToken ct)
+        {
+            await UniTask.SwitchToMainThread(ct);
+
+            try
+            {
+                RendererManyEntityActions sceneRequest = RendererManyEntityActions.Parser.ParseFrom(request.Payload);
+                for (var i = 0; i < sceneRequest.Actions.Count; i++)
+                {
+                    context.crdt.SceneController.EnqueueSceneMessage(
+                        SDK6DataMapExtensions.SceneMessageFromSdk6Message(sceneRequest.Actions[i], sceneNumber)
+                    );
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+
+            return defaultSendBatchResult;
         }
     }
 }

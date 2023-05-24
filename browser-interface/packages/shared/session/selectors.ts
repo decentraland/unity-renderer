@@ -1,4 +1,4 @@
-import { IEthereumProvider, LoginState } from 'kernel-web-interface'
+import { IEthereumProvider, LoginState } from '@dcl/kernel-interface'
 import { RootSessionState } from './types'
 
 // TODO use userId

@@ -2,8 +2,8 @@ import { Quaternion, Vector3 } from '@dcl/ecs-math'
 import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import { browserInterface } from 'unity-interface/BrowserInterface'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -165,28 +165,13 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
     },
     async teleportTo(req: TeleportToRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')
-      if (!isPositionValid(lastPlayerPosition, ctx) || !req.worldPosition) {
+
+      if (!isPositionValid(lastPlayerPosition, ctx) || !req.worldCoordinates)
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
-        return { success: false }
-      }
+      else
+        getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates })
 
-      getUnityInstance().Teleport(
-        {
-          position: req.worldPosition,
-          cameraTarget: req.cameraTarget
-        },
-        false
-      )
-
-      // Get ahead of the position report that will be done automatically later and report
-      // position right now, also marked as an immediate update (last bool in Position structure)
-      browserInterface.ReportPosition({
-        position: req.worldPosition,
-        rotation: Quaternion.Identity,
-        immediate: true
-      })
-
-      return { success: true }
+      return {}
     }
   }))
 }

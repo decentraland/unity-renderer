@@ -2,7 +2,7 @@ import { Authenticator } from '@dcl/crypto'
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
 import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK, PREVIEW, RESET_TUTORIAL } from 'config'
 import { RequestManager } from 'eth-connect'
-import { DecentralandIdentity, LoginState } from 'kernel-web-interface'
+import { DecentralandIdentity, LoginState } from '@dcl/kernel-interface'
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 import { createDummyLogger, createLogger } from 'lib/logger'
 import { getEthereumNetworkFromProvider } from 'lib/web3/getEthereumNetworkFromProvider'
@@ -318,7 +318,10 @@ function* logout() {
 }
 
 function* redirectToSignUp() {
-  window.location.search += '&show_wallet=1'
+
+  const q = new URLSearchParams(globalThis.location.search)
+  q.set('show_wallet', '1')
+  globalThis.history.replaceState({ show_wallet: '1' }, 'show_wallet', `?${q.toString()}`)
   window.location.reload()
 }
 

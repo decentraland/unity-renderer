@@ -7,6 +7,7 @@ using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -72,7 +73,7 @@ namespace DCL.Components
     {
         public static bool enableInteractionHoverFeedback = true;
 
-        [System.Serializable]
+        [Serializable]
         public new class Model : UUIDComponent.Model
         {
             public string button = WebInterface.ACTION_BUTTON.ANY.ToString();
@@ -80,25 +81,34 @@ namespace DCL.Components
             public float distance = 10f;
             public bool showFeedback = true;
 
-            public override BaseModel GetDataFromJSON(string json)
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
             {
-                return Utils.SafeFromJson<Model>(json);
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.UuidCallback)
+                    return Utils.SafeUnimplemented<OnPointerEvent, Model>(expected: ComponentBodyPayload.PayloadOneofCase.UuidCallback, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+
+                if (pbModel.UuidCallback.HasUuid) pb.uuid = pbModel.UuidCallback.Uuid;
+                if (pbModel.UuidCallback.HasType) pb.type = pbModel.UuidCallback.Type;
+                if (pbModel.UuidCallback.HasButton) pb.button = pbModel.UuidCallback.Button;
+                if (pbModel.UuidCallback.HasHoverText) pb.hoverText = pbModel.UuidCallback.HoverText;
+                if (pbModel.UuidCallback.HasDistance) pb.distance = pbModel.UuidCallback.Distance;
+                if (pbModel.UuidCallback.HasShowFeedback) pb.showFeedback = pbModel.UuidCallback.ShowFeedback;
+
+                return pb;
             }
 
-            public WebInterface.ACTION_BUTTON GetActionButton()
-            {
-                switch (button)
+            public WebInterface.ACTION_BUTTON GetActionButton() =>
+                button switch
                 {
-                    case "PRIMARY":
-                        return WebInterface.ACTION_BUTTON.PRIMARY;
-                    case "SECONDARY":
-                        return WebInterface.ACTION_BUTTON.SECONDARY;
-                    case "POINTER":
-                        return WebInterface.ACTION_BUTTON.POINTER;
-                    default:
-                        return WebInterface.ACTION_BUTTON.ANY;
-                }
-            }
+                    "PRIMARY" => WebInterface.ACTION_BUTTON.PRIMARY,
+                    "SECONDARY" => WebInterface.ACTION_BUTTON.SECONDARY,
+                    "POINTER" => WebInterface.ACTION_BUTTON.POINTER,
+                    _ => WebInterface.ACTION_BUTTON.ANY,
+                };
         }
 
         public OnPointerEventHandler pointerEventHandler;

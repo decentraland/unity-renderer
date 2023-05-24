@@ -6,13 +6,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
 
 namespace DCL.Components
 {
     public class UIContainerStack : UIShape<UIContainerRectReferencesContainer, UIContainerStack.Model>
     {
         [System.Serializable]
-        new public class Model : UIShape.Model
+        public new class Model : UIShape.Model
         {
             public Color color = Color.clear;
             public StackOrientation stackOrientation = StackOrientation.VERTICAL;
@@ -20,7 +22,35 @@ namespace DCL.Components
             public bool adaptHeight = true;
             public float spacing = 0;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json) =>
+                Utils.SafeFromJson<Model>(json);
+
+            public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
+            {
+                if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.UiContainerStack)
+                    return Utils.SafeUnimplemented<UIContainerStack, Model>(expected: ComponentBodyPayload.PayloadOneofCase.UiContainerStack, actual: pbModel.PayloadCase);
+
+                var pb = new Model();
+                if (pbModel.UiContainerStack.HasName) pb.name = pbModel.UiContainerStack.Name;
+                if (pbModel.UiContainerStack.HasParentComponent) pb.parentComponent = pbModel.UiContainerStack.ParentComponent;
+                if (pbModel.UiContainerStack.HasVisible) pb.visible = pbModel.UiContainerStack.Visible;
+                if (pbModel.UiContainerStack.HasOpacity) pb.opacity = pbModel.UiContainerStack.Opacity;
+                if (pbModel.UiContainerStack.HasHAlign) pb.hAlign = pbModel.UiContainerStack.HAlign;
+                if (pbModel.UiContainerStack.HasVAlign) pb.vAlign = pbModel.UiContainerStack.VAlign;
+                if (pbModel.UiContainerStack.Width != null) pb.width = SDK6DataMapExtensions.FromProtobuf(pb.width, pbModel.UiContainerStack.Width);
+                if (pbModel.UiContainerStack.Height != null) pb.height = SDK6DataMapExtensions.FromProtobuf(pb.height, pbModel.UiContainerStack.Height);
+                if (pbModel.UiContainerStack.PositionX != null) pb.positionX = SDK6DataMapExtensions.FromProtobuf(pb.positionX, pbModel.UiContainerStack.PositionX);
+                if (pbModel.UiContainerStack.PositionY != null) pb.positionY = SDK6DataMapExtensions.FromProtobuf(pb.positionY, pbModel.UiContainerStack.PositionY);
+                if (pbModel.UiContainerStack.HasIsPointerBlocker) pb.isPointerBlocker = pbModel.UiContainerStack.IsPointerBlocker;
+
+                if (pbModel.UiContainerStack.HasStackOrientation) pb.stackOrientation = (StackOrientation)pbModel.UiContainerStack.StackOrientation;
+                if (pbModel.UiContainerStack.HasAdaptWidth) pb.adaptWidth = pbModel.UiContainerStack.AdaptWidth;
+                if (pbModel.UiContainerStack.HasAdaptHeight) pb.adaptHeight = pbModel.UiContainerStack.AdaptHeight;
+                if (pbModel.UiContainerStack.HasSpacing) pb.spacing = pbModel.UiContainerStack.Spacing;
+                if (pbModel.UiContainerStack.Color != null) pb.color = pbModel.UiContainerStack.Color.AsUnityColor();
+
+                return pb;
+            }
         }
 
         public enum StackOrientation

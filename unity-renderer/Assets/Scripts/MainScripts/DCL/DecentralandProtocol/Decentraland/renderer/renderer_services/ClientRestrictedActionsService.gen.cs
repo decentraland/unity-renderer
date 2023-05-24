@@ -9,6 +9,8 @@ using rpc_csharp;
 namespace Decentraland.Renderer.RendererServices {
 public interface IClientRestrictedActionsService
 {
+  UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request);
+
   UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request);
 
   UniTask<OpenModalResponse> OpenNftDialog(OpenNftDialogRequest request);
@@ -23,6 +25,11 @@ public class ClientRestrictedActionsService : IClientRestrictedActionsService
       this.module = module;
   }
 
+  
+  public UniTask<TeleportToResponse> TeleportTo(TeleportToRequest request)
+  {
+      return module.CallUnaryProcedure<TeleportToResponse>("TeleportTo", request);
+  }
 
   public UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request)
   {

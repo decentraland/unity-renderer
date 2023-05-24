@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using UnityEngine;
+using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
@@ -35,9 +36,14 @@ namespace DCL.Components
 
         protected BaseModel model;
 
-        public HashSet<IDCLEntity> GetAttachedEntities() { return attachedEntities; }
+        public HashSet<IDCLEntity> GetAttachedEntities() =>
+            attachedEntities;
 
-        public virtual void UpdateFromJSON(string json) { UpdateFromModel(model.GetDataFromJSON(json)); }
+        public virtual void UpdateFromJSON(string json) =>
+            UpdateFromModel(model.GetDataFromJSON(json));
+
+        public virtual void UpdateFromPb(ComponentBodyPayload payload) =>
+            UpdateFromModel(model.GetDataFromPb(payload));
 
         public virtual void UpdateFromModel(BaseModel newModel)
         {

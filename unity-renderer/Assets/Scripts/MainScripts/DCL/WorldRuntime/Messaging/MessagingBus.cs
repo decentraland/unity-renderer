@@ -85,23 +85,28 @@ namespace DCL
             Stop();
         }
 
+        Dictionary<string, LinkedListNode<QueuedSceneMessage>> tempDictionary = new Dictionary<string, LinkedListNode<QueuedSceneMessage>>();
+
         public void Enqueue(QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
         {
             lock (unreliableMessages)
-            {                
-                // TODO: If we check here for 'if (message == null || string.IsNullOrEmpty(message.message))' loading the scene breaks, as we get empty messages every frame... 
+            {
+                // TODO: If we check here for 'if (message == null || string.IsNullOrEmpty(message.message))' loading the scene breaks, as we get empty messages every frame...
                 if (message == null)
                     throw new Exception("A null message?");
 
                 bool enqueued = true;
 
                 // When removing an entity we have to ensure that the enqueued lossy messages after it are processed and not replaced
-                if (message is QueuedSceneMessage_Scene queuedSceneMessage &&
-                    queuedSceneMessage.payload is Protocol.RemoveEntity removeEntityPayload)
+                if (message is QueuedSceneMessage_Scene { payload: Protocol.RemoveEntity removeEntityPayload })
                 {
-                    unreliableMessages = unreliableMessages
-                        .Where(kvp => !kvp.Key.Contains(removeEntityPayload.entityId))
-                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                    tempDictionary.Clear();
+
+                    foreach (var unreliableMessage in unreliableMessages)
+                        if (!unreliableMessage.Key.Contains(removeEntityPayload.entityId))
+                            tempDictionary.Add(unreliableMessage.Key, unreliableMessage.Value);
+
+                    unreliableMessages = tempDictionary;
                 }
 
                 if (queueMode == QueueMode.Reliable)
@@ -186,14 +191,14 @@ namespace DCL
                 QueuedSceneMessage m = pendingMessagesFirst.Value;
 
                 PerformanceAnalytics.MessagesProcessedTracker.Track();
-                
+
                 RemoveFirstReliableMessage();
 
                 if (m.isUnreliable)
                     RemoveUnreliableMessage(m);
 
                 bool shouldLogMessage = VERBOSE;
-                
+
                 switch (m.type)
                 {
                     case QueuedSceneMessage.Type.NONE:

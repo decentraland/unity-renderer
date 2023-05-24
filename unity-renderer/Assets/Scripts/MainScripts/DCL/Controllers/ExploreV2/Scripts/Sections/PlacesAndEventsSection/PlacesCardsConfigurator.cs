@@ -18,16 +18,16 @@ public static class PlacesCardsConfigurator
     /// <param name="placeInfo">Model to apply.</param>
     /// <param name="OnPlaceInfoClicked">Action to inform when the Info button has been clicked.</param>
     /// <param name="OnPlaceJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
-    public static PlaceCardComponentView Configure(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<HotSceneInfo> OnPlaceJumpInClicked, Action<string, bool> OnFavoriteClicked)
+    public static PlaceCardComponentView Configure(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool> OnFavoriteChanged)
     {
         placeCard.Configure(placeInfo);
 
         placeCard.onInfoClick.RemoveAllListeners();
         placeCard.onInfoClick.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
         placeCard.onJumpInClick.RemoveAllListeners();
-        placeCard.onJumpInClick.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
-        placeCard.onFavoriteClick -= OnFavoriteClicked;
-        placeCard.onFavoriteClick += OnFavoriteClicked;
+        placeCard.onJumpInClick.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.placeInfo));
+        placeCard.OnFavoriteChanged -= OnFavoriteChanged;
+        placeCard.OnFavoriteChanged += OnFavoriteChanged;
 
         return placeCard;
     }
@@ -41,7 +41,6 @@ public static class PlacesCardsConfigurator
         cardModel.numberOfUsers = placeFromAPI.usersTotalCount;
         cardModel.parcels = placeFromAPI.parcels;
         cardModel.coords = placeFromAPI.baseCoords;
-        cardModel.hotSceneInfo = placeFromAPI;
 
         return cardModel;
     }

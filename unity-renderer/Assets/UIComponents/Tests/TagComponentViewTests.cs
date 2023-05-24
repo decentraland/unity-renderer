@@ -10,7 +10,7 @@ public class TagComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        tagComponent = BaseComponentView.Create<TagComponentView>("Tag");
+        tagComponent = BaseComponentView.CreateUIComponentFromAssetDatabase<TagComponentView>("Tag");
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }

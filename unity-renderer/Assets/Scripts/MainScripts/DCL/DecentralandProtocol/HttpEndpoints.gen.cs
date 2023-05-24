@@ -25,7 +25,7 @@ namespace Decentraland.Bff {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiVkZWNlbnRyYWxhbmQvYmZmL2h0dHBfZW5kcG9pbnRzLnByb3RvEhBkZWNl",
-            "bnRyYWxhbmQuYmZmGhtnb29nbGUvcHJvdG9idWYvZW1wdHkucHJvdG8ihw0K",
+            "bnRyYWxhbmQuYmZmGhtnb29nbGUvcHJvdG9idWYvZW1wdHkucHJvdG8imQ0K",
             "DUFib3V0UmVzcG9uc2USDwoHaGVhbHRoeRgBIAEoCBJKCg5jb25maWd1cmF0",
             "aW9ucxgCIAEoCzIyLmRlY2VudHJhbGFuZC5iZmYuQWJvdXRSZXNwb25zZS5B",
             "Ym91dENvbmZpZ3VyYXRpb24SPAoHY29udGVudBgDIAEoCzIrLmRlY2VudHJh",
@@ -37,40 +37,40 @@ namespace Decentraland.Bff {
             "Z191c2VycxgHIAEoCBp7ChRNaW5pbWFwQ29uZmlndXJhdGlvbhIPCgdlbmFi",
             "bGVkGAEgASgIEhcKCmRhdGFfaW1hZ2UYAiABKAlIAIgBARIZCgxlc3RhdGVf",
             "aW1hZ2UYAyABKAlIAYgBAUINCgtfZGF0YV9pbWFnZUIPCg1fZXN0YXRlX2lt",
-            "YWdlGj0KE1NreWJveENvbmZpZ3VyYXRpb24SFwoKZml4ZWRfaG91chgBIAEo",
-            "AkgAiAEBQg0KC19maXhlZF9ob3VyGvQCChJBYm91dENvbmZpZ3VyYXRpb24S",
-            "FwoKcmVhbG1fbmFtZRgBIAEoCUgAiAEBEhIKCm5ldHdvcmtfaWQYAiABKA0S",
-            "GQoRZ2xvYmFsX3NjZW5lc191cm4YAyADKAkSEgoKc2NlbmVzX3VybhgEIAMo",
-            "CRJKCgdtaW5pbWFwGAUgASgLMjQuZGVjZW50cmFsYW5kLmJmZi5BYm91dFJl",
-            "c3BvbnNlLk1pbmltYXBDb25maWd1cmF0aW9uSAGIAQESSAoGc2t5Ym94GAYg",
-            "ASgLMjMuZGVjZW50cmFsYW5kLmJmZi5BYm91dFJlc3BvbnNlLlNreWJveENv",
-            "bmZpZ3VyYXRpb25IAogBARInChpjaXR5X2xvYWRlcl9jb250ZW50X3NlcnZl",
-            "chgHIAEoCUgDiAEBQg0KC19yZWFsbV9uYW1lQgoKCF9taW5pbWFwQgkKB19z",
-            "a3lib3hCHQobX2NpdHlfbG9hZGVyX2NvbnRlbnRfc2VydmVyGn4KC0NvbnRl",
-            "bnRJbmZvEg8KB2hlYWx0aHkYASABKAgSFAoHdmVyc2lvbhgCIAEoCUgAiAEB",
-            "EhgKC2NvbW1pdF9oYXNoGAMgASgJSAGIAQESEgoKcHVibGljX3VybBgEIAEo",
-            "CUIKCghfdmVyc2lvbkIOCgxfY29tbWl0X2hhc2gafgoLTGFtYmRhc0luZm8S",
-            "DwoHaGVhbHRoeRgBIAEoCBIUCgd2ZXJzaW9uGAIgASgJSACIAQESGAoLY29t",
-            "bWl0X2hhc2gYAyABKAlIAYgBARISCgpwdWJsaWNfdXJsGAQgASgJQgoKCF92",
-            "ZXJzaW9uQg4KDF9jb21taXRfaGFzaBr6AQoJQ29tbXNJbmZvEg8KB2hlYWx0",
-            "aHkYASABKAgSFAoHdmVyc2lvbhgCIAEoCUgAiAEBEhgKC2NvbW1pdF9oYXNo",
-            "GAMgASgJSAGIAQESFwoKcHVibGljX3VybBgEIAEoCUgCiAEBEhAKCHByb3Rv",
-            "Y29sGDIgASgJEhgKC3VzZXJzX2NvdW50GDMgASgFSAOIAQESGgoNZml4ZWRf",
-            "YWRhcHRlchg0IAEoCUgEiAEBQgoKCF92ZXJzaW9uQg4KDF9jb21taXRfaGFz",
-            "aEINCgtfcHVibGljX3VybEIOCgxfdXNlcnNfY291bnRCEAoOX2ZpeGVkX2Fk",
-            "YXB0ZXIa1gEKB0JmZkluZm8SDwoHaGVhbHRoeRgBIAEoCBIUCgd2ZXJzaW9u",
+            "YWdlGk8KE1NreWJveENvbmZpZ3VyYXRpb24SFwoKZml4ZWRfaG91chgBIAEo",
+            "AkgAiAEBEhAKCHRleHR1cmVzGAIgAygJQg0KC19maXhlZF9ob3VyGvQCChJB",
+            "Ym91dENvbmZpZ3VyYXRpb24SFwoKcmVhbG1fbmFtZRgBIAEoCUgAiAEBEhIK",
+            "Cm5ldHdvcmtfaWQYAiABKA0SGQoRZ2xvYmFsX3NjZW5lc191cm4YAyADKAkS",
+            "EgoKc2NlbmVzX3VybhgEIAMoCRJKCgdtaW5pbWFwGAUgASgLMjQuZGVjZW50",
+            "cmFsYW5kLmJmZi5BYm91dFJlc3BvbnNlLk1pbmltYXBDb25maWd1cmF0aW9u",
+            "SAGIAQESSAoGc2t5Ym94GAYgASgLMjMuZGVjZW50cmFsYW5kLmJmZi5BYm91",
+            "dFJlc3BvbnNlLlNreWJveENvbmZpZ3VyYXRpb25IAogBARInChpjaXR5X2xv",
+            "YWRlcl9jb250ZW50X3NlcnZlchgHIAEoCUgDiAEBQg0KC19yZWFsbV9uYW1l",
+            "QgoKCF9taW5pbWFwQgkKB19za3lib3hCHQobX2NpdHlfbG9hZGVyX2NvbnRl",
+            "bnRfc2VydmVyGn4KC0NvbnRlbnRJbmZvEg8KB2hlYWx0aHkYASABKAgSFAoH",
+            "dmVyc2lvbhgCIAEoCUgAiAEBEhgKC2NvbW1pdF9oYXNoGAMgASgJSAGIAQES",
+            "EgoKcHVibGljX3VybBgEIAEoCUIKCghfdmVyc2lvbkIOCgxfY29tbWl0X2hh",
+            "c2gafgoLTGFtYmRhc0luZm8SDwoHaGVhbHRoeRgBIAEoCBIUCgd2ZXJzaW9u",
             "GAIgASgJSACIAQESGAoLY29tbWl0X2hhc2gYAyABKAlIAYgBARISCgpwdWJs",
-            "aWNfdXJsGAQgASgJEhcKCnVzZXJfY291bnQYMyABKAVIAogBARIdChBwcm90",
-            "b2NvbF92ZXJzaW9uGDQgASgJSAOIAQFCCgoIX3ZlcnNpb25CDgoMX2NvbW1p",
-            "dF9oYXNoQg0KC191c2VyX2NvdW50QhMKEV9wcm90b2NvbF92ZXJzaW9uQgYK",
-            "BF9iZmYyUwoNSHR0cEVuZHBvaW50cxJCCgVBYm91dBIWLmdvb2dsZS5wcm90",
-            "b2J1Zi5FbXB0eRofLmRlY2VudHJhbGFuZC5iZmYuQWJvdXRSZXNwb25zZSIA",
-            "YgZwcm90bzM="));
+            "aWNfdXJsGAQgASgJQgoKCF92ZXJzaW9uQg4KDF9jb21taXRfaGFzaBr6AQoJ",
+            "Q29tbXNJbmZvEg8KB2hlYWx0aHkYASABKAgSFAoHdmVyc2lvbhgCIAEoCUgA",
+            "iAEBEhgKC2NvbW1pdF9oYXNoGAMgASgJSAGIAQESFwoKcHVibGljX3VybBgE",
+            "IAEoCUgCiAEBEhAKCHByb3RvY29sGDIgASgJEhgKC3VzZXJzX2NvdW50GDMg",
+            "ASgFSAOIAQESGgoNZml4ZWRfYWRhcHRlchg0IAEoCUgEiAEBQgoKCF92ZXJz",
+            "aW9uQg4KDF9jb21taXRfaGFzaEINCgtfcHVibGljX3VybEIOCgxfdXNlcnNf",
+            "Y291bnRCEAoOX2ZpeGVkX2FkYXB0ZXIa1gEKB0JmZkluZm8SDwoHaGVhbHRo",
+            "eRgBIAEoCBIUCgd2ZXJzaW9uGAIgASgJSACIAQESGAoLY29tbWl0X2hhc2gY",
+            "AyABKAlIAYgBARISCgpwdWJsaWNfdXJsGAQgASgJEhcKCnVzZXJfY291bnQY",
+            "MyABKAVIAogBARIdChBwcm90b2NvbF92ZXJzaW9uGDQgASgJSAOIAQFCCgoI",
+            "X3ZlcnNpb25CDgoMX2NvbW1pdF9oYXNoQg0KC191c2VyX2NvdW50QhMKEV9w",
+            "cm90b2NvbF92ZXJzaW9uQgYKBF9iZmYyUwoNSHR0cEVuZHBvaW50cxJCCgVB",
+            "Ym91dBIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRofLmRlY2VudHJhbGFuZC5i",
+            "ZmYuQWJvdXRSZXNwb25zZSIAYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse), global::Decentraland.Bff.AboutResponse.Parser, new[]{ "Healthy", "Configurations", "Content", "Comms", "Lambdas", "Bff", "AcceptingUsers" }, new[]{ "Bff" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.MinimapConfiguration), global::Decentraland.Bff.AboutResponse.Types.MinimapConfiguration.Parser, new[]{ "Enabled", "DataImage", "EstateImage" }, new[]{ "DataImage", "EstateImage" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.SkyboxConfiguration), global::Decentraland.Bff.AboutResponse.Types.SkyboxConfiguration.Parser, new[]{ "FixedHour" }, new[]{ "FixedHour" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.SkyboxConfiguration), global::Decentraland.Bff.AboutResponse.Types.SkyboxConfiguration.Parser, new[]{ "FixedHour", "Textures" }, new[]{ "FixedHour" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.AboutConfiguration), global::Decentraland.Bff.AboutResponse.Types.AboutConfiguration.Parser, new[]{ "RealmName", "NetworkId", "GlobalScenesUrn", "ScenesUrn", "Minimap", "Skybox", "CityLoaderContentServer" }, new[]{ "RealmName", "Minimap", "Skybox", "CityLoaderContentServer" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.ContentInfo), global::Decentraland.Bff.AboutResponse.Types.ContentInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl" }, new[]{ "Version", "CommitHash" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.LambdasInfo), global::Decentraland.Bff.AboutResponse.Types.LambdasInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl" }, new[]{ "Version", "CommitHash" }, null, null, null),
@@ -865,6 +865,7 @@ namespace Decentraland.Bff {
         public SkyboxConfiguration(SkyboxConfiguration other) : this() {
           _hasBits0 = other._hasBits0;
           fixedHour_ = other.fixedHour_;
+          textures_ = other.textures_.Clone();
           _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
         }
 
@@ -902,6 +903,17 @@ namespace Decentraland.Bff {
           _hasBits0 &= ~1;
         }
 
+        /// <summary>Field number for the "textures" field.</summary>
+        public const int TexturesFieldNumber = 2;
+        private static readonly pb::FieldCodec<string> _repeated_textures_codec
+            = pb::FieldCodec.ForString(18);
+        private readonly pbc::RepeatedField<string> textures_ = new pbc::RepeatedField<string>();
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public pbc::RepeatedField<string> Textures {
+          get { return textures_; }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override bool Equals(object other) {
@@ -918,6 +930,7 @@ namespace Decentraland.Bff {
             return true;
           }
           if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FixedHour, other.FixedHour)) return false;
+          if(!textures_.Equals(other.textures_)) return false;
           return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -926,6 +939,7 @@ namespace Decentraland.Bff {
         public override int GetHashCode() {
           int hash = 1;
           if (HasFixedHour) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FixedHour);
+          hash ^= textures_.GetHashCode();
           if (_unknownFields != null) {
             hash ^= _unknownFields.GetHashCode();
           }
@@ -948,6 +962,7 @@ namespace Decentraland.Bff {
             output.WriteRawTag(13);
             output.WriteFloat(FixedHour);
           }
+          textures_.WriteTo(output, _repeated_textures_codec);
           if (_unknownFields != null) {
             _unknownFields.WriteTo(output);
           }
@@ -962,6 +977,7 @@ namespace Decentraland.Bff {
             output.WriteRawTag(13);
             output.WriteFloat(FixedHour);
           }
+          textures_.WriteTo(ref output, _repeated_textures_codec);
           if (_unknownFields != null) {
             _unknownFields.WriteTo(ref output);
           }
@@ -975,6 +991,7 @@ namespace Decentraland.Bff {
           if (HasFixedHour) {
             size += 1 + 4;
           }
+          size += textures_.CalculateSize(_repeated_textures_codec);
           if (_unknownFields != null) {
             size += _unknownFields.CalculateSize();
           }
@@ -990,6 +1007,7 @@ namespace Decentraland.Bff {
           if (other.HasFixedHour) {
             FixedHour = other.FixedHour;
           }
+          textures_.Add(other.textures_);
           _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
         }
 
@@ -1009,6 +1027,10 @@ namespace Decentraland.Bff {
                 FixedHour = input.ReadFloat();
                 break;
               }
+              case 18: {
+                textures_.AddEntriesFrom(input, _repeated_textures_codec);
+                break;
+              }
             }
           }
         #endif
@@ -1026,6 +1048,10 @@ namespace Decentraland.Bff {
                 break;
               case 13: {
                 FixedHour = input.ReadFloat();
+                break;
+              }
+              case 18: {
+                textures_.AddEntriesFrom(ref input, _repeated_textures_codec);
                 break;
               }
             }

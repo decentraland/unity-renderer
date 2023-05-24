@@ -5,22 +5,22 @@ using UnityEngine.UI;
 
 namespace UIComponents.Scripts.Components
 {
-    public class PageSelectorComponentView : BaseComponentView<PageSelectorModel>
+    public class PageSelectorComponentView : BaseComponentView
     {
+        public event Action<int> OnValueChanged;
+
         [SerializeField] private Button previousButton;
         [SerializeField] private Button nextButton;
-        [SerializeField] private PageSelectorButtonComponentView pageButtonPrefab;
+        [SerializeField] private PageSelectorButtonComponentView pageSelectorButtonPrefab;
         [SerializeField] private RectTransform pageButtonsParent;
         [SerializeField] private RectTransform rectTransform;
         [SerializeField] private bool limitedPages;
         [SerializeField] private int maxVisiblePages;
 
         private readonly List<PageSelectorButtonComponentView> buttons = new ();
-        private int totalPages;
-        public int CurrentIndex { get; private set; } = -1;
 
-        public event Action<int> OnValueChanged;
-        public event Action<int> OnTotalPagesChanged;
+        public int TotalPages { get; private set; }
+        public int CurrentPage { get; private set; }
 
         public override void Awake()
         {
@@ -31,63 +31,65 @@ namespace UIComponents.Scripts.Components
             gameObject.SetActive(false);
         }
 
-        public override void RefreshControl()
+        public override void RefreshControl() { }
+
+        public void Setup(int maxTotalPages, bool forceRebuild = false)
         {
-            SetTotalPages(model.TotalPages);
-            CurrentIndex = model.CurrentPage - 1;
-            UpdateButtonsStatus(false);
-        }
+            if (maxTotalPages == this.TotalPages && !forceRebuild) { return; }
 
-        public void SelectIndex(int index)
-        {
-            CurrentIndex = index;
-            UpdateButtonsStatus();
-        }
+            this.TotalPages = maxTotalPages;
 
-        public void SetTotalPages(int maxTotalPages)
-        {
-            if (maxTotalPages == this.totalPages) return;
+            CurrentPage = Mathf.Clamp(CurrentPage, 0, maxTotalPages - 1);
 
-            this.totalPages = maxTotalPages;
+            if (maxTotalPages <= 1)
+            {
+                gameObject.SetActive(false);
+                OnValueChanged?.Invoke(0);
+                return;
+            }
 
-            CurrentIndex = Mathf.Clamp(CurrentIndex, 0, maxTotalPages - 1);
+            gameObject.SetActive(true);
 
             EnsureButtons();
             UpdateButtonsStatus(false);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(pageButtonsParent);
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
-
-            OnTotalPagesChanged?.Invoke(totalPages);
         }
 
-        private void OnNextButtonDown()
+        public void SelectPage(int pageNumber, bool notifyEvent = true)
         {
-            CurrentIndex = (CurrentIndex + 1) % totalPages;
-            UpdateButtonsStatus();
+            CurrentPage = pageNumber;
+            UpdateButtonsStatus(notifyEvent);
         }
 
         private void OnPreviousButtonDown()
         {
-            if (CurrentIndex - 1 < 0)
-                CurrentIndex = totalPages - 1;
+            if (CurrentPage - 1 < 0)
+                CurrentPage = TotalPages - 1;
             else
-                CurrentIndex = (CurrentIndex - 1) % totalPages;
+                CurrentPage = (CurrentPage - 1) % TotalPages;
 
+            UpdateButtonsStatus();
+        }
+
+        private void OnNextButtonDown()
+        {
+            CurrentPage = (CurrentPage + 1) % TotalPages;
             UpdateButtonsStatus();
         }
 
         private void EnsureButtons()
         {
-            if (buttons.Count != totalPages)
+            if (buttons.Count != TotalPages)
             {
-                int diff = totalPages - buttons.Count;
+                int diff = TotalPages - buttons.Count;
 
                 if (diff > 0)
                 {
                     for (var i = 0; i < diff; i++)
                     {
-                        var instance = Instantiate(pageButtonPrefab, pageButtonsParent);
+                        var instance = Instantiate(pageSelectorButtonPrefab, pageButtonsParent);
                         buttons.Add(instance);
                     }
                 }
@@ -95,34 +97,31 @@ namespace UIComponents.Scripts.Components
 
             for (var i = 0; i < buttons.Count; i++)
             {
-                PageSelectorButtonComponentView uiPageButton = buttons[i];
+                PageSelectorButtonComponentView pageSelectorButtonComponentView = buttons[i];
 
-                if (i >= totalPages)
+                if (i >= TotalPages)
                 {
-                    uiPageButton.gameObject.SetActive(false);
+                    pageSelectorButtonComponentView.gameObject.SetActive(false);
 
                     continue;
                 }
 
-                uiPageButton.SetModel(new PageSelectorButtonModel
-                {
-                    PageNumber = i + 1,
-                });
-                uiPageButton.gameObject.SetActive(true);
-                uiPageButton.OnPageClicked -= SelectIndex;
-                uiPageButton.OnPageClicked += SelectIndex;
+                pageSelectorButtonComponentView.Initialize(i);
+                pageSelectorButtonComponentView.gameObject.SetActive(true);
+                pageSelectorButtonComponentView.OnPageClicked -= OnPageClicked;
+                pageSelectorButtonComponentView.OnPageClicked += OnPageClicked;
             }
         }
 
         private bool ShouldShowButton(int buttonIndex)
         {
-            if (buttonIndex >= totalPages)
+            if (buttonIndex >= TotalPages)
                 return false;
 
-            if (CurrentIndex + 1 <= maxVisiblePages / 2)
+            if (CurrentPage + 1 <= maxVisiblePages / 2)
                 return buttonIndex < maxVisiblePages;
-
-            return buttonIndex < CurrentIndex + 1 + (maxVisiblePages / 2) && buttonIndex + 1 > CurrentIndex - (maxVisiblePages / 2);
+            else
+                return buttonIndex < CurrentPage + 1 + (maxVisiblePages / 2) && buttonIndex + 1 > CurrentPage - (maxVisiblePages / 2);
         }
 
         private void UpdateButtonsStatus(bool notifyEvent = true)
@@ -130,7 +129,7 @@ namespace UIComponents.Scripts.Components
             UpdateToggleStatus();
 
             if (notifyEvent)
-                OnValueChanged?.Invoke(CurrentIndex + 1);
+                OnValueChanged?.Invoke(CurrentPage);
         }
 
         private void UpdateToggleStatus()
@@ -142,8 +141,11 @@ namespace UIComponents.Scripts.Components
                 if (limitedPages)
                     currentButton.gameObject.SetActive(ShouldShowButton(i));
 
-                currentButton.Toggle(i == CurrentIndex);
+                currentButton.Toggle(i == CurrentPage);
             }
         }
+
+        private void OnPageClicked(int pageNumber) =>
+            SelectPage(pageNumber);
     }
 }

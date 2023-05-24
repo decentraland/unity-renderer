@@ -1,4 +1,4 @@
-using DCL.Quest;
+using DCL.Quests;
 using System;
 using System.Text;
 using TMPro;

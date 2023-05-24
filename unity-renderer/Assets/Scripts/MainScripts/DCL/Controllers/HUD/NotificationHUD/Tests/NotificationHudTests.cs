@@ -1,10 +1,10 @@
 using NUnit.Framework;
 using System.Collections;
-using DCL.Controllers;
-using DCL.Helpers;
+
 using UnityEngine;
 using UnityEngine.TestTools;
 using DCL.NotificationModel;
+using UnityEditor;
 
 namespace Tests
 {
@@ -15,7 +15,9 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new NotificationHUDController();
+            var view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<NotificationHUDView>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/NotificationHUD/Prefabs/NotificationHUD.prefab"));
+            controller = new NotificationHUDController(view);
         }
 
         protected override IEnumerator TearDown()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public class QuestOfferComponentViewShould
     {

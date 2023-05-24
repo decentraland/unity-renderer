@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public class QuestStepComponentViewShould
     {
@@ -53,6 +53,16 @@ namespace DCL.Quest
             Assert.True(questStepComponentView.nonCompletedQuestToggle.activeSelf);
             Assert.AreEqual(questStepComponentView.questStepText.color, questStepComponentView.normalTextColor);
             Assert.AreEqual(questStepText, questStepComponentView.questStepText.text);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetJumpInButtonSupport(bool supports)
+        {
+            questStepComponentView.SetSupportsJumpIn(supports);
+
+            Assert.AreEqual(supports, questStepComponentView.jumpInButton.gameObject.activeSelf);
         }
     }
 }

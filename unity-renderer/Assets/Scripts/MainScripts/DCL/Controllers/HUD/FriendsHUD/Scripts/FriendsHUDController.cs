@@ -677,7 +677,7 @@ namespace DCL.Social.Friends
             ShowOrHideMoreFriendRequestsToLoadHint();
         }
 
-        private void AddFriendRequests(List<FriendRequest> friendRequests)
+        private void AddFriendRequests(IEnumerable<FriendRequest> friendRequests)
         {
             if (friendRequests == null)
                 return;
@@ -780,11 +780,11 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            string[] friendsToAdd = await friendsController
+            IReadOnlyList<string> friendsToAdd = await friendsController
                                          .GetFriendsAsync(search, MAX_SEARCHED_FRIENDS, cancellationToken)
                                          .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
 
-            for (int i = 0; i < friendsToAdd.Length; i++)
+            for (int i = 0; i < friendsToAdd.Count; i++)
                 HandleFriendshipUpdated(friendsToAdd[i], FriendshipAction.APPROVED);
 
             View.EnableSearchMode();

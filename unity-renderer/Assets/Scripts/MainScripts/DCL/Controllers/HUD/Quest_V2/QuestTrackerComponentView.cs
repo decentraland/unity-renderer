@@ -5,7 +5,7 @@ using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public class QuestTrackerComponentView : BaseComponentView<QuestTrackerComponentModel>, IQuestTrackerComponentView
     {
@@ -31,6 +31,7 @@ namespace DCL.Quest
             SetQuestTitle(model.questTitle);
             SetQuestCoordinates(model.coordinates);
             SetQuestSteps(model.questSteps);
+            SetSupportsJumpIn(model.supportsJumpIn);
         }
 
         public void SetQuestTitle(string questTitle)
@@ -39,10 +40,8 @@ namespace DCL.Quest
             questTitleText.text = questTitle;
         }
 
-        public void SetQuestCoordinates(Vector2Int coordinates)
-        {
+        public void SetQuestCoordinates(Vector2Int coordinates) =>
             model.coordinates = coordinates;
-        }
 
         public void SetQuestSteps(List<QuestStepComponentModel> questSteps)
         {
@@ -52,10 +51,16 @@ namespace DCL.Quest
             foreach (var step in questSteps)
             {
                 QuestStepComponentView questStep = Instantiate(stepPrefab, stepsContainer);
-                questStep.model = step;
-                questStep.RefreshControl();
+                questStep.SetModel(step);
+
                 currentQuestSteps.Add(questStep.gameObject);
             }
+        }
+
+        public void SetSupportsJumpIn(bool supportsJumpIn)
+        {
+            model.supportsJumpIn = supportsJumpIn;
+            jumpInButton.gameObject.SetActive(supportsJumpIn);
         }
     }
 

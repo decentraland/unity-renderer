@@ -5,6 +5,7 @@ using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -18,10 +19,16 @@ namespace DCL.Social.Friends
         public void Setup()
         {
             // we need to add friends controller because the badge internally uses FriendsController.i
-            FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
-            view = FriendsHUDComponentView.Create();
-            var friendsController = Substitute.For<IFriendsController>();
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<FriendsHUDComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/FriendsHUD.prefab"));
+
+            var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
+
+            var friendsController = serviceLocator.Get<IFriendsController>();
             friendsController.GetAllocatedFriends().Returns(new Dictionary<string, UserStatus>());
+
             view.Initialize(Substitute.For<IChatController>(),
                 friendsController, Substitute.For<ISocialAnalytics>());
         }
@@ -36,16 +43,16 @@ namespace DCL.Social.Friends
         public void Show()
         {
             view.Show();
-        
+
             Assert.IsTrue(view.gameObject.activeSelf);
             Assert.IsTrue(view.IsActive());
         }
-    
+
         [Test]
         public void Hide()
         {
             view.Hide();
-        
+
             Assert.IsFalse(view.gameObject.activeSelf);
             Assert.IsFalse(view.IsActive());
         }
@@ -54,15 +61,15 @@ namespace DCL.Social.Friends
         public void HideSpinner()
         {
             view.HideLoadingSpinner();
-        
+
             Assert.IsFalse(view.loadingSpinner.activeSelf);
         }
-    
+
         [Test]
         public void ShowSpinner()
         {
             view.ShowLoadingSpinner();
-        
+
             Assert.IsTrue(view.loadingSpinner.activeSelf);
         }
 
@@ -73,12 +80,12 @@ namespace DCL.Social.Friends
 
             GivenFriendListTabFocused();
             GivenApprovedFriend(userId);
-        
+
             Assert.IsNull(view.friendRequestsTab.Get(userId));
             Assert.AreEqual(1, view.friendsTab.Count);
 
             yield return null;
-        
+
             Assert.IsTrue(view.ContainsFriend(userId));
             Assert.IsFalse(view.ContainsFriendRequest(userId));
             Assert.IsNotNull(view.GetEntry(userId));
@@ -91,13 +98,13 @@ namespace DCL.Social.Friends
         public IEnumerator RemoveFriendByFriendshipAction()
         {
             const string userId = "userId";
-        
+
             GivenFriendListTabFocused();
             GivenApprovedFriend(userId);
             yield return null;
             GivenRemovedFriend(userId);
             yield return null;
-        
+
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsFalse(view.ContainsFriendRequest(userId));
             Assert.IsNull(view.GetEntry(userId));
@@ -106,18 +113,18 @@ namespace DCL.Social.Friends
             Assert.AreEqual(0, view.FriendRequestCount);
             Assert.AreEqual(0, view.FriendCount);
         }
-    
+
         [UnityTest]
         public IEnumerator AddAndRemoveFriendInstantly()
         {
             const string userId = "userId";
-        
+
             GivenFriendListTabFocused();
             GivenApprovedFriend(userId);
             GivenRemovedFriend(userId);
 
             yield return null;
-        
+
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsFalse(view.ContainsFriendRequest(userId));
             Assert.IsNull(view.GetEntry(userId));
@@ -126,18 +133,18 @@ namespace DCL.Social.Friends
             Assert.AreEqual(0, view.FriendRequestCount);
             Assert.AreEqual(0, view.FriendCount);
         }
-    
+
         [UnityTest]
         public IEnumerator RejectFriendByFriendshipAction()
         {
             const string userId = "userId";
-        
+
             GivenFriendListTabFocused();
             GivenApprovedFriend(userId);
             yield return null;
             GivenRemovedFriend(userId);
             yield return null;
-        
+
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsFalse(view.ContainsFriendRequest(userId));
             Assert.IsNull(view.GetEntry(userId));
@@ -146,16 +153,16 @@ namespace DCL.Social.Friends
             Assert.AreEqual(0, view.FriendCount);
             Assert.AreEqual(0, view.FriendRequestCount);
         }
-    
+
         [UnityTest]
         public IEnumerator AddReceivedRequestByFriendshipAction()
         {
             const string userId = "userId";
-        
+
             GivenRequestTabFocused();
             GivenFriendRequestReceived(userId);
             yield return null;
-        
+
             Assert.IsTrue(view.ContainsFriendRequest(userId));
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsNotNull(view.GetEntry(userId));
@@ -164,16 +171,16 @@ namespace DCL.Social.Friends
             Assert.AreEqual(0, view.FriendCount);
             Assert.IsNull(view.friendsTab.Get(userId));
         }
-    
+
         [UnityTest]
         public IEnumerator AddSentRequestByFriendshipAction()
         {
             const string userId = "userId";
-        
+
             GivenRequestTabFocused();
             GivenSentFriendRequest(userId);
             yield return null;
-        
+
             Assert.IsTrue(view.ContainsFriendRequest(userId));
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsNotNull(view.GetEntry(userId));
@@ -182,16 +189,16 @@ namespace DCL.Social.Friends
             Assert.AreEqual(0, view.FriendCount);
             Assert.IsNull(view.friendsTab.Get(userId));
         }
-    
+
         [UnityTest]
         public IEnumerator CancelRequestByFriendshipAction()
         {
             const string userId = "userId";
-        
+
             GivenRequestTabFocused();
             GivenRemovedFriend(userId);
             yield return null;
-        
+
             Assert.IsFalse(view.ContainsFriendRequest(userId));
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsNull(view.GetEntry(userId));
@@ -200,13 +207,14 @@ namespace DCL.Social.Friends
             Assert.AreEqual(0, view.FriendCount);
             Assert.IsNull(view.friendsTab.Get(userId));
         }
-    
+
         [UnityTest]
         public IEnumerator UpdateFriendshipStatusToFriend()
         {
             const string userId = "userId";
-        
+
             GivenFriendListTabFocused();
+
             view.Set(userId, new FriendEntryModel
             {
                 blocked = false,
@@ -216,8 +224,9 @@ namespace DCL.Social.Friends
                 userId = userId,
                 userName = "name"
             });
+
             yield return null;
-        
+
             Assert.IsTrue(view.ContainsFriend(userId));
             Assert.IsFalse(view.ContainsFriendRequest(userId));
             Assert.IsNotNull(view.GetEntry(userId));
@@ -226,16 +235,16 @@ namespace DCL.Social.Friends
             Assert.AreEqual(1, view.FriendCount);
             Assert.IsNotNull(view.friendsTab.Get(userId));
         }
-    
+
         [UnityTest]
         public IEnumerator RemoveFriendship()
         {
             const string userId = "userId";
-        
+
             GivenFriendListTabFocused();
             view.Remove(userId);
             yield return null;
-        
+
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsFalse(view.ContainsFriendRequest(userId));
             Assert.IsNull(view.GetEntry(userId));
@@ -244,13 +253,14 @@ namespace DCL.Social.Friends
             Assert.AreEqual(0, view.FriendCount);
             Assert.IsNull(view.friendsTab.Get(userId));
         }
-    
+
         [UnityTest]
         public IEnumerator UpdateFriendshipStatusToSentFriendship()
         {
             const string userId = "userId";
-        
+
             GivenRequestTabFocused();
+
             view.Set(userId, new FriendRequestEntryModel
             {
                 blocked = false,
@@ -261,8 +271,9 @@ namespace DCL.Social.Friends
                 userName = "name",
                 isReceived = false
             });
+
             yield return null;
-        
+
             Assert.IsTrue(view.ContainsFriendRequest(userId));
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsNotNull(view.GetEntry(userId));
@@ -271,13 +282,14 @@ namespace DCL.Social.Friends
             Assert.AreEqual(0, view.FriendCount);
             Assert.IsNull(view.friendsTab.Get(userId));
         }
-    
+
         [UnityTest]
         public IEnumerator UpdateFriendshipStatusToReceivedFriendship()
         {
             const string userId = "userId";
-        
+
             GivenRequestTabFocused();
+
             view.Set(userId, new FriendRequestEntryModel
             {
                 blocked = false,
@@ -288,8 +300,9 @@ namespace DCL.Social.Friends
                 userName = "name",
                 isReceived = true
             });
+
             yield return null;
-        
+
             Assert.IsTrue(view.ContainsFriendRequest(userId));
             Assert.IsFalse(view.ContainsFriend(userId));
             Assert.IsNotNull(view.GetEntry(userId));
@@ -303,7 +316,7 @@ namespace DCL.Social.Friends
         public void ShowMoreFriendsToLoadHint()
         {
             view.ShowMoreFriendsToLoadHint(3);
-        
+
             Assert.IsTrue(view.friendsTab.loadMoreEntriesContainer.activeSelf);
             Assert.AreEqual("3 friends hidden. Use the search bar to find them or scroll down to show more.", view.friendsTab.loadMoreEntriesLabel.text);
         }
@@ -312,7 +325,7 @@ namespace DCL.Social.Friends
         public void ShowMoreRequestsToLoadHint()
         {
             view.ShowMoreRequestsToLoadHint(7);
-        
+
             Assert.IsTrue(view.friendRequestsTab.loadMoreEntriesContainer.activeSelf);
             Assert.AreEqual("7 requests hidden. Scroll down to show more.", view.friendRequestsTab.loadMoreEntriesLabel.text);
         }
@@ -330,15 +343,15 @@ namespace DCL.Social.Friends
             yield return null;
 
             view.friendsTab.scroll.onValueChanged.Invoke(Vector2.zero);
-        
+
             Assert.IsFalse(called);
-        
+
             // wait for the internal delay
             yield return new WaitForSeconds(1.5f);
-        
+
             Assert.IsTrue(called);
         }
-    
+
         [UnityTest]
         public IEnumerator RequireMoreRequestEntries()
         {
@@ -347,17 +360,17 @@ namespace DCL.Social.Friends
             GivenRequestTabFocused();
             GivenFriendRequestReceived("bleh");
             view.ShowMoreRequestsToLoadHint(5);
-        
+
             // wait until queued entry is created
             yield return null;
-        
+
             view.friendRequestsTab.scroll.onValueChanged.Invoke(Vector2.zero);
-        
+
             Assert.IsFalse(called);
-        
+
             // wait for the internal delay
             yield return new WaitForSeconds(1.5f);
-        
+
             Assert.IsTrue(called);
         }
 
@@ -365,10 +378,10 @@ namespace DCL.Social.Friends
         public IEnumerator ReceiveRequestThenConvertIntoFriend()
         {
             const string userId = "userId";
-        
+
             yield return AddReceivedRequestByFriendshipAction();
             yield return AddApprovedFriendshipAction();
-        
+
             Assert.IsTrue(view.ContainsFriend(userId));
             Assert.IsFalse(view.ContainsFriendRequest(userId));
             Assert.IsNotNull(view.GetEntry(userId));
@@ -381,15 +394,15 @@ namespace DCL.Social.Friends
         public void ShowLoadingSpinner()
         {
             view.ShowLoadingSpinner();
-        
+
             Assert.IsTrue(view.loadingSpinner.activeSelf);
         }
-    
+
         [Test]
         public void HideLoadingSpinner()
         {
             view.HideLoadingSpinner();
-        
+
             Assert.IsFalse(view.loadingSpinner.activeSelf);
         }
 
@@ -421,11 +434,14 @@ namespace DCL.Social.Friends
             });
         }
 
-        private void GivenRequestTabFocused() => view.FocusTab(1);
+        private void GivenRequestTabFocused() =>
+            view.FocusTab(1);
 
-        private void GivenFriendListTabFocused() => view.FocusTab(0);
+        private void GivenFriendListTabFocused() =>
+            view.FocusTab(0);
 
-        private void GivenRemovedFriend(string userId) => view.Remove(userId);
+        private void GivenRemovedFriend(string userId) =>
+            view.Remove(userId);
 
         private void GivenApprovedFriend(string userId)
         {

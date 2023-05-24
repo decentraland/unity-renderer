@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DCL.Quest
+namespace DCL.Quests
 {
     public class QuestTrackerComponentViewShould
     {
@@ -61,6 +61,17 @@ namespace DCL.Quest
             questTrackerComponentView.jumpInButton.onClick?.Invoke();
 
             Assert.AreEqual(finalCoordinates, clickedCoordinates);
+        }
+
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetJumpInButtonSupport(bool supports)
+        {
+            questTrackerComponentView.SetSupportsJumpIn(supports);
+
+            Assert.AreEqual(supports, questTrackerComponentView.jumpInButton.gameObject.activeSelf);
         }
     }
 }

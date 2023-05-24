@@ -224,6 +224,7 @@ MonoBehaviour:
     imageUri: 
     hideList: []
     removeList: []
+    wearableId: 
   typeIcons: {fileID: 11400000, guid: 9525caf9cd97d4aa1b91f145f3a604e3, type: 2}
   rarityBackgrounds: {fileID: 11400000, guid: 019afcbe85a6d4f7f82562cd9ca86dc4, type: 2}
   rarityNftBackgrounds: {fileID: 11400000, guid: 3f361f63120234ae8972eac66a946fa0,

@@ -79,11 +79,11 @@ namespace Tests
             {
                 AvatarTexture = new AvatarTexture()
                 {
-                    WrapMode = TextureWrapMode.TwmMirrorOnce
+                    WrapMode = TextureWrapMode.TwmMirror
                 }
             };
 
-            Assert.IsTrue(UnityEngine.TextureWrapMode.MirrorOnce == avatarTexture.GetWrapMode());
+            Assert.IsTrue(UnityEngine.TextureWrapMode.Mirror == avatarTexture.GetWrapMode());
         }
 
         [Test]
