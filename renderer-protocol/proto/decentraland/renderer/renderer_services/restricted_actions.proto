@@ -1,6 +1,12 @@
 syntax = "proto3";
 package decentraland.renderer.renderer_services;
 
+import "decentraland/common/vectors.proto";
+
+message TeleportToRequest {
+  decentraland.common.Vector2 world_coordinates = 1;
+}
+
 message OpenExternalUrlRequest {
   string url = 1;
   int32 scene_number = 2;
@@ -14,7 +20,12 @@ message OpenModalResponse {
   bool success = 1;
 }
 
+message TeleportToResponse { }
+
 service RestrictedActionsService {
+  // TeleportTo will move the user to the specified world LAND parcel coordinates
+  rpc TeleportTo(TeleportToRequest) returns (TeleportToResponse) {}
+
   // OpenExternalUrl prompts the user to open an external link
   rpc OpenExternalUrl(OpenExternalUrlRequest) returns (OpenModalResponse) {}
 
