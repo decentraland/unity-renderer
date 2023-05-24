@@ -71,8 +71,7 @@ namespace DCL
 
             int objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount);
 
-            for (int i = 0; i < objectsToInstantiate; i++)
-                Instantiate(false);
+            for (int i = 0; i < objectsToInstantiate; i++) { Instantiate(); }
         }
 
         public async UniTask PrewarmAsync(int createPerFrame, CancellationToken cancellationToken)
@@ -133,33 +132,33 @@ namespace DCL
             return po;
         }
 
-        private void Instantiate(bool isActive = true)
+        public PoolableObject Instantiate()
         {
-            var gameObject = InstantiateAsOriginal(isActive);
+            var gameObject = InstantiateAsOriginal();
 
-            SetupPoolableObject(gameObject);
+            return SetupPoolableObject(gameObject);
         }
 
-        public GameObject InstantiateAsOriginal(bool isActive = true)
+        public GameObject InstantiateAsOriginal()
         {
             Assert.IsTrue(original != null, $"Original should never be null here ({id})");
 
-            GameObject gameObject = instantiator != null
-                ? instantiator.Instantiate(original)
-                : Object.Instantiate(original);
+            GameObject gameObject = null;
 
-            gameObject.SetActive(isActive);
+            if (instantiator != null)
+                gameObject = instantiator.Instantiate(original);
+            else
+                gameObject = GameObject.Instantiate(original);
+
+            gameObject.SetActive(true);
 
             return gameObject;
         }
 
-        private void SetupPoolableObject(GameObject gameObject, bool active = false)
+        private PoolableObject SetupPoolableObject(GameObject gameObject, bool active = false)
         {
             if (PoolManager.i.poolables.ContainsKey(gameObject))
-            {
-                PoolManager.i.GetPoolable(gameObject);
-                return;
-            }
+                return PoolManager.i.GetPoolable(gameObject);
 
             PoolableObject poolable = new PoolableObject(this, gameObject);
             PoolManager.i.poolables.Add(gameObject, poolable);
@@ -179,6 +178,7 @@ namespace DCL
 #if UNITY_EDITOR
             RefreshName();
 #endif
+            return poolable;
         }
 
         public void Release(PoolableObject poolable)
@@ -286,7 +286,7 @@ namespace DCL
             lastGetTime = Time.unscaledTime;
         }
 
-        private void DisablePoolableObject(PoolableObject poolable)
+        public void DisablePoolableObject(PoolableObject poolable)
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
@@ -302,11 +302,9 @@ namespace DCL
 
             if (PoolManager.USE_POOL_CONTAINERS)
             {
-                if (container != null)
-                    go.transform.SetParent(container.transform);
+                if (container != null) { go.transform.SetParent(container.transform); }
             }
-            else
-                go.transform.SetParent(null);
+            else { go.transform.SetParent(null); }
         }
 
 #if UNITY_EDITOR
@@ -323,13 +321,16 @@ namespace DCL
             if (PoolManager.i.poolables.TryGetValue(gameObject, out PoolableObject poolable))
             {
                 pool = poolable.pool;
+
                 return true;
             }
 
             return false;
         }
 
-        public bool IsValid() =>
-            original != null;
+        public bool IsValid()
+        {
+            return original != null;
+        }
     }
 };
