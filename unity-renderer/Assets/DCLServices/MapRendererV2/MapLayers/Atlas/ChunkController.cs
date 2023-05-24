@@ -14,6 +14,8 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
         private const int PIXELS_PER_UNIT = 50;
         private const string CHUNKS_API = "https://api.decentraland.org/v1/map.png";
 
+        private readonly Vector2 Vector2_OneHalf = new (0.5f, 0.5f);
+
         private readonly SpriteRenderer spriteRenderer;
 
         private Service<IWebRequestController> webRequestController;
@@ -32,21 +34,21 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         public async UniTask LoadImage(int chunkSize, int parcelSize, Vector2Int mapPosition, CancellationToken ct)
         {
+            string url = $"{CHUNKS_API}?center={mapPosition.x},{mapPosition.y}&width={chunkSize}&height={chunkSize}&size={parcelSize}";
+            var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
+
+            var texture = CreateTexture(webRequest.downloadHandler.data);
+            texture.wrapMode = TextureWrapMode.Clamp;
+
+            spriteRenderer.sprite =
+                Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2_OneHalf, PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect, Vector4.one, false);
+
             Texture2D CreateTexture(byte[] data)
             {
                 Texture2D texture2D = new Texture2D(1, 1);
                 texture2D.LoadImage(data);
                 return texture2D;
             }
-
-            string url = $"{CHUNKS_API}?center={mapPosition.x},{mapPosition.y}&width={chunkSize}&height={chunkSize}&size={parcelSize}";
-
-            var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
-            var texture = CreateTexture(webRequest.downloadHandler.data);
-            texture.wrapMode = TextureWrapMode.Clamp;
-            Sprite newSprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), PIXELS_PER_UNIT);
-
-            spriteRenderer.sprite = newSprite;
         }
 
         public void Dispose()
