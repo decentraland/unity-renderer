@@ -13,7 +13,6 @@ using UnityEngine;
 
 namespace DCL.Controllers.LoadingScreenV2.Tests
 {
-    [Category("EditModeCI")]
     [TestFixture]
     public class HintRequestServiceShould
     {
