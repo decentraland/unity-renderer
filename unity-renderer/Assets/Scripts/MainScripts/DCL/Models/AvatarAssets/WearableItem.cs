@@ -195,6 +195,7 @@ public class WearableItem
 
         if (hides != null && replaces != null)
         {
+            //merge hides and replaces removing duplicates and own category
             var combinedArray = new string[hides.Length + replaces.Length];
             Array.Copy(hides, combinedArray, hides.Length);
             Array.Copy(replaces, 0, combinedArray, hides.Length, replaces.Length);
