@@ -8,7 +8,6 @@ using Task = System.Threading.Tasks.Task;
 
 namespace DCLServices.QuestsService.Tests
 {
-    [Category("EditModeCI")]
     public class QuestsServiceShould
     {
         private QuestsService questsService;
