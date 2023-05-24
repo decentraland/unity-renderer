@@ -53,7 +53,6 @@ namespace DCL.Backpack
         {
             base.Dispose();
 
-            characterPreviewController.Dispose();
             avatarPreviewRotation.OnHorizontalRotation -= OnPreviewRotation;
             avatarPreviewPanning.OnPanning -= OnPreviewPanning;
             avatarPreviewZoom.OnZoom -= OnPreviewZoom;

@@ -11,6 +11,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
     {
         public event Action<Vector3> OnZoom;
 
+        [SerializeField] internal InputAction_Measurable mouseWheelAction;
         [SerializeField] private float zoomSpeed = 2.0f;
         [SerializeField] private float smoothTime = 0.2f;
 
@@ -31,7 +32,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             while (!ct.IsCancellationRequested)
             {
-                Vector3 newZoomDelta = Vector3.forward * (-Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);
+                Vector3 newZoomDelta = Vector3.forward * (-mouseWheelAction.GetValue() * zoomSpeed);
 
                 if (currentZoomDelta != newZoomDelta)
                 {

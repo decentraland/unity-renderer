@@ -12,18 +12,20 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
     {
         public event Action<Vector3> OnPanning;
 
-        public float panSpeed = 0.2f;
-        public bool allowVerticalPanning = true;
-        public bool allowHorizontalPanning = true;
-        public float inertiaDuration = 0.5f;
+        [SerializeField] internal InputAction_Hold secondClickAction;
+        [SerializeField] internal InputAction_Hold middleClickAction;
+        [SerializeField] internal float panSpeed = 0.2f;
+        [SerializeField] internal bool allowVerticalPanning = true;
+        [SerializeField] internal bool allowHorizontalPanning = true;
+        [SerializeField] internal float inertiaDuration = 0.5f;
 
         private Vector3 lastMousePosition;
         private Vector3 lastPanningDeltaBeforeEndDrag;
-        private CancellationTokenSource cts;
+        private CancellationTokenSource cts = new ();
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!Input.GetMouseButton(2) && !Input.GetMouseButton(1))
+            if (!middleClickAction.isOn && !secondClickAction.isOn)
                 return;
 
             cts = cts.SafeRestart();
@@ -33,7 +35,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!Input.GetMouseButton(2) && !Input.GetMouseButton(1))
+            if (!middleClickAction.isOn && !secondClickAction.isOn)
                 return;
 
             var panningDelta = Input.mousePosition - lastMousePosition;

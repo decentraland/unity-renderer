@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52af82d546e9b41d089ac247180bc813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstClickAction: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
   rotationFactor: -15
   slowDownTime: 0.5
 --- !u!222 &3710328169364529327

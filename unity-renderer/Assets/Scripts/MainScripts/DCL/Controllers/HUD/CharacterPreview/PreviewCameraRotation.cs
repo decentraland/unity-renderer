@@ -12,18 +12,19 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public event Action<float> OnHorizontalRotation;
         public event Action<double> OnEndDragEvent;
 
-        public float rotationFactor = -15f;
-        public float slowDownTime = 0.5f;
+        [SerializeField] internal InputAction_Hold firstClickAction;
+        [SerializeField] internal float rotationFactor = -15f;
+        [SerializeField] internal float slowDownTime = 0.5f;
 
         private float currentHorizontalRotationVelocity;
         private float slowDownVelocity;
-        private CancellationTokenSource cts;
+        private CancellationTokenSource cts = new ();
         private float timer;
         private DateTime startDragDateTime;
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!Input.GetMouseButton(0))
+            if (!firstClickAction.isOn)
                 return;
 
             cts = cts.SafeRestart();
@@ -33,7 +34,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!Input.GetMouseButton(0))
+            if (!firstClickAction.isOn)
                 return;
 
             currentHorizontalRotationVelocity = rotationFactor * eventData.delta.x;
