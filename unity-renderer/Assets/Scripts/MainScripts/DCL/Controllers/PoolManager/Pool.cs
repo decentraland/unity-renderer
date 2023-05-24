@@ -78,17 +78,14 @@ namespace DCL
 
                 int objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount);
                 for (var i = 0; i < objectsToInstantiate; i++)
-                    if(forceActive)
-                        Instantiate();
-                    else
-                        InstantiateOnPrewarm(parent);
+                    InstantiateOnPrewarm(parent, forceActive);
             }
         }
 
         /// <summary>
         /// Lightweight version of Instantiate() that doesn't activate/deactivate the gameObject and parent it straight away.
         /// </summary>
-        private void InstantiateOnPrewarm(Transform parent)
+        private void InstantiateOnPrewarm(Transform parent, bool forceActive = true)
         {
             GameObject gameObject = Object.Instantiate(original, parent);
 
@@ -98,6 +95,11 @@ namespace DCL
 
             poolable.node = unusedObjects.AddFirst(poolable);
 
+            if (forceActive)
+            {
+                gameObject.SetActive(true);
+                gameObject.SetActive(false);
+            }
 #if UNITY_EDITOR
             RefreshName();
 #endif
