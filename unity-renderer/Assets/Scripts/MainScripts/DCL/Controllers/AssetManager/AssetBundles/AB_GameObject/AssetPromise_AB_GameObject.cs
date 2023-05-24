@@ -154,7 +154,7 @@ namespace DCL
                 asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(assetBundleModelGO);
                 asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
                 asset.SetTextures(MeshesInfoUtils.ExtractUniqueTextures(asset.materials));
-
+                OptimizeMaterials(MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers));
                 UploadMeshesToGPU(MeshesInfoUtils.ExtractUniqueMeshes(asset.renderers));
                 asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
 
@@ -169,6 +169,12 @@ namespace DCL
 #endif
 
             }
+        }
+
+        private void OptimizeMaterials(HashSet<Material> materials)
+        {
+            foreach (Material material in materials)
+                SRPBatchingHelper.OptimizeMaterial(material);
         }
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
