@@ -124,7 +124,7 @@ namespace DCL.Backpack
             else
                 hiddenByList.Remove(hiddenBy);
 
-            List<string> sortedList1 = hiddenByList.OrderBy(x => WearableItem.CATEGORIES_PRIORITY.IndexOf(x)).ToList();
+            List<string> sortedList = hiddenByList.OrderBy(x => WearableItem.CATEGORIES_PRIORITY.IndexOf(x)).ToList();
 
             if (sortedList1.Count > 0)
             {
