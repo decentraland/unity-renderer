@@ -6,6 +6,7 @@ using DCL.ProfanityFiltering;
 using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using SocialFeaturesAnalytics;
+using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
@@ -53,9 +54,8 @@ namespace DCL.Chat.HUD
             this.socialAnalytics = socialAnalytics;
         }
 
-        public void Initialize(IPublicChatWindowView view = null, bool isVisible = true)
+        public void Initialize(IPublicChatWindowView view, bool isVisible = true)
         {
-            view ??= PublicChatWindowComponentView.Create();
             View = view;
             view.OnClose += HandleViewClosed;
             view.OnBack += HandleViewBacked;

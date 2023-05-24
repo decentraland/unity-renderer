@@ -30,7 +30,7 @@ namespace Tests
             playerTeleportPosition = Substitute.For<IBaseVariable<Vector3>>();
 
             var sbcInternalComponent = Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>();
-            handler = new ECSTransformHandler(worldState, playerTeleportPosition, sbcInternalComponent);
+            handler = new ECSTransformHandler(sbcInternalComponent);
         }
 
         [TearDown]
@@ -125,51 +125,17 @@ namespace Tests
         }
 
         [Test]
-        public void MoveCharacterWhenSameSceneAndValidPosition()
+        public void NotMoveCharacter()
         {
             worldState.GetCurrentSceneNumber().Returns(scene.sceneData.sceneNumber);
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
+            var previousPlayerPosition = playerEntity.gameObject.transform.position;
 
-            Vector3 position = new Vector3(8, 0, 0);
-            handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
-            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)), true);
-        }
+            Vector3 newPosition = new Vector3(8, 0, 0);
+            handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = newPosition });
 
-        [Test]
-        public void MoveCharacterWhenGlobalSceneTriggerIt()
-        {
-            scene.isPersistent = true;
-            worldState.GetCurrentSceneNumber().Returns(5); // scene number different than Setup() scene
-            var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
-
-            Vector3 position = new Vector3(8, 0, 0);
-            handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
-
-            playerTeleportPosition.Received(1)
-                                  .Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)),
-                                       true);
-        }
-
-        [Test]
-        public void NotMoveCharacterWhenSameSceneButInvalidPosition()
-        {
-            worldState.GetCurrentSceneNumber().Returns(scene.sceneData.sceneNumber);
-            var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
-
-            Vector3 position = new Vector3(1000, 0, 0);
-            handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
             playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>(), true);
-        }
-
-        [Test]
-        public void NotMoveCharacterWhenPlayerIsNotInScene()
-        {
-            worldState.GetCurrentSceneNumber().Returns(5); // scene number different than Setup() scene
-            var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
-
-            Vector3 position = new Vector3(1000, 0, 0);
-            handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
-            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>(), true);
+            Assert.AreEqual(previousPlayerPosition, playerEntity.gameObject.transform.position);
         }
 
         [Test]

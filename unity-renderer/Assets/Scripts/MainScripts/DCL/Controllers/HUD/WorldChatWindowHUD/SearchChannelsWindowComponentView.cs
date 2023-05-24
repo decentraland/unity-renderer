@@ -76,11 +76,6 @@ namespace DCL.Chat.HUD
             base.Dispose();
         }
 
-        public static SearchChannelsWindowComponentView Create()
-        {
-            return Instantiate(Resources.Load<SearchChannelsWindowComponentView>("SocialBarV1/ChannelSearchHUD"));
-        }
-
         public void ClearAllEntries()
         {
             channelList.Clear();

@@ -6,12 +6,10 @@ using DCL.Configuration;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
-using System.Threading.Tasks;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -211,8 +209,7 @@ namespace DCL
             return res;
         }
 
-        private void ProcessMessage(ParcelScene scene, string method, object msgPayload,
-            out CustomYieldInstruction yieldInstruction)
+        private void ProcessMessage(ParcelScene scene, string method, object msgPayload, out CustomYieldInstruction yieldInstruction)
         {
             yieldInstruction = null;
             IDelayedComponent delayedComponent = null;
@@ -225,117 +222,91 @@ namespace DCL
                         {
                             if (msgPayload is Protocol.CreateEntity payload)
                                 scene.CreateEntity(entityIdHelper.EntityFromLegacyEntityString(payload.entityId));
-
                             break;
                         }
                     case MessagingTypes.ENTITY_REPARENT:
                         {
                             if (msgPayload is Protocol.SetEntityParent payload)
-                                scene.SetEntityParent(entityIdHelper.EntityFromLegacyEntityString(payload.entityId),
-                                    entityIdHelper.EntityFromLegacyEntityString(payload.parentId));
-
+                                scene.SetEntityParent(entityIdHelper.EntityFromLegacyEntityString(payload.entityId),entityIdHelper.EntityFromLegacyEntityString(payload.parentId));
                             break;
                         }
-
-                    case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
-                        {
-                            if (msgPayload is Protocol.EntityComponentCreateOrUpdate payload)
-                            {
-                                delayedComponent = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
-                                    entityIdHelper.EntityFromLegacyEntityString(payload.entityId),
-                                    (CLASS_ID_COMPONENT) payload.classId, payload.json) as IDelayedComponent;
+                    case MessagingTypes.PB_SHARED_COMPONENT_UPDATE:
+                    {
+                        if (msgPayload is Decentraland.Sdk.Ecs6.ComponentUpdatedBody payload){
+                            if (payload.ComponentData != null) {
+                                delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.Id, payload.ComponentData) as IDelayedComponent;
                             }
+                        }
+                        break;
+                    }
+                    case MessagingTypes.PB_ENTITY_COMPONENT_CREATE_OR_UPDATE:
+                        {
+                            if (msgPayload is Decentraland.Sdk.Ecs6.UpdateEntityComponentBody payload) {
 
+                                if (payload.ComponentData != null) {
+                                    delayedComponent = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityIdHelper.EntityFromLegacyEntityString(payload.EntityId),
+                                    (CLASS_ID_COMPONENT) payload.ClassId, payload.ComponentData) as IDelayedComponent;
+                                }
+                            }
                             break;
                         }
-
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                         {
                             if (msgPayload is Protocol.EntityComponentDestroy payload)
-                                scene.componentsManagerLegacy.EntityComponentRemove(
-                                    entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.name);
-
+                                scene.componentsManagerLegacy.EntityComponentRemove(entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.name);
                             break;
                         }
-
                     case MessagingTypes.SHARED_COMPONENT_ATTACH:
                         {
                             if (msgPayload is Protocol.SharedComponentAttach payload)
-                                scene.componentsManagerLegacy.SceneSharedComponentAttach(
-                                    entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.id);
-
+                                scene.componentsManagerLegacy.SceneSharedComponentAttach(entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.id);
                             break;
                         }
-
                     case MessagingTypes.SHARED_COMPONENT_CREATE:
                         {
                             if (msgPayload is Protocol.SharedComponentCreate payload)
                                 scene.componentsManagerLegacy.SceneSharedComponentCreate(payload.id, payload.classId);
-
                             break;
                         }
-
                     case MessagingTypes.SHARED_COMPONENT_DISPOSE:
                         {
                             if (msgPayload is Protocol.SharedComponentDispose payload)
                                 scene.componentsManagerLegacy.SceneSharedComponentDispose(payload.id);
-
                             break;
                         }
-
-                    case MessagingTypes.SHARED_COMPONENT_UPDATE:
-                        {
-                            if (msgPayload is Protocol.SharedComponentUpdate payload)
-                                delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.componentId, payload.json) as IDelayedComponent;
-
-                            break;
-                        }
-
                     case MessagingTypes.ENTITY_DESTROY:
                         {
                             if (msgPayload is Protocol.RemoveEntity payload)
                                 scene.RemoveEntity(entityIdHelper.EntityFromLegacyEntityString(payload.entityId));
-
                             break;
                         }
-
                     case MessagingTypes.INIT_DONE:
                         {
                             if (!scene.IsInitMessageDone())
-                            {
                                 scene.sceneLifecycleHandler.SetInitMessagesDone();
-                            }
                             break;
                         }
-
                     case MessagingTypes.QUERY:
                         {
                             if (msgPayload is QueryMessage queryMessage)
                                 ParseQuery(queryMessage.payload, scene.sceneData.sceneNumber);
-
                             break;
                         }
-
                     case MessagingTypes.OPEN_EXTERNAL_URL:
                         {
                             if (msgPayload is Protocol.OpenExternalUrl payload)
                                 OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
-
                             break;
                         }
-
                     case MessagingTypes.OPEN_NFT_DIALOG:
                         {
                             if (msgPayload is Protocol.OpenNftDialog payload)
-                                DataStore.i.common.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId,
-                                    payload.comment), true);
-
+                                DataStore.i.common.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId, payload.comment), true);
                             break;
                         }
 
                     default:
                         Debug.LogError($"Unknown method {method}");
-
                         break;
                 }
             }
@@ -348,7 +319,9 @@ namespace DCL
             if (delayedComponent != null)
             {
                 if (delayedComponent.isRoutineRunning)
+                {
                     yieldInstruction = delayedComponent.yieldInstruction;
+                }
             }
         }
 

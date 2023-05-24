@@ -1,7 +1,7 @@
 import { AuthIdentity } from '@dcl/crypto'
 
 import { ETHEREUM_NETWORK } from 'config'
-import { IEthereumProvider, LoginState } from 'kernel-web-interface'
+import { IEthereumProvider, LoginState } from '@dcl/kernel-interface'
 
 export type RootSessionState = {
   session: SessionState

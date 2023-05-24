@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Helpers.NFT;
 using Decentraland.Renderer.RendererServices;
 using NUnit.Framework;
 using RPC;
@@ -121,8 +122,8 @@ namespace Tests
             const string CONTRACT_ADDRESS = "0x0123512313223123123123123";
             const string TOKEN_ID = "645433";
 
-            Assert.IsTrue(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:ethereum:erc1150:{CONTRACT_ADDRESS}:{TOKEN_ID}",
+            Assert.IsTrue(NFTUtils.TryParseUrn(
+                $"urn:decentraland:ethereum:erc1150:{CONTRACT_ADDRESS}:{TOKEN_ID}",
                 out string contractAddress,
                 out string tokenId));
 
@@ -136,38 +137,38 @@ namespace Tests
             string contractAddress;
             string tokenId;
 
-            // "urn" missing
-            Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
+            // "urn:decentraland" missing
+            Assert.IsFalse(NFTUtils.TryParseUrn(
                 $"ethereum:erc1150:0x0000temptation:666",
                 out contractAddress,
                 out tokenId));
 
             // "chain" missing
-            Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:erc1150:0x0000temptation:666",
+            Assert.IsFalse(NFTUtils.TryParseUrn(
+                $"urn:decentraland:erc1150:0x0000temptation:666",
                 out contractAddress,
                 out tokenId));
 
             // "chain" invalid
-            Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:some-chain:erc1150:0x0000temptation:666",
+            Assert.IsFalse(NFTUtils.TryParseUrn(
+                $"urn:decentraland:some-chain:erc1150:0x0000temptation:666",
                 out contractAddress,
                 out tokenId));
 
             // contract address missing
-            Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:ethereum:erc1150:666",
+            Assert.IsFalse(NFTUtils.TryParseUrn(
+                $"urn:decentraland:ethereum:erc1150:666",
                 out contractAddress,
                 out tokenId));
 
             // token id missing
-            Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
-                $"urn:ethereum:erc1150:0x0000temptation",
+            Assert.IsFalse(NFTUtils.TryParseUrn(
+                $"urn:decentraland:ethereum:erc1150:0x0000temptation",
                 out contractAddress,
                 out tokenId));
 
             // empty string
-            Assert.IsFalse(RestrictedActionsServiceImpl.TryParseUrn(
+            Assert.IsFalse(NFTUtils.TryParseUrn(
                 "",
                 out contractAddress,
                 out tokenId));
@@ -199,7 +200,7 @@ namespace Tests
                 var result = await rpcClient.OpenNftDialog(
                     new OpenNftDialogRequest()
                     {
-                        Urn = $"urn:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
+                        Urn = $"urn:decentraland:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
                     });
 
                 Assert.IsTrue(result.Success);
@@ -230,7 +231,7 @@ namespace Tests
                 var result = await rpcClient.OpenNftDialog(
                     new OpenNftDialogRequest()
                     {
-                        Urn = $"urn:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
+                        Urn = $"urn:decentraland:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
                     });
 
                 Assert.IsFalse(result.Success);

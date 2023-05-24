@@ -17,8 +17,6 @@ namespace DCL.Social.Chat
 {
     public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
-        private const string VIEW_PATH = "SocialBarV1/ChatHUD";
-
         [SerializeField] internal TMP_InputField inputField;
         [SerializeField] internal RectTransform chatEntriesContainer;
         [SerializeField] internal ScrollRect scrollRect;
@@ -116,12 +114,6 @@ namespace DCL.Social.Chat
         public IChatEntryFactory ChatEntryFactory { get; set; }
         public IComparer<ChatEntryModel> SortingStrategy { get; set; }
         public bool UseLegacySorting { private get; set; }
-
-        public static ChatHUDView Create()
-        {
-            var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<ChatHUDView>();
-            return view;
-        }
 
         public override void Awake()
         {

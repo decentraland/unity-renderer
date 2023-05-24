@@ -2,11 +2,12 @@ using DCL.Providers;
 using DCLPlugins.LoadingScreenPlugin;
 using NUnit.Framework;
 using System.Threading;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.LoadingScreen.Test
 {
-    [Category("ToFix")]
+
     public class LoadingScreenViewTests
     {
         private LoadingScreenView loadingScreenView;
@@ -23,6 +24,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView.Dispose();
         }
 
+        [Category("EditModeCI")]
         [Test]
         public void LoadingPercentageCorrectly()
         {
@@ -48,12 +50,15 @@ namespace DCL.LoadingScreen.Test
             Assert.AreEqual(loadingScreenPercentageView.loadingPercentage.fillAmount, currentLoadingValue/100f);
         }
 
+        [Category("EditModeCI")]
         [Test]
         public void LoadingTipsUpdatedCorrectly()
         {
             //Arrange
             LoadingScreenTipsView loadingScreenTipsView = loadingScreenView.GetTipsView();
-            Sprite testSprite = Resources.Load<Sprite>("TipsImgs/BuilderImg");
+
+            Sprite testSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/LoadingScreen/Sprites/BuilderImg.png");
             LoadingTip newLoadingTip = new LoadingTip("LoadingTest", testSprite);
 
             //Act

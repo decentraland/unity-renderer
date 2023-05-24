@@ -16,6 +16,8 @@ public interface IClientRpcSceneControllerService
   UniTask<CRDTSceneMessage> SendCrdt(CRDTSceneMessage request);
 
   UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request);
+
+  UniTask<SendBatchResponse> SendBatch(SendBatchRequest request);
 }
 
 public class ClientRpcSceneControllerService : IClientRpcSceneControllerService
@@ -46,6 +48,11 @@ public class ClientRpcSceneControllerService : IClientRpcSceneControllerService
   public UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request)
   {
       return module.CallUnaryProcedure<CRDTSceneCurrentState>("GetCurrentState", request);
+  }
+
+  public UniTask<SendBatchResponse> SendBatch(SendBatchRequest request)
+  {
+      return module.CallUnaryProcedure<SendBatchResponse>("SendBatch", request);
   }
 
 }

@@ -3,7 +3,7 @@ import { storeCondition } from 'lib/redux/storeCondition'
 import { initializeRenderer } from 'shared/renderer/actions'
 import { CommonRendererOptions, loadUnity } from './loader'
 import type { UnityGame } from 'unity-interface/loader'
-import type { KernelOptions } from 'kernel-web-interface'
+import type { KernelOptions } from '@dcl/kernel-interface'
 
 import { initializeUnityEditor } from './wsEditorAdapter'
 import { traceDecoratorRendererOptions } from './trace'

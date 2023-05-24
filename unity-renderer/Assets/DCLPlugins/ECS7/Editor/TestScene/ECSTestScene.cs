@@ -158,7 +158,7 @@ public class ECSTestScene : MonoBehaviour
     private static void AddNFTComponent(int sceneNumber, IECSComponentWriter componentWriter)
     {
         PBNftShape model = new PBNftShape();
-        model.Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722";
+        model.Urn = "urn:decentraland:ethereum:erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d:1540722";
         model.Color = new Color3();
         model.Style = (NftFrameType)6;
         model.Color.R = 0.5f;
