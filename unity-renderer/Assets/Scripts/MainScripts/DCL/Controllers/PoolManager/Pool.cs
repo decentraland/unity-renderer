@@ -4,7 +4,6 @@ using Cysharp.Threading.Tasks;
 using DCL.Configuration;
 using UnityEngine;
 using DCL.Helpers;
-using Unity.Profiling;
 using UnityEngine.Assertions;
 
 namespace DCL
@@ -65,21 +64,18 @@ namespace DCL
             this.maxPrewarmCount = maxPrewarmCount;
         }
 
-        ProfilerMarker m_prewarmMarker = new ("Pool.Prewarm");
         public void ForcePrewarm(bool forceActive = true)
         {
-            using (m_prewarmMarker.Auto())
-            {
-                if (maxPrewarmCount <= objectsCount)
-                    return;
+            if (maxPrewarmCount <= objectsCount)
+                return;
 
-                Assert.IsTrue(original != null, $"Original should never be null here ({id})");
-                var parent= PoolManager.USE_POOL_CONTAINERS && container != null ? container.transform : null;
+            Assert.IsTrue(original != null, $"Original should never be null here ({id})");
+            var parent = PoolManager.USE_POOL_CONTAINERS && container != null ? container.transform : null;
 
-                int objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount);
-                for (var i = 0; i < objectsToInstantiate; i++)
-                    InstantiateOnPrewarm(parent, forceActive);
-            }
+            int objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount);
+
+            for (var i = 0; i < objectsToInstantiate; i++)
+                InstantiateOnPrewarm(parent, forceActive);
         }
 
         /// <summary>
