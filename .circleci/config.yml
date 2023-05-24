@@ -273,11 +273,6 @@ jobs:
           name: Get the hash of source files
           command: ./scripts/hash-unity-files.sh
       - run: *STORE_TARGET
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare test image
           command: |
@@ -329,11 +324,6 @@ jobs:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
       - run: *STORE_TARGET
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-editmode-v2-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare image
           command: |
