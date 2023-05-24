@@ -126,14 +126,14 @@ namespace DCL.Backpack
 
             List<string> sortedList = hiddenByList.OrderBy(x => WearableItem.CATEGORIES_PRIORITY.IndexOf(x)).ToList();
 
-            if (sortedList1.Count > 0)
+            if (sortedList.Count > 0)
             {
                 hiddenSlot.SetActive(true);
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
-                string readableCategory = sortedList1[0].Replace("_", " ");
+                string readableCategory = sortedList[0].Replace("_", " ");
                 tooltipHiddenText.text = $"Hidden by: {readableCategory[0].ToString().ToUpper() + readableCategory[1..]}";
-                model.hiddenBy = sortedList1[0];
+                model.hiddenBy = sortedList[0];
             }
             else
             {
