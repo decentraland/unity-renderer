@@ -86,8 +86,7 @@ namespace DCL.Backpack
 
         private void CancelDoubleClickCooldown()
         {
-            cts.Cancel();
-            cts.Dispose();
+            cts.SafeCancelAndDispose();
             cts = new CancellationTokenSource();
         }
 
