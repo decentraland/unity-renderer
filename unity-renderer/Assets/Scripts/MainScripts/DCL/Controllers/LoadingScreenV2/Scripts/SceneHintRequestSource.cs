@@ -8,8 +8,8 @@ using UnityEngine;
 namespace DCL.Controllers.LoadingScreenV2
 {
     /// <summary>
-    /// This hint request source should fetch the scene.json and load the loading_hints field
-    /// If the field is missing, we return an empty list.
+    /// The SceneHintRequestSource class implements the IHintRequestSource interface for retrieving loading hints from a specific scene.
+    /// It monitors the scene loading process, checking the loading status and extracting hints.
     /// </summary>
     public class SceneHintRequestSource : IHintRequestSource
     {
@@ -61,7 +61,7 @@ namespace DCL.Controllers.LoadingScreenV2
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Exception in SceneHintRequestSource.GetHintsAsync: {ex.Message}\n{ex.StackTrace}");
+                Debug.LogWarning($"Exception in SceneHintRequestSource.GetHintsAsync: {ex.Message}\n{ex.StackTrace}");
             }
             // Returns an empty list if the scene is not loaded or the hints are not present
             return loading_hints;

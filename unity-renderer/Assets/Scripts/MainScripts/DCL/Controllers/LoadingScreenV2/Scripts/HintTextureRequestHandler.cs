@@ -7,7 +7,10 @@ using UnityEngine.Networking;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
-    public class HintTextureRequestHandler/*: IHintTextureRequestHandler*/
+    /// <summary>
+    /// The HintTextureRequestHandler class is responsible for downloading textures for loading screen hints.
+    /// </summary>
+    public class HintTextureRequestHandler: IHintTextureRequestHandler
     {
         public async UniTask<Texture2D> DownloadTexture(string url, CancellationToken ctx, int timeout = 2)
         {

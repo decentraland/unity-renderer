@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
+    /// <summary>
+    /// The LocalHintRequestSource class manages the retrieval of loading screen hints from a local JSON source.
+    /// </summary>
     public class LocalHintRequestSource : IHintRequestSource
     {
         private const string LOCAL_HINTS_JSON_SOURCE = "LoadingScreenV2LocalHintsJsonSource";
@@ -39,12 +42,12 @@ namespace DCL.Controllers.LoadingScreenV2
                     throw new Exception("Failed to load the addressable asset");
                 }
 
-                loading_hints = HintSceneParser.ParseJsonToHints(containerSceneAddressable.text);
+                loading_hints = HintSceneParserUtil.ParseJsonToHints(containerSceneAddressable.text);
                 return loading_hints;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to load hints from addressable: {ex.Message}");
+                Debug.LogWarning($"Failed to load hints from addressable: {ex.Message}");
 
                 return loading_hints;
             }

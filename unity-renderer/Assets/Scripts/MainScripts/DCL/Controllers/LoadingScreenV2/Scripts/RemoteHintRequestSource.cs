@@ -8,6 +8,11 @@ using UnityEngine.Networking;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
+    ///<summary>
+    /// RemoteHintRequestSource provides remote hint request functionality.
+    /// It retrieves hints asynchronously from a specified source URL using an ISourceWebRequestHandler.
+    /// The hints are parsed from the received JSON data using HintSceneParserUtil.
+    ///</summary>
     public class RemoteHintRequestSource : IHintRequestSource
     {
         public string source { get; }
@@ -37,12 +42,12 @@ namespace DCL.Controllers.LoadingScreenV2
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    loading_hints = HintSceneParser.ParseJsonToHints(json);
+                    loading_hints = HintSceneParserUtil.ParseJsonToHints(json);
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Exception in RemoteHintRequestSource.GetHintsAsync: {ex.Message}\n{ex.StackTrace}");
+                Debug.LogWarning($"Exception in RemoteHintRequestSource.GetHintsAsync: {ex.Message}\n{ex.StackTrace}");
             }
 
             return loading_hints;

@@ -1,22 +1,28 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class HintSourceSourceWebRequestHandler : ISourceWebRequestHandler
+namespace DCL.Controllers.LoadingScreenV2
 {
-    public async UniTask<string> Get(string url)
+    ///<summary>
+    /// HintSourceSourceWebRequestHandler asynchronously retrieve data from a given URL.
+    ///</summary>
+    public class HintSourceSourceWebRequestHandler : ISourceWebRequestHandler
     {
-        using (var request = UnityEngine.Networking.UnityWebRequest.Get(url))
+        public async UniTask<string> Get(string url)
         {
-            await request.SendWebRequest();
+            using (var request = UnityEngine.Networking.UnityWebRequest.Get(url))
+            {
+                await request.SendWebRequest();
 
-            if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
-            {
-                Debug.LogError($"WebRequest failed: {request.error}");
-                return null;
-            }
-            else
-            {
-                return request.downloadHandler.text;
+                if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
+                {
+                    Debug.LogWarning($"HintSourceSourceWebRequestHandler WebRequest failed: {request.error}");
+                    return null;
+                }
+                else
+                {
+                    return request.downloadHandler.text;
+                }
             }
         }
     }
