@@ -5,7 +5,6 @@ using DCL.Models;
 using RPC.Context;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCL.ECS7
 {
@@ -32,7 +31,7 @@ namespace DCL.ECS7
             context.IsSceneGltfLoadingFinished += IsSceneGltfLoadingFinished;
         }
 
-        private uint GetSceneTick(int sceneNumber)
+        internal uint GetSceneTick(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
             {
@@ -50,7 +49,7 @@ namespace DCL.ECS7
             return 0;
         }
 
-        private void IncreaseSceneTick(int sceneNumber)
+        internal void IncreaseSceneTick(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
             {
@@ -60,7 +59,7 @@ namespace DCL.ECS7
             }
         }
 
-        private bool IsSceneGltfLoadingFinished(int sceneNumber)
+        internal bool IsSceneGltfLoadingFinished(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
             {
