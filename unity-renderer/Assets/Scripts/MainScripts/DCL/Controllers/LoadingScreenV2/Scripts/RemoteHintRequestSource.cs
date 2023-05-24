@@ -12,18 +12,18 @@ namespace DCL.Controllers.LoadingScreenV2
     {
         public string source { get; }
         public SourceTag sourceTag { get; }
-        public List<IHint> loading_hints { get; private set; }
+        public List<Hint> loading_hints { get; private set; }
         public ISourceWebRequestHandler webRequestHandler { get; }
 
         public RemoteHintRequestSource(string sourceUrlJson, SourceTag sourceTag, ISourceWebRequestHandler webRequestHandler)
         {
             this.source = sourceUrlJson;
             this.sourceTag = sourceTag;
-            this.loading_hints = new List<IHint>();
+            this.loading_hints = new List<Hint>();
             this.webRequestHandler = webRequestHandler;
         }
 
-        public async UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
+        public async UniTask<List<Hint>> GetHintsAsync(CancellationToken ctx)
         {
             try
             {

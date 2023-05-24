@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class HintSceneParser
 {
-    public static List<IHint> ParseJsonToHints(string json)
+    public static List<Hint> ParseJsonToHints(string json)
     {
-        var hints = new List<IHint>();
+        var hints = new List<Hint>();
         var sceneJson = JsonUtility.FromJson<LoadParcelScenesMessage.UnityParcelScene>(json);
 
         if (sceneJson == null || sceneJson.loadingScreenHints == null)
@@ -15,7 +15,7 @@ public class HintSceneParser
 
         foreach (var hint in sceneJson.loadingScreenHints)
         {
-            hints.Add(new BaseHint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
+            hints.Add(new Hint(hint.TextureUrl, hint.Title, hint.Body, hint.SourceTag));
         }
         return hints;
     }

@@ -15,7 +15,7 @@ namespace DCL.Controllers.LoadingScreenV2
     {
         public string source { get; }
         public SourceTag sourceTag { get; }
-        public List<IHint> loading_hints { get; private set; }
+        public List<Hint> loading_hints { get; private set; }
 
         private Vector2Int currentDestination;
         private readonly ISceneController sceneController;
@@ -28,7 +28,7 @@ namespace DCL.Controllers.LoadingScreenV2
         {
             this.source = sceneJson;
             this.sourceTag = sourceTag;
-            this.loading_hints = new List<IHint>();
+            this.loading_hints = new List<Hint>();
 
             this.sceneController = sceneController;
             this.currentDestination = currentDestination;
@@ -37,7 +37,7 @@ namespace DCL.Controllers.LoadingScreenV2
             sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
         }
 
-        public async UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
+        public async UniTask<List<Hint>> GetHintsAsync(CancellationToken ctx)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace DCL.Controllers.LoadingScreenV2
                 {
                     foreach (var basehint in currentSceneBeingLoaded.loadingScreenHints)
                     {
-                        if (basehint is IHint hint)
+                        if (basehint is Hint hint)
                         {
                             loading_hints.Add(hint);
                         }

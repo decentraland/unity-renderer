@@ -15,17 +15,17 @@ namespace DCL.Controllers.LoadingScreenV2
         private IAddressableResourceProvider addressablesProvider;
         public string source { get; }
         public SourceTag sourceTag { get; }
-        public List<IHint> loading_hints { get; private set; }
+        public List<Hint> loading_hints { get; private set; }
 
         public LocalHintRequestSource(string sourceAddressableSceneJson, SourceTag sourceTag, IAddressableResourceProvider addressablesProvider)
         {
             this.source = sourceAddressableSceneJson;
             this.sourceTag = sourceTag;
-            this.loading_hints = new List<IHint>();
+            this.loading_hints = new List<Hint>();
             this.addressablesProvider = addressablesProvider;
         }
 
-        internal async UniTask<List<IHint>> LoadHintsFromAddressable(string addressableSourceKey, CancellationToken ctx)
+        internal async UniTask<List<Hint>> LoadHintsFromAddressable(string addressableSourceKey, CancellationToken ctx)
         {
             try
             {
@@ -51,11 +51,11 @@ namespace DCL.Controllers.LoadingScreenV2
         }
 
 
-        public UniTask<List<IHint>> GetHintsAsync(CancellationToken ctx)
+        public UniTask<List<Hint>> GetHintsAsync(CancellationToken ctx)
         {
             // If cancellation is requested, return an empty list
             if (ctx.IsCancellationRequested)
-                return UniTask.FromResult(new List<IHint>());
+                return UniTask.FromResult(new List<Hint>());
 
             // Otherwise, return hints when they are loaded from the addressable
             return LoadHintsFromAddressable(source, ctx);

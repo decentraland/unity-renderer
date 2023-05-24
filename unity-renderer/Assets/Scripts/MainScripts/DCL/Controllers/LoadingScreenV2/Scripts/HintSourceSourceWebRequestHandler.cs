@@ -5,7 +5,6 @@ public class HintSourceSourceWebRequestHandler : ISourceWebRequestHandler
 {
     public async UniTask<string> Get(string url)
     {
-        Debug.Log($"FD:: HintSourceSourceWebRequestHandler.Get: {url}");
         using (var request = UnityEngine.Networking.UnityWebRequest.Get(url))
         {
             await request.SendWebRequest();

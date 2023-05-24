@@ -23,7 +23,7 @@ namespace DCL.Models
         public bool sdk7;
         public string[] requiredPermissions;
         public string[] allowedMediaHostnames;
-        public List<IHint> loadingScreenHints;
+        public List<Hint> loadingScreenHints;
     }
 
     [Serializable]
@@ -56,7 +56,7 @@ namespace DCL.Models
             public string[] requiredPermissions;
             public string[] allowedMediaHostnames;
 
-            public List<BaseHint> loadingScreenHints;
+            public List<Hint> loadingScreenHints;
         }
     }
 }

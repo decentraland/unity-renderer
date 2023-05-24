@@ -22,7 +22,7 @@ namespace DCL.Controllers.LoadingScreenV2
          private HintTextureRequestHandler hintTextureRequestHandler;
          private CancellationToken _cancellationToken;
          private Texture2D _preMadeTexture;
-         private BaseHint _premadeHint;
+         private Hint premadeHint;
 
          [SetUp]
          public void Setup()
@@ -37,7 +37,7 @@ namespace DCL.Controllers.LoadingScreenV2
              // _hintTextureRequest.DownloadTexture(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(_preMadeTexture));
 
              // mock premade hint for scene response
-             _premadeHint = new BaseHint("https://example.com/image.png", "title", "body", SourceTag.Event);
+             premadeHint = new Hint("https://example.com/image.png", "title", "body", SourceTag.Event);
          }
 
          [TearDown]
@@ -64,9 +64,8 @@ namespace DCL.Controllers.LoadingScreenV2
              var mockWebRequestHandler = Substitute.For<ISourceWebRequestHandler>();
              var mockSceneRensponse = new LoadParcelScenesMessage.UnityParcelScene
              {
-                 loadingScreenHints = new List<BaseHint> { _premadeHint },
+                 loadingScreenHints = new List<Hint> { premadeHint },
              };
-             Debug.Log ("FD:: mockSceneRensponse: " + mockSceneRensponse);
              string mockJsonResponse = JsonUtility.ToJson(mockSceneRensponse);
              mockWebRequestHandler.Get(Arg.Any<string>()).Returns(UniTask.FromResult(mockJsonResponse));
 
@@ -78,8 +77,8 @@ namespace DCL.Controllers.LoadingScreenV2
 
              // Assert
              Assert.AreEqual(1, result.Count);
-             Assert.AreEqual(_premadeHint.Title, result.Keys.ToArray()[0].Title);
-             Assert.AreEqual(_premadeHint.Body, result.Keys.ToArray()[0].Body);
+             Assert.AreEqual(premadeHint.Title, result.Keys.ToArray()[0].Title);
+             Assert.AreEqual(premadeHint.Body, result.Keys.ToArray()[0].Body);
          }
 
          [Test]
@@ -107,7 +106,7 @@ namespace DCL.Controllers.LoadingScreenV2
              var mockScene = Substitute.For<IParcelScene>();
              var mockSceneRensponse = new LoadParcelScenesMessage.UnityParcelScene
              {
-                 loadingScreenHints = new List<BaseHint> { _premadeHint },
+                 loadingScreenHints = new List<Hint> { premadeHint },
              };
              mockScene.sceneData.Returns(mockSceneRensponse);
              var sourceTag = SourceTag.Event;
@@ -130,8 +129,8 @@ namespace DCL.Controllers.LoadingScreenV2
 
              // Assert
              Assert.AreEqual(1, result.Count);
-             Assert.AreEqual(_premadeHint.Title, result[0].Title);
-             Assert.AreEqual(_premadeHint.Body, result[0].Body);
+             Assert.AreEqual(premadeHint.Title, result[0].Title);
+             Assert.AreEqual(premadeHint.Body, result[0].Body);
          }
 
         // TODO: Add more test cases for texture handling, handling exceptions, ordering of hints, etc.

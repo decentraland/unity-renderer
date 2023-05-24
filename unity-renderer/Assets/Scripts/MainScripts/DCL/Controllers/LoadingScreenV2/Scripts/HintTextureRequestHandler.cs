@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
-    public class HintTextureRequestHandler: IHintTextureRequestHandler
+    public class HintTextureRequestHandler/*: IHintTextureRequestHandler*/
     {
         public async UniTask<Texture2D> DownloadTexture(string url, CancellationToken ctx, int timeout = 2)
         {
