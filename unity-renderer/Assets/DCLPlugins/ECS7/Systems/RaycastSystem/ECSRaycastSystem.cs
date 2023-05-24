@@ -27,6 +27,7 @@ namespace ECSSystems.ECSRaycastSystem
         private readonly IInternalECSComponent<InternalColliders> onPointerColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
         private readonly IECSComponentWriter componentWriter;
+        private int firstFramePendingMeshes = 0;
 
         public ECSRaycastSystem(
             IInternalECSComponent<InternalRaycast> internalRaycastComponent,
@@ -53,6 +54,9 @@ namespace ECSSystems.ECSRaycastSystem
                 PBRaycast model = raycastComponentGroup[i].value.model.raycastModel;
                 IDCLEntity entity = raycastComponentGroup[i].value.entity;
                 IParcelScene scene = raycastComponentGroup[i].value.scene;
+
+                // Wait until scene initial GLTFs are finished loading (handled at SceneStateHandler)
+                if (!scene.IsInitMessageDone()) continue;
 
                 if (model.QueryType == RaycastQueryType.RqtNone)
                 {
