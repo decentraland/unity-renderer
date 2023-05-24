@@ -131,9 +131,9 @@ namespace DCL.Backpack
                 hiddenSlot.SetActive(true);
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
-                string readableCategory = sortedList1.First().Replace("_", " ");
+                string readableCategory = sortedList1[0].Replace("_", " ");
                 tooltipHiddenText.text = $"Hidden by: {readableCategory[0].ToString().ToUpper() + readableCategory[1..]}";
-                model.hiddenBy = sortedList1.First();
+                model.hiddenBy = sortedList1[0];
             }
             else
             {

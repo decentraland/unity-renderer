@@ -370,6 +370,7 @@ namespace DCL.Backpack
                 model.wearables.Add(wearableId, wearable);
                 previewEquippedWearables.Add(wearableId);
 
+                //Reset override for affected categories of new equip
                 if(wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
                     foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
                         UpdateOverrideHides(s,false);
@@ -421,6 +422,7 @@ namespace DCL.Backpack
             if (source != UnequipWearableSource.None)
                 backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
+            //Reset override for affected categories of unequip
             if(wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
                 foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
                     UpdateOverrideHides(s,false);
