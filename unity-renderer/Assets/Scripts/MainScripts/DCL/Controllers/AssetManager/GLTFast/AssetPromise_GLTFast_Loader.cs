@@ -133,7 +133,7 @@ namespace DCL
                 if (e is OperationCanceledException)
                     return;
 
-                Debug.LogError("[GltFast] Failed to load: " + e);
+                Debug.LogException(e);
                 onFail?.Invoke(e);
             }
             finally { isLoading = false; }
