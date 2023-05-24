@@ -239,7 +239,7 @@ namespace DCL.Backpack
             });
         }
 
-        public void SetHideVisible(bool isVisible) =>
+        public void SetHideIconVisible(bool isVisible) =>
             hiddenSlot.SetActive(isVisible);
 
         public void ShakeAnimation() =>

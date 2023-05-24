@@ -107,7 +107,7 @@ namespace DCL.Backpack
                     if (hideOverrides != null && hideOverrides.Contains(categoryToHide))
                     {
                         avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
-                        avatarSlots[categoryToHide].SetHideVisible(true);
+                        avatarSlots[categoryToHide].SetHideIconVisible(true);
                         continue;
                     }
 

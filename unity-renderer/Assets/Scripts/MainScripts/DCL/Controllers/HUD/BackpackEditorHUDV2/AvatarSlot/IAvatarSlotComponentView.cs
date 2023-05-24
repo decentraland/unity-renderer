@@ -21,6 +21,6 @@ namespace DCL.Backpack
         void SetHideList(string[] hideList);
         string[] GetHideList();
         void ShakeAnimation();
-        void SetHideVisible(bool isVisible);
+        void SetHideIconVisible(bool isVisible);
     }
 }
