@@ -1,5 +1,7 @@
 using NSubstitute;
 using NUnit.Framework;
+using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -11,7 +13,9 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view = Object.Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/ChannelSearchEntry"));
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<PublicChatEntry>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/ChannelSearchEntry.prefab"));
         }
 
         [TearDown]
@@ -66,7 +70,10 @@ namespace DCL.Chat.HUD
         [Test]
         public void InitializeUnreadNotificationBadge()
         {
-            view = PublicChatEntry.Create();
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<PublicChatEntry>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/PublicChannelElement.prefab"));
+
             var chatController = Substitute.For<IChatController>();
             chatController.GetAllocatedUnseenChannelMessages("channelId").Returns(5);
             view.Initialize(chatController, new DataStore_Mentions());
@@ -78,7 +85,10 @@ namespace DCL.Chat.HUD
         [Test]
         public void TriggerOpenChat()
         {
-            view = PublicChatEntry.Create();
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<PublicChatEntry>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/PublicChannelElement.prefab"));
+
             var called = false;
             view.OnOpenChat += entry => called = true;
             view.openChatButton.onClick.Invoke();
@@ -89,7 +99,10 @@ namespace DCL.Chat.HUD
         [Test]
         public void TriggerOptionsMenu()
         {
-            view = PublicChatEntry.Create();
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<PublicChatEntry>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/PublicChannelElement.prefab"));
+
             view.GetComponent<UIHoverObjectToggler>().OnPointerEnter(null);
             var called = false;
             view.OnOpenOptions += entry => called = true;

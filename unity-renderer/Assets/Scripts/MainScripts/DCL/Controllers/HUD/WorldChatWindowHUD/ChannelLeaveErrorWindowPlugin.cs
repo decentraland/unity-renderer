@@ -1,17 +1,32 @@
+using DCL.Providers;
+using System.Threading;
+
 namespace DCL.Chat.HUD
 {
     public class ChannelLeaveErrorWindowPlugin : IPlugin
     {
-        private readonly ChannelLeaveErrorWindowController controller;
+        private readonly CancellationTokenSource cts = new ();
+
+        private ChannelLeaveErrorWindowController controller;
 
         public ChannelLeaveErrorWindowPlugin()
         {
-            controller = new ChannelLeaveErrorWindowController(
-                ChannelLeaveErrorWindowComponentView.Create(),
-                Environment.i.serviceLocator.Get<IChatController>(),
-                DataStore.i);
+            Initialize(cts.Token);
         }
 
-        public void Dispose() => controller.Dispose();
+        private async void Initialize(CancellationToken ct)
+        {
+            var view = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                        .Instantiate<ChannelLeaveErrorWindowComponentView>("ChannelLeaveErrorModal", cancellationToken: ct);
+
+            controller = new ChannelLeaveErrorWindowController(view, Environment.i.serviceLocator.Get<IChatController>(), DataStore.i);
+        }
+
+        public void Dispose()
+        {
+            cts.Cancel();
+            cts.Dispose();
+            controller.Dispose();
+        }
     }
 }

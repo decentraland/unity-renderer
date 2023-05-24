@@ -5,6 +5,7 @@ using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -18,7 +19,9 @@ namespace DCL.Social.Friends
         public void Setup()
         {
             // we need to add friends controller because the badge internally uses FriendsController.i
-            view = FriendsHUDComponentView.Create();
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<FriendsHUDComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/FriendsHUD.prefab"));
 
             var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
             Environment.Setup(serviceLocator);

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SocialBar.UserThumbnail;
 using SocialFeaturesAnalytics;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class UserThumbnailComponentViewMock : UserThumbnailComponentView
@@ -23,7 +24,10 @@ public class PrivateChatWindowComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        view = PrivateChatWindowComponentView.Create();
+        view = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<PrivateChatWindowComponentView>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/PrivateChatHUD.prefab"));
+
         userThumbnail = new GameObject("userThumbnail").AddComponent<UserThumbnailComponentViewMock>();
         view.userThumbnail = userThumbnail;
 

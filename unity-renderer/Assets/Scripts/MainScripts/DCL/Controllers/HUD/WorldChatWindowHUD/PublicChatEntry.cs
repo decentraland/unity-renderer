@@ -31,11 +31,6 @@ namespace DCL.Chat.HUD
         public event Action<PublicChatEntry> OnJoin;
         public event Action<PublicChatEntry> OnOpenOptions;
 
-        public static PublicChatEntry Create()
-        {
-            return Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/PublicChannelElement"));
-        }
-
         public override void Awake()
         {
             base.Awake();

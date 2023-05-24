@@ -50,7 +50,7 @@ public interface IImageComponentView
 
 public class ImageComponentView : BaseComponentView, IImageComponentView, IComponentModelConfig<ImageComponentModel>
 {
-    private readonly Vector2 vector2oneHalf = new Vector2(0.5f, 0.5f);
+    private readonly Vector2 vector2oneHalf = new (0.5f, 0.5f);
 
     [Header("Prefab References")]
     [SerializeField] internal Image image;
