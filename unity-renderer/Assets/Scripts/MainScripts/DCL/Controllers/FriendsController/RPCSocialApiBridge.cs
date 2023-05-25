@@ -154,7 +154,11 @@ namespace DCL.Social.Friends
                     try
                     {
                         var profile = await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friend.Address, cancellationToken);
-                        OnFriendAdded?.Invoke(new UserStatus { userId = friend.Address, userName = profile.userName });
+                        OnFriendAdded?.Invoke(new UserStatus {
+                            userId = friend.Address,
+                            userName = profile.userName,
+                            friendshipStatus = FriendshipStatus.FRIEND,
+                        });
                     }
                     catch (OperationCanceledException) { }
                     catch (Exception e) { Debug.LogException(e); }
