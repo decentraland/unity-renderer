@@ -1,18 +1,13 @@
-using Cysharp.Threading.Tasks;
-using DCL.Tasks;
 using System;
 using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
     public class WearableGridItemComponentView : BaseComponentView<WearableGridItemModel>
     {
-        private const float DOUBLE_CLICK_MAX_DELAY = 0.75f;
-
         [SerializeField] internal NftRarityBackgroundSO rarityNftBackgrounds;
         [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
         [SerializeField] internal Image nftBackground;
@@ -27,6 +22,7 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject incompatibleContainer;
         [SerializeField] internal GameObject incompatibleTooltip;
 
+        private IButtonDoubleClick interactDoubleClick;
         private string lastThumbnailUrl;
 
         public WearableGridItemModel Model => model;
@@ -38,64 +34,34 @@ namespace DCL.Backpack
         public event Action<WearableGridItemModel> OnEquipped;
         public event Action<WearableGridItemModel> OnUnequipped;
 
-        private CancellationTokenSource cts;
-
         public override void Awake()
         {
             base.Awake();
             image.OnLoaded += PlayLoadingSound;
-            cts = new CancellationTokenSource();
+            InitializeInteractButton();
+        }
 
-            interactButton.onClick.AddListener(() =>
+        private void InitializeInteractButton()
+        {
+            interactDoubleClick = interactButton.gameObject.GetComponent<IButtonDoubleClick>();
+            interactDoubleClick.AlwaysPerformSingleClick = true;
+            interactDoubleClick.OnClick += () => { OnSelected?.Invoke(model); };
+            interactDoubleClick.OnDoubleClick += () =>
             {
-                clicked++;
-
-                if (clicked == 1)
+                if (model.IsEquipped)
                 {
-                    clickTime = Time.time;
-                    CancelDoubleClickCooldown();
-                    DoubleClickCooldown(cts.Token).Forget();
-                    OnSelected?.Invoke(model);
+                    if (!model.UnEquipAllowed)
+                        return;
+
+                    OnUnequipped?.Invoke(model);
                 }
-
-                if (clicked > 1)
-                {
-                    CancelDoubleClickCooldown();
-                    clicked = 0;
-                    clickTime = 0;
-
-                    if (model.IsEquipped)
-                    {
-                        if (!model.UnEquipAllowed)
-                            return;
-
-                        OnUnequipped?.Invoke(model);
-                    }
-                    else
-                        OnEquipped?.Invoke(model);
-                }
-            });
+                else
+                    OnEquipped?.Invoke(model);
+            };
         }
 
-        private async UniTaskVoid DoubleClickCooldown(CancellationToken cancellationToken)
-        {
-            while (Time.time - clickTime < DOUBLE_CLICK_MAX_DELAY)
-                await UniTask.NextFrame(cancellationToken);
-
-            clicked = 0;
-        }
-
-        private void CancelDoubleClickCooldown()
-        {
-            cts.SafeCancelAndDispose();
-            cts = new CancellationTokenSource();
-        }
-
-        public override void Dispose()
-        {
+        public override void Dispose() =>
             image.OnLoaded -= PlayLoadingSound;
-            CancelDoubleClickCooldown();
-        }
 
         public override void OnFocus()
         {
