@@ -3589,7 +3589,6 @@ MonoBehaviour:
   hairColorPickerComponent: {fileID: 6733050965456895549}
   facialHairColorPickerComponent: {fileID: 3234247730794696175}
   eyeBrowsColorPickerComponent: {fileID: 2459573730806547177}
-  characterPreviewRotation: {fileID: 6749458557699296124}
   characterPreviewImage: {fileID: 5221576635362755376}
   randomizeButton: {fileID: 1450360507441575512}
   randomizeAnimator: {fileID: 4292949885884074233}
@@ -3617,6 +3616,10 @@ MonoBehaviour:
   emotesSection: {fileID: 8105447645029322740}
   clickBlocker: {fileID: 1261334859402260978}
   noItemInCollectionWarning: {fileID: 8627138561593741906}
+  characterPreviewInputDetector: {fileID: 3395851756878701198}
+  firstClickAction: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
+  rotationFactor: -30
+  slowDownTime: 0.5
 --- !u!225 &-2971377967518096820
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -8548,7 +8551,7 @@ GameObject:
   - component: {fileID: 2225072684624242756}
   - component: {fileID: 5221576635362755376}
   - component: {fileID: 4427406772819655723}
-  - component: {fileID: 6749458557699296124}
+  - component: {fileID: 3395851756878701198}
   m_Layer: 5
   m_Name: CharacterPreview
   m_TagString: Untagged
@@ -8573,7 +8576,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 13.5, y: 11.9999695}
+  m_AnchoredPosition: {x: 13.5, y: 12}
   m_SizeDelta: {x: 0, y: -116.00003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2225072684624242756
@@ -8625,7 +8628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 2
   m_AspectRatio: 1
---- !u!114 &6749458557699296124
+--- !u!114 &3395851756878701198
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8634,12 +8637,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7607304237219422835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52af82d546e9b41d089ac247180bc813, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b0ce504b8c4f91478d1634adf5e2a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstClickAction: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
-  rotationFactor: -15
-  slowDownTime: 0.5
 --- !u!1 &7659616090356243264
 GameObject:
   m_ObjectHideFlags: 0

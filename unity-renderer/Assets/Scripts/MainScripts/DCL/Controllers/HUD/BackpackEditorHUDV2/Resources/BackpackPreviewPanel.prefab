@@ -164,9 +164,7 @@ GameObject:
   - component: {fileID: 6101877714986778067}
   - component: {fileID: 160430747983648423}
   - component: {fileID: 8592443274156419516}
-  - component: {fileID: 1722018204688604907}
-  - component: {fileID: 5106955908309710894}
-  - component: {fileID: 5642037097663683387}
+  - component: {fileID: 6366575228749786892}
   m_Layer: 5
   m_Name: CharacterPreview
   m_TagString: Untagged
@@ -243,7 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 2
   m_AspectRatio: 1
---- !u!114 &1722018204688604907
+--- !u!114 &6366575228749786892
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -252,39 +250,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2584397978103117796}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52af82d546e9b41d089ac247180bc813, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b0ce504b8c4f91478d1634adf5e2a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstClickAction: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
-  rotationFactor: -30
-  slowDownTime: 0.5
---- !u!114 &5106955908309710894
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2584397978103117796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ac847f28f9e49179578de4a558603b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5642037097663683387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2584397978103117796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70266ae604f646e9906b0e2ec4f42b15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
-  zoomSpeed: 5
-  smoothTime: 0.2
 --- !u!1 &3296544936141930365
 GameObject:
   m_ObjectHideFlags: 0
@@ -908,17 +876,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
   avatarPreviewPanel: {fileID: 7059152913108139601}
-  avatarPreviewRotation: {fileID: 1722018204688604907}
-  previewCameraPanningDetector: {fileID: 5106955908309710894}
-  avatarPreviewZoom: {fileID: 5642037097663683387}
   avatarPreviewImage: {fileID: 160430747983648423}
   avatarPreviewLoadingSpinner: {fileID: 9054132650566966005}
+  characterPreviewInputDetector: {fileID: 6366575228749786892}
+  firstClickAction: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
   secondClickAction: {fileID: 11400000, guid: 78141e376894fb7458339db37c0c18d4, type: 2}
   middleClickAction: {fileID: 11400000, guid: 4375699da3162584e802b36565d7b039, type: 2}
+  mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
+  rotationFactor: -30
+  slowDownTime: 0.5
   panSpeed: 0.2
   allowVerticalPanning: 1
   allowHorizontalPanning: 0
-  inertiaDuration: 0.5
+  panningInertiaDuration: 0.5
+  zoomSpeed: 5
+  smoothTime: 0.2
 --- !u!1 &7226453470775641204
 GameObject:
   m_ObjectHideFlags: 0

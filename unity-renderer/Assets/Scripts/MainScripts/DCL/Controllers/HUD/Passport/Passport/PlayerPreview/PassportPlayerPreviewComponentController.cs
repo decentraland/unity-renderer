@@ -25,7 +25,8 @@ namespace DCL.Social.Passports
             this.view = view;
             this.socialAnalytics = socialAnalytics;
 
-            view.PreviewCameraRotation.OnHorizontalRotation += RotateCharacterPreview;
+            if (view.PreviewCameraRotationController != null)
+                view.PreviewCameraRotationController.OnHorizontalRotation += RotateCharacterPreview;
             cancellationTokenSource = new CancellationTokenSource();
 
             previewController = characterPreviewFactory.Ref.Create(CharacterPreviewMode.WithoutHologram,
@@ -90,7 +91,9 @@ namespace DCL.Social.Passports
 
         public void Dispose()
         {
-            view.PreviewCameraRotation.OnHorizontalRotation -= RotateCharacterPreview;
+            if (view.PreviewCameraRotationController != null)
+                view.PreviewCameraRotationController.OnHorizontalRotation -= RotateCharacterPreview;
+
             cancellationTokenSource?.Cancel();
             cancellationTokenSource?.Dispose();
             cancellationTokenSource = null;

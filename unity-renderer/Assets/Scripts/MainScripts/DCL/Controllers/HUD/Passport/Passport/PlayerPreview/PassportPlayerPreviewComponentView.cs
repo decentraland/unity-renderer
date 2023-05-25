@@ -12,24 +12,39 @@ namespace DCL.Social.Passports
         public RawImage CharacterPreviewImage { get; private set; }
         public event Action<double> OnEndDragEvent;
 
-        [field: SerializeField]
-        public PreviewCameraRotation PreviewCameraRotation { get; private set; }
+        public PreviewCameraRotationController PreviewCameraRotationController => avatarPreviewRotationController;
+        private PreviewCameraRotationController avatarPreviewRotationController;
 
         [SerializeField] private ShowHideAnimator tutorialShowHide;
         [SerializeField] private GameObject loadingSpinner;
+
+        [Header("MOUSE INPUT CONFIGURATION")]
+        [SerializeField] private CharacterPreviewInputDetector characterPreviewInputDetector;
+        [SerializeField] internal InputAction_Hold firstClickAction;
+
+        [Header("ROTATE CONFIGURATION")]
+        [SerializeField] internal float rotationFactor = -30f;
+        [SerializeField] internal float slowDownTime = 0.5f;
 
         public override void Awake()
         {
             base.Awake();
 
-            PreviewCameraRotation.OnEndDragEvent += EndPreviewDrag;
+            avatarPreviewRotationController = new PreviewCameraRotationController(
+                firstClickAction,
+                rotationFactor,
+                slowDownTime,
+                characterPreviewInputDetector);
+
+            avatarPreviewRotationController.OnEndDragEvent += EndPreviewDrag;
         }
 
         public override void Dispose()
         {
             base.Dispose();
 
-            PreviewCameraRotation.OnEndDragEvent -= EndPreviewDrag;
+            avatarPreviewRotationController.OnEndDragEvent -= EndPreviewDrag;
+            avatarPreviewRotationController.Dispose();
         }
 
         public void HideTutorial()

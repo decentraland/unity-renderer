@@ -9,7 +9,7 @@ namespace DCL.Social.Passports
     {
         event Action<double> OnEndDragEvent;
         RenderTexture CharacterPreviewTexture { get; }
-        PreviewCameraRotation PreviewCameraRotation { get; }
+        PreviewCameraRotationController PreviewCameraRotationController { get; }
         void HideTutorial();
         void SetAsLoading(bool isLoading);
     }

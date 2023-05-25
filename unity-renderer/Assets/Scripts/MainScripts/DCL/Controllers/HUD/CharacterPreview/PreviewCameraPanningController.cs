@@ -3,6 +3,7 @@ using DCL.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Vector3 = UnityEngine.Vector3;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
@@ -17,7 +18,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private readonly bool allowVerticalPanning;
         private readonly bool allowHorizontalPanning;
         private readonly float inertiaDuration;
-        private readonly IPreviewCameraPanningDetector previewCameraPanningDetector;
+        private readonly ICharacterPreviewInputDetector characterPreviewInputDetector;
 
         private Vector3 lastMousePosition;
         private Vector3 lastPanningDeltaBeforeEndDrag;
@@ -30,7 +31,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             bool allowVerticalPanning,
             bool allowHorizontalPanning,
             float inertiaDuration,
-            IPreviewCameraPanningDetector previewCameraPanningDetector)
+            ICharacterPreviewInputDetector characterPreviewInputDetector)
         {
             this.secondClickAction = secondClickAction;
             this.middleClickAction = middleClickAction;
@@ -38,14 +39,14 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             this.allowVerticalPanning = allowVerticalPanning;
             this.allowHorizontalPanning = allowHorizontalPanning;
             this.inertiaDuration = inertiaDuration;
-            this.previewCameraPanningDetector = previewCameraPanningDetector;
+            this.characterPreviewInputDetector = characterPreviewInputDetector;
 
-            previewCameraPanningDetector.OnDragStarted += OnBeginDrag;
-            previewCameraPanningDetector.OnDragging += OnDrag;
-            previewCameraPanningDetector.OnDragFinished += OnEndDrag;
+            characterPreviewInputDetector.OnDragStarted += OnBeginDrag;
+            characterPreviewInputDetector.OnDragging += OnDrag;
+            characterPreviewInputDetector.OnDragFinished += OnEndDrag;
         }
 
-        private void OnBeginDrag()
+        private void OnBeginDrag(PointerEventData eventData)
         {
             if (!middleClickAction.isOn && !secondClickAction.isOn)
                 return;
@@ -55,7 +56,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             AudioScriptableObjects.buttonClick.Play(true);
         }
 
-        private void OnDrag()
+        private void OnDrag(PointerEventData eventData)
         {
             if (!middleClickAction.isOn && !secondClickAction.isOn)
                 return;
@@ -76,7 +77,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             OnPanning?.Invoke(panningDelta);
         }
 
-        private void OnEndDrag()
+        private void OnEndDrag(PointerEventData eventData)
         {
             if (lastPanningDeltaBeforeEndDrag.magnitude >= 0.01f)
                 InertiaAsync(cts.Token).Forget();
@@ -100,9 +101,9 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void Dispose()
         {
             cts.SafeCancelAndDispose();
-            previewCameraPanningDetector.OnDragStarted -= OnBeginDrag;
-            previewCameraPanningDetector.OnDragging -= OnDrag;
-            previewCameraPanningDetector.OnDragFinished -= OnEndDrag;
+            characterPreviewInputDetector.OnDragStarted -= OnBeginDrag;
+            characterPreviewInputDetector.OnDragging -= OnDrag;
+            characterPreviewInputDetector.OnDragFinished -= OnEndDrag;
         }
     }
 }
