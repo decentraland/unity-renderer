@@ -82,7 +82,7 @@ public class HUDBridge : MonoBehaviour
 
     public void SetSignupFlow()
     {
-        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("seamless_login"))
+        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("seamless_login_variant:enabled"))
             DataStore.i.HUDs.tosPopupVisible.Set(true, true);
         else
         {

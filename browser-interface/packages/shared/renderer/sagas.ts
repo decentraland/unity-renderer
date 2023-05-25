@@ -14,7 +14,7 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { receivePeerUserData } from 'shared/comms/peers'
 import { getExploreRealmsService } from 'shared/dao/selectors'
 import { waitingForRenderer } from 'shared/loading/types'
-import {getAllowedContentServer, getFeatureFlagEnabled} from 'shared/meta/selectors'
+import {getAllowedContentServer, getFeatureFlagVariantValue} from 'shared/meta/selectors'
 import {
   addProfileToLastSentProfileVersionAndCatalog,
   SendProfileToRenderer,
@@ -246,7 +246,7 @@ function* initializeRenderer(action: InitializeRenderer) {
 
 function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   if (action.payload.isSignUp) {
-    if(getFeatureFlagEnabled(store.getState(), 'seamless_login'))
+    if(getFeatureFlagVariantValue<"enabled" | "disabled">(store.getState(), 'seamless_login_variant') === "enabled")
     {
       const userId: string = yield select(getCurrentUserId)
       yield put(sendProfileToRenderer(userId))

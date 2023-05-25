@@ -46,7 +46,6 @@ import { deleteSession, retrieveLastGuestSession, retrieveLastSessionByAddress, 
 import { getCurrentIdentity, isGuestLogin } from './selectors'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
 import {
-  getFeatureFlagEnabled,
   getFeatureFlagVariantName,
   getFeatureFlagVariantValue,
   getWorldConfig
@@ -139,7 +138,7 @@ function* authenticate(action: AuthenticateAction) {
 
   // 3. continue with signin/signup (only not in preview)
   let isSignUp = avatar.version <= 0 && !PREVIEW
-  if(getFeatureFlagEnabled(store.getState(), 'seamless_login'))
+  if(getFeatureFlagVariantValue<"enabled" | "disabled">(store.getState(), 'seamless_login_variant') === "enabled")
   {
     const tosAccepted : boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
     isSignUp = !tosAccepted && !PREVIEW
