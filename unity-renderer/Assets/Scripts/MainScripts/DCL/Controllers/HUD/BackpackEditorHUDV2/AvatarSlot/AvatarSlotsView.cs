@@ -21,6 +21,15 @@ namespace DCL.Backpack
         public event Action<string> OnUnequipFromSlot;
         public event Action<string, bool> OnHideUnhidePressed;
 
+        private Dictionary<string, HashSet<string>> previouslyHidden;
+        public override void Awake()
+        {
+            previouslyHidden = new Dictionary<string, HashSet<string>>();
+
+            foreach (string category in WearableItem.CATEGORIES_PRIORITY)
+                previouslyHidden.Add(category, new HashSet<string>());
+        }
+
         public void CreateAvatarSlotSection(string sectionName, bool addSeparator)
         {
             avatarSlotSections.Add(sectionName, Instantiate(avatarSlotSectionPrefab, avatarSlotsContainer).transform);
@@ -79,10 +88,8 @@ namespace DCL.Backpack
                 avatarSlotComponentView.Value.SetOverrideHide(isHidden);
             }
 
-            Dictionary<string, HashSet<string>> previouslyHidden = new Dictionary<string, HashSet<string>>();
-
             foreach (string category in WearableItem.CATEGORIES_PRIORITY)
-                previouslyHidden.Add(category, new HashSet<string>());
+                previouslyHidden[category] = new HashSet<string>();
 
             foreach (string priorityCategory in WearableItem.CATEGORIES_PRIORITY)
             {
