@@ -14,7 +14,6 @@ using UnityEngine;
 
 namespace DCL.Controllers.LoadingScreenV2.Tests
 {
-    [Category("EditModeCI")]
     [Explicit(TestUtils.EXPLICIT_INSTANT_STEPS)]
     public class HintRequestServiceShould
     {
@@ -37,7 +36,6 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
              cancellationToken = new CancellationToken();
 
              preMadeTexture = new Texture2D(2, 2);
-             // hintTextureRequestHandler.DownloadTexture(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(preMadeTexture));
 
              // mock premade hint for scene response
              premadeHint1 = new Hint("https://example.com/image1.png", "title1", "body1", SourceTag.Event);
