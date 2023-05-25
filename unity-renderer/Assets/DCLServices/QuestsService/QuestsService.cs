@@ -1,5 +1,4 @@
-﻿using Castle.Core.Internal;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
@@ -43,7 +42,7 @@ namespace DCLServices.QuestsService
             userSubscribeCt?.Dispose();
             userSubscribeCt = null;
 
-            if (!userId.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(userId))
             {
                 userSubscribeCt = new CancellationTokenSource();
                 Subscribe(userSubscribeCt.Token).Forget();
@@ -80,7 +79,7 @@ namespace DCLServices.QuestsService
 
         public async UniTask<StartQuestResponse> StartQuest(string questId)
         {
-            if(userId.IsNullOrEmpty())
+            if(string.IsNullOrEmpty(userId))
                 throw new UserIdNotSetException();
 
             return await clientQuestsService.StartQuest(new StartQuestRequest { QuestId = questId, UserAddress = userId });
@@ -88,7 +87,7 @@ namespace DCLServices.QuestsService
 
         public async UniTask<AbortQuestResponse> AbortQuest(string questInstanceId)
         {
-            if(userId.IsNullOrEmpty())
+            if(string.IsNullOrEmpty(userId))
                 throw new UserIdNotSetException();
 
             return await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId, UserAddress = userId });

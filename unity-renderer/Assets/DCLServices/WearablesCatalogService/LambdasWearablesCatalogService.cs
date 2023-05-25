@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Tasks;
 using DCLServices.Lambdas;
 using MainScripts.DCL.Helpers.Utils;
@@ -35,6 +36,9 @@ namespace DCLServices.WearablesCatalogService
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
 
+#if UNITY_EDITOR
+        private readonly DebugConfig debugConfig = DataStore.i.debugConfig;
+#endif
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog,
             ILambdasService lambdasService)
         {
@@ -129,6 +133,14 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
+
+#if UNITY_EDITOR
+            string debugUserId = debugConfig.overrideUserID;
+
+            if (!string.IsNullOrEmpty(debugUserId))
+                userId = debugUserId;
+#endif
+
             var createNewPointer = false;
             if (!ownerWearablesPagePointers.TryGetValue((userId, pageSize), out var pagePointer))
             {
