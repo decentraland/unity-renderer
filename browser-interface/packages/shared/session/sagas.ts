@@ -45,11 +45,7 @@ import {
 import { deleteSession, retrieveLastGuestSession, retrieveLastSessionByAddress, storeSession } from './index'
 import { getCurrentIdentity, isGuestLogin } from './selectors'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
-import {
-  getFeatureFlagVariantName,
-  getFeatureFlagVariantValue,
-  getWorldConfig
-} from '../meta/selectors'
+import { getFeatureFlagVariantName, getFeatureFlagVariantValue, getWorldConfig } from '../meta/selectors'
 import { trackEvent } from '../analytics/trackEvent'
 import { setOnboardingState } from '../realm/actions'
 import { changeRealm } from '../dao'
@@ -138,9 +134,9 @@ function* authenticate(action: AuthenticateAction) {
 
   // 3. continue with signin/signup (only not in preview)
   let isSignUp = avatar.version <= 0 && !PREVIEW
-  if(getFeatureFlagVariantValue<"enabled" | "disabled">(store.getState(), 'seamless_login_variant') === "enabled")
-  {
-    const tosAccepted : boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
+  if (getFeatureFlagVariantValue<'enabled' | 'disabled'>(store.getState(), 'seamless_login_variant') === 'enabled') {
+
+    const tosAccepted: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
     isSignUp = !tosAccepted && !PREVIEW
   }
 
@@ -333,7 +329,6 @@ function* logout() {
 }
 
 function* redirectToSignUp() {
-
   const q = new URLSearchParams(globalThis.location.search)
   q.set('show_wallet', '1')
   globalThis.history.replaceState({ show_wallet: '1' }, 'show_wallet', `?${q.toString()}`)
