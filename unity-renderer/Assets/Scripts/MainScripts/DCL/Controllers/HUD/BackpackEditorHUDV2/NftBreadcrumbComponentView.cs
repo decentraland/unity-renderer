@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UIComponents.Scripts.Components;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.Backpack
 {

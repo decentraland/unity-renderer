@@ -29,7 +29,6 @@ namespace DCL.Backpack
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
         private readonly BackpackEditorHUDModel model = new ();
-        private readonly BackpackEditorHUDModel preEquipModel = new ();
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -69,6 +68,7 @@ namespace DCL.Backpack
 
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
             avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearableFromSlot;
+            avatarSlotsHUDController.OnHideUnhidePressed += UpdateOverrideHides;
 
             view.SetColorPickerVisibility(false);
             view.OnContinueSignup += SaveAvatarAndContinueSignupProcess;
@@ -94,11 +94,24 @@ namespace DCL.Backpack
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
             avatarSlotsHUDController.OnUnequipFromSlot -= UnEquipWearableFromSlot;
+            avatarSlotsHUDController.OnHideUnhidePressed -= UpdateOverrideHides;
             avatarSlotsHUDController.Dispose();
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.OnContinueSignup -= SaveAvatarAndContinueSignupProcess;
             view.Dispose();
+        }
+
+        private void UpdateOverrideHides(string category, bool toggleOn)
+        {
+            if (toggleOn)
+                model.hideOverrides.Add(category);
+            else
+                model.hideOverrides.Remove(category);
+
+            avatarIsDirty = true;
+            avatarSlotsHUDController.Recalculate(model.hideOverrides);
+            UpdateAvatarPreview();
         }
 
         private void OnBackpackVisibleChanged(bool current, bool _) =>
@@ -236,7 +249,7 @@ namespace DCL.Backpack
 
             model.bodyShape = bodyShape;
             dataStore.backpackV2.previewBodyShape.Set(bodyShape.id);
-            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id);
+            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id, model.hideOverrides);
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
             wearableGridController.Equip(bodyShape.id);
             wearableGridController.UpdateBodyShapeCompatibility(bodyShape.id);
@@ -316,21 +329,6 @@ namespace DCL.Backpack
                 Debug.LogError($"Cannot pre-visualize wearable {wearableId}");
                 return;
             }
-
-            preEquipModel.Update(model);
-
-            foreach (var w in preEquipModel.wearables.Values)
-            {
-                if (w.data.category != wearable.data.category)
-                    continue;
-
-                preEquipModel.wearables.Remove(w.id);
-                break;
-            }
-
-            preEquipModel.wearables.Add(wearableId, wearable);
-
-            view.UpdateAvatarPreview(preEquipModel.ToAvatarModel());
         }
 
         private void EquipWearableFromGrid(string wearableId, EquipWearableSource source) =>
@@ -371,7 +369,10 @@ namespace DCL.Backpack
 
                 model.wearables.Add(wearableId, wearable);
                 previewEquippedWearables.Add(wearableId);
-                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape);
+
+                ResetOverridesOfAffectedCategories(wearable);
+
+                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.hideOverrides);
                 wearableGridController.Equip(wearableId);
             }
 
@@ -418,7 +419,9 @@ namespace DCL.Backpack
             if (source != UnequipWearableSource.None)
                 backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
-            avatarSlotsHUDController.UnEquip(wearable.data.category);
+            ResetOverridesOfAffectedCategories(wearable);
+
+            avatarSlotsHUDController.UnEquip(wearable.data.category, model.hideOverrides);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
             wearableGridController.UnEquip(wearableId);
@@ -429,9 +432,17 @@ namespace DCL.Backpack
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
+        private void ResetOverridesOfAffectedCategories(WearableItem wearable)
+        {
+            if (wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
+                foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
+                    UpdateOverrideHides(s, false);
+        }
+
         private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
         {
             currentSlotSelected = isSelected ? slotCategory : null;
+            view.UpdateHideUnhideStatus(currentSlotSelected, model.hideOverrides);
             view.SetColorPickerVisibility(isSelected && supportColor);
 
             if (isSelected && supportColor)

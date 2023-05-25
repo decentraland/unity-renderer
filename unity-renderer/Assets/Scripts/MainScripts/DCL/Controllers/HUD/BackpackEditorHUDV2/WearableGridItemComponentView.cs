@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,10 +15,6 @@ namespace DCL.Backpack
         [SerializeField] internal Image categoryBackground;
         [SerializeField] internal GameObject selectedContainer;
         [SerializeField] internal GameObject equippedContainer;
-        [SerializeField] internal GameObject hoverUnequippedContainer;
-        [SerializeField] internal GameObject hoverEquippedContainer;
-        [SerializeField] internal GameObject hoverSelectedUnequippedContainer;
-        [SerializeField] internal GameObject hoverSelectedEquippedContainer;
         [SerializeField] internal GameObject isNewContainer;
         [SerializeField] internal ImageComponentView image;
         [SerializeField] internal Button interactButton;
@@ -25,9 +22,13 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject incompatibleContainer;
         [SerializeField] internal GameObject incompatibleTooltip;
 
+        private IButtonDoubleClick interactDoubleClick;
         private string lastThumbnailUrl;
 
         public WearableGridItemModel Model => model;
+
+        private int clicked = 0;
+        private float clickTime = 0;
 
         public event Action<WearableGridItemModel> OnSelected;
         public event Action<WearableGridItemModel> OnEquipped;
@@ -37,29 +38,30 @@ namespace DCL.Backpack
         {
             base.Awake();
             image.OnLoaded += PlayLoadingSound;
-            interactButton.onClick.AddListener(() =>
-            {
-                if (model.IsSelected)
-                {
-                    if (model.IsEquipped)
-                    {
-                        if (!model.UnEquipAllowed)
-                            return;
+            InitializeInteractButton();
+        }
 
-                        OnUnequipped?.Invoke(model);
-                    }
-                    else
-                        OnEquipped?.Invoke(model);
+        private void InitializeInteractButton()
+        {
+            interactDoubleClick = interactButton.gameObject.GetComponent<IButtonDoubleClick>();
+            interactDoubleClick.AlwaysPerformSingleClick = true;
+            interactDoubleClick.OnClick += () => { OnSelected?.Invoke(model); };
+            interactDoubleClick.OnDoubleClick += () =>
+            {
+                if (model.IsEquipped)
+                {
+                    if (!model.UnEquipAllowed)
+                        return;
+
+                    OnUnequipped?.Invoke(model);
                 }
                 else
-                    OnSelected?.Invoke(model);
-            });
+                    OnEquipped?.Invoke(model);
+            };
         }
 
-        public override void Dispose()
-        {
+        public override void Dispose() =>
             image.OnLoaded -= PlayLoadingSound;
-        }
 
         public override void OnFocus()
         {
@@ -80,10 +82,6 @@ namespace DCL.Backpack
         {
             selectedContainer.SetActive(model.IsSelected);
             equippedContainer.SetActive(model.IsEquipped);
-            hoverEquippedContainer.SetActive(!model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            hoverUnequippedContainer.SetActive(!model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            hoverSelectedUnequippedContainer.SetActive(model.IsSelected && !model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
-            hoverSelectedEquippedContainer.SetActive(model.UnEquipAllowed && model.IsSelected && model.IsEquipped && isFocused && model.IsCompatibleWithBodyShape);
             isNewContainer.SetActive(model.IsNew);
 
             // we gotta check for url changes, otherwise the image component will start a "loading" state, even if the url is the same

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -159,6 +160,9 @@ namespace DCL.Backpack
             colorPickerComponentView.SetShowOnlyPresetColors(isSkinMode);
             colorPickerComponentView.SetColorList(isSkinMode ? skinColorPresetsSO.colors : colorPresetsSO.colors);
         }
+
+        public void UpdateHideUnhideStatus(string slotCategory, HashSet<string> hideOverrides) =>
+            avatarSlotsView.SetHideUnhideStatus(slotCategory, hideOverrides.Contains(slotCategory));
 
         public void SetColorPickerValue(Color color)
         {

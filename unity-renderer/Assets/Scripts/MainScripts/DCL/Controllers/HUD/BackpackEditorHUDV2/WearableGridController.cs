@@ -40,6 +40,7 @@ namespace DCL.Backpack
         public event Action<string> OnWearableSelected;
         public event Action<string, EquipWearableSource> OnWearableEquipped;
         public event Action<string, UnequipWearableSource> OnWearableUnequipped;
+        public event Action<string, bool> OnHideUnhidePressed;
 
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
