@@ -3,27 +3,49 @@ using DCL.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Vector3 = UnityEngine.Vector3;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
-    public class PreviewCameraPanning : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class PreviewCameraPanningController
     {
         public event Action<Vector3> OnPanning;
 
-        [SerializeField] internal InputAction_Hold secondClickAction;
-        [SerializeField] internal InputAction_Hold middleClickAction;
-        [SerializeField] internal float panSpeed = 0.2f;
-        [SerializeField] internal bool allowVerticalPanning = true;
-        [SerializeField] internal bool allowHorizontalPanning = true;
-        [SerializeField] internal float inertiaDuration = 0.5f;
+        private readonly InputAction_Hold secondClickAction;
+        private readonly InputAction_Hold middleClickAction;
+        private readonly float panSpeed;
+        private readonly bool allowVerticalPanning;
+        private readonly bool allowHorizontalPanning;
+        private readonly float inertiaDuration;
+        private readonly IPreviewCameraPanningDetector previewCameraPanningDetector;
 
         private Vector3 lastMousePosition;
         private Vector3 lastPanningDeltaBeforeEndDrag;
         private CancellationTokenSource cts = new ();
 
-        public void OnBeginDrag(PointerEventData eventData)
+        public PreviewCameraPanningController(
+            InputAction_Hold secondClickAction,
+            InputAction_Hold middleClickAction,
+            float panSpeed,
+            bool allowVerticalPanning,
+            bool allowHorizontalPanning,
+            float inertiaDuration,
+            IPreviewCameraPanningDetector previewCameraPanningDetector)
+        {
+            this.secondClickAction = secondClickAction;
+            this.middleClickAction = middleClickAction;
+            this.panSpeed = panSpeed;
+            this.allowVerticalPanning = allowVerticalPanning;
+            this.allowHorizontalPanning = allowHorizontalPanning;
+            this.inertiaDuration = inertiaDuration;
+            this.previewCameraPanningDetector = previewCameraPanningDetector;
+
+            previewCameraPanningDetector.OnDragStarted += OnBeginDrag;
+            previewCameraPanningDetector.OnDragging += OnDrag;
+            previewCameraPanningDetector.OnDragFinished += OnEndDrag;
+        }
+
+        private void OnBeginDrag()
         {
             if (!middleClickAction.isOn && !secondClickAction.isOn)
                 return;
@@ -33,7 +55,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             AudioScriptableObjects.buttonClick.Play(true);
         }
 
-        public void OnDrag(PointerEventData eventData)
+        private void OnDrag()
         {
             if (!middleClickAction.isOn && !secondClickAction.isOn)
                 return;
@@ -54,7 +76,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             OnPanning?.Invoke(panningDelta);
         }
 
-        public void OnEndDrag(PointerEventData eventData)
+        private void OnEndDrag()
         {
             if (lastPanningDeltaBeforeEndDrag.magnitude >= 0.01f)
                 InertiaAsync(cts.Token).Forget();
@@ -75,7 +97,12 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             }
         }
 
-        private void OnDestroy() =>
+        public void Dispose()
+        {
             cts.SafeCancelAndDispose();
+            previewCameraPanningDetector.OnDragStarted -= OnBeginDrag;
+            previewCameraPanningDetector.OnDragging -= OnDrag;
+            previewCameraPanningDetector.OnDragFinished -= OnEndDrag;
+        }
     }
 }

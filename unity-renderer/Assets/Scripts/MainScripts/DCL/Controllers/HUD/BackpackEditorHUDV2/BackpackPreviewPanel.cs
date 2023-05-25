@@ -22,14 +22,25 @@ namespace DCL.Backpack
 
         [SerializeField] private RectTransform avatarPreviewPanel;
         [SerializeField] private PreviewCameraRotation avatarPreviewRotation;
-        [SerializeField] private PreviewCameraPanning avatarPreviewPanning;
         [SerializeField] private PreviewCameraZoom avatarPreviewZoom;
         [SerializeField] private RawImage avatarPreviewImage;
         [SerializeField] internal GameObject avatarPreviewLoadingSpinner;
 
+        [Header("MOUSE INPUT CONFIGURATION")]
+        [SerializeField] internal InputAction_Hold secondClickAction;
+        [SerializeField] internal InputAction_Hold middleClickAction;
+
+        [Header("PANNING CONFIGURATION")]
+        [SerializeField] private PreviewCameraPanningDetector previewCameraPanningDetector;
+        [SerializeField] internal float panSpeed = 0.2f;
+        [SerializeField] internal bool allowVerticalPanning = true;
+        [SerializeField] internal bool allowHorizontalPanning = false;
+        [SerializeField] internal float panningInertiaDuration = 0.5f;
+
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
         private ICharacterPreviewController characterPreviewController;
+        private PreviewCameraPanningController avatarPreviewPanningController;
         private float prevRenderScale = 1.0f;
 
         public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
@@ -45,8 +56,18 @@ namespace DCL.Backpack
                 CAMERA_ZOOM_CENTER, CAMERA_ZOOM_BOTTOM_MAX_OFFSET, CAMERA_ZOOM_TOP_MAX_OFFSET);
             characterPreviewController.SetFocus(PreviewCameraFocus.DefaultEditing);
             avatarPreviewRotation.OnHorizontalRotation += OnPreviewRotation;
-            avatarPreviewPanning.OnPanning += OnPreviewPanning;
             avatarPreviewZoom.OnZoom += OnPreviewZoom;
+
+            avatarPreviewPanningController = new PreviewCameraPanningController(
+                secondClickAction,
+                middleClickAction,
+                panSpeed,
+                allowVerticalPanning,
+                allowHorizontalPanning,
+                panningInertiaDuration,
+                previewCameraPanningDetector);
+
+            avatarPreviewPanningController.OnPanning += OnPreviewPanningController;
         }
 
         public override void Dispose()
@@ -54,8 +75,10 @@ namespace DCL.Backpack
             base.Dispose();
 
             avatarPreviewRotation.OnHorizontalRotation -= OnPreviewRotation;
-            avatarPreviewPanning.OnPanning -= OnPreviewPanning;
             avatarPreviewZoom.OnZoom -= OnPreviewZoom;
+
+            avatarPreviewPanningController.OnPanning -= OnPreviewPanningController;
+            avatarPreviewPanningController.Dispose();
         }
 
         public override void RefreshControl() { }
@@ -101,7 +124,7 @@ namespace DCL.Backpack
         private void OnPreviewRotation(float angularVelocity) =>
             characterPreviewController.Rotate(angularVelocity);
 
-        private void OnPreviewPanning(Vector3 positionDelta) =>
+        private void OnPreviewPanningController(Vector3 positionDelta) =>
             characterPreviewController.MoveCamera(positionDelta, true);
 
         private void OnPreviewZoom(Vector3 delta) =>
