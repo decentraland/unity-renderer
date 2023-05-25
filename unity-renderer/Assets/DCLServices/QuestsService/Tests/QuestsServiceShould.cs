@@ -9,6 +9,7 @@ using Task = System.Threading.Tasks.Task;
 namespace DCLServices.QuestsService.Tests
 {
     [Category("EditModeCI")]
+    [Explicit(TestUtils.EXPLICIT_INSTANT_STEPS)]
     public class QuestsServiceShould
     {
         private QuestsService questsService;
