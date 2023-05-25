@@ -453,6 +453,9 @@ namespace DCL.Social.Friends
                 case UpdateFriendshipResponse.ResponseOneofCase.TooManyRequestsError:
                     Debug.LogErrorFormat("Got Too many requests error {0} {1} while trying to update friendship", friendId, error.TooManyRequestsError.Message);
                     break;
+                case UpdateFriendshipResponse.ResponseOneofCase.BadRequestError:
+                    Debug.LogErrorFormat("Got Bad request {0} {1} while trying to update friendship", friendId, error.BadRequestError.Message);
+                    break;
                 default: throw new ArgumentOutOfRangeException(nameof(error), error, null);
             }
         }
