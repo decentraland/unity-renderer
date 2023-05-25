@@ -71,9 +71,9 @@ namespace DCL.Backpack
             backpackFiltersController.OnThirdPartyCollectionChanged += SetThirdPartCollectionIds;
             backpackFiltersController.OnSortByChanged += SetSorting;
             backpackFiltersController.OnSearchTextChanged += SetTextFilter;
-            backpackFiltersController.OnCollectionTypeChanged += SetCollectionType;
+            backpackFiltersController.OnCollectionTypeChanged += SetCollectionTypeFromFilterSelection;
 
-            avatarSlotsHUDController.OnToggleSlot += SetCategory;
+            avatarSlotsHUDController.OnToggleSlot += SetCategoryFromFilterSelection;
         }
 
         public void Dispose()
@@ -89,10 +89,10 @@ namespace DCL.Backpack
             backpackFiltersController.OnThirdPartyCollectionChanged -= SetThirdPartCollectionIds;
             backpackFiltersController.OnSortByChanged -= SetSorting;
             backpackFiltersController.OnSearchTextChanged -= SetTextFilter;
-            backpackFiltersController.OnCollectionTypeChanged -= SetCollectionType;
+            backpackFiltersController.OnCollectionTypeChanged -= SetCollectionTypeFromFilterSelection;
             backpackFiltersController.Dispose();
 
-            avatarSlotsHUDController.OnToggleSlot -= SetCategory;
+            avatarSlotsHUDController.OnToggleSlot -= SetCategoryFromFilterSelection;
             avatarSlotsHUDController.Dispose();
 
             view.Dispose();
@@ -324,10 +324,7 @@ namespace DCL.Backpack
             string filter = filters[^1];
 
             if (filter.StartsWith(NAME_FILTER_REF))
-            {
-                nameFilter = null;
-                backpackFiltersController.ClearTextSearch(false);
-            }
+                ClearTextFilter(false);
             else if (filter.StartsWith(CATEGORY_FILTER_REF))
             {
                 avatarSlotsHUDController.ClearSlotSelection(filter[9..]);
@@ -369,7 +366,7 @@ namespace DCL.Backpack
             view.SetInfoCardVisible(false);
         }
 
-        private void SetCollectionType(NftCollectionType collectionType)
+        private void SetCollectionTypeFromFilterSelection(NftCollectionType collectionType)
         {
             collectionTypeMask = collectionType;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
@@ -377,7 +374,26 @@ namespace DCL.Backpack
             view.SetInfoCardVisible(false);
         }
 
-        private void SetCategory(string category, bool supportColor, bool isSelected)
+        private void SetCategoryFromFilterSelection(string category, bool supportColor, bool isSelected)
+        {
+            ClearTextFilter(false);
+            SetCategory(category, isSelected);
+        }
+
+        private void ClearTextFilter(bool fetchWearables)
+        {
+            nameFilter = null;
+            backpackFiltersController.ClearTextSearch(false);
+
+            if (fetchWearables)
+            {
+                filtersCancellationToken = filtersCancellationToken.SafeRestart();
+                ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
+                view.SetInfoCardVisible(false);
+            }
+        }
+
+        private void SetCategory(string category, bool isSelected)
         {
             categoryFilter = isSelected ? category : null;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();

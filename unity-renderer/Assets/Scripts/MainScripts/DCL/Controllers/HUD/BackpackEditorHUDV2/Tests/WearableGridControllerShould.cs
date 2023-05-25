@@ -996,5 +996,16 @@ namespace DCL.Backpack
 
             slotsView.Received(1).DisablePreviousSlot("upper_body");
         }
+
+        [Test]
+        public void ClearTextFilterWhenCategorySlotIsSelected()
+        {
+            filtersView.OnSearchTextChanged += Raise.Event<Action<string>>("festival");
+            filtersView.ClearReceivedCalls();
+
+            slotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>("upper_body", false, true);
+
+            filtersView.Received(1).SetSearchText(null, false);
+        }
     }
 }
