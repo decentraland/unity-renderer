@@ -50,7 +50,7 @@ namespace DCL.ECS7
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
 
-            sceneNumberMapping = new Dictionary<int, IParcelScene>(81);
+            sceneNumberMapping = new Dictionary<int, IParcelScene>(81); // Scene Load Radius 4 -> max scenes 81
 
             sceneStateHandler = new SceneStateHandler(
                 crdtContext,
