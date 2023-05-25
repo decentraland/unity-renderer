@@ -9,6 +9,7 @@ using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using DefaultWearables = WearableLiterals.DefaultWearables;
@@ -58,55 +59,52 @@ namespace Test.AvatarSystem
         [TearDown]
         public void TearDown() { curator.Dispose(); }
 
-        [UnityTest]
-        public IEnumerator CurateFollowingHideOrder() =>
-            UniTask.ToCoroutine(async () =>
-            {
-                (WearableItem bodyshape,
+        [Test]
+        public async Task CurateFollowingHideOrder()
+        {
+            (WearableItem bodyshape,
                         WearableItem eyes,
                         WearableItem eyebrows,
                         WearableItem mouth,
                         List<WearableItem> wearables,
                         List<WearableItem> emotes)
                     = await curator.Curate(
-                        new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE},
+                        new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE },
                         new[] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id", "helmet_id", "mask_id" }, new string[] { });
 
-                Assert.IsFalse(wearables.Contains(catalog["mask_id"]));
-                Assert.IsTrue(wearables.Contains(catalog["helmet_id"]));
-            });
+            Assert.IsFalse(wearables.Contains(catalog["mask_id"]));
+            Assert.IsTrue(wearables.Contains(catalog["helmet_id"]));
+        }
 
-        [UnityTest]
-        public IEnumerator CurateWithHideOverrides() =>
-            UniTask.ToCoroutine(async () =>
-            {
-                (WearableItem bodyshape,
+        [Test]
+        public async Task CurateWithHideOverrides()
+        {
+            (WearableItem bodyshape,
                         WearableItem eyes,
                         WearableItem eyebrows,
                         WearableItem mouth,
                         List<WearableItem> wearables,
                         List<WearableItem> emotes)
                     = await curator.Curate(
-                        new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE},
+                        new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE },
                         new[] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id", "tiara_id", "top_head_id" }, new string[] { });
 
-                Assert.IsFalse(wearables.Contains(catalog["tiara_id"]));
+            Assert.IsFalse(wearables.Contains(catalog["tiara_id"]));
 
-                (WearableItem bodyshape2,
-                        WearableItem eyes2,
-                        WearableItem eyebrows2,
-                        WearableItem mouth2,
-                        List<WearableItem> wearables2,
-                        List<WearableItem> emotes2)
-                    = await curator.Curate(
-                        new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE, hideOverrides = new HashSet<string>() {"tiara"} },
+            (WearableItem bodyshape2,
+                    WearableItem eyes2,
+                    WearableItem eyebrows2,
+                    WearableItem mouth2,
+                    List<WearableItem> wearables2,
+                    List<WearableItem> emotes2)
+                = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE, hideOverrides = new HashSet<string>() { "tiara" } },
                         new[] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id", "tiara_id", "top_head_id" }, new string[] { });
 
-                Assert.IsTrue(wearables2.Contains(catalog["tiara_id"]));
-            });
+            Assert.IsTrue(wearables2.Contains(catalog["tiara_id"]));
+        }
 
-        [UnityTest]
-        public IEnumerator CurateAProperConstructedModel() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task CurateAProperConstructedModel()
         {
             (WearableItem bodyshape,
                     WearableItem eyes,
@@ -133,10 +131,10 @@ namespace Test.AvatarSystem
             Assert.NotNull(wearables);
             Assert.IsTrue(wearables.Contains(catalog["ubody_id"]));
             Assert.IsTrue(wearables.Contains(catalog["lbody_id"]));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator FallbackToADefaultSetOfWearables() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task FallbackToADefaultSetOfWearables()
         {
             (WearableItem bodyshape,
                 WearableItem eyes,
@@ -152,24 +150,24 @@ namespace Test.AvatarSystem
             Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.EYES)], eyes);
 
             Assert.Null(eyebrows);
-            
+
             Assert.NotNull(mouth);
             Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.MOUTH)], mouth);
 
             Assert.NotNull(wearables);
             Assert.IsFalse(wearables.Contains(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.UPPER_BODY)]));
             Assert.IsFalse(wearables.Contains(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.LOWER_BODY)]));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowOnCurateIfCancellationTokenIsCancelled() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowOnCurateIfCancellationTokenIsCancelled()
         {
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
 
             //Assert
             TestUtils.ThrowsAsync<OperationCanceledException>(curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, null, null, cts.Token));
-        });
+        }
 
         [Test]
         public void DisposeResolver()

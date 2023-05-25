@@ -118,8 +118,8 @@ namespace DCL.Backpack
 
         public void SetHideUnhideStatus(string slotCategory, bool isOverridden)
         {
-            if(avatarSlots.ContainsKey(slotCategory))
-                avatarSlots[slotCategory].SetOverrideHide(isOverridden);
+            if(avatarSlots.TryGetValue(slotCategory, out var slot))
+                slot.SetOverrideHide(isOverridden);
         }
 
         public override void RefreshControl()
