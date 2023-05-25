@@ -19,6 +19,7 @@ namespace DCL.ECSComponents
                 () => new GltfContainerHandler(
                     internalComponents.onPointerColliderComponent,
                     internalComponents.physicColliderComponent,
+                    internalComponents.customLayerColliderComponent,
                     internalComponents.renderersComponent,
                     internalComponents.GltfContainerLoadingStateComponent,
                     dataStoreEcs7,

@@ -22,6 +22,7 @@ namespace Tests
 
         private IInternalECSComponent<InternalColliders> pointerColliderComponent;
         private IInternalECSComponent<InternalColliders> physicColliderComponent;
+        private IInternalECSComponent<InternalColliders> customLayerColliderComponent;
         private IInternalECSComponent<InternalRenderers> renderersComponent;
         private IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent;
         private DataStore_ECS7 dataStoreEcs7;
@@ -56,11 +57,13 @@ namespace Tests
             renderersComponent = internalEcsComponents.renderersComponent;
             pointerColliderComponent = internalEcsComponents.onPointerColliderComponent;
             physicColliderComponent = internalEcsComponents.physicColliderComponent;
+            customLayerColliderComponent = internalEcsComponents.customLayerColliderComponent;
             gltfContainerLoadingStateComponent = internalEcsComponents.GltfContainerLoadingStateComponent;
             dataStoreEcs7 = new DataStore_ECS7();
 
             handler = new GltfContainerHandler(pointerColliderComponent,
                 physicColliderComponent,
+                customLayerColliderComponent,
                 renderersComponent,
                 gltfContainerLoadingStateComponent,
                 dataStoreEcs7,
