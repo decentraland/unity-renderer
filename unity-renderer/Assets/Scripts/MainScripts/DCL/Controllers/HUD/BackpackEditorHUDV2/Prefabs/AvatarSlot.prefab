@@ -392,7 +392,7 @@ MonoBehaviour:
   typeColorSupporting: {fileID: 11400000, guid: cabc2888038bd9642b681f41597ffe20,
     type: 2}
   typeIcons: {fileID: 11400000, guid: 9525caf9cd97d4aa1b91f145f3a604e3, type: 2}
-  nftContainer: {fileID: 0}
+  nftContainer: {fileID: 3382390140976046251}
   rarityBackgrounds: {fileID: 11400000, guid: 3f361f63120234ae8972eac66a946fa0, type: 2}
   typeImage: {fileID: 4329488436158027747}
   nftImage: {fileID: 8486726043931597902}
@@ -809,7 +809,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 101.52, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &6034613973485034670
