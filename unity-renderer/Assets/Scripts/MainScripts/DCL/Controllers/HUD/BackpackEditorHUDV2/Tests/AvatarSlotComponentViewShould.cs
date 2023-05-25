@@ -46,7 +46,7 @@ namespace DCL.Backpack
             nftTypePreviewCameraFocus.previewCameraFocusByNftType[0] = new NftTypePreviewCameraFocusConfig.NftTypePreviewCameraFocus
             {
                 nftType = TEST_CATEGORY,
-                cameraFocus = CharacterPreviewController.CameraFocus.FaceEditing,
+                cameraFocus = PreviewCameraFocus.FaceEditing,
             };
 
             nftRarityBackgroundMapping.rarityIcons = new SerializableKeyValuePair<string, Sprite>[1];
@@ -87,7 +87,7 @@ namespace DCL.Backpack
             Assert.IsTrue(nftTypeColorSupporting.IsColorSupportedByType(TEST_CATEGORY));
 
             var previewCamFocus = nftTypePreviewCameraFocus.GetPreviewCameraFocus(TEST_CATEGORY);
-            Assert.AreEqual(CharacterPreviewController.CameraFocus.FaceEditing, previewCamFocus);
+            Assert.AreEqual(PreviewCameraFocus.FaceEditing, previewCamFocus);
         }
 
         [Test]

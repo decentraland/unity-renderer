@@ -15,6 +15,6 @@ namespace DCL.Backpack
         public string wearableId;
         public string[] hidesList;
         public bool unEquipAllowed = true;
-        public CharacterPreviewController.CameraFocus previewCameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing;
+        public PreviewCameraFocus previewCameraFocus = PreviewCameraFocus.DefaultEditing;
     }
 }

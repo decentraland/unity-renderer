@@ -29,7 +29,7 @@ namespace DCL.Social.Passports
             cancellationTokenSource = new CancellationTokenSource();
 
             previewController = characterPreviewFactory.Ref.Create(CharacterPreviewMode.WithoutHologram,
-                view.CharacterPreviewTexture, true, CharacterPreviewController.CameraFocus.Preview);
+                view.CharacterPreviewTexture, true, PreviewCameraFocus.Preview);
 
             view.SetModel(new (TutorialEnabled));
             view.OnEndDragEvent += EndPreviewDrag;

@@ -203,10 +203,10 @@ namespace DCL.Backpack
         }
 
         [Test]
-        [TestCase("eyes", CharacterPreviewController.CameraFocus.FaceEditing)]
-        [TestCase("body_shape", CharacterPreviewController.CameraFocus.DefaultEditing)]
-        [TestCase("non_existing_category", CharacterPreviewController.CameraFocus.DefaultEditing)]
-        public void ToggleSlotCorrectly(string slotCategory, CharacterPreviewController.CameraFocus previewCameraFocus)
+        [TestCase("eyes", PreviewCameraFocus.FaceEditing)]
+        [TestCase("body_shape", PreviewCameraFocus.DefaultEditing)]
+        [TestCase("non_existing_category", PreviewCameraFocus.DefaultEditing)]
+        public void ToggleSlotCorrectly(string slotCategory, PreviewCameraFocus previewCameraFocus)
         {
             // Act
             avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, previewCameraFocus, true);

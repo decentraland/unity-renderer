@@ -9,18 +9,18 @@ public class NftTypePreviewCameraFocusConfig : ScriptableObject
     public class NftTypePreviewCameraFocus
     {
         public string nftType;
-        public CharacterPreviewController.CameraFocus cameraFocus;
+        public PreviewCameraFocus cameraFocus;
     }
 
     [SerializeField] public NftTypePreviewCameraFocus[] previewCameraFocusByNftType;
 
-    public CharacterPreviewController.CameraFocus GetPreviewCameraFocus(string category)
+    public PreviewCameraFocus GetPreviewCameraFocus(string category)
     {
         foreach (var nftType in previewCameraFocusByNftType)
         {
             if(nftType.nftType == category)
                 return nftType.cameraFocus;
         }
-        return CharacterPreviewController.CameraFocus.DefaultEditing;
+        return PreviewCameraFocus.DefaultEditing;
     }
 }

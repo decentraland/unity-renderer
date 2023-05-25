@@ -38,7 +38,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         public Toggle toggle;
         public Canvas canvas;
         public bool enabledByDefault;
-        public CharacterPreviewController.CameraFocus focus = CharacterPreviewController.CameraFocus.DefaultEditing;
+        public PreviewCameraFocus focus = PreviewCameraFocus.DefaultEditing;
 
         //To remove when we refactor this to avoid ToggleGroup issues when quitting application
         public void Initialize() { Application.quitting += () => toggle.onValueChanged.RemoveAllListeners(); }
@@ -691,7 +691,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
                 ResetPreviewEmote();
             }
 
-            CharacterPreview.SetFocus(global::MainScripts.DCL.Controllers.HUD.CharacterPreview.CharacterPreviewController.CameraFocus.DefaultEditing);
+            CharacterPreview.SetFocus(PreviewCameraFocus.DefaultEditing);
             emotesCustomizationDataStore.isEmotesCustomizationSelected.Set(true, notifyEvent: false);
         });
     }

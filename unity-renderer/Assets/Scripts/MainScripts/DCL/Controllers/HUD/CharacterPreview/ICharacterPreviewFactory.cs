@@ -9,7 +9,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             CharacterPreviewMode loadingMode,
             RenderTexture renderTexture,
             bool isVisible,
-            CharacterPreviewController.CameraFocus cameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing,
+            PreviewCameraFocus previewCameraFocus = PreviewCameraFocus.DefaultEditing,
             bool isAvatarShadowActive = false);
     }
 }

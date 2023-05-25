@@ -10,7 +10,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private static readonly Vector3 COORDS_TO_START = new (0, 50, 0);
         private static readonly Vector3 VECTOR_BETWEEN_INSTANCES = new (3, 0, 3);
 
-        private int controllersCount = 0;
+        private int controllersCount;
 
         private CharacterPreviewController prefab;
 
@@ -18,7 +18,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             CharacterPreviewMode loadingMode,
             RenderTexture renderTexture,
             bool isVisible,
-            CharacterPreviewController.CameraFocus cameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing,
+            PreviewCameraFocus previewCameraFocus = PreviewCameraFocus.DefaultEditing,
             bool isAvatarShadowActive = false)
         {
             var instance = Object.Instantiate(prefab);
@@ -26,10 +26,10 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
             var characterPreviewController = instance.gameObject.GetComponent<CharacterPreviewController>();
 
-            characterPreviewController.Initialize(loadingMode, renderTexture);
+            characterPreviewController.Initialize(loadingMode, renderTexture, new PreviewCameraController());
             characterPreviewController.SetEnabled(isVisible);
             characterPreviewController.SetCharacterShadowActive(isAvatarShadowActive);
-            characterPreviewController.SetFocus(cameraFocus, false);
+            characterPreviewController.SetFocus(previewCameraFocus, false);
 
             controllersCount++;
 
@@ -38,9 +38,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         void IDisposable.Dispose() { }
 
-        void IService.Initialize()
-        {
+        void IService.Initialize() =>
             prefab = Resources.Load<CharacterPreviewController>("CharacterPreview");
-        }
     }
 }

@@ -38,12 +38,12 @@ namespace DCL.Backpack
                 loadingMode: CharacterPreviewMode.WithoutHologram,
                 renderTexture: (RenderTexture) avatarPreviewImage.texture,
                 isVisible: false,
-                cameraFocus: CharacterPreviewController.CameraFocus.DefaultEditing,
+                previewCameraFocus: PreviewCameraFocus.DefaultEditing,
                 isAvatarShadowActive: true);
             characterPreviewController.SetCameraLimits(CAMERA_LIMITS);
             characterPreviewController.ConfigureZoom(
                 CAMERA_ZOOM_CENTER, CAMERA_ZOOM_BOTTOM_MAX_OFFSET, CAMERA_ZOOM_TOP_MAX_OFFSET);
-            characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
+            characterPreviewController.SetFocus(PreviewCameraFocus.DefaultEditing);
             avatarPreviewRotation.OnHorizontalRotation += OnPreviewRotation;
             avatarPreviewPanning.OnPanning += OnPreviewPanning;
             avatarPreviewZoom.OnZoom += OnPreviewZoom;
@@ -95,7 +95,7 @@ namespace DCL.Backpack
                 (face256, body) => onSuccess?.Invoke(face256, body),
                 () => onFailed?.Invoke());
 
-        public void SetFocus(CharacterPreviewController.CameraFocus focus, bool useTransition = true) =>
+        public void SetFocus(PreviewCameraFocus focus, bool useTransition = true) =>
             characterPreviewController.SetFocus(focus, useTransition);
 
         private void OnPreviewRotation(float angularVelocity) =>

@@ -5,7 +5,7 @@ namespace DCL.Backpack
 {
     public interface IAvatarSlotsView
     {
-        delegate void ToggleAvatarSlotDelegate(string slotCategory, bool supportColor, CharacterPreviewController.CameraFocus previewCameraFocus, bool isSelected);
+        delegate void ToggleAvatarSlotDelegate(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected);
         event ToggleAvatarSlotDelegate OnToggleAvatarSlot;
 
         event Action<string> OnUnequipFromSlot;

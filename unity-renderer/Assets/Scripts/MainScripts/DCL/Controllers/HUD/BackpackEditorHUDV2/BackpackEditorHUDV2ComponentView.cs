@@ -144,7 +144,7 @@ namespace DCL.Backpack
             backpackPreviewPanel.SetLoadingActive(true);
         }
 
-        public void SetAvatarPreviewFocus(CharacterPreviewController.CameraFocus focus, bool useTransition = true) =>
+        public void SetAvatarPreviewFocus(PreviewCameraFocus focus, bool useTransition = true) =>
             backpackPreviewPanel.SetFocus(focus, useTransition);
 
         public void TakeSnapshotsAfterStopPreviewAnimation(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
@@ -212,7 +212,7 @@ namespace DCL.Backpack
         private void ResetPreviewPanel()
         {
             ResetPreviewEmote();
-            SetAvatarPreviewFocus(CharacterPreviewController.CameraFocus.DefaultEditing, false);
+            SetAvatarPreviewFocus(PreviewCameraFocus.DefaultEditing, false);
         }
 
         private void UpdateAvatarModelWhenNeeded()

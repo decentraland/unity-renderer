@@ -26,7 +26,7 @@ namespace DCL.Backpack
                 Arg.Any<CharacterPreviewMode>(),
                 Arg.Any<RenderTexture>(),
                 Arg.Any<bool>(),
-                Arg.Any<CharacterPreviewController.CameraFocus>(),
+                Arg.Any<PreviewCameraFocus>(),
                 Arg.Any<bool>()).Returns(characterPreviewController);
 
 
@@ -179,9 +179,9 @@ namespace DCL.Backpack
         }
 
         [Test]
-        [TestCase(CharacterPreviewController.CameraFocus.DefaultEditing, true)]
-        [TestCase(CharacterPreviewController.CameraFocus.FaceEditing, false)]
-        public void SetAvatarPreviewFocusCorrectly(CharacterPreviewController.CameraFocus focus, bool useTransition)
+        [TestCase(PreviewCameraFocus.DefaultEditing, true)]
+        [TestCase(PreviewCameraFocus.FaceEditing, false)]
+        public void SetAvatarPreviewFocusCorrectly(PreviewCameraFocus focus, bool useTransition)
         {
             // Act
             backpackEditorHUDV2ComponentView.SetAvatarPreviewFocus(focus, useTransition);

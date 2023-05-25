@@ -3067,7 +3067,7 @@ MonoBehaviour:
   m_LayoutPriority: 1
 --- !u!95 &4292949885884074233
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3084,7 +3084,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2987560495814082926
 GameObject:
   m_ObjectHideFlags: 0
@@ -8636,6 +8637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52af82d546e9b41d089ac247180bc813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstClickAction: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
   rotationFactor: -15
   slowDownTime: 0.5
 --- !u!1 &7659616090356243264
@@ -12981,12 +12983,12 @@ PrefabInstance:
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -12996,7 +12998,7 @@ PrefabInstance:
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -70
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3034530879239878528, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -13222,12 +13224,17 @@ PrefabInstance:
     - target: {fileID: 7899743641607750033, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7955388171955735810, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_Color.a
       value: 0.74509805
+      objectReference: {fileID: 0}
+    - target: {fileID: 8341972100564397293, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 15.9
       objectReference: {fileID: 0}
     - target: {fileID: 8341972100564397293, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}

@@ -7,7 +7,7 @@ namespace DCL.Backpack
 {
     public class AvatarSlotsHUDController
     {
-        public event Action<string, bool, CharacterPreviewController.CameraFocus, bool> OnToggleSlot;
+        public event Action<string, bool, PreviewCameraFocus, bool> OnToggleSlot;
 
         private readonly IAvatarSlotsView avatarSlotsView;
         private string lastSelectedSlot;
@@ -36,7 +36,7 @@ namespace DCL.Backpack
         }
 
         // TODO: this method should be private
-        public void ToggleSlot(string slotCategory, bool supportColor, CharacterPreviewController.CameraFocus previewCameraFocus, bool isSelected)
+        public void ToggleSlot(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
         {
             if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
                 avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);

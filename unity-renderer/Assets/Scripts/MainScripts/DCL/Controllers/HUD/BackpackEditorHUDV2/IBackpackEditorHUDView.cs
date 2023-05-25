@@ -21,7 +21,7 @@ namespace DCL.Backpack
         void PlayPreviewEmote(string emoteId, long timestamp);
         void ResetPreviewEmote();
         void UpdateAvatarPreview(AvatarModel avatarModel);
-        void SetAvatarPreviewFocus(CharacterPreviewController.CameraFocus focus, bool useTransition = true);
+        void SetAvatarPreviewFocus(PreviewCameraFocus focus, bool useTransition = true);
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
         void SetColorPickerVisibility(bool isActive);
         void SetColorPickerAsSkinMode(bool isSkinMode);
