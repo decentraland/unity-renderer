@@ -499,17 +499,17 @@ namespace DCL.Backpack
         {
             string equipEmote = category switch
                                 {
-                                    WearableLiterals.Categories.FEET => GetRandomizedName("Outfit_Shoes_v0", 2),
-                                    WearableLiterals.Categories.LOWER_BODY => GetRandomizedName("Outfit_Lower_v0", 3),
-                                    WearableLiterals.Categories.UPPER_BODY => GetRandomizedName("Outfit_Upper_v0", 3),
-                                    WearableLiterals.Categories.EYEWEAR => GetRandomizedName("Outfit_Accessories_v0", 3),
-                                    WearableLiterals.Categories.TIARA => GetRandomizedName("Outfit_Accessories_v0", 3),
-                                    WearableLiterals.Categories.EARRING => GetRandomizedName("Outfit_Accessories_v0", 3),
-                                    WearableLiterals.Categories.HAT => GetRandomizedName("Outfit_Accessories_v0", 3),
-                                    WearableLiterals.Categories.TOP_HEAD => GetRandomizedName("Outfit_Accessories_v0", 3),
-                                    WearableLiterals.Categories.HELMET => GetRandomizedName("Outfit_Accessories_v0", 3),
-                                    WearableLiterals.Categories.MASK => GetRandomizedName("Outfit_Accessories_v0", 3),
-                                    WearableLiterals.Categories.SKIN => GetRandomizedName("Outfit_Upper_v0", 3),
+                                    WearableLiterals.Categories.FEET => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_SHOES, 2),
+                                    WearableLiterals.Categories.LOWER_BODY => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_LOWER, 3),
+                                    WearableLiterals.Categories.UPPER_BODY => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_UPPER, 3),
+                                    WearableLiterals.Categories.EYEWEAR => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.TIARA => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.EARRING => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.HAT => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.TOP_HEAD => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.HELMET => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.MASK => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.SKIN => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_UPPER, 3),
                                     _ => string.Empty,
                                 };
 

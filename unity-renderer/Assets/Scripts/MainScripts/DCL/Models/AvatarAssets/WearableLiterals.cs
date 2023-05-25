@@ -100,4 +100,12 @@ public static class WearableLiterals
             return defaultWearables[(bodyShapeId, category)];
         }
     }
+
+    public static class DefaultEmotes
+    {
+        public const string OUTFIT_SHOES = "Outfit_Shoes_v0";
+        public const string OUTFIT_LOWER = "Outfit_Lower_v0";
+        public const string OUTFIT_UPPER = "Outfit_Upper_v0";
+        public const string OUTFIT_ACCESSORIES = "Outfit_Accessories_v0";
+    }
 }
