@@ -19,8 +19,11 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private Vector3 currentZoomVelocity;
         private CancellationTokenSource cts = new ();
 
-        public void OnPointerEnter(PointerEventData eventData) =>
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            cts = cts.SafeRestart();
             ZoomAsync(cts.Token).Forget();
+        }
 
         public void OnPointerExit(PointerEventData eventData)
         {
