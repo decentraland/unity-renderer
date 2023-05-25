@@ -72,7 +72,7 @@ namespace DCL.Backpack
                 slowDownTime,
                 characterPreviewInputDetector);
 
-            avatarPreviewRotationController.OnHorizontalRotation += OnPreviewRotationController;
+            avatarPreviewRotationController.OnHorizontalRotation += OnPreviewRotation;
 
             avatarPreviewPanningController = new PreviewCameraPanningController(
                 secondClickAction,
@@ -83,7 +83,7 @@ namespace DCL.Backpack
                 panningInertiaDuration,
                 characterPreviewInputDetector);
 
-            avatarPreviewPanningController.OnPanning += OnPreviewPanningController;
+            avatarPreviewPanningController.OnPanning += OnPreviewPanning;
 
             avatarPreviewZoomController = new PreviewCameraZoomController(
                 mouseWheelAction,
@@ -91,16 +91,16 @@ namespace DCL.Backpack
                 smoothTime,
                 characterPreviewInputDetector);
 
-            avatarPreviewZoomController.OnZoom += OnPreviewZoomController;
+            avatarPreviewZoomController.OnZoom += OnPreviewZoom;
         }
 
         public override void Dispose()
         {
             base.Dispose();
 
-            avatarPreviewRotationController.OnHorizontalRotation -= OnPreviewRotationController;
-            avatarPreviewPanningController.OnPanning -= OnPreviewPanningController;
-            avatarPreviewZoomController.OnZoom -= OnPreviewZoomController;
+            avatarPreviewRotationController.OnHorizontalRotation -= OnPreviewRotation;
+            avatarPreviewPanningController.OnPanning -= OnPreviewPanning;
+            avatarPreviewZoomController.OnZoom -= OnPreviewZoom;
             avatarPreviewRotationController.Dispose();
             avatarPreviewPanningController.Dispose();
             avatarPreviewZoomController.Dispose();
@@ -146,13 +146,13 @@ namespace DCL.Backpack
         public void SetFocus(PreviewCameraFocus focus, bool useTransition = true) =>
             characterPreviewController.SetFocus(focus, useTransition);
 
-        private void OnPreviewRotationController(float angularVelocity) =>
+        private void OnPreviewRotation(float angularVelocity) =>
             characterPreviewController.Rotate(angularVelocity);
 
-        private void OnPreviewPanningController(Vector3 positionDelta) =>
+        private void OnPreviewPanning(Vector3 positionDelta) =>
             characterPreviewController.MoveCamera(positionDelta, true);
 
-        private void OnPreviewZoomController(Vector3 delta) =>
+        private void OnPreviewZoom(Vector3 delta) =>
             characterPreviewController.MoveCamera(delta, true);
 
         // TODO: We have to investigate why we have to use this workaround to fix the preview rendering
