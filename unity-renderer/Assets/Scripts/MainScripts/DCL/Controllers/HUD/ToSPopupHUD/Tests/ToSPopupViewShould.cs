@@ -1,9 +1,10 @@
+using DCL.Helpers;
 using UnityEngine;
-using UnityEngine.UI;
 using NUnit.Framework;
 using UnityEditor;
 
 [Category("EditModeCI")]
+[Explicit(TestUtils.EXPLICIT_INSTANT_STEPS)]
 public class ToSPopupViewShould
 {
     private ToSPopupView view;
