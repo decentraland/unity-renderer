@@ -1,12 +1,7 @@
 {
   "name": "ToSPopupHUDTests",
   "rootNamespace": "",
-  "references": [
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:0ce750bfb1587d743b488e9d21e404c4",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
-    "GUID:81f3218b29e049144b175dad2ebbac1b",
-    "GUID:ef84d7ce90ba34f07be26ace428e9bc8"
+  "references": [    
   ],
   "includePlatforms": [
     "Editor"
@@ -15,13 +10,9 @@
   "allowUnsafeCode": false,
   "overrideReferences": true,
   "precompiledReferences": [
-    "nunit.framework.dll",
-    "NSubstitute.dll",
-    "System.Threading.Tasks.Extensions.dll"
   ],
   "autoReferenced": false,
   "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
   ],
   "versionDefines": [],
   "noEngineReferences": false
