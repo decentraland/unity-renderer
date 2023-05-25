@@ -1,5 +1,6 @@
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -25,6 +26,7 @@ namespace DCL.Backpack
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
         void SetColorPickerVisibility(bool isActive);
         void SetColorPickerAsSkinMode(bool isSkinMode);
+        void UpdateHideUnhideStatus(string slotCategory, HashSet<string> hideOverrides);
         void SetColorPickerValue(Color color);
         void ShowContinueSignup();
         void HideContinueSignup();

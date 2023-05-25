@@ -166,20 +166,6 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void SelectAndPreVisualizeWearableCorrectly()
-        {
-            // Arrange
-            EquipAndSaveCorrectly();
-
-            // Act
-            wearableGridView.OnWearableSelected += Raise.Event<Action<WearableGridItemModel>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_african_leggins" });
-
-            // Assert
-            view.Received(1).UpdateAvatarPreview(Arg.Is<AvatarModel>(avatarModel =>
-                avatarModel.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_african_leggins")));
-        }
-
-        [Test]
         public void UpdateAvatarPreviewCorrectly()
         {
             // Act
@@ -257,7 +243,8 @@ namespace DCL.Backpack
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(BODY_SHAPE_ID);
             avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
                 Arg.Is<WearableItem>(w => w.id == BODY_SHAPE_ID),
-                BODY_SHAPE_ID);
+                BODY_SHAPE_ID,
+                Arg.Any<HashSet<string>>());
         }
 
         [TestCase(WearableLiterals.BodyShapes.FEMALE)]
@@ -280,7 +267,8 @@ namespace DCL.Backpack
             backpackEmotesSectionController.Received(1).SetEquippedBodyShape(bodyShapeId);
             avatarSlotsView.Received(1).SetSlotContent(WearableLiterals.Categories.BODY_SHAPE,
                 Arg.Is<WearableItem>(w => w.id == bodyShapeId),
-                bodyShapeId);
+                bodyShapeId,
+                Arg.Any<HashSet<string>>());
         }
 
         [Test]

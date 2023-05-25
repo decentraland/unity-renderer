@@ -756,6 +756,7 @@ GameObject:
   - component: {fileID: 8807333678967151859}
   - component: {fileID: 3560771922875560365}
   - component: {fileID: 500316371534560565}
+  - component: {fileID: 6619035016525204940}
   m_Layer: 5
   m_Name: InteractButton
   m_TagString: Untagged
@@ -881,6 +882,18 @@ MonoBehaviour:
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 0}
+--- !u!114 &6619035016525204940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2591013439279457893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b67c80bfd284fff852386e90af89e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3107835224311206352
 GameObject:
   m_ObjectHideFlags: 0
@@ -2099,16 +2112,13 @@ MonoBehaviour:
   categoryBackground: {fileID: 8426946361206309972}
   selectedContainer: {fileID: 7244788150410464893}
   equippedContainer: {fileID: 8157210884129312552}
-  hoverUnequippedContainer: {fileID: 1515699385888417164}
-  hoverEquippedContainer: {fileID: 1062828274846125180}
-  hoverSelectedUnequippedContainer: {fileID: 2359974453176469686}
-  hoverSelectedEquippedContainer: {fileID: 2590922580496455929}
   isNewContainer: {fileID: 8928173404589500160}
   image: {fileID: 134086463821417477}
   interactButton: {fileID: 3560771922875560365}
   grayScaleMaterial: {fileID: 2100000, guid: ae7a50fe785304bc4b38cafd6ad212f3, type: 2}
   incompatibleContainer: {fileID: 3198579703257594712}
   incompatibleTooltip: {fileID: 4852417723843484900}
+  interactDoubleClick: {fileID: 6619035016525204940}
 --- !u!114 &6979477567029031272
 MonoBehaviour:
   m_ObjectHideFlags: 0
