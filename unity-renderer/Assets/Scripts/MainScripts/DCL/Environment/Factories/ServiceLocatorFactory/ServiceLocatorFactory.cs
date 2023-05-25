@@ -86,7 +86,7 @@ namespace DCL
             result.Register<ISocialApiBridge>(() =>
             {
                 ITransport TransportProvider() =>
-                    new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
+                    new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
 
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,

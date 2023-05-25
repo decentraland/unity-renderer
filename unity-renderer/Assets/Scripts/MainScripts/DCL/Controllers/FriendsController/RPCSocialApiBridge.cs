@@ -221,10 +221,8 @@ namespace DCL.Social.Friends
             await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
         }
 
-        public async UniTask<UserProfile> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default)
+        public async UniTask<UserProfile> AcceptFriendshipAsync(string friendId, CancellationToken cancellationToken = default)
         {
-            string userId = GetUserIdFromFriendRequestId(friendRequestId);
-
             var updateFriendshipPayload = new UpdateFriendshipPayload()
             {
                 Event =
@@ -232,7 +230,7 @@ namespace DCL.Social.Friends
                     {
                         Accept = new AcceptPayload()
                         {
-                            User = new User() { Address = userId }
+                            User = new User() { Address = friendId }
                         }
                     },
                 AuthToken = new Payload()
@@ -241,9 +239,9 @@ namespace DCL.Social.Friends
                 }
             };
 
-            await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
+            await this.UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
 
-            return await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(userId, cancellationToken);
+            return await userProfileWebInterfaceBridge.RequestFullUserProfileAsync(friendId, cancellationToken);
         }
 
         public async UniTask DeleteFriendshipAsync(string friendId, CancellationToken cancellationToken = default)
@@ -267,7 +265,7 @@ namespace DCL.Social.Friends
             await this.UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
         }
 
-        public async UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody, CancellationToken cancellationToken = default)
+        public async UniTask<FriendRequest> RequestFriendshipAsync(string friendId, string messageBody, CancellationToken cancellationToken = default)
         {
             var updateFriendshipPayload = new UpdateFriendshipPayload()
             {
@@ -276,7 +274,7 @@ namespace DCL.Social.Friends
                     Request = new RequestPayload()
                     {
                         Message = messageBody,
-                        User = new User() { Address = friendUserId },
+                        User = new User() { Address = friendId },
                     }
                 },
                 AuthToken = new Payload()
@@ -285,7 +283,7 @@ namespace DCL.Social.Friends
                 }
             };
 
-            return await UpdateFriendship(updateFriendshipPayload, friendUserId, cancellationToken);
+            return await UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
         }
 
         private async UniTask SubscribeToFriendshipEvents(CancellationToken cancellationToken = default)

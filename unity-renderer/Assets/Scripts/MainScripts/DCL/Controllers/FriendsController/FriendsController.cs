@@ -36,7 +36,7 @@ namespace DCL.Social.Friends
 
         private FeatureFlag featureFlags => dataStore.featureFlags.flags.Get();
 
-        private bool useSocialApiBridge => featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
+        private bool useSocialApiBridge => true; //featureFlags.IsFeatureEnabled(USE_SOCIAL_CLIENT_FEATURE_FLAG);
 
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
@@ -179,16 +179,11 @@ namespace DCL.Social.Friends
 
             if (friendRequest != null)
             {
-                if (incoming)
-                {
-                    incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                    incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
-                }
-                else
-                {
-                    outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                    outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
-                }
+                incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+
+                outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
             }
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
