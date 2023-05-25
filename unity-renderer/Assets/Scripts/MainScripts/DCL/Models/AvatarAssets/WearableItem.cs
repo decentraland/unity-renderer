@@ -11,7 +11,7 @@ public class WearableItem
     private const string THIRD_PARTY_COLLECTIONS_PATH = "collections-thirdparty";
     public static readonly List<string> CATEGORIES_PRIORITY = new ()
     {
-        "skin", "upper_body", "lower_body", "feet", "helmet", "hat", "top_head", "mask", "eyewear", "earring", "tiara",
+        "skin", "upper_body", "lower_body", "feet", "helmet", "hat", "top_head", "mask", "eyewear", "earring", "tiara", "hair", "eyebrows", "eyes", "mouth", "facial_hair", "body_shape"
     };
 
     public static readonly Dictionary<string, string> CATEGORIES_READABLE_MAPPING = new ()

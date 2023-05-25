@@ -103,7 +103,7 @@ namespace DCL.Backpack
                         continue;
 
                     //if category has already been processed, avoid processing hides
-                    if (previouslyHidden.ContainsKey(categoryToHide) && previouslyHidden[categoryToHide].Contains(priorityCategory))
+                    if (previouslyHidden[categoryToHide].Contains(priorityCategory))
                     {
                         avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
                         continue;
