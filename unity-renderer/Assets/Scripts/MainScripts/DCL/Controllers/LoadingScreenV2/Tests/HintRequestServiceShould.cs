@@ -121,41 +121,5 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
              Assert.IsEmpty(result);
          }
 
-         // [Test] // FD:: TODO: This test is failing because of the Environment requirement in SceneHintRequestSource
-         // public async Task ShouldRequestHintsFromSceneSource()
-         // {
-         //     // Arrange
-         //     string sceneJson = "scene.json";
-         //     var mockSceneController = Substitute.For<ISceneController>();
-         //     var mockScene = Substitute.For<IParcelScene>();
-         //     var mockSceneRensponse = new LoadParcelScenesMessage.UnityParcelScene
-         //     {
-         //         loadingScreenHints = new List<Hint> { premadeHint },
-         //     };
-         //     mockScene.sceneData.Returns(mockSceneRensponse);
-         //     var sourceTag = SourceTag.Scene;
-         //     var currentDestination = new Vector2Int(1, 1);
-         //
-         //     mockSceneController
-         //        .When(controller => controller.OnNewSceneAdded += Arg.Any<Action<IParcelScene>>())
-         //        .Do(info =>
-         //         {
-         //             var handler = info.Arg<Action<IParcelScene>>();
-         //             handler(mockScene);
-         //         });
-         //
-         //     // var sceneHintSource = new SceneHintRequestSource(sceneJson, sourceTag, mockSceneController, currentDestination);
-         //     var sceneHintSource = Substitute.For<SceneHintRequestSource>(sceneJson, sourceTag, mockSceneController, currentDestination);
-         //     sceneHintSource.CheckTargetSceneWithCoords(Arg.Any<IParcelScene>()).Returns(true);
-         //
-         //     // Act
-         //     var result = await sceneHintSource.GetHintsAsync(cancellationToken);
-         //
-         //     // Assert
-         //     Assert.AreEqual(1, result.Count);
-         //     Assert.AreEqual(premadeHint.Title, result[0].Title);
-         //     Assert.AreEqual(premadeHint.Body, result[0].Body);
-         // }
-
     }
 }
