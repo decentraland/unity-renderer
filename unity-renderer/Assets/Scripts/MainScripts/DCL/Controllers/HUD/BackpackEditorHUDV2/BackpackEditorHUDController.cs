@@ -370,10 +370,7 @@ namespace DCL.Backpack
                 model.wearables.Add(wearableId, wearable);
                 previewEquippedWearables.Add(wearableId);
 
-                //Reset override for affected categories of new equip
-                if(wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
-                    foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
-                        UpdateOverrideHides(s,false);
+                ResetOverridesOfAffectedCategories(wearable);
 
                 avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.hideOverrides);
                 wearableGridController.Equip(wearableId);
@@ -422,10 +419,7 @@ namespace DCL.Backpack
             if (source != UnequipWearableSource.None)
                 backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
-            //Reset override for affected categories of unequip
-            if(wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
-                foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
-                    UpdateOverrideHides(s,false);
+            ResetOverridesOfAffectedCategories(wearable);
 
             avatarSlotsHUDController.UnEquip(wearable.data.category, model.hideOverrides);
             model.wearables.Remove(wearableId);
@@ -436,6 +430,13 @@ namespace DCL.Backpack
                 avatarIsDirty = true;
 
             view.UpdateAvatarPreview(model.ToAvatarModel());
+        }
+
+        private void ResetOverridesOfAffectedCategories(WearableItem wearable)
+        {
+            if (wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
+                foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
+                    UpdateOverrideHides(s, false);
         }
 
         private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
