@@ -454,7 +454,10 @@ namespace DCL.Social.Friends
                 int sentCount = outgoingFriendRequestsByTimestamp.Values.Count;
                 int receivedCount = incomingFriendRequestsByTimestamp.Values.Count;
 
-                List<FriendRequest> result = new List<FriendRequest>(sentCount - sentSkip + receivedCount - receivedSkip);
+                int capacity = sentCount - sentSkip + receivedCount - receivedSkip;
+                if (capacity <= 0) return new List<FriendRequest>(0);
+
+                List<FriendRequest> result = new List<FriendRequest>(capacity);
 
                 for (int i = receivedSkip; i < receivedSkip + receivedLimit && i < incomingFriendRequestsByTimestamp.Values.Count; i++)
                 {
@@ -618,9 +621,12 @@ namespace DCL.Social.Friends
 
             if (useSocialApiBridge)
             {
+                TryGetAllocatedFriendRequest(friendRequestId, out friendRequest);
+
                 await socialApiBridge.CancelFriendshipAsync(friendRequestId, cancellationToken);
 
-                if (TryGetAllocatedFriendRequest(friendRequestId, out friendRequest)) { RemoveFriendRequest(friendRequest.To, false, FriendshipAction.CANCELLED); }
+                if (friendRequest != null)
+                    RemoveFriendRequest(friendRequest.To, false, FriendshipAction.CANCELLED);
             }
             else
             {

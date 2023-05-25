@@ -354,6 +354,8 @@ namespace DCL.Social.Friends
 
         private async UniTask<FriendRequest> ProcessFriendshipEvent(FriendshipEventResponse friendshipEvent, Func<RequestResponse, FriendRequest> onRequest, CancellationToken cancellationToken)
         {
+            await UniTask.SwitchToMainThread(cancellationToken);
+
             switch (friendshipEvent.BodyCase)
             {
                 case FriendshipEventResponse.BodyOneofCase.Request:
