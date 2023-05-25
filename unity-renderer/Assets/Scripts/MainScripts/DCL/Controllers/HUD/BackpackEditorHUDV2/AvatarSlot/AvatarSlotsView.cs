@@ -125,6 +125,9 @@ namespace DCL.Backpack
 
         public void SetHideUnhideStatus(string slotCategory, bool isOverridden)
         {
+            if (slotCategory == null)
+                return;
+            
             if(avatarSlots.TryGetValue(slotCategory, out var slot))
                 slot.SetOverrideHide(isOverridden);
         }
