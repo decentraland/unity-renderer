@@ -193,7 +193,7 @@ namespace DCL.EmotesCustomization
                     maxPrewarmCount: EMOTE_CARDS_POOL_PREWARM,
                     isPersistent: true);
 
-                emoteCardsPool.ForcePrewarm();
+                emoteCardsPool.ForcePrewarm(forceActive: false);
             }
         }
 
