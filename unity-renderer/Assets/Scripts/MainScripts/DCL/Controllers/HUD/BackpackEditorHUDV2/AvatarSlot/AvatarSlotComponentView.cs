@@ -131,8 +131,7 @@ namespace DCL.Backpack
                 hiddenSlot.SetActive(true);
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
-                string readableCategory = sortedList[0].Replace("_", " ");
-                tooltipHiddenText.text = $"Hidden by: {readableCategory[0].ToString().ToUpper() + readableCategory[1..]}";
+                tooltipHiddenText.text = $"Hidden by: {WearableItem.CATEGORIES_READABLE_MAPPING[sortedList[0]]}";
                 model.hiddenBy = sortedList[0];
             }
             else
@@ -149,7 +148,8 @@ namespace DCL.Backpack
             model.category = category;
             model.allowsColorChange = typeColorSupporting.IsColorSupportedByType(category);
             typeImage.sprite = typeIcons.GetTypeImage(category);
-            tooltipCategoryText.text = category.Replace("_", " ");
+            WearableItem.CATEGORIES_READABLE_MAPPING.TryGetValue(category, out string readableCategory);
+            tooltipCategoryText.text = readableCategory;
         }
 
         public void SetUnEquipAllowed(bool allowUnEquip) =>

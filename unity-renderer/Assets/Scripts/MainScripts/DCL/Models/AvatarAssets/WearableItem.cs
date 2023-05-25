@@ -14,6 +14,27 @@ public class WearableItem
         "skin", "upper_body", "lower_body", "feet", "helmet", "hat", "top_head", "mask", "eyewear", "earring", "tiara",
     };
 
+    public static readonly Dictionary<string, string> CATEGORIES_READABLE_MAPPING = new ()
+    {
+        { "skin", "Skin" },
+        { "upper_body", "Upper body" },
+        { "lower_body", "Lower body" },
+        { "feet", "Feet" },
+        { "helmet", "Helmet" },
+        { "hat", "Hat" },
+        { "top_head", "Top Head" },
+        { "mask", "Mask" },
+        { "eyewear", "Eyewear" },
+        { "earring", "Earring" },
+        { "tiara", "Tiara" },
+        { "eyes", "Eyes" },
+        { "mouth", "Mouth" },
+        { "hair", "Hair" },
+        { "eyebrows", "Eyebrows" },
+        { "body_shape", "Body shape" },
+        { "facial_hair", "Facial hair" },
+    };
+
     [Serializable]
     public class MappingPair
     {
