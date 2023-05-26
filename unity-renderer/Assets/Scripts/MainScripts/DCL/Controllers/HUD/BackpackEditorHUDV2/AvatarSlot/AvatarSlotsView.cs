@@ -22,6 +22,7 @@ namespace DCL.Backpack
         public event Action<string, bool> OnHideUnhidePressed;
 
         private Dictionary<string, HashSet<string>> previouslyHidden;
+
         public override void Awake()
         {
             previouslyHidden = new Dictionary<string, HashSet<string>>();
@@ -54,7 +55,7 @@ namespace DCL.Backpack
             avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, slotModel.previewCameraFocus, isToggled);
             avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
             avatarSlot.OnFocusHiddenBy += (hiddenBy) => avatarSlots[hiddenBy].ShakeAnimation();
-            avatarSlot.OnHideUnhidePressed += (category, isOverridden) => OnHideUnhidePressed?.Invoke(category,isOverridden);
+            avatarSlot.OnHideUnhidePressed += (category, isOverridden) => OnHideUnhidePressed?.Invoke(category, isOverridden);
         }
 
         public void DisablePreviousSlot(string category) =>
@@ -127,13 +128,17 @@ namespace DCL.Backpack
         {
             if (slotCategory == null)
                 return;
-            
-            if(avatarSlots.TryGetValue(slotCategory, out var slot))
+
+            if (avatarSlots.TryGetValue(slotCategory, out var slot))
                 slot.SetOverrideHide(isOverridden);
         }
 
-        public override void RefreshControl()
+        public void Select(string category, bool notify)
         {
+            if (avatarSlots.TryGetValue(category, out var slot))
+                slot.Select(notify);
         }
+
+        public override void RefreshControl() { }
     }
 }

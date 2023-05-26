@@ -74,6 +74,9 @@ namespace DCL.Backpack
         public void ClearTextSearch(bool notify = true) =>
             view.SetSearchText(null, notify);
 
+        public void SetTextSearch(string text, bool notify = true) =>
+            view.SetSearchText(text, notify);
+
         private void SetOnlyCollectibles(bool isOn)
         {
             if (isOn)

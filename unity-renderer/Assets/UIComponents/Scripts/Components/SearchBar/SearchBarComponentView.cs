@@ -100,7 +100,11 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     {
         StopSearchCoroutine();
 
-        inputField.text = value;
+        if (notify)
+            inputField.text = value;
+        else
+            inputField.SetTextWithoutNotify(value);
+
         SetSearchMode();
 
         if (notify)

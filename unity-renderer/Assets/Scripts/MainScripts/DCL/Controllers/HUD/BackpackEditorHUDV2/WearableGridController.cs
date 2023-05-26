@@ -41,7 +41,6 @@ namespace DCL.Backpack
         public event Action<string> OnWearableSelected;
         public event Action<string, EquipWearableSource> OnWearableEquipped;
         public event Action<string, UnequipWearableSource> OnWearableUnequipped;
-        public event Action<string, bool> OnHideUnhidePressed;
 
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
@@ -186,6 +185,16 @@ namespace DCL.Backpack
 
             view.SetWearableBreadcrumb(wearableBreadcrumbModel);
 
+            if (string.IsNullOrEmpty(categoryFilter))
+                avatarSlotsHUDController.ClearSlotSelection();
+            else
+                avatarSlotsHUDController.SelectSlot(categoryFilter, false);
+
+            if (string.IsNullOrEmpty(nameFilter))
+                backpackFiltersController.ClearTextSearch(false);
+            else
+                backpackFiltersController.SetTextSearch(nameFilter, false);
+
             int resultCount = await RequestWearablesAndShowThem(page, cancellationToken);
 
             view.SetWearableBreadcrumb(wearableBreadcrumbModel with { ResultCount = resultCount });
@@ -326,12 +335,9 @@ namespace DCL.Backpack
             string filter = filters[^1];
 
             if (filter.StartsWith(NAME_FILTER_REF))
-                ClearTextFilter(false);
+                nameFilter = null;
             else if (filter.StartsWith(CATEGORY_FILTER_REF))
-            {
-                avatarSlotsHUDController.ClearSlotSelection(filter[9..]);
                 categoryFilter = null;
-            }
 
             requestWearablesCancellationToken = requestWearablesCancellationToken.SafeRestart();
             ShowWearablesAndUpdateFilters(1, requestWearablesCancellationToken.Token).Forget();
@@ -378,21 +384,8 @@ namespace DCL.Backpack
 
         private void SetCategoryFromFilterSelection(string category, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
         {
-            ClearTextFilter(false);
-            SetCategory(category, isSelected);
-        }
-
-        private void ClearTextFilter(bool fetchWearables)
-        {
             nameFilter = null;
-            backpackFiltersController.ClearTextSearch(false);
-
-            if (fetchWearables)
-            {
-                filtersCancellationToken = filtersCancellationToken.SafeRestart();
-                ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
-                view.SetInfoCardVisible(false);
-            }
+            SetCategory(category, isSelected);
         }
 
         private void SetCategory(string category, bool isSelected)

@@ -59,10 +59,12 @@ namespace DCL.Backpack
         [Test]
         public void ToggleSlotCorrectly()
         {
-            avatarSlotsHUDController.ToggleSlot("tiara", false, PreviewCameraFocus.DefaultEditing, true);
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(
+                "tiara", false, PreviewCameraFocus.DefaultEditing, true);
             avatarSlotsView.DidNotReceive().DisablePreviousSlot(Arg.Any<string>());
 
-            avatarSlotsHUDController.ToggleSlot("mask", false, PreviewCameraFocus.DefaultEditing, true);
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(
+                "mask", false, PreviewCameraFocus.DefaultEditing, true);
             avatarSlotsView.Received().DisablePreviousSlot("tiara");
         }
     }

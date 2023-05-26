@@ -37,19 +37,15 @@ namespace DCL.Backpack
             avatarSlotsView.RebuildLayout();
         }
 
-        // TODO: this method should be private
-        public void ToggleSlot(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
-        {
-            if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
-                avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);
-
-            lastSelectedSlot = isSelected ? slotCategory : "";
-
-            OnToggleSlot?.Invoke(slotCategory, supportColor, previewCameraFocus, isSelected);
-        }
-
         public void Dispose() =>
             avatarSlotsView.OnToggleAvatarSlot -= ToggleSlot;
+
+        public void SelectSlot(string category, bool notify = true)
+        {
+            ClearSlotSelection();
+
+            avatarSlotsView.Select(category, notify);
+        }
 
         public void Recalculate(HashSet<string> hideOverrides) =>
             avatarSlotsView.RecalculateHideList(hideOverrides);
@@ -68,9 +64,25 @@ namespace DCL.Backpack
                 lastSelectedSlot = "";
         }
 
+        public void ClearSlotSelection()
+        {
+            if (string.IsNullOrEmpty(lastSelectedSlot)) return;
+            avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);
+        }
+
         private bool CanAvatarSlotBeUnEquipped(string avatarSlotSection) =>
             avatarSlotSection != WearableLiterals.Categories.BODY_SHAPE &&
             avatarSlotSection != WearableLiterals.Categories.EYES &&
             avatarSlotSection != WearableLiterals.Categories.MOUTH;
+
+        private void ToggleSlot(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
+        {
+            if (isSelected && !string.IsNullOrEmpty(lastSelectedSlot))
+                avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);
+
+            lastSelectedSlot = isSelected ? slotCategory : "";
+
+            OnToggleSlot?.Invoke(slotCategory, supportColor, previewCameraFocus, isSelected);
+        }
     }
 }

@@ -52,7 +52,7 @@ namespace DCL.Backpack
                 bool isSelected = model.Current == i;
 
                 NftSubCategoryFilterComponentView subCategoryView =
-                    CreateSubCategory(subCategory, isLastItem, isSelected);
+                    CreateSubCategory(subCategory, false, isSelected);
                 categoriesByIndex[i] = subCategoryView;
 
                 if (!isLastItem)
@@ -76,7 +76,7 @@ namespace DCL.Backpack
         }
 
         private NftSubCategoryFilterComponentView CreateSubCategory((string Filter, string Name, string Type, bool Removable) subCategory,
-            bool isLastItem, bool isSelected)
+            bool showResultCount, bool isSelected)
         {
             PoolableObject poolObj = pool.Get();
             NftSubCategoryFilterComponentView view = poolObj.gameObject.GetComponent<NftSubCategoryFilterComponentView>();
@@ -87,7 +87,7 @@ namespace DCL.Backpack
                 Name = subCategory.Name.Replace("_", " "),
                 Filter = subCategory.Filter,
                 ResultCount = model.ResultCount,
-                ShowResultCount = isLastItem,
+                ShowResultCount = showResultCount,
                 Icon = icon,
                 IsSelected = isSelected,
                 ShowRemoveButton = subCategory.Removable,

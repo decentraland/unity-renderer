@@ -200,21 +200,22 @@ namespace DCL.Backpack
 
         public void OnSlotClick()
         {
-            isSelected = !isSelected;
-
-            if (isSelected)
-            {
-                selectedImage.enabled = true;
-                ScaleUpAnimation(selectedImage.transform);
-            }
+            if (!isSelected)
+                Select(true);
             else
-            {
-                ScaleDownAndResetAnimation(selectedImage);
-            }
-
-            OnSelectAvatarSlot?.Invoke(model, isSelected);
+                UnSelect(true);
         }
 
+        public void UnSelect(bool notify)
+        {
+            if (!isSelected) return;
+            isSelected = false;
+
+            ScaleDownAndResetAnimation(selectedImage);
+
+            if (notify)
+                OnSelectAvatarSlot?.Invoke(model, isSelected);
+        }
 
         public void OnPointerClickOnDifferentSlot()
         {
@@ -239,6 +240,18 @@ namespace DCL.Backpack
 
         public void SetHideIconVisible(bool isVisible) =>
             hiddenSlot.SetActive(isVisible && !string.IsNullOrEmpty(model.wearableId));
+
+        public void Select(bool notify)
+        {
+            if (isSelected) return;
+
+            isSelected = true;
+            selectedImage.enabled = true;
+            ScaleUpAnimation(selectedImage.transform);
+
+            if (notify)
+                OnSelectAvatarSlot?.Invoke(model, isSelected);
+        }
 
         public void ShakeAnimation() =>
             nftContainer.DOShakePosition(SHAKE_ANIMATION_TIME, 4).OnComplete(() => nftContainer.anchoredPosition = nftContainerDefaultPosition);
