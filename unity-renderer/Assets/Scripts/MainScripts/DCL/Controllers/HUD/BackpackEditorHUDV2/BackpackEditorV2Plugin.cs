@@ -14,7 +14,11 @@ namespace DCL.Backpack
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
             var view = BackpackEditorHUDV2ComponentView.Create();
-            view.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+            view.Initialize(
+            Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
+            new PreviewCameraRotationController(),
+            new PreviewCameraPanningController(),
+            new PreviewCameraZoomController());
 
             DataStore dataStore = DataStore.i;
 

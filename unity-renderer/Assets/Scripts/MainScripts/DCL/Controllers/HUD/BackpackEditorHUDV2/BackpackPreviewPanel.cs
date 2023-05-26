@@ -48,12 +48,16 @@ namespace DCL.Backpack
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
         private ICharacterPreviewController characterPreviewController;
-        private PreviewCameraRotationController avatarPreviewRotationController;
-        private PreviewCameraPanningController avatarPreviewPanningController;
-        private PreviewCameraZoomController avatarPreviewZoomController;
+        private IPreviewCameraRotationController avatarPreviewRotationController;
+        private IPreviewCameraPanningController avatarPreviewPanningController;
+        private IPreviewCameraZoomController avatarPreviewZoomController;
         private float prevRenderScale = 1.0f;
 
-        public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
+        public void Initialize(
+            ICharacterPreviewFactory characterPreviewFactory,
+            IPreviewCameraRotationController avatarPreviewRotationController,
+            IPreviewCameraPanningController avatarPreviewPanningController,
+            IPreviewCameraZoomController avatarPreviewZoomController)
         {
             characterPreviewController = characterPreviewFactory.Create(
                 loadingMode: CharacterPreviewMode.WithoutHologram,
@@ -66,15 +70,16 @@ namespace DCL.Backpack
                 CAMERA_ZOOM_CENTER, CAMERA_ZOOM_BOTTOM_MAX_OFFSET, CAMERA_ZOOM_TOP_MAX_OFFSET);
             characterPreviewController.SetFocus(PreviewCameraFocus.DefaultEditing);
 
-            avatarPreviewRotationController = new PreviewCameraRotationController(
+            this.avatarPreviewRotationController = avatarPreviewRotationController;
+            this.avatarPreviewRotationController.Configure(
                 firstClickAction,
                 rotationFactor,
                 slowDownTime,
                 characterPreviewInputDetector);
+            this.avatarPreviewRotationController.OnHorizontalRotation += OnPreviewRotation;
 
-            avatarPreviewRotationController.OnHorizontalRotation += OnPreviewRotation;
-
-            avatarPreviewPanningController = new PreviewCameraPanningController(
+            this.avatarPreviewPanningController = avatarPreviewPanningController;
+            this.avatarPreviewPanningController.Configure(
                 secondClickAction,
                 middleClickAction,
                 panSpeed,
@@ -82,16 +87,15 @@ namespace DCL.Backpack
                 allowHorizontalPanning,
                 panningInertiaDuration,
                 characterPreviewInputDetector);
+            this.avatarPreviewPanningController.OnPanning += OnPreviewPanning;
 
-            avatarPreviewPanningController.OnPanning += OnPreviewPanning;
-
-            avatarPreviewZoomController = new PreviewCameraZoomController(
+            this.avatarPreviewZoomController = avatarPreviewZoomController;
+            this.avatarPreviewZoomController.Configure(
                 mouseWheelAction,
                 zoomSpeed,
                 smoothTime,
                 characterPreviewInputDetector);
-
-            avatarPreviewZoomController.OnZoom += OnPreviewZoom;
+            this.avatarPreviewZoomController.OnZoom += OnPreviewZoom;
         }
 
         public override void Dispose()

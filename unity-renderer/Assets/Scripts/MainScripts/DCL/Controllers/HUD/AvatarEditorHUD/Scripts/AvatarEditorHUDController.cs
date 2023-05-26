@@ -7,6 +7,7 @@ using DCL.Interface;
 using DCL.NotificationModel;
 using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,7 +103,7 @@ public class AvatarEditorHUDController : IHUD
     {
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
-        view = AvatarEditorHUDView.Create(this);
+        view = AvatarEditorHUDView.Create(this, new PreviewCameraRotationController());
 
         view.skinsFeatureContainer.SetActive(true);
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;

@@ -53,10 +53,18 @@ namespace DCL.Backpack
             saveAvatarButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
         }
 
-        public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
+        public void Initialize(
+            ICharacterPreviewFactory characterPreviewFactory,
+            IPreviewCameraRotationController avatarPreviewRotationController,
+            IPreviewCameraPanningController avatarPreviewPanningController,
+            IPreviewCameraZoomController avatarPreviewZoomController)
         {
             ConfigureSectionSelector();
-            backpackPreviewPanel.Initialize(characterPreviewFactory);
+            backpackPreviewPanel.Initialize(
+                characterPreviewFactory,
+                avatarPreviewRotationController,
+                avatarPreviewPanningController,
+                avatarPreviewZoomController);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
         }
 

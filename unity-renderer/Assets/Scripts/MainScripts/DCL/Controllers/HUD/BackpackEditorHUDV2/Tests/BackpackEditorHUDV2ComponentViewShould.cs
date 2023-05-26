@@ -31,7 +31,11 @@ namespace DCL.Backpack
 
 
             backpackEditorHUDV2ComponentView = BackpackEditorHUDV2ComponentView.Create();
-            backpackEditorHUDV2ComponentView.Initialize(characterPreviewFactory);
+            backpackEditorHUDV2ComponentView.Initialize(
+                characterPreviewFactory,
+                Substitute.For<IPreviewCameraRotationController>(),
+                Substitute.For<IPreviewCameraPanningController>(),
+                Substitute.For<IPreviewCameraZoomController>());
         }
 
         [TearDown]

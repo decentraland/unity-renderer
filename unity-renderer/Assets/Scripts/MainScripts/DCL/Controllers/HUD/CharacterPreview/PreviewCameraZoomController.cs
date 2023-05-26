@@ -7,20 +7,19 @@ using UnityEngine.EventSystems;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
-    public class PreviewCameraZoomController
+    public class PreviewCameraZoomController : IPreviewCameraZoomController
     {
         public event Action<Vector3> OnZoom;
 
-        private readonly InputAction_Measurable mouseWheelAction;
-        private readonly float zoomSpeed;
-        private readonly float smoothTime;
-        private readonly ICharacterPreviewInputDetector characterPreviewInputDetector;
-
+        private InputAction_Measurable mouseWheelAction;
+        private float zoomSpeed;
+        private float smoothTime;
+        private ICharacterPreviewInputDetector characterPreviewInputDetector;
         private Vector3 currentZoomDelta;
         private Vector3 currentZoomVelocity;
         private CancellationTokenSource cts = new ();
 
-        public PreviewCameraZoomController(
+        public void Configure(
             InputAction_Measurable mouseWheelAction,
             float zoomSpeed,
             float smoothTime,

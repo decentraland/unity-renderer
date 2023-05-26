@@ -12,31 +12,30 @@ namespace DCL.Social.Passports
         public RawImage CharacterPreviewImage { get; private set; }
         public event Action<double> OnEndDragEvent;
 
-        public PreviewCameraRotationController PreviewCameraRotationController => avatarPreviewRotationController;
-        private PreviewCameraRotationController avatarPreviewRotationController;
+        public PreviewCameraRotationController PreviewCameraRotationController => (PreviewCameraRotationController) avatarPreviewRotationController;
+        private IPreviewCameraRotationController avatarPreviewRotationController;
 
         [SerializeField] private ShowHideAnimator tutorialShowHide;
         [SerializeField] private GameObject loadingSpinner;
 
         [Header("MOUSE INPUT CONFIGURATION")]
         [SerializeField] private CharacterPreviewInputDetector characterPreviewInputDetector;
-        [SerializeField] internal InputAction_Hold firstClickAction;
+        [SerializeField] private InputAction_Hold firstClickAction;
 
         [Header("ROTATE CONFIGURATION")]
-        [SerializeField] internal float rotationFactor = -30f;
-        [SerializeField] internal float slowDownTime = 0.5f;
+        [SerializeField] private float rotationFactor = -30f;
+        [SerializeField] private float slowDownTime = 0.5f;
 
-        public override void Awake()
+        public void Initialize(IPreviewCameraRotationController avatarPreviewRotationController)
         {
-            base.Awake();
-
-            avatarPreviewRotationController = new PreviewCameraRotationController(
+            this.avatarPreviewRotationController = avatarPreviewRotationController;
+            this.avatarPreviewRotationController.Configure(
                 firstClickAction,
                 rotationFactor,
                 slowDownTime,
                 characterPreviewInputDetector);
 
-            avatarPreviewRotationController.OnEndDragEvent += EndPreviewDrag;
+            this.avatarPreviewRotationController.OnEndDragEvent += EndPreviewDrag;
         }
 
         public override void Dispose()

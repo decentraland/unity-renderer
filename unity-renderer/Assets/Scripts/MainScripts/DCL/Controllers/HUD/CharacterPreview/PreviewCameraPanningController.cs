@@ -8,23 +8,22 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
-    public class PreviewCameraPanningController
+    public class PreviewCameraPanningController : IPreviewCameraPanningController
     {
         public event Action<Vector3> OnPanning;
 
-        private readonly InputAction_Hold secondClickAction;
-        private readonly InputAction_Hold middleClickAction;
-        private readonly float panSpeed;
-        private readonly bool allowVerticalPanning;
-        private readonly bool allowHorizontalPanning;
-        private readonly float inertiaDuration;
-        private readonly ICharacterPreviewInputDetector characterPreviewInputDetector;
-
+        private InputAction_Hold secondClickAction;
+        private InputAction_Hold middleClickAction;
+        private float panSpeed;
+        private bool allowVerticalPanning;
+        private bool allowHorizontalPanning;
+        private float inertiaDuration;
+        private ICharacterPreviewInputDetector characterPreviewInputDetector;
         private Vector3 lastMousePosition;
         private Vector3 lastPanningDeltaBeforeEndDrag;
         private CancellationTokenSource cts = new ();
 
-        public PreviewCameraPanningController(
+        public void Configure(
             InputAction_Hold secondClickAction,
             InputAction_Hold middleClickAction,
             float panSpeed,

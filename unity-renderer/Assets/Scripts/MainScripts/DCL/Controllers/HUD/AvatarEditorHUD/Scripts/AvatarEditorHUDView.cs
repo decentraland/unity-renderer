@@ -147,7 +147,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     private bool isAvatarDirty;
     private AvatarModel avatarModelToUpdate;
     private bool doAvatarFeedback;
-    private PreviewCameraRotationController avatarPreviewRotationController;
+    private IPreviewCameraRotationController avatarPreviewRotationController;
 
     public ICharacterPreviewController CharacterPreview { get; private set; }
 
@@ -164,9 +164,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         arePanelsInitialized = false;
     }
 
-    private void Initialize(AvatarEditorHUDController controller)
+    private void Initialize(AvatarEditorHUDController controller, IPreviewCameraRotationController avatarPreviewRotationController)
     {
         this.controller = controller;
+        this.avatarPreviewRotationController = avatarPreviewRotationController;
         gameObject.name = VIEW_OBJECT_NAME;
 
         randomizeButton.onClick.AddListener(OnRandomizeButton);
@@ -218,7 +219,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         }
         InitializeNavigationInfo(collectiblesNavigationInfo, !isGuest);
 
-        avatarPreviewRotationController = new PreviewCameraRotationController(
+        avatarPreviewRotationController.Configure(
             firstClickAction,
             rotationFactor,
             slowDownTime,
@@ -272,10 +273,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         eyeBrowsColorPickerComponent.OnColorChanged += controller.HairColorClicked;
     }
 
-    internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
+    internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller, IPreviewCameraRotationController avatarPreviewRotationController)
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<AvatarEditorHUDView>();
-        view.Initialize(controller);
+        view.Initialize(controller, avatarPreviewRotationController);
         return view;
     }
 

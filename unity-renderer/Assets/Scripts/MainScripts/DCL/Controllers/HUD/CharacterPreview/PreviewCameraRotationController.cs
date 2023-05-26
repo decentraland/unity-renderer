@@ -7,23 +7,22 @@ using UnityEngine.EventSystems;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
-    public class PreviewCameraRotationController
+    public class PreviewCameraRotationController : IPreviewCameraRotationController
     {
         public event Action<float> OnHorizontalRotation;
         public event Action<double> OnEndDragEvent;
 
-        private readonly InputAction_Hold firstClickAction;
-        private readonly float rotationFactor;
-        private readonly float slowDownTime;
-        private readonly ICharacterPreviewInputDetector characterPreviewInputDetector;
-
+        private InputAction_Hold firstClickAction;
+        private float rotationFactor;
+        private float slowDownTime;
+        private ICharacterPreviewInputDetector characterPreviewInputDetector;
         private float currentHorizontalRotationVelocity;
         private float slowDownVelocity;
         private CancellationTokenSource cts = new ();
         private float timer;
         private DateTime startDragDateTime;
 
-        public PreviewCameraRotationController(
+        public void Configure(
             InputAction_Hold firstClickAction,
             float rotationFactor,
             float slowDownTime,
@@ -39,7 +38,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             characterPreviewInputDetector.OnDragFinished += OnEndDrag;
         }
 
-        public void OnBeginDrag(PointerEventData eventData)
+        private void OnBeginDrag(PointerEventData eventData)
         {
             if (!firstClickAction.isOn)
                 return;
@@ -49,7 +48,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             AudioScriptableObjects.buttonClick.Play(true);
         }
 
-        public void OnDrag(PointerEventData eventData)
+        private void OnDrag(PointerEventData eventData)
         {
             if (!firstClickAction.isOn)
                 return;
@@ -58,7 +57,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             OnHorizontalRotation?.Invoke(currentHorizontalRotationVelocity);
         }
 
-        public void OnEndDrag(PointerEventData eventData)
+        private void OnEndDrag(PointerEventData eventData)
         {
             timer = slowDownTime;
             slowDownVelocity = currentHorizontalRotationVelocity;
