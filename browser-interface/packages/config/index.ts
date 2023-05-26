@@ -61,6 +61,7 @@ export const ENGINE_DEBUG_PANEL = location.search.includes('ENGINE_DEBUG_PANEL')
 export const SCENE_DEBUG_PANEL = location.search.includes('SCENE_DEBUG_PANEL') && !ENGINE_DEBUG_PANEL
 export const SHOW_FPS_COUNTER = location.search.includes('SHOW_FPS_COUNTER') || location.search.includes('DEBUG_MODE')
 export const HAS_INITIAL_POSITION_MARK = location.search.includes('position')
+export const HAS_INITIAL_REALM_MARK = location.search.includes('realm')
 export const WSS_ENABLED = !!ensureSingleString(qs.get('ws'))
 export const FORCE_SEND_MESSAGE = location.search.includes('FORCE_SEND_MESSAGE')
 export const ALLOW_SWIFT_SHADER = location.search.includes('ALLOW_SWIFT_SHADER')
