@@ -133,7 +133,7 @@ namespace DCL.Backpack
                 hiddenSlot.SetActive(true);
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(true);
-                tooltipHiddenText.text = $"Hidden by: {WearableItem.CATEGORIES_READABLE_MAPPING[sortedList[0]]}";
+                tooltipHiddenText.text = $"Hidden by {WearableItem.CATEGORIES_READABLE_MAPPING[sortedList[0]]}";
                 model.hiddenBy = sortedList[0];
             }
             else

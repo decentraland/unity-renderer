@@ -101,7 +101,7 @@ namespace DCL.Backpack
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, "Mask");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
-            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: Hat");
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by Hat");
         }
 
         [Test]
@@ -131,7 +131,7 @@ namespace DCL.Backpack
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, "Mask");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
-            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by: Mask");
+            Assert.AreEqual(avatarSlot.tooltipHiddenText.text, "Hidden by Mask");
         }
 
         [Test]
@@ -147,19 +147,19 @@ namespace DCL.Backpack
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, "Mask");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
             Assert.True(avatarSlot.hiddenSlot.activeSelf);
-            Assert.AreEqual("Hidden by: Helmet", avatarSlot.tooltipHiddenText.text);
+            Assert.AreEqual("Hidden by Helmet", avatarSlot.tooltipHiddenText.text);
 
             //Set second hiding category that should hide the first one
             avatarSlot.SetIsHidden(true, "top_head");
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, "Mask");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
-            Assert.AreEqual("Hidden by: Helmet", avatarSlot.tooltipHiddenText.text);
+            Assert.AreEqual("Hidden by Helmet", avatarSlot.tooltipHiddenText.text);
 
             //Remove the first hiding category that should leave the second one as hiding
             avatarSlot.SetIsHidden(false, "helmet");
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, "Mask");
             Assert.True(avatarSlot.tooltipHiddenText.gameObject.activeSelf);
-            Assert.AreEqual("Hidden by: Top Head", avatarSlot.tooltipHiddenText.text);
+            Assert.AreEqual("Hidden by Top Head", avatarSlot.tooltipHiddenText.text);
 
             //Remove the first hiding category that should remove all hiding constrains
             avatarSlot.SetIsHidden(false, "top_head");
