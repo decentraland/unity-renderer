@@ -42,8 +42,6 @@ namespace DCL.Backpack
         private bool isSelected = false;
 
         private readonly HashSet<string> hiddenByList = new HashSet<string>();
-        private Vector2 tooltipDefaultPosition;
-        private Vector2 tooltipFullPosition;
         private Vector2 nftContainerDefaultPosition;
 
         public override void Awake()
@@ -130,7 +128,6 @@ namespace DCL.Backpack
             if (sortedList.Count > 0)
             {
                 SetHideIconVisible(true);
-                tooltipContainer.anchoredPosition = tooltipFullPosition;
                 tooltipHiddenText.gameObject.SetActive(!string.IsNullOrEmpty(model.wearableId));
                 tooltipHiddenText.text = $"Hidden by {WearableItem.CATEGORIES_READABLE_MAPPING[sortedList[0]]}";
                 model.hiddenBy = sortedList[0];
@@ -139,7 +136,6 @@ namespace DCL.Backpack
             {
                 SetHideIconVisible(false);
                 tooltipHiddenText.gameObject.SetActive(false);
-                tooltipContainer.anchoredPosition = tooltipDefaultPosition;
                 model.hiddenBy = "";
             }
         }
