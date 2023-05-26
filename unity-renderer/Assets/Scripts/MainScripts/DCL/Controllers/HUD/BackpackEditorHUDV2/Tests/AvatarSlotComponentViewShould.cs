@@ -96,7 +96,8 @@ namespace DCL.Backpack
             {
                 category = TEST_CATEGORY,
                 isHidden = true,
-                hiddenBy = "hat"
+                hiddenBy = "hat",
+                wearableId = "asdasdasd"
             });
 
             Assert.AreEqual(avatarSlot.tooltipCategoryText.text, "Mask");
@@ -111,7 +112,8 @@ namespace DCL.Backpack
             {
                 category = TEST_CATEGORY,
                 isHidden = false,
-                hiddenBy = ""
+                hiddenBy = "",
+                wearableId = "asdasdasd"
             });
 
             avatarSlot.RefreshControl();
@@ -125,7 +127,8 @@ namespace DCL.Backpack
         {
             avatarSlot.SetModel(new AvatarSlotComponentModel()
             {
-                category = TEST_CATEGORY
+                category = TEST_CATEGORY,
+                wearableId = "asdasdasd"
             });
             avatarSlot.SetIsHidden(true, "mask");
 
@@ -139,7 +142,8 @@ namespace DCL.Backpack
         {
             avatarSlot.SetModel(new AvatarSlotComponentModel()
             {
-                category = TEST_CATEGORY
+                category = TEST_CATEGORY,
+                wearableId = "asdasdasd"
             });
 
             //Set first hiding category
