@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
@@ -53,8 +54,7 @@ namespace DCLServices.QuestsService
 
             // Definitions are not user specific, so we only need to clear the state cache
             stateCache.Clear();
-            userSubscribeCt?.Cancel();
-            userSubscribeCt?.Dispose();
+            userSubscribeCt.SafeCancelAndDispose();
             userSubscribeCt = null;
 
             if (!string.IsNullOrEmpty(userId))
@@ -99,7 +99,7 @@ namespace DCLServices.QuestsService
             return await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId, UserAddress = userId });
         }
 
-        public async UniTask<Quest> GetDefinition(string questId, CancellationToken cancellationToken = default)
+        public UniTask<Quest> GetDefinition(string questId, CancellationToken cancellationToken = default)
         {
             UniTaskCompletionSource<Quest> definitionCompletionSource;
 
@@ -117,13 +117,12 @@ namespace DCLServices.QuestsService
                 RetrieveTask().Forget();
             }
 
-            return await definitionCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+            return definitionCompletionSource.Task.AttachExternalCancellation(cancellationToken);
         }
 
         public void Dispose()
         {
-            userSubscribeCt?.Cancel();
-            userSubscribeCt?.Dispose();
+            userSubscribeCt.SafeCancelAndDispose();
             userSubscribeCt = null;
         }
     }
