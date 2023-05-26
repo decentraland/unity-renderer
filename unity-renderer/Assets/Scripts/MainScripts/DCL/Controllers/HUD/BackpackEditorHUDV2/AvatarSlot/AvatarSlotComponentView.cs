@@ -88,6 +88,8 @@ namespace DCL.Backpack
             SetWearableId("");
             SetHideList(Array.Empty<string>());
             SetOverrideHide(false);
+            hiddenSlot.SetActive(false);
+            tooltipHiddenText.gameObject.SetActive(false);
         }
 
         public string[] GetHideList() =>
@@ -140,6 +142,12 @@ namespace DCL.Backpack
                 tooltipHiddenText.gameObject.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipDefaultPosition;
                 model.hiddenBy = "";
+            }
+
+            if (string.IsNullOrEmpty(model.wearableId))
+            {
+                tooltipHiddenText.gameObject.SetActive(false);
+                hiddenSlot.SetActive(false);
             }
         }
 
