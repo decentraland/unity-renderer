@@ -29,6 +29,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7299768730189234663}
   m_Father: {fileID: 0}
@@ -36,8 +37,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 645}
+  m_AnchoredPosition: {x: 0, y: -93.5932}
+  m_SizeDelta: {x: 250, y: 832.1864}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2128844665139240563
 CanvasRenderer:
@@ -89,6 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86305f54f225dea4798088a19ffbe769, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   emotesSlots: {fileID: 4743070937342007002}
   model:
     selectedSlot: -1
@@ -113,6 +115,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -249,6 +271,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard4
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -287,6 +314,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -423,6 +470,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard6
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -461,6 +513,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -597,6 +669,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard3
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -635,6 +712,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -771,6 +868,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard9
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -809,6 +911,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -945,6 +1067,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard5
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -983,6 +1110,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1124,6 +1271,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -1162,6 +1314,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5989498347712335370, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1288,6 +1460,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard0
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -1326,6 +1503,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1467,6 +1664,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -1505,6 +1707,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1641,6 +1863,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard7
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -1679,6 +1906,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4283056195
       objectReference: {fileID: 0}
     - target: {fileID: 5850750219364270930, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1815,6 +2062,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard8
       objectReference: {fileID: 0}
+    - target: {fileID: 8123195354923042031, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -1877,7 +2129,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 184
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -1947,12 +2199,12 @@ PrefabInstance:
     - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: model.itemSize.x
-      value: 184
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: model.itemSize.y
-      value: 50
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -1982,12 +2234,12 @@ PrefabInstance:
     - target: {fileID: 7829080691771640198, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_CellSize.x
-      value: 184
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 7829080691771640198, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_CellSize.y
-      value: 50
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 7829080691771640198, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2001,12 +2253,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a0b08d9ca8421644db83c1bd3f2e2e48, type: 3}
---- !u!224 &7299768730189234663 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
-    type: 3}
-  m_PrefabInstance: {fileID: 8742604002910103164}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4743070937342007002 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
@@ -2019,3 +2265,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49a3b742109ef0499aa2a13d3e0bedf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &7299768730189234663 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
+    type: 3}
+  m_PrefabInstance: {fileID: 8742604002910103164}
+  m_PrefabAsset: {fileID: 0}
