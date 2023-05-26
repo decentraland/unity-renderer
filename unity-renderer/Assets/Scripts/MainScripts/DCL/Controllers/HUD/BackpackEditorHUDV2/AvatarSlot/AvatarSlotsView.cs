@@ -51,7 +51,7 @@ namespace DCL.Backpack
             avatarSlot.SetCategory(slotCategory);
             avatarSlot.SetUnEquipAllowed(allowUnEquip);
             avatarSlots.Add(slotCategory, avatarSlot);
-            avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, isToggled);
+            avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, slotModel.previewCameraFocus, isToggled);
             avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
             avatarSlot.OnFocusHiddenBy += (hiddenBy) => avatarSlots[hiddenBy].ShakeAnimation();
             avatarSlot.OnHideUnhidePressed += (category, isOverridden) => OnHideUnhidePressed?.Invoke(category,isOverridden);
@@ -125,6 +125,9 @@ namespace DCL.Backpack
 
         public void SetHideUnhideStatus(string slotCategory, bool isOverridden)
         {
+            if (slotCategory == null)
+                return;
+            
             if(avatarSlots.TryGetValue(slotCategory, out var slot))
                 slot.SetOverrideHide(isOverridden);
         }

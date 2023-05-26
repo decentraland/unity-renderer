@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -29,6 +30,8 @@ namespace DCL.Backpack
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
         private readonly BackpackEditorHUDModel model = new ();
+
+        private int currentAnimationIndexShown;
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -124,6 +127,7 @@ namespace DCL.Backpack
                 if (visible)
                 {
                     avatarIsDirty = false;
+                    dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
                     backpackEmotesSectionController.RestoreEmoteSlots();
                     backpackEmotesSectionController.LoadEmotes();
                     wearableGridController.LoadWearables();
@@ -167,6 +171,7 @@ namespace DCL.Backpack
         {
             view.Hide();
             view.ResetPreviewEmote();
+            dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld);
         }
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
@@ -383,7 +388,10 @@ namespace DCL.Backpack
                 backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
             if (updateAvatarPreview)
+            {
                 view.UpdateAvatarPreview(model.ToAvatarModel());
+                PlayEquipAnimation(wearable.data.category);
+            }
         }
 
         private void UnEquipCurrentBodyShape(bool setAsDirty = true)
@@ -439,7 +447,7 @@ namespace DCL.Backpack
                     UpdateOverrideHides(s, false);
         }
 
-        private void ToggleSlot(string slotCategory, bool supportColor, bool isSelected)
+        private void ToggleSlot(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
         {
             currentSlotSelected = isSelected ? slotCategory : null;
             view.UpdateHideUnhideStatus(currentSlotSelected, model.hideOverrides);
@@ -460,6 +468,8 @@ namespace DCL.Backpack
                     view.SetColorPickerValue(model.skinColor);
                     break;
             }
+
+            view.SetAvatarPreviewFocus(currentSlotSelected != null ? previewCameraFocus : PreviewCameraFocus.DefaultEditing);
         }
 
         private void OnWearableColorChanged(Color newColor)
@@ -487,6 +497,40 @@ namespace DCL.Backpack
 
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
+        }
+
+        private void PlayEquipAnimation(string category)
+        {
+            view.PlayPreviewEmote(
+                GetEquipEmoteByCategory(category),
+                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        }
+
+        private string GetEquipEmoteByCategory(string category)
+        {
+            string equipEmote = category switch
+                                {
+                                    WearableLiterals.Categories.FEET => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_SHOES, 2),
+                                    WearableLiterals.Categories.LOWER_BODY => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_LOWER, 3),
+                                    WearableLiterals.Categories.UPPER_BODY => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_UPPER, 3),
+                                    WearableLiterals.Categories.EYEWEAR => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.TIARA => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.EARRING => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.HAT => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.TOP_HEAD => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.HELMET => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.MASK => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_ACCESSORIES, 3),
+                                    WearableLiterals.Categories.SKIN => GetRandomizedName(WearableLiterals.DefaultEmotes.OUTFIT_UPPER, 3),
+                                    _ => string.Empty,
+                                };
+
+            return equipEmote;
+        }
+
+        private string GetRandomizedName(string baseString, int limit)
+        {
+            currentAnimationIndexShown = (currentAnimationIndexShown + 1) % limit;
+            return baseString + (currentAnimationIndexShown + 1);
         }
     }
 }

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NUnit.Framework;
@@ -1003,7 +1004,7 @@ namespace DCL.Backpack
             filtersView.OnSearchTextChanged += Raise.Event<Action<string>>("festival");
             filtersView.ClearReceivedCalls();
 
-            slotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>("upper_body", false, true);
+            slotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>("upper_body", false, PreviewCameraFocus.DefaultEditing, true);
 
             filtersView.Received(1).SetSearchText(null, false);
         }

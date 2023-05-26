@@ -53,10 +53,18 @@ namespace DCL.Backpack
             saveAvatarButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
         }
 
-        public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
+        public void Initialize(
+            ICharacterPreviewFactory characterPreviewFactory,
+            IPreviewCameraRotationController avatarPreviewRotationController,
+            IPreviewCameraPanningController avatarPreviewPanningController,
+            IPreviewCameraZoomController avatarPreviewZoomController)
         {
             ConfigureSectionSelector();
-            backpackPreviewPanel.Initialize(characterPreviewFactory);
+            backpackPreviewPanel.Initialize(
+                characterPreviewFactory,
+                avatarPreviewRotationController,
+                avatarPreviewPanningController,
+                avatarPreviewZoomController);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
         }
 
@@ -119,6 +127,14 @@ namespace DCL.Backpack
         public void PlayPreviewEmote(string emoteId) =>
             backpackPreviewPanel.PlayPreviewEmote(emoteId);
 
+        public void PlayPreviewEmote(string emoteId, long timestamp)
+        {
+            if (avatarModelToUpdate != null)
+                avatarModelToUpdate.expressionTriggerTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            backpackPreviewPanel.PlayPreviewEmote(emoteId, timestamp);
+        }
+
         public void ResetPreviewEmote() =>
             backpackPreviewPanel.ResetPreviewEmote();
 
@@ -136,6 +152,9 @@ namespace DCL.Backpack
 
             backpackPreviewPanel.SetLoadingActive(true);
         }
+
+        public void SetAvatarPreviewFocus(PreviewCameraFocus focus, bool useTransition = true) =>
+            backpackPreviewPanel.SetFocus(focus, useTransition);
 
         public void TakeSnapshotsAfterStopPreviewAnimation(IBackpackEditorHUDView.OnSnapshotsReady onSuccess, Action onFailed)
         {
@@ -190,7 +209,7 @@ namespace DCL.Backpack
                 backpackPreviewPanel.AnchorPreviewPanel(false);
 
                 if (isSelected)
-                    ResetPreviewEmote();
+                    ResetPreviewPanel();
             });
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
@@ -198,8 +217,14 @@ namespace DCL.Backpack
                 backpackPreviewPanel.AnchorPreviewPanel(true);
 
                 if (isSelected)
-                    ResetPreviewEmote();
+                    ResetPreviewPanel();
             });
+        }
+
+        private void ResetPreviewPanel()
+        {
+            ResetPreviewEmote();
+            SetAvatarPreviewFocus(PreviewCameraFocus.DefaultEditing, false);
         }
 
         private void UpdateAvatarModelWhenNeeded()

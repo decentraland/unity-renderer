@@ -1,5 +1,6 @@
 ﻿using DCL.Browser;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -106,10 +107,14 @@ namespace DCL.Backpack
         [Test]
         public void ShowBackpackCorrectly()
         {
+            // Arrange
+            dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld, false);
+
             // Act
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
             // Assert
+            Assert.AreEqual(AvatarMaterialProfile.InEditor, dataStore.skyboxConfig.avatarMatProfile.Get());
             backpackEmotesSectionController.Received(1).RestoreEmoteSlots();
             backpackEmotesSectionController.Received(1).LoadEmotes();
             view.Received(1).Show();
@@ -119,6 +124,7 @@ namespace DCL.Backpack
         public void EquipAndSaveCorrectly()
         {
             // Arrange
+            dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor, false);
             userProfile.avatar.wearables.Clear();
             wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01" }, EquipWearableSource.Wearable);
             wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel { WearableId = "urn:decentraland:off-chain:base-avatars:bear_slippers" }, EquipWearableSource.Wearable);
@@ -132,6 +138,7 @@ namespace DCL.Backpack
             dataStore.HUDs.avatarEditorVisible.Set(false, true);
 
             // Assert
+            Assert.AreEqual(AvatarMaterialProfile.InWorld, dataStore.skyboxConfig.avatarMatProfile.Get());
             Assert.IsTrue(userProfile.avatar.wearables.Count > 0);
             Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_eyebrows_01"));
             Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:bear_slippers"));
@@ -182,16 +189,13 @@ namespace DCL.Backpack
         }
 
         [Test]
-        [TestCase("eyes")]
-        [TestCase("hair")]
-        [TestCase("eyebrows")]
-        [TestCase("facial_hair")]
-        [TestCase("body_shape")]
-        [TestCase("non_existing_category")]
-        public void ToggleSlotCorrectly(string slotCategory)
+        [TestCase("eyes", PreviewCameraFocus.FaceEditing)]
+        [TestCase("body_shape", PreviewCameraFocus.DefaultEditing)]
+        [TestCase("non_existing_category", PreviewCameraFocus.DefaultEditing)]
+        public void ToggleSlotCorrectly(string slotCategory, PreviewCameraFocus previewCameraFocus)
         {
             // Act
-            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, true);
+            avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(slotCategory, true, previewCameraFocus, true);
 
             // Assert
             view.Received(1).SetColorPickerVisibility(true);
@@ -215,6 +219,8 @@ namespace DCL.Backpack
                     view.Received(1).SetColorPickerValue(userProfile.avatar.skinColor);
                     break;
             }
+
+            view.Received(1).SetAvatarPreviewFocus(previewCameraFocus);
         }
 
         [Test]

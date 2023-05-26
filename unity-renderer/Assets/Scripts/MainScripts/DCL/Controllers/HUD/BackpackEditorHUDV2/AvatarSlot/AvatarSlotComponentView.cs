@@ -15,6 +15,7 @@ namespace DCL.Backpack
         private const float SHAKE_ANIMATION_TIME = 0.75f;
 
         [SerializeField] internal NftTypeColorSupportingSO typeColorSupporting;
+        [SerializeField] internal NftTypePreviewCameraFocusConfig previewCameraFocus;
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal RectTransform nftContainer;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
@@ -147,6 +148,7 @@ namespace DCL.Backpack
         {
             model.category = category;
             model.allowsColorChange = typeColorSupporting.IsColorSupportedByType(category);
+            model.previewCameraFocus = previewCameraFocus.GetPreviewCameraFocus(category);
             typeImage.sprite = typeIcons.GetTypeImage(category);
             WearableItem.CATEGORIES_READABLE_MAPPING.TryGetValue(category, out string readableCategory);
             tooltipCategoryText.text = readableCategory;

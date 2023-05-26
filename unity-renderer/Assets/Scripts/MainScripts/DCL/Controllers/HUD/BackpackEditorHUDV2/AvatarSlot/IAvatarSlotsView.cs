@@ -1,3 +1,4 @@
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 
@@ -5,7 +6,7 @@ namespace DCL.Backpack
 {
     public interface IAvatarSlotsView
     {
-        delegate void ToggleAvatarSlotDelegate(string slotCategory, bool supportColor, bool isSelected);
+        delegate void ToggleAvatarSlotDelegate(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected);
         event ToggleAvatarSlotDelegate OnToggleAvatarSlot;
         public event Action<string, bool> OnHideUnhidePressed;
         event Action<string> OnUnequipFromSlot;
