@@ -27,7 +27,6 @@ namespace ECSSystems.ECSRaycastSystem
         private readonly IInternalECSComponent<InternalColliders> onPointerColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
         private readonly IECSComponentWriter componentWriter;
-        private int firstFramePendingMeshes = 0;
 
         public ECSRaycastSystem(
             IInternalECSComponent<InternalRaycast> internalRaycastComponent,
