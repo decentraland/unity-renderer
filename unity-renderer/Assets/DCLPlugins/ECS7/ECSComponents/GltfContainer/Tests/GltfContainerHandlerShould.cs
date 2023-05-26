@@ -98,35 +98,6 @@ namespace Tests
             Assert.AreEqual("shark_skeleton", handler.gameObject.transform.GetChild(0).GetChild(0).GetChild(0).name);
         }
 
-        // [UnityTest]
-        // public IEnumerator SetCollidersCorrectly()
-        // {
-        //     // test with several updates to make sure that changing gltf does not affect the expected result
-        //     handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-        //     yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-        //
-        //     handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
-        //     yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-        //
-        //     handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-        //     yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-        //
-        //     Collider physicCollider = handler.gameObject.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Collider>();
-        //     Collider pointerCollider = handler.gameObject.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetComponent<Collider>();
-        //
-        //     Assert.IsTrue(physicCollider);
-        //     Assert.IsTrue(pointerCollider);
-        //
-        //     Assert.AreEqual(physicCollider.gameObject.layer, PhysicsLayers.characterOnlyLayer);
-        //     Assert.AreEqual(pointerCollider.gameObject.layer, PhysicsLayers.onPointerEventLayer);
-        //
-        //     var physicColliderComponentData = physicColliderComponent.GetFor(scene, entity);
-        //     var pointerColliderComponentData = pointerColliderComponent.GetFor(scene, entity);
-        //
-        //     Assert.AreEqual(physicCollider, physicColliderComponentData.model.colliders.Pairs[0].key);
-        //     Assert.AreEqual(pointerCollider, pointerColliderComponentData.model.colliders.Pairs[0].key);
-        // }
-
         [UnityTest]
         public IEnumerator SetAssetAsLoaded()
         {
