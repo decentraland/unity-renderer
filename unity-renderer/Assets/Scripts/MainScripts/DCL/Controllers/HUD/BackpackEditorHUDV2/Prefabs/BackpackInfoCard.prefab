@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 366606970992223459}
   - component: {fileID: 5217839472934315619}
   - component: {fileID: 4811404605148497211}
+  - component: {fileID: 6345242952378291269}
   m_Layer: 5
   m_Name: NFTImageBackground
   m_TagString: Untagged
@@ -155,6 +156,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
+--- !u!114 &6345242952378291269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 484543518881883211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 2
+  m_AspectRatio: 1
 --- !u!1 &707259140918583798
 GameObject:
   m_ObjectHideFlags: 0
