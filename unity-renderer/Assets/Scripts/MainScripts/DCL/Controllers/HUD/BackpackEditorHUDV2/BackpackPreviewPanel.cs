@@ -25,7 +25,7 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject avatarPreviewLoadingSpinner;
 
         [Header("MOUSE INPUT CONFIGURATION")]
-        [SerializeField] private CharacterPreviewInputDetector characterPreviewInputDetector;
+        [SerializeField] internal CharacterPreviewInputDetector characterPreviewInputDetector;
         [SerializeField] internal InputAction_Hold firstClickAction;
         [SerializeField] internal InputAction_Hold secondClickAction;
         [SerializeField] internal InputAction_Hold middleClickAction;
@@ -42,8 +42,8 @@ namespace DCL.Backpack
         [SerializeField] internal float panningInertiaDuration = 0.5f;
 
         [Header("ZOOM CONFIGURATION")]
-        [SerializeField] private float zoomSpeed = 5.0f;
-        [SerializeField] private float smoothTime = 0.2f;
+        [SerializeField] internal float zoomSpeed = 5.0f;
+        [SerializeField] internal float smoothTime = 0.2f;
 
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
