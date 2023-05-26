@@ -229,13 +229,7 @@ namespace DCL.ECSComponents
             RemoveActiveColliders(invisibleActiveColliders.CustomLayerColliders, customLayerColliderComponent);
             RemoveActiveColliders(visibleActiveColliders.CustomLayerColliders, customLayerColliderComponent);
 
-            if (renderers != null)
-            {
-                foreach (Renderer renderer in renderers)
-                {
-                    renderersComponent.RemoveRenderer(scene, entity, renderer);
-                }
-            }
+            renderersComponent.RemoveRenderers(scene, entity, renderers);
 
             if (!string.IsNullOrEmpty(gltfSrc))
             {
