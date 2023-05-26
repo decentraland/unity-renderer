@@ -93,7 +93,7 @@ namespace DCL.Backpack
 
             view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n => n.Current == 0
-                                                                       && n.ResultCount == WEARABLE_TOTAL_AMOUNT
+                                                                       && n.ResultCount == 0
                                                                        && n.Path[0].Name == "All"
                                                                        && n.Path[0].Filter == "all"));
         }
@@ -543,7 +543,7 @@ namespace DCL.Backpack
 
             view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
-                     n.ResultCount == 50
+                     n.ResultCount == 0
                      && n.Current == 0
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"));
@@ -569,7 +569,7 @@ namespace DCL.Backpack
 
             view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
-                     n.ResultCount == 50
+                     n.ResultCount == 0
                      && n.Current == 2
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"
@@ -603,13 +603,14 @@ namespace DCL.Backpack
 
             view.ClearReceivedCalls();
             wearablesCatalogService.ClearReceivedCalls();
+            filtersView.ClearReceivedCalls();
 
             view.OnFilterRemoved += Raise.Event<Action<string>>("all&category=upper_body&name=festival");
             yield return null;
 
             view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
-                     n.ResultCount == 50
+                     n.ResultCount == 0
                      && n.Current == 1
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"
@@ -618,6 +619,8 @@ namespace DCL.Backpack
                      && n.Path[1].Name == "upper_body"
                      && n.Path[1].Removable == true
                      && n.Path.Length == 2));
+
+            filtersView.Received(1).SetSearchText(null, false);
 
             wearablesCatalogService.Received(1)
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
@@ -646,7 +649,7 @@ namespace DCL.Backpack
 
             view.Received(1)
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
-                     n.ResultCount == 50
+                     n.ResultCount == 0
                      && n.Current == 1
                      && n.Path[0].Filter == "all"
                      && n.Path[0].Name == "All"
@@ -984,9 +987,12 @@ namespace DCL.Backpack
             filtersView.Received(1).SetSearchText(null, false);
         }
 
-        [Test]
-        public void ClearCategorySlotFilterWhenRemoveCategoryFilterFromBreadcrumb()
+        [UnityTest]
+        public IEnumerator ClearCategorySlotFilterWhenRemoveCategoryFilterFromBreadcrumb()
         {
+            slotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(
+                "upper_body", false, PreviewCameraFocus.DefaultEditing, true);
+
             IReadOnlyList<WearableItem> wearableList = Array.Empty<WearableItem>();
 
             wearablesCatalogService.RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
@@ -995,16 +1001,20 @@ namespace DCL.Backpack
 
             view.OnFilterRemoved += Raise.Event<Action<string>>("category=upper_body");
 
+            yield return null;
+
             slotsView.Received(1).DisablePreviousSlot("upper_body");
         }
 
-        [Test]
-        public void ClearTextFilterWhenCategorySlotIsSelected()
+        [UnityTest]
+        public IEnumerator ClearTextFilterWhenCategorySlotIsSelected()
         {
             filtersView.OnSearchTextChanged += Raise.Event<Action<string>>("festival");
             filtersView.ClearReceivedCalls();
 
             slotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>("upper_body", false, PreviewCameraFocus.DefaultEditing, true);
+
+            yield return null;
 
             filtersView.Received(1).SetSearchText(null, false);
         }

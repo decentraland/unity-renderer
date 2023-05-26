@@ -56,18 +56,11 @@ namespace DCL.Backpack
         public void UnEquip(string category, HashSet<string> hideOverrides) =>
             avatarSlotsView.ResetCategorySlot(category, hideOverrides);
 
-        public void ClearSlotSelection(string category)
-        {
-            avatarSlotsView.DisablePreviousSlot(category);
-
-            if (lastSelectedSlot == category)
-                lastSelectedSlot = "";
-        }
-
         public void ClearSlotSelection()
         {
             if (string.IsNullOrEmpty(lastSelectedSlot)) return;
             avatarSlotsView.DisablePreviousSlot(lastSelectedSlot);
+            lastSelectedSlot = "";
         }
 
         private bool CanAvatarSlotBeUnEquipped(string avatarSlotSection) =>
