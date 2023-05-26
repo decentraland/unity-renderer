@@ -197,7 +197,8 @@ namespace DCL.Backpack
 
             int resultCount = await RequestWearablesAndShowThem(page, cancellationToken);
 
-            view.SetWearableBreadcrumb(wearableBreadcrumbModel with { ResultCount = resultCount });
+            // This call has been removed to avoid flickering. The result count is hidden in the view
+            // view.SetWearableBreadcrumb(wearableBreadcrumbModel with { ResultCount = resultCount });
         }
 
         private void HandleNewPageRequested(int page)
