@@ -1,6 +1,6 @@
 using DCL;
 
-namespace SupportAnalytics
+namespace Analytics
 {
     public interface ISupportAnalytics
     {

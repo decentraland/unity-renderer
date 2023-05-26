@@ -10,7 +10,7 @@ using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
-using SupportAnalytics;
+using Analytics;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

@@ -1,5 +1,5 @@
 using DCL.Interface;
-using SupportAnalytics;
+using Analytics;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,12 +13,12 @@ namespace DCL.HelpAndSupportHUD
         internal const string FAQ_URL = "https://docs.decentraland.org/decentraland/faq/";
         public IHelpAndSupportHUDView view {  get; }
 
-        private ISupportAnalytics supportAnalytics;
+        private ISupportAnalytics analytics;
 
-        public HelpAndSupportHUDController(IHelpAndSupportHUDView view, ISupportAnalytics supportAnalytics)
+        public HelpAndSupportHUDController(IHelpAndSupportHUDView view, ISupportAnalytics analytics)
         {
             this.view = view;
-            this.supportAnalytics = supportAnalytics;
+            this.analytics = analytics;
             view.Initialize();
 
             view.OnDiscordButtonPressed += OpenDiscord;
@@ -43,7 +43,7 @@ namespace DCL.HelpAndSupportHUD
 
         private void OpenSupport()
         {
-            supportAnalytics.SendOpenSupport(OpenSupportSource.ExploreHUD);
+            analytics.SendOpenSupport(OpenSupportSource.ExploreHUD);
             OpenIntercom();
         }
 

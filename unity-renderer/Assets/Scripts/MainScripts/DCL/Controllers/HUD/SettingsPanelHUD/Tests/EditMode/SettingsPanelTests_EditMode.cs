@@ -4,7 +4,7 @@ using DCL.SettingsPanelHUD.Sections;
 using DCL.SettingsPanelHUD.Widgets;
 using NSubstitute;
 using NUnit.Framework;
-using SupportAnalytics;
+using Analytics;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;

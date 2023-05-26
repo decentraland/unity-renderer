@@ -1,4 +1,4 @@
-namespace SupportAnalytics
+namespace Analytics
 {
     public enum OpenSupportSource
     {

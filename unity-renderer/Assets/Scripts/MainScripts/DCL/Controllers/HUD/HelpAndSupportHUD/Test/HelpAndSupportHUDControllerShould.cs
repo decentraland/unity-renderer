@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using DCL.HelpAndSupportHUD;
 using NSubstitute;
-using SupportAnalytics;
+using Analytics;
 using System;
 
 namespace Tests
