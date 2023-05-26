@@ -4,6 +4,7 @@ using DCL.Chat;
 using DCL.Chat.HUD;
 using DCL.Interface;
 using DCL.Social.Friends;
+using SupportAnalytics;
 using System;
 using System.Threading;
 using TMPro;
@@ -33,6 +34,7 @@ public class TaskbarHUDController : IHUD
     public VoiceChatWindowController voiceChatHud;
 
     private IMouseCatcher mouseCatcher;
+    private ISupportAnalytics supportAnalytics;
     private InputAction_Trigger toggleFriendsTrigger;
     private InputAction_Trigger closeWindowTrigger;
     private InputAction_Trigger toggleWorldChatTrigger;
@@ -62,10 +64,11 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<string> openChat => DataStore.i.HUDs.openChat;
     internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
 
-    public TaskbarHUDController(IChatController chatController, IFriendsController friendsController)
+    public TaskbarHUDController(IChatController chatController, IFriendsController friendsController, ISupportAnalytics supportAnalytics)
     {
         this.chatController = chatController;
         this.friendsController = friendsController;
+        this.supportAnalytics = supportAnalytics;
     }
 
     protected virtual TaskbarHUDView CreateView()
@@ -133,8 +136,11 @@ public class TaskbarHUDController : IHUD
         openChat.OnChange += OpenChat;
     }
 
-    private void OpenIntercom() =>
+    private void OpenIntercom()
+    {
+        supportAnalytics.SendOpenSupport(OpenSupportSource.Taskbar);
         WebInterface.OpenURL(INTERCOM_URL);
+    }
 
     private void HandleFriendsToggle(bool show)
     {
