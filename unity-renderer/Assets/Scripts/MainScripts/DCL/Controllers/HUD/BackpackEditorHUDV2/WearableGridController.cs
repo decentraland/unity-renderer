@@ -252,6 +252,7 @@ namespace DCL.Backpack
                 IsSelected = false,
                 UnEquipAllowed = CanWearableBeUnEquipped(wearable),
                 IsCompatibleWithBodyShape = IsCompatibleWithBodyShape(currentBodyShapeId, wearable),
+                IsSmartWearable = wearable.IsSmart(),
             };
         }
 

@@ -14,6 +14,7 @@ namespace DCL.Backpack
         public string Category { get; set; }
         public bool UnEquipAllowed { get; set; } = true;
         public bool IsCompatibleWithBodyShape { get; set; } = true;
+        public bool IsSmartWearable { get; set; } = false;
 
         public virtual bool Equals(WearableGridItemModel other)
         {
@@ -26,7 +27,8 @@ namespace DCL.Backpack
                    && IsNew == other.IsNew
                    && Category == other.Category
                    && UnEquipAllowed == other.UnEquipAllowed
-                   && IsCompatibleWithBodyShape == other.IsCompatibleWithBodyShape;
+                   && IsCompatibleWithBodyShape == other.IsCompatibleWithBodyShape
+                   && IsSmartWearable == other.IsSmartWearable;
         }
 
         public override int GetHashCode()
@@ -41,6 +43,7 @@ namespace DCL.Backpack
             hashCode.Add(Category);
             hashCode.Add(UnEquipAllowed);
             hashCode.Add(IsCompatibleWithBodyShape);
+            hashCode.Add(IsSmartWearable);
             return hashCode.ToHashCode();
         }
     }
