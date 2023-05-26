@@ -21,6 +21,7 @@ namespace DCL.Backpack
         [SerializeField] internal Material grayScaleMaterial;
         [SerializeField] internal GameObject incompatibleContainer;
         [SerializeField] internal GameObject incompatibleTooltip;
+        [SerializeField] internal GameObject smartWearableFlag;
 
         private IButtonDoubleClick interactDoubleClick;
         private string lastThumbnailUrl;
@@ -83,7 +84,7 @@ namespace DCL.Backpack
             selectedContainer.SetActive(model.IsSelected);
             equippedContainer.SetActive(model.IsEquipped);
             isNewContainer.SetActive(model.IsNew);
-
+            smartWearableFlag.SetActive(model.IsSmartWearable);
             // we gotta check for url changes, otherwise the image component will start a "loading" state, even if the url is the same
             if (lastThumbnailUrl != model.ImageUrl)
             {
