@@ -98,12 +98,12 @@ public class AvatarEditorHUDController : IHUD
     }
 
     public void Initialize(
-        bool bypassUpdateAvatarPreview = false
-        )
+        bool bypassUpdateAvatarPreview,
+        IPreviewCameraRotationController previewCameraRotationController)
     {
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
-        view = AvatarEditorHUDView.Create(this, new PreviewCameraRotationController());
+        view = AvatarEditorHUDView.Create(this, previewCameraRotationController);
 
         view.skinsFeatureContainer.SetActive(true);
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
