@@ -75,7 +75,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
             pluginSystem.RegisterWithFlag<FavoritePlacesPlugin>(() => new FavoritePlacesPlugin(), "favourite_places");
             pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
-            pluginSystem.RegisterWithFlag<ToSPopupHUDPlugin>(() => new ToSPopupHUDPlugin(), "seamless_login_variant:enabled");
+            pluginSystem.RegisterWithFlag<ToSPopupHUDPlugin>(() => new ToSPopupHUDPlugin(), "seamless_login_variant");
 
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 Environment.i.serviceLocator.Get<IFriendsController>(),
