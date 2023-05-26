@@ -45,6 +45,8 @@ public class ToSPopupController : IDisposable
     public void Dispose()
     {
         view.OnAccept -= HandleAccept;
+        view.OnAccept -= HandleCancel;
+        view.OnAccept -= HandleViewToS;
         view.Dispose();
         tosPopupVisible.OnChange -= OnToSPopupVisible;
     }

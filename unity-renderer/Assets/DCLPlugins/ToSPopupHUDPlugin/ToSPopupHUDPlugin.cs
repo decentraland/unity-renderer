@@ -17,7 +17,6 @@ namespace DCLPlugins.ToSPopupHUDPlugin
         {
             await Environment.WaitUntilInitialized();
             var assetsProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
-            //var analytics = Environment.i.platform.serviceProviders.analytics;
             var hudsDataStore = DataStore.i.HUDs;
 
             var view = await assetsProvider.Instantiate<IToSPopupView>("ToSPopupHUD", "_ToSPopupHUD");

@@ -1,3 +1,10 @@
+
+/* Why is this commented?
+ * Good question! To get ride of the nasty bug `too many instant steps` from unity we have to avoid having new asmdefs with test related stuff
+ * This is the only way to have both the test (although commented),
+ * because due to the dependencies with the test environment either we have an asmdef with the references or we have compilation errors.
+ */
+
 // using DCL.Helpers;
 // using NSubstitute;
 // using NUnit.Framework;
