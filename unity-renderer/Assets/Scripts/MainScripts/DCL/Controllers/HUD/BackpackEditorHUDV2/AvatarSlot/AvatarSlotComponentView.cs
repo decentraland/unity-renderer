@@ -129,15 +129,15 @@ namespace DCL.Backpack
 
             if (sortedList.Count > 0)
             {
-                hiddenSlot.SetActive(true);
+                SetHideIconVisible(true);
                 tooltipContainer.anchoredPosition = tooltipFullPosition;
-                tooltipHiddenText.gameObject.SetActive(true);
-                tooltipHiddenText.text = $"Hidden by: {WearableItem.CATEGORIES_READABLE_MAPPING[sortedList[0]]}";
+                tooltipHiddenText.gameObject.SetActive(!string.IsNullOrEmpty(model.wearableId));
+                tooltipHiddenText.text = $"Hidden by {WearableItem.CATEGORIES_READABLE_MAPPING[sortedList[0]]}";
                 model.hiddenBy = sortedList[0];
             }
             else
             {
-                hiddenSlot.SetActive(false);
+                SetHideIconVisible(false);
                 tooltipHiddenText.gameObject.SetActive(false);
                 tooltipContainer.anchoredPosition = tooltipDefaultPosition;
                 model.hiddenBy = "";
@@ -242,7 +242,7 @@ namespace DCL.Backpack
         }
 
         public void SetHideIconVisible(bool isVisible) =>
-            hiddenSlot.SetActive(isVisible);
+            hiddenSlot.SetActive(isVisible && !string.IsNullOrEmpty(model.wearableId));
 
         public void ShakeAnimation() =>
             nftContainer.DOShakePosition(SHAKE_ANIMATION_TIME, 4).OnComplete(() => nftContainer.anchoredPosition = nftContainerDefaultPosition);
