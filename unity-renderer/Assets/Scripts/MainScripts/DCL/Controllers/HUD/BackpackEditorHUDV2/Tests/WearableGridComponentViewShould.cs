@@ -216,6 +216,17 @@ namespace DCL.Backpack
         }
 
         [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetLoadingActive(bool isActive)
+        {
+            view.SetLoadingActive(isActive);
+
+            Assert.AreEqual(!isActive, view.wearablesGridContainer.gameObject.activeSelf);
+            Assert.AreEqual(isActive, view.loadingSpinner.activeSelf);
+        }
+
+        [Test]
         public void SetBreadcrumb()
         {
             var model = new NftBreadcrumbModel

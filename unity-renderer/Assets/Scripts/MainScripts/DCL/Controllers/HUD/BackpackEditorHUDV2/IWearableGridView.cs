@@ -23,5 +23,6 @@ namespace DCL.Backpack
         void SetWearableBreadcrumb(NftBreadcrumbModel model);
         void FillInfoCard(InfoCardComponentModel model);
         void SetInfoCardVisible(bool isVisible);
+        void SetLoadingActive(bool isActive);
     }
 }

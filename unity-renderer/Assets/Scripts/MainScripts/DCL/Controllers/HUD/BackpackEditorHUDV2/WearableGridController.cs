@@ -229,6 +229,7 @@ namespace DCL.Backpack
 
                 var filtersToRequest = GetCategoryAndCollectionFiltersToRequest();
 
+                view.SetLoadingActive(true);
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
@@ -236,6 +237,7 @@ namespace DCL.Backpack
                     filtersToRequest.categoryFilterToRequest, NftRarity.None, filtersToRequest.collectionTypeMaskToRequest,
                     thirdPartyCollectionIdsFilter,
                     nameFilter, wearableSorting);
+                view.SetLoadingActive(false);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
                                             .ToDictionary(item => item.WearableId, model => model);

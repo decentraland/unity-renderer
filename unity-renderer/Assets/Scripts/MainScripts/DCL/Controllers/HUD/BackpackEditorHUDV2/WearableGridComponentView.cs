@@ -15,6 +15,7 @@ namespace DCL.Backpack
         [SerializeField] internal InfoCardComponentView infoCardComponentView;
         [SerializeField] internal GameObject emptyStateContainer;
         [SerializeField] internal Button goToMarketplaceButton;
+        [SerializeField] internal GameObject loadingSpinner;
 
         private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
         private readonly Dictionary<string, WearableGridItemComponentView> wearablesById = new ();
@@ -146,6 +147,12 @@ namespace DCL.Backpack
 
         public void SetInfoCardVisible(bool isVisible) =>
             infoCardComponentView.SetVisible(isVisible);
+
+        public void SetLoadingActive(bool isActive)
+        {
+            wearablesGridContainer.gameObject.SetActive(!isActive);
+            loadingSpinner.SetActive(isActive);
+        }
 
         public void SetWearableBreadcrumb(NftBreadcrumbModel model) =>
             wearablesBreadcrumbComponentView.SetModel(model);
