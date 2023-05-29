@@ -44,6 +44,7 @@ namespace DCL.Backpack
         {
             ClearSlotSelection();
 
+            lastSelectedSlot = category;
             avatarSlotsView.Select(category, notify);
         }
 
