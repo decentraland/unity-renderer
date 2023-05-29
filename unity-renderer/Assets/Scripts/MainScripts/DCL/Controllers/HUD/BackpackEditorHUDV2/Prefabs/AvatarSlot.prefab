@@ -88,7 +88,6 @@ GameObject:
   - component: {fileID: 8485199980452263055}
   - component: {fileID: 8938532611340547235}
   - component: {fileID: 5111178573828489163}
-  - component: {fileID: 8887041467283646044}
   m_Layer: 5
   m_Name: NonOverride
   m_TagString: Untagged
@@ -199,22 +198,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8887041467283646044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258832852174740416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playHover: 0
-  playClick: 1
-  playRelease: 0
-  extraClickEvent: {fileID: 0}
 --- !u!1 &390093675035885393
 GameObject:
   m_ObjectHideFlags: 0
@@ -1319,7 +1302,6 @@ GameObject:
   - component: {fileID: 5781764464709001911}
   - component: {fileID: 6402358974077830544}
   - component: {fileID: 7015445653465098593}
-  - component: {fileID: 5478103115284161585}
   m_Layer: 5
   m_Name: OverrideHide
   m_TagString: Untagged
@@ -1430,22 +1412,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5478103115284161585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4212813612706947540}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playHover: 0
-  playClick: 1
-  playRelease: 0
-  extraClickEvent: {fileID: 0}
 --- !u!1 &4821146610293522735
 GameObject:
   m_ObjectHideFlags: 0

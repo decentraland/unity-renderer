@@ -337,14 +337,23 @@ namespace DCL.Backpack
             }
         }
 
-        private void EquipWearableFromGrid(string wearableId, EquipWearableSource source) =>
+        private void EquipWearableFromGrid(string wearableId, EquipWearableSource source)
+        {
+            AudioScriptableObjects.equip.Play(true);
             EquipWearable(wearableId, source);
+        }
 
-        private void UnEquipWearableFromGrid(string wearableId, UnequipWearableSource source) =>
+        private void UnEquipWearableFromGrid(string wearableId, UnequipWearableSource source)
+        {
+            AudioScriptableObjects.unequip.Play(true);
             UnEquipWearable(wearableId, source);
+        }
 
-        private void UnEquipWearableFromSlot(string wearableId, UnequipWearableSource source) =>
+        private void UnEquipWearableFromSlot(string wearableId, UnequipWearableSource source)
+        {
+            AudioScriptableObjects.unequip.Play(true);
             UnEquipWearable(wearableId, source);
+        }
 
         private void EquipWearable(string wearableId,
             EquipWearableSource source = EquipWearableSource.None,

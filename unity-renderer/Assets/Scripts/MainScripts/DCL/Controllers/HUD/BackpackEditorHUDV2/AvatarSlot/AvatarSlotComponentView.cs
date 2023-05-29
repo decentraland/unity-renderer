@@ -51,12 +51,14 @@ namespace DCL.Backpack
             overriddenHide.onClick.RemoveAllListeners();
             overriddenHide.onClick.AddListener(()=>
             {
+                AudioScriptableObjects.hide.Play(true);
                 OnHideUnhidePressed?.Invoke(model.category, false);
                 SetOverrideHide(false);
             });
             normalHide.onClick.RemoveAllListeners();
             normalHide.onClick.AddListener(()=>
             {
+                AudioScriptableObjects.show.Play(true);
                 OnHideUnhidePressed?.Invoke(model.category, true);
                 SetOverrideHide(true);
             });
