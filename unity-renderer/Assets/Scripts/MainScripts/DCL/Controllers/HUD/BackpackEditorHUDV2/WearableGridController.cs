@@ -156,6 +156,15 @@ namespace DCL.Backpack
         public void LoadCollections() =>
             backpackFiltersController.LoadCollections();
 
+        public void ResetFilters()
+        {
+            categoryFilter = null;
+            collectionTypeMask = NftCollectionType.All;
+            thirdPartyCollectionIdsFilter = null;
+            nameFilter = null;
+            wearableSorting = new (NftOrderByOperation.Date, false);
+        }
+
         private async UniTaskVoid ShowWearablesAndUpdateFilters(int page, CancellationToken cancellationToken)
         {
             List<(string reference, string name, string type, bool removable)> path = new ();

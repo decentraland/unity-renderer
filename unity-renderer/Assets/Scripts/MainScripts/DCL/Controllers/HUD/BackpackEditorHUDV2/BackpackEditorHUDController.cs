@@ -174,6 +174,7 @@ namespace DCL.Backpack
         {
             view.Hide();
             view.ResetPreviewEmote();
+            wearableGridController.ResetFilters();
             dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld);
         }
 
