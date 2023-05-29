@@ -22,14 +22,16 @@ namespace Tests
         {
             yield return base.SetUp();
 
-            // we do a re-setup of the service locator to override the wearablesCatalogService
-            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            ServiceLocator serviceLocator = InitializeServiceLocator();
-            serviceLocator.Register<IWearablesCatalogService>(() => wearablesCatalogService);
-            Environment.Setup(serviceLocator);
-
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
+        }
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            ServiceLocator serviceLocator = base.InitializeServiceLocator();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            serviceLocator.Register<IWearablesCatalogService>(() => wearablesCatalogService);
+            return serviceLocator;
         }
 
         protected override IEnumerator TearDown()
