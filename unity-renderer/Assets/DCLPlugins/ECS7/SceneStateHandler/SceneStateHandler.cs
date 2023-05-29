@@ -52,22 +52,11 @@ namespace DCL.ECS7
 
         internal void IncreaseSceneTick(int sceneNumber)
         {
-            if (scenes.TryGetValue(sceneNumber, out var scene))
-            {
-                var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model?? InitializeEngineInfoComponentModel();
-                model.SceneTick++;
-                engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
-            }
-        }
+            if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
 
-        internal void UpdateSceneRunTime(int sceneNumber)
-        {
-            if (scenes.TryGetValue(sceneNumber, out var scene))
-            {
-                var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model?? new InternalEngineInfo() { SceneTick = 0 };
-                model.SceneTick++;
-                engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
-            }
+            var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model?? InitializeEngineInfoComponentModel();
+            model.SceneTick++;
+            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
         }
 
         internal bool IsSceneGltfLoadingFinished(int sceneNumber)

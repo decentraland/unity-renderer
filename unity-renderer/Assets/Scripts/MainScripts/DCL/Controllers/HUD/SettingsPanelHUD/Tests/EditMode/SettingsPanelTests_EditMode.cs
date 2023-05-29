@@ -4,6 +4,7 @@ using DCL.SettingsPanelHUD.Sections;
 using DCL.SettingsPanelHUD.Widgets;
 using NSubstitute;
 using NUnit.Framework;
+using Analytics;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -86,7 +87,7 @@ namespace SettingsPanelTests
         public void AddHelpAndSupportWindowProperly()
         {
             IHelpAndSupportHUDView view = Substitute.For<IHelpAndSupportHUDView>();
-            helpAndSupportHUDController = new HelpAndSupportHUDController(view);
+            helpAndSupportHUDController = new HelpAndSupportHUDController(view, Substitute.For<ISupportAnalytics>());
             panelController.AddHelpAndSupportWindow(helpAndSupportHUDController);
 
             view.DidNotReceive().SetVisibility(true);
