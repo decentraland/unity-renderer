@@ -61,9 +61,11 @@ namespace DCL.Backpack
                     text = defaultCollection.name,
                     isOn = true,
                     isTextActive = true,
+                    changeTextColorOnSelect = true,
                 };
 
                 collectionsToAdd.Add(defaultToggle);
+                selectedCollections.Clear();
                 selectedCollections.Add(defaultToggle.id);
             }
 
@@ -75,10 +77,14 @@ namespace DCL.Backpack
                     text = collection.name,
                     isOn = false,
                     isTextActive = true,
+                    changeTextColorOnSelect = true,
                 };
 
                 collectionsToAdd.Add(newCollectionModel);
             }
+
+            if (collectionsToAdd.Count > 0)
+                collectionDropdown.SetTitle(collectionsToAdd[0].text);
 
             collectionDropdown.SetOptions(collectionsToAdd);
             loadedFilters = collectionsToAdd;
@@ -137,15 +143,12 @@ namespace DCL.Backpack
 
         private void OnCollectionDropdownChanged(bool isOn, string optionId, string optionName)
         {
-            if (isOn)
-            {
-                if (selectedCollections.Contains(optionId))
-                    return;
+            if (!isOn)
+                return;
 
-                selectedCollections.Add(optionId);
-            }
-            else
-                selectedCollections.Remove(optionId);
+            collectionDropdown.SetTitle(optionName);
+            selectedCollections.Clear();
+            selectedCollections.Add(optionId);
 
             // need to make a copy of the collection because it may be modified in the event subscription
             OnCollectionChanged?.Invoke(selectedCollections.ToHashSet());
