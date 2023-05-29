@@ -1,5 +1,4 @@
 using DCL;
-using DCL.Configuration;
 using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
@@ -195,7 +194,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator RemoveAndUndoCollidersModifications()
+        public IEnumerator UndoCollidersModifications()
         {
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer()
             {
@@ -206,24 +205,44 @@ namespace Tests
 
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
 
-            var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true)
-                                   .ToArray();
+            var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true);
+
+            var invisibleColliders = colliders.Where(HasColliderName).ToArray();
+            var visibleColliders = colliders.Where(c => !HasColliderName(c)).ToArray();
+
+            handler.collidersHandler.CleanUp();
+            yield return null;
+
+            foreach (var collider in invisibleColliders)
+            {
+                Assert.IsTrue(collider);
+                Assert.IsFalse(collider.enabled);
+            }
+
+            foreach (var collider in visibleColliders)
+            {
+                // Any non "_collider" should have being removed
+                Assert.IsFalse(collider);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator RemoveColliders()
+        {
+            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer()
+            {
+                Src = "palmtree",
+                InvisibleMeshesCollisionMask = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1),
+                VisibleMeshesCollisionMask = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1)
+            });
+
+            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
 
             handler.OnComponentRemoved(scene, entity);
 
             Assert.IsNull(physicColliderComponent.GetFor(scene, entity));
             Assert.IsNull(pointerColliderComponent.GetFor(scene, entity));
             Assert.IsNull(customLayerColliderComponent.GetFor(scene, entity));
-
-            foreach (var collider in colliders)
-            {
-                bool containsColliderName = HasColliderName(collider);
-
-                Assert.AreEqual(containsColliderName ? PhysicsLayers.characterOnlyLayer : PhysicsLayers.onPointerEventLayer,
-                    collider.gameObject.layer);
-
-                Assert.IsTrue(collider.enabled);
-            }
         }
 
         [UnityTest]

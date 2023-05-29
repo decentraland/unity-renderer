@@ -43,7 +43,7 @@ namespace DCL.ECSComponents
 
         private IReadOnlyCollection<Renderer> renderers;
 
-        private GltfContainerCollidersHandler collidersHandler;
+        internal GltfContainerCollidersHandler collidersHandler;
         private PBGltfContainer previousModel = null;
 
         public GltfContainerHandler(IInternalECSComponent<InternalColliders> pointerColliderComponent,
