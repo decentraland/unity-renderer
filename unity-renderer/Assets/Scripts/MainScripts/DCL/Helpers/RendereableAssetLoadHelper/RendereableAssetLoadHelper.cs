@@ -347,14 +347,7 @@ namespace DCL.Components
 
             gltfastPromise.OnFailEvent += (asset, exception) =>
             {
-                if (exception is PromiseForgottenException or OperationCanceledException)
-                {
-                    ClearEvents();
-                    return;
-                }
-
                 OnFailWrapper(OnFail, exception, hasFallback);
-
             };
 
             AssetPromiseKeeper_GLTFast_Instance.i.Keep(gltfastPromise);
