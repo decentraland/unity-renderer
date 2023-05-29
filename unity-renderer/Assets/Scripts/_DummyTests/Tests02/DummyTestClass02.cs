@@ -1,12 +1,7 @@
-using Cysharp.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using DCL.Helpers;
-using DCL.Providers;
-using DCLPlugins.LoadingScreenPlugin;
-using Decentraland.Bff;
-using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System;
 using System.Collections;
 using System.Threading;
