@@ -55,7 +55,7 @@ namespace DCL
         {
             debugController.SetSceneDebugPanel();
         }
-
+        
         public void SetMemoryUsage(string payload)
         {
             var data = JsonUtility.FromJson<MemoryDescriptionPayload>(payload);
@@ -131,6 +131,57 @@ namespace DCL
             Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
+        public void CrashPayloadRequest()
+        {
+            bool originalLoggingValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+
+            var crashPayload = CrashPayloadUtils.ComputePayload
+            (
+                DCL.Environment.i.world.state.GetLoadedScenes(),
+                debugController.GetTrackedMovements(),
+                debugController.GetTrackedTeleportPositions()
+            );
+
+            CrashPayloadResponse(crashPayload);
+
+            Debug.unityLogger.logEnabled = originalLoggingValue;
+        }
+
+        public void CrashPayloadResponse(CrashPayload payload)
+        {
+            string json = JsonConvert.SerializeObject(payload);
+            WebInterface.MessageFromEngine("CrashPayloadResponse", json);
+        }
+
+        [ContextMenu("Dump Crash Payload")]
+        public void DumpCrashPayload()
+        {
+            bool originalLoggingValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+
+            debugLogger.Log(
+                $"MEMORY -- total {Profiler.GetTotalAllocatedMemoryLong()} ... used by mono {Profiler.GetMonoUsedSizeLong()}");
+
+            var payload = CrashPayloadUtils.ComputePayload
+            (
+                DCL.Environment.i.world.state.GetLoadedScenes(),
+                debugController.GetTrackedMovements(),
+                debugController.GetTrackedTeleportPositions()
+            );
+
+            foreach (var field in payload.fields)
+            {
+                string dump = JsonConvert.SerializeObject(field.Value);
+                debugLogger.Log($"Crash payload ({field.Key}): {dump}");
+            }
+
+            string fullDump = JsonConvert.SerializeObject(payload);
+            debugLogger.Log($"Full crash payload size: {fullDump.Length}");
+
+            Debug.unityLogger.logEnabled = originalLoggingValue;
+        }
+
         public void RunPerformanceMeterTool(float durationInSeconds)
         {
             debugController.RunPerformanceMeterTool(durationInSeconds);
@@ -190,13 +241,13 @@ namespace DCL
 
             DataStore.i.debugConfig.showSceneSpawnPoints.AddOrSet(data.sceneId, data);
         }
-
+        
         [ContextMenu("Enable Animation Culling")]
         public void EnableAnimationCulling()
         {
             debugController.SetAnimationCulling(true);
         }
-
+        
         [ContextMenu("Disable Animation Culling")]
         public void DisableAnimationCulling()
         {
@@ -231,7 +282,7 @@ namespace DCL
                                     "\"areaDepth\":15 " +
                                     "}");
         }
-
+        
         [ContextMenu("Instantiate 50 bots at player coordinates")]
         public void DebugBotsInstantiation2()
         {
