@@ -34,9 +34,12 @@ namespace DCL.Backpack
         private Texture2D testFace256Texture = new Texture2D(1, 1);
         private Texture2D testBodyTexture = new Texture2D(1, 1);
 
+        GameObject audioHandler;
+
         [SetUp]
         public void SetUp()
         {
+            audioHandler = MainSceneFactory.CreateAudioHandler();
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
             view = Substitute.For<IBackpackEditorHUDView>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
@@ -91,6 +94,7 @@ namespace DCL.Backpack
             backpackEditorHUDController.Dispose();
             Object.Destroy(testFace256Texture);
             Object.Destroy(testBodyTexture);
+            Object.Destroy(audioHandler);
         }
 
         [Test]
