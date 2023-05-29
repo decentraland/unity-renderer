@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
@@ -16,9 +15,9 @@ namespace DCL.Backpack
         [SerializeField] internal NFTTypeIconsAndColors iconsByCategory;
 
         private readonly Dictionary<NftSubCategoryFilterComponentView, PoolableObject> pooledObjects = new ();
-        private NftSubCategoryFilterComponentView[] categoriesByIndex = Array.Empty<NftSubCategoryFilterComponentView>();
-        private readonly List<GameObject> separators = new ();
+        private readonly Dictionary<GameObject, PoolableObject> pooledSeparators = new ();
         private Pool pool;
+        private Pool separatorsPool;
         private bool isLayoutDirty;
 
         internal NftBreadcrumbModel Model => model;
@@ -36,14 +35,16 @@ namespace DCL.Backpack
                 maxPrewarmCount: 5,
                 isPersistent: true);
 
-            pool.ForcePrewarm();
+            separatorsPool = PoolManager.i.AddPool(
+                $"NftBreadcrumbSeparator_{GetInstanceID()}",
+                Instantiate(separatorPrefab),
+                maxPrewarmCount: 5,
+                isPersistent: true);
         }
 
         public override void RefreshControl()
         {
             ClearInstances();
-
-            categoriesByIndex = new NftSubCategoryFilterComponentView[model.Path.Length];
 
             for (var i = 0; i < model.Path.Length; i++)
             {
@@ -51,9 +52,7 @@ namespace DCL.Backpack
                 bool isLastItem = i == model.Path.Length - 1;
                 bool isSelected = model.Current == i;
 
-                NftSubCategoryFilterComponentView subCategoryView =
-                    CreateSubCategory(subCategory, false, isSelected);
-                categoriesByIndex[i] = subCategoryView;
+                CreateSubCategory(subCategory, false, isSelected);
 
                 if (!isLastItem)
                     CreateSeparator();
@@ -71,8 +70,10 @@ namespace DCL.Backpack
 
         private void CreateSeparator()
         {
-            GameObject separator = Instantiate(separatorPrefab, container, false);
-            separators.Add(separator);
+            PoolableObject poolObj = separatorsPool.Get();
+            GameObject separator = poolObj.gameObject;
+            separator.transform.SetParent(container, false);
+            pooledSeparators[separator] = poolObj;
         }
 
         private NftSubCategoryFilterComponentView CreateSubCategory((string Filter, string Name, string Type, bool Removable) subCategory,
@@ -113,9 +114,10 @@ namespace DCL.Backpack
 
             pooledObjects.Clear();
 
-            foreach (GameObject separator in separators)
-                Destroy(separator);
-            separators.Clear();
+            foreach ((GameObject go, PoolableObject poolObj) in pooledSeparators)
+                poolObj.Release();
+
+            pooledSeparators.Clear();
         }
 
         private void RemoveFilter(NftSubCategoryFilterModel model) =>
