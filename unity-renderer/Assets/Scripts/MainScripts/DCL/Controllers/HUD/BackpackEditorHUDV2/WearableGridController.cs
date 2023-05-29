@@ -70,7 +70,7 @@ namespace DCL.Backpack
 
             backpackFiltersController.OnThirdPartyCollectionChanged += SetThirdPartCollectionIds;
             backpackFiltersController.OnSortByChanged += SetSorting;
-            backpackFiltersController.OnSearchTextChanged += SetTextFilter;
+            backpackFiltersController.OnSearchTextChanged += SetNameFilterFromSearchText;
             backpackFiltersController.OnCollectionTypeChanged += SetCollectionTypeFromFilterSelection;
 
             avatarSlotsHUDController.OnToggleSlot += SetCategoryFromFilterSelection;
@@ -88,7 +88,7 @@ namespace DCL.Backpack
 
             backpackFiltersController.OnThirdPartyCollectionChanged -= SetThirdPartCollectionIds;
             backpackFiltersController.OnSortByChanged -= SetSorting;
-            backpackFiltersController.OnSearchTextChanged -= SetTextFilter;
+            backpackFiltersController.OnSearchTextChanged -= SetNameFilterFromSearchText;
             backpackFiltersController.OnCollectionTypeChanged -= SetCollectionTypeFromFilterSelection;
             backpackFiltersController.Dispose();
 
@@ -392,8 +392,9 @@ namespace DCL.Backpack
             backpackAnalyticsController.SendWearableSortedBy(newSorting.type, newSorting.directionAscendent);
         }
 
-        private void SetTextFilter(string newText)
+        private void SetNameFilterFromSearchText(string newText)
         {
+            categoryFilter = null;
             nameFilter = newText;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
@@ -403,6 +404,7 @@ namespace DCL.Backpack
 
         private void SetCollectionTypeFromFilterSelection(NftCollectionType collectionType)
         {
+            categoryFilter = null;
             nameFilter = null;
             collectionTypeMask = collectionType;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
