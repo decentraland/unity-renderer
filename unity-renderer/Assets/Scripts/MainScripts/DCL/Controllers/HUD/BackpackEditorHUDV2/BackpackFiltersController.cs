@@ -87,11 +87,11 @@ namespace DCL.Backpack
         public void SetTextSearch(string text, bool notify = true) =>
             view.SetSearchText(text, notify);
 
-        public HashSet<string> GetLoadedCollections() =>
-            loadedCollections;
-
         public void SetOnlyCollectiblesIsOn(bool isOn, bool notify) =>
             view.SetOnlyCollectiblesToggleIsOn(isOn, notify);
+
+        public void SetSorting(NftOrderByOperation type, bool directionAscending, bool notify) =>
+            view.SetSorting(type, directionAscending, notify);
 
         private void SetOnlyCollectibles(bool isOn)
         {

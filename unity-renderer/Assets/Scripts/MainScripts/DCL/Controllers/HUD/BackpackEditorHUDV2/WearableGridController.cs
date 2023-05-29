@@ -35,7 +35,8 @@ namespace DCL.Backpack
         private string categoryFilter;
         private ICollection<string> thirdPartyCollectionIdsFilter;
         private string nameFilter;
-        private (NftOrderByOperation type, bool directionAscendent)? wearableSorting;
+        // initialize as "newest"
+        private (NftOrderByOperation type, bool directionAscendent)? wearableSorting = new (NftOrderByOperation.Date, false);
         private NftCollectionType collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
 
         public event Action<string> OnWearableSelected;
@@ -194,6 +195,12 @@ namespace DCL.Backpack
                 backpackFiltersController.ClearTextSearch(false);
             else
                 backpackFiltersController.SetTextSearch(nameFilter, false);
+
+            if (wearableSorting != null)
+            {
+                (NftOrderByOperation type, bool directionAscending) = wearableSorting.Value;
+                backpackFiltersController.SetSorting(type, directionAscending, false);
+            }
 
             bool isOnlyCollectiblesOn = (collectionTypeMask & NftCollectionType.Base) == 0;
             backpackFiltersController.SetOnlyCollectiblesIsOn(isOnlyCollectiblesOn, false);

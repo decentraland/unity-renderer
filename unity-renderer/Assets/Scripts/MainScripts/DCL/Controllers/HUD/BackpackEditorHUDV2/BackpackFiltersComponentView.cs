@@ -95,6 +95,27 @@ namespace DCL.Backpack
                 onlyCollectiblesToggle.SetIsOnWithoutNotify(isOn);
         }
 
+        public void SetSorting(NftOrderByOperation type, bool directionAscending, bool notify)
+        {
+            IToggleComponentView option = sortByDropdown.SelectOption(OrderByToOptionId(type, directionAscending), notify);
+            sortByDropdown.SetTitle(option.title);
+        }
+
+        private string OrderByToOptionId(NftOrderByOperation type, bool directionAscending)
+        {
+            switch (type)
+            {
+                case NftOrderByOperation.Date:
+                    return directionAscending ? OLDEST_FILTER_ID : NEWEST_FILTER_ID;
+                case NftOrderByOperation.Rarity:
+                    return directionAscending ? LESS_RARE_FILTER_ID : RAREST_FILTER_ID;
+                case NftOrderByOperation.Name:
+                    return directionAscending ? NAME_AZ_FILTER_ID : NAME_ZA_FILTER_ID;
+                default:
+                    throw new ArgumentOutOfRangeException($"Unsupported order type operation: {type}, direction: {(directionAscending ? "ASC" : "DESC")}");
+            }
+        }
+
         private void LoadSortByDropdown()
         {
             List<ToggleComponentModel> sortingMethodsToAdd = new List<ToggleComponentModel>

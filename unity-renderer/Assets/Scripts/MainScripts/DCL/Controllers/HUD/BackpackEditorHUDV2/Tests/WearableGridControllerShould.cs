@@ -551,7 +551,9 @@ namespace DCL.Backpack
             wearablesCatalogService.Received(1)
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
-                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain);
+                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                                        orderBy: Arg.Is<(NftOrderByOperation type, bool directionAscendent)>(arg =>
+                                            arg.type == NftOrderByOperation.Date && arg.directionAscendent == false));
         }
 
         [UnityTest]
@@ -586,7 +588,9 @@ namespace DCL.Backpack
                                         Arg.Any<CancellationToken>(),
                                         collectionTypeMask: NftCollectionType.All,
                                         category: null,
-                                        name: "festival");
+                                        name: "festival",
+                                        orderBy: Arg.Is<(NftOrderByOperation type, bool directionAscendent)>(arg =>
+                                            arg.type == NftOrderByOperation.Date && arg.directionAscendent == false));
         }
 
         [UnityTest]
@@ -626,7 +630,9 @@ namespace DCL.Backpack
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
                                         collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
-                                        category: "upper_body");
+                                        category: "upper_body",
+                                        orderBy: Arg.Is<(NftOrderByOperation type, bool directionAscendent)>(arg =>
+                                            arg.type == NftOrderByOperation.Date && arg.directionAscendent == false));
         }
 
         [UnityTest]
@@ -663,7 +669,9 @@ namespace DCL.Backpack
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
                                         collectionTypeMask: NftCollectionType.All,
-                                        name: "festival");
+                                        name: "festival",
+                                        orderBy: Arg.Is<(NftOrderByOperation type, bool directionAscendent)>(arg =>
+                                            arg.type == NftOrderByOperation.Date && arg.directionAscendent == false));
         }
 
         [UnityTest]
@@ -1017,6 +1025,25 @@ namespace DCL.Backpack
             yield return null;
 
             filtersView.Received(1).SetSearchText(null, false);
+        }
+
+        [Test]
+        public void UpdateOrderByFilterViewWhenLoadWearables()
+        {
+            controller.LoadWearables();
+
+            filtersView.Received(1).SetSorting(NftOrderByOperation.Date, false, false);
+        }
+
+        [UnityTest]
+        public IEnumerator UpdateOrderByFilterViewWhenChanges()
+        {
+            filtersView.OnSortByChanged += Raise.Event<Action<(NftOrderByOperation type, bool directionAscendent)>>(
+                (NftOrderByOperation.Name, true));
+
+            yield return null;
+
+            filtersView.Received(1).SetSorting(NftOrderByOperation.Name, true, false);
         }
     }
 }
