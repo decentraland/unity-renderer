@@ -15,7 +15,7 @@ namespace DCL.Backpack
         private readonly DataStore dataStore;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IBackpackEmotesSectionController backpackEmotesSectionController;
-        private readonly BackpackAnalyticsController backpackAnalyticsController;
+        private readonly IBackpackAnalyticsController backpackAnalyticsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
@@ -40,7 +40,7 @@ namespace DCL.Backpack
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
             IBackpackEmotesSectionController backpackEmotesSectionController,
-            BackpackAnalyticsController backpackAnalyticsController,
+            IBackpackAnalyticsController backpackAnalyticsController,
             WearableGridController wearableGridController,
             AvatarSlotsHUDController avatarSlotsHUDController)
         {
