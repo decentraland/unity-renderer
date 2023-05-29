@@ -8,6 +8,7 @@ namespace DCL.Backpack
     public interface IBackpackEditorHUDView
     {
         event Action<Color> OnColorChanged;
+        event Action OnColorPickerToggle;
         event Action OnContinueSignup;
 
         delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);

@@ -76,6 +76,7 @@ namespace DCL.Backpack
             view.SetColorPickerVisibility(false);
             view.OnContinueSignup += SaveAvatarAndContinueSignupProcess;
             view.OnColorChanged += OnWearableColorChanged;
+            view.OnColorPickerToggle += OnColorPickerToggled;
 
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
         }
@@ -498,6 +499,9 @@ namespace DCL.Backpack
             avatarIsDirty = true;
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
+
+        private void OnColorPickerToggled() =>
+            backpackAnalyticsController.SendAvatarColorPick();
 
         private void PlayEquipAnimation(string category)
         {

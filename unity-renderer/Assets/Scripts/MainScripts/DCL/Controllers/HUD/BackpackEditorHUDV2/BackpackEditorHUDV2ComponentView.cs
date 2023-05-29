@@ -14,6 +14,7 @@ namespace DCL.Backpack
     public class BackpackEditorHUDV2ComponentView : BaseComponentView<BackpackEditorHUDModel>, IBackpackEditorHUDView, IPointerDownHandler
     {
         public event Action<Color> OnColorChanged;
+        public event Action OnColorPickerToggle;
         public event Action OnContinueSignup;
 
         private const int AVATAR_SECTION_INDEX = 0;
@@ -66,6 +67,7 @@ namespace DCL.Backpack
                 avatarPreviewPanningController,
                 avatarPreviewZoomController);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
+            colorPickerComponentView.OnColorPickerToggle += ColorPickerToggle;
         }
 
         private void Update() =>
@@ -86,6 +88,7 @@ namespace DCL.Backpack
             backpackPreviewPanel.Dispose();
 
             colorPickerComponentView.OnColorChanged -= OnColorPickerColorChanged;
+            colorPickerComponentView.OnColorPickerToggle -= ColorPickerToggle;
         }
 
         public static BackpackEditorHUDV2ComponentView Create() =>
@@ -245,5 +248,8 @@ namespace DCL.Backpack
 
         private void OnColorPickerColorChanged(Color newColor) =>
             OnColorChanged?.Invoke(newColor);
+
+        private void ColorPickerToggle() =>
+            OnColorPickerToggle?.Invoke();
     }
 }

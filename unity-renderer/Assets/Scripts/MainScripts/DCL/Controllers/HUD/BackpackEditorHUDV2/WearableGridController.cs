@@ -365,6 +365,7 @@ namespace DCL.Backpack
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
             view.SetInfoCardVisible(false);
+            backpackAnalyticsController.SendWearableSortedBy(newSorting.type, newSorting.directionAscendent);
         }
 
         private void SetTextFilter(string newText)
@@ -373,6 +374,7 @@ namespace DCL.Backpack
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
             view.SetInfoCardVisible(false);
+            backpackAnalyticsController.SendWearableSearch(newText);
         }
 
         private void SetCollectionTypeFromFilterSelection(NftCollectionType collectionType)
@@ -381,6 +383,7 @@ namespace DCL.Backpack
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
             view.SetInfoCardVisible(false);
+            backpackAnalyticsController.SendWearableFilter(!collectionType.HasFlag(NftCollectionType.Base));
         }
 
         private void SetCategoryFromFilterSelection(string category, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
