@@ -174,7 +174,6 @@ namespace DCL.ECS7.InternalComponents
     public class InternalEngineInfo : InternalComponent
     {
         public uint SceneTick = 0;
-        public int SceneInitialFrameNumber = 0;
         public float SceneInitialRunTime = 0;
     }
 }

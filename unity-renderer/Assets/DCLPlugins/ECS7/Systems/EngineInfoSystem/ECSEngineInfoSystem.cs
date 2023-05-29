@@ -29,27 +29,12 @@ namespace ECSSystems.ECSEngineInfoSystem
 
         public void Update()
         {
-            // Traverse all scenes and add/update tick, frame, scene time
-            // int scenesAmount = scenes.Count;
-            // for (int i = 0; i < scenesAmount; i++)
-            // {
-            //     var scene = scenes[i];
-            //     // scenes[i]
-            //     componentWriter.PutComponent(
-            //         scene,
-            //         scene.GetEntityById(SpecialEntityId.SCENE_ROOT_ENTITY),
-            //         ComponentID.ENGINE_INFO,
-            //         new PBEngineInfo()
-            //         {
-            //
-            //         }
-            //         );
-            // }
-
             int currentEngineFrameCount = Time.frameCount;
             float currentEngineRunTime = Time.realtimeSinceStartup;
 
+            // Internal EngineInfo component is initialized and attached by SceneStateHandler when a scene is loaded
             var componentGroup = internalEngineInfo.GetForAll();
+
             int entitiesCount = componentGroup.Count;
             for (int i = 0; i < entitiesCount; i++)
             {
@@ -57,7 +42,6 @@ namespace ECSSystems.ECSEngineInfoSystem
                 var scene = componentGroup[i].value.scene;
                 var model = componentGroup[i].value.model;
 
-                // TODO: How to deal with this happening in the SceneStateHandler ???
                 model.SceneTick++;
 
                 componentWriter.PutComponent(
@@ -67,7 +51,7 @@ namespace ECSSystems.ECSEngineInfoSystem
                     new PBEngineInfo()
                     {
                         TickNumber = model.SceneTick,
-                        FrameNumber = (uint)(currentEngineFrameCount - model.SceneInitialFrameNumber),
+                        FrameNumber = (uint)currentEngineFrameCount,
                         TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime
                     });
 
