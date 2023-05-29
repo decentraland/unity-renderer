@@ -48,6 +48,9 @@ public static class AudioScriptableObjects
     private static AudioEvent showEvent;
     public static AudioEvent show => CommonScriptableObjects.GetOrLoad(ref showEvent, "ScriptableObjects/AudioEvents/HUDCommon/Show");
 
+    private static AudioEvent_WithRandomPitch inputEvent;
+    public static AudioEvent_WithRandomPitch input => CommonScriptableObjects.GetOrLoad(ref inputEvent, "ScriptableObjects/AudioEvents/HUDCommon/InputField");
+
     private static AudioEvent buttonReleaseEvent;
     public static AudioEvent buttonRelease => CommonScriptableObjects.GetOrLoad(ref buttonReleaseEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonRelease");
 
