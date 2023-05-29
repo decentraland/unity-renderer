@@ -10,6 +10,7 @@ namespace DCL.Backpack
         event Action<Color> OnColorChanged;
         event Action OnColorPickerToggle;
         event Action OnContinueSignup;
+        event Action OnAvatarUpdated;
 
         delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 

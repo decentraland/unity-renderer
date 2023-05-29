@@ -24,6 +24,7 @@ namespace DCL.Backpack
         private bool avatarIsDirty;
         private CancellationTokenSource loadProfileCancellationToken = new ();
         private CancellationTokenSource setVisibilityCancellationToken = new ();
+        private string categoryPendingToPlayEmote;
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
@@ -77,6 +78,7 @@ namespace DCL.Backpack
             view.OnContinueSignup += SaveAvatarAndContinueSignupProcess;
             view.OnColorChanged += OnWearableColorChanged;
             view.OnColorPickerToggle += OnColorPickerToggled;
+            view.OnAvatarUpdated += OnAvatarUpdated;
 
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
         }
@@ -400,7 +402,7 @@ namespace DCL.Backpack
             if (updateAvatarPreview)
             {
                 view.UpdateAvatarPreview(model.ToAvatarModel());
-                PlayEquipAnimation(wearable.data.category);
+                categoryPendingToPlayEmote = wearable.data.category;
             }
         }
 
@@ -511,6 +513,15 @@ namespace DCL.Backpack
 
         private void OnColorPickerToggled() =>
             backpackAnalyticsController.SendAvatarColorPick();
+
+        private void OnAvatarUpdated()
+        {
+            if (string.IsNullOrEmpty(categoryPendingToPlayEmote))
+                return;
+
+            PlayEquipAnimation(categoryPendingToPlayEmote);
+            categoryPendingToPlayEmote = null;
+        }
 
         private void PlayEquipAnimation(string category)
         {

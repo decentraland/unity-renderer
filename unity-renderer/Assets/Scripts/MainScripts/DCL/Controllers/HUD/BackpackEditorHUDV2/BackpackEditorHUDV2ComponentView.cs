@@ -16,6 +16,7 @@ namespace DCL.Backpack
         public event Action<Color> OnColorChanged;
         public event Action OnColorPickerToggle;
         public event Action OnContinueSignup;
+        public event Action OnAvatarUpdated;
 
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
@@ -236,6 +237,7 @@ namespace DCL.Backpack
             {
                 await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate, ct);
                 backpackPreviewPanel.SetLoadingActive(false);
+                OnAvatarUpdated?.Invoke();
             }
 
             if (!isAvatarDirty)
