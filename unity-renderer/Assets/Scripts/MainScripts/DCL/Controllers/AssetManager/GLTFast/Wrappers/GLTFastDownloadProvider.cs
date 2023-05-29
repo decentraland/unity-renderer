@@ -92,8 +92,7 @@ namespace DCL.GLTFast.Wrappers
 #else
                 false
 #endif
-              , linear: forceLinear,
-                permittedSources: AssetSource.ALL
+              , linear: forceLinear
             );
 
             var wrapper = new GLTFastTexturePromiseWrapper(texturePromiseKeeper, promise);
