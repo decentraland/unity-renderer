@@ -9,7 +9,9 @@
         "BaseVariable",
         "LambdasService",
         "UniTask",
-        "IService"
+        "IService",
+        "ServiceProvidersInterfaces",
+        "CatalystInterfaces"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

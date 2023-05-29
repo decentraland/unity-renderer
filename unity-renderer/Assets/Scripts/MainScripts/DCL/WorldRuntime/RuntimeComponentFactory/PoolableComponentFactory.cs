@@ -75,7 +75,7 @@ namespace DCL
                 if (item.usePool)
                 {
                     EnsurePoolForItem(item);
-                    GetPoolForItem(item).ForcePrewarm();
+                    GetPoolForItem(item).ForcePrewarm(forceActive: false);
                 }
             }
         }
