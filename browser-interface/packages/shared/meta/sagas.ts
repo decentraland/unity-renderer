@@ -84,11 +84,7 @@ async function fetchFeatureFlagsAndVariants(network: ETHEREUM_NETWORK): Promise<
           if (variant !== null) {
             flagsAndVariants.variants[name] = {
               enabled: true,
-              name: variant,
-              payload: {
-                type: 'string',
-                value: variant
-              }
+              name: variant
             } as FeatureFlagVariant
           }
         }
