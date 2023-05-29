@@ -142,6 +142,10 @@ namespace AvatarSystem
 
                 name = renderer.name.ToLower();
 
+                // we still support the old gltf hierarchy for ABs
+                if (name.Contains("primitive"))
+                    name = renderer.transform.parent.name.ToLower();
+
                 if (name.Contains("head"))
                     head = renderer;
                 else if (name.Contains("ubody"))
