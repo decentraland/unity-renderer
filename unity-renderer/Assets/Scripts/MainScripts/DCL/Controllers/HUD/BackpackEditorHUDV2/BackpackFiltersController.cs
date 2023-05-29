@@ -62,8 +62,11 @@ namespace DCL.Backpack
 
                     loadedCollections.Clear();
                     loadedCollections.Add(defaultCollection.urn);
-                    foreach (var collection in collections)
-                        loadedCollections.Add(collection.urn);
+                    if (collections != null)
+                    {
+                        foreach (var collection in collections)
+                            loadedCollections.Add(collection.urn);
+                    }
 
                     view.LoadCollectionDropdown(collections, defaultCollection);
                     collectionsAlreadyLoaded = true;

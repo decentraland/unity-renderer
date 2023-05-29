@@ -584,8 +584,8 @@ namespace DCL.Backpack
             wearablesCatalogService.Received(1)
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
-                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
-                                        category: "upper_body",
+                                        collectionTypeMask: NftCollectionType.All,
+                                        category: null,
                                         name: "festival");
         }
 
@@ -647,7 +647,7 @@ namespace DCL.Backpack
             view.OnFilterRemoved += Raise.Event<Action<string>>("all&name=festival&category=upper_body");
             yield return null;
 
-            view.Received(1)
+            view.Received()
                 .SetWearableBreadcrumb(Arg.Is<NftBreadcrumbModel>(n =>
                      n.ResultCount == 0
                      && n.Current == 1
@@ -662,7 +662,7 @@ namespace DCL.Backpack
             wearablesCatalogService.Received(1)
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
-                                        collectionTypeMask: NftCollectionType.Base | NftCollectionType.OnChain,
+                                        collectionTypeMask: NftCollectionType.All,
                                         name: "festival");
         }
 
@@ -693,9 +693,9 @@ namespace DCL.Backpack
             wearablesCatalogService.Received(1)
                                    .RequestOwnedWearablesAsync(OWN_USER_ID, 1, 15,
                                         Arg.Any<CancellationToken>(),
-                                        CATEGORY,
+                                        null,
                                         NftRarity.None,
-                                        NftCollectionType.Base | NftCollectionType.OnChain | NftCollectionType.ThirdParty,
+                                        NftCollectionType.All,
                                         Arg.Is<ICollection<string>>(i =>
                                             i.ElementAt(0) == ON_CHAIN_COLLECTION
                                             && i.ElementAt(1) == BASE_OFF_CHAIN_COLLECTION

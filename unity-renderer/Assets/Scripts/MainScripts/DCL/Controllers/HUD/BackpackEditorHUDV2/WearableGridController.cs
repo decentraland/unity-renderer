@@ -220,14 +220,14 @@ namespace DCL.Backpack
             {
                 currentWearables.Clear();
 
-                var filtersToRequest = GetFiltersToRequest();
+                var filtersToRequest = GetCategoryAndCollectionFiltersToRequest();
 
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
                     PAGE_SIZE, cancellationToken,
                     filtersToRequest.categoryFilterToRequest, NftRarity.None, filtersToRequest.collectionTypeMaskToRequest,
-                    filtersToRequest.thirdPartyCollectionIdsFilterToRequest,
+                    thirdPartyCollectionIdsFilter,
                     nameFilter, wearableSorting);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
@@ -246,23 +246,28 @@ namespace DCL.Backpack
             return 0;
         }
 
-        private (string categoryFilterToRequest, ICollection<string> thirdPartyCollectionIdsFilterToRequest, NftCollectionType collectionTypeMaskToRequest) GetFiltersToRequest()
+        private (string categoryFilterToRequest, NftCollectionType collectionTypeMaskToRequest) GetCategoryAndCollectionFiltersToRequest()
         {
             string categoryFilterToRequest = categoryFilter;
-            ICollection<string> thirdPartyCollectionIdsFilterToRequest = thirdPartyCollectionIdsFilter;
             NftCollectionType collectionTypeMaskToRequest = collectionTypeMask;
+
             if (!string.IsNullOrEmpty(nameFilter) && nameFilter.Length > 0)
             {
-                avatarSlotsHUDController.UnselectAllSlots(false);
-                List<(string reference, string name, string type, bool removable)> path = new () { (reference: ALL_FILTER_REF, name: "All", type: "all", removable: false) };
-                view.SetWearableBreadcrumb(new NftBreadcrumbModel { Path = path.ToArray(), Current = path.Count - 1, ResultCount = 0 });
-                backpackFiltersController.SetOnlyCollectiblesIsOn(false, false);
                 categoryFilterToRequest = null;
-                thirdPartyCollectionIdsFilterToRequest = backpackFiltersController.GetLoadedCollections();
                 collectionTypeMaskToRequest = NftCollectionType.All;
+
+                avatarSlotsHUDController.UnselectAllSlots(false);
+                backpackFiltersController.SetOnlyCollectiblesIsOn(false, false);
+
+                List<(string reference, string name, string type, bool removable)> path = new ();
+                var additiveReferencePath = $"{ALL_FILTER_REF}";
+                path.Add((reference: additiveReferencePath, name: "All", type: "all", removable: false));
+                additiveReferencePath += $"&{NAME_FILTER_REF}{nameFilter}";
+                path.Add((reference: additiveReferencePath, name: nameFilter, type: "nft-name", removable: true));
+                view.SetWearableBreadcrumb(new NftBreadcrumbModel { Path = path.ToArray(), Current = path.Count - 1, ResultCount = 0 });
             }
 
-            return (categoryFilterToRequest, thirdPartyCollectionIdsFilterToRequest, collectionTypeMaskToRequest);
+            return (categoryFilterToRequest, collectionTypeMaskToRequest);
         }
 
         private WearableGridItemModel ToWearableGridModel(WearableItem wearable)
