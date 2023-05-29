@@ -5,6 +5,7 @@ using DCL.Models;
 using RPC.Context;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.ECS7
 {
@@ -39,7 +40,7 @@ namespace DCL.ECS7
 
                 if (model == null)
                 {
-                    model = new InternalEngineInfo() { SceneTick = 0 };
+                    model = InitializeEngineInfoComponentModel();
                     engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
                 }
 
@@ -50,6 +51,16 @@ namespace DCL.ECS7
         }
 
         internal void IncreaseSceneTick(int sceneNumber)
+        {
+            if (scenes.TryGetValue(sceneNumber, out var scene))
+            {
+                var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model?? InitializeEngineInfoComponentModel();
+                model.SceneTick++;
+                engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
+            }
+        }
+
+        internal void UpdateSceneRunTime(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
             {
@@ -74,6 +85,14 @@ namespace DCL.ECS7
 
             return true;
         }
+
+        private InternalEngineInfo InitializeEngineInfoComponentModel() =>
+            new InternalEngineInfo()
+            {
+                SceneTick = 0,
+                SceneInitialFrameNumber = Time.frameCount,
+                SceneInitialRunTime = Time.realtimeSinceStartup
+            };
 
         public void Dispose()
         {

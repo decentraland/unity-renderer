@@ -2,6 +2,7 @@ using DCL;
 using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
+using ECSSystems.ECSEngineInfoSystem;
 using ECSSystems.ECSRaycastSystem;
 using ECSSystems.ECSSceneBoundsCheckerSystem;
 using ECSSystems.ECSUiPointerEventsSystem;
@@ -117,12 +118,17 @@ public class ECSSystemsController : IDisposable
             context.componentWriter,
             context.internalEcsComponents.GltfContainerLoadingStateComponent);
 
+        ECSEngineInfoSystem engineInfoSystem = new ECSEngineInfoSystem(
+            DataStore.i.ecs7.scenes,
+            context.componentWriter,
+            context.internalEcsComponents.EngineInfo);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
         updateSystems = new ECS7System[]
         {
+            engineInfoSystem.Update,
             ECSTransformParentingSystem.CreateSystem(context.internalEcsComponents.sceneBoundsCheckComponent),
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
@@ -142,7 +148,7 @@ public class ECSSystemsController : IDisposable
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,
-            raycastSystem.Update, // should always be after player/entity transformations update
+            raycastSystem.Update, // Should always be after player/entity transformations update
             sceneBoundsCheckerSystem.Update // Should always be the last system
         };
     }
