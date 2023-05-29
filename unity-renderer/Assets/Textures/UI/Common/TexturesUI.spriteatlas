@@ -205,6 +205,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a55ecfa6bafe1486da42b025ec8edbd8, type: 3}
   - {fileID: 21300000, guid: 51bee6e6d6f314363a939973c91dff7a, type: 3}
   - {fileID: 21300000, guid: 518e3be6157b64d5a9fabd3e9c35622d, type: 3}
+  - {fileID: 21300000, guid: 463b39f697f51426c83cdef0cf23aa3b, type: 3}
   - {fileID: 21300000, guid: 100172170ea424b1f94f8c64e2d48da1, type: 3}
   - {fileID: 21300000, guid: e4194917179d34ea897e31a5b487a894, type: 3}
   - {fileID: 21300000, guid: 71bec2279cc084440b3820533c062b92, type: 3}
@@ -260,6 +261,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1c63e329c16184c1bb493ada5f85c91b, type: 3}
   - {fileID: 21300000, guid: 13bc1439c14df4c03a3bfc3c087d017f, type: 3}
   - {fileID: 21300000, guid: f9934449af9e15443befe12f639d5979, type: 3}
+  - {fileID: 21300000, guid: 801b2e4946a664b06873a855ca5bd8ef, type: 3}
   - {fileID: 21300000, guid: e36f3569fbdef4c609c33f7a1cebace5, type: 3}
   - {fileID: 21300000, guid: c4b955690452948efa830562d3ca8ed4, type: 3}
   - {fileID: 21300000, guid: ad6a5c692d0a34fbe8f1e4dd9bee0c2b, type: 3}
@@ -545,6 +547,7 @@ SpriteAtlas:
   - CatalogIcon
   - Frame10
   - BlockPlayerIcon
+  - EmptyIconNew
   - BackgroundPattern
   - CheckmarkContainer
   - ContainerRadius20Shadow
@@ -600,6 +603,7 @@ SpriteAtlas:
   - Frame12
   - RoundedButtonShadow
   - ContainerRadius24Shadow
+  - HideUIIconNew
   - Ellipse128
   - SearchChannelIcon
   - FriendsOff
