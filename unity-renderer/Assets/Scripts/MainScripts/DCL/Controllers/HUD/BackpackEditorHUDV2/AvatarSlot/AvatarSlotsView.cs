@@ -139,6 +139,12 @@ namespace DCL.Backpack
                 slot.Select(notify);
         }
 
+        public void UnSelectAll(bool notify)
+        {
+            foreach (KeyValuePair<string,IAvatarSlotComponentView> slot in avatarSlots)
+                slot.Value.UnSelect(notify);
+        }
+
         public override void RefreshControl() { }
     }
 }

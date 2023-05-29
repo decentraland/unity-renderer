@@ -195,6 +195,9 @@ namespace DCL.Backpack
             else
                 backpackFiltersController.SetTextSearch(nameFilter, false);
 
+            bool isOnlyCollectiblesOn = (collectionTypeMask & NftCollectionType.Base) == 0;
+            backpackFiltersController.SetOnlyCollectiblesIsOn(isOnlyCollectiblesOn, false);
+
             int resultCount = await RequestWearablesAndShowThem(page, cancellationToken);
 
             // This call has been removed to avoid flickering. The result count is hidden in the view
@@ -217,12 +220,14 @@ namespace DCL.Backpack
             {
                 currentWearables.Clear();
 
+                var filtersToRequest = GetFiltersToRequest();
+
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
                     PAGE_SIZE, cancellationToken,
-                    categoryFilter, NftRarity.None, collectionTypeMask,
-                    thirdPartyCollectionIdsFilter,
+                    filtersToRequest.categoryFilterToRequest, NftRarity.None, filtersToRequest.collectionTypeMaskToRequest,
+                    filtersToRequest.thirdPartyCollectionIdsFilterToRequest,
                     nameFilter, wearableSorting);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
@@ -239,6 +244,25 @@ namespace DCL.Backpack
             catch (Exception e) { Debug.LogException(e); }
 
             return 0;
+        }
+
+        private (string categoryFilterToRequest, ICollection<string> thirdPartyCollectionIdsFilterToRequest, NftCollectionType collectionTypeMaskToRequest) GetFiltersToRequest()
+        {
+            string categoryFilterToRequest = categoryFilter;
+            ICollection<string> thirdPartyCollectionIdsFilterToRequest = thirdPartyCollectionIdsFilter;
+            NftCollectionType collectionTypeMaskToRequest = collectionTypeMask;
+            if (!string.IsNullOrEmpty(nameFilter) && nameFilter.Length > 0)
+            {
+                avatarSlotsHUDController.UnselectAllSlots(false);
+                List<(string reference, string name, string type, bool removable)> path = new () { (reference: ALL_FILTER_REF, name: "All", type: "all", removable: false) };
+                view.SetWearableBreadcrumb(new NftBreadcrumbModel { Path = path.ToArray(), Current = path.Count - 1, ResultCount = 0 });
+                backpackFiltersController.SetOnlyCollectiblesIsOn(false, false);
+                categoryFilterToRequest = null;
+                thirdPartyCollectionIdsFilterToRequest = backpackFiltersController.GetLoadedCollections();
+                collectionTypeMaskToRequest = NftCollectionType.All;
+            }
+
+            return (categoryFilterToRequest, thirdPartyCollectionIdsFilterToRequest, collectionTypeMaskToRequest);
         }
 
         private WearableGridItemModel ToWearableGridModel(WearableItem wearable)
@@ -379,6 +403,7 @@ namespace DCL.Backpack
 
         private void SetCollectionTypeFromFilterSelection(NftCollectionType collectionType)
         {
+            nameFilter = null;
             collectionTypeMask = collectionType;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();

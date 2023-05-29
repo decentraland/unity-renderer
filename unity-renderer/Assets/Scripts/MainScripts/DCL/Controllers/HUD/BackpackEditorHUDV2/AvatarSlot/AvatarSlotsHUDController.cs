@@ -47,6 +47,9 @@ namespace DCL.Backpack
             avatarSlotsView.Select(category, notify);
         }
 
+        public void UnselectAllSlots(bool notify = true) =>
+            avatarSlotsView.UnSelectAll(notify);
+
         public void Recalculate(HashSet<string> hideOverrides) =>
             avatarSlotsView.RecalculateHideList(hideOverrides);
 

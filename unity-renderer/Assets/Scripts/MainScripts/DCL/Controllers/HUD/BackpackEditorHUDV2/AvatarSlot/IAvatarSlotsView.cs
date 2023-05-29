@@ -19,7 +19,7 @@ namespace DCL.Backpack
         void ResetCategorySlot(string category, HashSet<string> hideOverrides);
         void RecalculateHideList(HashSet<string> hideOverrides);
         void SetHideUnhideStatus(string slotCategory, bool isOverridden);
-
         void Select(string category, bool notify);
+        void UnSelectAll(bool notify);
     }
 }

@@ -87,6 +87,14 @@ namespace DCL.Backpack
         public void SetSearchText(string text, bool notify) =>
             searchBar.SubmitSearch(text, notify);
 
+        public void SetOnlyCollectiblesToggleIsOn(bool isOn, bool notify)
+        {
+            if (notify)
+                onlyCollectiblesToggle.isOn = isOn;
+            else
+                onlyCollectiblesToggle.SetIsOnWithoutNotify(isOn);
+        }
+
         private void LoadSortByDropdown()
         {
             List<ToggleComponentModel> sortingMethodsToAdd = new List<ToggleComponentModel>

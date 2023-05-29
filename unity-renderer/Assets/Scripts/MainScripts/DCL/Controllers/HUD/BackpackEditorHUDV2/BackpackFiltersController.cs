@@ -21,6 +21,7 @@ namespace DCL.Backpack
         private readonly IWearablesCatalogService wearablesCatalogService;
         private bool collectionsAlreadyLoaded;
         private HashSet<string> selectedCollections = new();
+        private HashSet<string> loadedCollections = new ();
         private NftCollectionType collectionType = NftCollectionType.OnChain | NftCollectionType.Base;
         private CancellationTokenSource loadThirdPartyCollectionsCancellationToken = new ();
 
@@ -58,6 +59,12 @@ namespace DCL.Backpack
                 {
                     WearableCollectionsAPIData.Collection[] collections = await wearablesCatalogService.GetThirdPartyCollectionsAsync(cancellationToken);
                     WearableCollectionsAPIData.Collection defaultCollection = new () { urn = DECENTRALAND_COLLECTION_ID, name = "Decentraland" };
+
+                    loadedCollections.Clear();
+                    loadedCollections.Add(defaultCollection.urn);
+                    foreach (var collection in collections)
+                        loadedCollections.Add(collection.urn);
+
                     view.LoadCollectionDropdown(collections, defaultCollection);
                     collectionsAlreadyLoaded = true;
                 }
@@ -76,6 +83,12 @@ namespace DCL.Backpack
 
         public void SetTextSearch(string text, bool notify = true) =>
             view.SetSearchText(text, notify);
+
+        public HashSet<string> GetLoadedCollections() =>
+            loadedCollections;
+
+        public void SetOnlyCollectiblesIsOn(bool isOn, bool notify) =>
+            view.SetOnlyCollectiblesToggleIsOn(isOn, notify);
 
         private void SetOnlyCollectibles(bool isOn)
         {
