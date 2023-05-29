@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading;
 using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
+using Analytics;
 
 public class HUDFactory : IHUDFactory
 {
@@ -139,7 +140,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
                 return new LeaveChannelConfirmationWindowController(Environment.i.serviceLocator.Get<IChatController>());
             case HUDElementID.TASKBAR:
-                return new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(), Environment.i.serviceLocator.Get<IFriendsController>());
+                return new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(), Environment.i.serviceLocator.Get<IFriendsController>(), new SupportAnalytics(Environment.i.platform.serviceProviders.analytics));
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 return new ExternalUrlPromptHUDController(DataStore.i.rpc.context.restrictedActions);
             case HUDElementID.NFT_INFO_DIALOG:
@@ -147,7 +148,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CONTROLS_HUD:
                 return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:
-                return new HelpAndSupportHUDController(await CreateHUDView<IHelpAndSupportHUDView>(HELP_AND_SUPPORT_HUD, cancellationToken));
+                return new HelpAndSupportHUDController(await CreateHUDView<IHelpAndSupportHUDView>(HELP_AND_SUPPORT_HUD, cancellationToken), new SupportAnalytics(Environment.i.platform.serviceProviders.analytics));
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 return new VoiceChatWindowController(
                     new UserProfileWebInterfaceBridge(),
