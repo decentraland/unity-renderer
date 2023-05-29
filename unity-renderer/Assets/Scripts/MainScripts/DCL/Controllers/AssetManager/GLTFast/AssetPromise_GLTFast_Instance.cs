@@ -108,16 +108,14 @@ namespace DCL
 
             if (success)
             {
-                if (asset.container == null)
+                if (!asset.container)
                 {
                     OnFail?.Invoke(new Exception("Object was destroyed during loading"));
                     yield break;
                 }
-                else
-                {
-                    yield return subPromise.asset.InstantiateAsync(asset.container.transform).ToCoroutine(e => throw e);
-                    yield return RemoveCollidersFromRenderers(asset.container.transform);
-                }
+
+                yield return subPromise.asset.InstantiateAsync(asset.container.transform).ToCoroutine(e => throw e);
+                yield return RemoveCollidersFromRenderers(asset.container.transform);
             }
 
             SetupAssetSettings();
