@@ -222,7 +222,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                     eyesColor = profile.avatar.eyeColor,
                     skinColor = profile.avatar.skinColor,
                     hairColor = profile.avatar.hairColor,
-                    forceRender = profile.avatar.forceRender
+                    forceRender = new HashSet<string>(profile.avatar.forceRender)
                 }, ct);
 
                 if (avatar.lodLevel <= 1)
