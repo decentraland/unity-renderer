@@ -17,6 +17,7 @@ namespace DCL.Quests
         [SerializeField] internal Transform rewardsContainer;
         [SerializeField] private Button confirmButton;
         [SerializeField] internal GameObject guestSection;
+        [SerializeField] internal GameObject container;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
 
@@ -30,7 +31,12 @@ namespace DCL.Quests
             rewardsPool = new UnityObjectPool<QuestRewardComponentView>(rewardPrefab, rewardsContainer);
             rewardsPool.Prewarm(MAX_REWARDS_COUNT);
             confirmButton.onClick.RemoveAllListeners();
-            confirmButton.onClick.AddListener(()=>OnConfirmed?.Invoke());
+            confirmButton.onClick.AddListener(()=>
+            {
+                SetVisible(false);
+                OnConfirmed?.Invoke();
+            });
+            SetVisible(false);
         }
 
         public override void RefreshControl()
@@ -75,5 +81,8 @@ namespace DCL.Quests
                 usedRewards.Add(pooledReward);
             }
         }
+
+        public void SetVisible(bool isVisible) =>
+            container.SetActive(isVisible);
     }
 }
