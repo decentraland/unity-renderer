@@ -212,10 +212,7 @@ namespace DCL.Backpack
                 backpackFiltersController.SetSorting(type, directionAscending, false);
             }
 
-            bool isOnlyCollectiblesOn = !collectionTypeMask.HasFlag(NftCollectionType.Base);
-            backpackFiltersController.SetOnlyCollectiblesIsOn(isOnlyCollectiblesOn, false);
-
-            // TODO: Set the collection dropdown to the corresponding option depending on the thirdPartyCollectionIdsFilter value
+            backpackFiltersController.SelectCollections(collectionTypeMask, thirdPartyCollectionIdsFilter, false);
 
             int resultCount = await RequestWearablesAndShowThem(page, cancellationToken);
 

@@ -1046,5 +1046,14 @@ namespace DCL.Backpack
 
             filtersView.Received(1).SetSorting(NftOrderByOperation.Name, true, false);
         }
+
+        [Test]
+        public void UpdateCollectionsWhenLoadWearables()
+        {
+            controller.LoadWearables();
+
+            filtersView.Received(1).SelectDropdownCollections(Arg.Is<HashSet<string>>(h => h.Contains("decentraland")),
+                false);
+        }
     }
 }

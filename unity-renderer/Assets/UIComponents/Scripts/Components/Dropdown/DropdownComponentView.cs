@@ -258,6 +258,17 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         refreshOptionsPanelCoroutine = CoroutineStarter.Start(RefreshOptionsPanelSize());
     }
 
+    public IToggleComponentView GetOption(string id)
+    {
+        foreach (var component in availableOptions.GetItems())
+        {
+            if (component is not IToggleComponentView toggle) continue;
+            if (toggle.id == id) return toggle;
+        }
+
+        return null;
+    }
+
     public IToggleComponentView GetOption(int index)
     {
         if (index >= availableOptions.GetItems().Count - 1)

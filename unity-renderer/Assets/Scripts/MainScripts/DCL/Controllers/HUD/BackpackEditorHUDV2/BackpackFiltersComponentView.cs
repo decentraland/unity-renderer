@@ -107,6 +107,22 @@ namespace DCL.Backpack
             sortByDropdown.SetTitle(option.title);
         }
 
+        public void SelectDropdownCollections(HashSet<string> collections, bool notify)
+        {
+            var isFirstAssigned = false;
+
+            foreach (string collection in collections)
+            {
+                collectionDropdown.SelectOption(collection, notify);
+
+                if (isFirstAssigned) continue;
+                IToggleComponentView option = collectionDropdown.GetOption(collection);
+                if (option == null) continue;
+                collectionDropdown.SetTitle(option.title);
+                isFirstAssigned = true;
+            }
+        }
+
         private string OrderByToOptionId(NftOrderByOperation type, bool directionAscending)
         {
             switch (type)

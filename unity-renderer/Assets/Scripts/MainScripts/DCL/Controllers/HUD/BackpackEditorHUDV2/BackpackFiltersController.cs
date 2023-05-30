@@ -33,7 +33,7 @@ namespace DCL.Backpack
             this.wearablesCatalogService = wearablesCatalogService;
 
             view.OnOnlyCollectiblesChanged += SetOnlyCollectibles;
-            view.OnCollectionChanged += SetCollections;
+            view.OnCollectionChanged += SetInternalStateOfCollectionsAndTriggerStateChange;
             view.OnSortByChanged += TriggerSorting;
             view.OnSearchTextChanged += TriggerTextSearch;
         }
@@ -41,7 +41,7 @@ namespace DCL.Backpack
         public void Dispose()
         {
             view.OnOnlyCollectiblesChanged -= SetOnlyCollectibles;
-            view.OnCollectionChanged -= SetCollections;
+            view.OnCollectionChanged -= SetInternalStateOfCollectionsAndTriggerStateChange;
             view.OnSortByChanged -= TriggerSorting;
             view.OnSearchTextChanged -= TriggerTextSearch;
 
@@ -87,8 +87,26 @@ namespace DCL.Backpack
         public void SetTextSearch(string text, bool notify = true) =>
             view.SetSearchText(text, notify);
 
-        public void SetOnlyCollectiblesIsOn(bool isOn, bool notify) =>
-            view.SetOnlyCollectiblesToggleIsOn(isOn, notify);
+        public void SelectCollections(NftCollectionType collectionTypeMask,
+            ICollection<string> thirdPartyCollectionIdsFilter = null,
+            bool notify = true)
+        {
+            HashSet<string> newSelectedCollections = new ();
+
+            if ((collectionTypeMask & NftCollectionType.OnChain) != 0)
+                newSelectedCollections.Add(DECENTRALAND_COLLECTION_ID);
+
+            if ((collectionTypeMask & NftCollectionType.ThirdParty) != 0 && thirdPartyCollectionIdsFilter != null)
+                foreach (string tpw in thirdPartyCollectionIdsFilter)
+                    newSelectedCollections.Add(tpw);
+
+            bool isOnlyCollectiblesOn = (collectionTypeMask & NftCollectionType.Base) == 0;
+            view.SetOnlyCollectiblesToggleIsOn(isOnlyCollectiblesOn, notify);
+            view.SelectDropdownCollections(newSelectedCollections, notify);
+
+            collectionType = collectionTypeMask;
+            selectedCollections = newSelectedCollections;
+        }
 
         public void SetSorting(NftOrderByOperation type, bool directionAscending, bool notify) =>
             view.SetSorting(type, directionAscending, notify);
@@ -103,7 +121,10 @@ namespace DCL.Backpack
             OnCollectionTypeChanged?.Invoke(collectionType);
         }
 
-        private void SetCollections(HashSet<string> newSelectedCollections)
+        private void SetInternalStateOfCollectionsAndTriggerStateChange(HashSet<string> newSelectedCollections) =>
+            SetInternalStateOfCollectionsAndTriggerStateChange(newSelectedCollections, true);
+
+        private void SetInternalStateOfCollectionsAndTriggerStateChange(HashSet<string> newSelectedCollections, bool notify)
         {
             if (newSelectedCollections.Contains(DECENTRALAND_COLLECTION_ID))
             {
@@ -120,8 +141,11 @@ namespace DCL.Backpack
             else
                 collectionType &= ~NftCollectionType.ThirdParty;
 
-            OnCollectionTypeChanged?.Invoke(collectionType);
-            OnThirdPartyCollectionChanged?.Invoke(selectedCollections);
+            if (notify)
+            {
+                OnCollectionTypeChanged?.Invoke(collectionType);
+                OnThirdPartyCollectionChanged?.Invoke(selectedCollections);
+            }
         }
 
         private void TriggerSorting((NftOrderByOperation type, bool directionAscendent) newSorting) =>
