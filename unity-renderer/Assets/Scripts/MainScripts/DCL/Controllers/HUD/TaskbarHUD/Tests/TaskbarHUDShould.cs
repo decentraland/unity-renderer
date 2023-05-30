@@ -10,6 +10,7 @@ using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using Analytics;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,7 +50,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         ownProfile.UpdateData(new UserProfileModel { name = "myself", userId = "myUserId" });
         userProfileBridge.GetOwn().Returns(ownProfile);
 
-        controller = new TaskbarHUDController(chatController, Substitute.For<IFriendsController>());
+        controller = new TaskbarHUDController(chatController, Substitute.For<IFriendsController>(), Substitute.For<ISupportAnalytics>());
         controller.Initialize(null);
         view = controller.view;
 
