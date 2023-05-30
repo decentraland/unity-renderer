@@ -150,8 +150,8 @@ namespace DCL.Backpack
 
         public void SetLoadingActive(bool isActive)
         {
-            wearablesGridContainer.gameObject.SetActive(!isActive);
             loadingSpinner.SetActive(isActive);
+            UpdateEmptyState();
         }
 
         public void SetWearableBreadcrumb(NftBreadcrumbModel model) =>
@@ -170,8 +170,8 @@ namespace DCL.Backpack
         {
             bool isEmpty = wearablesById.Count == 0;
 
-            wearablesGridContainer.gameObject.SetActive(!isEmpty);
-            emptyStateContainer.SetActive(isEmpty);
+            wearablesGridContainer.gameObject.SetActive(!isEmpty && !loadingSpinner.activeSelf);
+            emptyStateContainer.SetActive(isEmpty && !loadingSpinner.activeSelf);
         }
     }
 }

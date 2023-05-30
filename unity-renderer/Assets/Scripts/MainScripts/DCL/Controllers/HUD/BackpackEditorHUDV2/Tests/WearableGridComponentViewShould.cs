@@ -222,7 +222,6 @@ namespace DCL.Backpack
         {
             view.SetLoadingActive(isActive);
 
-            Assert.AreEqual(!isActive, view.wearablesGridContainer.gameObject.activeSelf);
             Assert.AreEqual(isActive, view.loadingSpinner.activeSelf);
         }
 
