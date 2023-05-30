@@ -58,7 +58,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
             currentHorizontalRotationVelocity = rotationFactor * eventData.delta.x;
             OnHorizontalRotation?.Invoke(currentHorizontalRotationVelocity);
-            Cursor.SetCursor(rotateCursorTexture, Vector2.zero, CursorMode.Auto);
+            Cursor.SetCursor(rotateCursorTexture, Vector2.zero, CursorMode.ForceSoftware);
         }
 
         private void OnEndDrag(PointerEventData eventData)

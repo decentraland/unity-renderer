@@ -77,7 +77,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             lastMousePosition = Input.mousePosition;
 
             OnPanning?.Invoke(panningDelta);
-            Cursor.SetCursor(panningCursorTexture, Vector2.zero, CursorMode.Auto);
+            Cursor.SetCursor(panningCursorTexture, Vector2.zero, CursorMode.ForceSoftware);
         }
 
         private void OnEndDrag(PointerEventData eventData)
