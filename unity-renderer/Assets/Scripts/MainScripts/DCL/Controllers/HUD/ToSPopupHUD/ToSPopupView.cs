@@ -2,82 +2,83 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
-public interface IToSPopupView : IDisposable
+namespace MainScripts.DCL.Controllers.HUD.ToSPopupHUD
 {
-    event Action OnAccept;
-    event Action OnCancel;
-    event Action OnTermsOfServiceLinkPressed;
-
-    void Show();
-
-    void Hide();
-}
-
-public class ToSPopupView : MonoBehaviour, IToSPopupView, IPointerClickHandler
-{
-    public event Action OnAccept;
-    public event Action OnCancel;
-    public event Action OnTermsOfServiceLinkPressed;
-
-    private bool isDestroyed = false;
-
-    [SerializeField] internal ButtonComponentView agreeButton;
-    [SerializeField] internal ButtonComponentView cancelButton;
-    [SerializeField] internal TextMeshProUGUI tosText;
-
-    private void Awake()
+    public interface IToSPopupView : IDisposable
     {
-        Initialize();
+        event Action OnAccept;
+        event Action OnCancel;
+        event Action OnTermsOfServiceLinkPressed;
+
+        void Show();
+
+        void Hide();
     }
 
-    internal void Initialize()
+    public class ToSPopupView : MonoBehaviour, IToSPopupView, IPointerClickHandler
     {
-        agreeButton.onClick.AddListener(OnAcceptPressed);
-        cancelButton.onClick.AddListener(OnCancelPressed);
-    }
+        public event Action OnAccept;
+        public event Action OnCancel;
+        public event Action OnTermsOfServiceLinkPressed;
 
-    private void OnAcceptPressed()
-    {
-        OnAccept?.Invoke();
-    }
+        private bool isDestroyed = false;
 
-    private void OnCancelPressed()
-    {
-        OnCancel?.Invoke();
-    }
+        [SerializeField] internal ButtonComponentView agreeButton;
+        [SerializeField] internal ButtonComponentView cancelButton;
+        [SerializeField] internal TextMeshProUGUI tosText;
 
-    public void Show()
-    {
-        gameObject.SetActive(true);
-    }
+        private void Awake()
+        {
+            Initialize();
+        }
 
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
+        internal void Initialize()
+        {
+            agreeButton.onClick.AddListener(OnAcceptPressed);
+            cancelButton.onClick.AddListener(OnCancelPressed);
+        }
 
-    private void OnDestroy()
-    {
-        isDestroyed = true;
-    }
+        private void OnAcceptPressed()
+        {
+            OnAccept?.Invoke();
+        }
 
-    public void Dispose()
-    {
-        if (!isDestroyed)
-            Destroy(gameObject);
-    }
+        private void OnCancelPressed()
+        {
+            OnCancel?.Invoke();
+        }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button != PointerEventData.InputButton.Left) return;
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(tosText, eventData.position, tosText.canvas.worldCamera);
-        if (linkIndex == -1)
-            return;
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
 
-        //There should be only one link, we dont even need to get it
-        OnTermsOfServiceLinkPressed?.Invoke();
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            isDestroyed = true;
+        }
+
+        public void Dispose()
+        {
+            if (!isDestroyed)
+                Destroy(gameObject);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(tosText, eventData.position, tosText.canvas.worldCamera);
+            if (linkIndex == -1)
+                return;
+
+            //There should be only one link, we dont even need to get it
+            OnTermsOfServiceLinkPressed?.Invoke();
+        }
     }
 }

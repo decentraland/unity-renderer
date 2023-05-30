@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
+using MainScripts.DCL.Controllers.HUD.ToSPopupHUD;
 
 namespace DCLPlugins.ToSPopupHUDPlugin
 {

@@ -1,28 +1,31 @@
 using DCL.Interface;
 
-public class ToSPopupHandler : IToSPopupHandler
+namespace MainScripts.DCL.Controllers.HUD.ToSPopupHUD
 {
-    private readonly BaseVariable<bool> toSPopupVisibleVariable;
-
-    public ToSPopupHandler(BaseVariable<bool> toSPopupVisibleVariable)
+    public class ToSPopupHandler : IToSPopupHandler
     {
-        this.toSPopupVisibleVariable = toSPopupVisibleVariable;
-    }
+        private readonly BaseVariable<bool> toSPopupVisibleVariable;
 
-    public void Accept()
-    {
-        toSPopupVisibleVariable.Set(false);
-        WebInterface.SendToSPopupAccepted();
-    }
+        public ToSPopupHandler(BaseVariable<bool> toSPopupVisibleVariable)
+        {
+            this.toSPopupVisibleVariable = toSPopupVisibleVariable;
+        }
 
-    public void Cancel()
-    {
-        toSPopupVisibleVariable.Set(false);
-        WebInterface.SendToSPopupRejected();
-    }
+        public void Accept()
+        {
+            toSPopupVisibleVariable.Set(false);
+            WebInterface.SendToSPopupAccepted();
+        }
 
-    public void ViewToS()
-    {
-        WebInterface.SendGoToTos();
+        public void Cancel()
+        {
+            toSPopupVisibleVariable.Set(false);
+            WebInterface.SendToSPopupRejected();
+        }
+
+        public void ViewToS()
+        {
+            WebInterface.SendGoToTos();
+        }
     }
 }

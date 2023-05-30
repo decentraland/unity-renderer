@@ -1,9 +1,9 @@
-using DCL;
-using System;
-
-public interface IToSPopupHandler
+namespace MainScripts.DCL.Controllers.HUD.ToSPopupHUD
 {
-    void Accept();
-    void Cancel();
-    void ViewToS();
+    public interface IToSPopupHandler
+    {
+        void Accept();
+        void Cancel();
+        void ViewToS();
+    }
 }
