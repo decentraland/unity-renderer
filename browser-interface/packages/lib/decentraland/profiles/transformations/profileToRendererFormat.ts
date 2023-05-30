@@ -74,7 +74,7 @@ function defaultAvatar(): Omit<AvatarInfo, 'snapshots'> {
     eyes: { color: Color3.White() },
     hair: { color: Color3.White() },
     skin: { color: Color3.White() },
-    wearables: [],
+    wearables: []
   }
 }
 
