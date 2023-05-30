@@ -74,13 +74,14 @@ function defaultAvatar(): Omit<AvatarInfo, 'snapshots'> {
     eyes: { color: Color3.White() },
     hair: { color: Color3.White() },
     skin: { color: Color3.White() },
-    wearables: []
+    wearables: [],
   }
 }
 
 function prepareAvatar(avatar?: Partial<AvatarInfo>) {
   return {
     wearables: avatar?.wearables || [],
+    forceRender: avatar?.forceRender || [],
     emotes: avatar?.emotes || [],
     bodyShape: avatar?.bodyShape || '',
     eyeColor: convertToRGBObject(avatar?.eyes?.color),
