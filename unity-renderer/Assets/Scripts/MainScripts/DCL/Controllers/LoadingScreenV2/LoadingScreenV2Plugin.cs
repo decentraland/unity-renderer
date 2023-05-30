@@ -8,8 +8,7 @@ public class LoadingScreenV2Plugin : IPlugin
 
     public LoadingScreenV2Plugin()
     {
-        // TODO: this is temporary. The true Loading Screen V2 controller is not implemented yet.
-        // controller = new HintRequestService(new List<IHintRequestSource>(), new SceneController(), new HintTextureRequestHandler());
+        controller = new HintRequestService(new List<IHintRequestSource>(), new SceneController(), new HintTextureRequestHandler());
     }
 
     public void Dispose()
