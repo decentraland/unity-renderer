@@ -150,7 +150,7 @@ export type RendererSaveProfile = {
       a: number
     }
     wearables: string[]
-    forceRender: string[]
+    forceRender?: string[]
     emotes: {
       slot: number
       urn: string
@@ -439,7 +439,7 @@ export class BrowserInterface {
           hair: { color: changes.avatar.hairColor },
           skin: { color: changes.avatar.skinColor },
           wearables: changes.avatar.wearables,
-          forceRender: changes.avatar.forceRender.map((category) => category as WearableCategory),
+          forceRender: (changes.avatar.forceRender ?? []).map((category) => category as WearableCategory),
           snapshots: {
             body: changes.body,
             face256: changes.face256
@@ -456,7 +456,7 @@ export class BrowserInterface {
           hair: { color: changes.avatar.hairColor },
           skin: { color: changes.avatar.skinColor },
           wearables: changes.avatar.wearables,
-          forceRender: changes.avatar.forceRender.map((category) => category as WearableCategory),
+          forceRender: (changes.avatar.forceRender ?? []).map((category) => category as WearableCategory),
           emotes: (changes.avatar.emotes ?? []).map((value, index) => ({ slot: index, urn: value as any as string })),
           snapshots: {
             body: changes.body,
