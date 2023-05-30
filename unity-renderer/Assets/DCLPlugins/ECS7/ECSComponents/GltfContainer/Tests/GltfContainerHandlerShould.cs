@@ -98,6 +98,17 @@ namespace Tests
             Assert.IsNotNull(sharkSkeleton);
         }
 
+        private Transform FindDeepChild(Transform parent, string name)
+        {
+            if (parent.gameObject.name == name)
+                return parent;
+
+            foreach (Transform child in parent)
+                return FindDeepChild(child, name);
+
+            return null;
+        }
+
         [UnityTest]
         public IEnumerator SetAssetAsLoaded()
         {

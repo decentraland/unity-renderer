@@ -67,7 +67,7 @@ namespace Tests
         public void TearDown()
         {
             testUtils.Dispose();
-            AssetPromiseKeeper_GLTF.i.Cleanup();
+            AssetPromiseKeeper_GLTFast_Instance.i.Cleanup();
             PoolManager.i.Dispose();
         }
 
@@ -99,7 +99,7 @@ namespace Tests
                 VisibleMeshesCollisionMask = visibleColliders ? mask : 0
             });
 
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true)
                                    .Where(c => c.enabled)
@@ -146,7 +146,7 @@ namespace Tests
                 VisibleMeshesCollisionMask = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1)
             });
 
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.Count > 0);
             Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.Count > 0);
@@ -179,7 +179,7 @@ namespace Tests
                 VisibleMeshesCollisionMask = 0
             });
 
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             yield return CreateWithColliders((uint)ColliderLayer.ClPhysics, false);
             yield return CreateWithColliders((uint)ColliderLayer.ClPointer, false);
@@ -203,7 +203,7 @@ namespace Tests
                 VisibleMeshesCollisionMask = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1)
             });
 
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true);
 
@@ -236,7 +236,7 @@ namespace Tests
                 VisibleMeshesCollisionMask = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1)
             });
 
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             handler.OnComponentRemoved(scene, entity);
 
@@ -258,7 +258,7 @@ namespace Tests
                 VisibleMeshesCollisionMask = invisibleColliders
             });
 
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer()
             {
@@ -267,7 +267,7 @@ namespace Tests
                 VisibleMeshesCollisionMask = invisibleColliders
             });
 
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true)
                                    .ToArray();
