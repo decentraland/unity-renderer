@@ -45,20 +45,20 @@ namespace Tests
         }
 
         // [Test]
-        public void IncreaseAndGetSceneTickCorrectly()
+        public void GetAndInitializeSceneTickCorrectly()
         {
             // Assert.IsNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
-            uint newSceneTick = sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber);
+            uint newSceneTick = sceneStateHandler.GetOrInitializeSceneTick(scene.sceneData.sceneNumber);
 
             // Assert.AreEqual(0, newSceneTick);
             var sceneEngineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
             // Assert.IsNotNull(sceneEngineInfo);
             // Assert.AreEqual(0, sceneEngineInfo.model.SceneTick);
 
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            sceneEngineInfo.model.SceneTick++;
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, sceneEngineInfo.model);
 
-            // Assert.AreEqual(1, sceneEngineInfo.model.SceneTick);
             // Assert.AreEqual(1, sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber));
         }
 

@@ -27,12 +27,11 @@ namespace DCL.ECS7
             this.engineInfoComponent = engineInfoComponent;
             this.gltfContainerLoadingState = gltfContainerLoadingState;
 
-            context.GetSceneTick += GetSceneTick;
-            context.IncreaseSceneTick += IncreaseSceneTick;
+            context.GetOrInitializeSceneTick += GetOrInitializeSceneTick;
             context.IsSceneGltfLoadingFinished += IsSceneGltfLoadingFinished;
         }
 
-        internal uint GetSceneTick(int sceneNumber)
+        internal uint GetOrInitializeSceneTick(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
             {
@@ -48,15 +47,6 @@ namespace DCL.ECS7
             }
 
             return 0;
-        }
-
-        internal void IncreaseSceneTick(int sceneNumber)
-        {
-            if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
-
-            var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model?? InitializeEngineInfoComponentModel();
-            model.SceneTick++;
-            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
         }
 
         internal bool IsSceneGltfLoadingFinished(int sceneNumber)
@@ -84,8 +74,7 @@ namespace DCL.ECS7
 
         public void Dispose()
         {
-            context.GetSceneTick -= GetSceneTick;
-            context.IncreaseSceneTick -= IncreaseSceneTick;
+            context.GetOrInitializeSceneTick -= GetOrInitializeSceneTick;
             context.IsSceneGltfLoadingFinished -= IsSceneGltfLoadingFinished;
         }
     }

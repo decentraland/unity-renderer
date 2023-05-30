@@ -14,8 +14,7 @@ namespace RPC.Context
         public ISceneController SceneController;
         public Action<int, CrdtMessage> CrdtMessageReceived;
         public IReadOnlyDictionary<int, ICRDTExecutor> CrdtExecutors;
-        public Func<int, uint> GetSceneTick;
-        public Action<int> IncreaseSceneTick;
+        public Func<int, uint> GetOrInitializeSceneTick;
         public Func<int, bool> IsSceneGltfLoadingFinished;
     }
 }
