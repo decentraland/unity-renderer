@@ -1,3 +1,4 @@
+using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
@@ -12,17 +13,17 @@ namespace ECSSystems.ECSEngineInfoSystem
     /// </summary>
     public class ECSEngineInfoSystem
     {
+        private readonly BaseList<IParcelScene> scenes;
         private readonly IECSComponentWriter componentWriter;
-        private readonly ISceneStateHandler sceneStateHandler;
         private readonly IInternalECSComponent<InternalEngineInfo> internalEngineInfo;
 
         public ECSEngineInfoSystem(
+            BaseList<IParcelScene> scenes,
             IECSComponentWriter componentWriter,
-            ISceneStateHandler sceneStateHandler,
             IInternalECSComponent<InternalEngineInfo> internalEngineInfo)
         {
+            this.scenes = scenes;
             this.componentWriter = componentWriter;
-            this.sceneStateHandler = sceneStateHandler;
             this.internalEngineInfo = internalEngineInfo;
         }
 
@@ -41,18 +42,20 @@ namespace ECSSystems.ECSEngineInfoSystem
                 var scene = componentGroup[i].value.scene;
                 var model = componentGroup[i].value.model;
 
+                model.SceneTick++;
+
                 componentWriter.PutComponent(
                     entity.scene,
                     scene.GetEntityById(SpecialEntityId.SCENE_ROOT_ENTITY),
                     ComponentID.ENGINE_INFO,
                     new PBEngineInfo()
                     {
-                        TickNumber = model.SceneTick++,
+                        TickNumber = model.SceneTick,
                         FrameNumber = (uint)currentEngineFrameCount,
                         TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime
                     });
 
-                sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+                internalEngineInfo.PutFor(scene, entity, model);
             }
         }
     }

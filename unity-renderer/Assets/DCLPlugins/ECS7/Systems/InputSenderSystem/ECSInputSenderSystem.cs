@@ -12,20 +12,17 @@ namespace ECSSystems.InputSenderSystem
         {
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
             public IECSComponentWriter componentWriter;
-            public ISceneStateHandler sceneStateHandler;
             public uint lastTimestamp = 0;
         }
 
         public static Action CreateSystem(
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
-            IECSComponentWriter componentWriter,
-            ISceneStateHandler sceneStateHandler)
+            IECSComponentWriter componentWriter)
         {
             var state = new State()
             {
                 inputResultComponent = inputResultComponent,
-                componentWriter = componentWriter,
-                sceneStateHandler = sceneStateHandler
+                componentWriter = componentWriter
             };
 
             return () => Update(state);
@@ -60,8 +57,7 @@ namespace ECSSystems.InputSenderSystem
                             Button = inputEvent.button,
                             Hit = inputEvent.hit,
                             State = inputEvent.type,
-                            Timestamp = state.lastTimestamp++,
-                            TickNumber = state.sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber)
+                            Timestamp = state.lastTimestamp++
                         },
                         ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
                 }

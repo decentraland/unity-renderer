@@ -1,6 +1,5 @@
 using DCL;
 using DCL.CRDT;
-using DCL.ECS7;
 using System;
 using System.Collections.Generic;
 
@@ -15,6 +14,7 @@ namespace RPC.Context
         public ISceneController SceneController;
         public Action<int, CrdtMessage> CrdtMessageReceived;
         public IReadOnlyDictionary<int, ICRDTExecutor> CrdtExecutors;
-        public ISceneStateHandler sceneStateHandler;
+        public Func<int, uint> GetOrInitializeSceneTick;
+        public Func<int, bool> IsSceneGltfLoadingFinished;
     }
 }
