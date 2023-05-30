@@ -49,7 +49,7 @@ namespace Tests
         {
             // Assert.IsNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
-            uint newSceneTick = sceneStateHandler.GetOrInitializeSceneTick(scene.sceneData.sceneNumber);
+            uint newSceneTick = sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber);
 
             // Assert.AreEqual(0, newSceneTick);
             var sceneEngineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);

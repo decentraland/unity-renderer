@@ -27,26 +27,26 @@ namespace DCL.ECS7
             this.engineInfoComponent = engineInfoComponent;
             this.gltfContainerLoadingState = gltfContainerLoadingState;
 
-            context.GetOrInitializeSceneTick += GetOrInitializeSceneTick;
+            context.GetSceneTick += GetSceneTick;
+            context.IncreaseSceneTick += IncreaseSceneTick;
             context.IsSceneGltfLoadingFinished += IsSceneGltfLoadingFinished;
         }
 
-        internal uint GetOrInitializeSceneTick(int sceneNumber)
+        internal uint GetSceneTick(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
-            {
-                var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model;
-
-                if (model == null)
-                {
-                    model = InitializeEngineInfoComponentModel();
-                    engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
-                }
-
-                return model.SceneTick;
-            }
+                return engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
 
             return 0;
+        }
+
+        internal void IncreaseSceneTick(int sceneNumber)
+        {
+            if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
+
+            var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model;
+            model.SceneTick++;
+            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
         }
 
         internal bool IsSceneGltfLoadingFinished(int sceneNumber)
@@ -65,16 +65,22 @@ namespace DCL.ECS7
             return true;
         }
 
-        private InternalEngineInfo InitializeEngineInfoComponentModel() =>
-            new InternalEngineInfo()
-            {
-                SceneTick = 0,
-                SceneInitialRunTime = Time.realtimeSinceStartup
-            };
+        public void InitializeEngineInfoComponent(int sceneNumber)
+        {
+            if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
+
+            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY,
+                new InternalEngineInfo()
+                {
+                    SceneTick = 0,
+                    SceneInitialRunTime = Time.realtimeSinceStartup
+                });
+        }
 
         public void Dispose()
         {
-            context.GetOrInitializeSceneTick -= GetOrInitializeSceneTick;
+            context.GetSceneTick -= GetSceneTick;
+            context.IncreaseSceneTick -= IncreaseSceneTick;
             context.IsSceneGltfLoadingFinished -= IsSceneGltfLoadingFinished;
         }
     }

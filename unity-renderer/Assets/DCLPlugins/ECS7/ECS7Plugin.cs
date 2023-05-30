@@ -78,20 +78,19 @@ namespace DCL.ECS7
 
         private void SceneControllerOnNewSceneAdded(IParcelScene scene)
         {
-            if (scene.sceneData.sdk7)
-            {
-                loadedScenes.Add(scene);
-                sceneNumberMapping.Add(scene.sceneData.sceneNumber, scene);
-            }
+            if (!scene.sceneData.sdk7) return;
+
+            loadedScenes.Add(scene);
+            sceneNumberMapping.Add(scene.sceneData.sceneNumber, scene);
+            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
         }
 
         private void SceneControllerOnSceneRemoved(IParcelScene scene)
         {
-            if (scene.sceneData.sdk7)
-            {
-                loadedScenes.Remove(scene);
-                sceneNumberMapping.Remove(scene.sceneData.sceneNumber);
-            }
+            if (!scene.sceneData.sdk7) return;
+
+            loadedScenes.Remove(scene);
+            sceneNumberMapping.Remove(scene.sceneData.sceneNumber);
         }
     }
 }

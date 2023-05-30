@@ -37,7 +37,7 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
 
-            var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, componentWriter);
+            var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, internalComponents.EngineInfo, componentWriter);
 
             updateSystems = () =>
             {

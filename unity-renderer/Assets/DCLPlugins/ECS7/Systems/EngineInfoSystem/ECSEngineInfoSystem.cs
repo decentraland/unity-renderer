@@ -1,4 +1,3 @@
-using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
@@ -13,16 +12,13 @@ namespace ECSSystems.ECSEngineInfoSystem
     /// </summary>
     public class ECSEngineInfoSystem
     {
-        private readonly BaseList<IParcelScene> scenes;
         private readonly IECSComponentWriter componentWriter;
         private readonly IInternalECSComponent<InternalEngineInfo> internalEngineInfo;
 
         public ECSEngineInfoSystem(
-            BaseList<IParcelScene> scenes,
             IECSComponentWriter componentWriter,
             IInternalECSComponent<InternalEngineInfo> internalEngineInfo)
         {
-            this.scenes = scenes;
             this.componentWriter = componentWriter;
             this.internalEngineInfo = internalEngineInfo;
         }
@@ -32,6 +28,7 @@ namespace ECSSystems.ECSEngineInfoSystem
             int currentEngineFrameCount = Time.frameCount;
             float currentEngineRunTime = Time.realtimeSinceStartup;
 
+            // TODO: update comment
             // Internal EngineInfo component is initialized and attached by SceneStateHandler when a scene is loaded
             var componentGroup = internalEngineInfo.GetForAll();
 
@@ -41,8 +38,6 @@ namespace ECSSystems.ECSEngineInfoSystem
                 var entity = componentGroup[i].value.entity;
                 var scene = componentGroup[i].value.scene;
                 var model = componentGroup[i].value.model;
-
-                model.SceneTick++;
 
                 componentWriter.PutComponent(
                     entity.scene,
@@ -54,8 +49,6 @@ namespace ECSSystems.ECSEngineInfoSystem
                         FrameNumber = (uint)currentEngineFrameCount,
                         TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime
                     });
-
-                internalEngineInfo.PutFor(scene, entity, model);
             }
         }
     }

@@ -194,7 +194,7 @@ namespace RPC.Services
                         }
                     }
 
-                    if (crdtContext.GetOrInitializeSceneTick(scene.sceneData.sceneNumber) == 0)
+                    if (crdtContext.GetSceneTick(sceneNumber) == 0)
                     {
                         // pause scene update until GLTFs are loaded
                         await UniTask.WaitUntil(() => crdtContext.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber), cancellationToken: ct);
@@ -228,6 +228,9 @@ namespace RPC.Services
                     sceneCrdtOutgoing.Clear();
                     reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
                 }
+
+                if (!isFirstMessage)
+                    crdtContext.IncreaseSceneTick(sceneNumber);
             }
             catch (Exception e)
             {

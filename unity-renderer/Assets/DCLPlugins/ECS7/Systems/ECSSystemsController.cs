@@ -69,6 +69,7 @@ public class ECSSystemsController : IDisposable
         ECSVideoPlayerSystem videoPlayerSystem = new ECSVideoPlayerSystem(
             context.internalEcsComponents.videoPlayerComponent,
             context.internalEcsComponents.videoMaterialComponent,
+            context.internalEcsComponents.EngineInfo,
             context.componentWriter);
 
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
@@ -84,6 +85,7 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.physicColliderComponent,
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.customLayerColliderComponent,
+            context.internalEcsComponents.EngineInfo,
             context.componentWriter);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
@@ -119,7 +121,6 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.GltfContainerLoadingStateComponent);
 
         ECSEngineInfoSystem engineInfoSystem = new ECSEngineInfoSystem(
-            DataStore.i.ecs7.scenes,
             context.componentWriter,
             context.internalEcsComponents.EngineInfo);
 
@@ -144,7 +145,10 @@ public class ECSSystemsController : IDisposable
         {
             uiPointerEventsSystem.Update,
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
-            ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
+            ECSInputSenderSystem.CreateSystem(
+                context.internalEcsComponents.inputEventResultsComponent,
+                context.internalEcsComponents.EngineInfo,
+                context.componentWriter),
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,
