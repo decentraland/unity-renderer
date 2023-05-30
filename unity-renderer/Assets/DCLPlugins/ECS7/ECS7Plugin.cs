@@ -65,7 +65,6 @@ namespace DCL.ECS7
             systemsController.Dispose();
             internalEcsComponents.Dispose();
             crdtExecutorsManager.Dispose();
-            // sceneStateHandler.Dispose();
 
             sceneController.OnNewSceneAdded -= SceneControllerOnNewSceneAdded;
             sceneController.OnSceneRemoved -= SceneControllerOnSceneRemoved;
