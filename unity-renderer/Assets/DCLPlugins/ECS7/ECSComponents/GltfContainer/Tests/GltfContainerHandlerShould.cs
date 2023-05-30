@@ -1,5 +1,4 @@
 using DCL;
-using DCL.Configuration;
 using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
@@ -22,6 +21,7 @@ namespace Tests
 
         private IInternalECSComponent<InternalColliders> pointerColliderComponent;
         private IInternalECSComponent<InternalColliders> physicColliderComponent;
+        private IInternalECSComponent<InternalColliders> customLayerColliderComponent;
         private IInternalECSComponent<InternalRenderers> renderersComponent;
         private IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent;
         private DataStore_ECS7 dataStoreEcs7;
@@ -42,13 +42,6 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(23423);
 
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, componentsManager, componentFactory, null,
-                new KeyValueSet<ComponentIdentifier, ComponentWriteData>(),
-                executors);
-
-            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
-
             scene.contentProvider.baseUrl = $"{TestAssetsUtils.GetPath()}/GLB/";
             scene.contentProvider.fileToHash.Add("palmtree", "PalmTree_01.glb");
             scene.contentProvider.fileToHash.Add("sharknado", "Shark/shark_anim.gltf");
@@ -56,11 +49,13 @@ namespace Tests
             renderersComponent = internalEcsComponents.renderersComponent;
             pointerColliderComponent = internalEcsComponents.onPointerColliderComponent;
             physicColliderComponent = internalEcsComponents.physicColliderComponent;
+            customLayerColliderComponent = internalEcsComponents.customLayerColliderComponent;
             gltfContainerLoadingStateComponent = internalEcsComponents.GltfContainerLoadingStateComponent;
             dataStoreEcs7 = new DataStore_ECS7();
 
             handler = new GltfContainerHandler(pointerColliderComponent,
                 physicColliderComponent,
+                customLayerColliderComponent,
                 renderersComponent,
                 gltfContainerLoadingStateComponent,
                 dataStoreEcs7,
@@ -72,7 +67,6 @@ namespace Tests
         [TearDown]
         public void TearDown()
         {
-            handler.OnComponentRemoved(scene, entity);
             testUtils.Dispose();
             AssetPromiseKeeper_GLTF.i.Cleanup();
             PoolManager.i.Dispose();
@@ -102,57 +96,6 @@ namespace Tests
 
             // make sure gltf is loaded properly by checking an specific gameobject name in its hierarchy
             Assert.AreEqual("shark_skeleton", handler.gameObject.transform.GetChild(0).GetChild(0).GetChild(0).name);
-        }
-
-        [UnityTest]
-        public IEnumerator SetCollidersCorrectly()
-        {
-            // test with several updates to make sure that changing gltf does not affect the expected result
-            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-
-            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-
-            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-
-            Collider physicCollider = handler.gameObject.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Collider>();
-            Collider pointerCollider = handler.gameObject.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetComponent<Collider>();
-
-            Assert.IsTrue(physicCollider);
-            Assert.IsTrue(pointerCollider);
-
-            Assert.AreEqual(physicCollider.gameObject.layer, PhysicsLayers.characterOnlyLayer);
-            Assert.AreEqual(pointerCollider.gameObject.layer, PhysicsLayers.onPointerEventLayer);
-
-            var physicColliderComponentData = physicColliderComponent.GetFor(scene, entity);
-            var pointerColliderComponentData = pointerColliderComponent.GetFor(scene, entity);
-
-            Assert.AreEqual(physicCollider, physicColliderComponentData.model.colliders.Pairs[0].key);
-            Assert.AreEqual(pointerCollider, pointerColliderComponentData.model.colliders.Pairs[0].key);
-        }
-
-        [UnityTest]
-        public IEnumerator SetRenderersCorrectly()
-        {
-            // test with several updates to make sure that changing gltf does not affect the expected result
-            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-
-            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-
-            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-
-            IList<Renderer> renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
-            IECSReadOnlyComponentData<InternalRenderers> internalRenderers = renderersComponent.GetFor(scene, entity);
-
-            for (int i = 0; i < renderers.Count; i++)
-            {
-                Assert.IsTrue(internalRenderers.model.renderers.Contains(renderers[i]));
-            }
         }
 
         [UnityTest]
@@ -192,6 +135,7 @@ namespace Tests
             Assert.IsNull(renderersComponent.GetFor(scene, entity));
             Assert.IsNull(physicColliderComponent.GetFor(scene, entity));
             Assert.IsNull(pointerColliderComponent.GetFor(scene, entity));
+            Assert.IsNull(customLayerColliderComponent.GetFor(scene, entity));
         }
 
         [Test]

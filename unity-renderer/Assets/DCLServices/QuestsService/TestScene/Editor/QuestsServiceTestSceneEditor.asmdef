@@ -1,0 +1,16 @@
+{
+    "name": "QuestsServiceTestSceneEditor",
+    "rootNamespace": "",
+    "references": ["GUID:f3425b9399e9f73418a616448a72fcbc"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

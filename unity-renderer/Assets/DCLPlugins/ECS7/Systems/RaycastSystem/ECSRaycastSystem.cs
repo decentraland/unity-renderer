@@ -54,6 +54,9 @@ namespace ECSSystems.ECSRaycastSystem
                 IDCLEntity entity = raycastComponentGroup[i].value.entity;
                 IParcelScene scene = raycastComponentGroup[i].value.scene;
 
+                // Wait until scene initial GLTFs are finished loading (handled at SceneStateHandler)
+                if (!scene.IsInitMessageDone()) continue;
+
                 if (model.QueryType == RaycastQueryType.RqtNone)
                 {
                     internalRaycastComponent.RemoveFor(scene, entity);
