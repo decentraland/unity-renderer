@@ -28,8 +28,7 @@ namespace ECSSystems.ECSEngineInfoSystem
             int currentEngineFrameCount = Time.frameCount;
             float currentEngineRunTime = Time.realtimeSinceStartup;
 
-            // TODO: update comment
-            // Internal EngineInfo component is initialized and attached by SceneStateHandler when a scene is loaded
+            // Scenes internal EngineInfo component is initialized at SceneStateHandler.InitializeEngineInfoComponent()
             var componentGroup = internalEngineInfo.GetForAll();
 
             int entitiesCount = componentGroup.Count;
@@ -49,6 +48,11 @@ namespace ECSSystems.ECSEngineInfoSystem
                         FrameNumber = (uint)currentEngineFrameCount,
                         TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime
                     });
+                Debug.Log("3"
+                          + $"\nscene: {scene.sceneData.sceneNumber}"
+                          + $"\nentity: {SpecialEntityId.SCENE_ROOT_ENTITY}"
+                          + $"\ncomponent id: {ComponentID.ENGINE_INFO}"
+                          );
             }
         }
     }

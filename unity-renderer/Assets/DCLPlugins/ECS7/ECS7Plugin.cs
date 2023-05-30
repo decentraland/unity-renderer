@@ -81,8 +81,10 @@ namespace DCL.ECS7
             if (!scene.sceneData.sdk7) return;
 
             loadedScenes.Add(scene);
-            sceneNumberMapping.Add(scene.sceneData.sceneNumber, scene);
-            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
+
+            int sceneNumber = scene.sceneData.sceneNumber;
+            sceneNumberMapping.Add(sceneNumber, scene);
+            sceneStateHandler.InitializeEngineInfoComponent(sceneNumber);
         }
 
         private void SceneControllerOnSceneRemoved(IParcelScene scene)

@@ -29,6 +29,13 @@ public class ECS7TestScene : IParcelScene
         return CreateEntity(id);
     }
 
+    IDCLEntity IParcelScene.GetEntityById(long entityId)
+    {
+        if (!entities.TryGetValue(entityId, out IDCLEntity entity)) { return null; }
+
+        return entity;
+    }
+
 // INTERNAL CONFIG FOR MOCKING
     internal GameObject _go;
     internal Func<long, ECS7TestEntity> _entityCreator;
@@ -42,10 +49,6 @@ public class ECS7TestScene : IParcelScene
     IECSComponentsManagerLegacy IParcelScene.componentsManagerLegacy => throw new NotImplementedException();
     bool IParcelScene.isTestScene => throw new NotImplementedException();
     float IParcelScene.loadingProgress => throw new NotImplementedException();
-    IDCLEntity IParcelScene.GetEntityById(long entityId)
-    {
-        throw new NotImplementedException();
-    }
     string IParcelScene.GetSceneName()
     {
         throw new NotImplementedException();

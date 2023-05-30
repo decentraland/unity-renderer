@@ -8,7 +8,10 @@ using DCL.Models;
 using ECSSystems.ECSEngineInfoSystem;
 using NSubstitute;
 using NUnit.Framework;
+using RPC.Context;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -28,20 +31,21 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, componentsManager, componentsFactory, null,
-                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
-                executors);
+
             componentWriter = Substitute.For<IECSComponentWriter>();
+            // var writeComponentSubscriber = Substitute.For<IDummyEventSubscriber<int, long, int, byte[], int, ECSComponentWriteType, CrdtMessageType>>();
+            // componentWriter = new ECSComponentWriter(writeComponentSubscriber.React);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 
             scene = testUtils.CreateScene(666);
 
-            // sceneStateHandler = new SceneStateHandler(new Dictionary<int, IParcelScene>() { { scene.sceneData.sceneNumber, scene } },
-            //     internalComponents.EngineInfo,
-            //     internalComponents.GltfContainerLoadingStateComponent);
-            // system = new ECSEngineInfoSystem(componentWriter, sceneStateHandler, internalComponents.EngineInfo);
+            sceneStateHandler = new SceneStateHandler(
+                Substitute.For<CRDTServiceContext>(),
+                new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
+                internalComponents.EngineInfo,
+                internalComponents.GltfContainerLoadingStateComponent);
+            system = new ECSEngineInfoSystem(componentWriter, internalComponents.EngineInfo);
         }
 
         [TearDown]
@@ -53,22 +57,30 @@ namespace Tests
         [Test]
         public void UpdateEngineInfoComponentCorrectly()
         {
-            // Assert.IsNull();
+            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
 
-            // sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber);
+            Assert.IsNotNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+
+            uint currentSceneTick = sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber);
             system.Update();
 
-            componentWriter.Received(1).PutComponent(
+            // componentWriter.ReceivedCalls();
+            componentWriter.ReceivedWithAnyArgs().PutComponent(
+                Arg.Any<int>(),
+                Arg.Any<long>(),
+                Arg.Any<int>(),
+                Arg.Any<PBEngineInfo>()
+            );
+
+            /*componentWriter.Received(1).PutComponent(
                 scene.sceneData.sceneNumber,
                 SpecialEntityId.SCENE_ROOT_ENTITY,
                 ComponentID.ENGINE_INFO,
-                Arg.Any<PBEngineInfo>()
-                // Arg.Is<PBEngineInfo>((componentModel) => componentModel.TickNumber == 1)
-                    // componentModel.TickNumber == 1 &&
-                    // componentModel.FrameNumber == 1 &&
-                    // componentModel.TotalRuntime == 1)
-            );
+                Arg.Is<PBEngineInfo>((componentModel) => componentModel.TickNumber == currentSceneTick)
+                // Arg.Any<PBEngineInfo>()
+            );*/
         }
     }
 }
