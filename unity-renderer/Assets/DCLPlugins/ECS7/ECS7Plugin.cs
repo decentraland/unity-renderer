@@ -20,7 +20,6 @@ namespace DCL.ECS7
         internal readonly ECSComponentsManager componentsManager;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly ISceneController sceneController;
-        private readonly SceneStateHandler sceneStateHandler;
 
         public ECS7Plugin()
         {
@@ -34,29 +33,25 @@ namespace DCL.ECS7
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, crdtExecutors);
-
             crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, crdtContext);
-
             crdtWriteSystem = new ComponentCrdtWriteSystem(crdtExecutors, sceneController, DataStore.i.rpc.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
+            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, crdtExecutors);
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
 
-            SystemsContext systemsContext = new SystemsContext(componentWriter,
+            sceneNumberMapping = new Dictionary<int, IParcelScene>(81); // Scene Load Radius 4 -> max scenes 81
+            crdtContext.sceneStateHandler = new SceneStateHandler(
+                sceneNumberMapping,
+                internalEcsComponents.EngineInfo,
+                internalEcsComponents.GltfContainerLoadingStateComponent);
+
+            SystemsContext systemsContext = new SystemsContext(componentWriter, crdtContext.sceneStateHandler,
                 internalEcsComponents,
                 new ComponentGroups(componentsManager),
                 (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD));
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
-
-            sceneNumberMapping = new Dictionary<int, IParcelScene>(81); // Scene Load Radius 4 -> max scenes 81
-
-            sceneStateHandler = new SceneStateHandler(
-                crdtContext,
-                sceneNumberMapping,
-                internalEcsComponents.EngineInfo,
-                internalEcsComponents.GltfContainerLoadingStateComponent);
 
             sceneController.OnNewSceneAdded += SceneControllerOnNewSceneAdded;
             sceneController.OnSceneRemoved += SceneControllerOnSceneRemoved;
@@ -70,7 +65,7 @@ namespace DCL.ECS7
             systemsController.Dispose();
             internalEcsComponents.Dispose();
             crdtExecutorsManager.Dispose();
-            sceneStateHandler.Dispose();
+            // sceneStateHandler.Dispose();
 
             sceneController.OnNewSceneAdded -= SceneControllerOnNewSceneAdded;
             sceneController.OnSceneRemoved -= SceneControllerOnSceneRemoved;

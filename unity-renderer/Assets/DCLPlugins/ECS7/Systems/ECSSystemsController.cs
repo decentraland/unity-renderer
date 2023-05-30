@@ -69,7 +69,8 @@ public class ECSSystemsController : IDisposable
         ECSVideoPlayerSystem videoPlayerSystem = new ECSVideoPlayerSystem(
             context.internalEcsComponents.videoPlayerComponent,
             context.internalEcsComponents.videoMaterialComponent,
-            context.componentWriter);
+            context.componentWriter,
+            context.sceneStateHandler);
 
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
             DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
@@ -84,7 +85,8 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.physicColliderComponent,
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.customLayerColliderComponent,
-            context.componentWriter);
+            context.componentWriter,
+            context.sceneStateHandler);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             DataStore.i.ecs7.scenes,
@@ -119,8 +121,8 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.GltfContainerLoadingStateComponent);
 
         ECSEngineInfoSystem engineInfoSystem = new ECSEngineInfoSystem(
-            DataStore.i.ecs7.scenes,
             context.componentWriter,
+            context.sceneStateHandler,
             context.internalEcsComponents.EngineInfo);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
@@ -128,7 +130,7 @@ public class ECSSystemsController : IDisposable
 
         updateSystems = new ECS7System[]
         {
-            engineInfoSystem.Update,
+            engineInfoSystem.Update, // Updates scene tick, frame and time; Ideally should be the first update of all
             ECSTransformParentingSystem.CreateSystem(context.internalEcsComponents.sceneBoundsCheckComponent),
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
@@ -144,7 +146,7 @@ public class ECSSystemsController : IDisposable
         {
             uiPointerEventsSystem.Update,
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
-            ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
+            ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter, context.sceneStateHandler),
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,

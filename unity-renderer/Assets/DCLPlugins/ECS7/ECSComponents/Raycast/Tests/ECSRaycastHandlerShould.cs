@@ -1,4 +1,5 @@
 ﻿using DCL.CRDT;
+using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents.Raycast;
@@ -38,7 +39,8 @@ namespace Tests
                 internalComponents.physicColliderComponent,
                 internalComponents.onPointerColliderComponent,
                 internalComponents.customLayerColliderComponent,
-                componentWriter);
+                componentWriter,
+                Substitute.For<ISceneStateHandler>());
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 

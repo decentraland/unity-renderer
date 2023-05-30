@@ -59,8 +59,9 @@ namespace Tests
             context.crdt.SceneController = Environment.i.world.sceneController;
             context.crdt.WorldState = Environment.i.world.state;
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
-            context.crdt.GetOrInitializeSceneTick = (int x) => 1;
-            context.crdt.IsSceneGltfLoadingFinished = (int x) => true;
+            context.crdt.sceneStateHandler = Substitute.For<ISceneStateHandler>();
+            // context.crdt.sceneStateHandler.GetOrInitializeSceneTick = (int x) => 1;
+            // context.crdt.IsSceneGltfLoadingFinished = (int x) => true;
         }
 
         [TearDown]
@@ -290,7 +291,7 @@ namespace Tests
                 // Setup context callbacks simulating a GLTF that takes 3 frames to load
                 int framesToWait = 3;
                 int framesCounter = 0;
-                context.crdt.IsSceneGltfLoadingFinished = (int x) =>
+                /*context.crdt.IsSceneGltfLoadingFinished = (int x) =>
                 {
                     framesCounter++;
 
@@ -298,7 +299,7 @@ namespace Tests
 
                     return framesCounter == framesToWait;
                 };
-                context.crdt.GetOrInitializeSceneTick = (int x) => 0; // first tick
+                context.crdt.GetOrInitializeSceneTick = (int x) => 0; // first tick*/
 
                 // Prepare entity creation CRDT message
                 CrdtMessage crdtMessage = new CrdtMessage

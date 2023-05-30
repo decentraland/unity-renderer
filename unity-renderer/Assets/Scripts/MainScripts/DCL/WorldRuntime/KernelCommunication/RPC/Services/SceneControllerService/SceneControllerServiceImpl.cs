@@ -194,10 +194,10 @@ namespace RPC.Services
                         }
                     }
 
-                    if (crdtContext.GetOrInitializeSceneTick(scene.sceneData.sceneNumber) == 0)
+                    if (crdtContext.sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber) == 0)
                     {
                         // pause scene update until GLTFs are loaded
-                        await UniTask.WaitUntil(() => crdtContext.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber), cancellationToken: ct);
+                        await UniTask.WaitUntil(() => crdtContext.sceneStateHandler.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber), cancellationToken: ct);
 
                         // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
                         // kernel won't be sending that message for those scenes

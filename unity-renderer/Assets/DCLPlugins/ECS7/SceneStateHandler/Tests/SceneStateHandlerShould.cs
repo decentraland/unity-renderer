@@ -1,10 +1,8 @@
 // using NUnit.Framework;
-using NSubstitute;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
 using DCL.Models;
-using RPC.Context;
 using System.Collections.Generic;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
@@ -32,7 +30,6 @@ namespace Tests
             scene = testUtils.CreateScene(666);
 
             sceneStateHandler = new SceneStateHandler(
-                Substitute.For<CRDTServiceContext>(),
                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
                 internalComponents.EngineInfo,
                 internalComponents.GltfContainerLoadingStateComponent);
@@ -45,20 +42,20 @@ namespace Tests
         }
 
         // [Test]
-        public void GetAndInitializeSceneTickCorrectly()
+        public void IncreaseAndGetSceneTickCorrectly()
         {
             // Assert.IsNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
-            uint newSceneTick = sceneStateHandler.GetOrInitializeSceneTick(scene.sceneData.sceneNumber);
+            uint newSceneTick = sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber);
 
             // Assert.AreEqual(0, newSceneTick);
             var sceneEngineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
             // Assert.IsNotNull(sceneEngineInfo);
             // Assert.AreEqual(0, sceneEngineInfo.model.SceneTick);
 
-            sceneEngineInfo.model.SceneTick++;
-            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, sceneEngineInfo.model);
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
 
+            // Assert.AreEqual(1, sceneEngineInfo.model.SceneTick);
             // Assert.AreEqual(1, sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber));
         }
 

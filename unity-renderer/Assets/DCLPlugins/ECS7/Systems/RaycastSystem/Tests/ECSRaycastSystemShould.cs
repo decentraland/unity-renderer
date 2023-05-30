@@ -50,7 +50,8 @@ namespace Tests
                 internalComponents.physicColliderComponent,
                 internalComponents.onPointerColliderComponent,
                 internalComponents.customLayerColliderComponent,
-                componentWriter);
+                componentWriter,
+                Substitute.For<ISceneStateHandler>());
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 

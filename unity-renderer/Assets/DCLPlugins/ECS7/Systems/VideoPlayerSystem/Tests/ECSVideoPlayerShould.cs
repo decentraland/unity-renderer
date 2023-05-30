@@ -40,7 +40,8 @@ namespace Tests
             var videoPlayerSystem = new ECSVideoPlayerSystem(
                 internalEcsComponents.videoPlayerComponent,
                 internalEcsComponents.videoMaterialComponent,
-                componentWriter);
+                componentWriter,
+                Substitute.For<ISceneStateHandler>());
 
             systemsUpdate = () =>
             {
