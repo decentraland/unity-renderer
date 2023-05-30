@@ -145,6 +145,7 @@ public class AvatarModel : BaseModel
         expressionTriggerTimestamp = other.expressionTriggerTimestamp;
         wearables = new List<string>(other.wearables);
         emotes = other.emotes.Select(x => new AvatarEmoteEntry() { slot = x.slot, urn = x.urn }).ToList();
+        forceRender = other.forceRender;
     }
 
     public override BaseModel GetDataFromJSON(string json) =>
