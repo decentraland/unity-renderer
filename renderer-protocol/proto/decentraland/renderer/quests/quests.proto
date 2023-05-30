@@ -1,0 +1,187 @@
+// This is living here during the PoC. After that, this must be downloaded from the protocol repo on Decentraland Github 
+syntax = "proto3";
+package decentraland.quests;
+
+// Errors 
+message InvalidQuest {}
+
+message NotUUID {}
+
+message InternalServerError {}
+
+message NotFoundQuestInstance {}
+
+message NotOwner {}
+
+message IgnoredEvent {}
+
+message UserAddress {
+  string user_address = 1;
+}
+
+message StartQuestRequest {
+  string user_address = 1;
+  string quest_id = 2;
+}
+
+message StartQuestResponse {
+  /* There are a few valid reasons to not be accepted:
+  *  - Quest is not found
+  *  - Quest is deactivated (the owner deleted it)
+  *  - User already started the quest
+  *  - Internal errors (DB connection failed or something like that) */
+  message Accepted {}
+  oneof response {
+    Accepted accepted = 1;
+    InvalidQuest invalid_quest = 2;
+    NotUUID not_uuid_error = 3;
+    InternalServerError internal_server_error = 4;
+  }
+}
+
+message AbortQuestRequest {
+  string user_address = 1;
+  string quest_instance_id = 2;
+}
+
+message AbortQuestResponse {
+  /* There are a few valid reasons to not be accepted:
+  *  - Quest instance is not found
+  *  - Quest instance is from another user 
+  *  - Quest instance already aborted
+  *  - Internal errors (DB connection failed or something like that) */
+  message Accepted {}
+  oneof response {
+    Accepted accepted = 1;
+    NotFoundQuestInstance not_found_quest_instance = 2;
+    NotUUID not_uuid_error = 3;
+    NotOwner not_owner = 4;
+    InternalServerError internal_server_error = 5;
+  }
+}
+
+message Event {
+  string id = 1;
+  string address = 2;
+  Action action = 3;
+}
+
+message EventRequest {
+  string address = 1;
+  Action action = 2;
+}
+
+message EventResponse {
+  oneof response {
+    string accepted_event_id = 1;
+    IgnoredEvent ignored_event = 2;
+    InternalServerError internal_server_error = 3;
+  }
+}
+
+message QuestDefinition {
+  repeated Step steps = 1;
+  repeated Connection connections = 2;
+}
+
+message Connection {
+  string step_from = 1;
+  string step_to = 2;
+}
+
+message Step {
+  string id = 1;
+  string description = 2;
+  repeated Task tasks = 3;
+}
+
+message Action {
+  string type = 1;
+  map<string, string> parameters = 2;
+}
+
+message Task {
+  string id = 1;
+  string description = 2;
+  repeated Action action_items = 3;
+}
+
+message StepContent {
+  repeated Task to_dos = 1;
+  repeated Task tasks_completed = 2;
+}
+
+message QuestState {
+  map<string, StepContent> current_steps = 2;
+  fixed32 steps_left = 3;
+  repeated string steps_completed = 4;
+  repeated string required_steps = 5;
+}
+
+message QuestStateWithData {
+  string quest_instance_id = 1;
+  string name = 2;
+  string description = 3;
+  QuestState quest_state = 4;
+}
+
+message QuestStateUpdate {
+  QuestStateWithData quest_data = 1;
+  string event_id = 2;
+}
+
+message UserUpdate {
+  oneof message {
+    QuestStateUpdate quest_state_update = 1;
+    QuestStateWithData new_quest_started = 2;
+    fixed32 event_ignored = 4;
+  }
+}
+
+message Quests {
+  repeated QuestInstance quests = 1;
+}
+
+message GetAllQuestsResponse {
+  oneof response {
+    Quests quests = 1;
+    InternalServerError internal_server_error = 2;
+  }
+}
+
+message Quest {
+  string name = 1;
+  string description = 2;
+  QuestDefinition definition = 3;
+}
+
+message GetQuestDefinitionRequest {
+  string quest_id = 1;
+}
+
+message GetQuestDefinitionResponse {
+  oneof response {
+    Quest quest = 1;
+    InternalServerError internal_server_error = 2;
+  }
+}
+
+message QuestInstance {
+  string instance_id = 1;
+  Quest quest = 2;
+  QuestState state = 3;
+}
+
+service QuestsService {
+  // User actions
+  rpc StartQuest(StartQuestRequest) returns (StartQuestResponse) {}
+  rpc AbortQuest(AbortQuestRequest) returns (AbortQuestResponse) {}
+  rpc SendEvent(EventRequest) returns (EventResponse) {}
+
+  // Listen to changes in quest states and event processing updates
+  rpc Subscribe(UserAddress) returns (stream UserUpdate) {}
+
+  // Query quest information
+  rpc GetAllQuests(UserAddress) returns (GetAllQuestsResponse) {}
+  rpc GetQuestDefinition(GetQuestDefinitionRequest) returns (GetQuestDefinitionResponse) {}
+}
