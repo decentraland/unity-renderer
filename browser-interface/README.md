@@ -43,7 +43,7 @@ By now, you can run and watch a server with the Browser Interface build by typin
 
     make watch
 
-The make process will take a while. When its finished, you can start debugging the browser's explorer by going to http://localhost:8080/
+The make process will take a while. When its finished, you can start debugging the browser's explorer by going to http://localhost:8080/ (or http://localhost:8080/?ENABLE_WEB3 if web3 log in is needed) 
 
 ### Run browser interface tests
 
