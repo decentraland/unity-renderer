@@ -87,7 +87,7 @@ namespace DCL.Components
                 if (pbModel.UiInputText.HasPlaceholder) pb.placeholder = pbModel.UiInputText.Placeholder;
                 if (pbModel.UiInputText.FocusedBackground != null) pb.focusedBackground = pbModel.UiInputText.FocusedBackground.AsUnityColor();
                 if (pbModel.UiInputText.HasOnTextSubmit) pb.onTextSubmit = pbModel.UiInputText.OnTextSubmit;
-                if (pbModel.UiInputText.HasOnTextChanged) pb.onChanged = pbModel.UiInputText.OnTextChanged;
+                if (pbModel.UiInputText.HasOnChanged) pb.onChanged = pbModel.UiInputText.OnChanged;
                 if (pbModel.UiInputText.HasOnFocus) pb.onFocus = pbModel.UiInputText.OnFocus;
                 if (pbModel.UiInputText.HasOnBlur) pb.onBlur = pbModel.UiInputText.OnBlur;
                 if (pbModel.UiInputText.HasOnTextChanged) pb.onTextChanged = pbModel.UiInputText.OnTextChanged;
