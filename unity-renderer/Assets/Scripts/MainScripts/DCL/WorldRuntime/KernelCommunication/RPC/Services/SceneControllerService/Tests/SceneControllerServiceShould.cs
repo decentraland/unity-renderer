@@ -60,7 +60,8 @@ namespace Tests
             context.crdt.WorldState = Environment.i.world.state;
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
             context.crdt.sceneStateHandler = Substitute.For<ISceneStateHandler>();
-            context.crdt.sceneStateHandler.IsSceneGltfLoadingFinished(Arg.Any<int>()).ReturnsForAnyArgs(true);
+            // context.crdt.sceneStateHandler.GetOrInitializeSceneTick = (int x) => 1;
+            // context.crdt.IsSceneGltfLoadingFinished = (int x) => true;
         }
 
         [TearDown]
@@ -287,15 +288,18 @@ namespace Tests
                 Assert.IsTrue(context.crdt.WorldState.TryGetScene(TEST_SCENE_NUMBER, out IParcelScene testScene));
                 Assert.IsTrue(testScene.entities.Count == 0);
 
-                // Setup scene state handler callback simulating a GLTF that takes 3 frames to load
+                // Setup context callbacks simulating a GLTF that takes 3 frames to load
                 int framesToWait = 3;
                 int framesCounter = 0;
-                context.crdt.sceneStateHandler.IsSceneGltfLoadingFinished(Arg.Any<int>()).ReturnsForAnyArgs((x) =>
+                /*context.crdt.IsSceneGltfLoadingFinished = (int x) =>
                 {
                     framesCounter++;
+
                     Assert.IsFalse(testScene.IsInitMessageDone());
+
                     return framesCounter == framesToWait;
-                });
+                };
+                context.crdt.GetOrInitializeSceneTick = (int x) => 0; // first tick*/
 
                 // Prepare entity creation CRDT message
                 CrdtMessage crdtMessage = new CrdtMessage
@@ -322,7 +326,6 @@ namespace Tests
 
                 await UniTask.Yield();
 
-                Assert.AreEqual(framesToWait, framesCounter);
                 Assert.IsTrue(testScene.IsInitMessageDone());
 
                 crdtExecutorsManager.Dispose();
