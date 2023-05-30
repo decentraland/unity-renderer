@@ -151,5 +151,24 @@ public class AvatarModel : BaseModel
     public override BaseModel GetDataFromJSON(string json) =>
         Utils.SafeFromJson<AvatarModel>(json);
 
+    public AvatarModelDTO ToAvatarModelDto()
+    {
+        AvatarModelDTO avatarModelDto = new AvatarModelDTO
+            {
+                id = this.id,
+                name = this.name,
+                bodyShape = this.bodyShape,
+                skinColor = this.skinColor,
+                hairColor = this.hairColor,
+                eyeColor = this.eyeColor,
+                wearables = this.wearables,
+                forceRender = this.forceRender.ToList(),
+                emotes = this.emotes,
+                expressionTriggerId = this.expressionTriggerId,
+                expressionTriggerTimestamp = this.expressionTriggerTimestamp,
+                talking = this.talking,
+            };
 
+        return avatarModelDto;
+    }
 }
