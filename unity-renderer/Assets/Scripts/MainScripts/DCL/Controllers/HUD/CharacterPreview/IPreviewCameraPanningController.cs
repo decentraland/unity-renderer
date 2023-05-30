@@ -14,6 +14,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             bool allowVerticalPanning,
             bool allowHorizontalPanning,
             float inertiaDuration,
-            ICharacterPreviewInputDetector characterPreviewInputDetector);
+            ICharacterPreviewInputDetector characterPreviewInputDetector,
+            Texture2D panningCursorTexture);
     }
 }

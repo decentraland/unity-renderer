@@ -33,7 +33,8 @@ namespace DCL.Social.Passports
                 firstClickAction,
                 rotationFactor,
                 slowDownTime,
-                characterPreviewInputDetector);
+                characterPreviewInputDetector,
+                null);
 
             this.avatarPreviewRotationController.OnEndDragEvent += EndPreviewDrag;
         }

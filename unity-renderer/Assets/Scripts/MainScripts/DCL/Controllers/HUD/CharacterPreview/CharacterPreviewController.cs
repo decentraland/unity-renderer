@@ -62,6 +62,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             gameObject.SetActive(isEnabled);
             cameraController.SetCameraEnabled(isEnabled);
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
 
         public void Initialize(

@@ -61,7 +61,8 @@ namespace DCL.Backpack
                 backpackPreviewPanel.firstClickAction,
                 backpackPreviewPanel.rotationFactor,
                 backpackPreviewPanel.slowDownTime,
-                backpackPreviewPanel.characterPreviewInputDetector);
+                backpackPreviewPanel.characterPreviewInputDetector,
+                backpackPreviewPanel.rotateCursorTexture);
 
             previewCameraPanningController.Received(1).Configure(
                 backpackPreviewPanel.secondClickAction,
@@ -70,7 +71,8 @@ namespace DCL.Backpack
                 backpackPreviewPanel.allowVerticalPanning,
                 backpackPreviewPanel.allowHorizontalPanning,
                 backpackPreviewPanel.panningInertiaDuration,
-                backpackPreviewPanel.characterPreviewInputDetector);
+                backpackPreviewPanel.characterPreviewInputDetector,
+                backpackPreviewPanel.panningCursorTexture);
 
             previewCameraZoomController.Received(1).Configure(
                 backpackPreviewPanel.mouseWheelAction,

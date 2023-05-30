@@ -34,12 +34,14 @@ namespace DCL.Backpack
         [Header("ROTATE CONFIGURATION")]
         [SerializeField] internal float rotationFactor = -30f;
         [SerializeField] internal float slowDownTime = 0.5f;
+        [SerializeField] internal Texture2D rotateCursorTexture;
 
         [Header("PANNING CONFIGURATION")]
         [SerializeField] internal float panSpeed = 0.2f;
         [SerializeField] internal bool allowVerticalPanning = true;
         [SerializeField] internal bool allowHorizontalPanning = false;
         [SerializeField] internal float panningInertiaDuration = 0.5f;
+        [SerializeField] internal Texture2D panningCursorTexture;
 
         [Header("ZOOM CONFIGURATION")]
         [SerializeField] internal float zoomSpeed = 5.0f;
@@ -75,7 +77,8 @@ namespace DCL.Backpack
                 firstClickAction,
                 rotationFactor,
                 slowDownTime,
-                characterPreviewInputDetector);
+                characterPreviewInputDetector,
+                rotateCursorTexture);
             this.avatarPreviewRotationController.OnHorizontalRotation += OnPreviewRotation;
 
             this.avatarPreviewPanningController = avatarPreviewPanningController;
@@ -86,7 +89,8 @@ namespace DCL.Backpack
                 allowVerticalPanning,
                 allowHorizontalPanning,
                 panningInertiaDuration,
-                characterPreviewInputDetector);
+                characterPreviewInputDetector,
+                panningCursorTexture);
             this.avatarPreviewPanningController.OnPanning += OnPreviewPanning;
 
             this.avatarPreviewZoomController = avatarPreviewZoomController;

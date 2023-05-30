@@ -22,6 +22,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private Vector3 lastMousePosition;
         private Vector3 lastPanningDeltaBeforeEndDrag;
         private CancellationTokenSource cts = new ();
+        private Texture2D panningCursorTexture;
 
         public void Configure(
             InputAction_Hold secondClickAction,
@@ -30,7 +31,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             bool allowVerticalPanning,
             bool allowHorizontalPanning,
             float inertiaDuration,
-            ICharacterPreviewInputDetector characterPreviewInputDetector)
+            ICharacterPreviewInputDetector characterPreviewInputDetector,
+            Texture2D panningCursorTexture)
         {
             this.secondClickAction = secondClickAction;
             this.middleClickAction = middleClickAction;
@@ -39,6 +41,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             this.allowHorizontalPanning = allowHorizontalPanning;
             this.inertiaDuration = inertiaDuration;
             this.characterPreviewInputDetector = characterPreviewInputDetector;
+            this.panningCursorTexture = panningCursorTexture;
 
             characterPreviewInputDetector.OnDragStarted += OnBeginDrag;
             characterPreviewInputDetector.OnDragging += OnDrag;
@@ -74,6 +77,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             lastMousePosition = Input.mousePosition;
 
             OnPanning?.Invoke(panningDelta);
+            Cursor.SetCursor(panningCursorTexture, Vector2.zero, CursorMode.Auto);
         }
 
         private void OnEndDrag(PointerEventData eventData)
@@ -82,6 +86,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 InertiaAsync(cts.Token).Forget();
 
             AudioScriptableObjects.buttonRelease.Play(true);
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
 
         private async UniTask InertiaAsync(CancellationToken ct)

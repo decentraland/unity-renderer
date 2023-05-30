@@ -21,17 +21,20 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private CancellationTokenSource cts = new ();
         private float timer;
         private DateTime startDragDateTime;
+        private Texture2D rotateCursorTexture;
 
         public void Configure(
             InputAction_Hold firstClickAction,
             float rotationFactor,
             float slowDownTime,
-            ICharacterPreviewInputDetector characterPreviewInputDetector)
+            ICharacterPreviewInputDetector characterPreviewInputDetector,
+            Texture2D rotateCursorTexture)
         {
             this.firstClickAction = firstClickAction;
             this.rotationFactor = rotationFactor;
             this.slowDownTime = slowDownTime;
             this.characterPreviewInputDetector = characterPreviewInputDetector;
+            this.rotateCursorTexture = rotateCursorTexture;
 
             characterPreviewInputDetector.OnDragStarted += OnBeginDrag;
             characterPreviewInputDetector.OnDragging += OnDrag;
@@ -55,6 +58,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
             currentHorizontalRotationVelocity = rotationFactor * eventData.delta.x;
             OnHorizontalRotation?.Invoke(currentHorizontalRotationVelocity);
+            Cursor.SetCursor(rotateCursorTexture, Vector2.zero, CursorMode.Auto);
         }
 
         private void OnEndDrag(PointerEventData eventData)
@@ -64,6 +68,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             SlowDownAsync(cts.Token).Forget();
             OnEndDragEvent?.Invoke((DateTime.Now - startDragDateTime).TotalMilliseconds);
             AudioScriptableObjects.buttonRelease.Play(true);
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
 
         private async UniTask SlowDownAsync(CancellationToken ct)

@@ -885,10 +885,13 @@ MonoBehaviour:
   mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
   rotationFactor: -30
   slowDownTime: 0.5
+  rotateCursorTexture: {fileID: 2800000, guid: ae432d6ee3307da4aac59db911ad410f, type: 3}
   panSpeed: 0.2
   allowVerticalPanning: 1
   allowHorizontalPanning: 0
   panningInertiaDuration: 0.5
+  panningCursorTexture: {fileID: 2800000, guid: c30cf2a9865e1354b88e6885f0dafe77,
+    type: 3}
   zoomSpeed: 5
   smoothTime: 0.2
 --- !u!1 &7226453470775641204

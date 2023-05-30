@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
@@ -11,6 +12,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             InputAction_Hold firstClickAction,
             float rotationFactor,
             float slowDownTime,
-            ICharacterPreviewInputDetector characterPreviewInputDetector);
+            ICharacterPreviewInputDetector characterPreviewInputDetector,
+            Texture2D rotateCursorTexture);
     }
 }

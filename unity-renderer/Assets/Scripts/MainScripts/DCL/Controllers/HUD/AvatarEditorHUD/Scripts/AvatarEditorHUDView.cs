@@ -223,7 +223,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
             firstClickAction,
             rotationFactor,
             slowDownTime,
-            characterPreviewInputDetector);
+            characterPreviewInputDetector,
+            null);
 
         avatarPreviewRotationController.OnHorizontalRotation += OnCharacterPreviewRotationController;
         arePanelsInitialized = true;
