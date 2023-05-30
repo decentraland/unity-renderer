@@ -160,7 +160,7 @@ namespace DCL.Backpack
         public void ResetFilters()
         {
             categoryFilter = null;
-            collectionTypeMask = NftCollectionType.All;
+            collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
             thirdPartyCollectionIdsFilter = null;
             nameFilter = null;
             wearableSorting = new (NftOrderByOperation.Date, false);
@@ -212,8 +212,10 @@ namespace DCL.Backpack
                 backpackFiltersController.SetSorting(type, directionAscending, false);
             }
 
-            bool isOnlyCollectiblesOn = (collectionTypeMask & NftCollectionType.Base) == 0;
+            bool isOnlyCollectiblesOn = !collectionTypeMask.HasFlag(NftCollectionType.Base);
             backpackFiltersController.SetOnlyCollectiblesIsOn(isOnlyCollectiblesOn, false);
+
+            // TODO: Set the collection dropdown to the corresponding option depending on the thirdPartyCollectionIdsFilter value
 
             int resultCount = await RequestWearablesAndShowThem(page, cancellationToken);
 
@@ -237,14 +239,12 @@ namespace DCL.Backpack
             {
                 currentWearables.Clear();
 
-                var filtersToRequest = GetCategoryAndCollectionFiltersToRequest();
-
                 view.SetLoadingActive(true);
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
                     PAGE_SIZE, cancellationToken,
-                    filtersToRequest.categoryFilterToRequest, NftRarity.None, filtersToRequest.collectionTypeMaskToRequest,
+                    categoryFilter, NftRarity.None, collectionTypeMask,
                     thirdPartyCollectionIdsFilter,
                     nameFilter, wearableSorting);
                 view.SetLoadingActive(false);
@@ -263,30 +263,6 @@ namespace DCL.Backpack
             catch (Exception e) { Debug.LogException(e); }
 
             return 0;
-        }
-
-        private (string categoryFilterToRequest, NftCollectionType collectionTypeMaskToRequest) GetCategoryAndCollectionFiltersToRequest()
-        {
-            string categoryFilterToRequest = categoryFilter;
-            NftCollectionType collectionTypeMaskToRequest = collectionTypeMask;
-
-            if (!string.IsNullOrEmpty(nameFilter) && nameFilter.Length > 0)
-            {
-                categoryFilterToRequest = null;
-                collectionTypeMaskToRequest = NftCollectionType.All;
-
-                avatarSlotsHUDController.UnselectAllSlots(false);
-                backpackFiltersController.SetOnlyCollectiblesIsOn(false, false);
-
-                List<(string reference, string name, string type, bool removable)> path = new ();
-                var additiveReferencePath = $"{ALL_FILTER_REF}";
-                path.Add((reference: additiveReferencePath, name: "All", type: "all", removable: false));
-                additiveReferencePath += $"&{NAME_FILTER_REF}{nameFilter}";
-                path.Add((reference: additiveReferencePath, name: nameFilter, type: "nft-name", removable: true));
-                view.SetWearableBreadcrumb(new NftBreadcrumbModel { Path = path.ToArray(), Current = path.Count - 1, ResultCount = 0 });
-            }
-
-            return (categoryFilterToRequest, collectionTypeMaskToRequest);
         }
 
         private WearableGridItemModel ToWearableGridModel(WearableItem wearable)
@@ -419,6 +395,7 @@ namespace DCL.Backpack
         private void SetNameFilterFromSearchText(string newText)
         {
             categoryFilter = null;
+            collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
             nameFilter = newText;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
@@ -428,7 +405,6 @@ namespace DCL.Backpack
 
         private void SetCollectionTypeFromFilterSelection(NftCollectionType collectionType)
         {
-            categoryFilter = null;
             nameFilter = null;
             collectionTypeMask = collectionType;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
