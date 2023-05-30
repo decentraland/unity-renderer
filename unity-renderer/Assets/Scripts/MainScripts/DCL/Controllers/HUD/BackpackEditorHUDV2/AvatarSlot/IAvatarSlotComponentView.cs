@@ -9,7 +9,7 @@ namespace DCL.Backpack
         event Action<string> OnFocusHiddenBy;
         public event Action<string, bool> OnHideUnhidePressed;
 
-        void SetOverrideHide(bool isOverridden);
+        void SetForceRender(bool isOverridden);
         void SetIsHidden(bool isHidden, string hiddenBy);
         void SetCategory(string category);
         void SetUnEquipAllowed(bool allowUnEquip);

@@ -319,7 +319,7 @@ public class WearableItem
         return result;
     }
 
-    public static HashSet<string> ComposeHiddenCategoriesOrdered(string bodyShapeId, HashSet<string> hideOverrides, List<WearableItem> wearables)
+    public static HashSet<string> ComposeHiddenCategoriesOrdered(string bodyShapeId, HashSet<string> forceRender, List<WearableItem> wearables)
     {
         var result = new HashSet<string>();
         var wearablesByCategory = wearables.ToDictionary(w => w.data.category);
@@ -339,7 +339,7 @@ public class WearableItem
 
                 previouslyHidden[priorityCategory].Add(categoryToHide);
 
-                if (hideOverrides != null && hideOverrides.Contains(categoryToHide))
+                if (forceRender != null && forceRender.Contains(categoryToHide))
                     continue;
 
                 result.Add(categoryToHide);

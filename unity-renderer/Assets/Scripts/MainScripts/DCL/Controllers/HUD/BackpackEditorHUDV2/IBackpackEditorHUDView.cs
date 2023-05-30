@@ -28,7 +28,7 @@ namespace DCL.Backpack
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);
         void SetColorPickerVisibility(bool isActive);
         void SetColorPickerAsSkinMode(bool isSkinMode);
-        void UpdateHideUnhideStatus(string slotCategory, HashSet<string> hideOverrides);
+        void UpdateHideUnhideStatus(string slotCategory, HashSet<string> forceRender);
         void SetColorPickerValue(Color color);
         void ShowContinueSignup();
         void HideContinueSignup();

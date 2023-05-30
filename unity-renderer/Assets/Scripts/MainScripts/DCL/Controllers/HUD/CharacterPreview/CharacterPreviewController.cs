@@ -131,7 +131,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                     eyesColor = newModel.eyeColor,
                     hairColor = newModel.hairColor,
                     skinColor = newModel.skinColor,
-                    hideOverrides = newModel.hideOverrides
+                    forceRender = newModel.forceRender
                 }, ct);
             }
             catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }

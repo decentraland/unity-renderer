@@ -21,7 +21,7 @@ namespace DCL.Backpack
             this.avatarSlotsView = avatarSlotsView;
             avatarSlotsView.OnToggleAvatarSlot += ToggleSlot;
             avatarSlotsView.OnUnequipFromSlot += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId, UnequipWearableSource.AvatarSlot);
-            avatarSlotsView.OnHideUnhidePressed += (category, overrideHide) => OnHideUnhidePressed?.Invoke(category, overrideHide);
+            avatarSlotsView.OnHideUnhidePressed += (category, forceRender) => OnHideUnhidePressed?.Invoke(category, forceRender);
             avatarSlotsDefinition = Resources.Load<AvatarSlotsDefinitionSO>("AvatarSlotsDefinition");
         }
 
@@ -51,14 +51,14 @@ namespace DCL.Backpack
         public void UnselectAllSlots(bool notify = true) =>
             avatarSlotsView.UnSelectAll(notify);
 
-        public void Recalculate(HashSet<string> hideOverrides) =>
-            avatarSlotsView.RecalculateHideList(hideOverrides);
+        public void Recalculate(HashSet<string> forceRender) =>
+            avatarSlotsView.RecalculateHideList(forceRender);
 
-        public void Equip(WearableItem wearableItem, string bodyShape, HashSet<string> hideOverrides) =>
-            avatarSlotsView.SetSlotContent(wearableItem.data.category, wearableItem, bodyShape, hideOverrides);
+        public void Equip(WearableItem wearableItem, string bodyShape, HashSet<string> forceRender) =>
+            avatarSlotsView.SetSlotContent(wearableItem.data.category, wearableItem, bodyShape, forceRender);
 
-        public void UnEquip(string category, HashSet<string> hideOverrides) =>
-            avatarSlotsView.ResetCategorySlot(category, hideOverrides);
+        public void UnEquip(string category, HashSet<string> forceRender) =>
+            avatarSlotsView.ResetCategorySlot(category, forceRender);
 
         public void ClearSlotSelection()
         {

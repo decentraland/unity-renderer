@@ -111,12 +111,12 @@ namespace DCL.Backpack
         private void UpdateOverrideHides(string category, bool toggleOn)
         {
             if (toggleOn)
-                model.hideOverrides.Add(category);
+                model.forceRender.Add(category);
             else
-                model.hideOverrides.Remove(category);
+                model.forceRender.Remove(category);
 
             avatarIsDirty = true;
-            avatarSlotsHUDController.Recalculate(model.hideOverrides);
+            avatarSlotsHUDController.Recalculate(model.forceRender);
             UpdateAvatarPreview();
         }
 
@@ -258,7 +258,7 @@ namespace DCL.Backpack
 
             model.bodyShape = bodyShape;
             dataStore.backpackV2.previewBodyShape.Set(bodyShape.id);
-            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id, model.hideOverrides);
+            avatarSlotsHUDController.Equip(bodyShape, bodyShape.id, model.forceRender);
             backpackEmotesSectionController.SetEquippedBodyShape(bodyShape.id);
             wearableGridController.Equip(bodyShape.id);
             wearableGridController.UpdateBodyShapeCompatibility(bodyShape.id);
@@ -390,7 +390,7 @@ namespace DCL.Backpack
 
                 ResetOverridesOfAffectedCategories(wearable);
 
-                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.hideOverrides);
+                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.forceRender);
                 wearableGridController.Equip(wearableId);
             }
 
@@ -442,7 +442,7 @@ namespace DCL.Backpack
 
             ResetOverridesOfAffectedCategories(wearable);
 
-            avatarSlotsHUDController.UnEquip(wearable.data.category, model.hideOverrides);
+            avatarSlotsHUDController.UnEquip(wearable.data.category, model.forceRender);
             model.wearables.Remove(wearableId);
             previewEquippedWearables.Remove(wearableId);
             wearableGridController.UnEquip(wearableId);
@@ -463,7 +463,7 @@ namespace DCL.Backpack
         private void ToggleSlot(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
         {
             currentSlotSelected = isSelected ? slotCategory : null;
-            view.UpdateHideUnhideStatus(currentSlotSelected, model.hideOverrides);
+            view.UpdateHideUnhideStatus(currentSlotSelected, model.forceRender);
             view.SetColorPickerVisibility(isSelected && supportColor);
 
             if (isSelected && supportColor)

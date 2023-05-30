@@ -77,7 +77,7 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public async Task CurateWithHideOverrides()
+        public async Task CurateWithForceRenderCategories()
         {
             (WearableItem bodyshape,
                         WearableItem eyes,
@@ -97,7 +97,7 @@ namespace Test.AvatarSystem
                     WearableItem mouth2,
                     List<WearableItem> wearables2,
                     List<WearableItem> emotes2)
-                = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE, hideOverrides = new HashSet<string>() { "tiara" } },
+                = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE, forceRender = new HashSet<string>() { "tiara" } },
                         new[] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id", "tiara_id", "top_head_id" }, new string[] { });
 
             Assert.IsTrue(wearables2.Contains(catalog["tiara_id"]));

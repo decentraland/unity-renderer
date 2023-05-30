@@ -61,16 +61,16 @@ namespace DCL.Backpack
         public void DisablePreviousSlot(string category) =>
             avatarSlots[category].OnPointerClickOnDifferentSlot();
 
-        public void SetSlotContent(string category, WearableItem wearableItem, string bodyShape, HashSet<string> hideOverrides)
+        public void SetSlotContent(string category, WearableItem wearableItem, string bodyShape, HashSet<string> forceRender)
         {
             avatarSlots[category].SetRarity(wearableItem.rarity);
             avatarSlots[category].SetNftImage(wearableItem.ComposeThumbnailUrl());
             avatarSlots[category].SetWearableId(wearableItem.id);
             avatarSlots[category].SetHideList(wearableItem.GetHidesList(bodyShape));
-            RecalculateHideList(hideOverrides);
+            RecalculateHideList(forceRender);
         }
 
-        public void ResetCategorySlot(string category, HashSet<string> hideOverrides)
+        public void ResetCategorySlot(string category, HashSet<string> forceRender)
         {
             if (avatarSlots[category].GetHideList() != null)
                 foreach (var slot in avatarSlots[category].GetHideList())
@@ -78,15 +78,15 @@ namespace DCL.Backpack
                         avatarSlots[slot].SetIsHidden(false, category);
 
             avatarSlots[category].ResetSlot();
-            RecalculateHideList(hideOverrides);
+            RecalculateHideList(forceRender);
         }
 
-        public void RecalculateHideList(HashSet<string> hideOverrides)
+        public void RecalculateHideList(HashSet<string> forceRender)
         {
             foreach (var avatarSlotComponentView in avatarSlots)
             {
-                bool isHidden = hideOverrides.Contains(avatarSlotComponentView.Key);
-                avatarSlotComponentView.Value.SetOverrideHide(isHidden);
+                bool isHidden = forceRender.Contains(avatarSlotComponentView.Key);
+                avatarSlotComponentView.Value.SetForceRender(isHidden);
             }
 
             foreach (string category in WearableItem.CATEGORIES_PRIORITY)
@@ -112,7 +112,7 @@ namespace DCL.Backpack
 
                     previouslyHidden[priorityCategory].Add(categoryToHide);
 
-                    if (hideOverrides != null && hideOverrides.Contains(categoryToHide))
+                    if (forceRender != null && forceRender.Contains(categoryToHide))
                     {
                         avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
                         avatarSlots[categoryToHide].SetHideIconVisible(true);
@@ -130,7 +130,7 @@ namespace DCL.Backpack
                 return;
 
             if (avatarSlots.TryGetValue(slotCategory, out var slot))
-                slot.SetOverrideHide(isOverridden);
+                slot.SetForceRender(isOverridden);
         }
 
         public void Select(string category, bool notify)

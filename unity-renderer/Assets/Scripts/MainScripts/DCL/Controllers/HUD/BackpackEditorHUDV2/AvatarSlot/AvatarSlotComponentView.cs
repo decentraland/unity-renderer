@@ -53,14 +53,14 @@ namespace DCL.Backpack
             {
                 AudioScriptableObjects.hide.Play(true);
                 OnHideUnhidePressed?.Invoke(model.category, false);
-                SetOverrideHide(false);
+                SetForceRender(false);
             });
             normalHide.onClick.RemoveAllListeners();
             normalHide.onClick.AddListener(()=>
             {
                 AudioScriptableObjects.show.Play(true);
                 OnHideUnhidePressed?.Invoke(model.category, true);
-                SetOverrideHide(true);
+                SetForceRender(true);
             });
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnSlotClick);
@@ -88,7 +88,7 @@ namespace DCL.Backpack
             RefreshControl();
             SetWearableId("");
             SetHideList(Array.Empty<string>());
-            SetOverrideHide(false);
+            SetForceRender(false);
         }
 
         public string[] GetHideList() =>
@@ -110,7 +110,7 @@ namespace DCL.Backpack
         public void SetHideList(string[] hideList) =>
             model.hidesList = hideList;
 
-        public void SetOverrideHide(bool isOverridden)
+        public void SetForceRender(bool isOverridden)
         {
             overriddenHide.gameObject.SetActive(isOverridden);
             normalHide.gameObject.SetActive(!isOverridden);

@@ -184,8 +184,8 @@ namespace DCL.Backpack
             colorPickerComponentView.SetColorList(isSkinMode ? skinColorPresetsSO.colors : colorPresetsSO.colors);
         }
 
-        public void UpdateHideUnhideStatus(string slotCategory, HashSet<string> hideOverrides) =>
-            avatarSlotsView.SetHideUnhideStatus(slotCategory, hideOverrides.Contains(slotCategory));
+        public void UpdateHideUnhideStatus(string slotCategory, HashSet<string> forceRender) =>
+            avatarSlotsView.SetHideUnhideStatus(slotCategory, forceRender.Contains(slotCategory));
 
         public void SetColorPickerValue(Color color)
         {

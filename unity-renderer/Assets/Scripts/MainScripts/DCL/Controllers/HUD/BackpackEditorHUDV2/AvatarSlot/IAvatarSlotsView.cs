@@ -15,9 +15,9 @@ namespace DCL.Backpack
         void RebuildLayout();
         void AddSlotToSection(string sectionName, string slotCategory, bool allowUnEquip);
         void DisablePreviousSlot(string category);
-        void SetSlotContent(string category, WearableItem wearableItem, string bodyShape, HashSet<string> hideOverrides);
-        void ResetCategorySlot(string category, HashSet<string> hideOverrides);
-        void RecalculateHideList(HashSet<string> hideOverrides);
+        void SetSlotContent(string category, WearableItem wearableItem, string bodyShape, HashSet<string> forceRender);
+        void ResetCategorySlot(string category, HashSet<string> forceRender);
+        void RecalculateHideList(HashSet<string> forceRender);
         void SetHideUnhideStatus(string slotCategory, bool isOverridden);
         void Select(string category, bool notify);
         void UnSelectAll(bool notify);
