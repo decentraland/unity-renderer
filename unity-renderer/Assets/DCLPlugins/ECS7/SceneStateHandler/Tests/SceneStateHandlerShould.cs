@@ -34,7 +34,8 @@ namespace Tests
                 Substitute.For<CRDTServiceContext>(),
                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
                 internalComponents.EngineInfo,
-                internalComponents.GltfContainerLoadingStateComponent);
+                internalComponents.GltfContainerLoadingStateComponent,
+                internalComponents.IncreaseSceneTick);
         }
 
         [TearDown]

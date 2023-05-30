@@ -11,16 +11,18 @@ namespace DCL.ECS7
 {
     public class SceneStateHandler : IDisposable
     {
-        private IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
-        private IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingState;
-        private CRDTServiceContext context;
+        private readonly IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
+        private readonly IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingState;
+        private readonly IInternalECSComponent<InternalIncreaseTickTagComponent> increaseSceneTickTagComponent;
+        private readonly CRDTServiceContext context;
         private IReadOnlyDictionary<int, IParcelScene> scenes;
 
         public SceneStateHandler(
             CRDTServiceContext context,
             IReadOnlyDictionary<int, IParcelScene> scenes,
             IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
-            IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingState)
+            IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingState,
+            IInternalECSComponent<InternalIncreaseTickTagComponent> increaseSceneTickTagComponent)
         {
             this.context = context;
             this.scenes = scenes;
@@ -42,11 +44,7 @@ namespace DCL.ECS7
 
         internal void IncreaseSceneTick(int sceneNumber)
         {
-            if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
-
-            var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model;
-            model.SceneTick++;
-            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
+            increaseSceneTickTagComponent.PutFor(sceneNumber, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalIncreaseTickTagComponent());
         }
 
         internal bool IsSceneGltfLoadingFinished(int sceneNumber)

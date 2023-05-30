@@ -56,7 +56,8 @@ namespace DCL.ECS7
                 crdtContext,
                 sceneNumberMapping,
                 internalEcsComponents.EngineInfo,
-                internalEcsComponents.GltfContainerLoadingStateComponent);
+                internalEcsComponents.GltfContainerLoadingStateComponent,
+                internalEcsComponents.IncreaseSceneTick);
 
             sceneController.OnNewSceneAdded += SceneControllerOnNewSceneAdded;
             sceneController.OnSceneRemoved += SceneControllerOnSceneRemoved;
