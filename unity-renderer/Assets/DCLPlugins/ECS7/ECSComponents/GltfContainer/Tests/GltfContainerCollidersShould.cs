@@ -45,7 +45,7 @@ namespace Tests
 
             scene.contentProvider.baseUrl = $"{TestAssetsUtils.GetPath()}/GLB/";
             scene.contentProvider.fileToHash.Add("palmtree", "PalmTree_01.glb");
-            scene.contentProvider.fileToHash.Add("sharknado", "Shark/shark_anim.gltf");
+            scene.contentProvider.fileToHash.Add("lantern", "Lantern/Lantern.glb");
 
             pointerColliderComponent = internalEcsComponents.onPointerColliderComponent;
             physicColliderComponent = internalEcsComponents.physicColliderComponent;
@@ -262,7 +262,7 @@ namespace Tests
 
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer()
             {
-                Src = "sharknado",
+                Src = "lantern",
                 InvisibleMeshesCollisionMask = visibleColliders,
                 VisibleMeshesCollisionMask = invisibleColliders
             });

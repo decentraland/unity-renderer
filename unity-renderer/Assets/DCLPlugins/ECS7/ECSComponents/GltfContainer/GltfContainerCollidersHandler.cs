@@ -114,17 +114,8 @@ namespace DCL.ECSComponents
 
             foreach (Renderer renderer in renderers)
             {
-                Mesh colliderMesh = null;
-
-                if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
-                {
-                    colliderMesh = skinnedMeshRenderer.sharedMesh;
-                }
-                else
-                {
-                    MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
-                    colliderMesh = meshFilter ? meshFilter.sharedMesh : null;
-                }
+                MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+                Mesh colliderMesh = meshFilter ? meshFilter.sharedMesh : null;
 
                 if (!colliderMesh)
                     continue;
