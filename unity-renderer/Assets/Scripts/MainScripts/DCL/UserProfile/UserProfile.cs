@@ -78,6 +78,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.blocked = newModel.blocked;
         model.muted = newModel.muted;
         model.version = newModel.version;
+        Debug.Log($"new model has {newModel.avatar.forceRender.Count} overrides");
 
         if (model.snapshots != null && faceSnapshotDirty)
             snapshotObserver.RefreshWithUri(face256SnapshotURL);
