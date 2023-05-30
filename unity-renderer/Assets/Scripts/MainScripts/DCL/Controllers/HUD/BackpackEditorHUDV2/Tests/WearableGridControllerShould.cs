@@ -332,6 +332,7 @@ namespace DCL.Backpack
 
             controller.Equip("w1");
 
+            view.Received(1).ClearWearableSelection();
             view.Received(1)
                 .SetWearable(Arg.Is<WearableGridItemModel>(w => w.WearableId == "w1"
                                                                 && w.Rarity == NftRarity.Epic

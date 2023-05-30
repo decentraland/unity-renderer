@@ -130,6 +130,7 @@ namespace DCL.Backpack
                 return;
 
             wearableGridModel.IsEquipped = true;
+            view.ClearWearableSelection();
             view.SetWearable(wearableGridModel);
         }
 
