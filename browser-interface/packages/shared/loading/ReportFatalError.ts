@@ -95,6 +95,7 @@ export function BringDownClientAndReportFatalError(
   context: ErrorContextTypes,
   payload: Record<string, any> = {}
 ) {
+  const isWarning = error instanceof UserError
   let sagaStack: string | undefined = payload['sagaStack']
 
   debugger
@@ -107,14 +108,16 @@ export function BringDownClientAndReportFatalError(
   }
 
   // segment requires less information than rollbar
-  trackEvent('error_fatal', {
-    context,
-    // this is on purpose, if error is not an actual Error, it has no message, so we use the ''+error to call a
-    // toString, we do that because it may be also null. and (null).toString() is invalid, but ''+null works perfectly
-    message: error.message || '' + error,
-    stack: getStack(error).slice(0, 10000),
-    saga_stack: sagaStack
-  })
+  if (!isWarning) {
+    trackEvent('error_fatal', {
+      context,
+      // this is on purpose, if error is not an actual Error, it has no message, so we use the ''+error to call a
+      // toString, we do that because it may be also null. and (null).toString() is invalid, but ''+null works perfectly
+      message: error.message || '' + error,
+      stack: getStack(error).slice(0, 10000),
+      saga_stack: sagaStack
+    })
+  }
 
   store.dispatch(fatalError(error.message || 'fatal error'))
   store.dispatch(setRealmAdapter(undefined))
@@ -122,7 +125,7 @@ export function BringDownClientAndReportFatalError(
 
   globalObservable.emit('error', {
     error,
-    level: 'fatal',
+    level: isWarning ? 'warning' : 'fatal',
     extra: { context, ...payload }
   })
 }
