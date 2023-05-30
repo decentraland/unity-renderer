@@ -1,10 +1,13 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using MainScripts.DCL.Helpers.SentryUtils;
+using Newtonsoft.Json;
 using Sentry;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -66,6 +69,26 @@ namespace DCLServices.Lambdas
             return SendRequestAsync<TResponse>(wr, cancellationToken, urlWithParams, transaction, urlEncodedParams);
         }
 
+        public async UniTask<(TResponse response, bool success)> PostFromSpecificUrl<TResponse, TBody>(
+            string endPointTemplate,
+            string url,
+            TBody postData,
+            int timeout = ILambdasService.DEFAULT_TIMEOUT,
+            int attemptsNumber = ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
+            CancellationToken cancellationToken = default,
+            params (string paramName, string paramValue)[] urlEncodedParams)
+        {
+            var postDataJson = JsonUtility.ToJson(postData);
+            await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
+            string urlWithParams = AppendQueryParamsToUrl(url, urlEncodedParams);
+            var headers = new Dictionary<string, string>
+                { { "Content-Type", "application/json" } };
+            var wr = webRequestController.Ref.Post(urlWithParams, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false, headers: headers);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
+
+            return await SendRequestAsync<TResponse>(wr, cancellationToken, urlWithParams, transaction, urlEncodedParams);
+        }
+
         private async UniTask<(TResponse response, bool success)> SendRequestAsync<TResponse>(
             IWebRequestAsyncOperation webRequestAsyncOperation,
             CancellationToken cancellationToken,
@@ -77,7 +100,10 @@ namespace DCLServices.Lambdas
             await webRequestAsyncOperation.WithCancellation(cancellationToken);
 
             if (!webRequestAsyncOperation.isSucceeded)
+            {
+                Debug.LogError($"{webRequestAsyncOperation.asyncOp.webRequest.error} {webRequestAsyncOperation.asyncOp.webRequest.url}");
                 return (default, false);
+            }
 
             string textResponse = webRequestAsyncOperation.webRequest.downloadHandler.text;
             webRequestAsyncOperation.Dispose();
@@ -159,7 +185,7 @@ namespace DCLServices.Lambdas
         {
             try
             {
-                response = JsonUtility.FromJson<TResponse>(textResponse);
+                response = JsonConvert.DeserializeObject<TResponse>(textResponse);
                 return true;
             }
             catch (Exception e)

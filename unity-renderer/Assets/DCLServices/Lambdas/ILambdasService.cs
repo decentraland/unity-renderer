@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DCLServices.Lambdas
 {
@@ -73,6 +74,15 @@ namespace DCLServices.Lambdas
         UniTask<(TResponse response, bool success)> GetFromSpecificUrl<TResponse>(
             string endPointTemplate,
             string url,
+            int timeout = DEFAULT_TIMEOUT,
+            int attemptsNumber = DEFAULT_ATTEMPTS_NUMBER,
+            CancellationToken cancellationToken = default,
+            params (string paramName, string paramValue)[] urlEncodedParams);
+
+        UniTask<(TResponse response, bool success)> PostFromSpecificUrl<TResponse, TBody>(
+            string endPointTemplate,
+            string url,
+            TBody postData,
             int timeout = DEFAULT_TIMEOUT,
             int attemptsNumber = DEFAULT_ATTEMPTS_NUMBER,
             CancellationToken cancellationToken = default,

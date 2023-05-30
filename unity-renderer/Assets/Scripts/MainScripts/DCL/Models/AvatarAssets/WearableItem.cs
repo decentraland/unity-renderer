@@ -66,7 +66,8 @@ public class WearableItem
 
     public Data data;
     public EmoteDataV0 emoteDataV0;
-    public string id;
+    public string id; // urn
+    public string entityId;
 
     public string baseUrl;
     public string baseUrlBundles;

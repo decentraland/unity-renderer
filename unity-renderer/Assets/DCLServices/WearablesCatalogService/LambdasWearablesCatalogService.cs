@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -19,7 +20,7 @@ namespace DCLServices.WearablesCatalogService
     {
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
-        private const string ASSET_BUNDLES_URL_ORG = "https://content-assets-as-bundle.decentraland.org/";
+        private const string ASSET_BUNDLES_URL_ORG = "https://ab-cdn.decentraland.org/"; // todo: Replace with global scene bundles url
         private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
@@ -327,6 +328,12 @@ namespace DCLServices.WearablesCatalogService
                 LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber),
                 ("includeDefinitions", "true"));
 
+        [Serializable]
+        private class WearableRequest
+        {
+            public List<string> pointers;
+        }
+
         private async UniTask<WearableItem> SyncWearablesRequestsAsync(string newWearableId, CancellationToken ct)
         {
             pendingWearablesToRequest.Add(newWearableId);
@@ -349,7 +356,7 @@ namespace DCLServices.WearablesCatalogService
                 // When the number of wearables to request is greater than MAX_WEARABLES_PER_REQUEST, we split the request into several smaller ones.
                 // In this way we avoid to send a very long url string that would fail due to the web request size limitations.
                 int numberOfPartialRequests = (wearableIds.Count + MAX_WEARABLES_PER_REQUEST - 1) / MAX_WEARABLES_PER_REQUEST;
-                var awaitingPartialTasksPool = PoolUtils.RentList<(UniTask<(WearableWithoutDefinitionResponse response, bool success)> task, IEnumerable<string> wearablesRequested)>();
+                var awaitingPartialTasksPool = PoolUtils.RentList<(UniTask<(WearableWithEntityResponseDto.ElementDto.EntityDto[] response, bool success)> task, IEnumerable<string> wearablesRequested)>();
                 var awaitingPartialTasks = awaitingPartialTasksPool.GetList();
 
                 for (var i = 0; i < numberOfPartialRequests; i++)
@@ -360,18 +367,16 @@ namespace DCLServices.WearablesCatalogService
 
                     var wearablesToRequest = wearableIds.Take(numberOfWearablesToRequest).ToList();
 
-                    var partialTask = lambdasService.Get<WearableWithoutDefinitionResponse>(
-                        NON_PAGINATED_WEARABLES_END_POINT,
-                        NON_PAGINATED_WEARABLES_END_POINT,
-                        REQUESTS_TIME_OUT_SECONDS,
-                        urlEncodedParams: GetWearablesUrlParams(wearablesToRequest),
-                        cancellationToken: serviceCts.Token);
+                    var request = new WearableRequest { pointers = wearablesToRequest };
+                    var url = $"{catalyst.contentUrl}entities/active";
+
+                    var partialTask = lambdasService.PostFromSpecificUrl<WearableWithEntityResponseDto.ElementDto.EntityDto[], WearableRequest>(url, url, request, cancellationToken: ct);
 
                     wearableIds.RemoveRange(0, numberOfWearablesToRequest);
                     awaitingPartialTasks.Add((partialTask, wearablesToRequest));
                 }
 
-                var servicePartialResponsesPool = PoolUtils.RentList<((WearableWithoutDefinitionResponse response, bool success) taskResponse, IEnumerable<string> wearablesRequested)>();
+                var servicePartialResponsesPool = PoolUtils.RentList<((WearableWithEntityResponseDto.ElementDto.EntityDto[] response, bool success) taskResponse, IEnumerable<string> wearablesRequested)>();
                 var servicePartialResponses = servicePartialResponsesPool.GetList();
 
                 try
@@ -394,7 +399,11 @@ namespace DCLServices.WearablesCatalogService
                         throw e;
                     }
 
-                    var wearables = partialResponse.taskResponse.response.wearables;
+                    var response = partialResponse.taskResponse.response;
+
+                    string contentBaseUrl = $"{catalyst.contentUrl}contents/";
+
+                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, ASSET_BUNDLES_URL_ORG)).ToList();
 
                     MapLambdasDataIntoWearableItem(wearables);
                     AddWearablesToCatalog(wearables);
@@ -464,7 +473,7 @@ namespace DCLServices.WearablesCatalogService
                     string newThumbnail = thumbnail[(index + 1)..];
                     string newBaseUrl = thumbnail[..(index + 1)];
                     wearable.thumbnail = newThumbnail;
-                    wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? $"{catalyst.contentUrl}/contents/" : newBaseUrl;
+                    wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? $"{catalyst.contentUrl}contents/" : newBaseUrl;
                     wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
                     wearable.emoteDataV0 = null;
                 }
@@ -548,7 +557,11 @@ namespace DCLServices.WearablesCatalogService
             return false;
         }
 
-        private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
-            wearableIds.Select(id => ("wearableId", id)).ToArray();
+        private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds)
+        {
+            List<(string, string id)> valueTuples = wearableIds.Select(id => ("wearableId", id)).ToList();
+            valueTuples.Add(("includeEntities", "true"));
+            return valueTuples.ToArray();
+        }
     }
 }

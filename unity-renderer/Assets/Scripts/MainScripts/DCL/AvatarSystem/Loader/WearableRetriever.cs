@@ -26,8 +26,7 @@ namespace AvatarSystem
 
                 if (IsNewAssetBundleFlagEnabled() && contentProvider.TryGetContentsUrl_Raw(mainFile, out string hash))
                 {
-
-                    var sceneAb = await FetchSceneAssetBundles(hash, contentProvider.assetBundlesBaseUrl);
+                    var sceneAb = await FetchSceneAssetBundles(item.entityId, contentProvider.assetBundlesBaseUrl);
 
                     if (sceneAb != null && sceneAb.IsSceneConverted())
                     {

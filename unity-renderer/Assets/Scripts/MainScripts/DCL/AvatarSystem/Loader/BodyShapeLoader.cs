@@ -71,7 +71,7 @@ namespace AvatarSystem
                 (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
 
                 await (LoadEyes(ct), LoadEyebrows(ct), LoadMouth(ct));
-               
+
                 UpdateColors(avatarSettings);
                 status = IWearableLoader.Status.Succeeded;
             }
@@ -139,14 +139,14 @@ namespace AvatarSystem
             if (representation == null)
                 throw new Exception("Couldn't find a representation for this bodyshape");
 
-            Rendereable bodyshapeRenderable = await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile, ct);
+            Rendereable bodyshapeRenderable = await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile, ct, wearable);
 
             if (bodyshapeRenderable == null) // fail safe, we shouldnt reach this since .Retrieve should throw if anything goes wrong
                 throw new Exception("Couldn't load bodyshape");
 
             return bodyshapeRenderable;
         }
-        
+
         public bool IsValid(WearableItem bodyshape, WearableItem eyebrows, WearableItem eyes, WearableItem mouth)
         {
             if (wearable.id != bodyshape?.id) return false;
@@ -177,7 +177,7 @@ namespace AvatarSystem
                 skm.bones = bones;
             }
             originalBones.Clear();
-            
+
             bodyshapeRetriever?.Dispose();
             eyesRetriever?.Dispose();
             eyebrowsRetriever?.Dispose();
