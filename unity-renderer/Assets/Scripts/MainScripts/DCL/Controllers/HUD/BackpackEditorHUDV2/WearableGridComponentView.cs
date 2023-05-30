@@ -157,6 +157,20 @@ namespace DCL.Backpack
         public void SetWearableBreadcrumb(NftBreadcrumbModel model) =>
             wearablesBreadcrumbComponentView.SetModel(model);
 
+        public void RefreshWearable(string wearableId)
+        {
+            if (!wearablesById.TryGetValue(wearableId, out var view))
+                return;
+
+            view.RefreshControl();
+        }
+
+        public void RefreshAllWearables()
+        {
+            foreach (WearableGridItemComponentView view in wearablePooledObjects.Keys)
+                view.RefreshControl();
+        }
+
         private void HandleWearableSelected(WearableGridItemModel model) =>
             OnWearableSelected?.Invoke(model);
 

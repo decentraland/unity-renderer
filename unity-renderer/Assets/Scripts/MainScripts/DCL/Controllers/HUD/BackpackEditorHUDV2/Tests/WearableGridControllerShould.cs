@@ -332,13 +332,13 @@ namespace DCL.Backpack
 
             controller.Equip("w1");
 
-            view.Received(1).ClearWearableSelection();
             view.Received(1)
                 .SetWearable(Arg.Is<WearableGridItemModel>(w => w.WearableId == "w1"
                                                                 && w.Rarity == NftRarity.Epic
                                                                 && w.IsSelected == false
                                                                 && w.IsEquipped == true
                                                                 && w.ImageUrl == "http://localimagesw1thumbnail"));
+            view.Received(1).RefreshAllWearables();
         }
 
         [UnityTest]
@@ -408,6 +408,7 @@ namespace DCL.Backpack
                                                                 && w.IsSelected == false
                                                                 && w.IsEquipped == false
                                                                 && w.ImageUrl == "http://localimagesw1thumbnail"));
+            view.Received(1).RefreshWearable("w1");
         }
 
         [UnityTest]

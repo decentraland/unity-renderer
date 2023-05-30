@@ -130,8 +130,8 @@ namespace DCL.Backpack
                 return;
 
             wearableGridModel.IsEquipped = true;
-            view.ClearWearableSelection();
             view.SetWearable(wearableGridModel);
+            view.RefreshAllWearables();
         }
 
         public void UnEquip(string wearableId)
@@ -141,6 +141,7 @@ namespace DCL.Backpack
 
             wearableGridModel.IsEquipped = false;
             view.SetWearable(wearableGridModel);
+            view.RefreshWearable(wearableId);
         }
 
         public void UpdateBodyShapeCompatibility(string bodyShapeId)

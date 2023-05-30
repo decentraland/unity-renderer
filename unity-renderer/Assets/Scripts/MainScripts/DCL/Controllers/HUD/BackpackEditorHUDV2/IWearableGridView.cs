@@ -24,5 +24,7 @@ namespace DCL.Backpack
         void FillInfoCard(InfoCardComponentModel model);
         void SetInfoCardVisible(bool isVisible);
         void SetLoadingActive(bool isActive);
+        void RefreshWearable(string wearableId);
+        void RefreshAllWearables();
     }
 }
