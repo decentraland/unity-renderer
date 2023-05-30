@@ -392,7 +392,7 @@ namespace DCL.Backpack
         private void SetNameFilterFromSearchText(string newText)
         {
             categoryFilter = null;
-            collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
+            collectionTypeMask = NftCollectionType.All;
             nameFilter = newText;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
