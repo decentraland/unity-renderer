@@ -7,6 +7,7 @@ using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using System;
+using System.Threading.Tasks;
 using ErrorEventArgs = WebSocketSharp.ErrorEventArgs;
 
 public class DCLWebSocketService : WebSocketBehavior
@@ -59,7 +60,7 @@ public class DCLWebSocketService : WebSocketBehavior
 
     public void SendBinary(byte[] data)
     {
-        Send(data);
+        Task.Run(() => Send(data));
     }
 
     public class Message
