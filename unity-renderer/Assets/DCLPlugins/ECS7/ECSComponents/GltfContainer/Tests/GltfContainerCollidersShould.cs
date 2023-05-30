@@ -46,6 +46,7 @@ namespace Tests
             scene.contentProvider.baseUrl = $"{TestAssetsUtils.GetPath()}/GLB/";
             scene.contentProvider.fileToHash.Add("palmtree", "PalmTree_01.glb");
             scene.contentProvider.fileToHash.Add("lantern", "Lantern/Lantern.glb");
+            scene.contentProvider.fileToHash.Add("sharknado", "Shark/shark_anim.gltf");
 
             pointerColliderComponent = internalEcsComponents.onPointerColliderComponent;
             physicColliderComponent = internalEcsComponents.physicColliderComponent;
@@ -117,20 +118,11 @@ namespace Tests
                 Assert.IsTrue((!visibleColliders && containsColliderName) || (visibleColliders && !containsColliderName));
                 Assert.AreEqual(unityGameObjectLayer.Value, collider.gameObject.layer);
 
-                if ((mask & (int)ColliderLayer.ClPhysics) != 0)
-                {
-                    Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider));
-                }
+                if ((mask & (int)ColliderLayer.ClPhysics) != 0) { Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
 
-                if ((mask & (int)ColliderLayer.ClPointer) != 0)
-                {
-                    Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider));
-                }
+                if ((mask & (int)ColliderLayer.ClPointer) != 0) { Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
 
-                if (hasCustomLayer)
-                {
-                    Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider));
-                }
+                if (hasCustomLayer) { Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
             }
 
             yield return null;
@@ -284,6 +276,26 @@ namespace Tests
             Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
             Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
             Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
+        }
+
+        [UnityTest]
+        public IEnumerator DontCreateCollidersOnSkinnedMeshRenderers()
+        {
+            const uint visibleColliders = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1);
+            const uint invisibleColliders = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1);
+
+            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer
+            {
+                Src = "sharknado", // this specific model is 100% skinned mesh renderer
+                InvisibleMeshesCollisionMask = visibleColliders,
+                VisibleMeshesCollisionMask = invisibleColliders
+            });
+
+            yield return handler.gltfLoader.Promise;
+
+            var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true).ToArray();
+
+            Assert.AreEqual(0, colliders.Length, "Ammount of colliders");
         }
 
         private static bool HasColliderName(Collider collider)
