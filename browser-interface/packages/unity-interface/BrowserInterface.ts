@@ -1,7 +1,7 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
+import { Avatar, generateLazyValidator, JSONSchema, WearableCategory } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
@@ -439,7 +439,7 @@ export class BrowserInterface {
           hair: { color: changes.avatar.hairColor },
           skin: { color: changes.avatar.skinColor },
           wearables: changes.avatar.wearables,
-          forceRender: changes.avatar.forceRender,
+          forceRender: changes.avatar.forceRender.map((category) => category as WearableCategory),
           snapshots: {
             body: changes.body,
             face256: changes.face256
@@ -456,7 +456,7 @@ export class BrowserInterface {
           hair: { color: changes.avatar.hairColor },
           skin: { color: changes.avatar.skinColor },
           wearables: changes.avatar.wearables,
-          forceRender: changes.avatar.forceRender,
+          forceRender: changes.avatar.forceRender.map((category) => category as WearableCategory),
           emotes: (changes.avatar.emotes ?? []).map((value, index) => ({ slot: index, urn: value as any as string })),
           snapshots: {
             body: changes.body,
