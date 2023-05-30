@@ -6,6 +6,7 @@ export type AvatarForUserData = {
   hairColor: string
   eyeColor: string
   wearables: WearableId[]
+  forceRender?: string[]
   emotes?: {
     slot: number
     urn: string
