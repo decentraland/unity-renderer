@@ -115,8 +115,8 @@ namespace DCL.Backpack
             else
                 model.forceRender.Remove(category);
 
-            avatarIsDirty = true;
             avatarSlotsHUDController.Recalculate(model.forceRender);
+            avatarIsDirty = true;
             UpdateAvatarPreview();
         }
 
@@ -212,15 +212,16 @@ namespace DCL.Backpack
                     model.skinColor = userProfile.avatar.skinColor;
                     model.hairColor = userProfile.avatar.hairColor;
                     model.eyesColor = userProfile.avatar.eyeColor;
-
+                    model.forceRender = new HashSet<string>(userProfile.avatar.forceRender);
                     model.wearables.Clear();
                     previewEquippedWearables.Clear();
 
                     int wearablesCount = userProfile.avatar.wearables.Count;
 
                     for (var i = 0; i < wearablesCount; i++)
-                        EquipWearable(userProfile.avatar.wearables[i], EquipWearableSource.None, false, false);
+                        EquipWearable(userProfile.avatar.wearables[i], EquipWearableSource.None, false, false, false);
 
+                    avatarSlotsHUDController.Recalculate(model.forceRender);
                     view.UpdateAvatarPreview(model.ToAvatarModel());
                 }
                 catch (OperationCanceledException) { }
@@ -361,7 +362,8 @@ namespace DCL.Backpack
         private void EquipWearable(string wearableId,
             EquipWearableSource source = EquipWearableSource.None,
             bool setAsDirty = true,
-            bool updateAvatarPreview = true)
+            bool updateAvatarPreview = true,
+            bool resetOverride = true)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -388,7 +390,8 @@ namespace DCL.Backpack
                 model.wearables.Add(wearableId, wearable);
                 previewEquippedWearables.Add(wearableId);
 
-                ResetOverridesOfAffectedCategories(wearable);
+                if(resetOverride)
+                    ResetOverridesOfAffectedCategories(wearable);
 
                 avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.forceRender);
                 wearableGridController.Equip(wearableId);

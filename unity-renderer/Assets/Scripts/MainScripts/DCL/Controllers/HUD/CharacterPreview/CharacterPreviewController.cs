@@ -132,7 +132,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                     eyesColor = newModel.eyeColor,
                     hairColor = newModel.hairColor,
                     skinColor = newModel.skinColor,
-                    forceRender = newModel.forceRender
+                    forceRender = new HashSet<string>(newModel.forceRender)
                 }, ct);
             }
             catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
