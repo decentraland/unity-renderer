@@ -60,7 +60,7 @@ public class DCLWebSocketService : WebSocketBehavior
 
     public void SendBinary(byte[] data)
     {
-        Task.Run(() => Send(data));
+        SendAsync(data, null);
     }
 
     public class Message
