@@ -1047,7 +1047,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -1913,6 +1913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 9133096493241739170}
+  newTag: {fileID: 0}
   selectedIcon: {fileID: 4252940004687062846}
   selectedTitle: {fileID: 5964868987140304646}
   backgroundTransitionColorsForSelected:
@@ -2058,6 +2059,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 6288797917933539428}
+  newTag: {fileID: 0}
   selectedIcon: {fileID: 3690785968410379867}
   selectedTitle: {fileID: 1190824037564760801}
   backgroundTransitionColorsForSelected:
@@ -4635,6 +4637,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3302785465968920600, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_Value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3516386619451137417, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
