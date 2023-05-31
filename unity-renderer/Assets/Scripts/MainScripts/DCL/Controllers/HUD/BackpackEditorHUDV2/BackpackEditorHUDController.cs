@@ -224,12 +224,28 @@ namespace DCL.Backpack
                     int wearablesCount = userProfile.avatar.wearables.Count;
 
                     for (var i = 0; i < wearablesCount; i++)
-                        EquipWearable(userProfile.avatar.wearables[i], EquipWearableSource.None, false, false);
+                    {
+                        string wearableId = userProfile.avatar.wearables[i];
+
+                        if (!wearablesCatalogService.WearablesCatalog.ContainsKey(wearableId))
+                        {
+                            try { await wearablesCatalogService.RequestWearableAsync(wearableId, cancellationToken); }
+                            catch (OperationCanceledException) { throw; }
+                            catch (Exception e)
+                            {
+                                Debug.LogError($"Cannot load the wearable {wearableId}");
+                                Debug.LogException(e);
+                                continue;
+                            }
+                        }
+
+                        EquipWearable(wearableId, EquipWearableSource.None, false, false);
+                    }
 
                     view.UpdateAvatarPreview(model.ToAvatarModel());
                 }
                 catch (OperationCanceledException) { }
-                catch (Exception e) { Debug.LogError(e); }
+                catch (Exception e) { Debug.LogException(e); }
             }
 
             loadProfileCancellationToken = loadProfileCancellationToken.SafeRestart();
