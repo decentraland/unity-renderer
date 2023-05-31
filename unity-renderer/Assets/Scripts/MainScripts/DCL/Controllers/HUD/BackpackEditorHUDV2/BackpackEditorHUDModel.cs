@@ -22,7 +22,7 @@ namespace DCL.Backpack
                 hairColor = hairColor,
                 skinColor = skinColor,
                 eyeColor = eyesColor,
-                forceRender = forceRender
+                forceRender = new HashSet<string>(forceRender)
             };
         }
 
@@ -36,6 +36,7 @@ namespace DCL.Backpack
             hairColor = newModel.hairColor;
             skinColor = newModel.skinColor;
             eyesColor = newModel.eyesColor;
+            forceRender = new HashSet<string>(newModel.forceRender);
         }
     }
 }
