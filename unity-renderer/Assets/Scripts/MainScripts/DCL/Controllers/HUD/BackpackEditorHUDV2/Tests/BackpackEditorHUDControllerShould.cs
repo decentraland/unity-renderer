@@ -104,7 +104,7 @@ namespace DCL.Backpack
             Assert.IsTrue(dataStore.HUDs.isAvatarEditorInitialized.Get());
             view.Received(1).SetAsFullScreenMenuMode(Arg.Any<Transform>());
             view.Received(1).Hide();
-            view.Received(1).ResetPreviewEmote();
+            view.Received(1).ResetPreviewPanel();
             view.Received(1).SetColorPickerVisibility(false);
         }
 

@@ -139,9 +139,6 @@ namespace DCL.Backpack
             backpackPreviewPanel.PlayPreviewEmote(emoteId, timestamp);
         }
 
-        public void ResetPreviewEmote() =>
-            backpackPreviewPanel.ResetPreviewEmote();
-
         public void UpdateAvatarPreview(AvatarModel avatarModel)
         {
             if (avatarModel?.wearables == null)
@@ -164,7 +161,7 @@ namespace DCL.Backpack
         {
             async UniTaskVoid TakeSnapshotsAfterStopPreviewAnimationAsync(CancellationToken ct)
             {
-                ResetPreviewEmote();
+                ResetPreviewPanel();
                 await UniTask.Delay(MS_TO_RESET_PREVIEW_ANIMATION, cancellationToken: ct);
                 backpackPreviewPanel.TakeSnapshots(
                     (face256, body) => onSuccess?.Invoke(face256, body),
@@ -225,9 +222,10 @@ namespace DCL.Backpack
             });
         }
 
-        private void ResetPreviewPanel()
+        public void ResetPreviewPanel()
         {
-            ResetPreviewEmote();
+            backpackPreviewPanel.ResetPreviewEmote();
+            backpackPreviewPanel.ResetPreviewRotation();
             SetAvatarPreviewFocus(PreviewCameraFocus.DefaultEditing, false);
         }
 

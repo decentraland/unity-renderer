@@ -22,7 +22,7 @@ namespace DCL.Backpack
         void SetAsFullScreenMenuMode(Transform parentTransform);
         void PlayPreviewEmote(string emoteId);
         void PlayPreviewEmote(string emoteId, long timestamp);
-        void ResetPreviewEmote();
+        void ResetPreviewPanel();
         void UpdateAvatarPreview(AvatarModel avatarModel);
         void SetAvatarPreviewFocus(PreviewCameraFocus focus, bool useTransition = true);
         void TakeSnapshotsAfterStopPreviewAnimation(OnSnapshotsReady onSuccess, Action onFailed);

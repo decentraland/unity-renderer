@@ -122,6 +122,16 @@ namespace DCL.Backpack
             characterPreviewController.Received(1).PlayEmote("Idle", (long)Time.realtimeSinceStartup);
         }
 
+        [Test]
+        public void ResetPreviewRotationCorrectly()
+        {
+            // Act
+            backpackPreviewPanel.ResetPreviewRotation();
+
+            // Assert
+            characterPreviewController.Received(1).ResetRotation();
+        }
+
         [UnityTest]
         public IEnumerator TryUpdatePreviewModelCorrectly()
         {

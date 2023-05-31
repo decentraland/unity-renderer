@@ -131,6 +131,9 @@ namespace DCL.Backpack
         public void ResetPreviewEmote() =>
             PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
 
+        public void ResetPreviewRotation() =>
+            characterPreviewController.ResetRotation();
+
         public async UniTask TryUpdatePreviewModelAsync(AvatarModel avatarModelToUpdate, CancellationToken ct) =>
             await characterPreviewController.TryUpdateModelAsync(avatarModelToUpdate, ct);
 
