@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DCL.Backpack
 {
-    public class BackpackAnalyticsController : IBackpackAnalyticsController
+    public class BackpackAnalyticsService : IBackpackAnalyticsService
     {
         private const string AVATAR_SCREENSHOT = "avatar_screenshot";
         private const string OUTFIT_EQUIP = "outfit_equip";
@@ -18,20 +18,19 @@ namespace DCL.Backpack
         private const string EQUIP_WEARABLE_METRIC = "equip_wearable";
         private const string UNEQUIP_WEARABLE_METRIC = "unequip_wearable";
         private const string AVATAR_COLOR_PICK = "avatar_color_pick";
+        private const string FORCE_SHOW_WEARABLE = "show_wearable";
+        private const string FORCE_HIDE_WEARABLE = "hide_wearable";
 
         private readonly IAnalytics analytics;
         private readonly INewUserExperienceAnalytics newUserExperienceAnalytics;
-        private readonly IWearablesCatalogService wearablesCatalogService;
         private const int NORMAL_OUTFIT_SLOTS_COUNT = 3;
 
-        public BackpackAnalyticsController(
+        public BackpackAnalyticsService(
             IAnalytics analytics,
-            INewUserExperienceAnalytics newUserExperienceAnalytics,
-            IWearablesCatalogService wearablesCatalogService)
+            INewUserExperienceAnalytics newUserExperienceAnalytics)
         {
             this.analytics = analytics;
             this.newUserExperienceAnalytics = newUserExperienceAnalytics;
-            this.wearablesCatalogService = wearablesCatalogService;
         }
 
         public void SendAvatarScreenshot(AvatarScreenshotSource source) =>
@@ -99,6 +98,25 @@ namespace DCL.Backpack
         public void SendAvatarColorPick() =>
             analytics.SendAnalytic(AVATAR_COLOR_PICK, null);
 
+        public void SendForceHideWearable(string category)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "category", category },
+            };
+
+            analytics.SendAnalytic(FORCE_HIDE_WEARABLE, data);
+        }
+
+        public void SendForceShowWearable(string category)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "category", category },
+            };
+
+            analytics.SendAnalytic(FORCE_SHOW_WEARABLE, data);
+        }
 
         private string CalculateSorting(NftOrderByOperation order, bool asc)
         {

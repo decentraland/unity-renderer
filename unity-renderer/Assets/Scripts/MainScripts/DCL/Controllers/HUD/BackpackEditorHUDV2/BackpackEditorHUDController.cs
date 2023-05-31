@@ -15,7 +15,7 @@ namespace DCL.Backpack
         private readonly DataStore dataStore;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IBackpackEmotesSectionController backpackEmotesSectionController;
-        private readonly IBackpackAnalyticsController backpackAnalyticsController;
+        private readonly IBackpackAnalyticsService backpackAnalyticsService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
@@ -41,7 +41,7 @@ namespace DCL.Backpack
             IUserProfileBridge userProfileBridge,
             IWearablesCatalogService wearablesCatalogService,
             IBackpackEmotesSectionController backpackEmotesSectionController,
-            IBackpackAnalyticsController backpackAnalyticsController,
+            IBackpackAnalyticsService backpackAnalyticsService,
             WearableGridController wearableGridController,
             AvatarSlotsHUDController avatarSlotsHUDController)
         {
@@ -51,7 +51,7 @@ namespace DCL.Backpack
             this.userProfileBridge = userProfileBridge;
             this.wearablesCatalogService = wearablesCatalogService;
             this.backpackEmotesSectionController = backpackEmotesSectionController;
-            this.backpackAnalyticsController = backpackAnalyticsController;
+            this.backpackAnalyticsService = backpackAnalyticsService;
             this.wearableGridController = wearableGridController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
 
@@ -356,7 +356,7 @@ namespace DCL.Backpack
             if (dataStore.common.isSignUpFlow.Get())
             {
                 dataStore.HUDs.signupVisible.Set(true);
-                backpackAnalyticsController.SendAvatarEditSuccessNuxAnalytic();
+                backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
             }
 
             avatarIsDirty = false;
@@ -442,7 +442,7 @@ namespace DCL.Backpack
                 avatarIsDirty = true;
 
             if (source != EquipWearableSource.None)
-                backpackAnalyticsController.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
+                backpackAnalyticsService.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
             if (updateAvatarPreview)
             {
@@ -482,7 +482,7 @@ namespace DCL.Backpack
             string wearableId = wearable.id;
 
             if (source != UnequipWearableSource.None)
-                backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
+                backpackAnalyticsService.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
             ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
@@ -557,7 +557,7 @@ namespace DCL.Backpack
         }
 
         private void OnColorPickerToggled() =>
-            backpackAnalyticsController.SendAvatarColorPick();
+            backpackAnalyticsService.SendAvatarColorPick();
 
         private void OnAvatarUpdated()
         {

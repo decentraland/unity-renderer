@@ -23,7 +23,7 @@ namespace DCL.Backpack
         private IAnalytics analytics;
         private INewUserExperienceAnalytics newUserExperienceAnalytics;
         private IBackpackEmotesSectionController backpackEmotesSectionController;
-        private BackpackAnalyticsController backpackAnalyticsController;
+        private BackpackAnalyticsService backpackAnalyticsService;
         private BackpackEditorHUDController backpackEditorHUDController;
         private WearableGridController wearableGridController;
         private AvatarSlotsHUDController avatarSlotsHUDController;
@@ -55,16 +55,15 @@ namespace DCL.Backpack
             testFace256Texture = new Texture2D(1, 1);
             testBodyTexture = new Texture2D(1, 1);
 
-            backpackAnalyticsController = new BackpackAnalyticsController(
+            backpackAnalyticsService = new BackpackAnalyticsService(
                 analytics,
-                newUserExperienceAnalytics,
-                wearablesCatalogService);
+                newUserExperienceAnalytics);
 
             backpackFiltersComponentView = Substitute.For<IBackpackFiltersComponentView>();
             backpackFiltersController = new BackpackFiltersController(backpackFiltersComponentView, wearablesCatalogService);
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
-            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
+            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService);
 
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
@@ -73,7 +72,7 @@ namespace DCL.Backpack
                 Substitute.For<IBrowserBridge>(),
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                Substitute.For<IBackpackAnalyticsController>());
+                Substitute.For<IBackpackAnalyticsService>());
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
@@ -82,7 +81,7 @@ namespace DCL.Backpack
                 userProfileBridge,
                 wearablesCatalogService,
                 backpackEmotesSectionController,
-                backpackAnalyticsController,
+                backpackAnalyticsService,
                 wearableGridController,
                 avatarSlotsHUDController);
         }

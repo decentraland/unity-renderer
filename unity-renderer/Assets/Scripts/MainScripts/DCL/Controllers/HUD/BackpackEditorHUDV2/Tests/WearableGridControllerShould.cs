@@ -58,8 +58,10 @@ namespace DCL.Backpack
             backpackFiltersController = new BackpackFiltersController(filtersView,
                 Substitute.For<IWearablesCatalogService>());
 
+            IBackpackAnalyticsService backpackAnalyticsService = Substitute.For<IBackpackAnalyticsService>();
+
             slotsView = Substitute.For<IAvatarSlotsView>();
-            avatarSlotsHUDController = new AvatarSlotsHUDController(slotsView);
+            avatarSlotsHUDController = new AvatarSlotsHUDController(slotsView, backpackAnalyticsService);
 
             controller = new WearableGridController(view,
                 userProfileBridge,
@@ -68,7 +70,7 @@ namespace DCL.Backpack
                 browserBridge,
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                Substitute.For<IBackpackAnalyticsController>());
+                backpackAnalyticsService);
         }
 
         [TearDown]

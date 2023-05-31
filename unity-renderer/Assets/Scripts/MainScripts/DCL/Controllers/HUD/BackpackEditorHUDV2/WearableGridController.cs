@@ -27,7 +27,7 @@ namespace DCL.Backpack
         private readonly IBrowserBridge browserBridge;
         private readonly BackpackFiltersController backpackFiltersController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
-        private readonly IBackpackAnalyticsController backpackAnalyticsController;
+        private readonly IBackpackAnalyticsService backpackAnalyticsService;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
@@ -51,7 +51,7 @@ namespace DCL.Backpack
             IBrowserBridge browserBridge,
             BackpackFiltersController backpackFiltersController,
             AvatarSlotsHUDController avatarSlotsHUDController,
-            IBackpackAnalyticsController backpackAnalyticsController)
+            IBackpackAnalyticsService backpackAnalyticsService)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
@@ -60,7 +60,7 @@ namespace DCL.Backpack
             this.browserBridge = browserBridge;
             this.backpackFiltersController = backpackFiltersController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
-            this.backpackAnalyticsController = backpackAnalyticsController;
+            this.backpackAnalyticsService = backpackAnalyticsService;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
@@ -391,7 +391,7 @@ namespace DCL.Backpack
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
             view.SetInfoCardVisible(false);
-            backpackAnalyticsController.SendWearableSortedBy(newSorting.type, newSorting.directionAscendent);
+            backpackAnalyticsService.SendWearableSortedBy(newSorting.type, newSorting.directionAscendent);
         }
 
         private void SetNameFilterFromSearchText(string newText)
@@ -403,7 +403,7 @@ namespace DCL.Backpack
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
             view.SetInfoCardVisible(false);
-            backpackAnalyticsController.SendWearableSearch(newText);
+            backpackAnalyticsService.SendWearableSearch(newText);
         }
 
         private void SetCollectionTypeFromFilterSelection(NftCollectionType collectionType)
@@ -413,7 +413,7 @@ namespace DCL.Backpack
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
             view.SetInfoCardVisible(false);
-            backpackAnalyticsController.SendWearableFilter(!collectionType.HasFlag(NftCollectionType.Base));
+            backpackAnalyticsService.SendWearableFilter(!collectionType.HasFlag(NftCollectionType.Base));
         }
 
         private void SetCategoryFromFilterSelection(string category, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)

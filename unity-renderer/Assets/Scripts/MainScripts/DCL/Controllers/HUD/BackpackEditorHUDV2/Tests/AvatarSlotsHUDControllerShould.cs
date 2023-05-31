@@ -1,8 +1,10 @@
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Backpack
 {
@@ -10,13 +12,15 @@ namespace DCL.Backpack
     {
         private AvatarSlotsHUDController avatarSlotsHUDController;
         private AvatarSlotsDefinitionSO avatarSlotsDefinition;
-        internal IAvatarSlotsView avatarSlotsView;
+        private IAvatarSlotsView avatarSlotsView;
+        private IBackpackAnalyticsService backpackAnalyticsService;
 
         [SetUp]
         public void SetUp()
         {
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
-            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView);
+            backpackAnalyticsService = Substitute.For<IBackpackAnalyticsService>();
+            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService);
             avatarSlotsDefinition = ScriptableObject.CreateInstance<AvatarSlotsDefinitionSO>();
 
             avatarSlotsDefinition.slotsDefinition = new SerializableKeyValuePair<string, List<string>>[2];
@@ -66,6 +70,22 @@ namespace DCL.Backpack
             avatarSlotsView.OnToggleAvatarSlot += Raise.Event<IAvatarSlotsView.ToggleAvatarSlotDelegate>(
                 "mask", false, PreviewCameraFocus.DefaultEditing, true);
             avatarSlotsView.Received().DisablePreviousSlot("tiara");
+        }
+
+        [Test]
+        public void TrackForceShowAnalytic()
+        {
+            avatarSlotsView.OnHideUnhidePressed += Raise.Event<Action<string, bool>>("upper_body", true);
+
+            backpackAnalyticsService.Received(1).SendForceShowWearable("upper_body");
+        }
+
+        [Test]
+        public void TrackForceHideAnalytic()
+        {
+            avatarSlotsView.OnHideUnhidePressed += Raise.Event<Action<string, bool>>("upper_body", false);
+
+            backpackAnalyticsService.Received(1).SendForceHideWearable("upper_body");
         }
     }
 }
