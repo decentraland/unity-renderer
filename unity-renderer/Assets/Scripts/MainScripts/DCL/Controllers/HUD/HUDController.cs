@@ -3,8 +3,6 @@ using DCL;
 using DCL.Chat;
 using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
-using DCL.Huds.QuestsPanel;
-using DCL.Huds.QuestsTracker;
 using DCL.NotificationModel;
 using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
@@ -108,12 +106,6 @@ public class HUDController : IHUDController
 
     public VoiceChatWindowController voiceChatHud =>
         GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as VoiceChatWindowController;
-
-    public QuestsPanelHUDController questsPanelHUD =>
-        GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
-
-    public QuestsTrackerHUDController questsTrackerHUD =>
-        GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
@@ -372,16 +364,6 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
-                break;
-            case HUDElementID.QUESTS_PANEL:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                if (configuration.active)
-                    questsPanelHUD.Initialize(QuestsController.i);
-                break;
-            case HUDElementID.QUESTS_TRACKER:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                if (configuration.active)
-                    questsTrackerHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
