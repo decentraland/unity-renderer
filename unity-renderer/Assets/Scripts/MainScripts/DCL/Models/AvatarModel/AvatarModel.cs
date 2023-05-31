@@ -119,6 +119,10 @@ public class AvatarModel : BaseModel
                                  && other.wearables.All(wearables.Contains)
                                  && wearables.Count == other.wearables.Count;
 
+        bool forceRenderAreEqual = forceRender.All(other.forceRender.Contains)
+                                 && other.forceRender.All(forceRender.Contains)
+                                 && forceRender.Count == other.forceRender.Count;
+
         return id == other.id &&
                name == other.name &&
                bodyShape == other.bodyShape &&
@@ -127,7 +131,8 @@ public class AvatarModel : BaseModel
                eyeColor == other.eyeColor &&
                expressionTriggerId == other.expressionTriggerId &&
                expressionTriggerTimestamp == other.expressionTriggerTimestamp &&
-               wearablesAreEqual;
+               wearablesAreEqual &&
+               forceRenderAreEqual;
     }
 
     public void CopyFrom(AvatarModel other)
