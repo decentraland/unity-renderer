@@ -227,9 +227,9 @@ namespace DCL.Backpack
                     {
                         string wearableId = userProfile.avatar.wearables[i];
 
-                        if (!wearablesCatalogService.WearablesCatalog.ContainsKey(wearableId))
+                        if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
                         {
-                            try { await wearablesCatalogService.RequestWearableAsync(wearableId, cancellationToken); }
+                            try { wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, cancellationToken); }
                             catch (OperationCanceledException) { throw; }
                             catch (Exception e)
                             {
@@ -239,7 +239,7 @@ namespace DCL.Backpack
                             }
                         }
 
-                        EquipWearable(wearableId, EquipWearableSource.None, false, false);
+                        EquipWearable(wearable, EquipWearableSource.None, false, false);
                     }
 
                     view.UpdateAvatarPreview(model.ToAvatarModel());
@@ -392,6 +392,16 @@ namespace DCL.Backpack
                 Debug.LogError($"Cannot equip wearable {wearableId}");
                 return;
             }
+
+            EquipWearable(wearable, source, setAsDirty, updateAvatarPreview);
+        }
+
+        private void EquipWearable(WearableItem wearable,
+            EquipWearableSource source = EquipWearableSource.None,
+            bool setAsDirty = true,
+            bool updateAvatarPreview = true)
+        {
+            string wearableId = wearable.id;
 
             if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
             {
