@@ -55,10 +55,7 @@ globalThis.DecentralandKernel = {
 
         await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
       } catch (err: any) {
-        if (err instanceof UserError)
-          BringDownClientAndShowError(err.message)
-        else
-          BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
+        BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
       }
     }, 0)
 
