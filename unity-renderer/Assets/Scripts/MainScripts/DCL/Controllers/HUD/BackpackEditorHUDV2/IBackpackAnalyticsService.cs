@@ -1,11 +1,8 @@
 using DCLServices.WearablesCatalogService;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCL.Backpack
 {
-    public interface IBackpackAnalyticsController
+    public interface IBackpackAnalyticsService
     {
         void SendAvatarScreenshot(AvatarScreenshotSource source);
         void SendOutfitEquipped(int slotNumber);
@@ -21,5 +18,7 @@ namespace DCL.Backpack
         void SendEquipWearableAnalytic(string category, string rarity, EquipWearableSource source);
         void SendUnequippedWearableAnalytic(string category, string rarity, UnequipWearableSource source);
         void SendAvatarColorPick();
+        void SendForceHideWearable(string category);
+        void SendForceShowWearable(string category);
     }
 }

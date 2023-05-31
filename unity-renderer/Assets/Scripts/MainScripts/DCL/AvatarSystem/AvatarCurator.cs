@@ -47,7 +47,7 @@ namespace AvatarSystem
                 //Old flow contains emotes among the wearablesIds
                 (List<WearableItem> wearableItems, List<WearableItem> emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
 
-                HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
+                HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategoriesOrdered(settings.bodyshapeId, settings.forceRender, wearableItems);
 
                 //New emotes flow use the emotes catalog
                 if (emoteIds != null)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -57,11 +58,18 @@ public interface ISectionToggle
     /// </summary>
     /// <returns>True if it is actived.</returns>
     bool IsActive();
+
+    /// <summary>
+    /// Show/Hide the NEW tag.
+    /// </summary>
+    /// <param name="isNew">True for showing the tag.</param>
+    void SetAsNew(bool isNew);
 }
 
 public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
 {
     [SerializeField] private Toggle toggle;
+    [SerializeField] private GameObject newTag;
 
     [Header("Visual Configuration When Selected")]
     [SerializeField] private Image selectedIcon;
@@ -103,7 +111,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
             backgroundTransitionColorsForSelected = backgroundTransitionColorsForSelected,
             unselectedTextColor = unselectedTextColor,
             unselectedImageColor = unselectedImageColor,
-            backgroundTransitionColorsForUnselected = backgroundTransitionColorsForUnselected
+            backgroundTransitionColorsForUnselected = backgroundTransitionColorsForUnselected,
+            showNewTag = newTag != null && newTag.activeSelf,
         };
     }
 
@@ -135,6 +144,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
             unselectedIcon.sprite = model.unselectedIcon;
             unselectedIcon.color = model.unselectedImageColor;
         }
+
+        SetAsNew(model.showNewTag);
 
         backgroundTransitionColorsForSelected = model.backgroundTransitionColorsForSelected;
         backgroundTransitionColorsForUnselected = model.backgroundTransitionColorsForUnselected;
@@ -196,6 +207,14 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
     public bool IsActive() { return gameObject.activeSelf; }
+
+    public void SetAsNew(bool isNew)
+    {
+        if (newTag == null)
+            return;
+
+        newTag.SetActive(isNew);
+    }
 
     internal void ConfigureDefaultOnSelectAction()
     {

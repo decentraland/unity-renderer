@@ -23,6 +23,7 @@ public class AvatarModel : BaseModel
     public Color hairColor;
     public Color eyeColor;
     public List<string> wearables = new List<string>();
+    public HashSet<string> forceRender = new HashSet<string>();
 
     public List<AvatarEmoteEntry> emotes = new List<AvatarEmoteEntry>();
 
@@ -73,6 +74,11 @@ public class AvatarModel : BaseModel
         if (!(wearables.Count == other.wearables.Count
               && wearables.All(other.wearables.Contains)
               && other.wearables.All(wearables.Contains)))
+            return false;
+
+        if (!(forceRender.Count == other.forceRender.Count
+              && forceRender.All(other.forceRender.Contains)
+              && other.forceRender.All(forceRender.Contains)))
             return false;
 
         //emotes are the same
