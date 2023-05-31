@@ -1,7 +1,7 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
+import { Avatar, generateLazyValidator, JSONSchema, WearableCategory } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
@@ -150,6 +150,7 @@ export type RendererSaveProfile = {
       a: number
     }
     wearables: string[]
+    forceRender?: string[]
     emotes: {
       slot: number
       urn: string
@@ -197,6 +198,7 @@ export const rendererSaveProfileSchemaV0: JSONSchema<RendererSaveProfile> = {
         hairColor: color3Schema,
         skinColor: color3Schema,
         wearables: { type: 'array', items: { type: 'string' } },
+        forceRender: { type: 'array', items: { type: 'string' }, nullable: true },
         emotes: { type: 'array', items: emoteSchema }
       }
     }
@@ -220,6 +222,7 @@ export const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
         hairColor: color3Schema,
         skinColor: color3Schema,
         wearables: { type: 'array', items: { type: 'string' } },
+        forceRender: { type: 'array', items: { type: 'string' }, nullable: true },
         emotes: { type: 'array', items: emoteSchema }
       }
     }
@@ -436,6 +439,7 @@ export class BrowserInterface {
           hair: { color: changes.avatar.hairColor },
           skin: { color: changes.avatar.skinColor },
           wearables: changes.avatar.wearables,
+          forceRender: (changes.avatar.forceRender ?? []).map((category) => category as WearableCategory),
           snapshots: {
             body: changes.body,
             face256: changes.face256
@@ -452,6 +456,7 @@ export class BrowserInterface {
           hair: { color: changes.avatar.hairColor },
           skin: { color: changes.avatar.skinColor },
           wearables: changes.avatar.wearables,
+          forceRender: (changes.avatar.forceRender ?? []).map((category) => category as WearableCategory),
           emotes: (changes.avatar.emotes ?? []).map((value, index) => ({ slot: index, urn: value as any as string })),
           snapshots: {
             body: changes.body,

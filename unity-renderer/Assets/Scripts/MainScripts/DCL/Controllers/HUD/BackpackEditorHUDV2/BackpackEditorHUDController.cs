@@ -221,7 +221,7 @@ namespace DCL.Backpack
                     model.skinColor = userProfile.avatar.skinColor;
                     model.hairColor = userProfile.avatar.hairColor;
                     model.eyesColor = userProfile.avatar.eyeColor;
-
+                    model.forceRender = new HashSet<string>(userProfile.avatar.forceRender);
                     model.wearables.Clear();
                     previewEquippedWearables.Clear();
 
@@ -243,9 +243,10 @@ namespace DCL.Backpack
                             }
                         }
 
-                        EquipWearable(wearable, EquipWearableSource.None, false, false);
+                        EquipWearable(wearable, EquipWearableSource.None, false, false, false);
                     }
 
+                    avatarSlotsHUDController.Recalculate(model.forceRender);
                     view.UpdateAvatarPreview(model.ToAvatarModel());
                 }
                 catch (OperationCanceledException) { }
@@ -395,7 +396,8 @@ namespace DCL.Backpack
         private void EquipWearable(string wearableId,
             EquipWearableSource source = EquipWearableSource.None,
             bool setAsDirty = true,
-            bool updateAvatarPreview = true)
+            bool updateAvatarPreview = true,
+            bool resetOverride = true)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -403,13 +405,14 @@ namespace DCL.Backpack
                 return;
             }
 
-            EquipWearable(wearable, source, setAsDirty, updateAvatarPreview);
+            EquipWearable(wearable, source, setAsDirty, updateAvatarPreview, resetOverride);
         }
 
         private void EquipWearable(WearableItem wearable,
             EquipWearableSource source = EquipWearableSource.None,
             bool setAsDirty = true,
-            bool updateAvatarPreview = true)
+            bool updateAvatarPreview = true,
+            bool resetOverride = true)
         {
             string wearableId = wearable.id;
 
@@ -432,7 +435,8 @@ namespace DCL.Backpack
                 model.wearables.Add(wearableId, wearable);
                 previewEquippedWearables.Add(wearableId);
 
-                ResetOverridesOfAffectedCategories(wearable, setAsDirty);
+                if (resetOverride)
+                    ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
                 avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.forceRender);
                 wearableGridController.Equip(wearableId);
