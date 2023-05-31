@@ -65,6 +65,8 @@ namespace DCL.Backpack
 
             backpackEmotesSectionController.OnNewEmoteAdded += OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed += OnEmotePreviewed;
+            backpackEmotesSectionController.OnEmoteEquipped += OnEmoteEquipped;
+            backpackEmotesSectionController.OnEmoteUnEquipped += OnEmoteUnEquipped;
 
             wearableGridController.OnWearableSelected += SelectWearable;
             wearableGridController.OnWearableEquipped += EquipWearableFromGrid;
@@ -92,6 +94,8 @@ namespace DCL.Backpack
 
             backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
+            backpackEmotesSectionController.OnEmoteEquipped -= OnEmoteEquipped;
+            backpackEmotesSectionController.OnEmoteUnEquipped -= OnEmoteUnEquipped;
             backpackEmotesSectionController.Dispose();
 
             wearableGridController.OnWearableSelected -= SelectWearable;
@@ -268,6 +272,12 @@ namespace DCL.Backpack
 
         private void OnEmotePreviewed(string emoteId) =>
             view.PlayPreviewEmote(emoteId);
+
+        private void OnEmoteEquipped(string emoteId) =>
+            avatarIsDirty = true;
+
+        private void OnEmoteUnEquipped(string emoteId) =>
+            avatarIsDirty = true;
 
         private void EquipBodyShape(WearableItem bodyShape, bool setAsDirty = true)
         {

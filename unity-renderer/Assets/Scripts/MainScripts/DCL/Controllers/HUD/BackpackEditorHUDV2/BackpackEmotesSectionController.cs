@@ -13,6 +13,8 @@ namespace DCL.Backpack
     {
         public event Action<string> OnNewEmoteAdded;
         public event Action<string> OnEmotePreviewed;
+        public event Action<string> OnEmoteEquipped;
+        public event Action<string> OnEmoteUnEquipped;
 
         private DataStore dataStore;
         private IUserProfileBridge userProfileBridge;
@@ -42,6 +44,8 @@ namespace DCL.Backpack
 
             dataStore.emotesCustomization.currentLoadedEmotes.OnAdded += NewEmoteAdded;
             emotesCustomizationComponentController.onEmotePreviewed += EmotePreviewed;
+            emotesCustomizationComponentController.onEmoteEquipped += EmoteEquipped;
+            emotesCustomizationComponentController.onEmoteUnequipped += EmoteUnEquipped;
         }
 
         public void Dispose()
@@ -51,6 +55,8 @@ namespace DCL.Backpack
 
             dataStore.emotesCustomization.currentLoadedEmotes.OnAdded -= NewEmoteAdded;
             emotesCustomizationComponentController.onEmotePreviewed -= EmotePreviewed;
+            emotesCustomizationComponentController.onEmoteEquipped -= EmoteEquipped;
+            emotesCustomizationComponentController.onEmoteUnequipped -= EmoteUnEquipped;
         }
 
         public void LoadEmotes()
@@ -89,5 +95,11 @@ namespace DCL.Backpack
 
         private void EmotePreviewed(string emoteId) =>
             OnEmotePreviewed?.Invoke(emoteId);
+
+        private void EmoteEquipped(string emoteId) =>
+            OnEmoteEquipped?.Invoke(emoteId);
+
+        private void EmoteUnEquipped(string emoteId) =>
+            OnEmoteUnEquipped?.Invoke(emoteId);
     }
 }
