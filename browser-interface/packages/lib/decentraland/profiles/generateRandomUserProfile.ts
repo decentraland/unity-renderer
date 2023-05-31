@@ -1,8 +1,28 @@
 import type { Avatar } from '@dcl/schemas'
 
-const bodyShapes = [
-  'urn:decentraland:off-chain:base-avatars:BaseFemale',
-  'urn:decentraland:off-chain:base-avatars:BaseMale'
+const bodyShapeWearables = [
+  {
+    bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseFemale',
+    wearables: [
+      'urn:decentraland:off-chain:base-avatars:f_blue_jacket',
+      'urn:decentraland:off-chain:base-avatars:f_capris',
+      'urn:decentraland:off-chain:base-avatars:ruby_blue_loafer',
+      'urn:decentraland:off-chain:base-avatars:pony_tail',
+      'urn:decentraland:off-chain:base-avatars:pearls_earring',
+      'urn:decentraland:off-chain:base-avatars:f_mouth_05'
+    ]
+  },
+  {
+    bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
+    wearables: [
+      'urn:decentraland:off-chain:base-avatars:m_sweater_02',
+      'urn:decentraland:off-chain:base-avatars:comfortablepants',
+      'urn:decentraland:off-chain:base-avatars:Espadrilles',
+      'urn:decentraland:off-chain:base-avatars:00_bald',
+      'urn:decentraland:off-chain:base-avatars:beard',
+      'urn:decentraland:off-chain:base-avatars:blue_bandana'
+    ]
+  }
 ]
 
 const skins = [
@@ -56,51 +76,22 @@ const eyes = [
   }
 ]
 
-const wearables = [
-  [
-    'urn:decentraland:off-chain:base-avatars:f_sweater',
-    'urn:decentraland:off-chain:base-avatars:f_jeans',
-    'urn:decentraland:off-chain:base-avatars:bun_shoes',
-    'urn:decentraland:off-chain:base-avatars:standard_hair',
-    'urn:decentraland:off-chain:base-avatars:f_eyes_00',
-    'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
-    'urn:decentraland:off-chain:base-avatars:f_mouth_00'
-  ],
-  [
-    'urn:decentraland:off-chain:base-avatars:f_sport_purple_tshirt',
-    'urn:decentraland:off-chain:base-avatars:f_roller_leggings',
-    'urn:decentraland:off-chain:base-avatars:sport_black_shoes',
-    'urn:decentraland:off-chain:base-avatars:hair_coolshortstyle',
-    'urn:decentraland:off-chain:base-avatars:f_mouth_08'
-  ],
-  [
-    'urn:decentraland:off-chain:base-avatars:turtle_neck_sweater',
-    'urn:decentraland:off-chain:base-avatars:kilt',
-    'urn:decentraland:off-chain:base-avatars:m_mountainshoes.glb',
-    'urn:decentraland:off-chain:base-avatars:keanu_hair',
-    'urn:decentraland:off-chain:base-avatars:full_beard'
-  ]
-]
-
 const snapshots = [
   {
     face256: `QmZbyGxDnZ4PaMVX7kpA2NuGTrmnpwTJ8heKKTSCk4GRJL`,
     body: `QmaQvcBWg57Eqf5E9R3Ts1ttPKKLhKueqdyhshaLS1tu2g`
-  },
-  {
-    body: 'bafkreifheg3u2lkq3dtxokid6nxtmqsd4elafoyx4hhemudosersmsdhlq',
-    face256: 'bafkreiayztsbgjwellug2s52j7grfhknxhl5ybvkqdxu2fs2iit62rwo2i'
   }
 ]
 
+function getRandomItem<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)]
+}
+
 export function generateRandomUserProfile(userId: string): Avatar {
-  // Randomly select a value for each attribute
-  const randomBodyShape = bodyShapes[Math.floor(Math.random() * bodyShapes.length)]
-  const randomSkin = skins[Math.floor(Math.random() * skins.length)]
-  const randomHair = hairs[Math.floor(Math.random() * hairs.length)]
-  const randomEyes = eyes[Math.floor(Math.random() * eyes.length)]
-  const randomWearables = wearables[Math.floor(Math.random() * wearables.length)]
-  const randomSnapshots = snapshots[Math.floor(Math.random() * snapshots.length)]
+  const randomSkin = getRandomItem(skins)
+  const randomHair = getRandomItem(hairs)
+  const randomEyes = getRandomItem(eyes)
+  const randomBodyShapeWearables = getRandomItem(bodyShapeWearables)
 
   return {
     userId,
@@ -112,12 +103,12 @@ export function generateRandomUserProfile(userId: string): Avatar {
     name: 'Guest',
     description: '',
     avatar: {
-      bodyShape: randomBodyShape,
+      bodyShape: randomBodyShapeWearables.bodyShape,
       skin: randomSkin,
       hair: randomHair,
       eyes: randomEyes,
-      wearables: randomWearables,
-      snapshots: randomSnapshots
+      wearables: randomBodyShapeWearables.wearables,
+      snapshots: snapshots[0]
     }
   }
 }
