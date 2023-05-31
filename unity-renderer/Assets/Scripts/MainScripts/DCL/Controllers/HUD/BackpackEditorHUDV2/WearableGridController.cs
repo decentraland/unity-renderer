@@ -394,6 +394,7 @@ namespace DCL.Backpack
         {
             categoryFilter = null;
             collectionTypeMask = NftCollectionType.All;
+            thirdPartyCollectionIdsFilter?.Clear();
             nameFilter = newText;
             filtersCancellationToken = filtersCancellationToken.SafeRestart();
             ThrottleLoadWearablesWithCurrentFilters(filtersCancellationToken.Token).Forget();
