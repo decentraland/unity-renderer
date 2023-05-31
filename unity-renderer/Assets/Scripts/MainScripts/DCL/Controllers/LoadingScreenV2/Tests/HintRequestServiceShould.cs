@@ -1,11 +1,9 @@
 using Cysharp.Threading.Tasks;
-using DCL.Helpers;
 using DCL.Models;
 using DCL.Providers;
 using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -14,8 +12,6 @@ using UnityEngine;
 
 namespace DCL.Controllers.LoadingScreenV2.Tests
 {
-    [Category("EditModeCI")]
-    [Explicit(TestUtils.EXPLICIT_INSTANT_STEPS)]
     public class HintRequestServiceShould
     {
          private HintRequestService hintRequestService;
