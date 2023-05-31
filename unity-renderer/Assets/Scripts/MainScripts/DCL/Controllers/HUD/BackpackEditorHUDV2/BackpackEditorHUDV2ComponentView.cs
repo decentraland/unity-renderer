@@ -207,7 +207,6 @@ namespace DCL.Backpack
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
                 wearablesSection.SetActive(isSelected);
-                backpackPreviewPanel.AnchorPreviewPanel(false);
 
                 if (isSelected)
                     ResetPreviewPanel();
@@ -215,7 +214,6 @@ namespace DCL.Backpack
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
                 emotesSection.SetActive(isSelected);
-                backpackPreviewPanel.AnchorPreviewPanel(true);
 
                 if (isSelected)
                     ResetPreviewPanel();

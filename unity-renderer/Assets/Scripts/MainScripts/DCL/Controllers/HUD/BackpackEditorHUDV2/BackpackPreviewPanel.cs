@@ -137,15 +137,6 @@ namespace DCL.Backpack
         public async UniTask TryUpdatePreviewModelAsync(AvatarModel avatarModelToUpdate, CancellationToken ct) =>
             await characterPreviewController.TryUpdateModelAsync(avatarModelToUpdate, ct);
 
-        public void AnchorPreviewPanel(bool anchorRight)
-        {
-            avatarPreviewPanel.pivot = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.pivot.y);
-            avatarPreviewPanel.anchorMin = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.anchorMin.y);
-            avatarPreviewPanel.anchorMax = new Vector2(anchorRight ? 1 : 0, avatarPreviewPanel.anchorMax.y);
-            avatarPreviewPanel.offsetMin = new Vector2(anchorRight ? -avatarPreviewPanel.rect.width : 0, avatarPreviewPanel.offsetMin.y);
-            avatarPreviewPanel.offsetMax = new Vector2(anchorRight ? 0 : avatarPreviewPanel.rect.width, avatarPreviewPanel.offsetMax.y);
-        }
-
         public void SetLoadingActive(bool isActive) =>
             avatarPreviewLoadingSpinner.SetActive(isActive);
 

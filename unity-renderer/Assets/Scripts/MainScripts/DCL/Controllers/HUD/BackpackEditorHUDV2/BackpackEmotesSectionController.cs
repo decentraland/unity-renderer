@@ -35,7 +35,8 @@ namespace DCL.Backpack
                 dataStore.emotes,
                 dataStore.exploreV2,
                 dataStore.HUDs,
-                emotesSectionTransform);
+                emotesSectionTransform,
+                "EmotesCustomization/EmotesCustomizationSectionV2");
 
             emotesCustomizationComponentController.SetEquippedBodyShape(userProfileBridge.GetOwn().avatar.bodyShape);
 
