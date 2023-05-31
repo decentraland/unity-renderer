@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("CameraTests")]
+[assembly: InternalsVisibleTo("DCL.PlaymodeTests")]
