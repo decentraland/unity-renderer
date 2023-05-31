@@ -42,6 +42,7 @@ namespace DCL.Backpack
         public event Action<string> OnWearableSelected;
         public event Action<string, EquipWearableSource> OnWearableEquipped;
         public event Action<string, UnequipWearableSource> OnWearableUnequipped;
+        public event Action OnCategoryFilterRemoved;
 
         public WearableGridController(IWearableGridView view,
             IUserProfileBridge userProfileBridge,
@@ -198,7 +199,10 @@ namespace DCL.Backpack
             view.SetWearableBreadcrumb(wearableBreadcrumbModel);
 
             if (string.IsNullOrEmpty(categoryFilter))
+            {
                 avatarSlotsHUDController.ClearSlotSelection();
+                OnCategoryFilterRemoved?.Invoke();
+            }
             else
                 avatarSlotsHUDController.SelectSlot(categoryFilter, false);
 

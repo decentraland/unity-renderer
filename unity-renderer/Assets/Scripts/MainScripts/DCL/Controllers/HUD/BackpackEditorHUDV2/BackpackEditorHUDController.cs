@@ -69,6 +69,7 @@ namespace DCL.Backpack
             wearableGridController.OnWearableSelected += SelectWearable;
             wearableGridController.OnWearableEquipped += EquipWearableFromGrid;
             wearableGridController.OnWearableUnequipped += UnEquipWearableFromGrid;
+            wearableGridController.OnCategoryFilterRemoved += OnCategoryFilterRemoved;
 
             avatarSlotsHUDController.OnToggleSlot += ToggleSlot;
             avatarSlotsHUDController.OnUnequipFromSlot += UnEquipWearableFromSlot;
@@ -96,6 +97,7 @@ namespace DCL.Backpack
             wearableGridController.OnWearableSelected -= SelectWearable;
             wearableGridController.OnWearableEquipped -= EquipWearableFromGrid;
             wearableGridController.OnWearableUnequipped -= UnEquipWearableFromGrid;
+            wearableGridController.OnCategoryFilterRemoved -= OnCategoryFilterRemoved;
             wearableGridController.Dispose();
 
             avatarSlotsHUDController.OnToggleSlot -= ToggleSlot;
@@ -351,6 +353,9 @@ namespace DCL.Backpack
             AudioScriptableObjects.unequip.Play(true);
             UnEquipWearable(wearableId, source);
         }
+
+        private void OnCategoryFilterRemoved() =>
+            view.SetColorPickerVisibility(false);
 
         private void UnEquipWearableFromSlot(string wearableId, UnequipWearableSource source)
         {
