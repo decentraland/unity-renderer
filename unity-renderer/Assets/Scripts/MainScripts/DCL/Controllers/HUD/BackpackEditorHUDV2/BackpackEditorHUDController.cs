@@ -110,14 +110,17 @@ namespace DCL.Backpack
             view.Dispose();
         }
 
-        private void UpdateOverrideHides(string category, bool toggleOn)
+        private void UpdateOverrideHides(string category, bool toggleOn) =>
+            UpdateOverrideHides(category, toggleOn, true);
+
+        private void UpdateOverrideHides(string category, bool toggleOn, bool setAsDirty)
         {
             if (toggleOn)
                 model.forceRender.Add(category);
             else
                 model.forceRender.Remove(category);
 
-            avatarIsDirty = true;
+            avatarIsDirty = setAsDirty;
             avatarSlotsHUDController.Recalculate(model.forceRender);
             UpdateAvatarPreview();
         }
@@ -393,7 +396,7 @@ namespace DCL.Backpack
                 model.wearables.Add(wearableId, wearable);
                 previewEquippedWearables.Add(wearableId);
 
-                ResetOverridesOfAffectedCategories(wearable);
+                ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
                 avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.forceRender);
                 wearableGridController.Equip(wearableId);
@@ -445,7 +448,7 @@ namespace DCL.Backpack
             if (source != UnequipWearableSource.None)
                 backpackAnalyticsController.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
 
-            ResetOverridesOfAffectedCategories(wearable);
+            ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
             avatarSlotsHUDController.UnEquip(wearable.data.category, model.forceRender);
             model.wearables.Remove(wearableId);
@@ -458,11 +461,11 @@ namespace DCL.Backpack
             view.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
-        private void ResetOverridesOfAffectedCategories(WearableItem wearable)
+        private void ResetOverridesOfAffectedCategories(WearableItem wearable, bool setAsDirty = true)
         {
             if (wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
                 foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
-                    UpdateOverrideHides(s, false);
+                    UpdateOverrideHides(s, false, setAsDirty);
         }
 
         private void ToggleSlot(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
