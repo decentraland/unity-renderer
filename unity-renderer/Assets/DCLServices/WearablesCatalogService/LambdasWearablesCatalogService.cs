@@ -73,7 +73,7 @@ namespace DCLServices.WearablesCatalogService
             return response.data;
         }
 
-        private const string USER_ID_DEBUG = "0x67064c9213284fe445c57f95bd13ef35210cbf14";
+        private const string USER_ID_DEBUG = "0x7b45b843f7c2b5af04f555675fe162e69d33ab2e";
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
             string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
