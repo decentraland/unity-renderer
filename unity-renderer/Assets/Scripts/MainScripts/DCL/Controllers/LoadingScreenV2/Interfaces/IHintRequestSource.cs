@@ -5,11 +5,11 @@ using System.Threading;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
-    public interface IHintRequestSource: IDisposable
+    public interface IHintRequestSource : IDisposable
     {
-        List<Hint> loading_hints { get;}
-        public string source { get;}
-        public SourceTag sourceTag { get;}
+        List<Hint> LoadingHints { get; }
+        public string Source { get; }
+        public SourceTag SourceTag { get; }
 
         UniTask<List<Hint>> GetHintsAsync(CancellationToken ctx);
     }

@@ -8,9 +8,9 @@ using UnityEngine.Networking;
 namespace DCL.Controllers.LoadingScreenV2
 {
     /// <summary>
-    /// The HintTextureRequestHandler class is responsible for downloading textures for loading screen hints.
+    ///     The HintTextureRequestHandler class is responsible for downloading textures for loading screen hints.
     /// </summary>
-    public class HintTextureRequestHandler: IHintTextureRequestHandler
+    public class HintTextureRequestHandler : IHintTextureRequestHandler
     {
         public async UniTask<Texture2D> DownloadTexture(string url, CancellationToken ctx, int timeout = 2)
         {
@@ -23,11 +23,12 @@ namespace DCL.Controllers.LoadingScreenV2
 
                 www.timeout = timeout;
 
-                var operation = www.SendWebRequest();
+                UnityWebRequestAsyncOperation operation = www.SendWebRequest();
 
                 while (!operation.isDone)
                 {
                     await UniTask.Yield();
+
                     if (ctx.IsCancellationRequested)
                     {
                         Debug.LogWarning("Hint DownloadTexture interrupted");
@@ -36,31 +37,24 @@ namespace DCL.Controllers.LoadingScreenV2
                     }
                 }
 
-                if (www.result != UnityWebRequest.Result.Success)
-                {
-                    Debug.LogWarning("Hint DownloadTexture Error: " + www.error);
-                }
+                if (www.result != UnityWebRequest.Result.Success) { Debug.LogWarning("Hint DownloadTexture Error: " + www.error); }
                 else
                 {
                     tex = new Texture2D(2, 2, GraphicsFormatUtility.GetGraphicsFormat(TextureFormat.RGBA32, false), TextureCreationFlags.None)
                     {
                         wrapMode = TextureWrapMode.Clamp,
                     };
+
                     tex.LoadImage(www.downloadHandler.data);
                     tex.Apply(false, false);
                 }
             }
-            catch (Exception ex)
-            {
-                Debug.LogWarning("DownloadTexture Exception: " + ex.Message);
-            }
+            catch (Exception ex) { Debug.LogWarning("DownloadTexture Exception: " + ex.Message); }
             finally
             {
-                if (www != null)
-                {
-                    www.Dispose();
-                }
+                if (www != null) { www.Dispose(); }
             }
+
             return tex;
         }
     }

@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCL.Models;
 using DCL.Providers;
 using System;
 using System.Collections.Generic;
@@ -9,50 +8,25 @@ using UnityEngine;
 namespace DCL.Controllers.LoadingScreenV2
 {
     /// <summary>
-    /// The LocalHintRequestSource class manages the retrieval of loading screen hints from a local JSON source.
+    ///     The LocalHintRequestSource class manages the retrieval of loading screen hints from a local JSON source.
     /// </summary>
     public class LocalHintRequestSource : IHintRequestSource
     {
         private const string LOCAL_HINTS_JSON_SOURCE = "LoadingScreenV2LocalHintsJsonSource";
 
-        private IAddressableResourceProvider addressablesProvider;
-        public string source { get; }
-        public SourceTag sourceTag { get; }
-        public List<Hint> loading_hints { get; private set; }
+        private readonly IAddressableResourceProvider addressablesProvider;
 
         public LocalHintRequestSource(string sourceAddressableSceneJson, SourceTag sourceTag, IAddressableResourceProvider addressablesProvider)
         {
-            this.source = sourceAddressableSceneJson;
-            this.sourceTag = sourceTag;
-            this.loading_hints = new List<Hint>();
+            Source = sourceAddressableSceneJson;
+            this.SourceTag = sourceTag;
+            LoadingHints = new List<Hint>();
             this.addressablesProvider = addressablesProvider;
         }
 
-        internal async UniTask<List<Hint>> LoadHintsFromAddressable(string addressableSourceKey, CancellationToken ctx)
-        {
-            try
-            {
-                if (ctx.IsCancellationRequested)
-                    return loading_hints;
-
-                var containerSceneAddressable = await addressablesProvider.GetAddressable<TextAsset>(addressableSourceKey, ctx);
-
-                if (containerSceneAddressable == null)
-                {
-                    throw new Exception("Failed to load the addressable asset");
-                }
-
-                loading_hints = HintSceneParserUtil.ParseJsonToHints(containerSceneAddressable.text);
-                return loading_hints;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"Failed to load hints from addressable: {ex.Message}");
-
-                return loading_hints;
-            }
-        }
-
+        public string Source { get; }
+        public SourceTag SourceTag { get; }
+        public List<Hint> LoadingHints { get; private set; }
 
         public UniTask<List<Hint>> GetHintsAsync(CancellationToken ctx)
         {
@@ -61,13 +35,34 @@ namespace DCL.Controllers.LoadingScreenV2
                 return UniTask.FromResult(new List<Hint>());
 
             // Otherwise, return hints when they are loaded from the addressable
-            return LoadHintsFromAddressable(source, ctx);
+            return LoadHintsFromAddressable(Source, ctx);
         }
-
 
         public void Dispose()
         {
-            loading_hints.Clear();
+            LoadingHints.Clear();
+        }
+
+        internal async UniTask<List<Hint>> LoadHintsFromAddressable(string addressableSourceKey, CancellationToken ctx)
+        {
+            try
+            {
+                if (ctx.IsCancellationRequested)
+                    return LoadingHints;
+
+                TextAsset containerSceneAddressable = await addressablesProvider.GetAddressable<TextAsset>(addressableSourceKey, ctx);
+
+                if (containerSceneAddressable == null) { throw new Exception("Failed to load the addressable asset"); }
+
+                LoadingHints = HintSceneParserUtil.ParseJsonToHints(containerSceneAddressable.text);
+                return LoadingHints;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"Failed to load hints from addressable: {ex.Message}");
+
+                return LoadingHints;
+            }
         }
     }
 }
