@@ -1,7 +1,6 @@
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
-using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -9,9 +8,7 @@ using ECSSystems.ECSEngineInfoSystem;
 using NSubstitute;
 using NUnit.Framework;
 using RPC.Context;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.TestTools;
 
 namespace Tests
 {
