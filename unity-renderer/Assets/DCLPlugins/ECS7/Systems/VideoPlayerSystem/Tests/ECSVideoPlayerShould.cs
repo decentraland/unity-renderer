@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Models;
 using DCL.Shaders;
 using ECSSystems.VideoPlayerSystem;
 using NSubstitute;
@@ -68,6 +69,10 @@ namespace Tests
                 },
                 internalEcsComponents.EngineInfo,
                 internalEcsComponents.GltfContainerLoadingStateComponent);
+
+            // This is normally initialized by SceneStateHandler when a scene is loaded
+            internalEcsComponents.EngineInfo.PutFor(scene0, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
+            internalEcsComponents.EngineInfo.PutFor(scene1, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
         }
 
         [TearDown]

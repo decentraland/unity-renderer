@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
-using DCL.ECS7;
 using DCL.ECSRuntime;
 using DCLServices.MapRendererV2;
 using Decentraland.Common;
@@ -60,6 +59,7 @@ namespace Tests
             context.crdt.WorldState = Environment.i.world.state;
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
             context.crdt.GetSceneTick = (int x) => 1;
+            context.crdt.IncreaseSceneTick = (int x) => { };
             context.crdt.IsSceneGltfLoadingFinished = (int x) => true;
         }
 
@@ -188,7 +188,6 @@ namespace Tests
                 ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
                 ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
                 Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
-
                 context.crdt.CrdtExecutors = crdtExecutors;
 
                 CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager,
