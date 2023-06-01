@@ -206,18 +206,19 @@ namespace DCL
                     playerName.Show(true);
                 }
 
-                avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
+                var forceRender = new HashSet<string>(userProfileBridge.Get(model.id)?.avatar.forceRender ?? new HashSet<string>());
+
+                var avatarSettings = new AvatarSettings
                 {
                     playerName = model.name,
                     bodyshapeId = model.bodyShape,
                     eyesColor = model.eyeColor,
                     skinColor = model.skinColor,
                     hairColor = model.hairColor,
-                    forceRender = new HashSet<string>(userProfileBridge.Get(model.id).avatar.forceRender ?? new HashSet<string>()),
-                }, loadingCts.Token);
+                    forceRender = forceRender,
+                };
 
-                // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
-                yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);
+                yield return avatar.Load(wearableItems, emotes.ToList(), avatarSettings, loadingCts.Token).ToCoroutine(Debug.LogException);
             }
 
             avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
@@ -246,7 +247,7 @@ namespace DCL
                 entity, player
             );
 
-            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, player.avatar);
+            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, player?.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
