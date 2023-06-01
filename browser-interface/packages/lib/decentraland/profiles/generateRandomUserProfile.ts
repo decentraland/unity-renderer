@@ -18,7 +18,7 @@ const bodyShapeWearables = [
       'urn:decentraland:off-chain:base-avatars:m_sweater_02',
       'urn:decentraland:off-chain:base-avatars:comfortablepants',
       'urn:decentraland:off-chain:base-avatars:Espadrilles',
-      'urn:decentraland:off-chain:base-avatars:00_bald',
+      'urn:decentraland:off-chain:base-avatars:cool_hair',
       'urn:decentraland:off-chain:base-avatars:beard',
       'urn:decentraland:off-chain:base-avatars:blue_bandana'
     ]
