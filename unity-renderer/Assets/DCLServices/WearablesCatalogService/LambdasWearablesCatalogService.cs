@@ -47,13 +47,11 @@ namespace DCLServices.WearablesCatalogService
             this.lambdasService = lambdasService;
             this.serviceProviders = serviceProviders;
             WearablesCatalog = wearablesCatalog;
-        }
-
-        public void Initialize()
-        {
-            serviceCts = serviceCts.SafeRestart();
             catalyst = serviceProviders.catalyst;
         }
+
+        public void Initialize() =>
+            serviceCts = serviceCts.SafeRestart();
 
         public void Dispose()
         {
@@ -516,6 +514,12 @@ namespace DCLServices.WearablesCatalogService
 
         private bool IsInvalidWearable(WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto metadata)
         {
+            if (metadata == null)
+            {
+                Debug.LogError("Wearable is invalid: metadata is null");
+                return true;
+            }
+
             if (string.IsNullOrEmpty(metadata.id))
             {
                 Debug.LogError("Wearable is invalid: id is null");
