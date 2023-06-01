@@ -29,22 +29,22 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             parentGameObject = new GameObject();
             gameObject.transform.SetParent(parentGameObject.transform);
-            
+
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
             dataStoreEcs7 = new DataStore_ECS7();
             componentHandler = new AnimatorComponentHandler(dataStoreEcs7);
 
-            
+
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
-            
+
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.sceneNumber = 1;
             scene.sceneData.Configure().Returns(sceneData);
             ContentProvider contentProvider = new ContentProvider();
             scene.Configure().contentProvider.Returns(contentProvider);
-            
+
             componentHandler.OnComponentCreated(scene, entity);
         }
 
@@ -68,7 +68,7 @@ namespace DCL.ECSComponents.Test
             // Assert
             Assert.IsNotNull(componentHandler.animComponent);
         }
-        
+
         [Test]
         public void ReactToShapeReadyCorrectly()
         {
@@ -78,20 +78,20 @@ namespace DCL.ECSComponents.Test
             componentHandler.animComponent = null;
             componentHandler.isShapeLoaded = false;
             componentHandler.OnComponentModelUpdated(scene,entity,model);
-            
+
             // Act
             dataStoreEcs7.AddShapeReady(entity.entityId,entity.gameObject);
 
             // Assert
             Assert.IsNotNull(componentHandler.animComponent);
         }
-        
+
         [Test]
         public void InitializateCorrectly()
         {
             // Arrange
             entity.gameObject.AddComponent<Animation>();
-            
+
             // Act
             componentHandler.Initialize(entity);
 
@@ -105,7 +105,7 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBAnimator model = CreateModel();
             byte[] byteArray;
-            
+
             // Act
             using(var memoryStream = new MemoryStream())
             {
@@ -116,7 +116,7 @@ namespace DCL.ECSComponents.Test
             // Assert
             Assert.IsNotNull(byteArray);
         }
-        
+
         [Test]
         public void SerializeAndDeserialzeCorrectly()
         {
@@ -125,7 +125,7 @@ namespace DCL.ECSComponents.Test
 
             // Act
             var newModel = SerializaAndDeserialize(model);
-            
+
             // Assert
             Assert.AreEqual(model.States, newModel.States);
         }
@@ -146,15 +146,15 @@ namespace DCL.ECSComponents.Test
         {
             PBAnimator model = new PBAnimator();
             PBAnimationState animationState = new PBAnimationState();
-            animationState.Clip = "animation:0";
+            animationState.Clip = "Clip_0";
             animationState.Name = "Test";
             animationState.Loop = true;
             animationState.Playing = true;
             animationState.Speed = 1f;
             animationState.Weight = 1f;
-            
+
             model.States.Add(animationState);
-            
+
             return model;
         }
     }
