@@ -148,7 +148,10 @@ namespace DCL.Backpack
                     view.Show();
 
                     if (dataStore.common.isSignUpFlow.Get())
+                    {
                         view.ShowContinueSignup();
+                        avatarSlotsHUDController.SelectSlot(WearableLiterals.Categories.BODY_SHAPE);
+                    }
                     else
                         view.HideContinueSignup();
                 }
