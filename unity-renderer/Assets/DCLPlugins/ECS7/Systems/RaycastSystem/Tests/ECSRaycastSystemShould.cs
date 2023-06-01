@@ -83,6 +83,7 @@ namespace Tests
         protected void TearDown()
         {
             testUtils.Dispose();
+            sceneStateHandler.Dispose();
         }
 
         [Test]
