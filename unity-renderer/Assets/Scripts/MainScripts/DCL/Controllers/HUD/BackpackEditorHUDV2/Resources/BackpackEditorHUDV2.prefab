@@ -2096,6 +2096,7 @@ GameObject:
   - component: {fileID: 1552155459228813813}
   - component: {fileID: 2472506505974493456}
   - component: {fileID: 9140011571792178647}
+  - component: {fileID: 2983975350221477343}
   m_Layer: 5
   m_Name: ContinueButton
   m_TagString: Untagged
@@ -2206,6 +2207,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2983975350221477343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5748387431688135276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &5977573212899500876
 GameObject:
   m_ObjectHideFlags: 0
@@ -4641,7 +4658,7 @@ PrefabInstance:
     - target: {fileID: 3302785465968920600, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3516386619451137417, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
