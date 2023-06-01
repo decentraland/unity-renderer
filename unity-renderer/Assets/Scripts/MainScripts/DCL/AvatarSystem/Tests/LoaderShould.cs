@@ -159,9 +159,9 @@ namespace Test.AvatarSystem
             WearableItem wearable2 = new WearableItem { id = "Item2", data = new WearableItem.Data { category = WearableLiterals.Categories.FEET } };
             Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>()
             {
-                { wearable0.data.category, GetMockedWearableLoader(wearable0, IWearableLoader.Status.Succeeded) },
+                { wearable0.data.category, GetMockedWearableLoader(wearable0, IWearableLoader.Status.Failed) },
                 { wearable1.data.category, GetMockedWearableLoader(wearable1, IWearableLoader.Status.Succeeded) },
-                { wearable2.data.category, GetMockedWearableLoader(wearable2, IWearableLoader.Status.Failed) },
+                { wearable2.data.category, GetMockedWearableLoader(wearable2, IWearableLoader.Status.Succeeded) },
             };
 
             //Act
@@ -175,9 +175,9 @@ namespace Test.AvatarSystem
         public void ComposeStatusWithRequiredLoadersFailed()
         {
             //Arrange
-            WearableItem wearable0 = new WearableItem { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.UPPER_BODY } };
-            WearableItem wearable1 = new WearableItem { id = "Item1", data = new WearableItem.Data { category = WearableLiterals.Categories.LOWER_BODY } };
-            WearableItem wearable2 = new WearableItem { id = "Item2", data = new WearableItem.Data { category = WearableLiterals.Categories.FEET } };
+            WearableItem wearable0 = new WearableItem { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } };
+            WearableItem wearable1 = new WearableItem { id = "Item1", data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } };
+            WearableItem wearable2 = new WearableItem { id = "Item2", data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } };
             Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>()
             {
                 { wearable0.data.category, GetMockedWearableLoader(wearable0, IWearableLoader.Status.Failed) },

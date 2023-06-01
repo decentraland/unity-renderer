@@ -239,6 +239,9 @@ namespace DCL
                 }
             }
 
+            if (DataStore.i.HUDs.chatInputVisible.Get())
+                return;
+
             if (charCamera == null)
             {
                 RetrieveCamera();

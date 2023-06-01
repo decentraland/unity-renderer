@@ -97,6 +97,13 @@ public interface IExploreV2MenuComponentView : IDisposable
     void SetSectionActive(ExploreSection section, bool isActive);
 
     /// <summary>
+    /// Shows/Hides the new tag for a section.
+    /// </summary>
+    /// <param name="section">Section to apply the new tag.</param>
+    /// <param name="isNew">True for show the new tag.</param>
+    void SetSectionAsNew(ExploreSection section, bool isNew);
+
+    /// <summary>
     /// Check if a section is activated or not.
     /// </summary>
     /// <param name="section">Section to check.</param>
