@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using DCL;
 using DCL.Components;
@@ -11,7 +10,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityGLTF;
 using Environment = DCL.Environment;
 using WaitUntil = UnityEngine.WaitUntil;
 
@@ -219,7 +217,7 @@ namespace Tests
             TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(shapeModel));
             yield return null;
 
-            // 4. Check the same colliders were kept 
+            // 4. Check the same colliders were kept
             Assert.IsTrue(pointerEventColliders == onPointerDownComponent.pointerEventHandler.eventColliders.colliders);
         }
 
@@ -257,7 +255,7 @@ namespace Tests
             TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(shapeModel));
             yield return null;
 
-            // 4. Check the same colliders were kept 
+            // 4. Check the same colliders were kept
             Assert.IsTrue(pointerEventColliders == onHoverEnterComponent.pointerEventColliders.colliders);
         }
 

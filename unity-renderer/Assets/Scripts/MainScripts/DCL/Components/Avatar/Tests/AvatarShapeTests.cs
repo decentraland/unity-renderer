@@ -21,9 +21,17 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
+        }
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            ServiceLocator serviceLocator = base.InitializeServiceLocator();
             wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            serviceLocator.Register<IWearablesCatalogService>(() => wearablesCatalogService);
+            return serviceLocator;
         }
 
         protected override IEnumerator TearDown()
@@ -45,7 +53,7 @@ namespace Tests
                 for (int i1 = 0; i1 < renderer.sharedMaterials.Length; i1++)
                 {
                     Material material = renderer.sharedMaterials[i1];
-                    Assert.IsTrue(!material.shader.name.Contains("Lit"), $"Material must not be LWRP Lit. found {material.shader.name} instead!");
+                    Assert.IsTrue(material.shader.name.Contains("DCL"), $"Material must be from DCL. found {material.shader.name} instead!");
                 }
             }
         }
@@ -94,8 +102,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit("Test too slow")]
         public IEnumerator InterpolatePosition()
         {
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortitus", "TestAvatar.json");
@@ -118,8 +124,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit("Test too slow")]
         public IEnumerator MaterialsSetCorrectly()
         {
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Joan Darteis", "TestAvatar.json");
@@ -129,8 +133,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit("Test too slow")]
         public IEnumerator WhenTwoAvatarsLoadAtTheSameTimeTheyHaveProperMaterials()
         {
             //NOTE(Brian): Avatars must be equal to share their meshes.

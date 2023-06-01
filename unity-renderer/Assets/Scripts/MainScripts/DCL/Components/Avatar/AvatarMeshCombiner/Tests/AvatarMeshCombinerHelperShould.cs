@@ -13,9 +13,9 @@ public class AvatarMeshCombinerHelperShould
 {
     private static string BASE_MALE_PATH = TestAssetsUtils.GetPath() + "/Avatar/Assets/BaseMale.glb";
 
-    private AssetPromiseKeeper_GLTF keeper;
+    private AssetPromiseKeeper_GLTFast_Instance keeper;
     private WebRequestController webRequestController;
-    private AssetPromise_GLTF promise;
+    private AssetPromise_GLTFast_Instance promise;
     private SkinnedMeshRenderer bonesContainer;
     private SkinnedMeshRenderer[] renderersToCombine;
     private UnityEngine.Material materialAsset;
@@ -23,10 +23,12 @@ public class AvatarMeshCombinerHelperShould
     [UnitySetUp]
     public IEnumerator SetUp()
     {
-        keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.enabled = false;
+        var serviceLocator = ServiceLocatorFactory.CreateDefault();
+        Environment.Setup(serviceLocator);
+
+        keeper = new AssetPromiseKeeper_GLTFast_Instance();
         webRequestController = WebRequestController.Create();
-        promise = new AssetPromise_GLTF(BASE_MALE_PATH, webRequestController);
+        promise = new AssetPromise_GLTFast_Instance("", BASE_MALE_PATH, webRequestController);
 
         yield return keeper.Keep(promise);
 
@@ -42,6 +44,7 @@ public class AvatarMeshCombinerHelperShould
         webRequestController.Dispose();
         Object.Destroy(materialAsset);
         PoolManager.i.Dispose();
+        Environment.Dispose();
         yield break;
     }
 
@@ -147,7 +150,7 @@ public class AvatarMeshCombinerHelperShould
         // Assert
         Assert.That(success, Is.True);
         Assert.That(helper.renderer.sharedMesh != null, Is.True);
-        Assert.That(helper.renderer.sharedMesh.vertexCount, Is.EqualTo(1542));
+        Assert.That(helper.renderer.sharedMesh.vertexCount, Is.EqualTo(1220));
 
         helper.Dispose();
 
