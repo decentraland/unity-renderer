@@ -56,7 +56,13 @@
         "GUID:fd239a454d9a4039b164f90867ea3216",
         "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",
         "GUID:37d2c04574c1d480d8c817e2a7c578e7",
-        "GUID:3c7b57a14671040bd8c549056adc04f5"
+        "GUID:3c7b57a14671040bd8c549056adc04f5",
+        "GUID:75786085fa5b640a7bbd1a630221ed4c",
+        "GUID:ac62e852826a4b36aeb22931dad73edb",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:c080767192e848758fb2598ac09533bd",
+        "GUID:46951180f4d84b25a1619640aa317e5b",
+        "GUID:fb529e4714eec4e4da9a3ff3e4da8eee"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -65,7 +71,8 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "NSubstitute.dll",
-        "Newtonsoft.Json.dll"
+        "Newtonsoft.Json.dll",
+        "Google.Protobuf.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
