@@ -114,7 +114,7 @@ namespace DCLServices.WearablesCatalogService
                     queryParams.Add(("thirdPartyCollectionId", collectionId));
 
             await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
-            string explorerUrl = catalyst.lambdasUrl.Replace("/lambdas/", "/explorer/");
+            string explorerUrl = catalyst.lambdasUrl.Replace("/lambdas", "/explorer");
 
             (WearableWithEntityResponseDto response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(
                 $"{explorerUrl}/:userId/wearables",
