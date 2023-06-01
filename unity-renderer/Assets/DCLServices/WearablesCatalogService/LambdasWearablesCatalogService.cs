@@ -73,8 +73,6 @@ namespace DCLServices.WearablesCatalogService
             return response.data;
         }
 
-        private const string USER_ID_DEBUG = "0x7b45b843f7c2b5af04f555675fe162e69d33ab2e";
-
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(
             string userId, int pageNumber, int pageSize, CancellationToken cancellationToken, string category = null,
             NftRarity rarity = NftRarity.None,
@@ -82,7 +80,6 @@ namespace DCLServices.WearablesCatalogService
             ICollection<string> thirdPartyCollectionIds = null,
             string name = null, (NftOrderByOperation type, bool directionAscendent)? orderBy = null)
         {
-            userId = USER_ID_DEBUG;
             var queryParams = new List<(string name, string value)>
             {
                 ("pageNum", pageNumber.ToString()),
@@ -146,9 +143,7 @@ namespace DCLServices.WearablesCatalogService
 
             if (!string.IsNullOrEmpty(debugUserId))
                 userId = debugUserId;
-
 #endif
-            userId = USER_ID_DEBUG;
 
             var createNewPointer = false;
 
@@ -200,8 +195,6 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages,
             CancellationToken ct)
         {
-            userId = USER_ID_DEBUG;
-
             var createNewPointer = false;
 
             if (!thirdPartyCollectionPagePointers.TryGetValue((userId, collectionId, pageSize), out var pagePointer)) { createNewPointer = true; }

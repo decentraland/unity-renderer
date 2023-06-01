@@ -10,11 +10,10 @@ namespace MainScripts.DCL.AssetsEmbedment.Editor
 {
     public class TextureEmbedder : AssetEmbedder
     {
-        internal static string texturesPath => Path.Combine(Application.dataPath, EmbeddedTextureResourcesPath.VALUE).Replace('\\', '/');
+        internal static string texturesPath => Path.Combine(Application.dataPath, "Resources", EmbeddedTextureResourcesPath.VALUE).Replace('\\', '/');
 
         public static async UniTask EmbedAsync(Dictionary<string, Texture2D> loadedData, string subPath)
         {
-            Debug.Log($"VV:: Embeding textures to {texturesPath}");
             var targetPath = string.IsNullOrEmpty(subPath) ? texturesPath : Path.Combine(texturesPath, subPath);
             ResetTargetPath(targetPath);
 
