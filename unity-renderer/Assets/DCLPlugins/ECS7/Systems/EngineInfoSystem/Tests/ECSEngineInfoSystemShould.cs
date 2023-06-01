@@ -31,11 +31,7 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-
             componentWriter = Substitute.For<IECSComponentWriter>();
-            // var writeComponentSubscriber = Substitute.For<IDummyEventSubscriber<int, long, int, byte[], int, ECSComponentWriteType, CrdtMessageType>>();
-            // componentWriter = new ECSComponentWriter(writeComponentSubscriber.React);
-
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 
             scene = testUtils.CreateScene(666);
@@ -62,25 +58,31 @@ namespace Tests
             Assert.IsNotNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
             sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-
-            uint currentSceneTick = sceneStateHandler.GetSceneTick(scene.sceneData.sceneNumber);
             system.Update();
 
-            // componentWriter.ReceivedCalls();
-            componentWriter.ReceivedWithAnyArgs().PutComponent(
-                Arg.Any<int>(),
-                Arg.Any<long>(),
-                Arg.Any<int>(),
-                Arg.Any<PBEngineInfo>()
-            );
-
-            /*componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
-                SpecialEntityId.SCENE_ROOT_ENTITY,
+            componentWriter.Received(1).PutComponent(
+                Arg.Is<IParcelScene>((sceneParam) => sceneParam.sceneData.sceneNumber == scene.sceneData.sceneNumber),
+                scene.GetEntityById(SpecialEntityId.SCENE_ROOT_ENTITY),
                 ComponentID.ENGINE_INFO,
-                Arg.Is<PBEngineInfo>((componentModel) => componentModel.TickNumber == currentSceneTick)
-                // Arg.Any<PBEngineInfo>()
-            );*/
+                Arg.Is<PBEngineInfo>((componentModel) =>
+                    componentModel.TickNumber == 1
+                    && componentModel.TotalRuntime > 0
+                    && componentModel.FrameNumber > 0)
+            );
+            componentWriter.ClearReceivedCalls();
+
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            system.Update();
+
+            componentWriter.Received(1).PutComponent(
+                Arg.Is<IParcelScene>((sceneParam) => sceneParam.sceneData.sceneNumber == scene.sceneData.sceneNumber),
+                scene.GetEntityById(SpecialEntityId.SCENE_ROOT_ENTITY),
+                ComponentID.ENGINE_INFO,
+                Arg.Is<PBEngineInfo>((componentModel) =>
+                    componentModel.TickNumber == 2
+                    && componentModel.TotalRuntime > 0
+                    && componentModel.FrameNumber > 0)
+            );
         }
     }
 }

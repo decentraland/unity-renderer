@@ -29,7 +29,7 @@ public class ECS7TestScene : IParcelScene
         return CreateEntity(id);
     }
 
-    IDCLEntity IParcelScene.GetEntityById(long entityId)
+    public IDCLEntity GetEntityById(long entityId)
     {
         if (!entities.TryGetValue(entityId, out IDCLEntity entity)) { return null; }
 

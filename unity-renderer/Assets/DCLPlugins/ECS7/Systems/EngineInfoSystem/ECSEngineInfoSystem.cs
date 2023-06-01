@@ -48,11 +48,6 @@ namespace ECSSystems.ECSEngineInfoSystem
                         FrameNumber = (uint)currentEngineFrameCount,
                         TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime
                     });
-                Debug.Log("3"
-                          + $"\nscene: {scene.sceneData.sceneNumber}"
-                          + $"\nentity: {SpecialEntityId.SCENE_ROOT_ENTITY}"
-                          + $"\ncomponent id: {ComponentID.ENGINE_INFO}"
-                          );
             }
         }
     }
