@@ -17,8 +17,6 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
             wid.emoteDataV0 = null;
             wid.baseUrl = TestAssetsUtils.GetPath() + "/Avatar/Assets/";
 
-            ThumbnailsManager.bypassRequests = true;
-
             foreach (var rep in wid.data.representations)
             {
                 rep.contents = rep.contents.Select((x) =>

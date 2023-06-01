@@ -14,6 +14,7 @@ namespace MainScripts.DCL.AssetsEmbedment.Editor
 
         public static async UniTask EmbedAsync(Dictionary<string, Texture2D> loadedData, string subPath)
         {
+            Debug.Log($"VV:: Embeding textures to {texturesPath}");
             var targetPath = string.IsNullOrEmpty(subPath) ? texturesPath : Path.Combine(texturesPath, subPath);
             ResetTargetPath(targetPath);
 
