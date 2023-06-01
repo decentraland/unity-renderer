@@ -65,6 +65,7 @@ namespace Tests
                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
                 internalComponents.EngineInfo,
                 internalComponents.GltfContainerLoadingStateComponent);
+            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
 
             // Test collider entities in line
             testEntity_PhysicsCollider = CreateColliderEntity(513, new Vector3(8, 1, 2), new[] { ColliderLayer.ClPhysics });
@@ -828,8 +829,6 @@ namespace Tests
         [Test]
         public void StoreSceneTickInResult()
         {
-            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
-
             entityRaycaster.gameObject.transform.position = new Vector3(12f, 0.5f, 0.1f);
             PBRaycast raycast = new PBRaycast()
             {

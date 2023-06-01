@@ -53,6 +53,8 @@ namespace Tests
                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
                 internalComponents.EngineInfo,
                 internalComponents.GltfContainerLoadingStateComponent);
+
+            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
         }
 
         [TearDown]
@@ -130,8 +132,6 @@ namespace Tests
         [Test]
         public void StoreSceneTickInResult()
         {
-            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
-
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
                 new InternalInputEventResults.EventData() { button = InputAction.IaPrimary, hit = new RaycastHit() { } },

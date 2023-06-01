@@ -69,10 +69,8 @@ namespace Tests
                 },
                 internalEcsComponents.EngineInfo,
                 internalEcsComponents.GltfContainerLoadingStateComponent);
-
-            // This is normally initialized by SceneStateHandler when a scene is loaded
-            internalEcsComponents.EngineInfo.PutFor(scene0, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
-            internalEcsComponents.EngineInfo.PutFor(scene1, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
+            sceneStateHandler.InitializeEngineInfoComponent(scene0.sceneData.sceneNumber);
+            sceneStateHandler.InitializeEngineInfoComponent(scene1.sceneData.sceneNumber);
         }
 
         [TearDown]
@@ -211,7 +209,6 @@ namespace Tests
         public void StoreSceneTickInVideoEvent()
         {
             ECS7TestEntity entity = scene0.CreateEntity(100);
-            sceneStateHandler.InitializeEngineInfoComponent(scene0.sceneData.sceneNumber);
 
             // This internal component normally gets automatically added by the VideoPlayerHandler
             internalEcsComponents.videoPlayerComponent.PutFor(scene0, entity, new InternalVideoPlayer()
