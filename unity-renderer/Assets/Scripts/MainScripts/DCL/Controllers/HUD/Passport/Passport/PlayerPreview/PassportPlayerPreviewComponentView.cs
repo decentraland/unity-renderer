@@ -12,24 +12,39 @@ namespace DCL.Social.Passports
         public RawImage CharacterPreviewImage { get; private set; }
         public event Action<double> OnEndDragEvent;
 
-        [field: SerializeField]
-        public PreviewCameraRotation PreviewCameraRotation { get; private set; }
+        public PreviewCameraRotationController PreviewCameraRotationController => (PreviewCameraRotationController) avatarPreviewRotationController;
+        private IPreviewCameraRotationController avatarPreviewRotationController;
 
         [SerializeField] private ShowHideAnimator tutorialShowHide;
         [SerializeField] private GameObject loadingSpinner;
 
-        public override void Awake()
-        {
-            base.Awake();
+        [Header("MOUSE INPUT CONFIGURATION")]
+        [SerializeField] private CharacterPreviewInputDetector characterPreviewInputDetector;
+        [SerializeField] private InputAction_Hold firstClickAction;
 
-            PreviewCameraRotation.OnEndDragEvent += EndPreviewDrag;
+        [Header("ROTATE CONFIGURATION")]
+        [SerializeField] private float rotationFactor = -30f;
+        [SerializeField] private float slowDownTime = 0.5f;
+
+        public void Initialize(IPreviewCameraRotationController avatarPreviewRotationController)
+        {
+            this.avatarPreviewRotationController = avatarPreviewRotationController;
+            this.avatarPreviewRotationController.Configure(
+                firstClickAction,
+                rotationFactor,
+                slowDownTime,
+                characterPreviewInputDetector,
+                null);
+
+            this.avatarPreviewRotationController.OnEndDragEvent += EndPreviewDrag;
         }
 
         public override void Dispose()
         {
             base.Dispose();
 
-            PreviewCameraRotation.OnEndDragEvent -= EndPreviewDrag;
+            avatarPreviewRotationController.OnEndDragEvent -= EndPreviewDrag;
+            avatarPreviewRotationController.Dispose();
         }
 
         public void HideTutorial()

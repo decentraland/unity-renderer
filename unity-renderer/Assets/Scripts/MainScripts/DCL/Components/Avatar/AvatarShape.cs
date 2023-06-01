@@ -145,7 +145,6 @@ namespace DCL
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
 
             var model = (AvatarModel) newModel;
-
             bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
             currentAvatar.CopyFrom(model);
 
@@ -214,6 +213,7 @@ namespace DCL
                     eyesColor = model.eyeColor,
                     skinColor = model.skinColor,
                     hairColor = model.hairColor,
+                    forceRender = new HashSet<string>(userProfileBridge.Get(model.id).avatar.forceRender ?? new HashSet<string>()),
                 }, loadingCts.Token);
 
                 // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready

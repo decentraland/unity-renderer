@@ -7,6 +7,7 @@ using DCL.Social.Passports;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ public class PlayerPassportPlugin : IPlugin
     public PlayerPassportPlugin()
     {
         PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportReferenceContainer>();
+        referenceContainer.PlayerPreviewView.Initialize(new PreviewCameraRotationController());
+
         var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
 
         passportController = new PlayerPassportHUDController(

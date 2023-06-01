@@ -3067,7 +3067,7 @@ MonoBehaviour:
   m_LayoutPriority: 1
 --- !u!95 &4292949885884074233
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3084,7 +3084,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2987560495814082926
 GameObject:
   m_ObjectHideFlags: 0
@@ -3588,7 +3589,6 @@ MonoBehaviour:
   hairColorPickerComponent: {fileID: 6733050965456895549}
   facialHairColorPickerComponent: {fileID: 3234247730794696175}
   eyeBrowsColorPickerComponent: {fileID: 2459573730806547177}
-  characterPreviewRotation: {fileID: 6749458557699296124}
   characterPreviewImage: {fileID: 5221576635362755376}
   randomizeButton: {fileID: 1450360507441575512}
   randomizeAnimator: {fileID: 4292949885884074233}
@@ -3616,6 +3616,10 @@ MonoBehaviour:
   emotesSection: {fileID: 8105447645029322740}
   clickBlocker: {fileID: 1261334859402260978}
   noItemInCollectionWarning: {fileID: 8627138561593741906}
+  characterPreviewInputDetector: {fileID: 3395851756878701198}
+  firstClickAction: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
+  rotationFactor: -30
+  slowDownTime: 0.5
 --- !u!225 &-2971377967518096820
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -8547,7 +8551,7 @@ GameObject:
   - component: {fileID: 2225072684624242756}
   - component: {fileID: 5221576635362755376}
   - component: {fileID: 4427406772819655723}
-  - component: {fileID: 6749458557699296124}
+  - component: {fileID: 3395851756878701198}
   m_Layer: 5
   m_Name: CharacterPreview
   m_TagString: Untagged
@@ -8572,7 +8576,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 13.5, y: 11.9999695}
+  m_AnchoredPosition: {x: 13.5, y: 12}
   m_SizeDelta: {x: 0, y: -116.00003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2225072684624242756
@@ -8624,7 +8628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 2
   m_AspectRatio: 1
---- !u!114 &6749458557699296124
+--- !u!114 &3395851756878701198
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8633,11 +8637,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7607304237219422835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52af82d546e9b41d089ac247180bc813, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b0ce504b8c4f91478d1634adf5e2a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationFactor: -15
-  slowDownTime: 0.5
 --- !u!1 &7659616090356243264
 GameObject:
   m_ObjectHideFlags: 0
@@ -12981,12 +12983,12 @@ PrefabInstance:
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -12996,7 +12998,7 @@ PrefabInstance:
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -70
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3034530879239878528, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -13222,12 +13224,17 @@ PrefabInstance:
     - target: {fileID: 7899743641607750033, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7955388171955735810, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_Color.a
       value: 0.74509805
+      objectReference: {fileID: 0}
+    - target: {fileID: 8341972100564397293, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 15.9
       objectReference: {fileID: 0}
     - target: {fileID: 8341972100564397293, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
