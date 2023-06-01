@@ -9,7 +9,9 @@ const bodyShapeWearables = [
       'urn:decentraland:off-chain:base-avatars:ruby_blue_loafer',
       'urn:decentraland:off-chain:base-avatars:pony_tail',
       'urn:decentraland:off-chain:base-avatars:pearls_earring',
-      'urn:decentraland:off-chain:base-avatars:f_mouth_05'
+      'urn:decentraland:off-chain:base-avatars:f_mouth_05',
+      'urn:decentraland:off-chain:base-avatars:f_eyebrows_02',
+      'urn:decentraland:off-chain:base-avatars:f_eyes_06'
     ]
   },
   {
@@ -19,7 +21,9 @@ const bodyShapeWearables = [
       'urn:decentraland:off-chain:base-avatars:comfortablepants',
       'urn:decentraland:off-chain:base-avatars:Espadrilles',
       'urn:decentraland:off-chain:base-avatars:cool_hair',
-      'urn:decentraland:off-chain:base-avatars:beard'
+      'urn:decentraland:off-chain:base-avatars:beard',
+      'urn:decentraland:off-chain:base-avatars:eyebrows_00',
+      'urn:decentraland:off-chain:base-avatars:eyes_00'
     ]
   }
 ]
