@@ -46,9 +46,10 @@ namespace DCL.EmotesCustomization
             DataStore_Emotes emotesDataStore,
             DataStore_ExploreV2 exploreV2DataStore,
             DataStore_HUDs hudsDataStore,
-            Transform parent)
+            Transform parent,
+            string viewPath = "EmotesCustomization/EmotesCustomizationSection")
         {
-            Initialize(emotesCustomizationDataStore, emotesDataStore, exploreV2DataStore, hudsDataStore, parent);
+            Initialize(emotesCustomizationDataStore, emotesDataStore, exploreV2DataStore, hudsDataStore, parent, viewPath);
         }
 
         internal void Initialize(
@@ -56,14 +57,15 @@ namespace DCL.EmotesCustomization
             DataStore_Emotes emotesDataStore,
             DataStore_ExploreV2 exploreV2DataStore,
             DataStore_HUDs hudsDataStore,
-            Transform parent)
+            Transform parent,
+            string viewPath = "EmotesCustomization/EmotesCustomizationSection")
         {
             this.emotesCustomizationDataStore = emotesCustomizationDataStore;
             this.emotesDataStore = emotesDataStore;
             this.exploreV2DataStore = exploreV2DataStore;
             this.hudsDataStore = hudsDataStore;
 
-            ConfigureView(parent);
+            ConfigureView(parent, viewPath);
             ConfigureShortcuts();
 
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
@@ -146,9 +148,9 @@ namespace DCL.EmotesCustomization
             UpdateEmoteSlots();
         }
 
-        private void ConfigureView(Transform parent)
+        private void ConfigureView(Transform parent, string viewPath)
         {
-            view = CreateView();
+            view = CreateView(viewPath);
             if (view.viewTransform != null)
                 view.viewTransform.SetParent(parent, false);
             view.onEmoteEquipped += OnEmoteEquipped;
@@ -410,6 +412,7 @@ namespace DCL.EmotesCustomization
             }
         }
 
-        internal virtual IEmotesCustomizationComponentView CreateView() => EmotesCustomizationComponentView.Create();
+        internal virtual IEmotesCustomizationComponentView CreateView(string path = "EmotesCustomization/EmotesCustomizationSection") =>
+            EmotesCustomizationComponentView.Create(path);
     }
 }

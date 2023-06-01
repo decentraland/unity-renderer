@@ -9,12 +9,13 @@ namespace DCL.Backpack
     public class WearableGridComponentView : MonoBehaviour, IWearableGridView
     {
         [SerializeField] internal NftBreadcrumbComponentView wearablesBreadcrumbComponentView;
-        [SerializeField] internal GridContainerComponentView wearablesGridContainer;
+        [SerializeField] internal GridLayoutGroup wearablesGridContainer;
         [SerializeField] internal WearableGridItemComponentView wearableGridItemPrefab;
         [SerializeField] internal PageSelectorComponentView wearablePageSelector;
         [SerializeField] internal InfoCardComponentView infoCardComponentView;
         [SerializeField] internal GameObject emptyStateContainer;
         [SerializeField] internal Button goToMarketplaceButton;
+        [SerializeField] internal GameObject loadingSpinner;
 
         private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
         private readonly Dictionary<string, WearableGridItemComponentView> wearablesById = new ();
@@ -111,8 +112,7 @@ namespace DCL.Backpack
                 wearablePooledObjects[wearableGridItem] = poolObj;
                 wearablesById[model.WearableId] = wearableGridItem;
                 wearableGridItem.SetModel(model);
-                wearablesGridContainer.AddItem(wearableGridItem);
-
+                wearableGridItem.transform.SetParent(wearablesGridContainer.transform, false);
                 wearableGridItem.OnSelected += HandleWearableSelected;
                 wearableGridItem.OnEquipped += HandleWearableEquipped;
                 wearableGridItem.OnUnequipped += HandleWearableUnequipped;
@@ -132,21 +132,44 @@ namespace DCL.Backpack
                 view.Unselect();
 
             selectedWearableItem = null;
-            infoCardComponentView.SetVisible(false);
+            SetInfoCardVisible(false);
         }
 
         public void SelectWearable(string wearableId)
         {
             selectedWearableItem = wearablesById[wearableId];
             selectedWearableItem.Select();
-            infoCardComponentView.SetVisible(true);
+            SetInfoCardVisible(true);
         }
 
         public void FillInfoCard(InfoCardComponentModel model) =>
             infoCardComponentView.SetModel(model);
 
+        public void SetInfoCardVisible(bool isVisible) =>
+            infoCardComponentView.SetVisible(isVisible);
+
+        public void SetLoadingActive(bool isActive)
+        {
+            loadingSpinner.SetActive(isActive);
+            UpdateEmptyState();
+        }
+
         public void SetWearableBreadcrumb(NftBreadcrumbModel model) =>
             wearablesBreadcrumbComponentView.SetModel(model);
+
+        public void RefreshWearable(string wearableId)
+        {
+            if (!wearablesById.TryGetValue(wearableId, out var view))
+                return;
+
+            view.RefreshControl();
+        }
+
+        public void RefreshAllWearables()
+        {
+            foreach (WearableGridItemComponentView view in wearablePooledObjects.Keys)
+                view.RefreshControl();
+        }
 
         private void HandleWearableSelected(WearableGridItemModel model) =>
             OnWearableSelected?.Invoke(model);
@@ -161,12 +184,8 @@ namespace DCL.Backpack
         {
             bool isEmpty = wearablesById.Count == 0;
 
-            if (isEmpty)
-                wearablesGridContainer.Hide(true);
-            else
-                wearablesGridContainer.Show(true);
-
-            emptyStateContainer.SetActive(isEmpty);
+            wearablesGridContainer.gameObject.SetActive(!isEmpty && !loadingSpinner.activeSelf);
+            emptyStateContainer.SetActive(isEmpty && !loadingSpinner.activeSelf);
         }
     }
 }

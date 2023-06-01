@@ -68,13 +68,12 @@ public class UserProfileController : MonoBehaviour
         if (payload == null)
             return;
 
-        var model = JsonUtility.FromJson<UserProfileModel>(payload);
-
+        var model = JsonUtility.FromJson<UserProfileModelDTO>(payload).ToUserProfileModel();
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
 
-    public void AddUserProfileToCatalog(string payload) { AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModel>(payload)); }
+    public void AddUserProfileToCatalog(string payload) { AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModelDTO>(payload).ToUserProfileModel()); }
 
     public void AddUserProfilesToCatalog(string payload)
     {

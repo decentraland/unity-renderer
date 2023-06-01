@@ -5,6 +5,7 @@ using DCL.GLTFast.Wrappers;
 using GLTFast;
 using GLTFast.Logging;
 using GLTFast.Materials;
+using System.IO;
 using UnityEngine;
 
 // Disable async call not being awaited warning
@@ -28,12 +29,13 @@ namespace DCL
         private readonly ConsoleLogger consoleLogger;
 
         private static IDeferAgent staticDeferAgent;
+        private bool isLoading = false;
 
         public AssetPromise_GLTFast_Loader(string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null)
             : base(contentUrl, hash)
         {
             this.contentProvider = contentProvider;
-            assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
+            assetDirectoryPath = GetDirectoryName(contentUrl);
 
             if (staticDeferAgent == null)
             {
@@ -46,6 +48,12 @@ namespace DCL
             cancellationSource = new CancellationTokenSource();
             gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
             consoleLogger = new ConsoleLogger();
+        }
+
+        private static string GetDirectoryName(string fullPath)
+        {
+            var fileName = Path.GetFileName(fullPath);
+            return fullPath.Substring(0, fullPath.Length - fileName.Length);
         }
 
         protected override void OnBeforeLoadOrReuse() { }
@@ -77,14 +85,17 @@ namespace DCL
 
         protected override void OnLoad(Action onSuccess, Action<Exception> onFail)
         {
+            isLoading = true;
             ImportGltfAsync(onSuccess, onFail, cancellationSource.Token);
         }
 
         internal override void Unload()
         {
-            base.Unload();
             gltFastDownloadProvider.Dispose();
+            base.Unload();
         }
+
+        public override bool keepWaiting => isLoading;
 
         private async UniTaskVoid ImportGltfAsync(Action onSuccess, Action<Exception> onFail, CancellationToken cancellationSourceToken)
         {
@@ -122,9 +133,10 @@ namespace DCL
                 if (e is OperationCanceledException)
                     return;
 
-                Debug.LogError("[GltFast] Failed to load: " + e);
+                Debug.LogException(e);
                 onFail?.Invoke(e);
             }
+            finally { isLoading = false; }
         }
 
         private bool FileToUrl(string fileName, out string fileHash) =>

@@ -26,6 +26,7 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
     public Color CurrentSelectedColor { get; private set; }
 
     public event Action<Color> OnColorChanged;
+    public event Action OnColorPickerToggle;
 
     private IColorSelector colorSelector;
     private bool isAudioPlaying;
@@ -157,7 +158,10 @@ public class ColorPickerComponentView : BaseComponentView, IComponentModelConfig
             arrowDownMark.SetActive(!isActive);
 
         if (isActive)
+        {
+            OnColorPickerToggle?.Invoke();
             RebuildLayout();
+        }
     }
 
     public override void Dispose()

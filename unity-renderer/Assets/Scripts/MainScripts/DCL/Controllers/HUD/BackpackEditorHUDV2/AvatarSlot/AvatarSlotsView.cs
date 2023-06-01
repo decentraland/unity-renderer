@@ -19,6 +19,17 @@ namespace DCL.Backpack
 
         public event IAvatarSlotsView.ToggleAvatarSlotDelegate OnToggleAvatarSlot;
         public event Action<string> OnUnequipFromSlot;
+        public event Action<string, bool> OnHideUnhidePressed;
+
+        private Dictionary<string, HashSet<string>> previouslyHidden;
+
+        public override void Awake()
+        {
+            previouslyHidden = new Dictionary<string, HashSet<string>>();
+
+            foreach (string category in WearableItem.CATEGORIES_PRIORITY)
+                previouslyHidden.Add(category, new HashSet<string>());
+        }
 
         public void CreateAvatarSlotSection(string sectionName, bool addSeparator)
         {
@@ -35,29 +46,31 @@ namespace DCL.Backpack
             Utils.ForceRebuildLayoutImmediate(avatarSlotsContainer);
         }
 
-        public void AddSlotToSection(string sectionName, string slotCategory)
+        public void AddSlotToSection(string sectionName, string slotCategory, bool allowUnEquip)
         {
             IAvatarSlotComponentView avatarSlot = Instantiate(avatarSlotPrefab, avatarSlotSections[sectionName]).GetComponent<IAvatarSlotComponentView>();
             avatarSlot.SetCategory(slotCategory);
+            avatarSlot.SetUnEquipAllowed(allowUnEquip);
             avatarSlots.Add(slotCategory, avatarSlot);
-            avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, isToggled);
+            avatarSlot.OnSelectAvatarSlot += (slotModel, isToggled) => OnToggleAvatarSlot?.Invoke(slotModel.category, slotModel.allowsColorChange, slotModel.previewCameraFocus, isToggled);
             avatarSlot.OnUnEquip += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId);
             avatarSlot.OnFocusHiddenBy += (hiddenBy) => avatarSlots[hiddenBy].ShakeAnimation();
+            avatarSlot.OnHideUnhidePressed += (category, isOverridden) => OnHideUnhidePressed?.Invoke(category, isOverridden);
         }
 
         public void DisablePreviousSlot(string category) =>
             avatarSlots[category].OnPointerClickOnDifferentSlot();
 
-        public void SetSlotContent(string category, WearableItem wearableItem, string bodyShape)
+        public void SetSlotContent(string category, WearableItem wearableItem, string bodyShape, HashSet<string> forceRender)
         {
             avatarSlots[category].SetRarity(wearableItem.rarity);
             avatarSlots[category].SetNftImage(wearableItem.ComposeThumbnailUrl());
             avatarSlots[category].SetWearableId(wearableItem.id);
             avatarSlots[category].SetHideList(wearableItem.GetHidesList(bodyShape));
-            RecalculateHideList();
+            RecalculateHideList(forceRender);
         }
 
-        public void ResetCategorySlot(string category)
+        public void ResetCategorySlot(string category, HashSet<string> forceRender)
         {
             if (avatarSlots[category].GetHideList() != null)
                 foreach (var slot in avatarSlots[category].GetHideList())
@@ -65,34 +78,73 @@ namespace DCL.Backpack
                         avatarSlots[slot].SetIsHidden(false, category);
 
             avatarSlots[category].ResetSlot();
+            RecalculateHideList(forceRender);
         }
 
-        public void SetWearableId(string category, string wearableId) =>
-            avatarSlots[category].SetWearableId(wearableId);
-
-        public void SetSlotsAsHidden(string[] slotsToHide, string hiddenBy)
+        public void RecalculateHideList(HashSet<string> forceRender)
         {
-            foreach (string slotToHide in slotsToHide)
-                if (avatarSlots.ContainsKey(slotToHide))
-                    avatarSlots[slotToHide].SetIsHidden(true, hiddenBy);
-        }
-
-        private void RecalculateHideList()
-        {
-            foreach (var slot in avatarSlots)
+            foreach (var avatarSlotComponentView in avatarSlots)
             {
-                var hideList = slot.Value.GetHideList();
-                if (hideList == null)
+                bool isHidden = forceRender.Contains(avatarSlotComponentView.Key);
+                avatarSlotComponentView.Value.SetForceRender(isHidden);
+            }
+
+            foreach (string category in WearableItem.CATEGORIES_PRIORITY)
+                previouslyHidden[category] = new HashSet<string>();
+
+            foreach (string priorityCategory in WearableItem.CATEGORIES_PRIORITY)
+            {
+                if (!avatarSlots.ContainsKey(priorityCategory) || avatarSlots[priorityCategory].GetHideList() == null)
                     continue;
 
-                foreach (string s in hideList)
-                    if(avatarSlots.ContainsKey(s))
-                        avatarSlots[s].SetIsHidden(true, slot.Key);
+                foreach (string categoryToHide in avatarSlots[priorityCategory].GetHideList())
+                {
+                    //if it hides a slot that doesn't exist, avoid processing hides
+                    if (!avatarSlots.ContainsKey(categoryToHide))
+                        continue;
+
+                    //if category has already been processed, avoid processing hides
+                    if (previouslyHidden[categoryToHide].Contains(priorityCategory))
+                    {
+                        avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
+                        continue;
+                    }
+
+                    previouslyHidden[priorityCategory].Add(categoryToHide);
+
+                    if (forceRender != null && forceRender.Contains(categoryToHide))
+                    {
+                        avatarSlots[categoryToHide].SetIsHidden(false, priorityCategory);
+                        avatarSlots[categoryToHide].SetHideIconVisible(true);
+                        continue;
+                    }
+
+                    avatarSlots[categoryToHide].SetIsHidden(true, priorityCategory);
+                }
             }
         }
 
-        public override void RefreshControl()
+        public void SetHideUnhideStatus(string slotCategory, bool isOverridden)
         {
+            if (slotCategory == null)
+                return;
+
+            if (avatarSlots.TryGetValue(slotCategory, out var slot))
+                slot.SetForceRender(isOverridden);
         }
+
+        public void Select(string category, bool notify)
+        {
+            if (avatarSlots.TryGetValue(category, out var slot))
+                slot.Select(notify);
+        }
+
+        public void UnSelectAll(bool notify)
+        {
+            foreach (KeyValuePair<string,IAvatarSlotComponentView> slot in avatarSlots)
+                slot.Value.UnSelect(notify);
+        }
+
+        public override void RefreshControl() { }
     }
 }

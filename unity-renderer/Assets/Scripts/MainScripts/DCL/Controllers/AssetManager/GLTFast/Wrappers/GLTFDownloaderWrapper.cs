@@ -15,17 +15,17 @@ namespace DCL.GLTFast.Wrappers
         /// </summary>
         private const uint GLB_SIGNATURE = 0x46546c67;
 
-        private readonly WebRequestAsyncOperation asyncOp;
+        private readonly UnityWebRequest webRequest;
         private byte[] cachedData;
         private bool isDisposed;
 
-        public GltfDownloaderWrapper(WebRequestAsyncOperation asyncOp)
+        public GltfDownloaderWrapper(UnityWebRequest webRequest)
         {
-            this.asyncOp = asyncOp;
+            this.webRequest = webRequest;
         }
 
-        public bool Success => asyncOp.isSucceeded;
-        public string Error => asyncOp.webRequest.error;
+        public bool Success => webRequest.result == UnityWebRequest.Result.Success;
+        public string Error => webRequest.error;
 
         public byte[] Data
         {
@@ -34,14 +34,12 @@ namespace DCL.GLTFast.Wrappers
                 if (isDisposed) return null;
                 if (cachedData != null) return cachedData;
 
-                UnityWebRequest asyncOpWebRequest = asyncOp.webRequest;
-                if (asyncOpWebRequest != null) return asyncOpWebRequest.downloadHandler.data;
-                Debug.LogWarning("The web request was disposed?" + asyncOp.isDisposed);
+                if (webRequest != null) return webRequest.downloadHandler.data;
                 return null;
             }
         }
 
-        public string Text => asyncOp.webRequest.downloadHandler.text;
+        public string Text => webRequest.downloadHandler.text;
         public bool? IsBinary => IsGltfBinary(Data);
 
         private static bool IsGltfBinary(byte[] data)
@@ -51,14 +49,11 @@ namespace DCL.GLTFast.Wrappers
             return gltfBinarySignature == GLB_SIGNATURE;
         }
 
-        public bool MoveNext() =>
-            asyncOp.MoveNext();
-
         public void Dispose()
         {
             isDisposed = true;
             cachedData = null;
-            asyncOp.Dispose();
+            webRequest.Dispose();
         }
     }
 }
