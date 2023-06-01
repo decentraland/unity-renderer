@@ -59,8 +59,8 @@ namespace Tests
             system.Update();
 
             componentWriter.Received(1).PutComponent(
-                Arg.Is<IParcelScene>((sceneParam) => sceneParam.sceneData.sceneNumber == scene.sceneData.sceneNumber),
-                scene.GetEntityById(SpecialEntityId.SCENE_ROOT_ENTITY),
+                Arg.Is<int>((sceneNumberParam) => sceneNumberParam == scene.sceneData.sceneNumber),
+                SpecialEntityId.SCENE_ROOT_ENTITY,
                 ComponentID.ENGINE_INFO,
                 Arg.Is<PBEngineInfo>((componentModel) =>
                     componentModel.TickNumber == 1
@@ -73,8 +73,8 @@ namespace Tests
             system.Update();
 
             componentWriter.Received(1).PutComponent(
-                Arg.Is<IParcelScene>((sceneParam) => sceneParam.sceneData.sceneNumber == scene.sceneData.sceneNumber),
-                scene.GetEntityById(SpecialEntityId.SCENE_ROOT_ENTITY),
+                Arg.Is<int>((sceneNumberParam) => sceneNumberParam == scene.sceneData.sceneNumber),
+                SpecialEntityId.SCENE_ROOT_ENTITY,
                 ComponentID.ENGINE_INFO,
                 Arg.Is<PBEngineInfo>((componentModel) =>
                     componentModel.TickNumber == 2

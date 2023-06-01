@@ -34,13 +34,12 @@ namespace ECSSystems.ECSEngineInfoSystem
             int entitiesCount = componentGroup.Count;
             for (int i = 0; i < entitiesCount; i++)
             {
-                var entity = componentGroup[i].value.entity;
                 var scene = componentGroup[i].value.scene;
                 var model = componentGroup[i].value.model;
 
                 componentWriter.PutComponent(
-                    entity.scene,
-                    scene.GetEntityById(SpecialEntityId.SCENE_ROOT_ENTITY),
+                    scene.sceneData.sceneNumber,
+                    SpecialEntityId.SCENE_ROOT_ENTITY,
                     ComponentID.ENGINE_INFO,
                     new PBEngineInfo()
                     {
