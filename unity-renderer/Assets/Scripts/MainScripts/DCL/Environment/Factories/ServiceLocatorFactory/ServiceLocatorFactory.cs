@@ -118,7 +118,9 @@ namespace DCL
             result.Register<IBillboardsController>(BillboardsController.Create);
 
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
-                new LambdasWearablesCatalogService(DataStore.i.common.wearables, result.Get<ILambdasService>()),
+                new LambdasWearablesCatalogService(DataStore.i.common.wearables,
+                    result.Get<ILambdasService>(),
+                    result.Get<IServiceProviders>()),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,
@@ -132,7 +134,7 @@ namespace DCL
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
                 {
-                    AssetSource.EMBEDDED, new EmbeddedTextureProvider()
+                    AssetSource.EMBEDDED, new EmbeddedTextureProvider(addressableResourceProvider)
                 },
 
                 {

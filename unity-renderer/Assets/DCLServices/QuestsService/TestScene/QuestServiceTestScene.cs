@@ -1,4 +1,4 @@
-﻿using DCL.Quests;
+using DCL.Quests;
 using UnityEngine;
 
 namespace DCLServices.QuestsService.TestScene
