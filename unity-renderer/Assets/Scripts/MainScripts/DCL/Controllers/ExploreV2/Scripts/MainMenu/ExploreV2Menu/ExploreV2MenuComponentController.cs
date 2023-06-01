@@ -226,6 +226,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (visible)
         {
+            // TODO: This is temporal while we want to keep the NEW tag for the new Backpack feature
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
+                view.SetSectionAsNew(ExploreSection.Backpack, true);
+
             if (mouseCatcher != null)
                 mouseCatcher.UnlockCursor();
 

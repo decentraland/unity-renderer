@@ -20,7 +20,7 @@ The Browser Interface component responsibility includes running the SDK scenes, 
 Make sure you have the following dependencies:
 
 - Latest version of GNU make, install it using `brew install make`
-- Node v10 or compatible installed via `sudo apt install nodejs` or [nvm](https://github.com/nvm-sh/nvm)
+- Node v10 or compatible installed via `sudo apt install nodejs`, [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm)
 
 ### With Docker (Windows/Mac/Linux) (Recommended)
 
@@ -34,20 +34,16 @@ When all the dependencies are in place, you can start building the project.
 First off, we need the npm package dependencies. In most of the cases this should be done only once:
 
     npm install
-    
+
+The next step will require copying different files from the unity build into the target location:
+
+    make build-unity-local
+
 By now, you can run and watch a server with the Browser Interface build by typing:
 
     make watch
 
-The make process will take a while. When its finished, you can start debugging the browser's explorer by going to http://localhost:8080/
-
-### Update local renderer build version
-
-The unity build used when accessing through localhost can be changed with several commands:
-
-- `make update-renderer` downloads the renderer build for the master branch and installs it, overwriting the previous build.
-
-Keep in mind that a `make watch` should be run and keep the server up before updating the local build, otherwise it will be replaced by the `make watch` command.
+The make process will take a while. When its finished, you can start debugging the browser's explorer by going to http://localhost:8080/ (or http://localhost:8080/?ENABLE_WEB3 if web3 log in is needed) 
 
 ### Run browser interface tests
 
