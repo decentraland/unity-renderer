@@ -14,32 +14,34 @@ namespace DCL.ECS7
         private readonly IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
         private readonly IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingState;
         private readonly IInternalECSComponent<InternalIncreaseTickTagComponent> increaseSceneTickTagComponent;
-        private readonly CRDTServiceContext context;
+        private readonly CRDTServiceContext rpcCrdtContext;
         private IReadOnlyDictionary<int, IParcelScene> scenes;
 
         public SceneStateHandler(
-            CRDTServiceContext context,
+            CRDTServiceContext rpcCrdtContext,
+            RestrictedActionsContext rpcRestrictedActionContext,
             IReadOnlyDictionary<int, IParcelScene> scenes,
             IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
             IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingState,
             IInternalECSComponent<InternalIncreaseTickTagComponent> increaseSceneTickTagComponent)
         {
-            this.context = context;
+            this.rpcCrdtContext = rpcCrdtContext;
             this.scenes = scenes;
             this.engineInfoComponent = engineInfoComponent;
             this.gltfContainerLoadingState = gltfContainerLoadingState;
             this.increaseSceneTickTagComponent = increaseSceneTickTagComponent;
 
-            context.GetSceneTick += GetSceneTick;
-            context.IncreaseSceneTick += IncreaseSceneTick;
-            context.IsSceneGltfLoadingFinished += IsSceneGltfLoadingFinished;
+            rpcCrdtContext.GetSceneTick += GetSceneTick;
+            rpcCrdtContext.IncreaseSceneTick += IncreaseSceneTick;
+            rpcCrdtContext.IsSceneGltfLoadingFinished += IsSceneGltfLoadingFinished;
+            rpcRestrictedActionContext.IsSceneRestrictedActionEnabled = IsSceneRestrictedActionEnabled;
         }
 
         public void Dispose()
         {
-            context.GetSceneTick -= GetSceneTick;
-            context.IncreaseSceneTick -= IncreaseSceneTick;
-            context.IsSceneGltfLoadingFinished -= IsSceneGltfLoadingFinished;
+            rpcCrdtContext.GetSceneTick -= GetSceneTick;
+            rpcCrdtContext.IncreaseSceneTick -= IncreaseSceneTick;
+            rpcCrdtContext.IsSceneGltfLoadingFinished -= IsSceneGltfLoadingFinished;
         }
 
         public void InitializeEngineInfoComponent(int sceneNumber)
@@ -89,11 +91,16 @@ namespace DCL.ECS7
 
         internal bool IsSceneRestrictedActionEnabled(int sceneNumber)
         {
+            if (scenes == null)
+                return false;
+
             if (scenes.TryGetValue(sceneNumber, out var scene))
             {
                 InternalEngineInfo engineInfo = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
                 uint sceneTick = engineInfo.SceneTick;
-                return sceneTick != 0 && sceneTick == engineInfo.EnableRestrictedActionTick;
+
+                const uint TICK_THRESHOLD = 2;
+                return sceneTick != 0 && sceneTick <= (engineInfo.EnableRestrictedActionTick + TICK_THRESHOLD);
             }
 
             return false;

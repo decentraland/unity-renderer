@@ -5,6 +5,7 @@ import "decentraland/common/vectors.proto";
 
 message TeleportToRequest {
   decentraland.common.Vector2 world_coordinates = 1;
+  int32 scene_number = 2;
 }
 
 message OpenExternalUrlRequest {
@@ -14,6 +15,18 @@ message OpenExternalUrlRequest {
 
 message OpenNftDialogRequest {
   string urn = 1;
+  int32 scene_number = 2;
+}
+
+message ChangeRealmRequest {
+  string realm = 1;
+  optional string message = 2;
+  int32 scene_number = 3;
+}
+
+message CommsAdapterRequest {
+  string connection_string = 1;
+  int32 scene_number = 2;
 }
 
 message OpenModalResponse {
@@ -31,4 +44,11 @@ service RestrictedActionsService {
 
   // OpenNftDialog opens an NFT dialog.
   rpc OpenNftDialog(OpenNftDialogRequest) returns (OpenModalResponse) {}
+
+  // ChangeRealm prompts the user to change to a specific realm
+  rpc ChangeRealm(ChangeRealmRequest) returns (OpenModalResponse) {}
+
+  // Asks the explorer to connect to other communications adapter, this feature
+  // can be used to join private game servers
+  rpc SetCommunicationsAdapter(CommsAdapterRequest) returns (OpenModalResponse) {}
 }

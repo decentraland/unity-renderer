@@ -60,7 +60,8 @@ namespace Tests
             videoPlayer = new WebVideoPlayer("test", "test.mp4", true, new VideoPluginWrapper_Mock());
 
             sceneStateHandler = new SceneStateHandler(
-                Substitute.For<CRDTServiceContext>(),
+                new CRDTServiceContext(),
+                new RestrictedActionsContext(),
                 new Dictionary<int, IParcelScene>()
                 {
                     { scene0.sceneData.sceneNumber, scene0 },

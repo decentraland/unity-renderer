@@ -114,8 +114,7 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.PointerEventsComponent,
             interactionHoverCanvas,
             Environment.i.world.state,
-            DataStore.i.ecs7,
-            DataStore.i.rpc.context.restrictedActions);
+            DataStore.i.ecs7);
 
         GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
             context.componentWriter,

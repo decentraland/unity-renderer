@@ -61,7 +61,8 @@ namespace Tests
             entityRaycaster = scene.CreateEntity(512);
             keepEntityAliveComponent.PutFor(scene, entityRaycaster, new InternalComponent());
             sceneStateHandler = new SceneStateHandler(
-                Substitute.For<CRDTServiceContext>(),
+                new CRDTServiceContext(),
+                new RestrictedActionsContext(),
                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
                 internalComponents.EngineInfo,
                 internalComponents.GltfContainerLoadingStateComponent,

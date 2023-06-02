@@ -4,6 +4,8 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using System;
+using UnityEngine;
+using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace ECSSystems.InputSenderSystem
 {
@@ -44,6 +46,7 @@ namespace ECSSystems.InputSenderSystem
 
                 var scene = inputResults[i].value.scene;
                 var entity = inputResults[i].value.entity;
+                long entityId = entity.entityId;
                 InternalEngineInfo engineInfoModel = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
                 bool checkRestrictedAction = scene.sceneData.sceneNumber == currentSceneNumber;
 
@@ -54,14 +57,11 @@ namespace ECSSystems.InputSenderSystem
                     InternalInputEventResults.EventData inputEvent = model.events[j];
                     InputAction actionButton = inputEvent.button;
                     PointerEventType evtType = inputEvent.type;
+                    RaycastHit hit = inputEvent.hit;
 
                     if (checkRestrictedAction && !restrictedActionEnabled)
                     {
-                        bool hasEntityInput = inputEvent.hit != null
-                                              && (evtType == PointerEventType.PetDown || evtType == PointerEventType.PetUp)
-                                              && actionButton != InputAction.IaAny;
-
-                        if (hasEntityInput)
+                        if (IsValidInputForRestrictedActions(entityId, actionButton, evtType, hit))
                         {
                             restrictedActionEnabled = true;
                             engineInfoModel.EnableRestrictedActionTick = engineInfoModel.SceneTick;
@@ -70,12 +70,12 @@ namespace ECSSystems.InputSenderSystem
                     }
 
                     writer.AppendComponent(scene.sceneData.sceneNumber,
-                        entity.entityId,
+                        entityId,
                         ComponentID.POINTER_EVENTS_RESULT,
                         new PBPointerEventsResult()
                         {
                             Button = actionButton,
-                            Hit = inputEvent.hit,
+                            Hit = hit,
                             State = evtType,
                             Timestamp = lastTimestamp++,
                             TickNumber = engineInfoModel.SceneTick
@@ -85,6 +85,17 @@ namespace ECSSystems.InputSenderSystem
 
                 model.events.Clear();
             }
+        }
+
+        private static bool IsValidInputForRestrictedActions(long entityId, InputAction actionButton,
+            PointerEventType evtType, RaycastHit hit)
+        {
+            if (entityId == SpecialEntityId.SCENE_ROOT_ENTITY)
+                return false;
+
+            return hit != null
+                   && (evtType == PointerEventType.PetDown || evtType == PointerEventType.PetUp)
+                   && actionButton != InputAction.IaAny;
         }
     }
 }

@@ -7,7 +7,6 @@ using DCL.Models;
 using ECSSystems.PointerInputSystem;
 using NSubstitute;
 using NUnit.Framework;
-using RPC.Context;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -57,8 +56,7 @@ namespace Tests
                 internalComponents.PointerEventsComponent,
                 Substitute.For<IECSInteractionHoverCanvas>(),
                 worldState,
-                dataStoreEcs7,
-                new RestrictedActionsContext());
+                dataStoreEcs7);
 
             systemUpdate = system.Update;
 

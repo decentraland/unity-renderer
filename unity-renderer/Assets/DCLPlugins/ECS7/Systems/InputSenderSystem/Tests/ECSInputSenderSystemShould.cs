@@ -53,7 +53,8 @@ namespace Tests
             };
 
             sceneStateHandler = new SceneStateHandler(
-                Substitute.For<CRDTServiceContext>(),
+                new CRDTServiceContext(),
+                new RestrictedActionsContext(),
                 new Dictionary<int, IParcelScene>() { { scene.sceneData.sceneNumber, scene } },
                 internalComponents.EngineInfo,
                 internalComponents.GltfContainerLoadingStateComponent,
