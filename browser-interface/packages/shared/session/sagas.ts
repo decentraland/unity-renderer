@@ -1,6 +1,13 @@
 import { Authenticator } from '@dcl/crypto'
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
-import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK, PREVIEW, RESET_TUTORIAL } from 'config'
+import {
+  DEBUG_KERNEL_LOG,
+  ETHEREUM_NETWORK,
+  HAS_INITIAL_POSITION_MARK,
+  HAS_INITIAL_REALM_MARK,
+  PREVIEW,
+  RESET_TUTORIAL
+} from 'config'
 import { RequestManager } from 'eth-connect'
 import { DecentralandIdentity, LoginState } from '@dcl/kernel-interface'
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
@@ -160,7 +167,7 @@ function* SetupTutorial() {
   // from the renderer
   const onboardingRealmName: string | undefined = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
   const isNewTutorialDisabled =
-    onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
+    onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK || HAS_INITIAL_REALM_MARK
   if (!isNewTutorialDisabled) {
     try {
       const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')

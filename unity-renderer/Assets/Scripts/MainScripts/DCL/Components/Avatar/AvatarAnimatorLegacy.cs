@@ -264,9 +264,11 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             rayCache.origin = velocityTargetPosition + rayOffset;
             rayCache.direction = Vector3.down;
 
+            LayerMask iGroundLayers = DCLCharacterController.i?.groundLayers ?? new LayerMask();
+
             isGroundedByRaycast = Physics.Raycast(rayCache,
                 RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
-                DCLCharacterController.i.groundLayers);
+                iGroundLayers);
 
         }
 

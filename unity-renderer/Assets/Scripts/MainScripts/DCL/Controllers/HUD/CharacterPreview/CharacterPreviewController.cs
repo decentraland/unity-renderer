@@ -6,64 +6,52 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
+    using UnityEngine;
+
     public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewController
     {
         private const int SNAPSHOT_BODY_WIDTH_RES = 256;
         private const int SNAPSHOT_BODY_HEIGHT_RES = 512;
-
         private const int SNAPSHOT_FACE_256_WIDTH_RES = 256;
         private const int SNAPSHOT_FACE_256_HEIGHT_RES = 256;
 
-        private const int SUPERSAMPLING = 1;
-        private const float CAMERA_TRANSITION_TIME = 0.5f;
-
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
-        public enum CameraFocus
-        {
-            DefaultEditing,
-            FaceEditing,
-            FaceSnapshot,
-            BodySnapshot,
-            Preview
-        }
-
-        private Dictionary<CameraFocus, Transform> cameraFocusLookUp;
+        private Dictionary<PreviewCameraFocus, Transform> cameraFocusLookUp;
 
         [SerializeField] private new Camera camera;
         [SerializeField] private Transform defaultEditingTemplate;
         [SerializeField] private Transform faceEditingTemplate;
-
         [SerializeField] private Transform faceSnapshotTemplate;
         [SerializeField] private Transform bodySnapshotTemplate;
         [SerializeField] private Transform previewTemplate;
-
         [SerializeField] private GameObject avatarContainer;
         [SerializeField] private Transform baseAvatarContainer;
         [SerializeField] private BaseAvatarReferences baseAvatarReferencesPrefab;
+        [SerializeField] private GameObject avatarShadow;
 
         private Service<IAvatarFactory> avatarFactory;
 
         private IAvatar avatar;
         private readonly AvatarModel currentAvatarModel = new () { wearables = new List<string>() };
         private CancellationTokenSource loadingCts = new ();
-
         private IAnimator animator;
         private Quaternion avatarContainerDefaultRotation;
+        private Transform cameraTransform;
+        private IPreviewCameraController cameraController;
 
         private void Awake()
         {
-            cameraFocusLookUp = new Dictionary<CameraFocus, Transform>()
+            cameraFocusLookUp = new Dictionary<PreviewCameraFocus, Transform>()
             {
-                { CameraFocus.DefaultEditing, defaultEditingTemplate },
-                { CameraFocus.FaceEditing, faceEditingTemplate },
-                { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
-                { CameraFocus.BodySnapshot, bodySnapshotTemplate },
-                { CameraFocus.Preview, previewTemplate }
+                { PreviewCameraFocus.DefaultEditing, defaultEditingTemplate },
+                { PreviewCameraFocus.FaceEditing, faceEditingTemplate },
+                { PreviewCameraFocus.FaceSnapshot, faceSnapshotTemplate },
+                { PreviewCameraFocus.BodySnapshot, bodySnapshotTemplate },
+                { PreviewCameraFocus.Preview, previewTemplate }
             };
 
             this.animator = GetComponentInChildren<IAnimator>();
@@ -73,10 +61,14 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void SetEnabled(bool isEnabled)
         {
             gameObject.SetActive(isEnabled);
-            camera.enabled = isEnabled;
+            cameraController.SetCameraEnabled(isEnabled);
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
 
-        public void Initialize(CharacterPreviewMode loadingMode, RenderTexture targetTexture)
+        public void Initialize(
+            CharacterPreviewMode loadingMode,
+            RenderTexture targetTexture,
+            IPreviewCameraController previewCameraController)
         {
             avatar?.Dispose();
             avatar = loadingMode switch
@@ -86,7 +78,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                          _ => avatar,
                      };
 
-            camera.targetTexture = targetTexture;
+            this.cameraController = previewCameraController;
+            cameraController.SetCamera(camera, targetTexture);
         }
 
         public async UniTask TryUpdateModelAsync(AvatarModel newModel, CancellationToken cancellationToken = default)
@@ -102,7 +95,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 ? loadingCts.Token
                 : CancellationTokenSource.CreateLinkedTokenSource(loadingCts.Token, cancellationToken).Token;
 
-
             await UpdateModelAsync(newModel, cancellationToken);
         }
 
@@ -112,6 +104,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             loadingCts?.Dispose();
             loadingCts = null;
             avatar?.Dispose();
+            cameraController.Dispose();
         }
 
         private IAvatar CreateAvatar() =>
@@ -131,15 +124,15 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             try
             {
                 ct.ThrowIfCancellationRequested();
-                List<string> wearables = new List<string>(newModel.wearables);
-                wearables.Add(newModel.bodyShape);
+                List<string> wearables = new List<string>(newModel.wearables) { newModel.bodyShape };
 
                 await avatar.Load(wearables, newModel.emotes.Select(x => x.urn).ToList(), new AvatarSettings
                 {
                     bodyshapeId = newModel.bodyShape,
                     eyesColor = newModel.eyeColor,
                     hairColor = newModel.hairColor,
-                    skinColor = newModel.skinColor
+                    skinColor = newModel.skinColor,
+                    forceRender = new HashSet<string>(newModel.forceRender)
                 }, ct);
             }
             catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
@@ -160,100 +153,53 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             global::DCL.Environment.i.platform.cullingController.Stop();
 
-            var current = camera.targetTexture;
-            camera.targetTexture = null;
+            var current = cameraController.CurrentTargetTexture;
+            cameraController.SetTargetTexture(null);
             var avatarAnimator = avatarContainer.gameObject.GetComponentInChildren<AvatarAnimatorLegacy>();
 
-            SetFocus(CameraFocus.FaceSnapshot, false);
+            SetFocus(PreviewCameraFocus.FaceSnapshot, false);
             avatarAnimator.Reset();
             yield return null;
-            Texture2D face256 = Snapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
+            Texture2D face256 = cameraController.TakeSnapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
 
-            SetFocus(CameraFocus.BodySnapshot, false);
+            SetFocus(PreviewCameraFocus.BodySnapshot, false);
             avatarAnimator.Reset();
             yield return null;
-            Texture2D body = Snapshot(SNAPSHOT_BODY_WIDTH_RES, SNAPSHOT_BODY_HEIGHT_RES);
+            Texture2D body = cameraController.TakeSnapshot(SNAPSHOT_BODY_WIDTH_RES, SNAPSHOT_BODY_HEIGHT_RES);
 
-            SetFocus(CameraFocus.DefaultEditing, false);
+            SetFocus(PreviewCameraFocus.DefaultEditing, false);
 
-            camera.targetTexture = current;
+            cameraController.SetTargetTexture(current);
 
             global::DCL.Environment.i.platform.cullingController.Start();
             callback?.Invoke(face256, body);
         }
 
-        private Texture2D Snapshot(int width, int height)
-        {
-            RenderTexture rt = new RenderTexture(width * SUPERSAMPLING, height * SUPERSAMPLING, 32);
-            camera.targetTexture = rt;
-            Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
-            camera.Render();
-            RenderTexture.active = rt;
-            screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            screenShot.Apply();
+        public void SetFocus(PreviewCameraFocus focus, bool useTransition = true) =>
+            cameraController.SetFocus(cameraFocusLookUp[focus], useTransition);
 
-            return screenShot;
-        }
-
-        private Coroutine cameraTransitionCoroutine;
-
-        public void SetFocus(CameraFocus focus, bool useTransition = true)
-        {
-            SetFocus(cameraFocusLookUp[focus], useTransition);
-        }
-
-        private void SetFocus(Transform transform, bool useTransition = true)
-        {
-            if (cameraTransitionCoroutine != null) { StopCoroutine(cameraTransitionCoroutine); }
-
-            if (useTransition && gameObject.activeInHierarchy)
-            {
-                cameraTransitionCoroutine = StartCoroutine(CameraTransition(camera.transform.position, transform.position, camera.transform.rotation, transform.rotation, CAMERA_TRANSITION_TIME));
-            }
-            else
-            {
-                var cameraTransform = camera.transform;
-                cameraTransform.position = transform.position;
-                cameraTransform.rotation = transform.rotation;
-            }
-        }
-
-        private IEnumerator CameraTransition(Vector3 initPos, Vector3 endPos, Quaternion initRotation, Quaternion endRotation, float time)
-        {
-            var cameraTransform = camera.transform;
-            float currentTime = 0;
-
-            float inverseTime = 1 / time;
-
-            while (currentTime < time)
-            {
-                currentTime = Mathf.Clamp(currentTime + Time.deltaTime, 0, time);
-                cameraTransform.position = Vector3.Lerp(initPos, endPos, currentTime * inverseTime);
-                cameraTransform.rotation = Quaternion.Lerp(initRotation, endRotation, currentTime * inverseTime);
-                yield return null;
-            }
-
-            cameraTransitionCoroutine = null;
-        }
-
-        public void Rotate(float rotationVelocity)
-        {
+        public void Rotate(float rotationVelocity) =>
             avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up);
-        }
 
-        public void ResetRotation()
-        {
+        public void ResetRotation() =>
             avatarContainer.transform.rotation = avatarContainerDefaultRotation;
-        }
 
-        public void PlayEmote(string emoteId, long timestamp)
-        {
+        public void MoveCamera(Vector3 positionDelta, bool changeYLimitsDependingOnZPosition) =>
+            cameraController.MoveCamera(positionDelta, changeYLimitsDependingOnZPosition);
+
+        public void SetCameraLimits(Bounds limits) =>
+            cameraController.SetCameraLimits(limits);
+
+        public void ConfigureZoom(float verticalCenterRef, float bottomMaxOffset, float topMaxOffset) =>
+            cameraController.ConfigureZoom(verticalCenterRef, bottomMaxOffset, topMaxOffset);
+
+        public void SetCharacterShadowActive(bool isActive) =>
+            avatarShadow.SetActive(isActive);
+
+        public void PlayEmote(string emoteId, long timestamp) =>
             avatar.PlayEmote(emoteId, timestamp);
-        }
 
-        public void Dispose()
-        {
+        public void Dispose() =>
             Destroy(gameObject);
-        }
     }
 }

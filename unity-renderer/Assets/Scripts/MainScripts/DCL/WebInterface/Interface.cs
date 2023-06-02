@@ -1310,7 +1310,7 @@ namespace DCL.Interface
             public string face256;
             public string body;
             public bool isSignUpFlow;
-            public AvatarModel avatar;
+            public AvatarModelDTO avatar;
         }
 
         public static class RendererAuthenticationType
@@ -1367,9 +1367,10 @@ namespace DCL.Interface
 
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
         {
+
             var payload = new SaveAvatarPayload()
             {
-                avatar = avatar,
+                avatar = avatar.ToAvatarModelDto(),
                 face256 = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
                 body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG()),
                 isSignUpFlow = isSignUpFlow

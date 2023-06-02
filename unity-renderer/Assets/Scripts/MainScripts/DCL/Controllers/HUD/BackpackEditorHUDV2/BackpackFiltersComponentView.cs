@@ -61,9 +61,11 @@ namespace DCL.Backpack
                     text = defaultCollection.name,
                     isOn = true,
                     isTextActive = true,
+                    changeTextColorOnSelect = true,
                 };
 
                 collectionsToAdd.Add(defaultToggle);
+                selectedCollections.Clear();
                 selectedCollections.Add(defaultToggle.id);
             }
 
@@ -75,13 +77,65 @@ namespace DCL.Backpack
                     text = collection.name,
                     isOn = false,
                     isTextActive = true,
+                    changeTextColorOnSelect = true,
                 };
 
                 collectionsToAdd.Add(newCollectionModel);
             }
 
+            if (collectionsToAdd.Count > 0)
+                collectionDropdown.SetTitle(collectionsToAdd[0].text);
+
             collectionDropdown.SetOptions(collectionsToAdd);
             loadedFilters = collectionsToAdd;
+        }
+
+        public void SetSearchText(string text, bool notify) =>
+            searchBar.SubmitSearch(text, notify);
+
+        public void SetOnlyCollectiblesToggleIsOn(bool isOn, bool notify)
+        {
+            if (notify)
+                onlyCollectiblesToggle.isOn = isOn;
+            else
+                onlyCollectiblesToggle.SetIsOnWithoutNotify(isOn);
+        }
+
+        public void SetSorting(NftOrderByOperation type, bool directionAscending, bool notify)
+        {
+            IToggleComponentView option = sortByDropdown.SelectOption(OrderByToOptionId(type, directionAscending), notify);
+            sortByDropdown.SetTitle(option.title);
+        }
+
+        public void SelectDropdownCollections(HashSet<string> collections, bool notify)
+        {
+            var isFirstAssigned = false;
+
+            foreach (string collection in collections)
+            {
+                collectionDropdown.SelectOption(collection, notify);
+
+                if (isFirstAssigned) continue;
+                IToggleComponentView option = collectionDropdown.GetOption(collection);
+                if (option == null) continue;
+                collectionDropdown.SetTitle(option.title);
+                isFirstAssigned = true;
+            }
+        }
+
+        private string OrderByToOptionId(NftOrderByOperation type, bool directionAscending)
+        {
+            switch (type)
+            {
+                case NftOrderByOperation.Date:
+                    return directionAscending ? OLDEST_FILTER_ID : NEWEST_FILTER_ID;
+                case NftOrderByOperation.Rarity:
+                    return directionAscending ? LESS_RARE_FILTER_ID : RAREST_FILTER_ID;
+                case NftOrderByOperation.Name:
+                    return directionAscending ? NAME_AZ_FILTER_ID : NAME_ZA_FILTER_ID;
+                default:
+                    throw new ArgumentOutOfRangeException($"Unsupported order type operation: {type}, direction: {(directionAscending ? "ASC" : "DESC")}");
+            }
         }
 
         private void LoadSortByDropdown()
@@ -105,15 +159,12 @@ namespace DCL.Backpack
 
         private void OnCollectionDropdownChanged(bool isOn, string optionId, string optionName)
         {
-            if (isOn)
-            {
-                if (selectedCollections.Contains(optionId))
-                    return;
+            if (!isOn)
+                return;
 
-                selectedCollections.Add(optionId);
-            }
-            else
-                selectedCollections.Remove(optionId);
+            collectionDropdown.SetTitle(optionName);
+            selectedCollections.Clear();
+            selectedCollections.Add(optionId);
 
             // need to make a copy of the collection because it may be modified in the event subscription
             OnCollectionChanged?.Invoke(selectedCollections.ToHashSet());

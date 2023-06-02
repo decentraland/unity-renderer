@@ -24,4 +24,5 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsComponent { get; }
     IInternalECSComponent<InternalRaycast> raycastComponent { get; }
     IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
+    IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
 }

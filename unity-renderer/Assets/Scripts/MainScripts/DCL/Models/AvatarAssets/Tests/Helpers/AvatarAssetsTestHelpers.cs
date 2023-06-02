@@ -17,6 +17,8 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
             wid.emoteDataV0 = null;
             wid.baseUrl = TestAssetsUtils.GetPath() + "/Avatar/Assets/";
 
+            ThumbnailsManager.bypassRequests = true;
+
             foreach (var rep in wid.data.representations)
             {
                 rep.contents = rep.contents.Select((x) =>
@@ -41,6 +43,10 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
             {
                 PrepareWearableItemDummy(wearableItem);
                 dummyCatalog.Add(wearableItem.id, wearableItem);
+
+                wearablesCatalogService
+                   .RequestWearableAsync(wearableItem.id, Arg.Any<CancellationToken>())
+                   .Returns(_ => UniTask.FromResult<WearableItem>(wearableItem));
             }
 
             wearablesCatalogService.WearablesCatalog.Returns(dummyCatalog);
@@ -81,15 +87,6 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<CancellationToken>())
                .Returns(_ => UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
-
-            wearablesCatalogService
-               .RequestWearableAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-               .Returns(_ =>
-                {
-                    UniTaskCompletionSource<WearableItem> mockedResult = new UniTaskCompletionSource<WearableItem>();
-                    mockedResult.TrySetResult(null);
-                    return mockedResult.Task;
-                });
 
             return wearablesCatalogService;
         }
