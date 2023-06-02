@@ -243,7 +243,13 @@ namespace DCL.Backpack
                             }
                         }
 
-                        EquipWearable(wearable, EquipWearableSource.None, false, false, false);
+                        try { EquipWearable(wearable, EquipWearableSource.None, false, false, false); }
+                        catch (OperationCanceledException) { throw; }
+                        catch (Exception e)
+                        {
+                            Debug.LogError($"Cannot equip the wearable {wearableId}");
+                            Debug.LogException(e);
+                        }
                     }
 
                     avatarSlotsHUDController.Recalculate(model.forceRender);

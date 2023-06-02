@@ -38,7 +38,6 @@ public class IntegrationTestSuite_Legacy
     protected virtual IEnumerator SetUp()
     {
         EnvironmentSettings.RUNNING_TESTS = true;
-        AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
         PoolManager.enablePrewarm = false;
 
         // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
@@ -162,7 +161,7 @@ public class IntegrationTestSuite_Legacy
 
     protected void TearDown_Memory()
     {
-        AssetPromiseKeeper_GLTF.i?.Cleanup();
+        AssetPromiseKeeper_GLTFast_Instance.i?.Cleanup();
         AssetPromiseKeeper_AB_GameObject.i?.Cleanup();
         AssetPromiseKeeper_AB.i?.Cleanup();
         AssetPromiseKeeper_Texture.i?.Cleanup();

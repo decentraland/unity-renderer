@@ -108,7 +108,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
         Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshFilter>() == null,
             "After updating the entity shape to a GLTF shape, the mesh filter should be removed from the object");
         Assert.IsTrue(
-            scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+            scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
             "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
         // Update its shape to a sphere
@@ -124,7 +124,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
         Assert.AreEqual("DCL Sphere Instance", meshName);
 
         Assert.IsTrue(
-            scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
-            "'GLTFScene' child object with 'InstantiatedGLTF' component shouldn't exist after the shape is updated to a non-GLTF shape");
+            scene.entities[entityId].gameObject.transform.Find("Lantern") == null,
+            "'GLTFScene' child object with 'Lantern' game object shouldn't exist after the shape is updated to a non-GLTF shape");
     }
 }
