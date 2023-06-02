@@ -325,6 +325,16 @@ namespace DCL.Backpack
             view.Received(1).HideContinueSignup();
         }
 
+        [Test]
+        public void SelectBodyShapeCategoryWhenSignupFlow()
+        {
+            dataStore.common.isSignUpFlow.Set(true);
+
+            dataStore.HUDs.avatarEditorVisible.Set(true, true);
+
+            avatarSlotsView.Received(1).Select(WearableLiterals.Categories.BODY_SHAPE, true);
+        }
+
         private static UserProfileModel GetTestUserProfileModel() =>
             new ()
             {

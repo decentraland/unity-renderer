@@ -11,7 +11,6 @@ using UnityEngine;
  */
 public class ECS7TestEntity : IDCLEntity
 {
-    public IParcelScene scene { get; set; }
     public GameObject gameObject { get; internal set; }
     public long entityId { get; set; }
     public long parentId { get; set; }
@@ -70,6 +69,12 @@ public class ECS7TestEntity : IDCLEntity
     void IDCLEntity.ResetRelease()
     {
         throw new NotImplementedException();
+    }
+
+    IParcelScene IDCLEntity.scene
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
     }
 
     bool IDCLEntity.markedForCleanup

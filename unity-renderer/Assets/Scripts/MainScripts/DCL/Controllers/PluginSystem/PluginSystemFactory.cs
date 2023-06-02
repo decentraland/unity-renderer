@@ -20,6 +20,7 @@ using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
 using DCLPlugins.SentryPlugin;
 using DCLPlugins.SignupHUDPlugin;
+using DCLPlugins.ToSPopupHUDPlugin;
 using DCLPlugins.UIRefresherPlugin;
 
 namespace DCL
@@ -76,6 +77,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<FavoritePlacesPlugin>(() => new FavoritePlacesPlugin(), "favourite_places");
             pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
             pluginSystem.RegisterWithFlag<LoadingScreenV2Plugin>(() => new LoadingScreenV2Plugin(), "loading_screen_v2");
+            pluginSystem.RegisterWithFlag<ToSPopupHUDPlugin>(() => new ToSPopupHUDPlugin(), "seamless_login_variant");
 
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 Environment.i.serviceLocator.Get<IFriendsController>(),
