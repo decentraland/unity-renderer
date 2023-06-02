@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DCL.PlaymodeTests")]
+[assembly: InternalsVisibleTo("ECS7Plugin.Tests")]

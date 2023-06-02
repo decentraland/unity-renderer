@@ -88,7 +88,6 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
             ECS7TestEntity entity = Internal_CreateEntity(id);
             entity.gameObject.transform.SetParent(scene.GetSceneTransform(), false);
             scene.entities.Add(entity.entityId, entity);
-            entity.scene = scene;
             return entity;
         };
 
