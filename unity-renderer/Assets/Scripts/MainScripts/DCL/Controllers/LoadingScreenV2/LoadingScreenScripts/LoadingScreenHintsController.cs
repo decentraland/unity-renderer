@@ -8,11 +8,11 @@ using Object = UnityEngine.Object;
 namespace DCL.Controllers.LoadingScreenV2
 {
     /// <summary>
-    ///  - The view should receive a list of IHint and show them.
-    ///  - The view should contain the max amount of hints that can be displayed, and they should be set up after the list of IHint arrives. We could also use a pool.
+    ///  - The view should receive a list of Hint and show them.
+    ///  - The view should contain the max amount of hints that can be displayed, and they should be set up after the list of Hint arrives. We could also use a pool.
     ///  - All HintViews should initialize as disabled and hidden (no text, no image)
     ///  - If the list of hints is empty or the amount is less than the max amount, we should disable the rest of the HintViews.
-    ///  - When the loading is finished, this class should handle the disposal of the IHint and their textures.
+    ///  - When the loading is finished, this class should handle the disposal of the Hint and their textures.
     ///  - When the loading screen is triggered again, we should make sure that old Hints are not loaded or shown.
     ///  - The hints carousel goes to the next hints after a few (n) seconds.
     ///  - The hints carousel allows user input from keys (A or D) to go to the next or previous hint.
@@ -40,6 +40,14 @@ namespace DCL.Controllers.LoadingScreenV2
 
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
+
+            // Instantiate HintView prefabs and add them to the pool
+            for (int i = 0; i < MAX_HINTS; i++)
+            {
+                HintView newHintView = Object.Instantiate(hintViewPrefab);
+                newHintView.HideHint();  // Hide it initially
+                hintViewPool.Add(newHintView);
+            }
         }
 
         public async UniTask RequestHints(CancellationToken ctx)
@@ -51,22 +59,23 @@ namespace DCL.Controllers.LoadingScreenV2
             int index = 0;
             foreach (var hintResult in hintsResult)
             {
-                hintsDictionary.Add(index++, new Tuple<Hint, Texture2D>(hintResult.Key, hintResult.Value));
+                var hintTuple = new Tuple<Hint, Texture2D>(hintResult.Key, hintResult.Value);
+                hintsDictionary.Add(index++, hintTuple);
+
+                // Check if this is the first hint, if so start the carousel
+                if (index == 1)
+                {
+                    StartHintsCarousel();
+                }
             }
-
-            if (hintsDictionary.Count == 0)
-                return;
-
-            StartHintsCarousel();
         }
 
-        private async UniTask IterateHintsAsync()
+        public void StartHintsCarousel()
         {
-            while (!disposeCts.Token.IsCancellationRequested)
-            {
-                CarouselNextHint();
-                await UniTask.Delay(SHOWING_TIME_HINTS, cancellationToken: disposeCts.Token);
-            }
+            if (disposeCts != null || hintsDictionary.Count == 0) return;
+
+            disposeCts = new CancellationTokenSource();
+            ResetHintTimer();
         }
 
         public void StopHintsCarousel()
@@ -78,12 +87,23 @@ namespace DCL.Controllers.LoadingScreenV2
             disposeCts = null;
         }
 
-        public void StartHintsCarousel()
+        private async UniTask IterateHintsAsync(CancellationToken token)
         {
-            if (disposeCts != null) return;
+            while (!token.IsCancellationRequested)
+            {
+                CarouselNextHint();
+                await UniTask.Delay(SHOWING_TIME_HINTS, cancellationToken: token);
+            }
+        }
 
-            disposeCts = new CancellationTokenSource();
-            IterateHintsAsync().Forget();
+        public void ResetHintTimer()
+        {
+            if (disposeCts != null)
+            {
+                disposeCts.Cancel();
+                disposeCts = new CancellationTokenSource();
+                IterateHintsAsync(disposeCts.Token).Forget();
+            }
         }
 
         public void CarouselNextHint()
@@ -91,6 +111,15 @@ namespace DCL.Controllers.LoadingScreenV2
             hintViewPool[currentHintIndex].HideHint();
             currentHintIndex = (currentHintIndex + 1) % hintsDictionary.Count;
             UpdateHintView();
+            ResetHintTimer();
+        }
+
+        public void CarouselPreviousHint()
+        {
+            hintViewPool[currentHintIndex].HideHint();
+            currentHintIndex = (currentHintIndex - 1 + hintsDictionary.Count) % hintsDictionary.Count;
+            UpdateHintView();
+            ResetHintTimer();
         }
 
         private void UpdateHintView()
@@ -114,7 +143,6 @@ namespace DCL.Controllers.LoadingScreenV2
             hintViewPool.ForEach(hintView => hintView.HideHint());
         }
     }
-
 }
 
 
