@@ -175,13 +175,9 @@ namespace DCL.ECS7.InternalComponents
     {
         public uint SceneTick = 0;
         public float SceneInitialRunTime = 0;
-        public float SceneInitialFrameCount = Time.frameCount;
+        public float SceneInitialFrameCount = 0;
+        public uint EnableRestrictedActionTick = 0;
     }
 
     public class InternalIncreaseTickTagComponent : InternalComponent { }
-
-    public class InternalLastSceneInput : InternalComponent
-    {
-        public uint SceneTick;
-    }
 }

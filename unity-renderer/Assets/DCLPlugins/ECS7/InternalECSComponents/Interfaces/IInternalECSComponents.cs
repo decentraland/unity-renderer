@@ -26,5 +26,4 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
     IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
     IInternalECSComponent<InternalIncreaseTickTagComponent> IncreaseSceneTick { get; }
-    IInternalECSComponent<InternalLastSceneInput> LastInput { get; }
 }

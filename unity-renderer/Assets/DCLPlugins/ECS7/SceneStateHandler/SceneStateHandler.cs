@@ -28,39 +28,18 @@ namespace DCL.ECS7
             this.scenes = scenes;
             this.engineInfoComponent = engineInfoComponent;
             this.gltfContainerLoadingState = gltfContainerLoadingState;
+            this.increaseSceneTickTagComponent = increaseSceneTickTagComponent;
 
             context.GetSceneTick += GetSceneTick;
             context.IncreaseSceneTick += IncreaseSceneTick;
             context.IsSceneGltfLoadingFinished += IsSceneGltfLoadingFinished;
         }
 
-        internal uint GetSceneTick(int sceneNumber)
+        public void Dispose()
         {
-            if (scenes.TryGetValue(sceneNumber, out var scene))
-                return engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
-
-            return 0;
-        }
-
-        internal void IncreaseSceneTick(int sceneNumber)
-        {
-            increaseSceneTickTagComponent.PutFor(sceneNumber, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalIncreaseTickTagComponent());
-        }
-
-        internal bool IsSceneGltfLoadingFinished(int sceneNumber)
-        {
-            if (scenes.TryGetValue(sceneNumber, out var scene))
-            {
-                var keys = scene.entities.Keys;
-                foreach (long entityId in keys)
-                {
-                    var model = gltfContainerLoadingState.GetFor(scene, entityId)?.model;
-                    if (model != null && model.LoadingState == LoadingState.Loading)
-                        return false;
-                }
-            }
-
-            return true;
+            context.GetSceneTick -= GetSceneTick;
+            context.IncreaseSceneTick -= IncreaseSceneTick;
+            context.IsSceneGltfLoadingFinished -= IsSceneGltfLoadingFinished;
         }
 
         public void InitializeEngineInfoComponent(int sceneNumber)
@@ -76,11 +55,48 @@ namespace DCL.ECS7
                 });
         }
 
-        public void Dispose()
+        internal uint GetSceneTick(int sceneNumber)
         {
-            context.GetSceneTick -= GetSceneTick;
-            context.IncreaseSceneTick -= IncreaseSceneTick;
-            context.IsSceneGltfLoadingFinished -= IsSceneGltfLoadingFinished;
+            if (scenes.TryGetValue(sceneNumber, out var scene))
+                return engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
+
+            return 0;
+        }
+
+        internal void IncreaseSceneTick(int sceneNumber)
+        {
+            increaseSceneTickTagComponent.PutFor(sceneNumber, SpecialEntityId.SCENE_ROOT_ENTITY,
+                new InternalIncreaseTickTagComponent());
+        }
+
+        internal bool IsSceneGltfLoadingFinished(int sceneNumber)
+        {
+            if (scenes.TryGetValue(sceneNumber, out var scene))
+            {
+                var keys = scene.entities.Keys;
+
+                foreach (long entityId in keys)
+                {
+                    var model = gltfContainerLoadingState.GetFor(scene, entityId)?.model;
+
+                    if (model != null && model.LoadingState == LoadingState.Loading)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        internal bool IsSceneRestrictedActionEnabled(int sceneNumber)
+        {
+            if (scenes.TryGetValue(sceneNumber, out var scene))
+            {
+                InternalEngineInfo engineInfo = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
+                uint sceneTick = engineInfo.SceneTick;
+                return sceneTick != 0 && sceneTick == engineInfo.EnableRestrictedActionTick;
+            }
+
+            return false;
         }
     }
 }

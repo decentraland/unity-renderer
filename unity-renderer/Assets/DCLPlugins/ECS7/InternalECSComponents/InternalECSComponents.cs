@@ -34,7 +34,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
     public IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
     public IInternalECSComponent<InternalIncreaseTickTagComponent> IncreaseSceneTick { get; }
-    public IInternalECSComponent<InternalLastSceneInput> LastInput { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -214,15 +213,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             markAsDirtyComponents,
             crdtExecutors
         );
-
-        LastInput = new InternalECSComponent<InternalLastSceneInput>(
-            InternalECSComponentsId.LAST_SCENE_INPUT,
-            componentsManager,
-            componentsFactory,
-            null,
-            markAsDirtyComponents,
-            crdtExecutors
-        );
     }
 
     public void Dispose()
@@ -248,7 +238,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         GltfContainerLoadingStateComponent.Dispose();
         EngineInfo.Dispose();
         IncreaseSceneTick.Dispose();
-        LastInput.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()
