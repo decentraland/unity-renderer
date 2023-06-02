@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
+// TODO: We need to separate this entity into WearableItem and EmoteItem they both can inherit a EntityItem and just have different metadata
 [Serializable]
 public class WearableItem
 {

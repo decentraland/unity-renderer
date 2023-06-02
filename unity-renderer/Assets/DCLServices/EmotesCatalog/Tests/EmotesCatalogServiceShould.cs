@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Providers;
+using DCLServices.Lambdas;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -17,14 +19,13 @@ public class EmotesCatalogServiceShould
     private IEmotesCatalogBridge bridge;
     private EmbeddedEmote[] embededEmotes;
 
-
     [SetUp]
     public void SetUp()
     {
         bridge = Substitute.For<IEmotesCatalogBridge>();
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetEmbeddedEmotesSO());
-        catalog = new EmotesCatalogService(bridge, addressableResourceProvider);
+        catalog = new EmotesCatalogService(bridge, addressableResourceProvider, Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>());
         catalog.Initialize();
     }
 
@@ -340,7 +341,7 @@ public class EmotesCatalogServiceShould
 
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetExampleEmbeddedEmotesSO());
-        catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), addressableResourceProvider);
+        catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), addressableResourceProvider, Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>());
 
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
         Assert.AreEqual(catalog.emotes["id2"], embededEmotes[1]);

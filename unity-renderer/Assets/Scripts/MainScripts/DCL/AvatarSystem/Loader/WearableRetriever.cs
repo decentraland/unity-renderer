@@ -30,12 +30,11 @@ namespace AvatarSystem
 
                     if (sceneAb != null && sceneAb.IsSceneConverted())
                     {
-                        Debug.Log($"<color=green>Wearable AB -> {mainFile} {hash}</color>");
                         contentProvider.assetBundles = sceneAb.GetConvertedFiles();
                         contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
                     } else
                     {
-                        Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {(item != null ? item.id : hash)}</color>");
+                        Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {(item != null ? item.entityId : hash)}</color>");
                     }
                 }
 

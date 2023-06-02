@@ -109,7 +109,10 @@ namespace DCL
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
 
-            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
+            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(),
+                addressableResourceProvider,
+                result.Get<ILambdasService>(),
+                result.Get<IServiceProviders>()));
 
             result.Register<ITeleportController>(() => new TeleportController());
 
