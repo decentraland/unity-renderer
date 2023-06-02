@@ -262,6 +262,7 @@ namespace DCL.Backpack
 
                 return totalAmount;
             }
+            catch (OperationCanceledException) { }
             catch (Exception e) { Debug.LogException(e); }
 
             return 0;
