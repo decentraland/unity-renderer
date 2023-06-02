@@ -39,12 +39,12 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
 
-            var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, internalComponents.EngineInfo, componentWriter);
+            var inputSenderSystem = new ECSInputSenderSystem(inputResultComponent, internalComponents.EngineInfo, componentWriter);
 
             updateSystems = () =>
             {
                 internalComponents.MarkDirtyComponentsUpdate();
-                systemUpdate();
+                inputSenderSystem.Update();
                 internalComponents.ResetDirtyComponentsUpdate();
             };
 

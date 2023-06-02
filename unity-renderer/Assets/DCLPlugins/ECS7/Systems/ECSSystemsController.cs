@@ -64,7 +64,6 @@ public class ECSSystemsController : IDisposable
             CommonScriptableObjects.allUIHidden,
             DataStore.i.HUDs.isSceneUIEnabled);
 
-
         ECSBillboardSystem billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
 
         ECSVideoPlayerSystem videoPlayerSystem = new ECSVideoPlayerSystem(
@@ -107,7 +106,6 @@ public class ECSSystemsController : IDisposable
             context.componentGroups.RegisteredUiPointerEventsWithUiRemoved,
             context.componentGroups.RegisteredUiPointerEventsWithPointerEventsRemoved);
 
-
         ECSPointerInputSystem pointerInputSystem = new ECSPointerInputSystem(
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.inputEventResultsComponent,
@@ -128,6 +126,11 @@ public class ECSSystemsController : IDisposable
         IncreaseSceneTickSystem increaseSceneTickSystem = new IncreaseSceneTickSystem(
             context.internalEcsComponents.IncreaseSceneTick,
             context.internalEcsComponents.EngineInfo);
+
+        ECSInputSenderSystem inputSenderSystem = new ECSInputSenderSystem(
+            context.internalEcsComponents.inputEventResultsComponent,
+            context.internalEcsComponents.EngineInfo,
+            context.componentWriter);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -150,10 +153,7 @@ public class ECSSystemsController : IDisposable
         {
             uiPointerEventsSystem.Update,
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
-            ECSInputSenderSystem.CreateSystem(
-                context.internalEcsComponents.inputEventResultsComponent,
-                context.internalEcsComponents.EngineInfo,
-                context.componentWriter),
+            inputSenderSystem.Update,
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,

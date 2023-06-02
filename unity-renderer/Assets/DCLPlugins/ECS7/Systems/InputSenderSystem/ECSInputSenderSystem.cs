@@ -3,39 +3,30 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using System;
 
 namespace ECSSystems.InputSenderSystem
 {
-    public static class ECSInputSenderSystem
+    public class ECSInputSenderSystem
     {
-        private class State
-        {
-            public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
-            public IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
-            public IECSComponentWriter componentWriter;
-            public uint lastTimestamp = 0;
-        }
+        private IInternalECSComponent<InternalInputEventResults> inputResultComponent;
+        private IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
+        private IECSComponentWriter componentWriter;
+        private uint lastTimestamp = 0;
 
-        public static Action CreateSystem(
+        public ECSInputSenderSystem(
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
             IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
             IECSComponentWriter componentWriter)
         {
-            var state = new State()
-            {
-                inputResultComponent = inputResultComponent,
-                engineInfoComponent = engineInfoComponent,
-                componentWriter = componentWriter
-            };
-
-            return () => Update(state);
+            this.inputResultComponent = inputResultComponent;
+            this.engineInfoComponent = engineInfoComponent;
+            this.componentWriter = componentWriter;
         }
 
-        private static void Update(State state)
+        public void Update()
         {
-            var inputResults = state.inputResultComponent.GetForAll();
-            var writer = state.componentWriter;
+            var inputResults = inputResultComponent.GetForAll();
+            var writer = componentWriter;
 
             for (int i = 0; i < inputResults.Count; i++)
             {
@@ -61,8 +52,8 @@ namespace ECSSystems.InputSenderSystem
                             Button = inputEvent.button,
                             Hit = inputEvent.hit,
                             State = inputEvent.type,
-                            Timestamp = state.lastTimestamp++,
-                            TickNumber = state.engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick
+                            Timestamp = lastTimestamp++,
+                            TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick
                         },
                         ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
                 }
