@@ -73,7 +73,8 @@ namespace DCL.ECS7
                 new InternalEngineInfo()
                 {
                     SceneTick = 0,
-                    SceneInitialRunTime = Time.realtimeSinceStartup
+                    SceneInitialRunTime = Time.realtimeSinceStartup,
+                    SceneInitialFrameCount = Time.frameCount
                 });
         }
 
