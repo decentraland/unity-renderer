@@ -7,6 +7,7 @@ using ECSSystems.ECSRaycastSystem;
 using ECSSystems.ECSSceneBoundsCheckerSystem;
 using ECSSystems.ECSUiPointerEventsSystem;
 using ECSSystems.GltfContainerLoadingStateSystem;
+using ECSSystems.IncreaseSceneTickSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
@@ -37,6 +38,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
+    private readonly IWorldState worldState;
 
     public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
     {
@@ -44,6 +46,7 @@ public class ECSSystemsController : IDisposable
         this.componentWriteSystem = componentWriteSystem;
         this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
         this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
+        this.worldState = Environment.i.world.state;
 
         var canvas = Resources.Load<GameObject>("ECSInteractionHoverCanvas");
         hoverCanvas = Object.Instantiate(canvas);
@@ -62,7 +65,6 @@ public class ECSSystemsController : IDisposable
             Environment.i.world.state,
             CommonScriptableObjects.allUIHidden,
             DataStore.i.HUDs.isSceneUIEnabled);
-
 
         ECSBillboardSystem billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
 
@@ -106,15 +108,13 @@ public class ECSSystemsController : IDisposable
             context.componentGroups.RegisteredUiPointerEventsWithUiRemoved,
             context.componentGroups.RegisteredUiPointerEventsWithPointerEventsRemoved);
 
-
         ECSPointerInputSystem pointerInputSystem = new ECSPointerInputSystem(
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.inputEventResultsComponent,
             context.internalEcsComponents.PointerEventsComponent,
             interactionHoverCanvas,
             Environment.i.world.state,
-            DataStore.i.ecs7,
-            DataStore.i.rpc.context.restrictedActions);
+            DataStore.i.ecs7);
 
         GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
             context.componentWriter,
@@ -123,6 +123,17 @@ public class ECSSystemsController : IDisposable
         ECSEngineInfoSystem engineInfoSystem = new ECSEngineInfoSystem(
             context.componentWriter,
             context.internalEcsComponents.EngineInfo);
+
+        IncreaseSceneTickSystem increaseSceneTickSystem = new IncreaseSceneTickSystem(
+            context.internalEcsComponents.IncreaseSceneTick,
+            context.internalEcsComponents.EngineInfo);
+
+        ECSInputSenderSystem inputSenderSystem = new ECSInputSenderSystem(
+            context.internalEcsComponents.inputEventResultsComponent,
+            context.internalEcsComponents.EngineInfo,
+            context.componentWriter,
+            GetCurrentSceneNumber
+        );
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -145,15 +156,13 @@ public class ECSSystemsController : IDisposable
         {
             uiPointerEventsSystem.Update,
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
-            ECSInputSenderSystem.CreateSystem(
-                context.internalEcsComponents.inputEventResultsComponent,
-                context.internalEcsComponents.EngineInfo,
-                context.componentWriter),
+            inputSenderSystem.Update,
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,
             raycastSystem.Update, // Should always be after player/entity transformations update
-            sceneBoundsCheckerSystem.Update // Should always be the last system
+            sceneBoundsCheckerSystem.Update, // Should always run after all systems that might affect bound checks
+            increaseSceneTickSystem.Update // Should always be the last system
         };
     }
 
@@ -220,5 +229,10 @@ public class ECSSystemsController : IDisposable
         {
             Debug.LogException(e);
         }
+    }
+
+    private int GetCurrentSceneNumber()
+    {
+        return worldState.GetCurrentSceneNumber();
     }
 }

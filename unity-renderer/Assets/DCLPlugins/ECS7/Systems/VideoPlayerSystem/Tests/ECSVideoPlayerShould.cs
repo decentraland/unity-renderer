@@ -60,14 +60,16 @@ namespace Tests
             videoPlayer = new WebVideoPlayer("test", "test.mp4", true, new VideoPluginWrapper_Mock());
 
             sceneStateHandler = new SceneStateHandler(
-                Substitute.For<CRDTServiceContext>(),
+                new CRDTServiceContext(),
+                new RestrictedActionsContext(),
                 new Dictionary<int, IParcelScene>()
                 {
                     { scene0.sceneData.sceneNumber, scene0 },
                     { scene1.sceneData.sceneNumber, scene1 }
                 },
                 internalEcsComponents.EngineInfo,
-                internalEcsComponents.GltfContainerLoadingStateComponent);
+                internalEcsComponents.GltfContainerLoadingStateComponent,
+                internalEcsComponents.IncreaseSceneTick);
             sceneStateHandler.InitializeEngineInfoComponent(scene0.sceneData.sceneNumber);
             sceneStateHandler.InitializeEngineInfoComponent(scene1.sceneData.sceneNumber);
         }

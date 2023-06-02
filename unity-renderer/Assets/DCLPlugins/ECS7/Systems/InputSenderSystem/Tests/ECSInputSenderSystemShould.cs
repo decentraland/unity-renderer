@@ -39,20 +39,26 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
 
-            var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, internalComponents.EngineInfo, componentWriter);
+            var inputSenderSystem = new ECSInputSenderSystem(
+                inputResultComponent,
+                internalComponents.EngineInfo,
+                componentWriter,
+                () => 0);
 
             updateSystems = () =>
             {
                 internalComponents.MarkDirtyComponentsUpdate();
-                systemUpdate();
+                inputSenderSystem.Update();
                 internalComponents.ResetDirtyComponentsUpdate();
             };
 
             sceneStateHandler = new SceneStateHandler(
-                Substitute.For<CRDTServiceContext>(),
-                new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
+                new CRDTServiceContext(),
+                new RestrictedActionsContext(),
+                new Dictionary<int, IParcelScene>() { { scene.sceneData.sceneNumber, scene } },
                 internalComponents.EngineInfo,
-                internalComponents.GltfContainerLoadingStateComponent);
+                internalComponents.GltfContainerLoadingStateComponent,
+                internalComponents.IncreaseSceneTick);
 
             sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
         }

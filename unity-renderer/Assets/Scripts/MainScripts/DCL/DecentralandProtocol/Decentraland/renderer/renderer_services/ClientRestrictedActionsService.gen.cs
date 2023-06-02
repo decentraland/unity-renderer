@@ -14,6 +14,10 @@ public interface IClientRestrictedActionsService
   UniTask<OpenModalResponse> OpenExternalUrl(OpenExternalUrlRequest request);
 
   UniTask<OpenModalResponse> OpenNftDialog(OpenNftDialogRequest request);
+
+  UniTask<OpenModalResponse> ChangeRealm(ChangeRealmRequest request);
+
+  UniTask<OpenModalResponse> SetCommunicationsAdapter(CommsAdapterRequest request);
 }
 
 public class ClientRestrictedActionsService : IClientRestrictedActionsService
@@ -39,6 +43,16 @@ public class ClientRestrictedActionsService : IClientRestrictedActionsService
   public UniTask<OpenModalResponse> OpenNftDialog(OpenNftDialogRequest request)
   {
       return module.CallUnaryProcedure<OpenModalResponse>("OpenNftDialog", request);
+  }
+
+  public UniTask<OpenModalResponse> ChangeRealm(ChangeRealmRequest request)
+  {
+      return module.CallUnaryProcedure<OpenModalResponse>("ChangeRealm", request);
+  }
+
+  public UniTask<OpenModalResponse> SetCommunicationsAdapter(CommsAdapterRequest request)
+  {
+      return module.CallUnaryProcedure<OpenModalResponse>("SetCommunicationsAdapter", request);
   }
 
 }

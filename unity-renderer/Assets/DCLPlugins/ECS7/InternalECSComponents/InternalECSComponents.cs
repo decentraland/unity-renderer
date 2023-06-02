@@ -33,6 +33,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalRaycast> raycastComponent { get; }
     public IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
     public IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
+    public IInternalECSComponent<InternalIncreaseTickTagComponent> IncreaseSceneTick { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -203,6 +204,15 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             markAsDirtyComponents,
             crdtExecutors
         );
+
+        IncreaseSceneTick = new InternalECSComponent<InternalIncreaseTickTagComponent>(
+            InternalECSComponentsId.INCREASE_SCENE_TICK,
+            componentsManager,
+            componentsFactory,
+            null,
+            markAsDirtyComponents,
+            crdtExecutors
+        );
     }
 
     public void Dispose()
@@ -227,6 +237,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         RegisteredUiPointerEventsComponent.Dispose();
         GltfContainerLoadingStateComponent.Dispose();
         EngineInfo.Dispose();
+        IncreaseSceneTick.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()

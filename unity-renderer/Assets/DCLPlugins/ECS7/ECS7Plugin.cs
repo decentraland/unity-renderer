@@ -26,17 +26,18 @@ namespace DCL.ECS7
         {
             DataStore.i.ecs7.isEcs7Enabled = true;
             loadedScenes = DataStore.i.ecs7.scenes;
-            CRDTServiceContext crdtContext = DataStore.i.rpc.context.crdt;
+            CRDTServiceContext rpcCrdtContext = DataStore.i.rpc.context.crdt;
+            RestrictedActionsContext rpcRestrictedActionsContext = DataStore.i.rpc.context.restrictedActions;
 
             sceneController = Environment.i.world.sceneController;
             Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(10);
-            crdtContext.CrdtExecutors = crdtExecutors;
+            rpcCrdtContext.CrdtExecutors = crdtExecutors;
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, crdtExecutors);
 
-            crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, crdtContext);
+            crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, rpcCrdtContext);
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(crdtExecutors, sceneController, DataStore.i.rpc.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
@@ -53,10 +54,12 @@ namespace DCL.ECS7
             sceneNumberMapping = new Dictionary<int, IParcelScene>(81); // Scene Load Radius 4 -> max scenes 81
 
             sceneStateHandler = new SceneStateHandler(
-                crdtContext,
+                rpcCrdtContext,
+                rpcRestrictedActionsContext,
                 sceneNumberMapping,
                 internalEcsComponents.EngineInfo,
-                internalEcsComponents.GltfContainerLoadingStateComponent);
+                internalEcsComponents.GltfContainerLoadingStateComponent,
+                internalEcsComponents.IncreaseSceneTick);
 
             sceneController.OnNewSceneAdded += SceneControllerOnNewSceneAdded;
             sceneController.OnSceneRemoved += SceneControllerOnSceneRemoved;
