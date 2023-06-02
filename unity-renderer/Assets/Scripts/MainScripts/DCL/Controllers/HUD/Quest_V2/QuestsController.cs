@@ -1,9 +1,10 @@
 using Cysharp.Threading.Tasks;
-using DCL.Quests;
+using DCL.Tasks;
 using DCLServices.QuestsService;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace DCL.Quests
 {
@@ -15,6 +16,14 @@ namespace DCL.Quests
         private readonly IQuestCompletedComponentView questCompletedComponentView;
         private readonly IQuestOfferComponentView questOfferComponentView;
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
+        private CancellationTokenSource trackQuestCts = null;
+
+        public QuestsController(
+            IQuestsService questsService,
+            IQuestTrackerComponentView questTrackerComponentView,
+            IQuestCompletedComponentView questCompletedComponentView,
+            IQuestOfferComponentView questOfferComponentView) : this(questsService, null, questTrackerComponentView, questCompletedComponentView, questOfferComponentView)
+        { }
 
         public QuestsController(
             IQuestsService questsService,
@@ -29,22 +38,10 @@ namespace DCL.Quests
             this.questCompletedComponentView = questCompletedComponentView;
             this.questOfferComponentView = questOfferComponentView;
 
-            questsService.SetUserId(ownUserProfile.userId);
-            questsService.OnQuestUpdated += UpdateQuestTracker;
-        }
+            if(userProfileBridge != null)
+                questsService.SetUserId(ownUserProfile.userId);
 
-        public QuestsController(
-            IQuestsService questsService,
-            IQuestTrackerComponentView questTrackerComponentView,
-            IQuestCompletedComponentView questCompletedComponentView,
-            IQuestOfferComponentView questOfferComponentView)
-        {
-            this.questsService = questsService;
-            this.questTrackerComponentView = questTrackerComponentView;
-            this.questCompletedComponentView = questCompletedComponentView;
-            this.questOfferComponentView = questOfferComponentView;
-
-            questsService.OnQuestUpdated += UpdateQuestTracker;
+            //todo subscribe to quest pinned changes in OnQuestPinned
         }
 
         private void ShowQuestOffer(QuestStateUpdate quest)
@@ -54,35 +51,53 @@ namespace DCL.Quests
             questOfferComponentView.SetIsGuest(ownUserProfile.isGuest);
         }
 
-        private void UpdateQuestTracker(QuestStateWithData questStateUpdate)
+        private void OnQuestPinned(string current, string previous)
         {
-            //if(questStateUpdate.QuestState.StepsLeft == 0 && questStateUpdate.QuestState.CurrentSteps.Values)
+            trackQuestCts?.SafeCancelAndDispose();
+            trackQuestCts = null;
 
-            List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
-
-            foreach (var step in questStateUpdate.QuestState.CurrentSteps)
+            if (!string.IsNullOrEmpty(current))
             {
-                foreach (Task task in step.Value.TasksCompleted)
-                    questSteps.Add(new QuestStepComponentModel { isCompleted = true, text = task.Id });
-
-                foreach (Task task in step.Value.ToDos)
-                    questSteps.Add(new QuestStepComponentModel { isCompleted = false, text = task.Id });
+                trackQuestCts = new CancellationTokenSource();
+                StartTrackingPinnedQuest(current, trackQuestCts.Token).Forget();
             }
-
-            questTrackerComponentView.SetQuestTitle(questStateUpdate.Name);
-            questTrackerComponentView.SetQuestSteps(questSteps);
+            else
+            {
+                // todo: Hide tracker logic
+            }
         }
 
-        private void AccceptQuest(string questId)
+        private async UniTaskVoid StartTrackingPinnedQuest(string questInstanceId, CancellationToken ct)
         {
-            questsService.StartQuest(questId).Forget();
+            await foreach (var questStateUpdate in questsService.QuestUpdated.WithCancellation(ct))
+            {
+                // Ignore updates from other quests
+                if(questStateUpdate.QuestInstanceId != questInstanceId)
+                    continue;
+
+                List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
+                foreach (var step in questStateUpdate.QuestState.CurrentSteps)
+                {
+                    foreach (Task task in step.Value.TasksCompleted)
+                        questSteps.Add(new QuestStepComponentModel { isCompleted = true, text = task.Id });
+
+                    foreach (Task task in step.Value.ToDos)
+                        questSteps.Add(new QuestStepComponentModel { isCompleted = false, text = task.Id });
+                }
+
+                questTrackerComponentView.SetQuestTitle(questStateUpdate.Name);
+                questTrackerComponentView.SetQuestSteps(questSteps);
+            }
         }
 
-        private void AbortQuest(string questId)
+        private void AbortQuest(string questInstanceId)
         {
-            questsService.AbortQuest(questId).Forget();
+            questsService.AbortQuest(questInstanceId).Forget();
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            trackQuestCts?.SafeCancelAndDispose();
+        }
     }
 }

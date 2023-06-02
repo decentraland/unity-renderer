@@ -16,7 +16,7 @@ namespace DCLServices.QuestsService.TestScene
         {
             service = new QuestsService(client);
             service.SetUserId("Test");
-            service.OnQuestUpdated += (questUpdate) => {Debug.Log($"QuestUdpated: {questUpdate.Name}"); };
+            service.QuestUpdated.AddListener((questUpdate) => {Debug.Log($"QuestUdpated: {questUpdate.Name}"); });
             questController = new QuestsController(service, questTrackerComponentView, questCompletedComponentView, questOfferComponentView);
         }
     }

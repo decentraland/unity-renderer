@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,8 @@ namespace DCLServices.QuestsService
 {
     public interface IQuestsService : IDisposable
     {
-        event Action<QuestStateWithData> OnQuestStarted;
-        event Action<QuestStateWithData> OnQuestUpdated;
+        public IAsyncEnumerableWithEvent<QuestStateWithData> QuestStarted { get; }
+        public IAsyncEnumerableWithEvent<QuestStateWithData> QuestUpdated { get; }
         IReadOnlyDictionary<string, QuestStateWithData> CurrentState { get; }
 
         void SetUserId(string userId);
