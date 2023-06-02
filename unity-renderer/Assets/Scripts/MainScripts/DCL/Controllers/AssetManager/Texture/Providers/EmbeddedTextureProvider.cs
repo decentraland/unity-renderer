@@ -1,28 +1,21 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL.Providers;
+using MainScripts.DCL.AssetsEmbedment.Runtime;
 using System.Threading;
 using UnityEngine;
 
 namespace DCL
 {
     /// <summary>
-    /// Provides embeded textures
+    /// Provides textures from "Resources"
     /// </summary>
     public class EmbeddedTextureProvider : ITextureAssetProvider
     {
-        private readonly IAddressableResourceProvider resourceProvider;
-
-        public EmbeddedTextureProvider(IAddressableResourceProvider resourceProvider)
-        {
-            this.resourceProvider = resourceProvider;
-        }
-
         public async UniTask<Texture2D> GetTextureAsync(string url, CancellationToken cancellationToken = default)
         {
-            int lastSlash = url.LastIndexOf('/');
-            string hash = lastSlash > -1 ? url.Remove(0, lastSlash + 1) : url;
-
-            return await resourceProvider.GetAddressable<Texture2D>(hash, cancellationToken);
+            var lastSlash = url.LastIndexOf('/');
+            var hash = lastSlash > -1 ? url.Remove(0, lastSlash + 1) : url;
+            var result = await Resources.LoadAsync<Texture2D>(EmbeddedTextureResourcesPath.VALUE + "/" + hash).WithCancellation(cancellationToken);
+            return (Texture2D)result;
         }
     }
 }

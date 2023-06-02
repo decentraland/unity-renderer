@@ -46,7 +46,8 @@ import {
   UPDATE_TOS,
   userAuthenticated,
   UserAuthenticated,
-  USER_AUTHENTICATED
+  USER_AUTHENTICATED,
+  TOS_POPUP_ACCEPTED
 } from './actions'
 import { deleteSession, retrieveLastGuestSession, retrieveLastSessionByAddress, storeSession } from './index'
 import { getCurrentIdentity, isGuestLogin } from './selectors'
@@ -75,6 +76,10 @@ export function* sessionSaga(): any {
   yield takeEvery(USER_AUTHENTICATED, function* (action: UserAuthenticated) {
     yield call(saveSession, action.payload.identity, action.payload.isGuest)
     logger.log(`User ${action.payload.identity.address} logged in isGuest=` + action.payload.isGuest)
+  })
+
+  yield takeLatest(TOS_POPUP_ACCEPTED, function* () {
+    yield call(saveToPersistentStorage, 'tos_popup_accepted', true)
   })
 
   yield call(initialize)
@@ -135,7 +140,13 @@ function* authenticate(action: AuthenticateAction) {
   const avatar = yield call(initialRemoteProfileLoad)
 
   // 3. continue with signin/signup (only not in preview)
-  const isSignUp = avatar.version <= 0 && !PREVIEW
+  let isSignUp = avatar.version <= 0 && !PREVIEW
+  if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
+
+    const tosAccepted: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
+    isSignUp = !tosAccepted && !PREVIEW
+  }
+
   if (isSignUp) {
     yield put(signUpSetIsSignUp(isSignUp))
     yield take(SIGNUP)
@@ -325,7 +336,6 @@ function* logout() {
 }
 
 function* redirectToSignUp() {
-
   const q = new URLSearchParams(globalThis.location.search)
   q.set('show_wallet', '1')
   globalThis.history.replaceState({ show_wallet: '1' }, 'show_wallet', `?${q.toString()}`)
