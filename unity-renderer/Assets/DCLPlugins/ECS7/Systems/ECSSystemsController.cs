@@ -38,6 +38,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
+    private readonly IWorldState worldState;
 
     public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
     {
@@ -45,6 +46,7 @@ public class ECSSystemsController : IDisposable
         this.componentWriteSystem = componentWriteSystem;
         this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
         this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
+        this.worldState = Environment.i.world.state;
 
         var canvas = Resources.Load<GameObject>("ECSInteractionHoverCanvas");
         hoverCanvas = Object.Instantiate(canvas);
@@ -130,7 +132,9 @@ public class ECSSystemsController : IDisposable
         ECSInputSenderSystem inputSenderSystem = new ECSInputSenderSystem(
             context.internalEcsComponents.inputEventResultsComponent,
             context.internalEcsComponents.EngineInfo,
-            context.componentWriter);
+            context.componentWriter,
+            GetCurrentSceneNumber
+        );
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -226,5 +230,10 @@ public class ECSSystemsController : IDisposable
         {
             Debug.LogException(e);
         }
+    }
+
+    private int GetCurrentSceneNumber()
+    {
+        return worldState.GetCurrentSceneNumber();
     }
 }
