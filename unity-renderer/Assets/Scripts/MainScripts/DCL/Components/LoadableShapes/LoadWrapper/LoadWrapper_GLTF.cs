@@ -6,7 +6,6 @@ namespace DCL.Components
 {
     public class LoadWrapper_GLTF : LoadWrapper
     {
-        private const string FEATURE_GLTFAST = "gltfast";
         private const string SMR_UPDATE_OFFSCREEN_FEATURE_FLAG = "smr_update_offscreen";
         static readonly bool VERBOSE = false;
 
@@ -32,13 +31,10 @@ namespace DCL.Components
 
             DataStore_FeatureFlag featureFlags = DataStore.i.featureFlags;
 
-            bool CheckIfGltFastIsEnabled() =>
-                featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
-
             if (customContentProvider == null)
-                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles, CheckIfGltFastIsEnabled);
+                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles);
             else
-                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles,CheckIfGltFastIsEnabled);
+                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles);
 
             loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;

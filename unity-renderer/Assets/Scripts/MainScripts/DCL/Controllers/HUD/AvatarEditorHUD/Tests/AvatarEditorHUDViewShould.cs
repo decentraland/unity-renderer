@@ -1,5 +1,6 @@
 using DCL;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NUnit.Framework;
@@ -61,7 +62,7 @@ namespace AvatarEditorHUD_Tests
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService,
                 userProfileBridge);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize();
+            controller.Initialize(false, Substitute.For<IPreviewCameraRotationController>());
         }
 
         [Test]
