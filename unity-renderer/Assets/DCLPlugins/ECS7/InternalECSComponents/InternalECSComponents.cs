@@ -216,7 +216,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         );
 
         LastInput = new InternalECSComponent<InternalLastSceneInput>(
-            InternalECSComponentsId.INCREASE_SCENE_TICK,
+            InternalECSComponentsId.LAST_SCENE_INPUT,
             componentsManager,
             componentsFactory,
             null,

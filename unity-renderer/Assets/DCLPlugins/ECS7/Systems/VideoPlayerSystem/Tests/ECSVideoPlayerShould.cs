@@ -68,7 +68,8 @@ namespace Tests
                     { scene1.sceneData.sceneNumber, scene1 }
                 },
                 internalEcsComponents.EngineInfo,
-                internalEcsComponents.GltfContainerLoadingStateComponent);
+                internalEcsComponents.GltfContainerLoadingStateComponent,
+                internalEcsComponents.IncreaseSceneTick);
             sceneStateHandler.InitializeEngineInfoComponent(scene0.sceneData.sceneNumber);
             sceneStateHandler.InitializeEngineInfoComponent(scene1.sceneData.sceneNumber);
         }

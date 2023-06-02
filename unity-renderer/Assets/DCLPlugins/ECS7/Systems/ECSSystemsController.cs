@@ -2,10 +2,12 @@ using DCL;
 using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
+using ECSSystems.ECSEngineInfoSystem;
 using ECSSystems.ECSRaycastSystem;
 using ECSSystems.ECSSceneBoundsCheckerSystem;
 using ECSSystems.ECSUiPointerEventsSystem;
 using ECSSystems.GltfContainerLoadingStateSystem;
+using ECSSystems.IncreaseSceneTickSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
@@ -68,6 +70,7 @@ public class ECSSystemsController : IDisposable
         ECSVideoPlayerSystem videoPlayerSystem = new ECSVideoPlayerSystem(
             context.internalEcsComponents.videoPlayerComponent,
             context.internalEcsComponents.videoMaterialComponent,
+            context.internalEcsComponents.EngineInfo,
             context.componentWriter);
 
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
@@ -83,6 +86,7 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.physicColliderComponent,
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.customLayerColliderComponent,
+            context.internalEcsComponents.EngineInfo,
             context.componentWriter);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
@@ -153,7 +157,7 @@ public class ECSSystemsController : IDisposable
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,
-            raycastSystem.Update, // should always be after player/entity transformations update
+            raycastSystem.Update, // Should always be after player/entity transformations update
             sceneBoundsCheckerSystem.Update, // Should always run after all systems that might affect bound checks
             increaseSceneTickSystem.Update // Should always be the last system
         };

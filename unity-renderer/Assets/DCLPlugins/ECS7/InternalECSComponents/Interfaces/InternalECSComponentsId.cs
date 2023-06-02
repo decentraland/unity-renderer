@@ -21,5 +21,5 @@ public enum InternalECSComponentsId
     GLTF_CONTAINER_LOADING_STATE = 19,
     ENGINE_INFO = 20,
     INCREASE_SCENE_TICK = 21,
-    LAST_SCENE_INPUT = 21
+    LAST_SCENE_INPUT = 22
 }

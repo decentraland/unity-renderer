@@ -64,7 +64,8 @@ namespace Tests
                 Substitute.For<CRDTServiceContext>(),
                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
                 internalComponents.EngineInfo,
-                internalComponents.GltfContainerLoadingStateComponent);
+                internalComponents.GltfContainerLoadingStateComponent,
+                internalComponents.IncreaseSceneTick);
             sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
 
             // Test collider entities in line
