@@ -14,8 +14,10 @@ public class InfiniteFloorController : MonoBehaviour
         CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
 
         DataStore.i.HUDs.mapMainTexture.OnChange += OnMapTextureChanged;
+        OnMapTextureChanged(DataStore.i.HUDs.latestDownloadedMainTexture.Get(), null);
 
         DataStore.i.HUDs.mapEstatesTexture.OnChange += OnEstateIdTextureChanged;
+        OnMapTextureChanged(DataStore.i.HUDs.latestDownloadedMapEstatesTexture.Get(), null);
 
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
         OnPlayerCoordsChanged(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
