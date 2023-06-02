@@ -1,4 +1,4 @@
-import { FeatureFlagsResult, fetchFlags } from '@dcl/feature-flags'
+import { FeatureFlagsResult, FeatureFlagVariant, fetchFlags } from '@dcl/feature-flags'
 import { ETHEREUM_NETWORK, getAssetBundlesBaseUrl, getServerConfigurations, PREVIEW, rootURLPreviewMode } from 'config'
 import defaultLogger from 'lib/logger'
 import { waitFor } from 'lib/redux'
@@ -64,19 +64,29 @@ async function fetchFeatureFlagsAndVariants(network: ETHEREUM_NETWORK): Promise<
     const flags = new URLSearchParams(location.search)
     flags.forEach((_, key) => {
       if (key.startsWith(`DISABLE_`)) {
-        const featureName = key.replace('DISABLE_', '').toLowerCase() as FeatureFlagsName
-        if (featureName in flagsAndVariants.variants) {
-          flagsAndVariants.flags[featureName] = true
-          flagsAndVariants.variants[featureName].enabled = false
+        const nameVariant = key.replace('DISABLE_', '').toLowerCase().split(':')
+        const name = nameVariant[0] as FeatureFlagsName
+        if (name in flagsAndVariants.variants) {
+          flagsAndVariants.flags[name] = true
+          flagsAndVariants.variants[name].enabled = false
         } else {
-          flagsAndVariants.flags[featureName] = false
+          flagsAndVariants.flags[name] = false
         }
       } else if (key.startsWith(`ENABLE_`)) {
-        const featureName = key.replace('ENABLE_', '').toLowerCase() as FeatureFlagsName
-        flagsAndVariants.flags[featureName] = true
-        if (featureName in flagsAndVariants.variants) {
-          flagsAndVariants.variants[featureName].enabled = true
+        const nameVariant = key.replace('ENABLE_', '').toLowerCase().split(':')
+        const name = nameVariant[0] as FeatureFlagsName
+        const variant = nameVariant.length > 1 ? nameVariant[1] : null
+
+        flagsAndVariants.flags[name] = true
+        if (name in flagsAndVariants.variants) {
+          flagsAndVariants.variants[name].enabled = true
         } else {
+          if (variant !== null) {
+            flagsAndVariants.variants[name] = {
+              enabled: true,
+              name: variant
+            } as FeatureFlagVariant
+          }
         }
       }
     })
