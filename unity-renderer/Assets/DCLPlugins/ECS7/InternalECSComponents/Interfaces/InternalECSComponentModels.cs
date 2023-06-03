@@ -170,4 +170,9 @@ namespace DCL.ECS7.InternalComponents
         public LoadingState LoadingState;
         public bool GltfContainerRemoved;
     }
+
+    public class InternalEngineInfo : InternalComponent
+    {
+        public uint SceneTick = 0;
+    }
 }

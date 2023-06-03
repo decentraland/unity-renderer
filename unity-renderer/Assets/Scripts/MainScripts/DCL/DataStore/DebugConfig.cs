@@ -66,5 +66,6 @@ namespace DCL
         /// </summary>
         public bool msgStepByStep = false;
         public bool logWs;
+        public string overrideUserID;
     }
 }

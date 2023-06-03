@@ -10,8 +10,8 @@ public interface INFTInfoRetriever : IDisposable
 {
     public event Action<NFTInfo> OnFetchInfoSuccess;
     public event Action OnFetchInfoFail;
-    void FetchNFTInfo(string address, string id);
-    UniTask<NFTInfo> FetchNFTInfo(string src);
+    void FetchNFTInfo(string contractAddress, string tokenId);
+    UniTask<NFTInfo> FetchNFTInfoAsync(string contractAddress, string tokenId);
 }
 
 public class NFTInfoRetriever : INFTInfoRetriever
@@ -19,7 +19,7 @@ public class NFTInfoRetriever : INFTInfoRetriever
     internal const string COULD_NOT_FETCH_DAR_URL = "Couldn't fetch DAR url '{0}' for NFTShape.";
     internal const string ACCEPTED_URL_FORMAT = "The accepted format is 'ethereum://ContractAddress/TokenID'.";
     internal const string SUPPORTED_PROTOCOL = "The only protocol currently supported is 'ethereum'.";
-    
+
     public event Action<NFTInfo> OnFetchInfoSuccess;
     public event Action OnFetchInfoFail;
     internal Coroutine fetchCoroutine;
@@ -36,65 +36,43 @@ public class NFTInfoRetriever : INFTInfoRetriever
         tokenSource?.Dispose();
     }
 
-    public void FetchNFTInfo(string address, string id)
+    public void FetchNFTInfo(string contractAddress, string tokenId)
     {
         if (fetchCoroutine != null)
             CoroutineStarter.Stop(fetchCoroutine);
 
-        fetchCoroutine = CoroutineStarter.Start(FetchNFTInfoCoroutine(address, id));
+        fetchCoroutine = CoroutineStarter.Start(FetchNFTInfoCoroutine(contractAddress, tokenId));
     }
 
-    public async UniTask<NFTInfo> FetchNFTInfo(string src)
+    public async UniTask<NFTInfo> FetchNFTInfoAsync(string contractAddress, string tokenId)
     {
         tokenSource = new CancellationTokenSource();
         tokenSource.Token.ThrowIfCancellationRequested();
-        // Check the src follows the needed format e.g.: 'ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536'
-        var regexMatches = Regex.Matches(src, "(?<protocol>[^:]+)://(?<registry>0x([A-Fa-f0-9])+)(?:/(?<asset>.+))?");
-        if (regexMatches.Count == 0 || regexMatches[0].Groups["protocol"] == null || regexMatches[0].Groups["registry"] == null || regexMatches[0].Groups["asset"] == null)
-        {
-            string errorMessage = string.Format(COULD_NOT_FETCH_DAR_URL + " " + ACCEPTED_URL_FORMAT, src);
-            Debug.Log(errorMessage);
-            OnFetchInfoFail?.Invoke();
-            return null;
-        }
-
-        Match match = regexMatches[0];
-        string darURLProtocol = match.Groups["protocol"].ToString();
-        if (darURLProtocol != "ethereum")
-        {
-            string errorMessage = string.Format(COULD_NOT_FETCH_DAR_URL + " " + SUPPORTED_PROTOCOL + " " + ACCEPTED_URL_FORMAT, src);
-            Debug.Log(errorMessage);
-            OnFetchInfoFail?.Invoke();
-            return null;
-        }
-
-        string darURLRegistry = match.Groups["registry"].ToString();
-        string darURLAsset = match.Groups["asset"].ToString();
 
         NFTInfo nftInformation = null;
-        
-        var rutine = NFTUtils.FetchNFTInfo(darURLRegistry, darURLAsset,
+
+        var rutine = NFTUtils.FetchNFTInfo(contractAddress, tokenId,
             (info) =>
             {
                 nftInformation = info;
             },
             (error) =>
             {
-                Debug.LogError($"Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}' {error}");
+                Debug.LogError($"Couldn't fetch NFT: '{contractAddress}/{tokenId}' {error}");
             });
-        
+
         await rutine.WithCancellation(tokenSource.Token);
 
         return nftInformation;
     }
 
-    private IEnumerator FetchNFTInfoCoroutine(string address, string id)
+    private IEnumerator FetchNFTInfoCoroutine(string contractAddress, string tokenId)
     {
-        yield return NFTUtils.FetchNFTInfo(address, id,
+        yield return NFTUtils.FetchNFTInfo(contractAddress, tokenId,
             (info) => { OnFetchInfoSuccess?.Invoke(info); },
             (error) =>
             {
-                Debug.LogError($"Couldn't fetch NFT: '{address}/{id}' {error}");
+                Debug.LogError($"Couldn't fetch NFT: '{contractAddress}/{tokenId}' {error}");
                 OnFetchInfoFail?.Invoke();
             });
     }

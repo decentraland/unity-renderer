@@ -83,9 +83,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1130988537500259567}
-  - component: {fileID: 2043418101042698383}
   - component: {fileID: 3710328169364529327}
   - component: {fileID: 206041431277575855}
+  - component: {fileID: 7695880104113636836}
   m_Layer: 5
   m_Name: Rotation
   m_TagString: Untagged
@@ -113,20 +113,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2043418101042698383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1353217242516652255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52af82d546e9b41d089ac247180bc813, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationFactor: -15
-  slowDownTime: 0.5
 --- !u!222 &3710328169364529327
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -165,6 +151,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7695880104113636836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353217242516652255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b0ce504b8c4f91478d1634adf5e2a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2747064483958360472
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,7 +557,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
   <CharacterPreviewImage>k__BackingField: {fileID: 1453265991699970119}
-  <PreviewCameraRotation>k__BackingField: {fileID: 2043418101042698383}
+  characterPreviewInputDetector: {fileID: 7695880104113636836}
+  firstClickAction: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
+  rotationFactor: -30
+  slowDownTime: 0.5
   tutorialShowHide: {fileID: 8435172790012182335}
   loadingSpinner: {fileID: 3823462377605549188}
 --- !u!1 &6875055614704630242

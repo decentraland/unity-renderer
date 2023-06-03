@@ -14,9 +14,7 @@ using System.IO;
 using System.Threading;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
-using Decentraland.Sdk.Ecs6;
 using MainScripts.DCL.Components;
-using Ray = DCL.Models.Ray;
 
 namespace RPC.Services
 {
@@ -33,6 +31,8 @@ namespace RPC.Services
         private int sceneNumber = -1;
         private RPCContext context;
         private RpcServerPort<RPCContext> port;
+        private bool isFirstMessage = true;
+        private int receivedSendCrdtCalls = 0;
 
         private readonly MemoryStream sendCrdtMemoryStream;
         private readonly BinaryWriter sendCrdtBinaryWriter;
@@ -172,37 +172,46 @@ namespace RPC.Services
             await UniTask.WaitWhile(() => crdtContext.MessagingControllersManager.HasScenePendingMessages(sceneNumber),
                 cancellationToken: ct);
 
+            reusableCrdtMessageResult.Payload = ByteString.Empty;
+            if (!scene.sceneData.sdk7) return reusableCrdtMessageResult;
+
+            if (isFirstMessage && (!request.Payload.IsEmpty || receivedSendCrdtCalls > 0))
+                isFirstMessage = false;
+            receivedSendCrdtCalls++;
+
             try
             {
-                int incomingCrdtCount = 0;
-                reusableCrdtMessageResult.Payload = ByteString.Empty;
-
-                using (var iterator = CRDTDeserializer.DeserializeBatch(request.Payload.Memory))
+                if (!isFirstMessage)
                 {
-                    while (iterator.MoveNext())
+                    using (var iterator = CRDTDeserializer.DeserializeBatch(request.Payload.Memory))
                     {
-                        if (!(iterator.Current is CrdtMessage crdtMessage))
-                            continue;
-
-                        crdtContext.CrdtMessageReceived?.Invoke(sceneNumber, crdtMessage);
-                        incomingCrdtCount++;
-                    }
-                }
-
-                if (incomingCrdtCount > 0)
-                {
-                    // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
-                    // kernel won't be sending that message for those scenes
-                    if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
-                    {
-                        crdtContext.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
+                        while (iterator.MoveNext())
                         {
-                            sceneNumber = sceneNumber,
-                            tag = "scene",
-                            payload = new Protocol.SceneReady(),
-                            method = MessagingTypes.INIT_DONE,
-                            type = QueuedSceneMessage.Type.SCENE_MESSAGE
-                        });
+                            if (!(iterator.Current is CrdtMessage crdtMessage))
+                                continue;
+
+                            crdtContext.CrdtMessageReceived?.Invoke(sceneNumber, crdtMessage);
+                        }
+                    }
+
+                    if (crdtContext.GetSceneTick(scene.sceneData.sceneNumber) == 0)
+                    {
+                        // pause scene update until GLTFs are loaded
+                        await UniTask.WaitUntil(() => crdtContext.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber), cancellationToken: ct);
+
+                        // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
+                        // kernel won't be sending that message for those scenes
+                        if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
+                        {
+                            crdtContext.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
+                            {
+                                sceneNumber = sceneNumber,
+                                tag = "scene",
+                                payload = new Protocol.SceneReady(),
+                                method = MessagingTypes.INIT_DONE,
+                                type = QueuedSceneMessage.Type.SCENE_MESSAGE
+                            });
+                        }
                     }
                 }
 
@@ -219,6 +228,9 @@ namespace RPC.Services
                     sceneCrdtOutgoing.Clear();
                     reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
                 }
+
+                if (!isFirstMessage)
+                    crdtContext.IncreaseSceneTick(scene.sceneData.sceneNumber);
             }
             catch (Exception e)
             {
@@ -291,18 +303,12 @@ namespace RPC.Services
 
             try
             {
-                for (var i = 0; i < request.Actions.Count; i++)
+                RendererManyEntityActions sceneRequest = RendererManyEntityActions.Parser.ParseFrom(request.Payload);
+                for (var i = 0; i < sceneRequest.Actions.Count; i++)
                 {
-                    EntityAction action = request.Actions[i];
-
-                    context.crdt.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene
-                    {
-                        type = QueuedSceneMessage.Type.SCENE_MESSAGE,
-                        method = MapMessagingMethodType(action),
-                        sceneNumber = sceneNumber,
-                        payload = ExtractPayload(from: action, sceneNumber),
-                        tag = action.Tag,
-                    });
+                    context.crdt.SceneController.EnqueueSceneMessage(
+                        SDK6DataMapExtensions.SceneMessageFromSdk6Message(sceneRequest.Actions[i], sceneNumber)
+                    );
                 }
             }
             catch (Exception e)
@@ -312,101 +318,5 @@ namespace RPC.Services
 
             return defaultSendBatchResult;
         }
-
-        private static object ExtractPayload(EntityAction from, int sceneNumber)
-        {
-            return from.Payload.PayloadCase switch
-                   {
-                       EntityActionPayload.PayloadOneofCase.InitMessagesFinished => new Protocol.SceneReady(),
-                       EntityActionPayload.PayloadOneofCase.OpenExternalUrl => new Protocol.OpenExternalUrl { url = from.Payload.OpenExternalUrl.Url },
-                       EntityActionPayload.PayloadOneofCase.OpenNftDialog => new Protocol.OpenNftDialog
-                       {
-                           contactAddress = from.Payload.OpenNftDialog.AssetContractAddress,
-                           comment = from.Payload.OpenNftDialog.Comment,
-                           tokenId = from.Payload.OpenNftDialog.TokenId
-                       },
-                       EntityActionPayload.PayloadOneofCase.CreateEntity => new Protocol.CreateEntity { entityId = from.Payload.CreateEntity.Id },
-                       EntityActionPayload.PayloadOneofCase.RemoveEntity => new Protocol.RemoveEntity { entityId = from.Payload.RemoveEntity.Id },
-                       EntityActionPayload.PayloadOneofCase.AttachEntityComponent => new Protocol.SharedComponentAttach
-                       {
-                           entityId = from.Payload.AttachEntityComponent.EntityId,
-                           id = from.Payload.AttachEntityComponent.Id,
-                           name = from.Payload.AttachEntityComponent.Name
-                       },
-                       EntityActionPayload.PayloadOneofCase.ComponentRemoved => new Protocol.EntityComponentDestroy()
-                       {
-                           entityId = from.Payload.ComponentRemoved.EntityId,
-                           name = from.Payload.ComponentRemoved.Name
-                       },
-                       EntityActionPayload.PayloadOneofCase.SetEntityParent => new Protocol.SetEntityParent()
-                       {
-                           entityId = from.Payload.SetEntityParent.EntityId,
-                           parentId = from.Payload.SetEntityParent.ParentId
-                       },
-                       EntityActionPayload.PayloadOneofCase.Query => new QueryMessage { payload = CreateRaycastPayload(from, sceneNumber) },
-                       EntityActionPayload.PayloadOneofCase.ComponentCreated => new Protocol.SharedComponentCreate
-                       {
-                           id = from.Payload.ComponentCreated.Id,
-                           classId = from.Payload.ComponentCreated.ClassId,
-                           name = from.Payload.ComponentCreated.Name,
-                       },
-                       EntityActionPayload.PayloadOneofCase.ComponentDisposed => new Protocol.SharedComponentDispose { id = from.Payload.ComponentDisposed.Id },
-
-                       //--- NEW FLOW!
-                       EntityActionPayload.PayloadOneofCase.ComponentUpdated => from.Payload.ComponentUpdated,
-                       EntityActionPayload.PayloadOneofCase.UpdateEntityComponent => from.Payload.UpdateEntityComponent,
-
-                       EntityActionPayload.PayloadOneofCase.None => null,
-                       _ => throw new ArgumentOutOfRangeException(),
-                   };
-        }
-
-        private static RaycastQuery CreateRaycastPayload(EntityAction action, int sceneNumber)
-        {
-            var raycastType = action.Payload.Query.Payload.QueryType switch
-                {
-                    "HitFirst" => RaycastType.HIT_FIRST,
-                    "HitAll" => RaycastType.HIT_ALL,
-                    "HitFirstAvatar" => RaycastType.HIT_FIRST_AVATAR,
-                    "HitAllAvatars" => RaycastType.HIT_ALL_AVATARS,
-                    _ => RaycastType.NONE,
-                };
-
-            var ray = new Ray
-            {
-                origin = action.Payload.Query.Payload.Ray.Origin.AsUnityVector3(),
-                direction =  action.Payload.Query.Payload.Ray.Direction.AsUnityVector3(),
-                distance = action.Payload.Query.Payload.Ray.Distance
-            };
-
-            return new RaycastQuery
-            {
-                id = action.Payload.Query.Payload.QueryId,
-                raycastType = raycastType,
-                ray = ray,
-                sceneNumber = sceneNumber,
-            };
-        }
-
-        private static string MapMessagingMethodType(EntityAction action) =>
-            action.Payload.PayloadCase switch
-            {
-                EntityActionPayload.PayloadOneofCase.InitMessagesFinished => MessagingTypes.INIT_DONE,
-                EntityActionPayload.PayloadOneofCase.OpenExternalUrl => MessagingTypes.OPEN_EXTERNAL_URL,
-                EntityActionPayload.PayloadOneofCase.OpenNftDialog => MessagingTypes.OPEN_NFT_DIALOG,
-                EntityActionPayload.PayloadOneofCase.CreateEntity => MessagingTypes.ENTITY_CREATE,
-                EntityActionPayload.PayloadOneofCase.RemoveEntity => MessagingTypes.ENTITY_DESTROY,
-                EntityActionPayload.PayloadOneofCase.AttachEntityComponent => MessagingTypes.SHARED_COMPONENT_ATTACH,
-                EntityActionPayload.PayloadOneofCase.ComponentRemoved => MessagingTypes.ENTITY_COMPONENT_DESTROY,
-                EntityActionPayload.PayloadOneofCase.SetEntityParent => MessagingTypes.ENTITY_REPARENT,
-                EntityActionPayload.PayloadOneofCase.Query => MessagingTypes.QUERY,
-                EntityActionPayload.PayloadOneofCase.ComponentCreated => MessagingTypes.SHARED_COMPONENT_CREATE,
-                EntityActionPayload.PayloadOneofCase.ComponentDisposed => MessagingTypes.SHARED_COMPONENT_DISPOSE,
-                EntityActionPayload.PayloadOneofCase.UpdateEntityComponent => MessagingTypes.PB_ENTITY_COMPONENT_CREATE_OR_UPDATE,  //--- NEW FLOW!
-                EntityActionPayload.PayloadOneofCase.ComponentUpdated => MessagingTypes.PB_SHARED_COMPONENT_UPDATE,
-                EntityActionPayload.PayloadOneofCase.None => null,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-
     }
 }

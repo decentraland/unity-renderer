@@ -3,6 +3,7 @@ using DCL.Map;
 using System.Collections;
 using NUnit.Framework;
 using NSubstitute;
+using RPC.Context;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -14,7 +15,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new TeleportPromptHUDController(Substitute.For<DataStore>(), Substitute.For<IMinimapApiBridge>());
+            controller = new TeleportPromptHUDController(Substitute.For<DataStore>(), Substitute.For<IMinimapApiBridge>(), Substitute.For<RestrictedActionsContext>());
         }
 
         protected override IEnumerator TearDown()
@@ -34,7 +35,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OpenAndCloseCorrectly()
         {
-            controller.RequestTeleport("{\"destination\": \"magic\"}");
+            controller.RequestJSONTeleport("{\"destination\": \"magic\"}");
             yield return null;
 
             Assert.IsTrue(controller.view.content.activeSelf, "teleport dialog should be visible");

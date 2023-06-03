@@ -3,6 +3,7 @@ using DCL;
 using DCL.Emotes;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace Test.AvatarSystem
@@ -18,8 +19,8 @@ namespace Test.AvatarSystem
         [SetUp]
         public void SetUp()
         {
-            tikAnim = Resources.Load<AnimationClip>("tik");
-            discoAnim = Resources.Load<AnimationClip>("disco");
+            tikAnim = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Scripts/MainScripts/DCL/Components/Avatar/Animations/Addressables/tik.anim");
+            discoAnim = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Scripts/MainScripts/DCL/Components/Avatar/Animations/Addressables/disco.anim");
 
             animator = Substitute.For<IAnimator>();
             dataStore = new DataStore_Emotes();
@@ -134,7 +135,7 @@ namespace Test.AvatarSystem
         {
             equipper.bodyShapeId = "female";
             equipper.emotes.AddRange(new [] { "old0", "old1", "old2" });
-            
+
             var emoteClipData = new EmoteClipData(tikAnim);
 
             dataStore.animations.Add(("male", "old0"), emoteClipData);

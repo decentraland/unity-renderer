@@ -1,6 +1,6 @@
 import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK } from 'config/index'
 import { WebSocketProvider } from 'eth-connect'
-import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from 'kernel-web-interface'
+import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from '@dcl/kernel-interface'
 import { getFromPersistentStorage, setPersistentStorage } from 'lib/browser/persistentStorage'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
@@ -9,7 +9,7 @@ import { storeCondition } from 'lib/redux/storeCondition'
 import { initShared } from 'shared'
 import { sendHomeScene } from 'shared/atlas/actions'
 import { homePointKey } from 'shared/atlas/utils'
-import { BringDownClientAndReportFatalError, BringDownClientAndShowError, ErrorContext, UserError } from 'shared/loading/ReportFatalError'
+import { BringDownClientAndReportFatalError, ErrorContext, UserError } from 'shared/loading/ReportFatalError'
 import { setResourcesURL } from 'shared/location'
 import { globalObservable } from 'shared/observables'
 import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
@@ -31,10 +31,6 @@ import { isWebGLCompatible } from './validations'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
-    ensureWebGLCapability()
-
-    ensureHLSCapability()
-
     await setupBaseUrl(options)
 
     ensureValidWebGLCanvasContainer(options)
@@ -49,6 +45,9 @@ globalThis.DecentralandKernel = {
      */
     setTimeout(async () => {
       try {
+        ensureWebGLCapability()
+
+        ensureHLSCapability()
         // TODO: is there a reason why initial teleport needs to happen before initializing a session?
         // TODO: do we need `initSession`? Can't it be just a fork at the begining of the main saga?
         await setupHomeAndInitialTeleport()
@@ -56,10 +55,7 @@ globalThis.DecentralandKernel = {
 
         await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
       } catch (err: any) {
-        if (err instanceof UserError)
-          BringDownClientAndShowError(err.message)
-        else
-          BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
+        BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
       }
     }, 0)
 

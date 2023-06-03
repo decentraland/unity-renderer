@@ -9,6 +9,31 @@ using UnityEngine;
 public class WearableItem
 {
     private const string THIRD_PARTY_COLLECTIONS_PATH = "collections-thirdparty";
+    public static readonly List<string> CATEGORIES_PRIORITY = new ()
+    {
+        "skin", "upper_body", "lower_body", "feet", "helmet", "hat", "top_head", "mask", "eyewear", "earring", "tiara", "hair", "eyebrows", "eyes", "mouth", "facial_hair", "body_shape"
+    };
+
+    public static readonly Dictionary<string, string> CATEGORIES_READABLE_MAPPING = new ()
+    {
+        { "skin", "Skin" },
+        { "upper_body", "Upper body" },
+        { "lower_body", "Lower body" },
+        { "feet", "Feet" },
+        { "helmet", "Helmet" },
+        { "hat", "Hat" },
+        { "top_head", "Top Head" },
+        { "mask", "Mask" },
+        { "eyewear", "Eyewear" },
+        { "earring", "Earring" },
+        { "tiara", "Tiara" },
+        { "eyes", "Eyes" },
+        { "mouth", "Mouth" },
+        { "hair", "Hair" },
+        { "eyebrows", "Eyebrows" },
+        { "body_shape", "Body shape" },
+        { "facial_hair", "Facial hair" },
+    };
 
     [Serializable]
     public class MappingPair
@@ -187,6 +212,17 @@ public class WearableItem
                 : hides.Concat(skinImplicitCategories).Distinct().ToArray();
         }
 
+        var replaces = GetReplacesList(bodyShapeType);
+
+        if (hides != null && replaces != null)
+        {
+            //merge hides and replaces removing duplicates and own category
+            var combinedArray = new string[hides.Length + replaces.Length];
+            Array.Copy(hides, combinedArray, hides.Length);
+            Array.Copy(replaces, 0, combinedArray, hides.Length, replaces.Length);
+            return combinedArray.Where(w => w != data.category).ToArray();
+        }
+
         return hides;
     }
 
@@ -277,6 +313,36 @@ public class WearableItem
             if (wearableHidesList != null)
             {
                 result.UnionWith(wearableHidesList);
+            }
+        }
+
+        return result;
+    }
+
+    public static HashSet<string> ComposeHiddenCategoriesOrdered(string bodyShapeId, HashSet<string> forceRender, List<WearableItem> wearables)
+    {
+        var result = new HashSet<string>();
+        var wearablesByCategory = wearables.ToDictionary(w => w.data.category);
+        var previouslyHidden = new Dictionary<string, HashSet<string>>();
+
+        foreach (var priorityCategory in CATEGORIES_PRIORITY)
+        {
+            previouslyHidden[priorityCategory] = new HashSet<string>();
+
+            if (!wearablesByCategory.TryGetValue(priorityCategory, out var wearable) || wearable.GetHidesList(bodyShapeId) == null)
+                continue;
+
+            foreach (var categoryToHide in wearable.GetHidesList(bodyShapeId))
+            {
+                if (previouslyHidden.TryGetValue(categoryToHide, out var hiddenCategories) && hiddenCategories.Contains(priorityCategory))
+                    continue;
+
+                previouslyHidden[priorityCategory].Add(categoryToHide);
+
+                if (forceRender != null && forceRender.Contains(categoryToHide))
+                    continue;
+
+                result.Add(categoryToHide);
             }
         }
 

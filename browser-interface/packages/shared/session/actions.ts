@@ -3,7 +3,7 @@ import { action } from 'typesafe-actions'
 import { ETHEREUM_NETWORK } from 'config'
 
 import { ExplorerIdentity } from './types'
-import { IEthereumProvider, LoginState } from 'kernel-web-interface'
+import { IEthereumProvider, LoginState } from '@dcl/kernel-interface'
 
 export const INIT_SESSION = '[SESSION] Initializing'
 export const initSession = () => action(INIT_SESSION)
@@ -47,3 +47,7 @@ export const signUpClearData = () => action(SIGNUP_CLEAR_DATA)
 export const SIGNUP_SET_IS_SIGNUP = '[SESSION] mark session as new user'
 export const signUpSetIsSignUp = (isSignUp: boolean) => action(SIGNUP_SET_IS_SIGNUP, { isSignUp })
 export type SignUpSetIsSignUp = ReturnType<typeof signUpSetIsSignUp>
+
+// Semless-login remove after A/B test
+export const TOS_POPUP_ACCEPTED = '[SESSION] TOS_POPUP_ACCEPTED'
+export const tosPopupAccepted = () => action(TOS_POPUP_ACCEPTED)

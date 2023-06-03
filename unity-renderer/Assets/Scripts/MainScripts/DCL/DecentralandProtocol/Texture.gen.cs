@@ -42,11 +42,10 @@ namespace Decentraland.Common {
             "Y2VudHJhbGFuZC5jb21tb24uVGV4dHVyZUgAEjwKDmF2YXRhcl90ZXh0dXJl",
             "GAIgASgLMiIuZGVjZW50cmFsYW5kLmNvbW1vbi5BdmF0YXJUZXh0dXJlSAAS",
             "OgoNdmlkZW9fdGV4dHVyZRgDIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24u",
-            "VmlkZW9UZXh0dXJlSABCBQoDdGV4KlUKD1RleHR1cmVXcmFwTW9kZRIOCgpU",
-            "V01fUkVQRUFUEAASDQoJVFdNX0NMQU1QEAESDgoKVFdNX01JUlJPUhACEhMK",
-            "D1RXTV9NSVJST1JfT05DRRADKkcKEVRleHR1cmVGaWx0ZXJNb2RlEg0KCVRG",
-            "TV9QT0lOVBAAEhAKDFRGTV9CSUxJTkVBUhABEhEKDVRGTV9UUklMSU5FQVIQ",
-            "AmIGcHJvdG8z"));
+            "VmlkZW9UZXh0dXJlSABCBQoDdGV4KkAKD1RleHR1cmVXcmFwTW9kZRIOCgpU",
+            "V01fUkVQRUFUEAASDQoJVFdNX0NMQU1QEAESDgoKVFdNX01JUlJPUhACKkcK",
+            "EVRleHR1cmVGaWx0ZXJNb2RlEg0KCVRGTV9QT0lOVBAAEhAKDFRGTV9CSUxJ",
+            "TkVBUhABEhEKDVRGTV9UUklMSU5FQVIQAmIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Common.TextureWrapMode), typeof(global::Decentraland.Common.TextureFilterMode), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -64,7 +63,6 @@ namespace Decentraland.Common {
     [pbr::OriginalName("TWM_REPEAT")] TwmRepeat = 0,
     [pbr::OriginalName("TWM_CLAMP")] TwmClamp = 1,
     [pbr::OriginalName("TWM_MIRROR")] TwmMirror = 2,
-    [pbr::OriginalName("TWM_MIRROR_ONCE")] TwmMirrorOnce = 3,
   }
 
   public enum TextureFilterMode {

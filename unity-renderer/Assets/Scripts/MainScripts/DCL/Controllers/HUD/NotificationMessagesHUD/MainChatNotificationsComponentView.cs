@@ -40,9 +40,6 @@ namespace DCL.Chat.Notifications
         private TMP_Text notificationMessage;
         private CancellationTokenSource animationCancellationToken = new ();
 
-        public static MainChatNotificationsComponentView Create() =>
-            Instantiate(Resources.Load<MainChatNotificationsComponentView>("SocialBarV1/ChatNotificationHUD"));
-
         public override void Awake()
         {
             onFocused += FocusedOnPanel;

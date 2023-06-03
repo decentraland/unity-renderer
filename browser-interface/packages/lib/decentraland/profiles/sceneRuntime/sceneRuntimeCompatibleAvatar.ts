@@ -7,6 +7,7 @@ export function sceneRuntimeCompatibleAvatar(avatar: AvatarInfo): AvatarForUserD
     ...avatar,
     bodyShape: avatar?.bodyShape,
     wearables: avatar?.wearables || [],
+    forceRender: avatar?.forceRender || [],
     snapshots: {
       ...avatar.snapshots,
       face: avatar.snapshots.face256,
