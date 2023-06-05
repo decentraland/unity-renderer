@@ -25,17 +25,14 @@
         "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
         "GUID:68069f49d86442cd9618861b4d74b1aa"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll",
         "Newtonsoft.Json.dll",
-        "NSubstitute.dll",
-        "System.Threading.Tasks.Extensions.dll"
+        "NSubstitute.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
