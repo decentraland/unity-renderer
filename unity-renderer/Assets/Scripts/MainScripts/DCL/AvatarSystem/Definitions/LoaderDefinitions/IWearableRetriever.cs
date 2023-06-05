@@ -9,6 +9,7 @@ namespace AvatarSystem
     public interface IWearableRetriever : IDisposable
     {
         Rendereable rendereable { get; }
-        UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, CancellationToken ct = default, WearableItem wearableItem = null);
+        UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, WearableItem wearableItem,
+            CancellationToken ct = default);
     }
 }

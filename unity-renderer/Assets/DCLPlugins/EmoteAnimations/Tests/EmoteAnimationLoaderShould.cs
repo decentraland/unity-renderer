@@ -67,6 +67,7 @@ namespace DCL.Emotes
                          Arg.Any<ContentProvider>(),
                          Arg.Any<string>(),
                          Arg.Any<string>(),
+                         Arg.Any<WearableItem>(),
                          Arg.Any<CancellationToken>())
                      .Returns(new UniTask<Rendereable>(rendereable));
             retriever.rendereable.Returns(rendereable);

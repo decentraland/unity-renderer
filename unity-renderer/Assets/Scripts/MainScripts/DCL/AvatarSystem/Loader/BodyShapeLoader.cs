@@ -139,7 +139,7 @@ namespace AvatarSystem
             if (representation == null)
                 throw new Exception("Couldn't find a representation for this bodyshape");
 
-            Rendereable bodyshapeRenderable = await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile, ct, wearable);
+            Rendereable bodyshapeRenderable = await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile, wearable, ct);
 
             if (bodyshapeRenderable == null) // fail safe, we shouldnt reach this since .Retrieve should throw if anything goes wrong
                 throw new Exception("Couldn't load bodyshape");

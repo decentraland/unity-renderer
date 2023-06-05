@@ -72,7 +72,7 @@ namespace Test.AvatarSystem
             Rendereable rendereable = PrepareRendereable(bodyParts);
             bodyshapeLoader.bodyshapeRetriever.rendereable.Returns(rendereable);
             bodyshapeLoader.bodyshapeRetriever.Configure()
-                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>())
                 .Returns(x => new UniTask<Rendereable>(rendereable));
 
             bodyshapeLoader.eyesRetriever.Configure()
@@ -129,7 +129,7 @@ namespace Test.AvatarSystem
         {
             //Arrange
             bodyshapeLoader.bodyshapeRetriever.Configure()
-                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>())
                 .Returns(x => throw new Exception("ThrowingOnPurpose"));
 
             //Assert
@@ -146,7 +146,7 @@ namespace Test.AvatarSystem
             //Arrange
             bodyshapeLoader.bodyshapeRetriever.rendereable.Returns(x => null);
             bodyshapeLoader.bodyshapeRetriever.Configure()
-                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>())
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>())
                 .Returns(x => new UniTask<Rendereable>(null));
 
             //Assert

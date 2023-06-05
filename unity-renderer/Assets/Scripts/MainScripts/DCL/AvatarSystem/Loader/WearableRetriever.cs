@@ -16,7 +16,8 @@ namespace AvatarSystem
 
         private RendereableAssetLoadHelper loaderAssetHelper;
 
-        public async UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, CancellationToken ct = default, WearableItem item = null)
+        public async UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, WearableItem item,
+            CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 

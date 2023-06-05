@@ -87,7 +87,7 @@ namespace Test.AvatarSystem
             };
 
             retriever.Configure()
-                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>())
                 .Returns(
                     x => // First call configures everything for null, mocking a failing wearable retrieval
                     {
@@ -111,7 +111,7 @@ namespace Test.AvatarSystem
 
             //Assert
             Assert.AreEqual(IWearableLoader.Status.Defaulted, loader.status);
-            retriever.Received(2).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            retriever.Received(2).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>());
             Assert.AreEqual(Color.gray, normalRenderer.material.color);
             Assert.AreEqual(Color.red, hairRenderer.material.color);
             Assert.AreEqual(Color.blue, skinRenderer.material.color);
@@ -137,7 +137,7 @@ namespace Test.AvatarSystem
             };
 
             retriever.Configure()
-                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>())
                 .Returns(
                     x => // First call configures everything for null, mocking the wearable retrieval
                     {
@@ -160,7 +160,7 @@ namespace Test.AvatarSystem
 
             //Assert
             Assert.AreEqual(IWearableLoader.Status.Defaulted, loader.status);
-            retriever.Received(2).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            retriever.Received(2).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>());
             Assert.AreEqual(Color.gray, normalRenderer.material.color);
             Assert.AreEqual(Color.red, hairRenderer.material.color);
             Assert.AreEqual(Color.blue, skinRenderer.material.color);
@@ -184,7 +184,7 @@ namespace Test.AvatarSystem
             });
 
             //Assert
-            retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>());
             Assert.AreEqual(IWearableLoader.Status.Failed, loader.status);
         });
 
@@ -196,7 +196,7 @@ namespace Test.AvatarSystem
             loader = new WearableLoader(retriever, wearablesCatalogService.WearablesCatalog[GLASSES_WEARABLE_ID]);
 
             retriever.Configure()
-                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>())
                 .Returns(x => throw new Exception("Failing on purpose"));
 
             //Act
@@ -208,7 +208,7 @@ namespace Test.AvatarSystem
             });
 
             //Assert
-            retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>());
             Assert.AreEqual(IWearableLoader.Status.Failed, loader.status);
         });
 
@@ -232,7 +232,7 @@ namespace Test.AvatarSystem
             CancellationTokenSource cts = new CancellationTokenSource();
 
             retriever.Configure()
-                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<WearableItem>(), Arg.Any<CancellationToken>())
                 .Returns(x => throw new OperationCanceledException());
             retriever.ClearReceivedCalls();
 
@@ -245,7 +245,7 @@ namespace Test.AvatarSystem
             GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Cube);
             primitive.name = materialName;
             if (primitive.TryGetComponent(out Collider collider))
-                Object.Destroy(collider);
+                Utils.SafeDestroy(collider);
             primitive.transform.parent = parent;
 
             Material material = new Material(Shader.Find("DCL/Universal Render Pipeline/Lit"))
@@ -264,7 +264,7 @@ namespace Test.AvatarSystem
         {
             loader?.Dispose();
             if (container != null)
-                Object.Destroy(container);
+                Utils.SafeDestroy(container);
 
             wearablesCatalogService.Dispose();
 
@@ -272,7 +272,7 @@ namespace Test.AvatarSystem
             {
                 Material material = materialsToBeDisposed[i];
                 if (material != null)
-                    Object.Destroy(material);
+                    Utils.SafeDestroy(material);
             }
         }
     }
