@@ -5,14 +5,12 @@ using DCL.Controllers;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityGLTF;
 using Environment = DCL.Environment;
 
 public class GLTFLoadingTestController : MonoBehaviour
 {
     public string dataTrackingURL = "https://tracking.decentraland.org/track";
 
-    GLTFComponent[] gltfRenderers;
     float loadingStartingTime;
 
     void Start()

@@ -14,7 +14,7 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { receivePeerUserData } from 'shared/comms/peers'
 import { getExploreRealmsService } from 'shared/dao/selectors'
 import { waitingForRenderer } from 'shared/loading/types'
-import { getAllowedContentServer } from 'shared/meta/selectors'
+import {getAllowedContentServer, getFeatureFlagVariantName} from 'shared/meta/selectors'
 import {
   addProfileToLastSentProfileVersionAndCatalog,
   SendProfileToRenderer,
@@ -27,10 +27,11 @@ import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromReal
 import { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { isSceneFeatureToggleEnabled } from 'lib/decentraland/sceneJson/isSceneFeatureToggleEnabled'
-import { SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
+import { SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP, signUp } from 'shared/session/actions'
 import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { CurrentRealmInfoForRenderer, NotificationType, VOICE_CHAT_FEATURE_TOGGLE } from 'shared/types'
+import { store } from 'shared/store/isolatedStore'
 import {
   SetVoiceChatErrorAction,
   SET_VOICE_CHAT_ERROR,
@@ -51,6 +52,7 @@ import { InitializeRenderer, registerRendererModules, registerRendererPort, REGI
 import { waitForRendererInstance } from './sagas-helper'
 import { getClientPort } from './selectors'
 import { RendererModules, RENDERER_INITIALIZE } from './types'
+import { adjectives, animals, colors, Config, uniqueNamesGenerator } from 'unique-names-generator'
 
 export function* rendererSaga() {
   yield takeEvery(SEND_PROFILE_TO_RENDERER_REQUEST, handleSubmitProfileToRenderer)
@@ -244,10 +246,23 @@ function* initializeRenderer(action: InitializeRenderer) {
 
 function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   if (action.payload.isSignUp) {
-    getUnityInstance().ShowAvatarEditorInSignIn()
-
-    const userId: string = yield select(getCurrentUserId)
-    yield put(sendProfileToRenderer(userId))
+    if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
+      const userId: string = yield select(getCurrentUserId)
+      yield put(sendProfileToRenderer(userId))
+      const config: Config = {
+        dictionaries: [adjectives, colors, animals],
+        separator: '-',
+        style: 'capital'
+      }
+      const randomName = uniqueNamesGenerator(config)
+      trackEvent('seamless_login tos accepted', {})
+      store.dispatch(signUp('', randomName))
+      getUnityInstance().ShowAvatarEditorInSignIn()
+    } else {
+      getUnityInstance().ShowAvatarEditorInSignIn()
+      const userId: string = yield select(getCurrentUserId)
+      yield put(sendProfileToRenderer(userId))
+    }
   }
 }
 
