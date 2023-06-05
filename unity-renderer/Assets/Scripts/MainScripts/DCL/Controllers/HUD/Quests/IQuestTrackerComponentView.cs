@@ -11,5 +11,6 @@ namespace DCL.Quests
         void SetQuestCoordinates(Vector2Int coordinates);
         void SetQuestSteps(List<QuestStepComponentModel> questSteps);
         void SetSupportsJumpIn(bool supportsJumpIn);
+        void SetVisible(bool isVisible);
     }
 }

@@ -62,6 +62,9 @@ namespace DCL.Quests
             model.supportsJumpIn = supportsJumpIn;
             jumpInButton.gameObject.SetActive(supportsJumpIn);
         }
+
+        public void SetVisible(bool isVisible) =>
+            gameObject.SetActive(isVisible);
     }
 
 }
