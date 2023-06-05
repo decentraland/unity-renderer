@@ -8,7 +8,7 @@ namespace DCLServices.QuestsService.TestScene
         [SerializeField] private ClientQuestsServiceMock client = null;
         [SerializeField] private QuestTrackerComponentView questTrackerComponentView;
         [SerializeField] private QuestCompletedComponentView questCompletedComponentView;
-        [SerializeField] private QuestOfferComponentView questOfferComponentView;
+        [SerializeField] private QuestStartedPopupComponentView questStartedPopupComponentView;
         private QuestsService service;
         private QuestsController questController;
 
@@ -17,7 +17,7 @@ namespace DCLServices.QuestsService.TestScene
             service = new QuestsService(client);
             service.SetUserId("Test");
             service.QuestUpdated.AddListener((questUpdate) => {Debug.Log($"QuestUdpated: {questUpdate.Name}"); });
-            questController = new QuestsController(service, questTrackerComponentView, questCompletedComponentView, questOfferComponentView);
+            questController = new QuestsController(service, questTrackerComponentView, questCompletedComponentView, questStartedPopupComponentView);
         }
     }
 }

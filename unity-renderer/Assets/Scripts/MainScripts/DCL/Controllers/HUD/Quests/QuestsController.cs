@@ -14,7 +14,7 @@ namespace DCL.Quests
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IQuestTrackerComponentView questTrackerComponentView;
         private readonly IQuestCompletedComponentView questCompletedComponentView;
-        private readonly IQuestOfferComponentView questOfferComponentView;
+        private readonly IQuestStartedPopupComponentView questStartedPopupComponentView;
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private CancellationTokenSource trackQuestCts = null;
 
@@ -22,7 +22,7 @@ namespace DCL.Quests
             IQuestsService questsService,
             IQuestTrackerComponentView questTrackerComponentView,
             IQuestCompletedComponentView questCompletedComponentView,
-            IQuestOfferComponentView questOfferComponentView) : this(questsService, null, questTrackerComponentView, questCompletedComponentView, questOfferComponentView)
+            IQuestStartedPopupComponentView questStartedPopupComponentView) : this(questsService, null, questTrackerComponentView, questCompletedComponentView, questStartedPopupComponentView)
         { }
 
         public QuestsController(
@@ -30,25 +30,18 @@ namespace DCL.Quests
             IUserProfileBridge userProfileBridge,
             IQuestTrackerComponentView questTrackerComponentView,
             IQuestCompletedComponentView questCompletedComponentView,
-            IQuestOfferComponentView questOfferComponentView)
+            IQuestStartedPopupComponentView questStartedPopupComponentView)
         {
             this.questsService = questsService;
             this.userProfileBridge = userProfileBridge;
             this.questTrackerComponentView = questTrackerComponentView;
             this.questCompletedComponentView = questCompletedComponentView;
-            this.questOfferComponentView = questOfferComponentView;
+            this.questStartedPopupComponentView = questStartedPopupComponentView;
 
             if(userProfileBridge != null)
                 questsService.SetUserId(ownUserProfile.userId);
 
             //todo subscribe to quest pinned changes in OnQuestPinned
-        }
-
-        private void ShowQuestOffer(QuestStateUpdate quest)
-        {
-            questOfferComponentView.SetQuestTitle(quest.QuestData.Name);
-            questOfferComponentView.SetQuestDescription(quest.QuestData.Description);
-            questOfferComponentView.SetIsGuest(ownUserProfile.isGuest);
         }
 
         private void OnQuestPinned(string current, string previous)

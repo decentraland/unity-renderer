@@ -4,7 +4,6 @@ using DCL.Chat;
 using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.NotificationModel;
-using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Friends;
 using System;
