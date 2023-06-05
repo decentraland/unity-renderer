@@ -42,6 +42,7 @@ namespace DCL.ECSComponents
             audioSource = entity.gameObject.AddComponent<AudioSource>();
             audioSource.spatialBlend = 1;
             audioSource.dopplerLevel = 0.1f;
+            audioSource.playOnAwake = false;
 
             if (settings != null)
                 settings.audioSettings.OnChanged += OnAudioSettingsChanged;
@@ -198,7 +199,7 @@ namespace DCL.ECSComponents
             float newVolume = model.GetVolume() * Utils.ToVolumeCurve(
                 dataStore.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume *
                 audioSettingsData.masterVolume);
-            
+
             audioSource.volume = newVolume;
         }
 
