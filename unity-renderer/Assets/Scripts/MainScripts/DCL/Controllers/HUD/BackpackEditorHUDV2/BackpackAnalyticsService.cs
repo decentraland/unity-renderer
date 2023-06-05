@@ -96,7 +96,7 @@ namespace DCL.Backpack
         }
 
         public void SendAvatarColorPick() =>
-            analytics.SendAnalytic(AVATAR_COLOR_PICK, null);
+            analytics.SendAnalytic(AVATAR_COLOR_PICK, new Dictionary<string, string>());
 
         public void SendForceHideWearable(string category)
         {

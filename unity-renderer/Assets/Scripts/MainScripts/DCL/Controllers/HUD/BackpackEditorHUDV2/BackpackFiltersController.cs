@@ -71,10 +71,8 @@ namespace DCL.Backpack
                     view.LoadCollectionDropdown(collections, defaultCollection);
                     collectionsAlreadyLoaded = true;
                 }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                catch (OperationCanceledException) { }
+                catch (Exception e) { Debug.LogException(e); }
             }
 
             loadThirdPartyCollectionsCancellationToken = loadThirdPartyCollectionsCancellationToken.SafeRestart();

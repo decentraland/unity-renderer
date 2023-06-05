@@ -23,7 +23,6 @@ namespace DCL.ECSComponents
 
         private const uint LAYER_PHYSICS = (uint)ColliderLayer.ClPhysics;
         private const uint LAYER_POINTER = (uint)ColliderLayer.ClPointer;
-        private const string FEATURE_GLTFAST = "gltfast";
         private const string SMR_UPDATE_OFFSCREEN_FEATURE_FLAG = "smr_update_offscreen";
 
         private readonly IInternalECSComponent<InternalColliders> pointerColliderComponent;
@@ -71,7 +70,7 @@ namespace DCL.ECSComponents
             transform.SetParent(entity.gameObject.transform);
             transform.ResetLocalTRS();
 
-            gltfLoader = new RendereableAssetLoadHelper(scene.contentProvider, scene.sceneData.baseUrlBundles, () => featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST));
+            gltfLoader = new RendereableAssetLoadHelper(scene.contentProvider, scene.sceneData.baseUrlBundles);
             gltfLoader.settings.forceGPUOnlyMesh = true;
             gltfLoader.settings.parent = transform;
             gltfLoader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;

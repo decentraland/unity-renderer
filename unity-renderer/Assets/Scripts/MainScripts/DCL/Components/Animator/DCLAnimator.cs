@@ -205,7 +205,7 @@ namespace DCL.Components
                     unityState.speed = state.speed;
 
                     state.clipReference = unityState.clip;
-
+                    
                     unityState.enabled = state.playing;
 
                     if (state.shouldReset)
