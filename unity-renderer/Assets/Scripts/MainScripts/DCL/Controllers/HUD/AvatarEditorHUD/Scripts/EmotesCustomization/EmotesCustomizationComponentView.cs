@@ -193,7 +193,7 @@ namespace DCL.EmotesCustomization
                     maxPrewarmCount: EMOTE_CARDS_POOL_PREWARM,
                     isPersistent: true);
 
-                emoteCardsPool.ForcePrewarm();
+                emoteCardsPool.ForcePrewarm(forceActive: false);
             }
         }
 
@@ -234,9 +234,9 @@ namespace DCL.EmotesCustomization
                 .ToList();
         }
 
-        internal static IEmotesCustomizationComponentView Create()
+        internal static IEmotesCustomizationComponentView Create(string path = "EmotesCustomization/EmotesCustomizationSection")
         {
-            EmotesCustomizationComponentView emotesCustomizationComponentView = Instantiate(Resources.Load<GameObject>("EmotesCustomization/EmotesCustomizationSection")).GetComponent<EmotesCustomizationComponentView>();
+            EmotesCustomizationComponentView emotesCustomizationComponentView = Instantiate(Resources.Load<GameObject>(path)).GetComponent<EmotesCustomizationComponentView>();
             emotesCustomizationComponentView.name = "_EmotesCustomizationSection";
 
             return emotesCustomizationComponentView;

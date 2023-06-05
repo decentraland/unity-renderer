@@ -51,7 +51,9 @@ namespace DCL.Backpack
             Assert.AreEqual("name=something", modelByName.Filter);
             Assert.AreEqual(42, modelByName.ResultCount);
             Assert.IsFalse(modelByName.IsSelected);
-            Assert.IsTrue(modelByName.ShowResultCount);
+            // the result count is not shown anymore
+            // Assert.IsTrue(modelByName.ShowResultCount);
+            Assert.IsFalse(modelByName.ShowResultCount);
         }
 
         [Test]
@@ -87,7 +89,9 @@ namespace DCL.Backpack
             Assert.AreEqual("category=shoes", model.Filter);
             Assert.AreEqual(3, model.ResultCount);
             Assert.IsTrue(model.IsSelected);
-            Assert.IsTrue(model.ShowResultCount);
+            // Assert.IsTrue(model.ShowResultCount);
+            // the result count is not shown anymore
+            Assert.IsFalse(model.ShowResultCount);
         }
     }
 }

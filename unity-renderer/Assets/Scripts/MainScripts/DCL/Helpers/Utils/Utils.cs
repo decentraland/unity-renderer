@@ -725,5 +725,35 @@ namespace DCL.Helpers
 
             return tween.ToUniTask(tweenCancelBehaviour: completeWhenCancel ? TweenCancelBehaviour.Complete : TweenCancelBehaviour.Kill, cancellationToken: cancellationToken);
         }
+
+        public static List<T> RemoveDuplicatesFromList<T>(List<T> items)
+        {
+            List<T> result = new List<T>();
+            for (int i = 0; i < items.Count; i++)
+            {
+                bool duplicate = false;
+                for (int z = 0; z < i; z++)
+                {
+                    if (Equals(items[z], items[i]))
+                    {
+                        duplicate = true;
+                        break;
+                    }
+                }
+                if (!duplicate)
+                {
+                    result.Add(items[i]);
+                }
+            }
+            return result;
+        }
+
+        public static T[] RemoveDuplicatesFromArray<T>(T[] s)
+        {
+            HashSet<T> set = new HashSet<T>(s);
+            T[] result = new T[set.Count];
+            set.CopyTo(result);
+            return result;
+        }
     }
 }

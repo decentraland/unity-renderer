@@ -475,34 +475,24 @@ namespace DCL.Social.Passports
             nftLandsPagesEntryPool.ReleaseAll();
         }
 
-        private Pool GetNftIconEntryPool()
-        {
-            var pool = PoolManager.i.GetPool(NFT_ICON_POOL_NAME_PREFIX + name + GetInstanceID());
-            if (pool != null) return pool;
+        private Pool GetNftIconEntryPool() =>
+            GetNftEntryPool(NFT_ICON_POOL_NAME_PREFIX + name + GetInstanceID(), wearableUIReferenceObject, MAX_NFT_ICON_ENTRIES);
 
-            pool = PoolManager.i.AddPool(
-                NFT_ICON_POOL_NAME_PREFIX + name + GetInstanceID(),
-                Instantiate(wearableUIReferenceObject).gameObject,
-                maxPrewarmCount: MAX_NFT_ICON_ENTRIES,
-                isPersistent: true);
+        private Pool GetNftPagesEntryPool(string poolId) =>
+            GetNftEntryPool(poolId, nftPageUIReferenceObject, MAX_NFT_PAGES_ENTRIES);
 
-            pool.ForcePrewarm();
-
-            return pool;
-        }
-
-        private Pool GetNftPagesEntryPool(string poolId)
+        private static Pool GetNftEntryPool(string poolId, GameObject referenceObject, int maxPrewarmCount)
         {
             var pool = PoolManager.i.GetPool(poolId);
             if (pool != null) return pool;
 
             pool = PoolManager.i.AddPool(
                 poolId,
-                Instantiate(nftPageUIReferenceObject).gameObject,
-                maxPrewarmCount: MAX_NFT_PAGES_ENTRIES,
+                Instantiate(referenceObject).gameObject,
+                maxPrewarmCount: maxPrewarmCount,
                 isPersistent: true);
 
-            pool.ForcePrewarm();
+            pool.ForcePrewarm(forceActive: false);
 
             return pool;
         }

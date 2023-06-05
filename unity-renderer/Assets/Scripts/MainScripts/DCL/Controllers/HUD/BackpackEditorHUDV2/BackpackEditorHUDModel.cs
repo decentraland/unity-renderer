@@ -11,6 +11,7 @@ namespace DCL.Backpack
         public Color hairColor;
         public Color skinColor;
         public Color eyesColor;
+        public HashSet<string> forceRender = new ();
 
         public AvatarModel ToAvatarModel()
         {
@@ -20,7 +21,8 @@ namespace DCL.Backpack
                 wearables = wearables.Keys.ToList(),
                 hairColor = hairColor,
                 skinColor = skinColor,
-                eyeColor = eyesColor
+                eyeColor = eyesColor,
+                forceRender = new HashSet<string>(forceRender)
             };
         }
 
@@ -34,6 +36,7 @@ namespace DCL.Backpack
             hairColor = newModel.hairColor;
             skinColor = newModel.skinColor;
             eyesColor = newModel.eyesColor;
+            forceRender = new HashSet<string>(newModel.forceRender);
         }
     }
 }

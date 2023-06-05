@@ -1,7 +1,11 @@
 import { Authenticator } from '@dcl/crypto'
 import { hashV1 } from '@dcl/hashing'
 import { Avatar, EntityType, Profile, Snapshots } from '@dcl/schemas'
-import { ContentClient } from 'dcl-catalyst-client/dist/ContentClient'
+import {
+  BuildEntityOptions,
+  BuildEntityWithoutFilesOptions,
+  ContentClient
+} from 'dcl-catalyst-client/dist/ContentClient'
 import type { DeploymentData } from 'dcl-catalyst-client/dist/utils/DeploymentBuilder'
 import { base64ToBuffer } from 'lib/encoding/base64ToBlob'
 import { call, put, select } from 'redux-saga/effects'
@@ -110,11 +114,18 @@ async function deploy(
     pointers: [identity.address],
     hashesByKey: contentHashes,
     metadata
-  }
+  } as BuildEntityWithoutFilesOptions
+
+  const entity = {
+    type: EntityType.PROFILE,
+    pointers: [identity.address],
+    files: contentFiles,
+    metadata
+  } as BuildEntityOptions
 
   // Build entity and group all files
   const preparationData = await (contentFiles.size
-    ? catalyst.buildEntity({ type: EntityType.PROFILE, pointers: [identity.address], files: contentFiles, metadata })
+    ? catalyst.buildEntity(entity)
     : catalyst.buildEntityWithoutNewFiles(entityWithoutNewFilesPayload))
   // sign the entity id
   const authChain = Authenticator.signPayload(identity, preparationData.entityId)
