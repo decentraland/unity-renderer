@@ -72,6 +72,9 @@ namespace DCL.Components
 
             for (var i = 0; i < meshRenderers.Length; i++)
             {
+                if (meshRenderers[i] == null)
+                    continue;
+
                 meshRenderers[i].enabled = shouldBeVisible;
 
                 if (meshRenderers[i].transform.childCount > 0)
