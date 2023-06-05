@@ -14,7 +14,7 @@ namespace DCL.Quests
         public void SetUp()
         {
             questCompletedComponentView = Object.Instantiate(
-                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Quest_V2/QuestCompletedHUD/QuestCompletedHUD.prefab"))
+                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Quests/QuestCompletedHUD/QuestCompletedHUD.prefab"))
                                             .GetComponent<QuestCompletedComponentView>();
         }
 

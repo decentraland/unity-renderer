@@ -14,7 +14,7 @@ namespace DCL.Quests
         public void SetUp()
         {
             questStartedPopupComponentView = Object.Instantiate(
-                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Quest_V2/QuestOfferHUD/QuestStartedPopupHUD.prefab"))
+                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Quests/QuestOfferHUD/QuestStartedPopupHUD.prefab"))
                                             .GetComponent<QuestStartedPopupComponentView>();
         }
 

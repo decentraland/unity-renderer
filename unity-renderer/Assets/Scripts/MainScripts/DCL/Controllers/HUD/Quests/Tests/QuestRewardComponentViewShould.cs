@@ -14,7 +14,7 @@ namespace DCL.Quests
         public void SetUp()
         {
             questRewardComponentView = Object.Instantiate(
-                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Quest_V2/QuestReward/QuestReward.prefab"))
+                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Quests/QuestReward/QuestReward.prefab"))
                                             .GetComponent<QuestRewardComponentView>();
         }
 

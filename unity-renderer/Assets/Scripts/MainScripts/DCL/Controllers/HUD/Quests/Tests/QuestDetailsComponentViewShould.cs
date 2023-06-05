@@ -13,7 +13,7 @@ namespace DCL.Quests
         public void SetUp()
         {
             questDetailsComponentView = Object.Instantiate(
-                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Quest_V2/QuestDetails/QuestDetailsSection.prefab"))
+                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/Quests/QuestDetails/QuestDetailsSection.prefab"))
                                             .GetComponent<QuestDetailsComponentView>();
         }
 
