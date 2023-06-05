@@ -21,6 +21,7 @@ namespace DCL.Quests
         {
             jumpInButton.onClick.RemoveAllListeners();
             jumpInButton.onClick.AddListener(() => OnJumpIn?.Invoke(model.coordinates));
+            SetVisible(false);
         }
 
         public override void RefreshControl()

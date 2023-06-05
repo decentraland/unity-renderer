@@ -17,6 +17,7 @@ namespace DCL.Quests
         private readonly IQuestStartedPopupComponentView questStartedPopupComponentView;
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private CancellationTokenSource trackQuestCts = null;
+        private CancellationTokenSource trackQuestStartedCts = null;
 
         public QuestsController(
             IQuestsService questsService,
@@ -41,56 +42,58 @@ namespace DCL.Quests
             if(userProfileBridge != null)
                 questsService.SetUserId(ownUserProfile.userId);
 
-            //todo subscribe to quest pinned changes in OnQuestPinned
+            trackQuestCts = new CancellationTokenSource();
+            trackQuestStartedCts = new CancellationTokenSource();
+            StartTrackingQuests(trackQuestCts.Token).Forget();
+            StartTrackingStartedQuests(trackQuestStartedCts.Token).Forget();
         }
 
-        private void OnQuestPinned(string current, string previous)
-        {
-            trackQuestCts?.SafeCancelAndDispose();
-            trackQuestCts = null;
-
-            if (!string.IsNullOrEmpty(current))
-            {
-                trackQuestCts = new CancellationTokenSource();
-                StartTrackingPinnedQuest(current, trackQuestCts.Token).Forget();
-            }
-            else
-            {
-                // todo: Hide tracker logic
-            }
-        }
-
-        private async UniTaskVoid StartTrackingPinnedQuest(string questInstanceId, CancellationToken ct)
+        private async UniTaskVoid StartTrackingQuests(CancellationToken ct)
         {
             await foreach (var questStateUpdate in questsService.QuestUpdated.WithCancellation(ct))
             {
-                // Ignore updates from other quests
-                if(questStateUpdate.QuestInstanceId != questInstanceId)
-                    continue;
-
-                List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
-                foreach (var step in questStateUpdate.QuestState.CurrentSteps)
+                if (questStateUpdate.QuestInstanceId == "pinnedQuestId")
                 {
-                    foreach (Task task in step.Value.TasksCompleted)
-                        questSteps.Add(new QuestStepComponentModel { isCompleted = true, text = task.Id });
+                    List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
 
-                    foreach (Task task in step.Value.ToDos)
-                        questSteps.Add(new QuestStepComponentModel { isCompleted = false, text = task.Id });
+                    foreach (var step in questStateUpdate.QuestState.CurrentSteps)
+                    {
+                        foreach (Task task in step.Value.TasksCompleted)
+                            questSteps.Add(new QuestStepComponentModel { isCompleted = true, text = task.Id });
+
+                        foreach (Task task in step.Value.ToDos)
+                            questSteps.Add(new QuestStepComponentModel { isCompleted = false, text = task.Id });
+                    }
+
+                    questTrackerComponentView.SetQuestTitle(questStateUpdate.Name);
+                    questTrackerComponentView.SetQuestSteps(questSteps);
                 }
-
-                questTrackerComponentView.SetQuestTitle(questStateUpdate.Name);
-                questTrackerComponentView.SetQuestSteps(questSteps);
+                else
+                {
+                    AddOrUpdateQuestToLog(questStateUpdate);
+                }
             }
         }
 
-        private void AbortQuest(string questInstanceId)
+        private async UniTaskVoid StartTrackingStartedQuests(CancellationToken ct)
         {
-            questsService.AbortQuest(questInstanceId).Forget();
+            await foreach (var questStateUpdate in questsService.QuestStarted.WithCancellation(ct))
+            {
+                questStartedPopupComponentView.SetQuestName(questStateUpdate.Name);
+                questStartedPopupComponentView.SetVisible(true);
+                AddOrUpdateQuestToLog(questStateUpdate);
+            }
+        }
+
+        private void AddOrUpdateQuestToLog(QuestStateWithData questStateWithData)
+        {
+            //Add or update quest in quest log as soon as merged
         }
 
         public void Dispose()
         {
             trackQuestCts?.SafeCancelAndDispose();
+            trackQuestStartedCts?.SafeCancelAndDispose();
         }
     }
 }
