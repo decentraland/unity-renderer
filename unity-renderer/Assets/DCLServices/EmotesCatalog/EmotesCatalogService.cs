@@ -5,35 +5,35 @@ using DCL;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Providers;
-using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
 using System;
-using System.Linq;
 using UnityEngine;
 
 public class EmotesCatalogService : IEmotesCatalogService
 {
-    private const string ASSET_BUNDLES_URL_ORG = "https://ab-cdn.decentraland.org/";
+    [Serializable]
+    internal class WearableRequest
+    {
+        public List<string> pointers;
+    }
 
     internal readonly Dictionary<string, WearableItem> emotes = new ();
     internal readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new ();
     internal readonly Dictionary<string, int> emotesOnUse = new ();
     internal readonly Dictionary<string, HashSet<Promise<WearableItem[]>>> ownedEmotesPromisesByUser = new ();
 
-    private readonly IEmotesCatalogBridge bridge;
+    private readonly IEmotesRequestSource emoteSource;
     private readonly IAddressableResourceProvider addressableResourceProvider;
-    private readonly ILambdasService lambdasService;
-    private readonly ICatalyst catalyst;
+
     private EmbeddedEmotesSO embeddedEmotesSo;
     private CancellationTokenSource addressableCts;
     private int retryCount = 3;
 
-    public EmotesCatalogService(IEmotesCatalogBridge bridge, IAddressableResourceProvider addressableResourceProvider, ILambdasService lambdasService, IServiceProviders serviceProviders)
+    public EmotesCatalogService(IEmotesRequestSource emoteSource, IAddressableResourceProvider addressableResourceProvider)
     {
-        this.bridge = bridge;
-        this.catalyst = serviceProviders.catalyst;
+        this.emoteSource = emoteSource;
         this.addressableResourceProvider = addressableResourceProvider;
-        this.lambdasService = lambdasService;
+
         InitializeAsyncEmbeddedEmotes().Forget();
     }
 
@@ -65,9 +65,9 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public void Initialize()
     {
-        bridge.OnEmotesReceived += OnEmotesReceived;
-        bridge.OnEmoteRejected += OnEmoteRejected;
-        bridge.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
+        emoteSource.OnEmotesReceived += OnEmotesReceived;
+        emoteSource.OnEmoteRejected += OnEmoteRejected;
+        emoteSource.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
     }
 
     private void OnEmotesReceived(WearableItem[] receivedEmotes)
@@ -145,7 +145,7 @@ public class EmotesCatalogService : IEmotesCatalogService
             ownedEmotesPromisesByUser[userId] = new HashSet<Promise<WearableItem[]>>();
         ownedEmotesPromisesByUser[userId].Add(promise);
 
-        bridge.RequestOwnedEmotes(userId);
+        emoteSource.RequestOwnedEmotes(userId);
 
         return promise;
     }
@@ -191,68 +191,12 @@ public class EmotesCatalogService : IEmotesCatalogService
             promises[id] = new HashSet<Promise<WearableItem>>();
         promises[id].Add(promise);
 
-        RequestEmoteAsync(id).Forget();
+        emoteSource.RequestEmote(id);
 
         return promise;
     }
 
-    private async UniTaskVoid RequestEmoteAsync(string id)
-    {
-        var wearable = await RequestWearableBatchAsync(id, addressableCts.Token);
-        OnEmoteReceived(wearable);
-    }
 
-    private List<string> pendingRequests = new ();
-    private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
-
-    [Serializable]
-    private class WearableRequest
-    {
-        public List<string> pointers;
-    }
-
-    private async UniTask<WearableItem> RequestWearableBatchAsync(string id, CancellationToken ct)
-    {
-        pendingRequests.Add(id);
-        lastRequestSource ??= new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
-
-        // we wait for the latest update possible so we buffer all requests into one
-        await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, ct);
-
-        List<WearableItem> result = new List<WearableItem>();
-
-        if (pendingRequests.Count > 0)
-        {
-            var request = new WearableRequest { pointers = new List<string>(pendingRequests) };
-            var url = $"{catalyst.contentUrl}entities/active";
-
-            pendingRequests.Clear();
-
-            var response = await lambdasService.PostFromSpecificUrl<EmoteEntityDto[], WearableRequest>(url, url, request, cancellationToken: ct);
-
-            if (response.success)
-            {
-                result.AddRange( response.response.Select(dto =>
-                {
-                    var contentUrl = $"{catalyst.contentUrl}contents/";
-                    var wearableItem = dto.ToWearableItem(contentUrl);
-                    wearableItem.baseUrl = contentUrl;
-                    wearableItem.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
-                    return wearableItem;
-                }));
-            }
-            else
-            {
-                throw new Exception($"Fetching wearables failed! {url}\n{string.Join("\n",request.pointers)}");
-            }
-
-            lastRequestSource.TrySetResult(result);
-        }
-        else
-            result = (List<WearableItem>)await lastRequestSource.Task;
-
-        return result.FirstOrDefault(x => x.id == id);
-    }
 
     public List<Promise<WearableItem>> RequestEmotes(IList<string> ids)
     {
@@ -352,9 +296,9 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public void Dispose()
     {
-        bridge.OnEmotesReceived -= OnEmotesReceived;
-        bridge.OnEmoteRejected -= OnEmoteRejected;
-        bridge.OnOwnedEmotesReceived -= OnOwnedEmotesReceived;
+        emoteSource.OnEmotesReceived -= OnEmotesReceived;
+        emoteSource.OnEmoteRejected -= OnEmoteRejected;
+        emoteSource.OnOwnedEmotesReceived -= OnOwnedEmotesReceived;
         DisposeCT();
     }
 

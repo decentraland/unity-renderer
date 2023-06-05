@@ -61,52 +61,53 @@ namespace DCLServices.EmotesCatalog
         public WearableItem ToWearableItem(string contentBaseUrl)
         {
             WearableItem wearable = new WearableItem();
-
-            wearable.emoteDataV0 = null;
-            wearable.description = metadata.description;
-            wearable.i18n = metadata.i18n;
-            wearable.id = metadata.id;
             wearable.entityId = id;
-            wearable.thumbnail = GetContentHashByFileName(metadata.thumbnail);
+            wearable.emoteDataV0 = null;
 
-            var data = metadata.emoteDataADR74;
+            MetadataDto metadataDto = metadata;
+            if (metadataDto == null) return wearable;
 
-            if (data != null)
+            wearable.description = metadataDto.description;
+            wearable.i18n = metadataDto.i18n;
+            wearable.id = metadataDto.id;
+            wearable.thumbnail = GetContentHashByFileName(metadataDto.thumbnail);
+
+            var data = metadataDto.emoteDataADR74;
+            if (data == null) return wearable;
+
+            // todo: remove this when we refactor the WearableItem into EmoteItem
+            wearable.emoteDataV0 = new EmoteDataV0() { loop = data.loop };
+
+            wearable.data = new WearableItem.Data
             {
-                // todo: remove this when we refactor the WearableItem into EmoteItem
-                wearable.emoteDataV0 = new EmoteDataV0() { loop = data.loop };
+                representations = new WearableItem.Representation[data.representations.Length],
+                category = data.category,
+                tags = data.tags,
+                loop = data.loop
+            };
 
-                wearable.data = new WearableItem.Data
+            for (var i = 0; i < data.representations.Length; i++)
+            {
+                MetadataDto.Representation representation = data.representations[i];
+
+                wearable.data.representations[i] = new WearableItem.Representation
                 {
-                    representations = new WearableItem.Representation[data.representations.Length],
-                    category = data.category,
-                    tags = data.tags,
-                    loop = data.loop
+                    bodyShapes = representation.bodyShapes,
+                    mainFile = representation.mainFile,
+                    contents = new WearableItem.MappingPair[representation.contents.Length],
                 };
 
-                for (var i = 0; i < data.representations.Length; i++)
+                for (var z = 0; z < representation.contents.Length; z++)
                 {
-                    MetadataDto.Representation representation = data.representations[i];
+                    string fileName = representation.contents[z];
+                    string hash = GetContentHashByFileName(fileName);
 
-                    wearable.data.representations[i] = new WearableItem.Representation
+                    wearable.data.representations[i].contents[z] = new WearableItem.MappingPair
                     {
-                        bodyShapes = representation.bodyShapes,
-                        mainFile = representation.mainFile,
-                        contents = new WearableItem.MappingPair[representation.contents.Length],
+                        url = $"{contentBaseUrl}/{hash}",
+                        hash = hash,
+                        key = fileName,
                     };
-
-                    for (var z = 0; z < representation.contents.Length; z++)
-                    {
-                        string fileName = representation.contents[z];
-                        string hash = GetContentHashByFileName(fileName);
-
-                        wearable.data.representations[i].contents[z] = new WearableItem.MappingPair
-                        {
-                            url = $"{contentBaseUrl}/{hash}",
-                            hash = hash,
-                            key = fileName,
-                        };
-                    }
                 }
             }
 

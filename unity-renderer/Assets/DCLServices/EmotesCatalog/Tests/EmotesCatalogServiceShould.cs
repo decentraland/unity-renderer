@@ -16,16 +16,16 @@ using UnityEngine.TestTools;
 public class EmotesCatalogServiceShould
 {
     private EmotesCatalogService catalog;
-    private IEmotesCatalogBridge bridge;
+    private IEmotesRequestSource emotesRequestSource;
     private EmbeddedEmote[] embededEmotes;
 
     [SetUp]
     public void SetUp()
     {
-        bridge = Substitute.For<IEmotesCatalogBridge>();
+        emotesRequestSource = Substitute.For<IEmotesRequestSource>();
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetEmbeddedEmotesSO());
-        catalog = new EmotesCatalogService(bridge, addressableResourceProvider, Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>());
+        catalog = new EmotesCatalogService(emotesRequestSource, addressableResourceProvider);
         catalog.Initialize();
     }
 
@@ -139,7 +139,7 @@ public class EmotesCatalogServiceShould
                               });
 
         var wearable = new WearableItem { id = "id1" };
-        bridge.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { wearable });
+        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { wearable });
 
         Assert.IsFalse(promise1.keepWaiting);
         Assert.AreEqual(wearable, promise1.value);
@@ -183,7 +183,7 @@ public class EmotesCatalogServiceShould
     [Test]
     public void NotAddEmotesToCatalogWhenNoPromises()
     {
-        bridge.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { new WearableItem { id = "id1" } });
+        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { new WearableItem { id = "id1" } });
 
         Assert.IsFalse(catalog.emotes.ContainsKey("id1"));
         Assert.IsFalse(catalog.emotesOnUse.ContainsKey("id1"));
@@ -195,7 +195,7 @@ public class EmotesCatalogServiceShould
         catalog.promises["id1"] = new HashSet<Promise<WearableItem>>( ) { new Promise<WearableItem>() };
         catalog.emotesOnUse["id1"] = 1;
 
-        bridge.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { new WearableItem { id = "id1" } });
+        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { new WearableItem { id = "id1" } });
 
         Assert.IsTrue(catalog.emotes.ContainsKey("id1"));
         Assert.IsTrue(catalog.emotesOnUse.ContainsKey("id1"));
@@ -236,10 +236,10 @@ public class EmotesCatalogServiceShould
     public IEnumerator ResolveAsyncEmoteRequest() => UniTask.ToCoroutine(async () =>
     {
         WearableItem emote = new WearableItem { id = "id1" };
-        bridge.When(x => x.RequestEmote(Arg.Any<string>()))
+        emotesRequestSource.When(x => x.RequestEmote(Arg.Any<string>()))
               .Do((x) =>
               {
-                  bridge.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { emote });
+                  emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { emote });
               });
 
         var emoteReceived = await catalog.RequestEmoteAsync("id1");
@@ -255,10 +255,10 @@ public class EmotesCatalogServiceShould
             { "id1", new WearableItem { id = "id1" } },
             { "id2", new WearableItem { id = "id2" } },
         };
-        bridge.When(x => x.RequestEmote(Arg.Any<string>()))
+        emotesRequestSource.When(x => x.RequestEmote(Arg.Any<string>()))
               .Do((x) =>
               {
-                  bridge.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { emotes[x.Arg<string>()] });
+                  emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { emotes[x.Arg<string>()] });
               });
 
         var emotesReceived = await catalog.RequestEmotesAsync(new [] { "id1", "id2" });
@@ -341,7 +341,7 @@ public class EmotesCatalogServiceShould
 
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetExampleEmbeddedEmotesSO());
-        catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), addressableResourceProvider, Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>());
+        catalog = new EmotesCatalogService(Substitute.For<IEmotesRequestSource>(), addressableResourceProvider);
 
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
         Assert.AreEqual(catalog.emotes["id2"], embededEmotes[1]);

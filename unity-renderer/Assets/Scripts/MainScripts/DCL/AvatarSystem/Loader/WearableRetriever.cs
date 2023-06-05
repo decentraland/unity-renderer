@@ -24,18 +24,28 @@ namespace AvatarSystem
             {
                 loaderAssetHelper?.Unload();
 
+                // Before loading the asset, we check if asset bundles exist, then we fill the content provider with it
                 if (IsNewAssetBundleFlagEnabled() && contentProvider.TryGetContentsUrl_Raw(mainFile, out string hash))
                 {
-                    var sceneAb = await FetchSceneAssetBundles(item.entityId, contentProvider.assetBundlesBaseUrl);
-
-                    if (sceneAb != null && sceneAb.IsSceneConverted())
+                    if (string.IsNullOrEmpty(item.entityId))
                     {
-                        contentProvider.assetBundles = sceneAb.GetConvertedFiles();
-                        contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
-                    } else
-                    {
-                        Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {(item != null ? item.entityId : hash)}</color>");
+                        Debug.LogError(mainFile + " has no entity ID, check where this wearable was loaded from");
                     }
+                    else
+                    {
+                        Debug.Log($"{mainFile}, {item.entityId}");
+                        var sceneAb = await FetchSceneAssetBundles(item.entityId, contentProvider.assetBundlesBaseUrl);
+
+                        if (sceneAb != null && sceneAb.IsSceneConverted())
+                        {
+                            contentProvider.assetBundles = sceneAb.GetConvertedFiles();
+                            contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
+                        } else
+                        {
+                            Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {(item != null ? item.entityId : hash)}</color>");
+                        }
+                    }
+
                 }
 
                 loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl);

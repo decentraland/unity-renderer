@@ -6,7 +6,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 
-public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
+public class EmotesRequestBridge : MonoBehaviour, IEmotesRequestSource
 {
     [Serializable]
     private class AddEmotesResponse
@@ -22,13 +22,13 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
     private readonly HashSet<string> emotesToRequestThisFrame = new HashSet<string>();
     private bool isAlreadyDestroyed;
 
-    public static EmotesCatalogBridge GetOrCreate()
+    public static EmotesRequestBridge GetOrCreate()
     {
         var brigeGO = SceneReferences.i?.bridgeGameObject;
         if (SceneReferences.i?.bridgeGameObject == null)
-            return new GameObject("Bridge").AddComponent<EmotesCatalogBridge>();
+            return new GameObject("Bridge").AddComponent<EmotesRequestBridge>();
 
-        return brigeGO.GetOrCreateComponent<EmotesCatalogBridge>();
+        return brigeGO.GetOrCreateComponent<EmotesRequestBridge>();
     }
 
     public void RequestEmote(string emoteId) { emotesToRequestThisFrame.Add(emoteId); }
@@ -79,7 +79,7 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
         {
             loadedEmoteIds.Add(emote.id);
         }
-        
+
         foreach(var emoteId in emoteIdsFromContext)
             if (!loadedEmoteIds.Contains(emoteId))
             {

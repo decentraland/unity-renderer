@@ -9,6 +9,7 @@ using DCL.Services;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
@@ -109,10 +110,12 @@ namespace DCL
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
 
-            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(),
-                addressableResourceProvider,
-                result.Get<ILambdasService>(),
-                result.Get<IServiceProviders>()));
+            result.Register<IEmotesCatalogService>(() =>
+            {
+                //var emotesRequest = EmotesRequestBridge.GetOrCreate();
+                var emotesRequest = new EmotesRequestWebRequest(result.Get<ILambdasService>(), result.Get<IServiceProviders>());
+                return new EmotesCatalogService(emotesRequest, addressableResourceProvider);
+            });
 
             result.Register<ITeleportController>(() => new TeleportController());
 
