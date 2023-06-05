@@ -10,7 +10,6 @@ namespace AvatarSystem
 {
     public class WearableRetriever : IWearableRetriever
     {
-        private const string FEATURE_GLTFAST = "gltfast";
         public Rendereable rendereable { get; private set; }
 
         private RendereableAssetLoadHelper loaderAssetHelper;
@@ -23,12 +22,11 @@ namespace AvatarSystem
             {
                 loaderAssetHelper?.Unload();
 
-                loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl, CheckGLTFastFeature);
+                loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl);
 
                 loaderAssetHelper.settings.forceNewInstance = false;
                 // TODO Review this hardcoded offset and try to solve it by offseting the Avatar container
                 loaderAssetHelper.settings.initialLocalPosition = Vector3.up * AvatarSystemUtils.AVATAR_Y_OFFSET;
-                loaderAssetHelper.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_SHADERS;
                 loaderAssetHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
                 loaderAssetHelper.settings.parent = container.transform;
                 loaderAssetHelper.settings.layer = container.layer;
@@ -72,8 +70,6 @@ namespace AvatarSystem
                 throw;
             }
         }
-        private bool CheckGLTFastFeature() =>
-            DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
 
         public void Dispose() { loaderAssetHelper?.Unload(); }
     }

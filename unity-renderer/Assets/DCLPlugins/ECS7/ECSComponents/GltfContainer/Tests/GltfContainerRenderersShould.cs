@@ -60,7 +60,7 @@ namespace Tests
         {
             handler.OnComponentRemoved(scene, entity);
             testUtils.Dispose();
-            AssetPromiseKeeper_GLTF.i.Cleanup();
+            AssetPromiseKeeper_GLTFast_Instance.i.Cleanup();
             PoolManager.i.Dispose();
         }
 
@@ -69,7 +69,7 @@ namespace Tests
         {
             // test with several updates to make sure that changing gltf does not affect the expected result
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             IList<Renderer> renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
             IECSReadOnlyComponentData<InternalRenderers> internalRenderers = renderersComponent.GetFor(scene, entity);
@@ -80,7 +80,7 @@ namespace Tests
             }
 
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
             internalRenderers = renderersComponent.GetFor(scene, entity);
@@ -91,7 +91,7 @@ namespace Tests
             }
 
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
-            yield return new WaitUntil(() => handler.gltfLoader.isFinished);
+            yield return handler.gltfLoader.Promise;
 
             renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
             internalRenderers = renderersComponent.GetFor(scene, entity);

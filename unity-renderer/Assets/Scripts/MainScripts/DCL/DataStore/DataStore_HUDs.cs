@@ -46,5 +46,6 @@ namespace DCL
         public readonly BaseVariable<string> openSentFriendRequestDetail = new BaseVariable<string>();
         public readonly BaseVariable<string> openReceivedFriendRequestDetail = new BaseVariable<string>();
         public readonly BaseVariable<(string playerId, string source)> currentPlayerId = new ((null, null));
+        public readonly BaseVariable<bool> tosPopupVisible = new BaseVariable<bool>(false);
     }
 }

@@ -14,7 +14,11 @@ namespace DCL.Backpack
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
             var view = BackpackEditorHUDV2ComponentView.Create();
-            view.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+            view.Initialize(
+            Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
+            new PreviewCameraRotationController(),
+            new PreviewCameraPanningController(),
+            new PreviewCameraZoomController());
 
             DataStore dataStore = DataStore.i;
 
@@ -24,14 +28,13 @@ namespace DCL.Backpack
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
 
-            var backpackAnalyticsController = new BackpackAnalyticsController(
+            var backpackAnalyticsService = new BackpackAnalyticsService(
                 Environment.i.platform.serviceProviders.analytics,
-                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics),
-                wearablesCatalogService);
+                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
 
             var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 
-            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView);
+            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView, backpackAnalyticsService);
 
             var wearableGridController = new WearableGridController(view.WearableGridComponentView,
                 userProfileBridge,
@@ -40,7 +43,7 @@ namespace DCL.Backpack
                 new WebInterfaceBrowserBridge(),
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                backpackAnalyticsController);
+                backpackAnalyticsService);
 
             hudController = new BackpackEditorHUDController(
                 view,
@@ -49,7 +52,7 @@ namespace DCL.Backpack
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 backpackEmotesSectionController,
-                backpackAnalyticsController,
+                backpackAnalyticsService,
                 wearableGridController,
                 avatarSlotsHUDController);
         }

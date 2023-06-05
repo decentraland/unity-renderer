@@ -58,7 +58,7 @@ namespace Tests
         public void TearDown()
         {
             testUtils.Dispose();
-            AssetPromiseKeeper_GLTF.i.Cleanup();
+            AssetPromiseKeeper_GLTFast_Instance.i.Cleanup();
             PoolManager.i.Dispose();
             DataStore.Clear();
         }

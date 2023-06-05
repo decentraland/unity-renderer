@@ -23,7 +23,6 @@ namespace DCL.Backpack
         [SerializeField] internal Image nftBackground;
         [SerializeField] internal ImageComponentView nftImage;
         [SerializeField] internal RectTransform dynamicSection;
-        [SerializeField] internal DynamicListComponentView removesList;
         [SerializeField] internal DynamicListComponentView hidesList;
         [SerializeField] internal DynamicListComponentView hiddenByDynamicList;
 
@@ -113,14 +112,6 @@ namespace DCL.Backpack
         public void SetRemovesList(List<string> removeList)
         {
             model.removeList = removeList;
-
-            removesList.RemoveIcons();
-
-            removesList.gameObject.SetActive(removeList.Count != 0);
-            foreach (string removeCategory in removeList)
-                removesList.AddIcon(typeIcons.GetTypeImage(removeCategory));
-
-            Utils.ForceRebuildLayoutImmediate(dynamicSection);
         }
 
         public void SetIsEquipped(bool isEquipped)
@@ -128,7 +119,7 @@ namespace DCL.Backpack
             model.isEquipped = isEquipped;
 
             equipButton.gameObject.SetActive(!isEquipped);
-            unEquipButton.gameObject.SetActive(isEquipped);
+            unEquipButton.gameObject.SetActive(model.unEquipAllowed && isEquipped);
         }
 
         public void SetWearableId(string wearableId)

@@ -76,7 +76,10 @@ public enum DCLAction_Hold
     VoiceChatRecording = 102,
     DefaultConfirmAction = 300,
     DefaultCancelAction = 301,
-    OpenExpressions = 447
+    OpenExpressions = 447,
+    MouseFirstClick = 448,
+    MouseSecondClick = 449,
+    MouseMiddleClick = 450,
 }
 
 /// <summary>
@@ -334,6 +337,15 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Hold.OpenExpressions:
                     InputProcessor.FromKey(action, KeyCode.B, InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Hold.MouseFirstClick:
+                    InputProcessor.FromMouse(action, 0);
+                    break;
+                case DCLAction_Hold.MouseSecondClick:
+                    InputProcessor.FromMouse(action, 1);
+                    break;
+                case DCLAction_Hold.MouseMiddleClick:
+                    InputProcessor.FromMouse(action, 2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
