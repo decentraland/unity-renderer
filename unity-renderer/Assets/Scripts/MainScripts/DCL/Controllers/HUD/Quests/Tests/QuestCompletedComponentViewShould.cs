@@ -80,7 +80,7 @@ namespace DCL.Quests
         {
             questCompletedComponentView.SetIsGuest(isGuest);
 
-            Assert.AreEqual(isGuest, questCompletedComponentView.guestSection.activeInHierarchy, "Guest section was not correctly set");
+            Assert.AreEqual(isGuest, questCompletedComponentView.guestSection.activeSelf, "Guest section was not correctly set");
         }
     }
 }
