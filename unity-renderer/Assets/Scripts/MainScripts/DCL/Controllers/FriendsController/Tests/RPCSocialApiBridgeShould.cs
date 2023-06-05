@@ -109,8 +109,7 @@ namespace DCL.Social.Friends
         {
             return UniTask.ToCoroutine(async () =>
             {
-                var cancellationToken = new CancellationToken();
-                var friends = new Dictionary<string, UserStatus>();
+                var friends = new HashSet<string>();
 
                 context.UserList = new List<Users>()
                 {
@@ -140,14 +139,15 @@ namespace DCL.Social.Friends
                     name = userName,
                 });
 
-                rpcSocialApiBridge.OnFriendAdded += friend =>
+                rpcSocialApiBridge.OnFriendAdded += friendId =>
                 {
-                    if (string.IsNullOrEmpty(friend.userName)) { throw new Exception("User should have a userName"); }
+                    if (string.IsNullOrEmpty(friendId))
+                        throw new Exception("User should have a userId");
 
-                    friends.Add(friend.userId, friend);
+                    friends.Add(friendId);
                 };
 
-                userProfileBridge.RequestFullUserProfileAsync(Arg.Any<string>())
+                userProfileBridge.RequestFullUserProfileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
                                  .Returns(new UniTask<UserProfile>(userProfile));
 
                 var incomingResult = new List<FriendRequest>();
@@ -191,7 +191,7 @@ namespace DCL.Social.Friends
                                        }
                                    ));
 
-                var response = await rpcSocialApiBridge.GetInitializationInformationAsync(cancellationToken);
+                var response = await rpcSocialApiBridge.GetInitializationInformationAsync();
 
                 Assert.AreEqual(4, friends.Count);
                 Assert.AreEqual(incomingRequests.Length, response.totalReceivedRequests);
@@ -257,8 +257,6 @@ namespace DCL.Social.Friends
         {
             return UniTask.ToCoroutine(async () =>
             {
-                var cancellationTokenSource = new CancellationTokenSource();
-                var cancellationToken = cancellationTokenSource.Token;
                 var friendId = "Friend ID";
                 var acceptFriendId = "Accept";
                 var rejectFriendId = "Reject";
@@ -314,7 +312,8 @@ namespace DCL.Social.Friends
                     }
                 };
 
-                userProfileBridge.RequestFullUserProfileAsync(acceptFriendId, cancellationToken).Returns(UniTask.FromResult(userProfile));
+                userProfileBridge.RequestFullUserProfileAsync(acceptFriendId, Arg.Any<CancellationToken>())
+                                 .Returns(UniTask.FromResult(userProfile));
 
                 var expectedFriendRequest = new FriendRequest(
                     $"{friendRequest.User.Address}-{friendRequest.CreatedAt}",
@@ -329,12 +328,9 @@ namespace DCL.Social.Friends
                 var rejectResult = "";
                 FriendRequest requestResult = null;
 
-                UserProfile acceptedProfileResult = ScriptableObject.CreateInstance<UserProfile>();
-
-                rpcSocialApiBridge.OnFriendRequestAccepted += (userId, profile) =>
+                rpcSocialApiBridge.OnFriendRequestAccepted += userId =>
                 {
                     acceptedResult = userId;
-                    acceptedProfileResult = profile;
                 };
 
                 rpcSocialApiBridge.OnFriendRequestCanceled += (userId) => { cancelResult = userId; };
@@ -343,12 +339,11 @@ namespace DCL.Social.Friends
                 rpcSocialApiBridge.OnDeletedByFriend += (userId) => { deletedResult = userId; };
                 rpcSocialApiBridge.OnIncomingFriendRequestAdded += (request) => { requestResult = request; };
 
-                await rpcSocialApiBridge.InitializeAsync(cancellationToken);
+                await rpcSocialApiBridge.InitializeAsync(default(CancellationToken));
 
                 await UniTask.WaitUntil(() => !string.IsNullOrEmpty(acceptedResult));
 
                 Assert.AreEqual(acceptFriendId, acceptedResult);
-                Assert.AreEqual(userProfile, acceptedProfileResult);
 
                 Assert.AreEqual(cancelFriendId, cancelResult);
                 Assert.AreEqual(rejectFriendId, rejectResult);
@@ -362,9 +357,6 @@ namespace DCL.Social.Friends
         {
             return UniTask.ToCoroutine(async () =>
             {
-                var cancellationTokenSource = new CancellationTokenSource();
-                var cancellationToken = cancellationTokenSource.Token;
-
                 var rejectFriendId = "Reject";
 
                 context.SubscribeFriendshipEventsUpdatesResponses = new List<SubscribeFriendshipEventsUpdatesResponse>()
@@ -409,7 +401,7 @@ namespace DCL.Social.Friends
                 LogAssert.Expect(LogType.Error, "Subscription to friendship events got internal server error Internal server");
                 LogAssert.Expect(LogType.Error, "Subscription to friendship events got Too many requests error Too many requests");
 
-                await rpcSocialApiBridge.InitializeAsync(cancellationToken);
+                await rpcSocialApiBridge.InitializeAsync(default(CancellationToken));
 
                 await UniTask.WaitUntil(() => !string.IsNullOrEmpty(rejectResult));
 

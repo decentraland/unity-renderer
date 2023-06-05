@@ -57,7 +57,10 @@ namespace DCL.Social.Friends
 
         bool IsFriend(string userId);
 
+        [Obsolete("Deprecated. Use RemoveFriendAsync instead")]
         void RemoveFriend(string friendId);
+
+        UniTask RemoveFriendAsync(string friendId, CancellationToken cancellationToken);
 
         UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default);
 

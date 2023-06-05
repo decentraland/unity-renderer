@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
-using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
 using NUnit.Framework;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
@@ -18,34 +17,35 @@ namespace DCL.Social.Friends
         private IFriendsApiBridge apiBridge;
         private ISocialApiBridge rpcSocialApiBridge;
         private FriendsController controller;
+        private IUserProfileBridge userProfileBridge;
+        private DataStore dataStore;
 
         [SetUp]
         public void SetUp()
         {
             apiBridge = Substitute.For<IFriendsApiBridge>();
-            GameObject go = new GameObject();
-            var component = go.AddComponent<MatrixInitializationBridge>();
-            var dataStore = new DataStore();
+            dataStore = new DataStore();
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = false } });
+            dataStore.featureFlags.flags.Get().SetAsInitialized();
 
             rpcSocialApiBridge = Substitute.For<ISocialApiBridge>();
+            userProfileBridge = Substitute.For<IUserProfileBridge>();
 
-            controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
-
-            dataStore.featureFlags.flags.Get().SetAsInitialized();
-            controller.Initialize();
+            controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore, userProfileBridge);
         }
 
         [Test]
         public void Initialize()
         {
+            controller.Initialize();
+
             var called = false;
             controller.OnInitialized += () => called = true;
 
             apiBridge.OnInitialized += Raise.Event<Action<FriendshipInitializationMessage>>(
                 new FriendshipInitializationMessage
                 {
-                    totalReceivedRequests = 4
+                    totalReceivedRequests = 4,
                 });
 
             Assert.AreEqual(4, controller.TotalReceivedFriendRequestCount);
@@ -55,7 +55,7 @@ namespace DCL.Social.Friends
         [Test]
         public void AddFriends()
         {
-            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
                          .Returns(UniTask.FromResult(
                               new AddFriendsPayload
                               {
@@ -63,7 +63,8 @@ namespace DCL.Social.Friends
                                   friends = new[] { "woah", "bleh" }
                               }));
 
-            controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
+            controller.Initialize();
+            controller.GetFriendsAsync(0, 0).Forget();
 
             Assert.AreEqual(2, controller.TotalFriendCount);
             var updatedFriends = controller.GetAllocatedFriends();
@@ -92,7 +93,7 @@ namespace DCL.Social.Friends
                           {
                               totalReceivedFriendRequests = 3,
                               totalSentFriendRequests = 2,
-                              requestedFrom = new FriendRequestPayload[]
+                              requestedFrom = new[]
                               {
                                   new FriendRequestPayload
                                   {
@@ -119,7 +120,7 @@ namespace DCL.Social.Friends
                                       timestamp = 0
                                   }
                               },
-                              requestedTo = new FriendRequestPayload[]
+                              requestedTo = new[]
                               {
                                   new FriendRequestPayload
                                   {
@@ -140,6 +141,7 @@ namespace DCL.Social.Friends
                               }
                           }));
 
+            controller.Initialize();
             controller.GetFriendRequestsAsync(0, 0, 0, 0, default(CancellationToken)).Forget();
 
             Assert.AreEqual(FriendshipAction.REQUESTED_TO, friendsUpdated["snt1"]);
@@ -156,6 +158,8 @@ namespace DCL.Social.Friends
             var friendsWithDMs = new List<FriendWithDirectMessages>();
             controller.OnUpdateFriendship += (s, action) => updatedFriends[s] = action;
             controller.OnAddFriendsWithDirectMessages += list => friendsWithDMs = list;
+
+            controller.Initialize();
 
             apiBridge.OnFriendWithDirectMessagesAdded += Raise.Event<Action<AddFriendsWithDirectMessagesPayload>>(
                 new AddFriendsWithDirectMessagesPayload
@@ -204,7 +208,7 @@ namespace DCL.Social.Friends
             var updatedFriends = new Dictionary<string, UserStatus>();
             controller.OnUpdateUserStatus += (s, status) => updatedFriends[s] = status;
 
-            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
                          .Returns(UniTask.FromResult(
                               new AddFriendsPayload
                               {
@@ -212,7 +216,8 @@ namespace DCL.Social.Friends
                                   friends = new[] { "usr1" }
                               }));
 
-            controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
+            controller.Initialize();
+            controller.GetFriendsAsync(0, 0).Forget();
 
             apiBridge.OnUserPresenceUpdated += Raise.Event<Action<UserStatus>>(new UserStatus
             {
@@ -248,6 +253,8 @@ namespace DCL.Social.Friends
             var updatedUsers = new Dictionary<string, FriendshipAction>();
             controller.OnUpdateFriendship += (s, action) => updatedUsers[s] = action;
 
+            controller.Initialize();
+
             apiBridge.OnFriendshipStatusUpdated += Raise.Event<Action<FriendshipUpdateStatusMessage>>(
                 new FriendshipUpdateStatusMessage
                 {
@@ -269,6 +276,8 @@ namespace DCL.Social.Friends
                 totalReceived = received;
                 totalSent = sent;
             };
+
+            controller.Initialize();
 
             apiBridge.OnTotalFriendRequestCountUpdated += Raise.Event<Action<UpdateTotalFriendRequestsPayload>>(
                 new UpdateTotalFriendRequestsPayload
@@ -298,6 +307,8 @@ namespace DCL.Social.Friends
         [Test]
         public void AllocateWhenReceiveFriendRequest()
         {
+            controller.Initialize();
+
             apiBridge.OnFriendRequestReceived += Raise.Event<Action<FriendRequestPayload>>(new FriendRequestPayload
             {
                 from = "senderId",
@@ -319,6 +330,8 @@ namespace DCL.Social.Friends
         [Test]
         public void AllocateByUserIdWhenReceiveFriendRequest()
         {
+            controller.Initialize();
+
             apiBridge.OnFriendRequestReceived += Raise.Event<Action<FriendRequestPayload>>(new FriendRequestPayload
             {
                 from = "senderId",
@@ -340,15 +353,7 @@ namespace DCL.Social.Friends
         [Test]
         public void AllocateByUserIdWhenReceiveFriendRequestWithSocialClient()
         {
-            var dataStore = new DataStore();
-
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
-
-            var cancellationToken = default(CancellationToken);
-
-            controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
-
-            dataStore.featureFlags.flags.Get().SetAsInitialized();
             controller.Initialize();
 
             FriendRequest CreateFriendRequest(int number) =>
@@ -418,6 +423,7 @@ namespace DCL.Social.Friends
                               }
                           }));
 
+                controller.Initialize();
                 FriendRequest request = await controller.CancelRequestAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
@@ -456,6 +462,7 @@ namespace DCL.Social.Friends
                                   },
                               }));
 
+                controller.Initialize();
                 FriendRequest request = await controller.RequestFriendshipAsync("receiverId", "bleh",
                     default(CancellationToken));
 
@@ -496,6 +503,7 @@ namespace DCL.Social.Friends
                               },
                           }));
 
+                controller.Initialize();
                 FriendRequest request = await controller.AcceptFriendshipAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
@@ -533,6 +541,7 @@ namespace DCL.Social.Friends
                               },
                           }));
 
+                controller.Initialize();
                 FriendRequest request = await controller.RejectFriendshipAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
@@ -606,6 +615,7 @@ namespace DCL.Social.Friends
                               requestedTo = requestedTo,
                           }));
 
+                controller.Initialize();
                 List<FriendRequest> requests = (await controller.GetFriendRequestsAsync(5, 0, 5, 0,
                     default(CancellationToken))).ToList();
 
@@ -640,26 +650,18 @@ namespace DCL.Social.Friends
         public IEnumerator GetFriendsAsyncWithSocialService() =>
             UniTask.ToCoroutine(async () =>
             {
-                var dataStore = new DataStore();
-
                 dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
-
-                var cancellationToken = default(CancellationToken);
 
                 var initializationResponse = UniTask.FromResult(new FriendshipInitializationMessage()
                 {
                     totalReceivedRequests = 0,
                 });
 
-                rpcSocialApiBridge.GetInitializationInformationAsync(cancellationToken)
+                rpcSocialApiBridge.GetInitializationInformationAsync()
                                   .Returns(initializationResponse);
 
-                controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
-
-                dataStore.featureFlags.flags.Get().SetAsInitialized();
                 controller.Initialize();
-
-                await controller.InitializeAsync(cancellationToken);
+                await controller.InitializeAsync(default(CancellationToken));
 
                 var firstUserId = "userId";
                 var secondUserId = "userId2";
@@ -691,32 +693,32 @@ namespace DCL.Social.Friends
                 };
 
                 // insert unsorted
-                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(fourthUser);
-                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(thirdUser);
-                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(secondUser);
-                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<UserStatus>>(firstUser);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<string>>(fourthUserId);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<string>>(thirdUserId);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<string>>(secondUserId);
+                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<string>>(firstUserId);
 
-                IReadOnlyList<string> response = await controller.GetFriendsAsync(100, 0, cancellationToken);
+                IReadOnlyList<string> response = await controller.GetFriendsAsync(100, 0);
                 string[] expected = { firstUserId, secondUserId, thirdUserId, fourthUserId };
 
                 CollectionAssert.AreEqual(response, expected);
 
-                response = await controller.GetFriendsAsync(1, 0, cancellationToken);
+                response = await controller.GetFriendsAsync(1, 0);
                 expected = new[] { firstUserId };
 
                 CollectionAssert.AreEqual(response, expected);
 
-                response = await controller.GetFriendsAsync(2, 1, cancellationToken);
+                response = await controller.GetFriendsAsync(2, 1);
                 expected = new[] { secondUserId, thirdUserId };
 
                 CollectionAssert.AreEqual(response, expected);
 
-                response = await controller.GetFriendsAsync("search", 10, cancellationToken);
+                response = await controller.GetFriendsAsync("search", 10);
                 expected = new[] { thirdUserId, fourthUserId };
 
                 CollectionAssert.AreEqual(response, expected);
 
-                response = await controller.GetFriendsAsync("search", 1, cancellationToken);
+                response = await controller.GetFriendsAsync("search", 1);
                 expected = new[] { thirdUserId };
 
                 CollectionAssert.AreEqual(response, expected);
@@ -726,8 +728,8 @@ namespace DCL.Social.Friends
         public IEnumerator GetFriendRequestsAsyncWithSocialBridge() =>
             UniTask.ToCoroutine(async () =>
             {
-                SetupControllerWithSocialService();
-                var cancellationToken = default(CancellationToken);
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+                controller.Initialize();
 
                 FriendRequest CreateFriendRequest(int number) =>
                     new ($"id{number}", number, $"from{number}", $"to{number}", $"a message {number}");
@@ -762,7 +764,7 @@ namespace DCL.Social.Friends
                     );
                 }
 
-                var result = await controller.GetFriendRequestsAsync(100, 0, 100, 0, cancellationToken);
+                var result = await controller.GetFriendRequestsAsync(100, 0, 100, 0, default(CancellationToken));
 
                 // the result should be reversed since the result should be sorted by timestamp
                 CollectionAssert.AreEqual(incomingFriendRequests.Reverse().Concat(outgoingFriendRequests.Reverse()), result);
@@ -772,61 +774,69 @@ namespace DCL.Social.Friends
         public IEnumerator AcceptedFriendRequestWithSocialBridge() =>
             UniTask.ToCoroutine(async () =>
             {
-                SetupControllerWithSocialService();
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+                controller.Initialize();
 
                 var friendsUpdated = new Dictionary<string, FriendshipAction>();
                 var friendId = "FriendId";
                 var profile = ScriptableObject.CreateInstance<UserProfile>();
-                profile.UpdateData(new UserProfileModel() { userId = friendId, name = "FriendName" });
+                profile.UpdateData(new UserProfileModel
+                    { userId = friendId, name = "FriendName" });
 
                 controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
 
-                rpcSocialApiBridge.OnFriendRequestAccepted += Raise.Event<Action<string, UserProfile>>(friendId, profile);
+                rpcSocialApiBridge.OnFriendRequestAccepted += Raise.Event<Action<string>>(friendId);
 
-                var friends = await controller.GetFriendsAsync(100, 0);
+                string[] friends = await controller.GetFriendsAsync(100, 0);
 
                 Assert.AreEqual(FriendshipAction.APPROVED, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(friends, new List<string>() { friendId });
+                CollectionAssert.AreEqual(friends, new List<string>
+                    { friendId });
             });
 
         [UnityTest]
         public IEnumerator DeletedByFriendWithSocialBridge() =>
             UniTask.ToCoroutine(async () =>
             {
-                SetupControllerWithSocialService();
-                var friendsUpdated = new Dictionary<string, FriendshipAction>();
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+                controller.Initialize();
 
+                Dictionary<string, FriendshipAction> friendsUpdated = new ();
                 var friendId = "FriendId";
                 var profile = ScriptableObject.CreateInstance<UserProfile>();
-                profile.UpdateData(new UserProfileModel() { userId = friendId, name = "FriendName" });
+                profile.UpdateData(new UserProfileModel
+                    { userId = friendId, name = "FriendName" });
 
                 controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
 
-                rpcSocialApiBridge.OnFriendRequestAccepted += Raise.Event<Action<string, UserProfile>>(friendId, profile);
+                rpcSocialApiBridge.OnFriendRequestAccepted += Raise.Event<Action<string>>(friendId);
 
                 string[] friends = await controller.GetFriendsAsync(100, 0);
 
                 Assert.AreEqual(FriendshipAction.APPROVED, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(friends, new List<string>() { friendId });
+                CollectionAssert.AreEqual(friends, new List<string>
+                    { friendId });
 
                 rpcSocialApiBridge.OnDeletedByFriend += Raise.Event<Action<string>>(friendId);
 
                 friends = await controller.GetFriendsAsync(100, 0);
 
                 Assert.AreEqual(FriendshipAction.DELETED, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(friends, new List<string>() { });
+                CollectionAssert.AreEqual(friends, new List<string>());
             });
 
         [UnityTest]
         public IEnumerator FriendRequestFullFlowWithSocialService() =>
             UniTask.ToCoroutine(async () =>
             {
-                SetupControllerWithSocialService();
-                var friendsUpdated = new Dictionary<string, FriendshipAction>();
+                dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
+                controller.Initialize();
 
+                Dictionary<string, FriendshipAction> friendsUpdated = new ();
                 var friendId = "FriendId";
                 var profile = ScriptableObject.CreateInstance<UserProfile>();
-                profile.UpdateData(new UserProfileModel() { userId = friendId, name = "FriendName" });
+                profile.UpdateData(new UserProfileModel
+                    { userId = friendId, name = "FriendName" });
 
                 controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
                 FriendRequest friendRequest = new ($"{friendId}-1", 1, friendId, "", "message");
@@ -850,48 +860,37 @@ namespace DCL.Social.Friends
 
                 string[] friends = await controller.GetFriendsAsync(100, 0);
                 Assert.AreEqual(FriendshipAction.REQUESTED_TO, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(new List<string>() { }, friends);
+                CollectionAssert.AreEqual(new List<string>(), friends);
 
                 rpcSocialApiBridge.OnFriendRequestRejected += Raise.Event<Action<string>>(friendId);
 
                 friends = await controller.GetFriendsAsync(100, 0);
                 Assert.AreEqual(FriendshipAction.REJECTED, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(new List<string>() { }, friends);
+                CollectionAssert.AreEqual(new List<string>(), friends);
 
                 rpcSocialApiBridge.OnIncomingFriendRequestAdded += Raise.Event<Action<FriendRequest>>(friendRequest);
 
                 friends = await controller.GetFriendsAsync(100, 0);
                 Assert.AreEqual(FriendshipAction.REQUESTED_FROM, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(new List<string>() { }, friends);
+                CollectionAssert.AreEqual(new List<string>(), friends);
 
                 await controller.RejectFriendshipAsync(friendRequest.FriendRequestId, default);
 
                 friends = await controller.GetFriendsAsync(100, 0);
                 Assert.AreEqual(FriendshipAction.REJECTED, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(new List<string>() { }, friends);
+                CollectionAssert.AreEqual(new List<string>(), friends);
 
                 rpcSocialApiBridge.OnIncomingFriendRequestAdded += Raise.Event<Action<FriendRequest>>(friendRequest);
 
                 friends = await controller.GetFriendsAsync(100, 0);
                 Assert.AreEqual(FriendshipAction.REQUESTED_FROM, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(new List<string>() { }, friends);
+                CollectionAssert.AreEqual(new List<string>(), friends);
 
                 await controller.AcceptFriendshipAsync(friendRequest.FriendRequestId, default);
 
                 friends = await controller.GetFriendsAsync(100, 0);
                 Assert.AreEqual(FriendshipAction.APPROVED, friendsUpdated[friendId]);
-                CollectionAssert.AreEqual(new List<string>() { friendId }, friends);
+                CollectionAssert.AreEqual(new List<string> { friendId }, friends);
             });
-
-        private void SetupControllerWithSocialService()
-        {
-            var dataStore = new DataStore();
-            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["use-social-client"] = true } });
-
-            controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore);
-
-            dataStore.featureFlags.flags.Get().SetAsInitialized();
-            controller.Initialize();
-        }
     }
 }

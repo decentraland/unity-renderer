@@ -104,7 +104,7 @@ namespace DCL
                         webInterfaceFriendsApiBridge,
                         RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
                         DataStore.i), result.Get<ISocialApiBridge>(),
-                    DataStore.i);
+                    DataStore.i, userProfileWebInterfaceBridge);
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());

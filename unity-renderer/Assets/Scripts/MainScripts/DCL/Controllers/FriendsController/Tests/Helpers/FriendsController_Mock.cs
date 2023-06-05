@@ -60,6 +60,9 @@ public class FriendsController_Mock : IFriendsController
         OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
     }
 
+    public UniTask RemoveFriendAsync(string friendId, CancellationToken cancellationToken) =>
+        UniTask.CompletedTask;
+
     public UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default) =>
         UniTask.FromResult(new string[0]);
 
