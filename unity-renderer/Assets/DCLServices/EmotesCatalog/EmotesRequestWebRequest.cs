@@ -84,7 +84,6 @@ namespace DCLServices.EmotesCatalog
                 result = (List<WearableItem>)await lastRequestSource.Task;
 
             OnEmotesReceived?.Invoke(result.ToArray());
-            lastRequestSource = null;
         }
     }
 }

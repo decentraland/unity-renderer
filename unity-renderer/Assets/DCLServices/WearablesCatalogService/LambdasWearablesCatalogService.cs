@@ -174,22 +174,28 @@ namespace DCLServices.WearablesCatalogService
             return (wearables, pageResponse.response.TotalAmount);
         }
 
+        [Serializable]
+        internal class BaseWearableResponse
+        {
+            public int total;
+            public WearableWithEntityResponseDto.ElementDto.EntityDto[] entities;
+        }
+
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
-            var serviceResponse = await lambdasService.Get<WearableWithoutDefinitionResponse>(
-                NON_PAGINATED_WEARABLES_END_POINT,
-                NON_PAGINATED_WEARABLES_END_POINT,
-                REQUESTS_TIME_OUT_SECONDS,
-                urlEncodedParams: ("collectionId", BASE_WEARABLES_COLLECTION_ID),
-                cancellationToken: ct);
+            var url = $"{catalyst.contentUrl}entities/active/collections/{BASE_WEARABLES_COLLECTION_ID}";
 
-            if (!serviceResponse.success)
+            var request = await lambdasService.GetFromSpecificUrl<BaseWearableResponse>(url, url, cancellationToken: ct);
+
+            if (!request.success)
                 throw new Exception("The request of the base wearables failed!");
 
-            MapLambdasDataIntoWearableItem(serviceResponse.response.wearables);
-            AddWearablesToCatalog(serviceResponse.response.wearables);
+            var wearables = request.response.entities.Select(dto => dto.ToWearableItem(catalyst.contentUrl, ASSET_BUNDLES_URL_ORG)).ToList();
 
-            return serviceResponse.response.wearables;
+            MapLambdasDataIntoWearableItem(wearables);
+            AddWearablesToCatalog(wearables);
+
+            return wearables;
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages,

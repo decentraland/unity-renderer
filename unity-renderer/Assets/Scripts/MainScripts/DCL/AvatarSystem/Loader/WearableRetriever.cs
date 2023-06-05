@@ -33,7 +33,6 @@ namespace AvatarSystem
                     }
                     else
                     {
-                        Debug.Log($"{mainFile}, {item.entityId}");
                         var sceneAb = await FetchSceneAssetBundles(item.entityId, contentProvider.assetBundlesBaseUrl);
 
                         if (sceneAb != null && sceneAb.IsSceneConverted())
@@ -45,7 +44,6 @@ namespace AvatarSystem
                             Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {(item != null ? item.entityId : hash)}</color>");
                         }
                     }
-
                 }
 
                 loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl);
