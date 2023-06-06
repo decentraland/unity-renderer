@@ -24,4 +24,22 @@ public class RealmPluginTestsUtils
             ScenesUrn = { sceneUrn },
         });
     }
+
+    public static AboutResponse.Types.AboutConfiguration GetAboutConfiguration(bool isWorld)
+    {
+        List<string> sceneUrn = new List<string>();
+
+        if (isWorld)
+            sceneUrn.Add("sceneUrn");
+
+        return new AboutResponse.Types.AboutConfiguration()
+        {
+            RealmName = isWorld ? WORLD_REALM_NAME : CATALYST_REALM_NAME,
+            Minimap = new AboutResponse.Types.MinimapConfiguration()
+            {
+                Enabled = !isWorld
+            },
+            ScenesUrn = { sceneUrn },
+        };
+    }
 }
