@@ -71,9 +71,7 @@ namespace ECSSystems.ScenesUiSystem
 
             // If parenting detects that the order for ui elements has changed, it should sort the ui tree
             if (scenesUiToSort.Count > 0)
-            {
                 SortSceneUiTree(internalUiContainerComponent, scenesUiToSort);
-            }
 
             // clear UI if scene changed
             if (sceneChanged && !isPendingSceneUI)
@@ -83,9 +81,7 @@ namespace ECSSystems.ScenesUiSystem
             }
 
             if (sceneChanged && currentScene != null && currentSceneNumber != currentScene.sceneData.sceneNumber)
-            {
                 currentScene = null;
-            }
 
             // UI not set for current scene yet
             if (isPendingSceneUI)
@@ -94,23 +90,9 @@ namespace ECSSystems.ScenesUiSystem
                 currentScene ??= GetCurrentScene(currentSceneNumber, loadedScenes);
 
                 // we apply current scene UI
-                if (currentScene != null)
-                {
-                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isSceneUIEnabled))
-                    {
-                        isPendingSceneUI = false;
-                    }
-                }
+                if (currentScene != null && ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isSceneUIEnabled))
+                    isPendingSceneUI = false;
             }
-
-            /*IECSReadOnlyComponentData<InternalUiContainer> sceneRootUiContainer =
-                internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            if (sceneRootUiContainer != null)
-            {
-                Screen.width
-                // sceneRootUiContainer.model.rootElement.layout.;
-
-            }*/
 
             componentWriter.PutComponent(
                 currentSceneNumber,
