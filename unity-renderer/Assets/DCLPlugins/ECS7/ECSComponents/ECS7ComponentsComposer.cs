@@ -44,6 +44,7 @@ namespace DCL.ECSComponents
         private readonly PointerEventResultRegister pointerEventResultRegister;
         private readonly CameraModeRegister cameraModeRegister;
         private readonly PointerLockRegister pointerLockRegister;
+        private readonly UiCanvasInformationRegister uiCanvasInformationRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents)
         {
@@ -83,6 +84,7 @@ namespace DCL.ECSComponents
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
             gltfContainerLoadingStateRegister = new GltfContainerLoadingStateRegister(ComponentID.GLTF_CONTAINER_LOADING_STATE, componentsFactory, componentsWriter);
+            uiCanvasInformationRegister = new UiCanvasInformationRegister(ComponentID.UI_CANVAS_INFORMATION, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -121,6 +123,7 @@ namespace DCL.ECSComponents
             pointerEvents.Dispose();
             gltfContainerLoadingStateRegister.Dispose();
             videoEventRegister.Dispose();
+            uiCanvasInformationRegister.Dispose();
         }
     }
 }

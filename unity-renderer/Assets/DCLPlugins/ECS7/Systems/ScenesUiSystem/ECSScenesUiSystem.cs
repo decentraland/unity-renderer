@@ -1,10 +1,13 @@
 using DCL;
 using DCL.Controllers;
+using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Device;
 using UnityEngine.UIElements;
 
 namespace ECSSystems.ScenesUiSystem
@@ -17,6 +20,7 @@ namespace ECSSystems.ScenesUiSystem
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly BooleanVariable hideUiEventVariable;
         private readonly BaseVariable<bool> isSceneUIEnabled;
+        private readonly IECSComponentWriter componentWriter;
 
         private int lastSceneNumber;
         private bool isPendingSceneUI;
@@ -28,7 +32,8 @@ namespace ECSSystems.ScenesUiSystem
             BaseList<IParcelScene> loadedScenes,
             IWorldState worldState,
             BooleanVariable hideUiEventVariable,
-            BaseVariable<bool> isSceneUIEnabled)
+            BaseVariable<bool> isSceneUIEnabled,
+            IECSComponentWriter componentWriter)
         {
             this.uiDocument = uiDocument;
             this.internalUiContainerComponent = internalUiContainerComponent;
@@ -36,6 +41,7 @@ namespace ECSSystems.ScenesUiSystem
             this.loadedScenes = loadedScenes;
             this.hideUiEventVariable = hideUiEventVariable;
             this.isSceneUIEnabled = isSceneUIEnabled;
+            this.componentWriter = componentWriter;
 
             lastSceneNumber = -1;
             isPendingSceneUI = true;
@@ -96,6 +102,26 @@ namespace ECSSystems.ScenesUiSystem
                     }
                 }
             }
+
+            /*IECSReadOnlyComponentData<InternalUiContainer> sceneRootUiContainer =
+                internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            if (sceneRootUiContainer != null)
+            {
+                Screen.width
+                // sceneRootUiContainer.model.rootElement.layout.;
+
+            }*/
+
+            componentWriter.PutComponent(
+                currentSceneNumber,
+                SpecialEntityId.SCENE_ROOT_ENTITY,
+                ComponentID.UI_CANVAS_INFORMATION,
+                new PBUiCanvasInformation()
+                {
+                    Width = Screen.width,
+                    Height = Screen.height,
+                    DevicePixelRatio = Screen.height / (float)Screen.width
+                });
         }
 
         private void LoadedScenesOnOnRemoved(IParcelScene scene)
