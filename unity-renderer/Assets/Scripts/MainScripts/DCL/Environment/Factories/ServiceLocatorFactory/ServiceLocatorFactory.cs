@@ -23,6 +23,7 @@ using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using rpc_csharp.transport;
 using RPC.Transports;
+using System;
 using System.Collections.Generic;
 using WorldsFeaturesAnalytics;
 
@@ -85,8 +86,13 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                ITransport TransportProvider() =>
-                    new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
+                ITransport TransportProvider()
+                {
+                    var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
+                    transport.WaitTime = TimeSpan.FromSeconds(100);
+                    transport.KeepConnectionAlive(TimeSpan.FromSeconds(1), 10);
+                    return transport;
+                }
 
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,

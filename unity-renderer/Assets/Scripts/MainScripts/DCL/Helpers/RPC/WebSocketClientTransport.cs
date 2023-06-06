@@ -1,4 +1,7 @@
+using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using System;
+using System.Threading;
 using WebSocketSharp;
 using ErrorEventArgs = WebSocketSharp.ErrorEventArgs;
 using ITransport = rpc_csharp.transport.ITransport;
@@ -9,6 +12,13 @@ namespace RPC.Transports
 {
     public class WebSocketClientTransport : WebSocket, ITransport
     {
+        private CancellationTokenSource pingOverTimeCancellationToken = new ();
+
+        public event Action OnCloseEvent;
+        public event Action<string> OnErrorEvent;
+        public event Action<byte[]> OnMessageEvent;
+        public event Action OnConnectEvent;
+
         public WebSocketClientTransport(string url, params string[] protocols) : base(url, protocols)
         {
             this.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
@@ -33,6 +43,7 @@ namespace RPC.Transports
 
         private void HandleClose(object sender, CloseEventArgs e)
         {
+            pingOverTimeCancellationToken.SafeCancelAndDispose();
             OnCloseEvent?.Invoke();
         }
 
@@ -44,6 +55,30 @@ namespace RPC.Transports
         public void SendMessage(byte[] data)
         {
             Send(data);
+        }
+
+        public void KeepConnectionAlive(TimeSpan signalFrequency, int failureTimesForCancelling)
+        {
+            async UniTaskVoid WaitUntilIsConnectedAndPingOverTime(CancellationToken cancellationToken)
+            {
+                while (!IsAlive)
+                    await UniTask.Delay(signalFrequency, cancellationToken: cancellationToken);
+
+                var pingFailedTimes = 0;
+
+                while (IsAlive && pingFailedTimes < failureTimesForCancelling)
+                {
+                    await UniTask.Delay(signalFrequency, cancellationToken: cancellationToken);
+
+                    if (Ping())
+                        pingFailedTimes = 0;
+                    else
+                        pingFailedTimes++;
+                }
+            }
+
+            pingOverTimeCancellationToken = pingOverTimeCancellationToken.SafeRestart();
+            WaitUntilIsConnectedAndPingOverTime(pingOverTimeCancellationToken.Token).Forget();
         }
 
         public void Dispose()
@@ -58,10 +93,5 @@ namespace RPC.Transports
             base.OnClose -= this.HandleClose;
             base.OnOpen -= this.HandleOpen;
         }
-
-        public event Action OnCloseEvent;
-        public event Action<string> OnErrorEvent;
-        public event Action<byte[]> OnMessageEvent;
-        public event Action OnConnectEvent;
     }
 }

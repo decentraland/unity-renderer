@@ -101,8 +101,6 @@ namespace DCL.Social.Friends
             controllerCancellationTokenSource = controllerCancellationTokenSource.SafeRestart();
 
             // TODO: wrap this events into socialApiBridge since it wont be supported by the social service
-            apiBridge.OnFriendNotFound += FriendNotFound;
-            apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
 
             void SubscribeToCorrespondingBridgeEvents()
@@ -127,6 +125,8 @@ namespace DCL.Social.Friends
                     apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
                     apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
                     apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
+                    apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
+                    apiBridge.OnFriendNotFound += FriendNotFound;
                 }
             }
 

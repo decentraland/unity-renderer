@@ -53,7 +53,7 @@ namespace DCL.Social.Friends
         {
             await InitializeClient(cancellationToken);
             // start listening to streams
-            UniTask.WhenAll(SubscribeToFriendshipEvents(cancellationToken)).Forget();
+            UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
         }
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
@@ -78,7 +78,11 @@ namespace DCL.Social.Friends
             if (initializationInformationTask != null) return await initializationInformationTask.Task.AttachExternalCancellation(cancellationToken);
 
             initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
+            // TODO: the bridge should not fetch all friends at start, its a responsibility/design issue.
+            // It should be fetched by its request method accordingly
             await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
+            // TODO: the bridge should not fetch all friend requests at start, its a responsibility/design issue.
+            // It should be fetched by its request method accordingly
             var friendshipInitializationMessage = await GetFriendRequestsFromServer(cancellationToken);
 
             initializationInformationTask.TrySetResult(friendshipInitializationMessage);
@@ -151,8 +155,6 @@ namespace DCL.Social.Friends
 
         public async UniTask RejectFriendshipAsync(string friendId, CancellationToken cancellationToken = default)
         {
-            string userId = GetUserIdFromFriendRequestId(friendId);
-
             var updateFriendshipPayload = new UpdateFriendshipPayload
             {
                 Event =
@@ -161,7 +163,7 @@ namespace DCL.Social.Friends
                         Reject = new RejectPayload
                         {
                             User = new User
-                                { Address = userId },
+                                { Address = friendId },
                         }
                     },
                 AuthToken = new Payload
@@ -170,13 +172,11 @@ namespace DCL.Social.Friends
                 }
             };
 
-            await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
+            await this.UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
         }
 
         public async UniTask CancelFriendshipAsync(string friendId, CancellationToken cancellationToken = default)
         {
-            string userId = GetUserIdFromFriendRequestId(friendId);
-
             var updateFriendshipPayload = new UpdateFriendshipPayload
             {
                 Event =
@@ -185,7 +185,7 @@ namespace DCL.Social.Friends
                         Cancel = new CancelPayload
                         {
                             User = new User
-                                { Address = userId }
+                                { Address = friendId }
                         }
                     },
                 AuthToken = new Payload
@@ -194,7 +194,7 @@ namespace DCL.Social.Friends
                 }
             };
 
-            await this.UpdateFriendship(updateFriendshipPayload, userId, cancellationToken);
+            await this.UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
         }
 
         public async UniTask AcceptFriendshipAsync(string friendId, CancellationToken cancellationToken = default)
@@ -271,7 +271,7 @@ namespace DCL.Social.Friends
                 response.Message);
         }
 
-        private async UniTask SubscribeToFriendshipEvents(CancellationToken cancellationToken = default)
+        private async UniTask SubscribeToIncomingFriendshipEvents(CancellationToken cancellationToken = default)
         {
             await WaitForAccessTokenAsync(cancellationToken);
 
@@ -367,12 +367,6 @@ namespace DCL.Social.Friends
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(error), error, null);
             }
-        }
-
-        private static string GetUserIdFromFriendRequestId(string friendRequestId)
-        {
-            var firstHyphen = friendRequestId.IndexOf('-');
-            return friendRequestId.Substring(0, firstHyphen);
         }
 
         private static string GetFriendRequestId(string userId, long createdAt) =>
