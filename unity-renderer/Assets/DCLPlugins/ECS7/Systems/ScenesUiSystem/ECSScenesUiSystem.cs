@@ -8,6 +8,7 @@ using DCL.Models;
 using Decentraland.Common;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 using Position = UnityEngine.UIElements.Position;
 using Screen = UnityEngine.Device.Screen;
@@ -105,16 +106,22 @@ namespace ECSSystems.ScenesUiSystem
                     isPendingSceneUI = false;
             }
 
+            float widthInInches = Screen.width / Screen.dpi;
+            float heightInInches = Screen.height / Screen.dpi;
+            float diagonalPixelsScreenSize = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height));
+            float diagonalInchesScreenSize = Mathf.Sqrt((widthInInches * widthInInches) + (heightInInches * heightInInches));
+            float ppi = diagonalPixelsScreenSize / diagonalInchesScreenSize;
+
             componentWriter.PutComponent(
                 currentSceneNumber,
                 SpecialEntityId.SCENE_ROOT_ENTITY,
                 ComponentID.UI_CANVAS_INFORMATION,
                 new PBUiCanvasInformation()
                 {
+                    InteractableArea = interactableArea,
                     Width = Screen.width,
                     Height = Screen.height,
-                    DevicePixelRatio = Screen.dpi, // should it be Screen.height / (float)Screen.width ???
-                    InteractableArea = interactableArea
+                    DevicePixelRatio = Screen.dpi / ppi
                 });
         }
 
