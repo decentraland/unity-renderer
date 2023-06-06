@@ -33,6 +33,8 @@ namespace DCL.Backpack
         [SerializeField] internal ColorPresetsSO skinColorPresetsSO;
         [SerializeField] private BackpackFiltersComponentView backpackFiltersComponentView;
         [SerializeField] internal Button saveAvatarButton;
+        [SerializeField] internal GameObject normalSection;
+        [SerializeField] internal GameObject outfitSection;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
@@ -69,6 +71,19 @@ namespace DCL.Backpack
                 avatarPreviewZoomController);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle += ColorPickerToggle;
+            backpackPreviewPanel.OnOutfitButtonPressed += ToggleOutfitSection;
+        }
+
+        private void ToggleOutfitSection()
+        {
+            normalSection.SetActive(false);
+            outfitSection.SetActive(true);
+        }
+
+        private void ToggleNormalSection()
+        {
+            normalSection.SetActive(false);
+            outfitSection.SetActive(true);
         }
 
         private void Update() =>
@@ -90,6 +105,7 @@ namespace DCL.Backpack
 
             colorPickerComponentView.OnColorChanged -= OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle -= ColorPickerToggle;
+            backpackPreviewPanel.OnOutfitButtonPressed -= ToggleOutfitSection;
         }
 
         public static BackpackEditorHUDV2ComponentView Create() =>
