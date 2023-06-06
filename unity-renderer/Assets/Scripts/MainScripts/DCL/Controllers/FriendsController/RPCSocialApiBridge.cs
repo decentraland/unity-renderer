@@ -51,11 +51,9 @@ namespace DCL.Social.Friends
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
         {
-            InitializeClient(cancellationToken).ContinueWith(() =>
-            {
-                // start listening to streams
-                UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
-            });
+            // await InitializeClient(cancellationToken);
+            // // start listening to streams
+            // UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
         }
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
