@@ -51,10 +51,14 @@ namespace DCL.Social.Friends
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
         {
+            Debug.Log("RPCSocialAPIBridge.InitializeAsync.InitializeClient.Pre");
             await InitializeClient(cancellationToken);
+            Debug.Log("RPCSocialAPIBridge.InitializeAsync.InitializeClient.Post");
 
+            Debug.Log("RPCSocialAPIBridge.InitializeAsync.SubscribeToIncomingFriendshipEvents.Pre");
             // start listening to streams
             UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
+            Debug.Log("RPCSocialAPIBridge.InitializeAsync.SubscribeToIncomingFriendshipEvents.Post");
         }
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
@@ -63,11 +67,15 @@ namespace DCL.Social.Friends
 
             var transport = clientTransportProvider();
             var client = new RpcClient(transport);
+            Debug.Log("RPCSocialAPIBridge.InitializeClient.CreatePort.Pre");
             var socialPort = await client.CreatePort("social-service-port");
+            Debug.Log("RPCSocialAPIBridge.InitializeClient.CreatePort.Post");
 
             cancellationToken.ThrowIfCancellationRequested();
 
+            Debug.Log("RPCSocialAPIBridge.InitializeClient.LoadModule.Pre");
             var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
+            Debug.Log("RPCSocialAPIBridge.InitializeClient.LoadModule.Post");
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -81,11 +89,11 @@ namespace DCL.Social.Friends
             initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
 
             // TODO: the bridge should not fetch all friends at start, its a responsibility/design issue.
-            // It should be fetched by its request method accordingly
+            // It should be fetched by its request function accordingly
             await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
 
             // TODO: the bridge should not fetch all friend requests at start, its a responsibility/design issue.
-            // It should be fetched by its request method accordingly
+            // It should be fetched by its request function accordingly
             var friendshipInitializationMessage = await GetFriendRequestsFromServer(cancellationToken);
 
             initializationInformationTask.TrySetResult(friendshipInitializationMessage);
