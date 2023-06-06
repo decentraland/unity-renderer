@@ -10,6 +10,8 @@ namespace Decentraland.Renderer.KernelServices {
 public interface IClientSignRequestKernelService
 {
   UniTask<SignBodyResponse> GetRequestSignature(SignBodyRequest request);
+
+  UniTask<GetSignedHeadersResponse> GetSignedHeaders(GetSignedHeadersRequest request);
 }
 
 public class ClientSignRequestKernelService : IClientSignRequestKernelService
@@ -25,6 +27,11 @@ public class ClientSignRequestKernelService : IClientSignRequestKernelService
   public UniTask<SignBodyResponse> GetRequestSignature(SignBodyRequest request)
   {
       return module.CallUnaryProcedure<SignBodyResponse>("GetRequestSignature", request);
+  }
+
+  public UniTask<GetSignedHeadersResponse> GetSignedHeaders(GetSignedHeadersRequest request)
+  {
+      return module.CallUnaryProcedure<GetSignedHeadersResponse>("GetSignedHeaders", request);
   }
 
 }

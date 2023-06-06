@@ -27,7 +27,6 @@ namespace DCL.Helpers
 
         public void Write(T item)
         {
-            UnityEngine.Debug.Log($"Calling event with {item}");
             callback?.Invoke(item);
             activeProperty.Value = item;
         }

@@ -25,94 +25,90 @@ namespace Decentraland.Quests {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CilkZWNlbnRyYWxhbmQvcmVuZGVyZXIvcXVlc3RzL3F1ZXN0cy5wcm90bxIT",
-            "ZGVjZW50cmFsYW5kLnF1ZXN0cyIOCgxJbnZhbGlkUXVlc3QiCQoHTm90VVVJ",
-            "RCIVChNJbnRlcm5hbFNlcnZlckVycm9yIhcKFU5vdEZvdW5kUXVlc3RJbnN0",
-            "YW5jZSIKCghOb3RPd25lciIOCgxJZ25vcmVkRXZlbnQiIwoLVXNlckFkZHJl",
-            "c3MSFAoMdXNlcl9hZGRyZXNzGAEgASgJIjsKEVN0YXJ0UXVlc3RSZXF1ZXN0",
-            "EhQKDHVzZXJfYWRkcmVzcxgBIAEoCRIQCghxdWVzdF9pZBgCIAEoCSKxAgoS",
-            "U3RhcnRRdWVzdFJlc3BvbnNlEkQKCGFjY2VwdGVkGAEgASgLMjAuZGVjZW50",
-            "cmFsYW5kLnF1ZXN0cy5TdGFydFF1ZXN0UmVzcG9uc2UuQWNjZXB0ZWRIABI6",
-            "Cg1pbnZhbGlkX3F1ZXN0GAIgASgLMiEuZGVjZW50cmFsYW5kLnF1ZXN0cy5J",
-            "bnZhbGlkUXVlc3RIABI2Cg5ub3RfdXVpZF9lcnJvchgDIAEoCzIcLmRlY2Vu",
-            "dHJhbGFuZC5xdWVzdHMuTm90VVVJREgAEkkKFWludGVybmFsX3NlcnZlcl9l",
-            "cnJvchgEIAEoCzIoLmRlY2VudHJhbGFuZC5xdWVzdHMuSW50ZXJuYWxTZXJ2",
-            "ZXJFcnJvckgAGgoKCEFjY2VwdGVkQgoKCHJlc3BvbnNlIkQKEUFib3J0UXVl",
-            "c3RSZXF1ZXN0EhQKDHVzZXJfYWRkcmVzcxgBIAEoCRIZChFxdWVzdF9pbnN0",
-            "YW5jZV9pZBgCIAEoCSL5AgoSQWJvcnRRdWVzdFJlc3BvbnNlEkQKCGFjY2Vw",
-            "dGVkGAEgASgLMjAuZGVjZW50cmFsYW5kLnF1ZXN0cy5BYm9ydFF1ZXN0UmVz",
-            "cG9uc2UuQWNjZXB0ZWRIABJOChhub3RfZm91bmRfcXVlc3RfaW5zdGFuY2UY",
-            "AiABKAsyKi5kZWNlbnRyYWxhbmQucXVlc3RzLk5vdEZvdW5kUXVlc3RJbnN0",
-            "YW5jZUgAEjYKDm5vdF91dWlkX2Vycm9yGAMgASgLMhwuZGVjZW50cmFsYW5k",
-            "LnF1ZXN0cy5Ob3RVVUlESAASMgoJbm90X293bmVyGAQgASgLMh0uZGVjZW50",
-            "cmFsYW5kLnF1ZXN0cy5Ob3RPd25lckgAEkkKFWludGVybmFsX3NlcnZlcl9l",
-            "cnJvchgFIAEoCzIoLmRlY2VudHJhbGFuZC5xdWVzdHMuSW50ZXJuYWxTZXJ2",
-            "ZXJFcnJvckgAGgoKCEFjY2VwdGVkQgoKCHJlc3BvbnNlIlEKBUV2ZW50EgoK",
-            "AmlkGAEgASgJEg8KB2FkZHJlc3MYAiABKAkSKwoGYWN0aW9uGAMgASgLMhsu",
-            "ZGVjZW50cmFsYW5kLnF1ZXN0cy5BY3Rpb24iTAoMRXZlbnRSZXF1ZXN0Eg8K",
-            "B2FkZHJlc3MYASABKAkSKwoGYWN0aW9uGAIgASgLMhsuZGVjZW50cmFsYW5k",
-            "LnF1ZXN0cy5BY3Rpb24ivwEKDUV2ZW50UmVzcG9uc2USGwoRYWNjZXB0ZWRf",
-            "ZXZlbnRfaWQYASABKAlIABI6Cg1pZ25vcmVkX2V2ZW50GAIgASgLMiEuZGVj",
-            "ZW50cmFsYW5kLnF1ZXN0cy5JZ25vcmVkRXZlbnRIABJJChVpbnRlcm5hbF9z",
-            "ZXJ2ZXJfZXJyb3IYAyABKAsyKC5kZWNlbnRyYWxhbmQucXVlc3RzLkludGVy",
-            "bmFsU2VydmVyRXJyb3JIAEIKCghyZXNwb25zZSJxCg9RdWVzdERlZmluaXRp",
-            "b24SKAoFc3RlcHMYASADKAsyGS5kZWNlbnRyYWxhbmQucXVlc3RzLlN0ZXAS",
-            "NAoLY29ubmVjdGlvbnMYAiADKAsyHy5kZWNlbnRyYWxhbmQucXVlc3RzLkNv",
-            "bm5lY3Rpb24iMAoKQ29ubmVjdGlvbhIRCglzdGVwX2Zyb20YASABKAkSDwoH",
-            "c3RlcF90bxgCIAEoCSJRCgRTdGVwEgoKAmlkGAEgASgJEhMKC2Rlc2NyaXB0",
-            "aW9uGAIgASgJEigKBXRhc2tzGAMgAygLMhkuZGVjZW50cmFsYW5kLnF1ZXN0",
-            "cy5UYXNrIooBCgZBY3Rpb24SDAoEdHlwZRgBIAEoCRI/CgpwYXJhbWV0ZXJz",
-            "GAIgAygLMisuZGVjZW50cmFsYW5kLnF1ZXN0cy5BY3Rpb24uUGFyYW1ldGVy",
-            "c0VudHJ5GjEKD1BhcmFtZXRlcnNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFs",
-            "dWUYAiABKAk6AjgBIloKBFRhc2sSCgoCaWQYASABKAkSEwoLZGVzY3JpcHRp",
-            "b24YAiABKAkSMQoMYWN0aW9uX2l0ZW1zGAMgAygLMhsuZGVjZW50cmFsYW5k",
-            "LnF1ZXN0cy5BY3Rpb24ibAoLU3RlcENvbnRlbnQSKQoGdG9fZG9zGAEgAygL",
-            "MhkuZGVjZW50cmFsYW5kLnF1ZXN0cy5UYXNrEjIKD3Rhc2tzX2NvbXBsZXRl",
-            "ZBgCIAMoCzIZLmRlY2VudHJhbGFuZC5xdWVzdHMuVGFzayLyAQoKUXVlc3RT",
-            "dGF0ZRJICg1jdXJyZW50X3N0ZXBzGAIgAygLMjEuZGVjZW50cmFsYW5kLnF1",
-            "ZXN0cy5RdWVzdFN0YXRlLkN1cnJlbnRTdGVwc0VudHJ5EhIKCnN0ZXBzX2xl",
-            "ZnQYAyABKAcSFwoPc3RlcHNfY29tcGxldGVkGAQgAygJEhYKDnJlcXVpcmVk",
-            "X3N0ZXBzGAUgAygJGlUKEUN1cnJlbnRTdGVwc0VudHJ5EgsKA2tleRgBIAEo",
-            "CRIvCgV2YWx1ZRgCIAEoCzIgLmRlY2VudHJhbGFuZC5xdWVzdHMuU3RlcENv",
-            "bnRlbnQ6AjgBIogBChJRdWVzdFN0YXRlV2l0aERhdGESGQoRcXVlc3RfaW5z",
-            "dGFuY2VfaWQYASABKAkSDAoEbmFtZRgCIAEoCRITCgtkZXNjcmlwdGlvbhgD",
-            "IAEoCRI0CgtxdWVzdF9zdGF0ZRgEIAEoCzIfLmRlY2VudHJhbGFuZC5xdWVz",
-            "dHMuUXVlc3RTdGF0ZSJhChBRdWVzdFN0YXRlVXBkYXRlEjsKCnF1ZXN0X2Rh",
-            "dGEYASABKAsyJy5kZWNlbnRyYWxhbmQucXVlc3RzLlF1ZXN0U3RhdGVXaXRo",
-            "RGF0YRIQCghldmVudF9pZBgCIAEoCSK7AQoKVXNlclVwZGF0ZRJDChJxdWVz",
-            "dF9zdGF0ZV91cGRhdGUYASABKAsyJS5kZWNlbnRyYWxhbmQucXVlc3RzLlF1",
-            "ZXN0U3RhdGVVcGRhdGVIABJEChFuZXdfcXVlc3Rfc3RhcnRlZBgCIAEoCzIn",
-            "LmRlY2VudHJhbGFuZC5xdWVzdHMuUXVlc3RTdGF0ZVdpdGhEYXRhSAASFwoN",
-            "ZXZlbnRfaWdub3JlZBgEIAEoB0gAQgkKB21lc3NhZ2UiPAoGUXVlc3RzEjIK",
-            "BnF1ZXN0cxgBIAMoCzIiLmRlY2VudHJhbGFuZC5xdWVzdHMuUXVlc3RJbnN0",
-            "YW5jZSKcAQoUR2V0QWxsUXVlc3RzUmVzcG9uc2USLQoGcXVlc3RzGAEgASgL",
-            "MhsuZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdHNIABJJChVpbnRlcm5hbF9z",
-            "ZXJ2ZXJfZXJyb3IYAiABKAsyKC5kZWNlbnRyYWxhbmQucXVlc3RzLkludGVy",
-            "bmFsU2VydmVyRXJyb3JIAEIKCghyZXNwb25zZSJkCgVRdWVzdBIMCgRuYW1l",
-            "GAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJEjgKCmRlZmluaXRpb24YAyAB",
-            "KAsyJC5kZWNlbnRyYWxhbmQucXVlc3RzLlF1ZXN0RGVmaW5pdGlvbiItChlH",
-            "ZXRRdWVzdERlZmluaXRpb25SZXF1ZXN0EhAKCHF1ZXN0X2lkGAEgASgJIqAB",
-            "ChpHZXRRdWVzdERlZmluaXRpb25SZXNwb25zZRIrCgVxdWVzdBgBIAEoCzIa",
-            "LmRlY2VudHJhbGFuZC5xdWVzdHMuUXVlc3RIABJJChVpbnRlcm5hbF9zZXJ2",
-            "ZXJfZXJyb3IYAiABKAsyKC5kZWNlbnRyYWxhbmQucXVlc3RzLkludGVybmFs",
-            "U2VydmVyRXJyb3JIAEIKCghyZXNwb25zZSJ/Cg1RdWVzdEluc3RhbmNlEhMK",
-            "C2luc3RhbmNlX2lkGAEgASgJEikKBXF1ZXN0GAIgASgLMhouZGVjZW50cmFs",
-            "YW5kLnF1ZXN0cy5RdWVzdBIuCgVzdGF0ZRgDIAEoCzIfLmRlY2VudHJhbGFu",
-            "ZC5xdWVzdHMuUXVlc3RTdGF0ZTLTBAoNUXVlc3RzU2VydmljZRJfCgpTdGFy",
-            "dFF1ZXN0EiYuZGVjZW50cmFsYW5kLnF1ZXN0cy5TdGFydFF1ZXN0UmVxdWVz",
-            "dBonLmRlY2VudHJhbGFuZC5xdWVzdHMuU3RhcnRRdWVzdFJlc3BvbnNlIgAS",
-            "XwoKQWJvcnRRdWVzdBImLmRlY2VudHJhbGFuZC5xdWVzdHMuQWJvcnRRdWVz",
-            "dFJlcXVlc3QaJy5kZWNlbnRyYWxhbmQucXVlc3RzLkFib3J0UXVlc3RSZXNw",
-            "b25zZSIAElQKCVNlbmRFdmVudBIhLmRlY2VudHJhbGFuZC5xdWVzdHMuRXZl",
-            "bnRSZXF1ZXN0GiIuZGVjZW50cmFsYW5kLnF1ZXN0cy5FdmVudFJlc3BvbnNl",
-            "IgASUgoJU3Vic2NyaWJlEiAuZGVjZW50cmFsYW5kLnF1ZXN0cy5Vc2VyQWRk",
-            "cmVzcxofLmRlY2VudHJhbGFuZC5xdWVzdHMuVXNlclVwZGF0ZSIAMAESXQoM",
-            "R2V0QWxsUXVlc3RzEiAuZGVjZW50cmFsYW5kLnF1ZXN0cy5Vc2VyQWRkcmVz",
-            "cxopLmRlY2VudHJhbGFuZC5xdWVzdHMuR2V0QWxsUXVlc3RzUmVzcG9uc2Ui",
-            "ABJ3ChJHZXRRdWVzdERlZmluaXRpb24SLi5kZWNlbnRyYWxhbmQucXVlc3Rz",
-            "LkdldFF1ZXN0RGVmaW5pdGlvblJlcXVlc3QaLy5kZWNlbnRyYWxhbmQucXVl",
-            "c3RzLkdldFF1ZXN0RGVmaW5pdGlvblJlc3BvbnNlIgBiBnByb3RvMw=="));
+            "ZGVjZW50cmFsYW5kLnF1ZXN0cxobZ29vZ2xlL3Byb3RvYnVmL2VtcHR5LnBy",
+            "b3RvIg4KDEludmFsaWRRdWVzdCIJCgdOb3RVVUlEIhUKE0ludGVybmFsU2Vy",
+            "dmVyRXJyb3IiFwoVTm90Rm91bmRRdWVzdEluc3RhbmNlIgoKCE5vdE93bmVy",
+            "Ig4KDElnbm9yZWRFdmVudCIlChFTdGFydFF1ZXN0UmVxdWVzdBIQCghxdWVz",
+            "dF9pZBgBIAEoCSKxAgoSU3RhcnRRdWVzdFJlc3BvbnNlEkQKCGFjY2VwdGVk",
+            "GAEgASgLMjAuZGVjZW50cmFsYW5kLnF1ZXN0cy5TdGFydFF1ZXN0UmVzcG9u",
+            "c2UuQWNjZXB0ZWRIABI6Cg1pbnZhbGlkX3F1ZXN0GAIgASgLMiEuZGVjZW50",
+            "cmFsYW5kLnF1ZXN0cy5JbnZhbGlkUXVlc3RIABI2Cg5ub3RfdXVpZF9lcnJv",
+            "chgDIAEoCzIcLmRlY2VudHJhbGFuZC5xdWVzdHMuTm90VVVJREgAEkkKFWlu",
+            "dGVybmFsX3NlcnZlcl9lcnJvchgEIAEoCzIoLmRlY2VudHJhbGFuZC5xdWVz",
+            "dHMuSW50ZXJuYWxTZXJ2ZXJFcnJvckgAGgoKCEFjY2VwdGVkQgoKCHJlc3Bv",
+            "bnNlIi4KEUFib3J0UXVlc3RSZXF1ZXN0EhkKEXF1ZXN0X2luc3RhbmNlX2lk",
+            "GAEgASgJIvkCChJBYm9ydFF1ZXN0UmVzcG9uc2USRAoIYWNjZXB0ZWQYASAB",
+            "KAsyMC5kZWNlbnRyYWxhbmQucXVlc3RzLkFib3J0UXVlc3RSZXNwb25zZS5B",
+            "Y2NlcHRlZEgAEk4KGG5vdF9mb3VuZF9xdWVzdF9pbnN0YW5jZRgCIAEoCzIq",
+            "LmRlY2VudHJhbGFuZC5xdWVzdHMuTm90Rm91bmRRdWVzdEluc3RhbmNlSAAS",
+            "NgoObm90X3V1aWRfZXJyb3IYAyABKAsyHC5kZWNlbnRyYWxhbmQucXVlc3Rz",
+            "Lk5vdFVVSURIABIyCglub3Rfb3duZXIYBCABKAsyHS5kZWNlbnRyYWxhbmQu",
+            "cXVlc3RzLk5vdE93bmVySAASSQoVaW50ZXJuYWxfc2VydmVyX2Vycm9yGAUg",
+            "ASgLMiguZGVjZW50cmFsYW5kLnF1ZXN0cy5JbnRlcm5hbFNlcnZlckVycm9y",
+            "SAAaCgoIQWNjZXB0ZWRCCgoIcmVzcG9uc2UiUQoFRXZlbnQSCgoCaWQYASAB",
+            "KAkSDwoHYWRkcmVzcxgCIAEoCRIrCgZhY3Rpb24YAyABKAsyGy5kZWNlbnRy",
+            "YWxhbmQucXVlc3RzLkFjdGlvbiI7CgxFdmVudFJlcXVlc3QSKwoGYWN0aW9u",
+            "GAEgASgLMhsuZGVjZW50cmFsYW5kLnF1ZXN0cy5BY3Rpb24ivwEKDUV2ZW50",
+            "UmVzcG9uc2USGwoRYWNjZXB0ZWRfZXZlbnRfaWQYASABKAlIABI6Cg1pZ25v",
+            "cmVkX2V2ZW50GAIgASgLMiEuZGVjZW50cmFsYW5kLnF1ZXN0cy5JZ25vcmVk",
+            "RXZlbnRIABJJChVpbnRlcm5hbF9zZXJ2ZXJfZXJyb3IYAyABKAsyKC5kZWNl",
+            "bnRyYWxhbmQucXVlc3RzLkludGVybmFsU2VydmVyRXJyb3JIAEIKCghyZXNw",
+            "b25zZSJxCg9RdWVzdERlZmluaXRpb24SKAoFc3RlcHMYASADKAsyGS5kZWNl",
+            "bnRyYWxhbmQucXVlc3RzLlN0ZXASNAoLY29ubmVjdGlvbnMYAiADKAsyHy5k",
+            "ZWNlbnRyYWxhbmQucXVlc3RzLkNvbm5lY3Rpb24iMAoKQ29ubmVjdGlvbhIR",
+            "CglzdGVwX2Zyb20YASABKAkSDwoHc3RlcF90bxgCIAEoCSJRCgRTdGVwEgoK",
+            "AmlkGAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJEigKBXRhc2tzGAMgAygL",
+            "MhkuZGVjZW50cmFsYW5kLnF1ZXN0cy5UYXNrIooBCgZBY3Rpb24SDAoEdHlw",
+            "ZRgBIAEoCRI/CgpwYXJhbWV0ZXJzGAIgAygLMisuZGVjZW50cmFsYW5kLnF1",
+            "ZXN0cy5BY3Rpb24uUGFyYW1ldGVyc0VudHJ5GjEKD1BhcmFtZXRlcnNFbnRy",
+            "eRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIloKBFRhc2sSCgoC",
+            "aWQYASABKAkSEwoLZGVzY3JpcHRpb24YAiABKAkSMQoMYWN0aW9uX2l0ZW1z",
+            "GAMgAygLMhsuZGVjZW50cmFsYW5kLnF1ZXN0cy5BY3Rpb24ibAoLU3RlcENv",
+            "bnRlbnQSKQoGdG9fZG9zGAEgAygLMhkuZGVjZW50cmFsYW5kLnF1ZXN0cy5U",
+            "YXNrEjIKD3Rhc2tzX2NvbXBsZXRlZBgCIAMoCzIZLmRlY2VudHJhbGFuZC5x",
+            "dWVzdHMuVGFzayLyAQoKUXVlc3RTdGF0ZRJICg1jdXJyZW50X3N0ZXBzGAIg",
+            "AygLMjEuZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdFN0YXRlLkN1cnJlbnRT",
+            "dGVwc0VudHJ5EhIKCnN0ZXBzX2xlZnQYAyABKAcSFwoPc3RlcHNfY29tcGxl",
+            "dGVkGAQgAygJEhYKDnJlcXVpcmVkX3N0ZXBzGAUgAygJGlUKEUN1cnJlbnRT",
+            "dGVwc0VudHJ5EgsKA2tleRgBIAEoCRIvCgV2YWx1ZRgCIAEoCzIgLmRlY2Vu",
+            "dHJhbGFuZC5xdWVzdHMuU3RlcENvbnRlbnQ6AjgBInAKBVF1ZXN0EgoKAmlk",
+            "GAEgASgJEgwKBG5hbWUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSOAoK",
+            "ZGVmaW5pdGlvbhgEIAEoCzIkLmRlY2VudHJhbGFuZC5xdWVzdHMuUXVlc3RE",
+            "ZWZpbml0aW9uInYKDVF1ZXN0SW5zdGFuY2USCgoCaWQYASABKAkSKQoFcXVl",
+            "c3QYAiABKAsyGi5kZWNlbnRyYWxhbmQucXVlc3RzLlF1ZXN0Ei4KBXN0YXRl",
+            "GAMgASgLMh8uZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdFN0YXRlIm8KEFF1",
+            "ZXN0U3RhdGVVcGRhdGUSEwoLaW5zdGFuY2VfaWQYASABKAkSNAoLcXVlc3Rf",
+            "c3RhdGUYAiABKAsyHy5kZWNlbnRyYWxhbmQucXVlc3RzLlF1ZXN0U3RhdGUS",
+            "EAoIZXZlbnRfaWQYAyABKAkitgEKClVzZXJVcGRhdGUSQwoScXVlc3Rfc3Rh",
+            "dGVfdXBkYXRlGAEgASgLMiUuZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdFN0",
+            "YXRlVXBkYXRlSAASPwoRbmV3X3F1ZXN0X3N0YXJ0ZWQYAiABKAsyIi5kZWNl",
+            "bnRyYWxhbmQucXVlc3RzLlF1ZXN0SW5zdGFuY2VIABIXCg1ldmVudF9pZ25v",
+            "cmVkGAQgASgHSABCCQoHbWVzc2FnZSI/CgZRdWVzdHMSNQoJaW5zdGFuY2Vz",
+            "GAEgAygLMiIuZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdEluc3RhbmNlIpwB",
+            "ChRHZXRBbGxRdWVzdHNSZXNwb25zZRItCgZxdWVzdHMYASABKAsyGy5kZWNl",
+            "bnRyYWxhbmQucXVlc3RzLlF1ZXN0c0gAEkkKFWludGVybmFsX3NlcnZlcl9l",
+            "cnJvchgCIAEoCzIoLmRlY2VudHJhbGFuZC5xdWVzdHMuSW50ZXJuYWxTZXJ2",
+            "ZXJFcnJvckgAQgoKCHJlc3BvbnNlIi0KGUdldFF1ZXN0RGVmaW5pdGlvblJl",
+            "cXVlc3QSEAoIcXVlc3RfaWQYASABKAkioAEKGkdldFF1ZXN0RGVmaW5pdGlv",
+            "blJlc3BvbnNlEisKBXF1ZXN0GAEgASgLMhouZGVjZW50cmFsYW5kLnF1ZXN0",
+            "cy5RdWVzdEgAEkkKFWludGVybmFsX3NlcnZlcl9lcnJvchgCIAEoCzIoLmRl",
+            "Y2VudHJhbGFuZC5xdWVzdHMuSW50ZXJuYWxTZXJ2ZXJFcnJvckgAQgoKCHJl",
+            "c3BvbnNlMr8ECg1RdWVzdHNTZXJ2aWNlEl8KClN0YXJ0UXVlc3QSJi5kZWNl",
+            "bnRyYWxhbmQucXVlc3RzLlN0YXJ0UXVlc3RSZXF1ZXN0GicuZGVjZW50cmFs",
+            "YW5kLnF1ZXN0cy5TdGFydFF1ZXN0UmVzcG9uc2UiABJfCgpBYm9ydFF1ZXN0",
+            "EiYuZGVjZW50cmFsYW5kLnF1ZXN0cy5BYm9ydFF1ZXN0UmVxdWVzdBonLmRl",
+            "Y2VudHJhbGFuZC5xdWVzdHMuQWJvcnRRdWVzdFJlc3BvbnNlIgASVAoJU2Vu",
+            "ZEV2ZW50EiEuZGVjZW50cmFsYW5kLnF1ZXN0cy5FdmVudFJlcXVlc3QaIi5k",
+            "ZWNlbnRyYWxhbmQucXVlc3RzLkV2ZW50UmVzcG9uc2UiABJICglTdWJzY3Jp",
+            "YmUSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaHy5kZWNlbnRyYWxhbmQucXVl",
+            "c3RzLlVzZXJVcGRhdGUiADABElMKDEdldEFsbFF1ZXN0cxIWLmdvb2dsZS5w",
+            "cm90b2J1Zi5FbXB0eRopLmRlY2VudHJhbGFuZC5xdWVzdHMuR2V0QWxsUXVl",
+            "c3RzUmVzcG9uc2UiABJ3ChJHZXRRdWVzdERlZmluaXRpb24SLi5kZWNlbnRy",
+            "YWxhbmQucXVlc3RzLkdldFF1ZXN0RGVmaW5pdGlvblJlcXVlc3QaLy5kZWNl",
+            "bnRyYWxhbmQucXVlc3RzLkdldFF1ZXN0RGVmaW5pdGlvblJlc3BvbnNlIgBi",
+            "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.InvalidQuest), global::Decentraland.Quests.InvalidQuest.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.NotUUID), global::Decentraland.Quests.NotUUID.Parser, null, null, null, null, null),
@@ -120,13 +116,12 @@ namespace Decentraland.Quests {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.NotFoundQuestInstance), global::Decentraland.Quests.NotFoundQuestInstance.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.NotOwner), global::Decentraland.Quests.NotOwner.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.IgnoredEvent), global::Decentraland.Quests.IgnoredEvent.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.UserAddress), global::Decentraland.Quests.UserAddress.Parser, new[]{ "UserAddress_" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.StartQuestRequest), global::Decentraland.Quests.StartQuestRequest.Parser, new[]{ "UserAddress", "QuestId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.StartQuestRequest), global::Decentraland.Quests.StartQuestRequest.Parser, new[]{ "QuestId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.StartQuestResponse), global::Decentraland.Quests.StartQuestResponse.Parser, new[]{ "Accepted", "InvalidQuest", "NotUuidError", "InternalServerError" }, new[]{ "Response" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.StartQuestResponse.Types.Accepted), global::Decentraland.Quests.StartQuestResponse.Types.Accepted.Parser, null, null, null, null, null)}),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.AbortQuestRequest), global::Decentraland.Quests.AbortQuestRequest.Parser, new[]{ "UserAddress", "QuestInstanceId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.AbortQuestRequest), global::Decentraland.Quests.AbortQuestRequest.Parser, new[]{ "QuestInstanceId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.AbortQuestResponse), global::Decentraland.Quests.AbortQuestResponse.Parser, new[]{ "Accepted", "NotFoundQuestInstance", "NotUuidError", "NotOwner", "InternalServerError" }, new[]{ "Response" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.AbortQuestResponse.Types.Accepted), global::Decentraland.Quests.AbortQuestResponse.Types.Accepted.Parser, null, null, null, null, null)}),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Event), global::Decentraland.Quests.Event.Parser, new[]{ "Id", "Address", "Action" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.EventRequest), global::Decentraland.Quests.EventRequest.Parser, new[]{ "Address", "Action" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.EventRequest), global::Decentraland.Quests.EventRequest.Parser, new[]{ "Action" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.EventResponse), global::Decentraland.Quests.EventResponse.Parser, new[]{ "AcceptedEventId", "IgnoredEvent", "InternalServerError" }, new[]{ "Response" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestDefinition), global::Decentraland.Quests.QuestDefinition.Parser, new[]{ "Steps", "Connections" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Connection), global::Decentraland.Quests.Connection.Parser, new[]{ "StepFrom", "StepTo" }, null, null, null, null),
@@ -135,15 +130,14 @@ namespace Decentraland.Quests {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Task), global::Decentraland.Quests.Task.Parser, new[]{ "Id", "Description", "ActionItems" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.StepContent), global::Decentraland.Quests.StepContent.Parser, new[]{ "ToDos", "TasksCompleted" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestState), global::Decentraland.Quests.QuestState.Parser, new[]{ "CurrentSteps", "StepsLeft", "StepsCompleted", "RequiredSteps" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestStateWithData), global::Decentraland.Quests.QuestStateWithData.Parser, new[]{ "QuestInstanceId", "Name", "Description", "QuestState" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestStateUpdate), global::Decentraland.Quests.QuestStateUpdate.Parser, new[]{ "QuestData", "EventId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Quest), global::Decentraland.Quests.Quest.Parser, new[]{ "Id", "Name", "Description", "Definition" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestInstance), global::Decentraland.Quests.QuestInstance.Parser, new[]{ "Id", "Quest", "State" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestStateUpdate), global::Decentraland.Quests.QuestStateUpdate.Parser, new[]{ "InstanceId", "QuestState", "EventId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.UserUpdate), global::Decentraland.Quests.UserUpdate.Parser, new[]{ "QuestStateUpdate", "NewQuestStarted", "EventIgnored" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Quests), global::Decentraland.Quests.Quests.Parser, new[]{ "Quests_" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Quests), global::Decentraland.Quests.Quests.Parser, new[]{ "Instances" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.GetAllQuestsResponse), global::Decentraland.Quests.GetAllQuestsResponse.Parser, new[]{ "Quests", "InternalServerError" }, new[]{ "Response" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Quest), global::Decentraland.Quests.Quest.Parser, new[]{ "Name", "Description", "Definition" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.GetQuestDefinitionRequest), global::Decentraland.Quests.GetQuestDefinitionRequest.Parser, new[]{ "QuestId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.GetQuestDefinitionResponse), global::Decentraland.Quests.GetQuestDefinitionResponse.Parser, new[]{ "Quest", "InternalServerError" }, new[]{ "Response" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestInstance), global::Decentraland.Quests.QuestInstance.Parser, new[]{ "InstanceId", "Quest", "State" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.GetQuestDefinitionResponse), global::Decentraland.Quests.GetQuestDefinitionResponse.Parser, new[]{ "Quest", "InternalServerError" }, new[]{ "Response" }, null, null, null)
           }));
     }
     #endregion
@@ -1065,195 +1059,6 @@ namespace Decentraland.Quests {
 
   }
 
-  public sealed partial class UserAddress : pb::IMessage<UserAddress>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<UserAddress> _parser = new pb::MessageParser<UserAddress>(() => new UserAddress());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<UserAddress> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[6]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public UserAddress() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public UserAddress(UserAddress other) : this() {
-      userAddress_ = other.userAddress_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public UserAddress Clone() {
-      return new UserAddress(this);
-    }
-
-    /// <summary>Field number for the "user_address" field.</summary>
-    public const int UserAddress_FieldNumber = 1;
-    private string userAddress_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string UserAddress_ {
-      get { return userAddress_; }
-      set {
-        userAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as UserAddress);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(UserAddress other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (UserAddress_ != other.UserAddress_) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (UserAddress_.Length != 0) hash ^= UserAddress_.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (UserAddress_.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(UserAddress_);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (UserAddress_.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(UserAddress_);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (UserAddress_.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(UserAddress_);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(UserAddress other) {
-      if (other == null) {
-        return;
-      }
-      if (other.UserAddress_.Length != 0) {
-        UserAddress_ = other.UserAddress_;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            UserAddress_ = input.ReadString();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            UserAddress_ = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
   public sealed partial class StartQuestRequest : pb::IMessage<StartQuestRequest>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -1268,7 +1073,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[7]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1288,7 +1093,6 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public StartQuestRequest(StartQuestRequest other) : this() {
-      userAddress_ = other.userAddress_;
       questId_ = other.questId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -1299,20 +1103,8 @@ namespace Decentraland.Quests {
       return new StartQuestRequest(this);
     }
 
-    /// <summary>Field number for the "user_address" field.</summary>
-    public const int UserAddressFieldNumber = 1;
-    private string userAddress_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string UserAddress {
-      get { return userAddress_; }
-      set {
-        userAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     /// <summary>Field number for the "quest_id" field.</summary>
-    public const int QuestIdFieldNumber = 2;
+    public const int QuestIdFieldNumber = 1;
     private string questId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1338,7 +1130,6 @@ namespace Decentraland.Quests {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (UserAddress != other.UserAddress) return false;
       if (QuestId != other.QuestId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -1347,7 +1138,6 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (UserAddress.Length != 0) hash ^= UserAddress.GetHashCode();
       if (QuestId.Length != 0) hash ^= QuestId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -1367,12 +1157,8 @@ namespace Decentraland.Quests {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (UserAddress.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(UserAddress);
-      }
       if (QuestId.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteString(QuestId);
       }
       if (_unknownFields != null) {
@@ -1385,12 +1171,8 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (UserAddress.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(UserAddress);
-      }
       if (QuestId.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteString(QuestId);
       }
       if (_unknownFields != null) {
@@ -1403,9 +1185,6 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (UserAddress.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(UserAddress);
-      }
       if (QuestId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(QuestId);
       }
@@ -1420,9 +1199,6 @@ namespace Decentraland.Quests {
     public void MergeFrom(StartQuestRequest other) {
       if (other == null) {
         return;
-      }
-      if (other.UserAddress.Length != 0) {
-        UserAddress = other.UserAddress;
       }
       if (other.QuestId.Length != 0) {
         QuestId = other.QuestId;
@@ -1443,10 +1219,6 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            UserAddress = input.ReadString();
-            break;
-          }
-          case 18: {
             QuestId = input.ReadString();
             break;
           }
@@ -1466,10 +1238,6 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            UserAddress = input.ReadString();
-            break;
-          }
-          case 18: {
             QuestId = input.ReadString();
             break;
           }
@@ -1494,7 +1262,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[8]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2052,7 +1820,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[9]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2072,7 +1840,6 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public AbortQuestRequest(AbortQuestRequest other) : this() {
-      userAddress_ = other.userAddress_;
       questInstanceId_ = other.questInstanceId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -2083,20 +1850,8 @@ namespace Decentraland.Quests {
       return new AbortQuestRequest(this);
     }
 
-    /// <summary>Field number for the "user_address" field.</summary>
-    public const int UserAddressFieldNumber = 1;
-    private string userAddress_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string UserAddress {
-      get { return userAddress_; }
-      set {
-        userAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     /// <summary>Field number for the "quest_instance_id" field.</summary>
-    public const int QuestInstanceIdFieldNumber = 2;
+    public const int QuestInstanceIdFieldNumber = 1;
     private string questInstanceId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -2122,7 +1877,6 @@ namespace Decentraland.Quests {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (UserAddress != other.UserAddress) return false;
       if (QuestInstanceId != other.QuestInstanceId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -2131,7 +1885,6 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (UserAddress.Length != 0) hash ^= UserAddress.GetHashCode();
       if (QuestInstanceId.Length != 0) hash ^= QuestInstanceId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -2151,12 +1904,8 @@ namespace Decentraland.Quests {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (UserAddress.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(UserAddress);
-      }
       if (QuestInstanceId.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteString(QuestInstanceId);
       }
       if (_unknownFields != null) {
@@ -2169,12 +1918,8 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (UserAddress.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(UserAddress);
-      }
       if (QuestInstanceId.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteString(QuestInstanceId);
       }
       if (_unknownFields != null) {
@@ -2187,9 +1932,6 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (UserAddress.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(UserAddress);
-      }
       if (QuestInstanceId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(QuestInstanceId);
       }
@@ -2204,9 +1946,6 @@ namespace Decentraland.Quests {
     public void MergeFrom(AbortQuestRequest other) {
       if (other == null) {
         return;
-      }
-      if (other.UserAddress.Length != 0) {
-        UserAddress = other.UserAddress;
       }
       if (other.QuestInstanceId.Length != 0) {
         QuestInstanceId = other.QuestInstanceId;
@@ -2227,10 +1966,6 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            UserAddress = input.ReadString();
-            break;
-          }
-          case 18: {
             QuestInstanceId = input.ReadString();
             break;
           }
@@ -2250,10 +1985,6 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            UserAddress = input.ReadString();
-            break;
-          }
-          case 18: {
             QuestInstanceId = input.ReadString();
             break;
           }
@@ -2278,7 +2009,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[10]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2889,7 +2620,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[11]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3161,7 +2892,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[12]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3181,7 +2912,6 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public EventRequest(EventRequest other) : this() {
-      address_ = other.address_;
       action_ = other.action_ != null ? other.action_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -3192,20 +2922,8 @@ namespace Decentraland.Quests {
       return new EventRequest(this);
     }
 
-    /// <summary>Field number for the "address" field.</summary>
-    public const int AddressFieldNumber = 1;
-    private string address_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Address {
-      get { return address_; }
-      set {
-        address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     /// <summary>Field number for the "action" field.</summary>
-    public const int ActionFieldNumber = 2;
+    public const int ActionFieldNumber = 1;
     private global::Decentraland.Quests.Action action_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -3231,7 +2949,6 @@ namespace Decentraland.Quests {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Address != other.Address) return false;
       if (!object.Equals(Action, other.Action)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -3240,7 +2957,6 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Address.Length != 0) hash ^= Address.GetHashCode();
       if (action_ != null) hash ^= Action.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -3260,12 +2976,8 @@ namespace Decentraland.Quests {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Address.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Address);
-      }
       if (action_ != null) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteMessage(Action);
       }
       if (_unknownFields != null) {
@@ -3278,12 +2990,8 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Address.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Address);
-      }
       if (action_ != null) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteMessage(Action);
       }
       if (_unknownFields != null) {
@@ -3296,9 +3004,6 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Address.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Address);
-      }
       if (action_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Action);
       }
@@ -3313,9 +3018,6 @@ namespace Decentraland.Quests {
     public void MergeFrom(EventRequest other) {
       if (other == null) {
         return;
-      }
-      if (other.Address.Length != 0) {
-        Address = other.Address;
       }
       if (other.action_ != null) {
         if (action_ == null) {
@@ -3339,10 +3041,6 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            Address = input.ReadString();
-            break;
-          }
-          case 18: {
             if (action_ == null) {
               Action = new global::Decentraland.Quests.Action();
             }
@@ -3365,10 +3063,6 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            Address = input.ReadString();
-            break;
-          }
-          case 18: {
             if (action_ == null) {
               Action = new global::Decentraland.Quests.Action();
             }
@@ -3396,7 +3090,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[13]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3721,7 +3415,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[14]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3925,7 +3619,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[15]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[14]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4151,7 +3845,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[16]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[15]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4403,7 +4097,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[17]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[16]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4618,7 +4312,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[18]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[17]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4870,7 +4564,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[19]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[18]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5074,7 +4768,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[20]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[19]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5327,21 +5021,21 @@ namespace Decentraland.Quests {
 
   }
 
-  public sealed partial class QuestStateWithData : pb::IMessage<QuestStateWithData>
+  public sealed partial class Quest : pb::IMessage<Quest>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<QuestStateWithData> _parser = new pb::MessageParser<QuestStateWithData>(() => new QuestStateWithData());
+    private static readonly pb::MessageParser<Quest> _parser = new pb::MessageParser<Quest>(() => new Quest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<QuestStateWithData> Parser { get { return _parser; } }
+    public static pb::MessageParser<Quest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[21]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[20]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5352,7 +5046,7 @@ namespace Decentraland.Quests {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public QuestStateWithData() {
+    public Quest() {
       OnConstruction();
     }
 
@@ -5360,29 +5054,29 @@ namespace Decentraland.Quests {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public QuestStateWithData(QuestStateWithData other) : this() {
-      questInstanceId_ = other.questInstanceId_;
+    public Quest(Quest other) : this() {
+      id_ = other.id_;
       name_ = other.name_;
       description_ = other.description_;
-      questState_ = other.questState_ != null ? other.questState_.Clone() : null;
+      definition_ = other.definition_ != null ? other.definition_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public QuestStateWithData Clone() {
-      return new QuestStateWithData(this);
+    public Quest Clone() {
+      return new Quest(this);
     }
 
-    /// <summary>Field number for the "quest_instance_id" field.</summary>
-    public const int QuestInstanceIdFieldNumber = 1;
-    private string questInstanceId_ = "";
+    /// <summary>Field number for the "id" field.</summary>
+    public const int IdFieldNumber = 1;
+    private string id_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string QuestInstanceId {
-      get { return questInstanceId_; }
+    public string Id {
+      get { return id_; }
       set {
-        questInstanceId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -5410,37 +5104,37 @@ namespace Decentraland.Quests {
       }
     }
 
-    /// <summary>Field number for the "quest_state" field.</summary>
-    public const int QuestStateFieldNumber = 4;
-    private global::Decentraland.Quests.QuestState questState_;
+    /// <summary>Field number for the "definition" field.</summary>
+    public const int DefinitionFieldNumber = 4;
+    private global::Decentraland.Quests.QuestDefinition definition_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Quests.QuestState QuestState {
-      get { return questState_; }
+    public global::Decentraland.Quests.QuestDefinition Definition {
+      get { return definition_; }
       set {
-        questState_ = value;
+        definition_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as QuestStateWithData);
+      return Equals(other as Quest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(QuestStateWithData other) {
+    public bool Equals(Quest other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (QuestInstanceId != other.QuestInstanceId) return false;
+      if (Id != other.Id) return false;
       if (Name != other.Name) return false;
       if (Description != other.Description) return false;
-      if (!object.Equals(QuestState, other.QuestState)) return false;
+      if (!object.Equals(Definition, other.Definition)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -5448,10 +5142,10 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (QuestInstanceId.Length != 0) hash ^= QuestInstanceId.GetHashCode();
+      if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
-      if (questState_ != null) hash ^= QuestState.GetHashCode();
+      if (definition_ != null) hash ^= Definition.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -5470,9 +5164,9 @@ namespace Decentraland.Quests {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (QuestInstanceId.Length != 0) {
+      if (Id.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(QuestInstanceId);
+        output.WriteString(Id);
       }
       if (Name.Length != 0) {
         output.WriteRawTag(18);
@@ -5482,9 +5176,9 @@ namespace Decentraland.Quests {
         output.WriteRawTag(26);
         output.WriteString(Description);
       }
-      if (questState_ != null) {
+      if (definition_ != null) {
         output.WriteRawTag(34);
-        output.WriteMessage(QuestState);
+        output.WriteMessage(Definition);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -5496,9 +5190,9 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (QuestInstanceId.Length != 0) {
+      if (Id.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(QuestInstanceId);
+        output.WriteString(Id);
       }
       if (Name.Length != 0) {
         output.WriteRawTag(18);
@@ -5508,9 +5202,9 @@ namespace Decentraland.Quests {
         output.WriteRawTag(26);
         output.WriteString(Description);
       }
-      if (questState_ != null) {
+      if (definition_ != null) {
         output.WriteRawTag(34);
-        output.WriteMessage(QuestState);
+        output.WriteMessage(Definition);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -5522,8 +5216,8 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (QuestInstanceId.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(QuestInstanceId);
+      if (Id.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
       }
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
@@ -5531,8 +5225,8 @@ namespace Decentraland.Quests {
       if (Description.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
       }
-      if (questState_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(QuestState);
+      if (definition_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Definition);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -5542,12 +5236,12 @@ namespace Decentraland.Quests {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(QuestStateWithData other) {
+    public void MergeFrom(Quest other) {
       if (other == null) {
         return;
       }
-      if (other.QuestInstanceId.Length != 0) {
-        QuestInstanceId = other.QuestInstanceId;
+      if (other.Id.Length != 0) {
+        Id = other.Id;
       }
       if (other.Name.Length != 0) {
         Name = other.Name;
@@ -5555,11 +5249,11 @@ namespace Decentraland.Quests {
       if (other.Description.Length != 0) {
         Description = other.Description;
       }
-      if (other.questState_ != null) {
-        if (questState_ == null) {
-          QuestState = new global::Decentraland.Quests.QuestState();
+      if (other.definition_ != null) {
+        if (definition_ == null) {
+          Definition = new global::Decentraland.Quests.QuestDefinition();
         }
-        QuestState.MergeFrom(other.QuestState);
+        Definition.MergeFrom(other.Definition);
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -5577,7 +5271,7 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            QuestInstanceId = input.ReadString();
+            Id = input.ReadString();
             break;
           }
           case 18: {
@@ -5589,10 +5283,10 @@ namespace Decentraland.Quests {
             break;
           }
           case 34: {
-            if (questState_ == null) {
-              QuestState = new global::Decentraland.Quests.QuestState();
+            if (definition_ == null) {
+              Definition = new global::Decentraland.Quests.QuestDefinition();
             }
-            input.ReadMessage(QuestState);
+            input.ReadMessage(Definition);
             break;
           }
         }
@@ -5611,7 +5305,7 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            QuestInstanceId = input.ReadString();
+            Id = input.ReadString();
             break;
           }
           case 18: {
@@ -5623,10 +5317,291 @@ namespace Decentraland.Quests {
             break;
           }
           case 34: {
-            if (questState_ == null) {
-              QuestState = new global::Decentraland.Quests.QuestState();
+            if (definition_ == null) {
+              Definition = new global::Decentraland.Quests.QuestDefinition();
             }
-            input.ReadMessage(QuestState);
+            input.ReadMessage(Definition);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class QuestInstance : pb::IMessage<QuestInstance>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<QuestInstance> _parser = new pb::MessageParser<QuestInstance>(() => new QuestInstance());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<QuestInstance> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[21]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public QuestInstance() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public QuestInstance(QuestInstance other) : this() {
+      id_ = other.id_;
+      quest_ = other.quest_ != null ? other.quest_.Clone() : null;
+      state_ = other.state_ != null ? other.state_.Clone() : null;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public QuestInstance Clone() {
+      return new QuestInstance(this);
+    }
+
+    /// <summary>Field number for the "id" field.</summary>
+    public const int IdFieldNumber = 1;
+    private string id_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Id {
+      get { return id_; }
+      set {
+        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "quest" field.</summary>
+    public const int QuestFieldNumber = 2;
+    private global::Decentraland.Quests.Quest quest_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Quests.Quest Quest {
+      get { return quest_; }
+      set {
+        quest_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "state" field.</summary>
+    public const int StateFieldNumber = 3;
+    private global::Decentraland.Quests.QuestState state_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Quests.QuestState State {
+      get { return state_; }
+      set {
+        state_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as QuestInstance);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(QuestInstance other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Id != other.Id) return false;
+      if (!object.Equals(Quest, other.Quest)) return false;
+      if (!object.Equals(State, other.State)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Id.Length != 0) hash ^= Id.GetHashCode();
+      if (quest_ != null) hash ^= Quest.GetHashCode();
+      if (state_ != null) hash ^= State.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Id.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (quest_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Quest);
+      }
+      if (state_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(State);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Id.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (quest_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Quest);
+      }
+      if (state_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(State);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Id.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
+      }
+      if (quest_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Quest);
+      }
+      if (state_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(State);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(QuestInstance other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Id.Length != 0) {
+        Id = other.Id;
+      }
+      if (other.quest_ != null) {
+        if (quest_ == null) {
+          Quest = new global::Decentraland.Quests.Quest();
+        }
+        Quest.MergeFrom(other.Quest);
+      }
+      if (other.state_ != null) {
+        if (state_ == null) {
+          State = new global::Decentraland.Quests.QuestState();
+        }
+        State.MergeFrom(other.State);
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Id = input.ReadString();
+            break;
+          }
+          case 18: {
+            if (quest_ == null) {
+              Quest = new global::Decentraland.Quests.Quest();
+            }
+            input.ReadMessage(Quest);
+            break;
+          }
+          case 26: {
+            if (state_ == null) {
+              State = new global::Decentraland.Quests.QuestState();
+            }
+            input.ReadMessage(State);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Id = input.ReadString();
+            break;
+          }
+          case 18: {
+            if (quest_ == null) {
+              Quest = new global::Decentraland.Quests.Quest();
+            }
+            input.ReadMessage(Quest);
+            break;
+          }
+          case 26: {
+            if (state_ == null) {
+              State = new global::Decentraland.Quests.QuestState();
+            }
+            input.ReadMessage(State);
             break;
           }
         }
@@ -5670,7 +5645,8 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public QuestStateUpdate(QuestStateUpdate other) : this() {
-      questData_ = other.questData_ != null ? other.questData_.Clone() : null;
+      instanceId_ = other.instanceId_;
+      questState_ = other.questState_ != null ? other.questState_.Clone() : null;
       eventId_ = other.eventId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -5681,20 +5657,32 @@ namespace Decentraland.Quests {
       return new QuestStateUpdate(this);
     }
 
-    /// <summary>Field number for the "quest_data" field.</summary>
-    public const int QuestDataFieldNumber = 1;
-    private global::Decentraland.Quests.QuestStateWithData questData_;
+    /// <summary>Field number for the "instance_id" field.</summary>
+    public const int InstanceIdFieldNumber = 1;
+    private string instanceId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Quests.QuestStateWithData QuestData {
-      get { return questData_; }
+    public string InstanceId {
+      get { return instanceId_; }
       set {
-        questData_ = value;
+        instanceId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "quest_state" field.</summary>
+    public const int QuestStateFieldNumber = 2;
+    private global::Decentraland.Quests.QuestState questState_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Quests.QuestState QuestState {
+      get { return questState_; }
+      set {
+        questState_ = value;
       }
     }
 
     /// <summary>Field number for the "event_id" field.</summary>
-    public const int EventIdFieldNumber = 2;
+    public const int EventIdFieldNumber = 3;
     private string eventId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -5720,7 +5708,8 @@ namespace Decentraland.Quests {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(QuestData, other.QuestData)) return false;
+      if (InstanceId != other.InstanceId) return false;
+      if (!object.Equals(QuestState, other.QuestState)) return false;
       if (EventId != other.EventId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -5729,7 +5718,8 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (questData_ != null) hash ^= QuestData.GetHashCode();
+      if (InstanceId.Length != 0) hash ^= InstanceId.GetHashCode();
+      if (questState_ != null) hash ^= QuestState.GetHashCode();
       if (EventId.Length != 0) hash ^= EventId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -5749,12 +5739,16 @@ namespace Decentraland.Quests {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (questData_ != null) {
+      if (InstanceId.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteMessage(QuestData);
+        output.WriteString(InstanceId);
+      }
+      if (questState_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(QuestState);
       }
       if (EventId.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(26);
         output.WriteString(EventId);
       }
       if (_unknownFields != null) {
@@ -5767,12 +5761,16 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (questData_ != null) {
+      if (InstanceId.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteMessage(QuestData);
+        output.WriteString(InstanceId);
+      }
+      if (questState_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(QuestState);
       }
       if (EventId.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(26);
         output.WriteString(EventId);
       }
       if (_unknownFields != null) {
@@ -5785,8 +5783,11 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (questData_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(QuestData);
+      if (InstanceId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(InstanceId);
+      }
+      if (questState_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(QuestState);
       }
       if (EventId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(EventId);
@@ -5803,11 +5804,14 @@ namespace Decentraland.Quests {
       if (other == null) {
         return;
       }
-      if (other.questData_ != null) {
-        if (questData_ == null) {
-          QuestData = new global::Decentraland.Quests.QuestStateWithData();
+      if (other.InstanceId.Length != 0) {
+        InstanceId = other.InstanceId;
+      }
+      if (other.questState_ != null) {
+        if (questState_ == null) {
+          QuestState = new global::Decentraland.Quests.QuestState();
         }
-        QuestData.MergeFrom(other.QuestData);
+        QuestState.MergeFrom(other.QuestState);
       }
       if (other.EventId.Length != 0) {
         EventId = other.EventId;
@@ -5828,13 +5832,17 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            if (questData_ == null) {
-              QuestData = new global::Decentraland.Quests.QuestStateWithData();
-            }
-            input.ReadMessage(QuestData);
+            InstanceId = input.ReadString();
             break;
           }
           case 18: {
+            if (questState_ == null) {
+              QuestState = new global::Decentraland.Quests.QuestState();
+            }
+            input.ReadMessage(QuestState);
+            break;
+          }
+          case 26: {
             EventId = input.ReadString();
             break;
           }
@@ -5854,13 +5862,17 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            if (questData_ == null) {
-              QuestData = new global::Decentraland.Quests.QuestStateWithData();
-            }
-            input.ReadMessage(QuestData);
+            InstanceId = input.ReadString();
             break;
           }
           case 18: {
+            if (questState_ == null) {
+              QuestState = new global::Decentraland.Quests.QuestState();
+            }
+            input.ReadMessage(QuestState);
+            break;
+          }
+          case 26: {
             EventId = input.ReadString();
             break;
           }
@@ -5942,8 +5954,8 @@ namespace Decentraland.Quests {
     public const int NewQuestStartedFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Quests.QuestStateWithData NewQuestStarted {
-      get { return messageCase_ == MessageOneofCase.NewQuestStarted ? (global::Decentraland.Quests.QuestStateWithData) message_ : null; }
+    public global::Decentraland.Quests.QuestInstance NewQuestStarted {
+      get { return messageCase_ == MessageOneofCase.NewQuestStarted ? (global::Decentraland.Quests.QuestInstance) message_ : null; }
       set {
         message_ = value;
         messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.NewQuestStarted;
@@ -6106,7 +6118,7 @@ namespace Decentraland.Quests {
           break;
         case MessageOneofCase.NewQuestStarted:
           if (NewQuestStarted == null) {
-            NewQuestStarted = new global::Decentraland.Quests.QuestStateWithData();
+            NewQuestStarted = new global::Decentraland.Quests.QuestInstance();
           }
           NewQuestStarted.MergeFrom(other.NewQuestStarted);
           break;
@@ -6140,7 +6152,7 @@ namespace Decentraland.Quests {
             break;
           }
           case 18: {
-            global::Decentraland.Quests.QuestStateWithData subBuilder = new global::Decentraland.Quests.QuestStateWithData();
+            global::Decentraland.Quests.QuestInstance subBuilder = new global::Decentraland.Quests.QuestInstance();
             if (messageCase_ == MessageOneofCase.NewQuestStarted) {
               subBuilder.MergeFrom(NewQuestStarted);
             }
@@ -6177,7 +6189,7 @@ namespace Decentraland.Quests {
             break;
           }
           case 18: {
-            global::Decentraland.Quests.QuestStateWithData subBuilder = new global::Decentraland.Quests.QuestStateWithData();
+            global::Decentraland.Quests.QuestInstance subBuilder = new global::Decentraland.Quests.QuestInstance();
             if (messageCase_ == MessageOneofCase.NewQuestStarted) {
               subBuilder.MergeFrom(NewQuestStarted);
             }
@@ -6230,7 +6242,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Quests(Quests other) : this() {
-      quests_ = other.quests_.Clone();
+      instances_ = other.instances_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -6240,15 +6252,15 @@ namespace Decentraland.Quests {
       return new Quests(this);
     }
 
-    /// <summary>Field number for the "quests" field.</summary>
-    public const int Quests_FieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Decentraland.Quests.QuestInstance> _repeated_quests_codec
+    /// <summary>Field number for the "instances" field.</summary>
+    public const int InstancesFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Decentraland.Quests.QuestInstance> _repeated_instances_codec
         = pb::FieldCodec.ForMessage(10, global::Decentraland.Quests.QuestInstance.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Quests.QuestInstance> quests_ = new pbc::RepeatedField<global::Decentraland.Quests.QuestInstance>();
+    private readonly pbc::RepeatedField<global::Decentraland.Quests.QuestInstance> instances_ = new pbc::RepeatedField<global::Decentraland.Quests.QuestInstance>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Quests.QuestInstance> Quests_ {
-      get { return quests_; }
+    public pbc::RepeatedField<global::Decentraland.Quests.QuestInstance> Instances {
+      get { return instances_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6266,7 +6278,7 @@ namespace Decentraland.Quests {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if(!quests_.Equals(other.quests_)) return false;
+      if(!instances_.Equals(other.instances_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -6274,7 +6286,7 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= quests_.GetHashCode();
+      hash ^= instances_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -6293,7 +6305,7 @@ namespace Decentraland.Quests {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      quests_.WriteTo(output, _repeated_quests_codec);
+      instances_.WriteTo(output, _repeated_instances_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -6304,7 +6316,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      quests_.WriteTo(ref output, _repeated_quests_codec);
+      instances_.WriteTo(ref output, _repeated_instances_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -6315,7 +6327,7 @@ namespace Decentraland.Quests {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      size += quests_.CalculateSize(_repeated_quests_codec);
+      size += instances_.CalculateSize(_repeated_instances_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -6328,7 +6340,7 @@ namespace Decentraland.Quests {
       if (other == null) {
         return;
       }
-      quests_.Add(other.quests_);
+      instances_.Add(other.instances_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -6345,7 +6357,7 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            quests_.AddEntriesFrom(input, _repeated_quests_codec);
+            instances_.AddEntriesFrom(input, _repeated_instances_codec);
             break;
           }
         }
@@ -6364,7 +6376,7 @@ namespace Decentraland.Quests {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            quests_.AddEntriesFrom(ref input, _repeated_quests_codec);
+            instances_.AddEntriesFrom(ref input, _repeated_instances_codec);
             break;
           }
         }
@@ -6659,278 +6671,6 @@ namespace Decentraland.Quests {
 
   }
 
-  public sealed partial class Quest : pb::IMessage<Quest>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<Quest> _parser = new pb::MessageParser<Quest>(() => new Quest());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<Quest> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[26]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Quest() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Quest(Quest other) : this() {
-      name_ = other.name_;
-      description_ = other.description_;
-      definition_ = other.definition_ != null ? other.definition_.Clone() : null;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Quest Clone() {
-      return new Quest(this);
-    }
-
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 1;
-    private string name_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Name {
-      get { return name_; }
-      set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "description" field.</summary>
-    public const int DescriptionFieldNumber = 2;
-    private string description_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Description {
-      get { return description_; }
-      set {
-        description_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "definition" field.</summary>
-    public const int DefinitionFieldNumber = 3;
-    private global::Decentraland.Quests.QuestDefinition definition_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Quests.QuestDefinition Definition {
-      get { return definition_; }
-      set {
-        definition_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as Quest);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(Quest other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (Name != other.Name) return false;
-      if (Description != other.Description) return false;
-      if (!object.Equals(Definition, other.Definition)) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (Description.Length != 0) hash ^= Description.GetHashCode();
-      if (definition_ != null) hash ^= Definition.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (Name.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
-      if (Description.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(Description);
-      }
-      if (definition_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(Definition);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Name.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
-      if (Description.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(Description);
-      }
-      if (definition_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(Definition);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
-      }
-      if (Description.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
-      }
-      if (definition_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Definition);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(Quest other) {
-      if (other == null) {
-        return;
-      }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
-      }
-      if (other.Description.Length != 0) {
-        Description = other.Description;
-      }
-      if (other.definition_ != null) {
-        if (definition_ == null) {
-          Definition = new global::Decentraland.Quests.QuestDefinition();
-        }
-        Definition.MergeFrom(other.Definition);
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
-          case 18: {
-            Description = input.ReadString();
-            break;
-          }
-          case 26: {
-            if (definition_ == null) {
-              Definition = new global::Decentraland.Quests.QuestDefinition();
-            }
-            input.ReadMessage(Definition);
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
-          case 18: {
-            Description = input.ReadString();
-            break;
-          }
-          case 26: {
-            if (definition_ == null) {
-              Definition = new global::Decentraland.Quests.QuestDefinition();
-            }
-            input.ReadMessage(Definition);
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
   public sealed partial class GetQuestDefinitionRequest : pb::IMessage<GetQuestDefinitionRequest>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -6945,7 +6685,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[27]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[26]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7134,7 +6874,7 @@ namespace Decentraland.Quests {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[28]; }
+      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[27]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7396,287 +7136,6 @@ namespace Decentraland.Quests {
             }
             input.ReadMessage(subBuilder);
             InternalServerError = subBuilder;
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  public sealed partial class QuestInstance : pb::IMessage<QuestInstance>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<QuestInstance> _parser = new pb::MessageParser<QuestInstance>(() => new QuestInstance());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<QuestInstance> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Quests.QuestsReflection.Descriptor.MessageTypes[29]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public QuestInstance() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public QuestInstance(QuestInstance other) : this() {
-      instanceId_ = other.instanceId_;
-      quest_ = other.quest_ != null ? other.quest_.Clone() : null;
-      state_ = other.state_ != null ? other.state_.Clone() : null;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public QuestInstance Clone() {
-      return new QuestInstance(this);
-    }
-
-    /// <summary>Field number for the "instance_id" field.</summary>
-    public const int InstanceIdFieldNumber = 1;
-    private string instanceId_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string InstanceId {
-      get { return instanceId_; }
-      set {
-        instanceId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "quest" field.</summary>
-    public const int QuestFieldNumber = 2;
-    private global::Decentraland.Quests.Quest quest_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Quests.Quest Quest {
-      get { return quest_; }
-      set {
-        quest_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "state" field.</summary>
-    public const int StateFieldNumber = 3;
-    private global::Decentraland.Quests.QuestState state_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Quests.QuestState State {
-      get { return state_; }
-      set {
-        state_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as QuestInstance);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(QuestInstance other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (InstanceId != other.InstanceId) return false;
-      if (!object.Equals(Quest, other.Quest)) return false;
-      if (!object.Equals(State, other.State)) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (InstanceId.Length != 0) hash ^= InstanceId.GetHashCode();
-      if (quest_ != null) hash ^= Quest.GetHashCode();
-      if (state_ != null) hash ^= State.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (InstanceId.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(InstanceId);
-      }
-      if (quest_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Quest);
-      }
-      if (state_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(State);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (InstanceId.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(InstanceId);
-      }
-      if (quest_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Quest);
-      }
-      if (state_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(State);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (InstanceId.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(InstanceId);
-      }
-      if (quest_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Quest);
-      }
-      if (state_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(State);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(QuestInstance other) {
-      if (other == null) {
-        return;
-      }
-      if (other.InstanceId.Length != 0) {
-        InstanceId = other.InstanceId;
-      }
-      if (other.quest_ != null) {
-        if (quest_ == null) {
-          Quest = new global::Decentraland.Quests.Quest();
-        }
-        Quest.MergeFrom(other.Quest);
-      }
-      if (other.state_ != null) {
-        if (state_ == null) {
-          State = new global::Decentraland.Quests.QuestState();
-        }
-        State.MergeFrom(other.State);
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            InstanceId = input.ReadString();
-            break;
-          }
-          case 18: {
-            if (quest_ == null) {
-              Quest = new global::Decentraland.Quests.Quest();
-            }
-            input.ReadMessage(Quest);
-            break;
-          }
-          case 26: {
-            if (state_ == null) {
-              State = new global::Decentraland.Quests.QuestState();
-            }
-            input.ReadMessage(State);
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            InstanceId = input.ReadString();
-            break;
-          }
-          case 18: {
-            if (quest_ == null) {
-              Quest = new global::Decentraland.Quests.Quest();
-            }
-            input.ReadMessage(Quest);
-            break;
-          }
-          case 26: {
-            if (state_ == null) {
-              State = new global::Decentraland.Quests.QuestState();
-            }
-            input.ReadMessage(State);
             break;
           }
         }

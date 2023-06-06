@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using Decentraland.Quests;
+using Google.Protobuf.Collections;
+using Google.Protobuf.WellKnownTypes;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -20,7 +22,15 @@ namespace DCLServices.QuestsService.Tests
         {
             channel = Channel.CreateSingleConsumerUnbounded<UserUpdate>();
             client = Substitute.For<IClientQuestsService>();
-            client.Configure().Subscribe(Arg.Any<UserAddress>()).Returns((x) => channel.Reader.ReadAllAsync());
+            client.Configure().Subscribe(Arg.Any<Empty>()).Returns((x) => channel.Reader.ReadAllAsync());
+            client.Configure().GetAllQuests(Arg.Any<Empty>()).Returns((x) =>
+                UniTask.FromResult(new GetAllQuestsResponse()
+                {
+                    Quests = new Quests()
+                    {
+                        Instances = {  },
+                    },
+                }));
             questsService = new QuestsService(client);
         }
 
@@ -41,10 +51,8 @@ namespace DCLServices.QuestsService.Tests
                 EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
                 QuestStateUpdate = new QuestStateUpdate
                 {
-                    QuestData = new QuestStateWithData()
-                    {
-                        QuestInstanceId = "0",
-                    },
+                    QuestState = new QuestState(),
+                    InstanceId = "0",
                 },
             });
 
@@ -53,15 +61,13 @@ namespace DCLServices.QuestsService.Tests
                 EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
                 QuestStateUpdate = new QuestStateUpdate
                 {
-                    QuestData = new QuestStateWithData()
-                    {
-                        QuestInstanceId = "1",
-                    },
+                    QuestState = new QuestState(),
+                    InstanceId = "0",
                 },
             });
 
             Assert.IsFalse(anyQuestUpdated);
-            Assert.AreEqual(0, questsService.CurrentState.Count);
+            Assert.AreEqual(0, questsService.QuestInstances.Count);
         }
 
         [TestCase(0)]
@@ -69,10 +75,17 @@ namespace DCLServices.QuestsService.Tests
         [TestCase(10)]
         public void TriggerOnQuestUpdateEvents(int count)
         {
+            for (int i = 0; i < count; i++)
+            {
+                questsService.questInstances.Add(i.ToString(), new QuestInstance()
+                {
+                    Id = i.ToString(),
+                    State = new QuestState(),
+                    Quest = new Quest { Id = $"questId{i}", },
+                });
+            }
             int questsUpdated = 0;
             questsService.QuestUpdated.AddListener(_ => questsUpdated++);
-
-            questsService.SetUserId("user");
 
             for (int i = 0; i < count; i++)
             {
@@ -81,16 +94,14 @@ namespace DCLServices.QuestsService.Tests
                     EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
                     QuestStateUpdate = new QuestStateUpdate
                     {
-                        QuestData = new QuestStateWithData()
-                        {
-                            QuestInstanceId = i.ToString()
-                        },
+                        QuestState = new QuestState(),
+                        InstanceId = i.ToString(),
                     },
                 });
             }
 
             Assert.AreEqual(count, questsUpdated);
-            Assert.AreEqual(count, questsService.CurrentState.Count);
+            Assert.AreEqual(count, questsService.QuestInstances.Count);
         }
 
         [TestCase((uint)1)]
@@ -98,10 +109,17 @@ namespace DCLServices.QuestsService.Tests
         [TestCase((uint)10)]
         public void UpdateCurrentStateIfSameQuestIsUpdated(uint updates)
         {
-            QuestStateWithData latestUpdate = null;
+            questsService.questInstances.Add("questInstanceId", new QuestInstance()
+            {
+                Id = "questInstanceId",
+                State = new QuestState()
+                {
+                    StepsLeft = updates
+                },
+                Quest = new Quest { Id = $"questId"},
+            });
+            QuestInstance latestUpdate = null;
             questsService.QuestUpdated.AddListener(x => { latestUpdate = x; });
-
-            questsService.SetUserId("user");
 
             for (uint i = 0; i < updates; i++)
             {
@@ -110,84 +128,78 @@ namespace DCLServices.QuestsService.Tests
                     EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
                     QuestStateUpdate = new QuestStateUpdate
                     {
-                        QuestData = new QuestStateWithData()
+                        InstanceId = "questInstanceId",
+                        QuestState = new QuestState()
                         {
-                            QuestInstanceId = "quest_id",
-                            QuestState = new QuestState
-                            {
-                                StepsLeft = (updates - 1) - i,
-                            },
-                        }
+                            StepsLeft = (updates - 1) - i,
+                        },
                     },
                 });
             }
 
-            Assert.AreEqual(0, latestUpdate.QuestState.StepsLeft);
-            Assert.AreEqual(1, questsService.CurrentState.Count);
-            Assert.AreEqual(latestUpdate, questsService.CurrentState["quest_id"]);
+            Assert.AreEqual(0, latestUpdate.State.StepsLeft);
+            Assert.AreEqual(1, questsService.QuestInstances.Count);
+            Assert.AreEqual(latestUpdate, questsService.QuestInstances["questInstanceId"]);
         }
 
         [Test]
         public void KeepCurrentStateUpdated()
         {
+            questsService.questInstances.Add("questInstanceId", new QuestInstance()
+            {
+                Id = "questInstanceId",
+                State = new QuestState(),
+                Quest = new Quest { Id = "questId", },
+            });
             var questStateUpdate = new QuestStateUpdate()
             {
-                QuestData = new QuestStateWithData
-                {
-                    QuestInstanceId = "questInstanceId",
-                }
+                QuestState = new QuestState(),
+                InstanceId = "questInstanceId",
             };
 
-            questsService.SetUserId("user");
             channel.Writer.TryWrite(new UserUpdate
             {
                 QuestStateUpdate = questStateUpdate,
             });
 
-            Assert.AreEqual(1, questsService.CurrentState.Count);
-            Assert.AreEqual(questStateUpdate.QuestData, questsService.CurrentState["questInstanceId"]);
+            Assert.AreEqual(1, questsService.QuestInstances.Count);
+            Assert.AreEqual(questStateUpdate.QuestState, questsService.QuestInstances["questInstanceId"].State);
         }
 
         [Test]
         public async Task StartQuest()
         {
-            questsService.SetUserId("userId");
             await questsService.StartQuest("questId");
 
-            client.Received().StartQuest(Arg.Is<StartQuestRequest>(s => s.QuestId == "questId" && s.UserAddress == "userId"));
+            client.Received().StartQuest(Arg.Is<StartQuestRequest>(s => s.QuestId == "questId"));
         }
 
-        [Test]
-        public async Task ThrowWhenStartingQuestWithNoUserIdSet()
-        {
-            await TestUtils.ThrowsAsync<UserIdNotSetException>(questsService.StartQuest("questId"));
-        }
-
-        [Test]
-        public async Task ThrowWhenAbortingQuestWithNoUserIdSet()
-        {
-            await TestUtils.ThrowsAsync<UserIdNotSetException>(questsService.AbortQuest("questId"));
-        }
 
         [Test]
         public void StopReceivingUpdatesWhenDisposing()
         {
-            questsService.SetUserId("userId");
             bool questUpdated = false;
+            var questInstance = new QuestInstance()
+            {
+                Id = "questInstanceId",
+                State = new QuestState(),
+                Quest = new Quest { Id = "questId", },
+            };
+            questsService.questInstances.Add("questInstanceId", questInstance);
             questsService.QuestUpdated.AddListener((x) => questUpdated = true);
 
             questsService.Dispose();
-
             channel.Writer.TryWrite(new UserUpdate()
             {
                 QuestStateUpdate = new QuestStateUpdate()
                 {
-                    QuestData = new QuestStateWithData()
-                }
+                    QuestState = new QuestState(),
+                    InstanceId = "questInstanceId",
+                },
             });
 
             Assert.IsFalse(questUpdated);
-            Assert.AreEqual(0, questsService.stateCache.Count);
+            Assert.AreEqual(questInstance.State, questsService.questInstances["questInstanceId"].State);
         }
     }
 }

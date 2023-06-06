@@ -2,6 +2,8 @@
 syntax = "proto3";
 package decentraland.quests;
 
+import "google/protobuf/empty.proto";
+
 // Errors 
 message InvalidQuest {}
 
@@ -15,13 +17,8 @@ message NotOwner {}
 
 message IgnoredEvent {}
 
-message UserAddress {
-  string user_address = 1;
-}
-
 message StartQuestRequest {
-  string user_address = 1;
-  string quest_id = 2;
+  string quest_id = 1;
 }
 
 message StartQuestResponse {
@@ -40,8 +37,7 @@ message StartQuestResponse {
 }
 
 message AbortQuestRequest {
-  string user_address = 1;
-  string quest_instance_id = 2;
+  string quest_instance_id = 1;
 }
 
 message AbortQuestResponse {
@@ -67,8 +63,7 @@ message Event {
 }
 
 message EventRequest {
-  string address = 1;
-  Action action = 2;
+  Action action = 1;
 }
 
 message EventResponse {
@@ -118,28 +113,35 @@ message QuestState {
   repeated string required_steps = 5;
 }
 
-message QuestStateWithData {
-  string quest_instance_id = 1;
+message Quest {
+  string id = 1;
   string name = 2;
   string description = 3;
-  QuestState quest_state = 4;
+  QuestDefinition definition = 4;
+}
+
+message QuestInstance {
+  string id = 1;
+  Quest quest = 2;
+  QuestState state = 3;
 }
 
 message QuestStateUpdate {
-  QuestStateWithData quest_data = 1;
-  string event_id = 2;
+  string instance_id = 1;
+  QuestState quest_state = 2;
+  string event_id = 3;
 }
 
 message UserUpdate {
   oneof message {
     QuestStateUpdate quest_state_update = 1;
-    QuestStateWithData new_quest_started = 2;
+    QuestInstance new_quest_started = 2;
     fixed32 event_ignored = 4;
   }
 }
 
 message Quests {
-  repeated QuestInstance quests = 1;
+  repeated QuestInstance instances = 1;
 }
 
 message GetAllQuestsResponse {
@@ -147,12 +149,6 @@ message GetAllQuestsResponse {
     Quests quests = 1;
     InternalServerError internal_server_error = 2;
   }
-}
-
-message Quest {
-  string name = 1;
-  string description = 2;
-  QuestDefinition definition = 3;
 }
 
 message GetQuestDefinitionRequest {
@@ -166,12 +162,6 @@ message GetQuestDefinitionResponse {
   }
 }
 
-message QuestInstance {
-  string instance_id = 1;
-  Quest quest = 2;
-  QuestState state = 3;
-}
-
 service QuestsService {
   // User actions
   rpc StartQuest(StartQuestRequest) returns (StartQuestResponse) {}
@@ -179,9 +169,9 @@ service QuestsService {
   rpc SendEvent(EventRequest) returns (EventResponse) {}
 
   // Listen to changes in quest states and event processing updates
-  rpc Subscribe(UserAddress) returns (stream UserUpdate) {}
+  rpc Subscribe(google.protobuf.Empty) returns (stream UserUpdate) {}
 
   // Query quest information
-  rpc GetAllQuests(UserAddress) returns (GetAllQuestsResponse) {}
+  rpc GetAllQuests(google.protobuf.Empty) returns (GetAllQuestsResponse) {}
   rpc GetQuestDefinition(GetQuestDefinitionRequest) returns (GetQuestDefinitionResponse) {}
 }

@@ -30,7 +30,7 @@ public class QuestsPlugin : IPlugin
         questTrackerComponentView = await resourceProvider.Instantiate<QuestTrackerComponentView>(QUEST_TRACKER_HUD, $"_{QUEST_TRACKER_HUD}", cts.Token);
         questCompletedComponentView = await resourceProvider.Instantiate<QuestCompletedComponentView>(QUEST_COMPLETED_HUD, $"_{QUEST_COMPLETED_HUD}", cts.Token);
         questStartedPopupComponentView = await resourceProvider.Instantiate<QuestStartedPopupComponentView>(QUEST_STARTED_POPUP, $"_{QUEST_STARTED_POPUP}", cts.Token);
-        QuestsController controller = new QuestsController(null, userProfileBridge, questTrackerComponentView, questCompletedComponentView, questStartedPopupComponentView);
+        QuestsController controller = new QuestsController(null, questTrackerComponentView, questCompletedComponentView, questStartedPopupComponentView);
     }
 
     public void Dispose()
