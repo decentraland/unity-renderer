@@ -106,17 +106,9 @@ namespace ECSSystems.ScenesUiSystem
                     isPendingSceneUI = false;
             }
 
-            float widthInInches = Screen.width / Screen.dpi;
-            float heightInInches = Screen.height / Screen.dpi;
+            // 'Screen.mainWindowDisplayInfo' cannot be used in WebGL due to 'Screen.GetDisplayInfoForPoint' being unsupported
             float diagonalPixelsScreenSize = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height));
-            float diagonalPixelsRealScreenSize = Mathf.Sqrt((Screen.mainWindowDisplayInfo.width * Screen.mainWindowDisplayInfo.width) + (Screen.mainWindowDisplayInfo.height * Screen.mainWindowDisplayInfo.height));
-            float diagonalInchesScreenSize = Mathf.Sqrt((widthInInches * widthInInches) + (heightInInches * heightInInches));
-            float ppi = diagonalPixelsScreenSize / diagonalInchesScreenSize;
-
-            Debug.Log($"device screen res: {Screen.width}x{Screen.height}");
-            Debug.Log($"main window res: {Screen.mainWindowDisplayInfo.width}x{Screen.mainWindowDisplayInfo.height}");
-            Debug.Log($"ratio (width) ???: {Screen.mainWindowDisplayInfo.width / Screen.width}");
-            Debug.Log($"ratio (height) ???: {Screen.mainWindowDisplayInfo.height / Screen.height}");
+            float diagonalPixelsRealScreenSize = Mathf.Sqrt((Screen.currentResolution.width * Screen.currentResolution.width) + (Screen.currentResolution.height * Screen.currentResolution.height));
             Debug.Log($"ratio (diagonal) ???: {diagonalPixelsRealScreenSize / diagonalPixelsScreenSize}");
 
             componentWriter.PutComponent(
