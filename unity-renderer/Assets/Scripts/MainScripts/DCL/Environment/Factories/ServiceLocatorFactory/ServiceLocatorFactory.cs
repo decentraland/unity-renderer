@@ -112,7 +112,6 @@ namespace DCL
 
             result.Register<IEmotesCatalogService>(() =>
             {
-                //var emotesRequest = EmotesRequestBridge.GetOrCreate();
                 var emotesRequest = new EmotesRequestWeb(
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),

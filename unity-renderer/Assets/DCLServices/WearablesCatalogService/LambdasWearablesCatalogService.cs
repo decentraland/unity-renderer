@@ -55,7 +55,8 @@ namespace DCLServices.WearablesCatalogService
         private readonly Dictionary<(string userId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string userId, string collectionId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
-        private readonly string assetBundlesUrl = "https://content-assets-as-bundle.decentraland.org/";
+        private readonly BaseVariable<FeatureFlag> featureFlags;
+        private string assetBundlesUrl => featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
 
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
@@ -69,15 +70,18 @@ namespace DCLServices.WearablesCatalogService
             IServiceProviders serviceProviders,
             BaseVariable<FeatureFlag> featureFlags)
         {
+            this.featureFlags = featureFlags;
             this.lambdasService = lambdasService;
             this.serviceProviders = serviceProviders;
             WearablesCatalog = wearablesCatalog;
             catalyst = serviceProviders.catalyst;
-            assetBundlesUrl = featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
+
         }
 
-        public void Initialize() =>
+        public void Initialize()
+        {
             serviceCts = serviceCts.SafeRestart();
+        }
 
         public void Dispose()
         {
