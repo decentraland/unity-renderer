@@ -293,14 +293,20 @@ namespace DCL.Social.Friends
                         case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.UnauthorizedError:
                         case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.ForbiddenError:
                         case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.TooManyRequestsError:
-                            ProcessAndLogSubscriptionError(friendshipEventResponse);
+                            LogIncomingFriendshipUpdateEventError(friendshipEventResponse);
                             break;
                         case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.Events:
-                            await ProcessIncomingFriendshipEvent(friendshipEventResponse.Events, cancellationToken);
+                            try { await ProcessIncomingFriendshipEvent(friendshipEventResponse.Events, cancellationToken); }
+                            catch (OperationCanceledException) { }
+                            catch (Exception e)
+                            {
+                                // just log the exception so we keep receiving updates in the loop
+                                Debug.LogException(e);
+                            }
                             break;
                         default:
                         {
-                            Debug.LogErrorFormat("Subscription to friendship events got invalid response {0}", friendshipEventResponse);
+                            Debug.LogErrorFormat("Subscription to friendship events got invalid response {0}", friendshipEventResponse.ResponseCase);
                             break;
                         }
                     }
@@ -354,7 +360,7 @@ namespace DCL.Social.Friends
             }
         }
 
-        private void ProcessAndLogSubscriptionError(SubscribeFriendshipEventsUpdatesResponse error)
+        private void LogIncomingFriendshipUpdateEventError(SubscribeFriendshipEventsUpdatesResponse error)
         {
             switch (error.ResponseCase)
             {
@@ -370,7 +376,6 @@ namespace DCL.Social.Friends
                 case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.TooManyRequestsError:
                     Debug.LogErrorFormat("Subscription to friendship events got Too many requests error {0}", error.TooManyRequestsError.Message);
                     break;
-                default: throw new ArgumentOutOfRangeException(nameof(error), error, null);
             }
         }
 
@@ -403,13 +408,13 @@ namespace DCL.Social.Friends
                     case UpdateFriendshipResponse.ResponseOneofCase.TooManyRequestsError:
                     case UpdateFriendshipResponse.ResponseOneofCase.BadRequestError:
                     default:
-                        throw new Exception(GetFriendshipErrorMessage(response, friendId));
+                        throw new Exception(GetFriendshipUpdateErrorMessage(response, friendId));
                 }
             }
             finally { await UniTask.SwitchToMainThread(); }
         }
 
-        private string GetFriendshipErrorMessage(UpdateFriendshipResponse error, string friendId)
+        private string GetFriendshipUpdateErrorMessage(UpdateFriendshipResponse error, string friendId)
         {
             switch (error.ResponseCase)
             {
