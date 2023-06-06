@@ -16,7 +16,7 @@ namespace DCLServices.WearablesCatalogService
 {
     public class LambdasWearablesCatalogServiceShould
     {
-        const string USER_ID = "userId";
+        private const string ASSET_BUNDLES_URL_ORG = "https://content-assets-as-bundle.decentraland.org/";
         private const string VALID_WEARABLE_ID = "validWearable";
         private const string WEARABLE_WITHOUT_THUMBNAIL = "wearableWithoutThumbnail";
         private const string BASE_WEARABLES_COLLECTION = "urn:decentraland:off-chain:base-avatars";
@@ -24,6 +24,7 @@ namespace DCLServices.WearablesCatalogService
         private const string CONTENT_URL = "http://catalyst.url/content/";
         private const string LAMBDAS_URL = "http://catalyst.url/lambdas/";
         private const string EXPLORER_URL = "http://catalyst.url/explorer/";
+        private const string USER_ID = "userId";
 
         private LambdasWearablesCatalogService service;
         private ILambdasService lambdasService;
@@ -66,7 +67,7 @@ namespace DCLServices.WearablesCatalogService
             catalyst.lambdasUrl.Returns(LAMBDAS_URL);
             serviceProviders.catalyst.Returns(catalyst);
 
-            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders);
+            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders, Substitute.For<BaseVariable<FeatureFlag>>());
             service.Initialize();
         }
 

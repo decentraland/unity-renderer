@@ -42,7 +42,6 @@ namespace DCLServices.WearablesCatalogService
 
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
-        public const string ASSET_BUNDLES_URL_ORG = "https://ab-cdn.decentraland.org/"; // todo: Replace with global scene bundles url
         private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
@@ -56,6 +55,8 @@ namespace DCLServices.WearablesCatalogService
         private readonly Dictionary<(string userId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string userId, string collectionId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
+        private readonly string assetBundlesUrl = "https://content-assets-as-bundle.decentraland.org/";
+
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
         private ICatalyst catalyst;
@@ -65,12 +66,14 @@ namespace DCLServices.WearablesCatalogService
 #endif
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog,
             ILambdasService lambdasService,
-            IServiceProviders serviceProviders)
+            IServiceProviders serviceProviders,
+            BaseVariable<FeatureFlag> featureFlags)
         {
             this.lambdasService = lambdasService;
             this.serviceProviders = serviceProviders;
             WearablesCatalog = wearablesCatalog;
             catalyst = serviceProviders.catalyst;
+            assetBundlesUrl = featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
         }
 
         public void Initialize() =>
@@ -150,7 +153,7 @@ namespace DCLServices.WearablesCatalogService
 
             List<WearableItem> wearables = ValidateWearables(response.elements,
                 $"{catalyst.contentUrl}/contents/",
-                ASSET_BUNDLES_URL_ORG);
+                assetBundlesUrl);
 
             AddWearablesToCatalog(wearables);
 
@@ -205,7 +208,7 @@ namespace DCLServices.WearablesCatalogService
             if (!request.success)
                 throw new Exception("The request of the base wearables failed!");
 
-            var wearables = request.response.entities.Select(dto => dto.ToWearableItem(catalyst.contentUrl, ASSET_BUNDLES_URL_ORG)).ToList();
+            var wearables = request.response.entities.Select(dto => dto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl)).ToList();
 
             MapLambdasDataIntoWearableItem(wearables);
             AddWearablesToCatalog(wearables);
@@ -418,7 +421,7 @@ namespace DCLServices.WearablesCatalogService
 
                     string contentBaseUrl = $"{catalyst.contentUrl}contents/";
 
-                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, ASSET_BUNDLES_URL_ORG)).ToList();
+                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, assetBundlesUrl)).ToList();
 
                     MapLambdasDataIntoWearableItem(wearables);
                     AddWearablesToCatalog(wearables);
@@ -489,7 +492,7 @@ namespace DCLServices.WearablesCatalogService
                     string newBaseUrl = thumbnail[..(index + 1)];
                     wearable.thumbnail = newThumbnail;
                     wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? $"{catalyst.contentUrl}contents/" : newBaseUrl;
-                    wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
+                    wearable.baseUrlBundles = assetBundlesUrl;
                     wearable.emoteDataV0 = null;
                 }
                 catch (Exception e)

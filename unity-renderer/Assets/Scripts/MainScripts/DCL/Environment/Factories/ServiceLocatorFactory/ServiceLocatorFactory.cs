@@ -113,7 +113,10 @@ namespace DCL
             result.Register<IEmotesCatalogService>(() =>
             {
                 //var emotesRequest = EmotesRequestBridge.GetOrCreate();
-                var emotesRequest = new EmotesRequestWebRequest(result.Get<ILambdasService>(), result.Get<IServiceProviders>());
+                var emotesRequest = new EmotesRequestWeb(
+                    result.Get<ILambdasService>(),
+                    result.Get<IServiceProviders>(),
+                    DataStore.i.featureFlags.flags);
                 return new EmotesCatalogService(emotesRequest, addressableResourceProvider);
             });
 
@@ -126,7 +129,8 @@ namespace DCL
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables,
                     result.Get<ILambdasService>(),
-                    result.Get<IServiceProviders>()),
+                    result.Get<IServiceProviders>(),
+                    DataStore.i.featureFlags.flags),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,

@@ -8,9 +8,9 @@ using System.Threading;
 
 namespace DCLServices.EmotesCatalog
 {
-    public class EmotesRequestWebRequest : IEmotesRequestSource
+    public class EmotesRequestWeb : IEmotesRequestSource
     {
-        private const string ASSET_BUNDLES_URL_ORG = "https://ab-cdn.decentraland.org/";
+        private string assetBundlesUrl = "https://content-assets-as-bundle.decentraland.org/";
 
         private readonly ILambdasService lambdasService;
         private readonly ICatalyst catalyst;
@@ -24,10 +24,11 @@ namespace DCLServices.EmotesCatalog
         public event Action<WearableItem[], string> OnOwnedEmotesReceived;
 
 
-        public EmotesRequestWebRequest(ILambdasService lambdasService, IServiceProviders serviceProviders)
+        public EmotesRequestWeb(ILambdasService lambdasService, IServiceProviders serviceProviders, BaseVariable<FeatureFlag> featureFlags)
         {
             this.lambdasService = lambdasService;
             this.catalyst = serviceProviders.catalyst;
+            assetBundlesUrl = featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
             cts = new CancellationTokenSource();
         }
 
@@ -72,7 +73,7 @@ namespace DCLServices.EmotesCatalog
                         var contentUrl = $"{catalyst.contentUrl}contents/";
                         var wearableItem = dto.ToWearableItem(contentUrl);
                         wearableItem.baseUrl = contentUrl;
-                        wearableItem.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
+                        wearableItem.baseUrlBundles = assetBundlesUrl;
                         return wearableItem;
                     }));
                 else
