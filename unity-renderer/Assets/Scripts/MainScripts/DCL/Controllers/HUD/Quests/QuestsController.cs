@@ -16,8 +16,7 @@ namespace DCL.Quests
         private readonly IQuestCompletedComponentView questCompletedComponentView;
         private readonly IQuestStartedPopupComponentView questStartedPopupComponentView;
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
-        private CancellationTokenSource trackQuestCts = null;
-        private CancellationTokenSource trackQuestStartedCts = null;
+        private CancellationTokenSource disposeCts = null;
 
         public QuestsController(
             IQuestsService questsService,
@@ -42,36 +41,32 @@ namespace DCL.Quests
             if(userProfileBridge != null)
                 questsService.SetUserId(ownUserProfile.userId);
 
-            trackQuestCts = new CancellationTokenSource();
-            trackQuestStartedCts = new CancellationTokenSource();
-            StartTrackingQuests(trackQuestCts.Token).Forget();
-            StartTrackingStartedQuests(trackQuestStartedCts.Token).Forget();
+            disposeCts = new CancellationTokenSource();
+            StartTrackingQuests(disposeCts.Token).Forget();
+            StartTrackingStartedQuests(disposeCts.Token).Forget();
         }
 
         private async UniTaskVoid StartTrackingQuests(CancellationToken ct)
         {
             await foreach (var questStateUpdate in questsService.QuestUpdated.WithCancellation(ct))
             {
-                if (questStateUpdate.QuestInstanceId == "pinnedQuestId")
-                {
-                    List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
-
-                    foreach (var step in questStateUpdate.QuestState.CurrentSteps)
-                    {
-                        foreach (Task task in step.Value.TasksCompleted)
-                            questSteps.Add(new QuestStepComponentModel { isCompleted = true, text = task.Id });
-
-                        foreach (Task task in step.Value.ToDos)
-                            questSteps.Add(new QuestStepComponentModel { isCompleted = false, text = task.Id });
-                    }
-
-                    questTrackerComponentView.SetQuestTitle(questStateUpdate.Name);
-                    questTrackerComponentView.SetQuestSteps(questSteps);
-                }
-                else
+                if (questStateUpdate.QuestInstanceId != "pinnedQuestId")
                 {
                     AddOrUpdateQuestToLog(questStateUpdate);
+                    continue;
                 }
+                List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
+
+                foreach (var step in questStateUpdate.QuestState.CurrentSteps)
+                {
+                    foreach (Task task in step.Value.TasksCompleted)
+                        questSteps.Add(new QuestStepComponentModel { isCompleted = true, text = task.Id });
+
+                    foreach (Task task in step.Value.ToDos)
+                        questSteps.Add(new QuestStepComponentModel { isCompleted = false, text = task.Id });
+                }
+                questTrackerComponentView.SetQuestTitle(questStateUpdate.Name);
+                questTrackerComponentView.SetQuestSteps(questSteps);
             }
         }
 
@@ -90,10 +85,7 @@ namespace DCL.Quests
             //Add or update quest in quest log as soon as merged
         }
 
-        public void Dispose()
-        {
-            trackQuestCts?.SafeCancelAndDispose();
-            trackQuestStartedCts?.SafeCancelAndDispose();
-        }
+        public void Dispose() =>
+            disposeCts?.SafeCancelAndDispose();
     }
 }
