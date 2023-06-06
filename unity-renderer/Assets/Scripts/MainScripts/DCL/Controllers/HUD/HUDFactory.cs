@@ -4,8 +4,6 @@ using DCL.Browser;
 using DCL.Chat;
 using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
-using DCL.Huds.QuestsPanel;
-using DCL.Huds.QuestsTracker;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.SettingsCommon;
@@ -161,10 +159,6 @@ public class HUDFactory : IHUDFactory
                     SceneReferences.i.mouseCatcher);
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 return new GraphicCardWarningHUDController();
-            case HUDElementID.QUESTS_PANEL:
-                return new QuestsPanelHUDController();
-            case HUDElementID.QUESTS_TRACKER:
-                return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
         }
 
         return null;
