@@ -97,7 +97,7 @@ namespace DCL
             // TODO: remove the v1 backpack editor when v2 is confirmed to be completely functional
             pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");
 
-            pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "my_wallet");
+            pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "wallet");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

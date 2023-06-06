@@ -20,10 +20,8 @@ namespace DCL.Wallet
             dataStore.wallet.isInitialized.Set(true);
         }
 
-        public void Dispose()
-        {
+        public void Dispose() =>
             dataStore.exploreV2.configureWalletSectionInFullscreenMenu.OnChange -= ConfigureWalletSectionInFullscreenMenuChanged;
-        }
 
         private void ConfigureWalletSectionInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
