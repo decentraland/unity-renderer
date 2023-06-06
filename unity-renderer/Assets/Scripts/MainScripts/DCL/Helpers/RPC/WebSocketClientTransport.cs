@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using System;
 using System.Threading;
+using UnityEngine;
 using WebSocketSharp;
 using ErrorEventArgs = WebSocketSharp.ErrorEventArgs;
 using ITransport = rpc_csharp.transport.ITransport;
@@ -21,6 +22,7 @@ namespace RPC.Transports
 
         public WebSocketClientTransport(string url, params string[] protocols) : base(url, protocols)
         {
+            Debug.Log("WebSocketClientTransport.Constructor.Pre");
             this.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
 
             base.OnMessage += this.HandleMessage;
@@ -28,7 +30,9 @@ namespace RPC.Transports
             base.OnClose += this.HandleClose;
             base.OnOpen += this.HandleOpen;
 
+            Debug.Log("WebSocketClientTransport.Constructor.Connect.Pre");
             base.Connect();
+            Debug.Log("WebSocketClientTransport.Constructor.Connect.Post");
         }
 
         private void HandleMessage(object sender, MessageEventArgs e)

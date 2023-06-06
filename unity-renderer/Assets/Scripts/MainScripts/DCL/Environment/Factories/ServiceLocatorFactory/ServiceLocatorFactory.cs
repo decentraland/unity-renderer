@@ -25,6 +25,7 @@ using rpc_csharp.transport;
 using RPC.Transports;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -88,9 +89,13 @@ namespace DCL
             {
                 ITransport TransportProvider()
                 {
+                    Debug.Log("SocialService.WebSocketClientTransport.Create.Pre");
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
+                    Debug.Log("SocialService.WebSocketClientTransport.Create.Post");
                     transport.WaitTime = TimeSpan.FromSeconds(100);
+                    Debug.Log("SocialService.WebSocketClientTransport.KeepConnectionAlive.Pre");
                     transport.KeepConnectionAlive(TimeSpan.FromSeconds(1), 10);
+                    Debug.Log("SocialService.WebSocketClientTransport.KeepConnectionAlive.Post");
                     return transport;
                 }
 

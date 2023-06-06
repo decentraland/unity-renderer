@@ -41,7 +41,7 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            // TODO: dispose the rpc client and all related objects
+            initializationInformationTask?.TrySetCanceled();
         }
 
         public void Initialize()
@@ -51,14 +51,11 @@ namespace DCL.Social.Friends
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
         {
-            Debug.Log("RPCSocialAPIBridge.InitializeAsync.InitializeClient.Pre");
-            await InitializeClient(cancellationToken);
-            Debug.Log("RPCSocialAPIBridge.InitializeAsync.InitializeClient.Post");
-
-            Debug.Log("RPCSocialAPIBridge.InitializeAsync.SubscribeToIncomingFriendshipEvents.Pre");
-            // start listening to streams
-            UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
-            Debug.Log("RPCSocialAPIBridge.InitializeAsync.SubscribeToIncomingFriendshipEvents.Post");
+            InitializeClient(cancellationToken).ContinueWith(() =>
+            {
+                // start listening to streams
+                UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
+            });
         }
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
@@ -67,15 +64,11 @@ namespace DCL.Social.Friends
 
             var transport = clientTransportProvider();
             var client = new RpcClient(transport);
-            Debug.Log("RPCSocialAPIBridge.InitializeClient.CreatePort.Pre");
             var socialPort = await client.CreatePort("social-service-port");
-            Debug.Log("RPCSocialAPIBridge.InitializeClient.CreatePort.Post");
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            Debug.Log("RPCSocialAPIBridge.InitializeClient.LoadModule.Pre");
             var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
-            Debug.Log("RPCSocialAPIBridge.InitializeClient.LoadModule.Post");
 
             cancellationToken.ThrowIfCancellationRequested();
 
