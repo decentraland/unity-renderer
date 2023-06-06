@@ -52,6 +52,7 @@ namespace DCL.Social.Friends
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
         {
             await InitializeClient(cancellationToken);
+
             // start listening to streams
             UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
         }
@@ -78,9 +79,11 @@ namespace DCL.Social.Friends
             if (initializationInformationTask != null) return await initializationInformationTask.Task.AttachExternalCancellation(cancellationToken);
 
             initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
+
             // TODO: the bridge should not fetch all friends at start, its a responsibility/design issue.
             // It should be fetched by its request method accordingly
             await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
+
             // TODO: the bridge should not fetch all friend requests at start, its a responsibility/design issue.
             // It should be fetched by its request method accordingly
             var friendshipInitializationMessage = await GetFriendRequestsFromServer(cancellationToken);
@@ -266,8 +269,8 @@ namespace DCL.Social.Friends
             return new FriendRequest(
                 GetFriendRequestId(response.User.Address, response.CreatedAt),
                 response.CreatedAt,
-                response.User.Address,
                 userProfileWebInterfaceBridge.GetOwn().userId,
+                response.User.Address,
                 response.Message);
         }
 
@@ -277,8 +280,10 @@ namespace DCL.Social.Friends
 
             try
             {
-                await foreach (var friendshipEventResponse in socialClient.SubscribeFriendshipEventsUpdates(new Payload
-                                   { SynapseToken = accessToken }))
+                IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> stream = socialClient
+                   .SubscribeFriendshipEventsUpdates(new Payload { SynapseToken = accessToken });
+
+                await foreach (var friendshipEventResponse in stream.WithCancellation(cancellationToken))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
