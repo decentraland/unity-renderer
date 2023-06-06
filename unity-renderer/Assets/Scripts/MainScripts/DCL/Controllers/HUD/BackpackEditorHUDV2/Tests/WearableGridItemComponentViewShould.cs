@@ -201,32 +201,11 @@ namespace DCL.Backpack
                 WearableId = "w1",
             });
 
-            Assert.IsFalse(view.hoverUnequippedContainer.activeSelf);
-            Assert.IsFalse(view.hoverEquippedContainer.activeSelf);
-            Assert.IsFalse(view.hoverSelectedEquippedContainer.activeSelf);
-            Assert.IsFalse(view.hoverSelectedUnequippedContainer.activeSelf);
+            Assert.IsFalse(view.selectedContainer.activeSelf);
         }
 
         [Test]
-        public void EnableHoverContainer()
-        {
-            view.SetModel(new WearableGridItemModel
-            {
-                Rarity = NftRarity.Common,
-                ImageUrl = "imageUrl",
-                IsEquipped = false,
-                IsNew = false,
-                IsSelected = false,
-                WearableId = "w1",
-            });
-
-            view.OnPointerEnter(null);
-
-            Assert.IsTrue(view.hoverUnequippedContainer.activeSelf);
-        }
-
-        [Test]
-        public void EnableHoverEquippedContainer()
+        public void EnableHover()
         {
             view.SetModel(new WearableGridItemModel
             {
@@ -240,29 +219,12 @@ namespace DCL.Backpack
 
             view.OnPointerEnter(null);
 
-            Assert.IsTrue(view.hoverEquippedContainer.activeSelf);
+            Assert.IsTrue(view.selectedContainer.activeSelf);
         }
 
-        [Test]
-        public void EnableHoverSelectedContainer()
-        {
-            view.SetModel(new WearableGridItemModel
-            {
-                Rarity = NftRarity.Common,
-                ImageUrl = "imageUrl",
-                IsEquipped = false,
-                IsNew = false,
-                IsSelected = true,
-                WearableId = "w1",
-            });
-
-            view.OnPointerEnter(null);
-
-            Assert.IsTrue(view.hoverSelectedUnequippedContainer.activeSelf);
-        }
 
         [Test]
-        public void EnableHoverSelectedEquippedContainer()
+        public void DisableHover()
         {
             view.SetModel(new WearableGridItemModel
             {
@@ -270,13 +232,13 @@ namespace DCL.Backpack
                 ImageUrl = "imageUrl",
                 IsEquipped = true,
                 IsNew = false,
-                IsSelected = true,
+                IsSelected = false,
                 WearableId = "w1",
             });
 
-            view.OnPointerEnter(null);
+            view.OnPointerExit(null);
 
-            Assert.IsTrue(view.hoverSelectedEquippedContainer.activeSelf);
+            Assert.IsFalse(view.selectedContainer.activeSelf);
         }
 
         [TestCaseSource(nameof(GetAllRarities))]

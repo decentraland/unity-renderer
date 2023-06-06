@@ -4,11 +4,9 @@ using DCL.Social.Friends;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
-using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
-using UnityEngine;
 
 namespace DCL.Social.Passports
 {
@@ -52,7 +50,6 @@ namespace DCL.Social.Passports
                                 passportApiBridge);
 
             var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
-            playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());
 
             playerPreviewController = new PassportPlayerPreviewComponentController(
                 playerPreviewView,

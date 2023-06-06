@@ -3,7 +3,8 @@ namespace DCL.Backpack
     public enum EquipWearableSource
     {
         Wearable,
-        InfoCard
+        InfoCard,
+        None
     }
 
     public enum UnequipWearableSource

@@ -23,6 +23,7 @@ public class AvatarModel : BaseModel
     public Color hairColor;
     public Color eyeColor;
     public List<string> wearables = new List<string>();
+    public HashSet<string> forceRender = new HashSet<string>();
 
     public List<AvatarEmoteEntry> emotes = new List<AvatarEmoteEntry>();
 
@@ -75,6 +76,11 @@ public class AvatarModel : BaseModel
               && other.wearables.All(wearables.Contains)))
             return false;
 
+        if (!(forceRender.Count == other.forceRender.Count
+              && forceRender.All(other.forceRender.Contains)
+              && other.forceRender.All(forceRender.Contains)))
+            return false;
+
         //emotes are the same
         if (emotes == null && other.emotes != null)
             return false;
@@ -113,6 +119,10 @@ public class AvatarModel : BaseModel
                                  && other.wearables.All(wearables.Contains)
                                  && wearables.Count == other.wearables.Count;
 
+        bool forceRenderAreEqual = forceRender.All(other.forceRender.Contains)
+                                 && other.forceRender.All(forceRender.Contains)
+                                 && forceRender.Count == other.forceRender.Count;
+
         return id == other.id &&
                name == other.name &&
                bodyShape == other.bodyShape &&
@@ -121,7 +131,8 @@ public class AvatarModel : BaseModel
                eyeColor == other.eyeColor &&
                expressionTriggerId == other.expressionTriggerId &&
                expressionTriggerTimestamp == other.expressionTriggerTimestamp &&
-               wearablesAreEqual;
+               wearablesAreEqual &&
+               forceRenderAreEqual;
     }
 
     public void CopyFrom(AvatarModel other)
@@ -139,10 +150,30 @@ public class AvatarModel : BaseModel
         expressionTriggerTimestamp = other.expressionTriggerTimestamp;
         wearables = new List<string>(other.wearables);
         emotes = other.emotes.Select(x => new AvatarEmoteEntry() { slot = x.slot, urn = x.urn }).ToList();
+        forceRender = new HashSet<string>(other.forceRender);
     }
 
     public override BaseModel GetDataFromJSON(string json) =>
         Utils.SafeFromJson<AvatarModel>(json);
 
+    public AvatarModelDTO ToAvatarModelDto()
+    {
+        AvatarModelDTO avatarModelDto = new AvatarModelDTO
+            {
+                id = this.id,
+                name = this.name,
+                bodyShape = this.bodyShape,
+                skinColor = this.skinColor,
+                hairColor = this.hairColor,
+                eyeColor = this.eyeColor,
+                wearables = this.wearables,
+                forceRender = this.forceRender.ToList(),
+                emotes = this.emotes,
+                expressionTriggerId = this.expressionTriggerId,
+                expressionTriggerTimestamp = this.expressionTriggerTimestamp,
+                talking = this.talking,
+            };
 
+        return avatarModelDto;
+    }
 }

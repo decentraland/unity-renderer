@@ -1,19 +1,41 @@
 ﻿using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace DCL.Backpack
 {
     public class BackpackEditorHUDV2ComponentViewShould
     {
         private BackpackEditorHUDV2ComponentView backpackEditorHUDV2ComponentView;
+        private ICharacterPreviewFactory characterPreviewFactory;
+        private ICharacterPreviewController characterPreviewController;
 
         [SetUp]
         public void SetUp()
         {
+            characterPreviewController = Substitute.For<ICharacterPreviewController>();
+            characterPreviewFactory = Substitute.For<ICharacterPreviewFactory>();
+            characterPreviewFactory.Configure().Create(
+                Arg.Any<CharacterPreviewMode>(),
+                Arg.Any<RenderTexture>(),
+                Arg.Any<bool>(),
+                Arg.Any<PreviewCameraFocus>(),
+                Arg.Any<bool>()).Returns(characterPreviewController);
+
+
             backpackEditorHUDV2ComponentView = BackpackEditorHUDV2ComponentView.Create();
-            backpackEditorHUDV2ComponentView.Initialize(Substitute.For<ICharacterPreviewFactory>());
+            backpackEditorHUDV2ComponentView.Initialize(
+                characterPreviewFactory,
+                Substitute.For<IPreviewCameraRotationController>(),
+                Substitute.For<IPreviewCameraPanningController>(),
+                Substitute.For<IPreviewCameraZoomController>());
         }
 
         [TearDown]
@@ -58,6 +80,7 @@ namespace DCL.Backpack
 
             // Assert
             Assert.IsTrue(backpackEditorHUDV2ComponentView.gameObject.activeSelf);
+            characterPreviewController.Received(1).SetEnabled(true);
         }
 
         [Test]
@@ -71,6 +94,7 @@ namespace DCL.Backpack
 
             // Assert
             Assert.IsFalse(backpackEditorHUDV2ComponentView.gameObject.activeSelf);
+            characterPreviewController.Received(1).SetEnabled(false);
         }
 
         [Test]
@@ -115,6 +139,61 @@ namespace DCL.Backpack
 
             // Assert
             Assert.AreEqual(testColor, backpackEditorHUDV2ComponentView.colorPickerComponentView.CurrentSelectedColor);
+        }
+
+        [Test]
+        [TestCase(null)]
+        [TestCase(long.MaxValue)]
+        public void PlayPreviewEmoteCorrectly(long? timestamp)
+        {
+            // Act
+            if (timestamp == null)
+                backpackEditorHUDV2ComponentView.PlayPreviewEmote("test");
+            else
+                backpackEditorHUDV2ComponentView.PlayPreviewEmote("test", timestamp.Value);
+
+            // Assert
+            characterPreviewController.Received(1).PlayEmote("test", timestamp ?? (long)Time.realtimeSinceStartup);
+        }
+
+        [Test]
+        public void ResetPreviewPanelCorrectly()
+        {
+            // Act
+            backpackEditorHUDV2ComponentView.ResetPreviewPanel();
+
+            // Assert
+            characterPreviewController.Received(1).PlayEmote("Idle", (long)Time.realtimeSinceStartup);
+            characterPreviewController.Received(1).ResetRotation();
+            characterPreviewController.Received(1).SetFocus(PreviewCameraFocus.DefaultEditing, false);
+        }
+
+        [UnityTest]
+        public IEnumerator UpdateAvatarPreviewCorrectly()
+        {
+            // Arrange
+            AvatarModel testAvatarModel = new AvatarModel { wearables = new List<string> { "testWearable" },};
+
+            // Act
+            backpackEditorHUDV2ComponentView.UpdateAvatarPreview(testAvatarModel);
+            yield return null;
+
+            // Assert
+            characterPreviewController.Received(1).TryUpdateModelAsync(
+                Arg.Is<AvatarModel>(avatarModel => avatarModel.wearables.Contains("testWearable")),
+                Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        [TestCase(PreviewCameraFocus.DefaultEditing, true)]
+        [TestCase(PreviewCameraFocus.FaceEditing, false)]
+        public void SetAvatarPreviewFocusCorrectly(PreviewCameraFocus focus, bool useTransition)
+        {
+            // Act
+            backpackEditorHUDV2ComponentView.SetAvatarPreviewFocus(focus, useTransition);
+
+            // Assert
+            characterPreviewController.Received().SetFocus(focus, useTransition);
         }
     }
 }
