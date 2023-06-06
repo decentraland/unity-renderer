@@ -1,27 +1,12 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCL.Tasks;
 using Decentraland.Quests;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
 namespace DCLServices.QuestsService
 {
-    public interface IQuestsService : IDisposable
-    {
-        event Action<QuestStateWithData> OnQuestStarted;
-        event Action<QuestStateWithData> OnQuestUpdated;
-        IReadOnlyDictionary<string, QuestStateWithData> CurrentState { get; }
-
-        void SetUserId(string userId);
-
-        UniTask<StartQuestResponse> StartQuest(string questId);
-
-        UniTask<AbortQuestResponse> AbortQuest(string questInstanceId);
-
-        UniTask<Quest> GetDefinition(string questId, CancellationToken cancellationToken = default);
-    }
-
     /* TODO Alex:
         - Add service to ServiceLocator
         - Find a good place to call QuestsService.SetUserId
@@ -30,8 +15,12 @@ namespace DCLServices.QuestsService
      */
     public class QuestsService : IQuestsService
     {
-        public event Action<QuestStateWithData> OnQuestStarted;
-        public event Action<QuestStateWithData> OnQuestUpdated;
+        public IAsyncEnumerableWithEvent<QuestStateWithData> QuestStarted => questStarted;
+        public IAsyncEnumerableWithEvent<QuestStateWithData> QuestUpdated => questUpdated;
+
+        private readonly AsyncEnumerableWithEvent<QuestStateWithData> questStarted = new ();
+        private readonly AsyncEnumerableWithEvent<QuestStateWithData> questUpdated = new ();
+
         public IReadOnlyDictionary<string, QuestStateWithData> CurrentState => stateCache;
         internal readonly Dictionary<string, QuestStateWithData> stateCache = new ();
 
@@ -67,17 +56,17 @@ namespace DCLServices.QuestsService
         private async UniTaskVoid Subscribe(CancellationToken ct)
         {
             var enumerable = clientQuestsService.Subscribe(new UserAddress { UserAddress_ = userId });
-            await foreach (var userUpdate in enumerable)
+            await foreach (var userUpdate in enumerable.WithCancellation(ct))
             {
                 switch (userUpdate.MessageCase)
                 {
                     case UserUpdate.MessageOneofCase.QuestStateUpdate:
                         stateCache[userUpdate.QuestStateUpdate.QuestData.QuestInstanceId] = userUpdate.QuestStateUpdate.QuestData;
-                        OnQuestUpdated?.Invoke(userUpdate.QuestStateUpdate.QuestData);
+                        questUpdated.Write(userUpdate.QuestStateUpdate.QuestData);
                         break;
                     case UserUpdate.MessageOneofCase.NewQuestStarted:
                         stateCache[userUpdate.NewQuestStarted.QuestInstanceId] = userUpdate.NewQuestStarted;
-                        OnQuestStarted?.Invoke(userUpdate.NewQuestStarted);
+                        questStarted.Write(userUpdate.NewQuestStarted);
                         break;
                 }
             }
@@ -124,6 +113,8 @@ namespace DCLServices.QuestsService
         {
             userSubscribeCt.SafeCancelAndDispose();
             userSubscribeCt = null;
+            questStarted.Dispose();
+            questUpdated.Dispose();
         }
     }
 }
