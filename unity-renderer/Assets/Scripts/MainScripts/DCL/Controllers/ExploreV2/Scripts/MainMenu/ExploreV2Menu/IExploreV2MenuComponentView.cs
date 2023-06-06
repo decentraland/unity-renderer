@@ -126,4 +126,10 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Hide Map section in UI when user enter isolated World
     /// </summary>
     void HideMapOnEnteringWorld();
+
+    /// <summary>
+    /// Activates/Deactivates the wallet button in the top menu.
+    /// </summary>
+    /// <param name="isActive">True for activating it.</param>
+    void SetWalletActive(bool isActive);
 }

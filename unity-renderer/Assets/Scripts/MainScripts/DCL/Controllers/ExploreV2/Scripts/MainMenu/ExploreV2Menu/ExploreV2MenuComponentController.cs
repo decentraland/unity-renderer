@@ -119,6 +119,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Wallet, DataStore.i.exploreV2.configureWalletSectionInFullscreenMenu);
 
         DataStore.i.common.isWorld.OnChange += OnWorldChange;
     }
@@ -227,8 +228,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (visible)
         {
             // TODO: This is temporal while we want to keep the NEW tag for the new Backpack feature
-            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
-                view.SetSectionAsNew(ExploreSection.Backpack, true);
+            view.SetSectionAsNew(
+                ExploreSection.Backpack,
+                DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"));
+
+            view.SetWalletActive(DataStore.i.wallet.isInitialized.Get());
 
             if (mouseCatcher != null)
                 mouseCatcher.UnlockCursor();

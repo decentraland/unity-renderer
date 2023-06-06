@@ -15,6 +15,7 @@ using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
+using DCL.Wallet;
 using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
@@ -95,6 +96,8 @@ namespace DCL
             pluginSystem.RegisterWithFlag<BackpackEditorV2Plugin>(() => new BackpackEditorV2Plugin(), "backpack_editor_v2");
             // TODO: remove the v1 backpack editor when v2 is confirmed to be completely functional
             pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");
+
+            pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "my_wallet");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 
