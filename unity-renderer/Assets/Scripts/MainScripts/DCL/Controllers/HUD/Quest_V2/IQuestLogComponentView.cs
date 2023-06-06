@@ -6,6 +6,7 @@ namespace DCL.Quests
 {
     public interface IQuestLogComponentView
     {
-
+        void AddActiveQuest(QuestDetailsComponentModel activeQuest);
+        void AddCompletedQuest(QuestDetailsComponentModel completedQuest);
     }
 }

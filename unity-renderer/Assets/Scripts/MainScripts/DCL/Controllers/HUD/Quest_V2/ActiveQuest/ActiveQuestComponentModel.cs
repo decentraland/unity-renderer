@@ -13,5 +13,6 @@ namespace DCL.Quests
         public string questName;
         public string questImageUri;
         public bool isPinned = false;
+        public QuestDetailsComponentModel questModel;
     }
 }

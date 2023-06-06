@@ -38,7 +38,11 @@ namespace DCL.Quests
             SetQuestId(model.questId);
             SetIsPinned(model.isPinned);
             SetQuestImage(model.questImageUri);
+            SetQuestDetailsModel(model.questModel);
         }
+
+        public void SetQuestDetailsModel(QuestDetailsComponentModel questDetailsComponentModel) =>
+            model.questModel = questDetailsComponentModel;
 
         public void SetQuestName(string title)
         {
