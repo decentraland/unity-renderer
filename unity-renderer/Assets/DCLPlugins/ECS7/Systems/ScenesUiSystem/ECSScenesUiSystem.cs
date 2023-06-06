@@ -121,7 +121,7 @@ namespace ECSSystems.ScenesUiSystem
                     InteractableArea = interactableArea,
                     Width = Screen.width,
                     Height = Screen.height,
-                    DevicePixelRatio = Screen.dpi / ppi
+                    DevicePixelRatio = ppi / Screen.dpi
                 });
         }
 
