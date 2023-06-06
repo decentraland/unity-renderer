@@ -16,10 +16,20 @@ namespace AvatarSystem
 
         private RendereableAssetLoadHelper loaderAssetHelper;
 
-        public async UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, WearableItem item,
-            CancellationToken ct = default)
+        public async UniTask<Rendereable> Retrieve(GameObject container, WearableItem wearable, string bodyShapeId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
+
+            WearableItem.Representation representation = wearable.GetRepresentation(bodyShapeId);
+            if (representation == null)
+            {
+                Debug.Log($"No representation for body shape {bodyShapeId} of wearable {wearable.id}");
+                return null;
+            }
+
+            var contentProvider = wearable.GetContentProvider(wearable.id);
+            string baseUrl = wearable.baseUrlBundles;
+            string mainFile = representation.mainFile;
 
             try
             {
@@ -28,13 +38,13 @@ namespace AvatarSystem
                 // Before loading the asset, we check if asset bundles exist, then we fill the content provider with it
                 if (IsNewAssetBundleFlagEnabled() && contentProvider.TryGetContentsUrl_Raw(mainFile, out string hash))
                 {
-                    if (string.IsNullOrEmpty(item.entityId))
+                    if (string.IsNullOrEmpty(wearable.entityId))
                     {
                         Debug.LogError(mainFile + " has no entity ID, check where this wearable was loaded from");
                     }
                     else
                     {
-                        var sceneAb = await FetchSceneAssetBundles(item.entityId, contentProvider.assetBundlesBaseUrl);
+                        var sceneAb = await FetchSceneAssetBundles(wearable.entityId, contentProvider.assetBundlesBaseUrl);
 
                         if (sceneAb != null && sceneAb.IsSceneConverted())
                         {
@@ -42,7 +52,7 @@ namespace AvatarSystem
                             contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
                         } else
                         {
-                            Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {(item != null ? item.entityId : hash)}</color>");
+                            Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {(wearable != null ? wearable.entityId : hash)}</color>");
                         }
                     }
                 }
