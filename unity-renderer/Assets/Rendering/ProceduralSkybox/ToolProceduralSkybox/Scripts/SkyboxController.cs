@@ -619,14 +619,13 @@ namespace DCL.Skybox
 
         public void ApplyAvatarColor(float normalizedDayTime)
         {
+            if (configuration == null)
+                return;
+
             if (dataStore.skyboxConfig.avatarMatProfile.Get() == AvatarMaterialProfile.InWorld)
-            {
                 configuration.ApplyInWorldAvatarColor(normalizedDayTime, directionalLight.gameObject);
-            }
             else
-            {
                 configuration.ApplyEditorAvatarColor();
-            }
         }
 
         private void OnAvatarMatProfileOnChange(AvatarMaterialProfile current, AvatarMaterialProfile previous) =>

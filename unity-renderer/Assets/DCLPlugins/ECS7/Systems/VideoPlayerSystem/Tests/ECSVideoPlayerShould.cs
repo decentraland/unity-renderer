@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Components.Video.Plugin;
+using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
 using System;
@@ -11,6 +12,7 @@ using DCL.Shaders;
 using ECSSystems.VideoPlayerSystem;
 using NSubstitute;
 using NUnit.Framework;
+using RPC.Context;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -27,6 +29,7 @@ namespace Tests
         private Action systemsUpdate;
         private WebVideoPlayer videoPlayer;
         private IECSComponentWriter componentWriter;
+        private SceneStateHandler sceneStateHandler;
 
         [SetUp]
         public void SetUp()
@@ -40,6 +43,7 @@ namespace Tests
             var videoPlayerSystem = new ECSVideoPlayerSystem(
                 internalEcsComponents.videoPlayerComponent,
                 internalEcsComponents.videoMaterialComponent,
+                internalEcsComponents.EngineInfo,
                 componentWriter);
 
             systemsUpdate = () =>
@@ -54,6 +58,18 @@ namespace Tests
             scene1 = testUtils.CreateScene(678);
 
             videoPlayer = new WebVideoPlayer("test", "test.mp4", true, new VideoPluginWrapper_Mock());
+
+            sceneStateHandler = new SceneStateHandler(
+                Substitute.For<CRDTServiceContext>(),
+                new Dictionary<int, IParcelScene>()
+                {
+                    { scene0.sceneData.sceneNumber, scene0 },
+                    { scene1.sceneData.sceneNumber, scene1 }
+                },
+                internalEcsComponents.EngineInfo,
+                internalEcsComponents.GltfContainerLoadingStateComponent);
+            sceneStateHandler.InitializeEngineInfoComponent(scene0.sceneData.sceneNumber);
+            sceneStateHandler.InitializeEngineInfoComponent(scene1.sceneData.sceneNumber);
         }
 
         [TearDown]
@@ -63,6 +79,7 @@ namespace Tests
             videoPlayer?.Dispose();
             AssetPromiseKeeper_Material.i.Cleanup();
             AssetPromiseKeeper_Texture.i.Cleanup();
+            sceneStateHandler.Dispose();
         }
 
         [UnityTest]
@@ -100,7 +117,7 @@ namespace Tests
                 videoTextureDatas = new List<InternalVideoMaterial.VideoTextureData>() { new InternalVideoMaterial.VideoTextureData(200, ShaderUtils.BaseMap) },
             });
 
-            yield return new WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
+            yield return new UnityEngine.WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
             videoPlayer.Update();
             Assert.IsNotNull(videoPlayer.texture);
 
@@ -138,7 +155,7 @@ namespace Tests
                 Arg.Is<ECSComponentWriteType>(val => val == (ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY))
                 );
 
-            yield return new WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
+            yield return new UnityEngine.WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
             systemsUpdate();
 
             componentWriter.Received(1).AppendComponent(
@@ -184,6 +201,33 @@ namespace Tests
                 Arg.Is<int>(val => val == scene0.sceneData.sceneNumber),
                 Arg.Is<long>(val => val == entity.entityId),
                 Arg.Is<int>(val => val == ComponentID.VIDEO_EVENT)
+            );
+        }
+
+        [Test]
+        public void StoreSceneTickInVideoEvent()
+        {
+            ECS7TestEntity entity = scene0.CreateEntity(100);
+
+            // This internal component normally gets automatically added by the VideoPlayerHandler
+            internalEcsComponents.videoPlayerComponent.PutFor(scene0, entity, new InternalVideoPlayer()
+            {
+                videoPlayer = videoPlayer
+            });
+
+            sceneStateHandler.IncreaseSceneTick(scene0.sceneData.sceneNumber);
+            sceneStateHandler.IncreaseSceneTick(scene0.sceneData.sceneNumber);
+            sceneStateHandler.IncreaseSceneTick(scene0.sceneData.sceneNumber);
+
+            systemsUpdate();
+
+            componentWriter.Received(1).AppendComponent(
+                Arg.Is<int>(val => val == scene0.sceneData.sceneNumber),
+                Arg.Is<long>(val => val == entity.entityId),
+                Arg.Is<int>(val => val == ComponentID.VIDEO_EVENT),
+                Arg.Is<PBVideoEvent>(val =>
+                    val.TickNumber == 3),
+                Arg.Is<ECSComponentWriteType>(val => val == (ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY))
             );
         }
     }
