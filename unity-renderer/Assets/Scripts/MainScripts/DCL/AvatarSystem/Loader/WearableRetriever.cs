@@ -27,7 +27,7 @@ namespace AvatarSystem
                 return null;
             }
 
-            var contentProvider = wearable.GetContentProvider(wearable.id);
+            var contentProvider = wearable.GetContentProvider(bodyShapeId);
             string baseUrl = wearable.baseUrlBundles;
             string mainFile = representation.mainFile;
 
