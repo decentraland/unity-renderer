@@ -227,7 +227,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &1680337826605459946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4400,12 +4400,12 @@ PrefabInstance:
     - target: {fileID: 1851627360813122803, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1851627360813122803, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1851627360813122803, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
@@ -4415,7 +4415,7 @@ PrefabInstance:
     - target: {fileID: 1851627360813122803, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -41.7
       objectReference: {fileID: 0}
     - target: {fileID: 2734986485857160978, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
@@ -4680,12 +4680,12 @@ PrefabInstance:
     - target: {fileID: 8936678147167691193, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8936678147167691193, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8936678147167691193, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
@@ -4700,7 +4700,7 @@ PrefabInstance:
     - target: {fileID: 8936678147167691193, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -464.25
       objectReference: {fileID: 0}
     - target: {fileID: 9016402783536619648, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}

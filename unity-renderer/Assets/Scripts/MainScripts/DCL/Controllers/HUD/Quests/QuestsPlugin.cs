@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Providers;
 using DCL.Quests;
 using DCLServices.QuestsService;
@@ -33,6 +34,8 @@ public class QuestsPlugin : IPlugin
         questTrackerComponentView = await resourceProvider.Instantiate<QuestTrackerComponentView>(QUEST_TRACKER_HUD, $"_{QUEST_TRACKER_HUD}", cts.Token);
         questCompletedComponentView = await resourceProvider.Instantiate<QuestCompletedComponentView>(QUEST_COMPLETED_HUD, $"_{QUEST_COMPLETED_HUD}", cts.Token);
         questStartedPopupComponentView = await resourceProvider.Instantiate<QuestStartedPopupComponentView>(QUEST_STARTED_POPUP, $"_{QUEST_STARTED_POPUP}", cts.Token);
+        DataStore.i.Quests.isInitialized.Set(true);
+        DataStore.i.HUDs.questsPanelVisible.Set(true);
         QuestsController controller = new QuestsController(null, questTrackerComponentView, questCompletedComponentView, questStartedPopupComponentView);
     }
 

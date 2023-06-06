@@ -66,7 +66,7 @@ namespace DCL.Quests
 
         private void AddOrUpdateQuestToLog(QuestInstance questInstance)
         {
-            //Add or update quest in quest log as soon as merged
+
         }
 
         public void Dispose() =>
