@@ -12,7 +12,7 @@ public class CoreComponentsPlugin : IPlugin
     public CoreComponentsPlugin()
     {
         poolableComponentFactory = Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
-        IRuntimeComponentFactory factory = Environment.i.world.componentFactory; 
+        IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
 
         // Transform
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.TRANSFORM, BuildComponent<DCLTransform>);
@@ -50,7 +50,7 @@ public class CoreComponentsPlugin : IPlugin
         // Video
         factory.RegisterBuilder((int) CLASS_ID.VIDEO_CLIP, BuildComponent<DCLVideoClip>);
         factory.RegisterBuilder((int) CLASS_ID.VIDEO_TEXTURE, BuildComponent<DCLVideoTexture>);
-        
+
         // Others
         factory.RegisterBuilder((int) CLASS_ID.FONT, BuildComponent<DCLFont>);
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.AVATAR_SHAPE,
@@ -61,8 +61,6 @@ public class CoreComponentsPlugin : IPlugin
             () => BuildPoolableComponent((int) CLASS_ID_COMPONENT.GIZMOS));
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA,
             () => BuildPoolableComponent((int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA));
-        factory.RegisterBuilder((int) CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION,
-            () => BuildPoolableComponent((int) CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION));
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.CAMERA_MODE_AREA, BuildComponent<CameraModeArea>);
 
         factory.createOverrides.Add((int) CLASS_ID_COMPONENT.TRANSFORM, HandleAvatarAttachExclusivity);
@@ -107,7 +105,7 @@ public class CoreComponentsPlugin : IPlugin
 
         if (factory == null)
             return;
-        
+
         // Transform
         factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.TRANSFORM);
         factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.AVATAR_ATTACH);
@@ -150,7 +148,6 @@ public class CoreComponentsPlugin : IPlugin
         factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.ANIMATOR);
         factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.GIZMOS);
         factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA);
-        factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.CAMERA_MODE_AREA);
         factory.UnregisterBuilder((int) CLASS_ID.FONT);
 
