@@ -5,10 +5,12 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using Decentraland.Common;
 using System;
 using System.Collections.Generic;
-using UnityEngine.Device;
 using UnityEngine.UIElements;
+using Position = UnityEngine.UIElements.Position;
+using Screen = UnityEngine.Device.Screen;
 
 namespace ECSSystems.ScenesUiSystem
 {
@@ -26,6 +28,7 @@ namespace ECSSystems.ScenesUiSystem
         private bool isPendingSceneUI;
         private IParcelScene currentScene;
         private HashSet<IParcelScene> scenesUiToSort = new HashSet<IParcelScene>();
+        private BorderRect interactableArea;
 
         public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
@@ -46,6 +49,14 @@ namespace ECSSystems.ScenesUiSystem
             lastSceneNumber = -1;
             isPendingSceneUI = true;
             currentScene = null;
+
+            interactableArea = new BorderRect()
+            {
+                Bottom = 0,
+                Left = 0,
+                Right = 0,
+                Top = 0
+            };
 
             loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
             hideUiEventVariable.OnChange += OnHideAllUiEvent;
@@ -102,7 +113,8 @@ namespace ECSSystems.ScenesUiSystem
                 {
                     Width = Screen.width,
                     Height = Screen.height,
-                    DevicePixelRatio = Screen.height / (float)Screen.width
+                    DevicePixelRatio = Screen.dpi, // should it be Screen.height / (float)Screen.width ???
+                    InteractableArea = interactableArea
                 });
         }
 
