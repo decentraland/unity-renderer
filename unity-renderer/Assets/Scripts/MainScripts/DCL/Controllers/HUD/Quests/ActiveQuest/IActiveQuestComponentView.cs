@@ -12,5 +12,6 @@ namespace DCL.Quests
         void SetIsPinned(bool isPinned);
         void SetQuestImage(string imageUri);
         void Deselect();
+        void SetQuestDetailsModel(QuestDetailsComponentModel questDetailsComponentModel);
     }
 }

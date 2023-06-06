@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Providers;
 using DCL.Quests;
+using DCLServices.QuestsService;
 using System.Threading;
 
 public class QuestsPlugin : IPlugin
@@ -14,6 +15,7 @@ public class QuestsPlugin : IPlugin
     private QuestTrackerComponentView questTrackerComponentView;
     private QuestCompletedComponentView questCompletedComponentView;
     private QuestStartedPopupComponentView questStartedPopupComponentView;
+    private QuestsService service;
 
     private CancellationTokenSource cts;
 
@@ -27,6 +29,7 @@ public class QuestsPlugin : IPlugin
 
     private async UniTaskVoid InstantiateUIs(CancellationTokenSource cts)
     {
+        service = new QuestsService(null);
         questTrackerComponentView = await resourceProvider.Instantiate<QuestTrackerComponentView>(QUEST_TRACKER_HUD, $"_{QUEST_TRACKER_HUD}", cts.Token);
         questCompletedComponentView = await resourceProvider.Instantiate<QuestCompletedComponentView>(QUEST_COMPLETED_HUD, $"_{QUEST_COMPLETED_HUD}", cts.Token);
         questStartedPopupComponentView = await resourceProvider.Instantiate<QuestStartedPopupComponentView>(QUEST_STARTED_POPUP, $"_{QUEST_STARTED_POPUP}", cts.Token);

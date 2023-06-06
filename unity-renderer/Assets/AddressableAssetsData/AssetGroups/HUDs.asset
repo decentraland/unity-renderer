@@ -21,10 +21,6 @@ MonoBehaviour:
     m_Address: SignupHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 6f8b81a0a0d620743b9e347797e87b53
-    m_Address: QuestsTrackerHUD
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 8eeaa25ae02fb784e9b14ed71aae12f5
     m_Address: HelpAndSupportHUD
     m_ReadOnly: 0

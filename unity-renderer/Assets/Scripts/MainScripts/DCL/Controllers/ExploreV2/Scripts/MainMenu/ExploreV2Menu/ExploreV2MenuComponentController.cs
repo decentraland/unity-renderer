@@ -58,12 +58,14 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Initialize()
     {
+        DataStore.i.Quests.isInitialized.Set(true);
+        DataStore.i.HUDs.questsPanelVisible.Set(true);
         sectionsVariables = new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
         {
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized, placesAndEventsVisible) },
+            { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Backpack, (isAvatarEditorInitialized, avatarEditorVisible) },
             { ExploreSection.Map, (isNavmapInitialized, navmapVisible) },
-            { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
         };
 
@@ -89,9 +91,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         DataStore.i.exploreV2.topMenuTooltipReference.Set(topMenuTooltipReference);
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
+        DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.backpackTooltipReference.Set(backpackTooltipReference);
         DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
-        DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
 

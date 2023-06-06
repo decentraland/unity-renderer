@@ -1080,7 +1080,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &5674188681382852263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1150,6 +1150,7 @@ MonoBehaviour:
   abandonButton: {fileID: 5285632930822995178}
   rewardsSection: {fileID: 2111371425988300921}
   guestSection: {fileID: 5884143121228627897}
+  footer: {fileID: 2082874048097011954}
   rewardPrefab: {fileID: 5656798287975932091, guid: abaa562bf9c674359b69b21f405fe692,
     type: 3}
   stepPrefab: {fileID: 9194670887751839170, guid: 3ce1537ea99a7409797cc21ac18809c7,
@@ -1609,7 +1610,7 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 1}
     m_HighlightedColor: {r: 0.2980005, g: 0.2819064, b: 0.3301887, a: 1}
-    m_PressedColor: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 1}
+    m_PressedColor: {r: 0.29803923, g: 0.28235295, b: 0.32941177, a: 1}
     m_SelectedColor: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -1705,7 +1706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9254902, g: 0.92156863, b: 0.92941177, a: 0.5019608}
+  m_Color: {r: 0.9254902, g: 0.92156863, b: 0.92941177, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2934,7 +2935,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c5a46d6e8b3d645649baea76db91f811, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 446caa43f3cad4f7d8abc800a474534b, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
