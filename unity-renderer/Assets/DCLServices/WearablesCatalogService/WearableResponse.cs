@@ -126,6 +126,7 @@ namespace DCLServices.WearablesCatalogService
                         i18n = metadata.i18n,
                         id = metadata.id,
                         entityId = id,
+                        rarity = metadata.rarity,
                         thumbnail = GetContentHashByFileName(metadata.thumbnail),
                     };
 

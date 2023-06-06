@@ -18,9 +18,31 @@ namespace DCLServices.WearablesCatalogService
     /// </summary>
     public class LambdasWearablesCatalogService : IWearablesCatalogService, ILambdaServiceConsumer<WearableWithDefinitionResponse>
     {
+        [Serializable]
+        public class WearableRequest
+        {
+            public List<string> pointers;
+        }
+
+        [Serializable]
+        public class WearableCollectionResponse
+        {
+            public int total;
+            public WearableWithEntityResponseDto.ElementDto.EntityDto[] entities;
+
+            public WearableCollectionResponse()
+            {
+            }
+
+            public WearableCollectionResponse(WearableWithEntityResponseDto.ElementDto.EntityDto[] entities)
+            {
+                this.entities = entities;
+            }
+        }
+
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
-        private const string ASSET_BUNDLES_URL_ORG = "https://ab-cdn.decentraland.org/"; // todo: Replace with global scene bundles url
+        public const string ASSET_BUNDLES_URL_ORG = "https://ab-cdn.decentraland.org/"; // todo: Replace with global scene bundles url
         private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
@@ -174,18 +196,11 @@ namespace DCLServices.WearablesCatalogService
             return (wearables, pageResponse.response.TotalAmount);
         }
 
-        [Serializable]
-        internal class BaseWearableResponse
-        {
-            public int total;
-            public WearableWithEntityResponseDto.ElementDto.EntityDto[] entities;
-        }
-
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
             var url = $"{catalyst.contentUrl}entities/active/collections/{BASE_WEARABLES_COLLECTION_ID}";
 
-            var request = await lambdasService.GetFromSpecificUrl<BaseWearableResponse>(url, url, cancellationToken: ct);
+            var request = await lambdasService.GetFromSpecificUrl<WearableCollectionResponse>(url, url, cancellationToken: ct);
 
             if (!request.success)
                 throw new Exception("The request of the base wearables failed!");
@@ -333,12 +348,6 @@ namespace DCLServices.WearablesCatalogService
                 LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize),
                 LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber),
                 ("includeDefinitions", "true"));
-
-        [Serializable]
-        private class WearableRequest
-        {
-            public List<string> pointers;
-        }
 
         private async UniTask<WearableItem> SyncWearablesRequestsAsync(string newWearableId, CancellationToken ct)
         {

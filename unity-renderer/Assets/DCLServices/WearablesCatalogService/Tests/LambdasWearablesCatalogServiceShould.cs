@@ -5,8 +5,12 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine.TestTools;
+using static DCLServices.WearablesCatalogService.LambdasWearablesCatalogService;
+using static DCLServices.WearablesCatalogService.WearableWithEntityResponseDto.ElementDto;
+using static DCLServices.WearablesCatalogService.WearableWithEntityResponseDto.ElementDto.EntityDto;
 
 namespace DCLServices.WearablesCatalogService
 {
@@ -31,11 +35,9 @@ namespace DCLServices.WearablesCatalogService
         {
             lambdasService = Substitute.For<ILambdasService>();
 
-            GivenWearableInLambdas(VALID_WEARABLE_ID,
-                GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"));
+            GivenWearableInLambdas(GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"));
 
-            GivenWearableInLambdas(WEARABLE_WITHOUT_THUMBNAIL,
-                GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null));
+            GivenWearableInLambdas(GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null));
 
             GivenCollectionInLambdas(BASE_WEARABLES_COLLECTION,
                 new List<WearableItem>
@@ -103,10 +105,10 @@ namespace DCLServices.WearablesCatalogService
                 WearableItem resultantWearable = await service.RequestWearableAsync(VALID_WEARABLE_ID, default(CancellationToken));
 
                 lambdasService.Received(1)
-                              .Get<WearableWithoutDefinitionResponse>("collections/wearables/",
-                                   "collections/wearables/",
-                                   45,
-                                   urlEncodedParams: ("wearableId", VALID_WEARABLE_ID),
+                              .PostFromSpecificUrl<EntityDto[], WearableRequest>(
+                                   Arg.Any<string>(),
+                                   Arg.Any<string>(),
+                                   Arg.Is<WearableRequest>(wr => wr.pointers.Contains(VALID_WEARABLE_ID)),
                                    cancellationToken: Arg.Any<CancellationToken>());
 
                 Assert.AreEqual(VALID_WEARABLE_ID, resultantWearable.id);
@@ -115,7 +117,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("hash", resultantWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual("thumbnail", resultantWearable.thumbnail);
                 Assert.AreEqual("baseurl/", resultantWearable.baseUrl);
-                Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", resultantWearable.baseUrlBundles);
+                Assert.AreEqual(ASSET_BUNDLES_URL_ORG, resultantWearable.baseUrlBundles);
                 Assert.IsNull(resultantWearable.emoteDataV0);
                 Assert.AreEqual(resultantWearable, service.WearablesCatalog[VALID_WEARABLE_ID]);
             });
@@ -127,14 +129,14 @@ namespace DCLServices.WearablesCatalogService
                 await service.RequestWearableAsync(WEARABLE_WITHOUT_THUMBNAIL, default(CancellationToken));
 
                 lambdasService.Received(1)
-                              .Get<WearableWithoutDefinitionResponse>("collections/wearables/",
-                                   "collections/wearables/",
-                                   45,
-                                   urlEncodedParams: ("wearableId", WEARABLE_WITHOUT_THUMBNAIL),
+                              .PostFromSpecificUrl<EntityDto[], WearableRequest>(
+                                   Arg.Any<string>(),
+                                   Arg.Any<string>(),
+                                   Arg.Is<WearableRequest>(wr => wr.pointers.Contains(WEARABLE_WITHOUT_THUMBNAIL)),
                                    cancellationToken: Arg.Any<CancellationToken>());
 
                 WearableItem resultantWearable = service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL];
-                Assert.AreEqual($"{CONTENT_URL}/contents/", resultantWearable.baseUrl);
+                Assert.AreEqual($"{CONTENT_URL}contents/", resultantWearable.baseUrl);
             });
 
         [Test]
@@ -161,12 +163,10 @@ namespace DCLServices.WearablesCatalogService
             {
                 IReadOnlyList<WearableItem> baseWearables = await service.RequestBaseWearablesAsync(default(CancellationToken));
 
+                var url = $"{CONTENT_URL}entities/active/collections/{BASE_WEARABLES_COLLECTION}";
+
                 lambdasService.Received(1)
-                              .Get<WearableWithoutDefinitionResponse>("collections/wearables/",
-                                   "collections/wearables/",
-                                   45,
-                                   urlEncodedParams: ("collectionId", BASE_WEARABLES_COLLECTION),
-                                   cancellationToken: Arg.Any<CancellationToken>());
+                              .GetFromSpecificUrl<WearableCollectionResponse>(url, url, cancellationToken: Arg.Any<CancellationToken>());
 
                 WearableItem firstWearable = baseWearables[0];
                 Assert.AreEqual(VALID_WEARABLE_ID, firstWearable.id);
@@ -175,7 +175,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("hash", firstWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual("thumbnail", firstWearable.thumbnail);
                 Assert.AreEqual("baseurl/", firstWearable.baseUrl);
-                Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", firstWearable.baseUrlBundles);
+                Assert.AreEqual(ASSET_BUNDLES_URL_ORG, firstWearable.baseUrlBundles);
                 Assert.IsNull(firstWearable.emoteDataV0);
                 Assert.AreEqual(firstWearable, service.WearablesCatalog[VALID_WEARABLE_ID]);
 
@@ -185,8 +185,8 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("rare", secondWearable.rarity);
                 Assert.AreEqual("hash", secondWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual(string.Empty, secondWearable.thumbnail);
-                Assert.AreEqual($"{CONTENT_URL}/contents/", secondWearable.baseUrl);
-                Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", secondWearable.baseUrlBundles);
+                Assert.AreEqual($"{CONTENT_URL}contents/", secondWearable.baseUrl);
+                Assert.AreEqual(ASSET_BUNDLES_URL_ORG, secondWearable.baseUrlBundles);
                 Assert.IsNull(secondWearable.emoteDataV0);
                 Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);
             });
@@ -215,7 +215,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("hash", firstWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual("thumbnail", firstWearable.thumbnail);
                 Assert.AreEqual("baseurl/", firstWearable.baseUrl);
-                Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", firstWearable.baseUrlBundles);
+                Assert.AreEqual(ASSET_BUNDLES_URL_ORG, firstWearable.baseUrlBundles);
                 Assert.IsNull(firstWearable.emoteDataV0);
                 Assert.AreEqual(firstWearable, service.WearablesCatalog[VALID_WEARABLE_ID]);
 
@@ -225,8 +225,8 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("rare", secondWearable.rarity);
                 Assert.AreEqual("hash", secondWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual(string.Empty, secondWearable.thumbnail);
-                Assert.AreEqual($"{CONTENT_URL}/contents/", secondWearable.baseUrl);
-                Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", secondWearable.baseUrlBundles);
+                Assert.AreEqual($"{CONTENT_URL}contents/", secondWearable.baseUrl);
+                Assert.AreEqual(ASSET_BUNDLES_URL_ORG, secondWearable.baseUrlBundles);
                 Assert.IsNull(secondWearable.emoteDataV0);
                 Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);
             });
@@ -254,7 +254,7 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("hash", firstWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual("thumbnail", firstWearable.thumbnail);
                 Assert.AreEqual("baseurl/", firstWearable.baseUrl);
-                Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", firstWearable.baseUrlBundles);
+                Assert.AreEqual(ASSET_BUNDLES_URL_ORG, firstWearable.baseUrlBundles);
                 Assert.IsNull(firstWearable.emoteDataV0);
                 Assert.AreEqual(firstWearable, service.WearablesCatalog[VALID_WEARABLE_ID]);
 
@@ -264,8 +264,8 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("rare", secondWearable.rarity);
                 Assert.AreEqual("hash", secondWearable.data.representations[0].contents[0].hash);
                 Assert.AreEqual(string.Empty, secondWearable.thumbnail);
-                Assert.AreEqual($"{CONTENT_URL}/contents/", secondWearable.baseUrl);
-                Assert.AreEqual("https://content-assets-as-bundle.decentraland.org/", secondWearable.baseUrlBundles);
+                Assert.AreEqual($"{CONTENT_URL}contents/", secondWearable.baseUrl);
+                Assert.AreEqual(ASSET_BUNDLES_URL_ORG, secondWearable.baseUrlBundles);
                 Assert.IsNull(secondWearable.emoteDataV0);
                 Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);
             });
@@ -420,7 +420,7 @@ namespace DCLServices.WearablesCatalogService
                                }, 0, 10, 1), true)));
         }
 
-        private void GivenWearableEntityWithSpecificLambdasUrl(WearableWithEntityResponseDto.ElementDto.EntityDto entity)
+        private void GivenWearableEntityWithSpecificLambdasUrl(EntityDto entity)
         {
             lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(
                                Arg.Any<string>(),
@@ -439,34 +439,23 @@ namespace DCLServices.WearablesCatalogService
                                }, 0, 10, 1), true)));
         }
 
-        private void GivenWearableInLambdas(string wearableID, WearableItem wearable)
+        private void GivenWearableInLambdas(WearableItem wearable)
         {
-            lambdasService.Get<WearableWithoutDefinitionResponse>(Arg.Any<string>(),
+            lambdasService.PostFromSpecificUrl<EntityDto[], WearableRequest>(
                                Arg.Any<string>(),
-                               Arg.Any<int>(),
-                               Arg.Any<int>(),
-                               Arg.Any<CancellationToken>(),
-                               urlEncodedParams: ("wearableId", wearableID))
-                          .Returns(UniTask.FromResult<(WearableWithoutDefinitionResponse response, bool success)>(
-                               (new WearableWithoutDefinitionResponse
-                               {
-                                   wearables = new List<WearableItem> { wearable },
-                               }, true)));
+                               Arg.Any<string>(),
+                               Arg.Is<WearableRequest>(wr => wr.pointers.Contains(wearable.id)),
+                               cancellationToken: Arg.Any<CancellationToken>())
+                          .Returns(UniTask.FromResult<(EntityDto[] response, bool success)>((new[] { WearableItemToEntityDto(wearable) }, true)));
         }
 
         private void GivenCollectionInLambdas(string collectionId, List<WearableItem> wearables)
         {
-            lambdasService.Get<WearableWithoutDefinitionResponse>(Arg.Any<string>(),
-                               Arg.Any<string>(),
-                               Arg.Any<int>(),
-                               Arg.Any<int>(),
-                               Arg.Any<CancellationToken>(),
-                               urlEncodedParams: ("collectionId", collectionId))
-                          .Returns(UniTask.FromResult<(WearableWithoutDefinitionResponse response, bool success)>(
-                               (new WearableWithoutDefinitionResponse
-                               {
-                                   wearables = wearables,
-                               }, true)));
+            var url = $"{CONTENT_URL}entities/active/collections/{collectionId}";
+            var entities = wearables.Select(WearableItemToEntityDto).ToArray();
+
+            lambdasService.GetFromSpecificUrl<WearableCollectionResponse>(url, url, cancellationToken: Arg.Any<CancellationToken>())
+                          .Returns(UniTask.FromResult<(WearableCollectionResponse response, bool success)>((new WearableCollectionResponse(entities: entities), true)));
         }
 
         private void GivenPaginatedCollectionInLambdas(string collectionId, List<WearableElementV1Dto> wearables)
@@ -510,11 +499,11 @@ namespace DCLServices.WearablesCatalogService
                 id = id,
                 data = new WearableItem.Data
                 {
-                    representations = new WearableItem.Representation[]
+                    representations = new[]
                     {
                         new WearableItem.Representation()
                         {
-                            contents = new WearableItem.MappingPair[]
+                            contents = new[]
                             {
                                 new WearableItem.MappingPair()
                                 {
@@ -530,32 +519,32 @@ namespace DCLServices.WearablesCatalogService
             };
         }
 
-        private WearableWithEntityResponseDto.ElementDto.EntityDto GivenValidWearableEntity(string id)
+        private EntityDto GivenValidWearableEntity(string id)
         {
-            return new WearableWithEntityResponseDto.ElementDto.EntityDto
+            return new EntityDto
             {
-                content = new WearableWithEntityResponseDto.ElementDto.EntityDto.ContentDto[]
+                content = new ContentDto[]
                 {
-                    new()
+                    new ()
                     {
                         file = "thumbnail.png",
                         hash = "thumbnailhash",
                     },
-                    new()
+                    new ()
                     {
                         file = "model.glb",
                         hash = "modelhash",
                     },
                 },
-                metadata = new WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto
+                metadata = new MetadataDto
                 {
                     thumbnail = "thumbnail.png",
                     id = id,
-                    data = new WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto.DataDto
+                    data = new MetadataDto.DataDto
                     {
-                        representations = new WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto.Representation[]
+                        representations = new MetadataDto.Representation[]
                         {
-                            new()
+                            new ()
                             {
                                 contents = new[]
                                 {
@@ -568,12 +557,50 @@ namespace DCLServices.WearablesCatalogService
                     rarity = "rare",
                     i18n = new i18n[]
                     {
-                        new()
+                        new ()
                         {
                             code = "en",
                             text = id,
                         }
                     }
+                },
+            };
+        }
+
+        private static EntityDto WearableItemToEntityDto(WearableItem wearable)
+        {
+            return new EntityDto
+            {
+                id = wearable.id,
+                content = new[]
+                {
+                    new ContentDto()
+                    {
+                        file = "representation/url/hash",
+                        hash = "representation/url/hash",
+                    },
+                    new ContentDto()
+                    {
+                        file = wearable.thumbnail,
+                        hash = wearable.thumbnail,
+                    },
+                },
+                metadata = new MetadataDto()
+                {
+                    id = wearable.id,
+                    rarity = wearable.rarity,
+                    thumbnail = wearable.thumbnail,
+                    description = wearable.description,
+                    data = new MetadataDto.DataDto()
+                    {
+                        representations = new[]
+                        {
+                            new MetadataDto.Representation()
+                            {
+                                contents = new[] { "representation/url/hash" },
+                            },
+                        },
+                    },
                 },
             };
         }
