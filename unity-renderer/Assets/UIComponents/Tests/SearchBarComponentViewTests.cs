@@ -119,9 +119,12 @@ public class SearchBarComponentViewTests
     }
 
     [Test]
-    public void SetSearchModeCorrectly()
+    [TestCase("Any text")]
+    [TestCase("")]
+    public void SetSearchModeCorrectly(string text)
     {
         // Arrange
+        searchBarComponent.inputField.text = text;
         searchBarComponent.clearSearchButton.gameObject.SetActive(false);
         searchBarComponent.searchSpinner.SetActive(true);
 
@@ -129,7 +132,7 @@ public class SearchBarComponentViewTests
         searchBarComponent.SetSearchMode();
 
         // Assert
-        Assert.IsTrue(searchBarComponent.clearSearchButton.gameObject.activeSelf);
+        Assert.AreEqual(!string.IsNullOrEmpty(text), searchBarComponent.clearSearchButton.gameObject.activeSelf);
         Assert.IsFalse(searchBarComponent.searchSpinner.activeSelf);
     }
 
