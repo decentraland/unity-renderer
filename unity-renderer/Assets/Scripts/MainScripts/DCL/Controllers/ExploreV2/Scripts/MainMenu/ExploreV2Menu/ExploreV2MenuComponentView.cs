@@ -229,10 +229,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     }
 
     public void SetSectionActive(ExploreSection section, bool isActive) =>
-        sectionSelector.GetSection((int)section).SetActive(isActive);
+        sectionSelector.GetSection((int)section)?.SetActive(isActive);
 
     public void SetSectionAsNew(ExploreSection section, bool isNew) =>
-        sectionSelector.GetSection((int)section).SetAsNew(isNew);
+        sectionSelector.GetSection((int)section)?.SetAsNew(isNew);
 
     public bool IsSectionActive(ExploreSection section)
     {

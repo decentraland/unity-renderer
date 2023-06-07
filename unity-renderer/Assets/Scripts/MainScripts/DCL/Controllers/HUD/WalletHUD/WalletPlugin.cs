@@ -1,4 +1,6 @@
-﻿namespace DCL.Wallet
+﻿using DCL.Browser;
+
+namespace DCL.Wallet
 {
     public class WalletPlugin : IPlugin
     {
@@ -8,7 +10,11 @@
         {
             walletSectionController = new WalletSectionHUDController(
                 WalletSectionHUDComponentView.Create(),
-                DataStore.i);
+                DataStore.i,
+                new UserProfileWebInterfaceBridge(),
+                Environment.i.platform.clipboard,
+                new WebInterfaceBrowserBridge(),
+                Environment.i.platform.serviceProviders.theGraph);
         }
 
         public void Dispose() =>

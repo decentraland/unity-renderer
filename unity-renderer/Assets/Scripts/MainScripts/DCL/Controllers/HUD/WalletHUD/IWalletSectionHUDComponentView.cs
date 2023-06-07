@@ -1,11 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace DCL.Wallet
 {
     public interface IWalletSectionHUDComponentView
     {
-        void Show(bool instant = false);
-        void Hide(bool instant = false);
+        event Action OnCopyWalletAddress;
+        event Action OnBuyManaClicked;
+        event Action OnLearnMoreClicked;
+
         void SetAsFullScreenMenuMode(Transform parentTransform);
+        void SetWalletAddress(string fullWalletAddress);
+        void SetEthereumManaLoadingActive(bool isActive);
+        void SetEthereumManaBalance(double balance);
+        void SetPolygonManaLoadingActive(bool isActive);
+        void SetPolygonManaBalance(double balance);
     }
 }

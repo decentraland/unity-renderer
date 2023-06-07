@@ -42,6 +42,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
     internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
     internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
+    internal BaseVariable<bool> isWalletInitialized => DataStore.i.wallet.isInitialized;
+    internal BaseVariable<bool> walletVisible => DataStore.i.wallet.isWalletSectionVisible;
 
     internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -65,6 +67,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             { ExploreSection.Map, (isNavmapInitialized, navmapVisible) },
             { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
+            { ExploreSection.Wallet, (isWalletInitialized, walletVisible) },
         };
 
         sectionsByInitVar = sectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
@@ -257,6 +260,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private void OnSectionVisibilityChanged(BaseVariable<bool> visibilityVar, bool visible, bool previous = false)
     {
         ExploreSection section = sectionsByVisibilityVar[visibilityVar];
+
+        if (section == ExploreSection.Wallet)
+            return;
+
         BaseVariable<bool> initVar = section == ExploreSection.Explore ? isInitialized : sectionsVariables[section].initVar;
 
         if (!initVar.Get() || DataStore.i.common.isSignUpFlow.Get())

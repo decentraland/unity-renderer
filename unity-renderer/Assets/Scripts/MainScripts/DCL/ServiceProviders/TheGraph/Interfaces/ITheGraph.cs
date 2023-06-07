@@ -11,6 +11,7 @@ public enum TheGraphCache
 public interface ITheGraph : IDisposable
 {
     Promise<List<Land>> QueryLands(string network, string address, float cacheMaxAgeSeconds);
+    Promise<double> QueryEthereumMana(string address);
     Promise<double> QueryPolygonMana(string address);
 
     /// <summary>

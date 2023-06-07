@@ -13,7 +13,8 @@ public class TheGraph : ITheGraph
     private const float DEFAULT_CACHE_TIME = 5 * 60;
     private const string LAND_SUBGRAPH_URL_ORG = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager";
     private const string LAND_SUBGRAPH_URL_ZONE = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager-goerli";
-    private const string LAND_SUBGRAPH_URL_MATIC = "https://api.thegraph.com/subgraphs/name/decentraland/mana-matic-mainnet";
+    private const string MANA_SUBGRAPH_URL_ETHEREUM = "https://api.thegraph.com/subgraphs/name/decentraland/mana-ethereum-mainnet";
+    private const string MANA_SUBGRAPH_URL_POLYGON = "https://api.thegraph.com/subgraphs/name/decentraland/mana-matic-mainnet";
     private const string NFT_COLLECTIONS_SUBGRAPH_URL_ETHEREUM = "https://api.thegraph.com/subgraphs/name/decentraland/collections-ethereum-mainnet";
     private const string NFT_COLLECTIONS_SUBGRAPH_URL_MATIC = "https://api.thegraph.com/subgraphs/name/decentraland/collections-matic-mainnet";
 
@@ -90,12 +91,38 @@ public class TheGraph : ITheGraph
         return promise;
     }
 
+    public Promise<double> QueryEthereumMana(string address)
+    {
+        Promise<double> promise = new Promise<double>();
+
+        string lowerCaseAddress = address.ToLower();
+        Query(MANA_SUBGRAPH_URL_ETHEREUM, TheGraphQueries.getEthereumManaQuery, new AddressVariable() { address = lowerCaseAddress })
+           .Then(resultJson =>
+            {
+                try
+                {
+                    JObject result = JObject.Parse(resultJson);
+                    JToken manaObject = result["data"]?["accounts"].First?["mana"];
+                    if (manaObject == null || !double.TryParse(manaObject.Value<string>(), out double parsedMana))
+                        throw new Exception($"QueryMana response couldn't be parsed: {resultJson}");
+
+                    promise.Resolve(parsedMana / 1e18);
+                }
+                catch (Exception e)
+                {
+                    promise.Reject(e.ToString());
+                }
+            })
+           .Catch(error => promise.Reject(error));
+        return promise;
+    }
+
     public Promise<double> QueryPolygonMana(string address)
     {
         Promise<double> promise = new Promise<double>();
 
         string lowerCaseAddress = address.ToLower();
-        Query(LAND_SUBGRAPH_URL_MATIC, TheGraphQueries.getPolygonManaQuery, new AddressVariable() { address = lowerCaseAddress })
+        Query(MANA_SUBGRAPH_URL_POLYGON, TheGraphQueries.getPolygonManaQuery, new AddressVariable() { address = lowerCaseAddress })
             .Then(resultJson =>
             {
                 try
