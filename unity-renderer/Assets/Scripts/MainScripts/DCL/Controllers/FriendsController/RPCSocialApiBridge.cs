@@ -54,9 +54,10 @@ namespace DCL.Social.Friends
             async UniTask InitializeAsync(CancellationToken cancellationToken)
             {
                 await InitializeClient(cancellationToken);
+                await WaitForAccessTokenAsync(cancellationToken);
 
-                // start listening to streams
-                UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
+                // this is an endless task that's why is forgotten
+                SubscribeToIncomingFriendshipEvents(cancellationToken).Forget();
             }
 
             initializationCancellationToken = initializationCancellationToken.SafeRestart();
@@ -280,8 +281,6 @@ namespace DCL.Social.Friends
 
         private async UniTask SubscribeToIncomingFriendshipEvents(CancellationToken cancellationToken = default)
         {
-            await WaitForAccessTokenAsync(cancellationToken);
-
             try
             {
                 IUniTaskAsyncEnumerable<SubscribeFriendshipEventsUpdatesResponse> stream = socialClient
@@ -301,13 +300,12 @@ namespace DCL.Social.Friends
                             break;
                         case SubscribeFriendshipEventsUpdatesResponse.ResponseOneofCase.Events:
                             try { await ProcessIncomingFriendshipEvent(friendshipEventResponse.Events, cancellationToken); }
-                            catch (OperationCanceledException) { }
+                            catch (OperationCanceledException) { throw; }
                             catch (Exception e)
                             {
                                 // just log the exception so we keep receiving updates in the loop
                                 Debug.LogException(e);
                             }
-
                             break;
                         default:
                         {
