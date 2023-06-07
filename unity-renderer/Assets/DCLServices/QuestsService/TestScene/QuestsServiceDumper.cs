@@ -24,6 +24,7 @@ namespace DCLServices.QuestsService.TestScene
 
         private ClientQuestsService client;
         private CancellationTokenSource subscribeCTS = new CancellationTokenSource();
+        private bool listeningToQuests = false;
 
         [ContextMenu("start")]
         private void StartDumper()
@@ -65,6 +66,8 @@ namespace DCLServices.QuestsService.TestScene
         {
             Debug.Log($"Start progressing quests:");
 
+            await UniTask.WaitUntil(() => this.listeningToQuests);
+
             // Do your interaction with the server here, such as:
             // Starting quests
             string[] questsToStart =
@@ -88,6 +91,7 @@ namespace DCLServices.QuestsService.TestScene
 
         private async UniTask CollectUpdatesAsync(ClientQuestsService client, CancellationToken ct)
         {
+            listeningToQuests = true;
             await foreach (var userUpdate in client.Subscribe(new Empty()).WithCancellation(ct))
             {
                 updates.Add(userUpdate);
