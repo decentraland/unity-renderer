@@ -117,7 +117,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
-        view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
 
         DataStore.i.common.isWorld.OnChange += OnWorldChange;
@@ -278,6 +277,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+        if(currentOpenSection == ExploreSection.Quest)
+            view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
 
         ChangeVisibilityVarForSwitchedSections();
 

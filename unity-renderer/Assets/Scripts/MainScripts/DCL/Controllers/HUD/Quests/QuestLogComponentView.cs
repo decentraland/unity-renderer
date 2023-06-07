@@ -22,16 +22,19 @@ namespace DCL.Quests
         [SerializeField] internal GameObject emptyState;
         [SerializeField] internal GameObject emptyActiveState;
         [SerializeField] internal GameObject emptyCompletedState;
+        [SerializeField] internal Transform activeQuestsContainer;
         [SerializeField] internal ActiveQuestComponentView activeQuestPrefab;
+
+        public event Action<string, bool> OnPinChange;
 
         private Dictionary<string, ActiveQuestComponentView> activeQuests = new Dictionary<string, ActiveQuestComponentView>();
         private Dictionary<string, ActiveQuestComponentView> completedQuests = new Dictionary<string, ActiveQuestComponentView>();
         private UnityObjectPool<ActiveQuestComponentView> questsPool;
         private UnityObjectPool<ActiveQuestComponentView> completedQuestsPool;
 
-        public override void Awake()
+        public void Start()
         {
-            questsPool = new UnityObjectPool<ActiveQuestComponentView>(activeQuestPrefab, null);
+            questsPool = new UnityObjectPool<ActiveQuestComponentView>(activeQuestPrefab, activeQuestsContainer);
             questsPool.Prewarm(MAX_QUESTS_COUNT);
             sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(COMPLETED_SECTION_INDEX).onSelect.RemoveAllListeners();
@@ -49,6 +52,8 @@ namespace DCL.Quests
                     headerText.text = COMPLETED_TITLE;
                 }
             });
+
+            questDetailsComponentView.OnPinChange += (questId, isPinned) => OnPinChange?.Invoke(questId, isPinned);
         }
 
         public void AddActiveQuest(QuestDetailsComponentModel activeQuest)
@@ -81,6 +86,25 @@ namespace DCL.Quests
                 isPinned = false,
                 questModel = completedQuest
             });
+        }
+
+        public void SetAsFullScreenMenuMode(Transform parentTransform)
+        {
+            if (parentTransform == null)
+                return;
+
+            transform.SetParent(parentTransform);
+            transform.localScale = Vector3.one;
+
+            RectTransform rectTransform = transform as RectTransform;
+            if (rectTransform == null) return;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.localPosition = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+            gameObject.SetActive(true);
         }
 
         public override void RefreshControl()

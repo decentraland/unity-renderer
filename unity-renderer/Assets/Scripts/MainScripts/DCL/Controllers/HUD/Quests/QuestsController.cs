@@ -5,6 +5,7 @@ using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 namespace DCL.Quests
 {
@@ -14,22 +15,44 @@ namespace DCL.Quests
         private readonly IQuestTrackerComponentView questTrackerComponentView;
         private readonly IQuestCompletedComponentView questCompletedComponentView;
         private readonly IQuestStartedPopupComponentView questStartedPopupComponentView;
+        private readonly IQuestLogComponentView questLogComponentView;
+        private readonly DataStore dataStore;
+
         private CancellationTokenSource disposeCts = null;
+        private BaseVariable<string> pinnedQuestId => dataStore.Quests.pinnedQuest;
 
         public QuestsController(
             IQuestsService questsService,
             IQuestTrackerComponentView questTrackerComponentView,
             IQuestCompletedComponentView questCompletedComponentView,
-            IQuestStartedPopupComponentView questStartedPopupComponentView)
+            IQuestStartedPopupComponentView questStartedPopupComponentView,
+            IQuestLogComponentView questLogComponentView,
+            DataStore dataStore)
         {
             this.questsService = questsService;
             this.questTrackerComponentView = questTrackerComponentView;
             this.questCompletedComponentView = questCompletedComponentView;
             this.questStartedPopupComponentView = questStartedPopupComponentView;
-
+            this.questLogComponentView = questLogComponentView;
             disposeCts = new CancellationTokenSource();
-            StartTrackingQuests(disposeCts.Token).Forget();
-            StartTrackingStartedQuests(disposeCts.Token).Forget();
+
+            if (questsService != null)
+            {
+                StartTrackingQuests(disposeCts.Token).Forget();
+                StartTrackingStartedQuests(disposeCts.Token).Forget();
+            }
+
+            dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange += ConfigureQuestLogInFullscreenMenuChanged;
+            ConfigureQuestLogInFullscreenMenuChanged(dataStore.exploreV2.configureQuestInFullscreenMenu.Get(), null);
+            questLogComponentView.OnPinChange += ChangePinnedQuest;
+        }
+
+        private void ChangePinnedQuest(string questId, bool isPinned) =>
+            pinnedQuestId.Set(isPinned ? questId : "");
+
+        private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous)
+        {
+            questLogComponentView.SetAsFullScreenMenuMode(current);
         }
 
         private async UniTaskVoid StartTrackingQuests(CancellationToken ct)
@@ -37,7 +60,7 @@ namespace DCL.Quests
             await foreach (var questInstance in questsService.QuestUpdated.WithCancellation(ct))
             {
                 AddOrUpdateQuestToLog(questInstance);
-                if (questInstance.Id != "pinnedQuestId")
+                if (questInstance.Id != pinnedQuestId.Get())
                     continue;
 
                 List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();

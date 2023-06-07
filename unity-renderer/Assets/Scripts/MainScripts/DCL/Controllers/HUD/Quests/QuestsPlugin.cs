@@ -10,13 +10,15 @@ public class QuestsPlugin : IPlugin
     private const string QUEST_TRACKER_HUD = "QuestTrackerHUD";
     private const string QUEST_COMPLETED_HUD = "QuestCompletedHUD";
     private const string QUEST_STARTED_POPUP = "QuestStartedPopupHUD";
+    private const string QUEST_LOG = "QuestLogHUD";
     private readonly IAddressableResourceProvider resourceProvider;
     private IUserProfileBridge userProfileBridge = new UserProfileWebInterfaceBridge();
 
     private QuestTrackerComponentView questTrackerComponentView;
     private QuestCompletedComponentView questCompletedComponentView;
     private QuestStartedPopupComponentView questStartedPopupComponentView;
-    private QuestsService service;
+    private QuestLogComponentView questLogComponentView;
+    private QuestsService questService;
 
     private CancellationTokenSource cts;
 
@@ -30,13 +32,21 @@ public class QuestsPlugin : IPlugin
 
     private async UniTaskVoid InstantiateUIs(CancellationTokenSource cts)
     {
-        service = new QuestsService(null);
+        //questService = new QuestsService(null);
         questTrackerComponentView = await resourceProvider.Instantiate<QuestTrackerComponentView>(QUEST_TRACKER_HUD, $"_{QUEST_TRACKER_HUD}", cts.Token);
         questCompletedComponentView = await resourceProvider.Instantiate<QuestCompletedComponentView>(QUEST_COMPLETED_HUD, $"_{QUEST_COMPLETED_HUD}", cts.Token);
         questStartedPopupComponentView = await resourceProvider.Instantiate<QuestStartedPopupComponentView>(QUEST_STARTED_POPUP, $"_{QUEST_STARTED_POPUP}", cts.Token);
+        questLogComponentView = await resourceProvider.Instantiate<QuestLogComponentView>(QUEST_LOG, $"_{QUEST_LOG}", cts.Token);
+        questLogComponentView.gameObject.SetActive(false);
         DataStore.i.Quests.isInitialized.Set(true);
-        DataStore.i.HUDs.questsPanelVisible.Set(true);
-        QuestsController controller = new QuestsController(null, questTrackerComponentView, questCompletedComponentView, questStartedPopupComponentView);
+        //DataStore.i.HUDs.questsPanelVisible.Set(true);
+        QuestsController controller = new QuestsController(
+            null,
+            questTrackerComponentView,
+            questCompletedComponentView,
+            questStartedPopupComponentView,
+            questLogComponentView,
+            DataStore.i);
     }
 
     public void Dispose()

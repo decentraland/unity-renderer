@@ -1,3 +1,4 @@
+﻿using DCL;
 using DCL.Quests;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace DCLServices.QuestsService.TestScene
         [SerializeField] private QuestTrackerComponentView questTrackerComponentView;
         [SerializeField] private QuestCompletedComponentView questCompletedComponentView;
         [SerializeField] private QuestStartedPopupComponentView questStartedPopupComponentView;
+        [SerializeField] private QuestLogComponentView questLogComponentView;
         private QuestsService service;
         private QuestsController questController;
 
@@ -16,7 +18,7 @@ namespace DCLServices.QuestsService.TestScene
         {
             service = new QuestsService(client);
             service.QuestUpdated.AddListener((questUpdate) => {Debug.Log($"QuestUdpated: {questUpdate.Quest.Name}"); });
-            questController = new QuestsController(service, questTrackerComponentView, questCompletedComponentView, questStartedPopupComponentView);
+            questController = new QuestsController(service, questTrackerComponentView, questCompletedComponentView, questStartedPopupComponentView, questLogComponentView, DataStore.i);
         }
     }
 }

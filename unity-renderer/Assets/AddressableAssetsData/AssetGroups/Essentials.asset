@@ -60,6 +60,10 @@ MonoBehaviour:
     m_Address: QuestCompletedHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 64b1eee227d634ff883737e85ae4c85f
+    m_Address: QuestLogHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
