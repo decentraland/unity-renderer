@@ -98,15 +98,6 @@ namespace DCL.Social.Friends
                    .Forget();
         }
 
-        public async UniTask InitializeAsync(CancellationToken cancellationToken)
-        {
-            if (!featureFlags.IsInitialized)
-                await WaitForFeatureFlagsToBeInitialized(cancellationToken);
-
-            if (useSocialApiBridge)
-                await socialApiBridge.InitializeAsync(cancellationToken);
-        }
-
         public UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default)
         {
             if (useSocialApiBridge)

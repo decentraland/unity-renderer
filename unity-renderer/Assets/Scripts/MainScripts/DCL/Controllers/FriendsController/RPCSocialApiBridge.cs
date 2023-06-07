@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
 using rpc_csharp;
@@ -20,6 +21,7 @@ namespace DCL.Social.Friends
         private string accessToken;
         private ClientFriendshipsService socialClient;
         private UniTaskCompletionSource<FriendshipInitializationMessage> initializationInformationTask;
+        private CancellationTokenSource initializationCancellationToken = new ();
 
         public event Action<string> OnFriendAdded;
         public event Action<FriendRequest> OnIncomingFriendRequestAdded;
@@ -42,24 +44,23 @@ namespace DCL.Social.Friends
         public void Dispose()
         {
             initializationInformationTask?.TrySetCanceled();
+            initializationCancellationToken.SafeCancelAndDispose();
         }
 
         public void Initialize()
         {
             matrixInitializationBridge.OnReceiveMatrixAccessToken += token => accessToken = token;
-        }
 
-        public async UniTask InitializeAsync(CancellationToken cancellationToken)
-        {
-            try
+            async UniTask InitializeAsync(CancellationToken cancellationToken)
             {
                 await InitializeClient(cancellationToken);
 
                 // start listening to streams
                 UniTask.WhenAll(SubscribeToIncomingFriendshipEvents(cancellationToken)).Forget();
             }
-            catch (OperationCanceledException) { throw; }
-            catch (Exception e) { Debug.LogException(e); }
+
+            initializationCancellationToken = initializationCancellationToken.SafeRestart();
+            InitializeAsync(initializationCancellationToken.Token).Forget();
         }
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
@@ -306,6 +307,7 @@ namespace DCL.Social.Friends
                                 // just log the exception so we keep receiving updates in the loop
                                 Debug.LogException(e);
                             }
+
                             break;
                         default:
                         {

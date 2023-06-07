@@ -99,7 +99,8 @@ namespace DCL.Social.Friends
 
             rpcSocialApiBridge = new RPCSocialApiBridge(matrixInitializationBridge, userProfileBridge, ct => UniTask.FromResult(client));
             rpcSocialApiBridge.Initialize();
-            yield return rpcSocialApiBridge.InitializeAsync(default(CancellationToken)).ToCoroutine();
+            // wait for async initialization
+            yield return null;
 
             matrixInitializationBridge.OnReceiveMatrixAccessToken += Raise.Event<Action<string>>(ACCESS_TOKEN);
         }
@@ -339,8 +340,6 @@ namespace DCL.Social.Friends
                 rpcSocialApiBridge.OnDeletedByFriend += (userId) => { deletedResult = userId; };
                 rpcSocialApiBridge.OnIncomingFriendRequestAdded += (request) => { requestResult = request; };
 
-                await rpcSocialApiBridge.InitializeAsync(default(CancellationToken));
-
                 await UniTask.WaitUntil(() => !string.IsNullOrEmpty(acceptedResult));
 
                 Assert.AreEqual(acceptFriendId, acceptedResult);
@@ -400,8 +399,6 @@ namespace DCL.Social.Friends
                 LogAssert.Expect(LogType.Error, "Subscription to friendship events got Unauthorized error Unauthorized");
                 LogAssert.Expect(LogType.Error, "Subscription to friendship events got internal server error Internal server");
                 LogAssert.Expect(LogType.Error, "Subscription to friendship events got Too many requests error Too many requests");
-
-                await rpcSocialApiBridge.InitializeAsync(default(CancellationToken));
 
                 await UniTask.WaitUntil(() => !string.IsNullOrEmpty(rejectResult));
 
