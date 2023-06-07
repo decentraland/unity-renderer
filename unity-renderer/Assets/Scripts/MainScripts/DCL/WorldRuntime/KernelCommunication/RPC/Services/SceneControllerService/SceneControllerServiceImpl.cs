@@ -6,6 +6,7 @@ using DCL.Helpers;
 using DCL.Models;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
+using MainScripts.DCL.Components;
 using rpc_csharp;
 using RPC.Context;
 using System;
@@ -14,7 +15,6 @@ using System.IO;
 using System.Threading;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
-using MainScripts.DCL.Components;
 
 namespace RPC.Services
 {
@@ -31,8 +31,7 @@ namespace RPC.Services
         private int sceneNumber = -1;
         private RPCContext context;
         private RpcServerPort<RPCContext> port;
-        private bool isFirstMessage = true;
-        private int receivedSendCrdtCalls = 0;
+        private uint currentTick = 0;
 
         private readonly MemoryStream sendCrdtMemoryStream;
         private readonly BinaryWriter sendCrdtBinaryWriter;
@@ -173,15 +172,13 @@ namespace RPC.Services
                 cancellationToken: ct);
 
             reusableCrdtMessageResult.Payload = ByteString.Empty;
-            if (!scene.sceneData.sdk7) return reusableCrdtMessageResult;
 
-            if (isFirstMessage && (!request.Payload.IsEmpty || receivedSendCrdtCalls > 0))
-                isFirstMessage = false;
-            receivedSendCrdtCalls++;
+            if (!scene.sceneData.sdk7)
+                return reusableCrdtMessageResult;
 
             try
             {
-                if (!isFirstMessage)
+                if (!request.Payload.IsEmpty)
                 {
                     using (var iterator = CRDTDeserializer.DeserializeBatch(request.Payload.Memory))
                     {
@@ -193,25 +190,25 @@ namespace RPC.Services
                             crdtContext.CrdtMessageReceived?.Invoke(sceneNumber, crdtMessage);
                         }
                     }
+                }
 
-                    if (crdtContext.GetSceneTick(sceneNumber) == 0)
+                if (currentTick == 0)
+                {
+                    // pause scene update until GLTFs are loaded
+                    await UniTask.WaitUntil(() => crdtContext.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber), cancellationToken: ct);
+
+                    // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
+                    // kernel won't be sending that message for those scenes
+                    if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
                     {
-                        // pause scene update until GLTFs are loaded
-                        await UniTask.WaitUntil(() => crdtContext.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber), cancellationToken: ct);
-
-                        // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
-                        // kernel won't be sending that message for those scenes
-                        if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
+                        crdtContext.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
                         {
-                            crdtContext.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
-                            {
-                                sceneNumber = sceneNumber,
-                                tag = "scene",
-                                payload = new Protocol.SceneReady(),
-                                method = MessagingTypes.INIT_DONE,
-                                type = QueuedSceneMessage.Type.SCENE_MESSAGE
-                            });
-                        }
+                            sceneNumber = sceneNumber,
+                            tag = "scene",
+                            payload = new Protocol.SceneReady(),
+                            method = MessagingTypes.INIT_DONE,
+                            type = QueuedSceneMessage.Type.SCENE_MESSAGE
+                        });
                     }
                 }
 
@@ -229,14 +226,14 @@ namespace RPC.Services
                     reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
                 }
 
-                if (!isFirstMessage)
-                    crdtContext.IncreaseSceneTick(sceneNumber);
+                crdtContext.IncreaseSceneTick(sceneNumber);
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
             }
 
+            currentTick++;
             return reusableCrdtMessageResult;
         }
 
@@ -304,6 +301,7 @@ namespace RPC.Services
             try
             {
                 RendererManyEntityActions sceneRequest = RendererManyEntityActions.Parser.ParseFrom(request.Payload);
+
                 for (var i = 0; i < sceneRequest.Actions.Count; i++)
                 {
                     context.crdt.SceneController.EnqueueSceneMessage(
