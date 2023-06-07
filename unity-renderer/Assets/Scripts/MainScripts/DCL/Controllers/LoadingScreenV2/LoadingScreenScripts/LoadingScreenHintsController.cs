@@ -26,15 +26,19 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private readonly HintView hintViewPrefab;
         private readonly HintRequestService hintRequestService;
-        private readonly List<HintView> hintViewPool;
+        private bool isRequestingHints = false;
 
-        private Dictionary<int, Tuple<Hint, Texture2D>> hintsDictionary;
-        private int currentHintIndex = 0;
+        internal readonly List<HintView> hintViewPool;
+        internal Dictionary<int, Tuple<Hint, Texture2D>> hintsDictionary;
+        internal int currentHintIndex = 0;
+        internal int hintCount = 0;
+        internal CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        private CancellationTokenSource disposeCts;
+        public event Action OnRequestHintsCompleted;
 
         public LoadingScreenHintsController(HintView hintViewPrefab, HintRequestService hintRequestService)
         {
+            Debug.Log("FD:: LoadingScreenHintsController constructor");
             this.hintViewPrefab = hintViewPrefab;
             this.hintRequestService = hintRequestService;
 
@@ -45,14 +49,25 @@ namespace DCL.Controllers.LoadingScreenV2
             for (int i = 0; i < MAX_HINTS; i++)
             {
                 HintView newHintView = Object.Instantiate(hintViewPrefab);
-                newHintView.HideHint();  // Hide it initially
+                newHintView.ShowHint(false);  // Hide it initially
                 hintViewPool.Add(newHintView);
             }
+
+            InitializeHints(cancellationTokenSource.Token);
+        }
+
+        private async void InitializeHints(CancellationToken ctx)
+        {
+            await RequestHints(ctx);
         }
 
         public async UniTask RequestHints(CancellationToken ctx)
         {
-            hintViewPool.ForEach(hintView => hintView.HideHint());
+            Debug.Log("FD:: RequestHints");
+            if (isRequestingHints) return;
+            isRequestingHints = true;
+
+            hintViewPool.ForEach(hintView => hintView.ShowHint(false));
             hintsDictionary.Clear();
 
             Dictionary<Hint, Texture2D> hintsResult = await hintRequestService.RequestHintsFromSources(ctx, MAX_HINTS);
@@ -68,70 +83,88 @@ namespace DCL.Controllers.LoadingScreenV2
                     StartHintsCarousel();
                 }
             }
+            hintCount = hintsDictionary.Count;
+            isRequestingHints = false;
+
+            OnRequestHintsCompleted?.Invoke();
         }
 
         public void StartHintsCarousel()
         {
-            if (disposeCts != null || hintsDictionary.Count == 0) return;
+            Debug.Log("FD:: StartHintsCarousel");
+            if (cancellationTokenSource != null || hintsDictionary.Count == 0) return;
 
-            disposeCts = new CancellationTokenSource();
+            cancellationTokenSource = new CancellationTokenSource();
             ResetHintTimer();
         }
 
         public void StopHintsCarousel()
         {
-            if (disposeCts ==  null) return;
+            Debug.Log("FD:: StopHintsCarousel");
+            if (cancellationTokenSource ==  null) return;
 
-            disposeCts.Cancel();
-            disposeCts.Dispose();
-            disposeCts = null;
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            cancellationTokenSource = null;
         }
 
         private async UniTask IterateHintsAsync(CancellationToken token)
         {
+            Debug.Log("FD:: IterateHintsAsync");
             while (!token.IsCancellationRequested)
             {
                 CarouselNextHint();
+
                 await UniTask.Delay(SHOWING_TIME_HINTS, cancellationToken: token);
             }
         }
 
         public void ResetHintTimer()
         {
-            if (disposeCts != null)
+            Debug.Log("FD:: ResetHintTimer");
+            if (cancellationTokenSource != null)
             {
-                disposeCts.Cancel();
-                disposeCts = new CancellationTokenSource();
-                IterateHintsAsync(disposeCts.Token).Forget();
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource = new CancellationTokenSource();
+                IterateHintsAsync(cancellationTokenSource.Token).Forget();
             }
         }
 
         public void CarouselNextHint()
         {
-            hintViewPool[currentHintIndex].HideHint();
+            Debug.Log("FD:: CarouselNextHint 1 - isRequestingHints " + isRequestingHints + " hintCount " + hintCount);
+            if (isRequestingHints || hintCount == 0) return;
+            Debug.Log("FD:: CarouselNextHint 2");
+
+            hintViewPool[currentHintIndex].ShowHint(false);
             currentHintIndex = (currentHintIndex + 1) % hintsDictionary.Count;
             UpdateHintView();
-            ResetHintTimer();
+            // ResetHintTimer();
         }
 
         public void CarouselPreviousHint()
         {
-            hintViewPool[currentHintIndex].HideHint();
+            Debug.Log("FD:: CarouselPreviousHint 1");
+            if (isRequestingHints || hintCount == 0) return;
+            Debug.Log("FD:: CarouselPreviousHint 2");
+
+            hintViewPool[currentHintIndex].ShowHint(false);
             currentHintIndex = (currentHintIndex - 1 + hintsDictionary.Count) % hintsDictionary.Count;
             UpdateHintView();
-            ResetHintTimer();
+            // ResetHintTimer();
         }
 
         private void UpdateHintView()
         {
+            Debug.Log("FD:: UpdateHintView");
             var hintTuple = hintsDictionary[currentHintIndex];
-            HintView hintView = hintViewPool[currentHintIndex];
-            hintView.Initialize(hintTuple.Item1, hintTuple.Item2);
-            hintView.ShowHint();
+            hintViewPool[currentHintIndex].Initialize(hintTuple.Item1, hintTuple.Item2);
+            hintViewPool[currentHintIndex].ShowHint(true);
         }
 
         public void Dispose()
         {
+            Debug.Log("FD:: Dispose");
             StopHintsCarousel();
 
             foreach (var hintKvp in hintsDictionary)
@@ -140,7 +173,7 @@ namespace DCL.Controllers.LoadingScreenV2
             }
 
             hintsDictionary.Clear();
-            hintViewPool.ForEach(hintView => hintView.HideHint());
+            hintViewPool.ForEach(hintView => hintView.ShowHint(false));
         }
     }
 }

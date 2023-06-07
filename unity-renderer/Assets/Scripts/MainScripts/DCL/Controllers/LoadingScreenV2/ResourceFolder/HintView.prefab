@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9932402d6a77c484999857fc085618a0, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: This is a test Hint
+  m_text: title1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0da28b1264c7140eda8582804e5d094b, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 263d3c969cdca4dfaaa71514f806a4c2, type: 2}
@@ -319,7 +319,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2944169527387221701
 RectTransform:
   m_ObjectHideFlags: 0
@@ -356,4 +356,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hintText: {fileID: 1194563920933136163}
-  hinImage: {fileID: 8107552351602172411}
+  hintImage: {fileID: 8107552351602172411}
