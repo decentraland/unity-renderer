@@ -18,8 +18,6 @@ namespace RPC.Transports
 
         public WebSocketClientTransport(string url, params string[] protocols) : base(url, protocols)
         {
-            SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
-
             base.OnMessage += this.HandleMessage;
             base.OnError += this.HandleError;
             base.OnClose += this.HandleClose;
