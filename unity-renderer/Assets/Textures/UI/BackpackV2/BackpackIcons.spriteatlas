@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BackpackAtlas
+  m_Name: BackpackIcons
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -44,7 +44,7 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: 3069fa73ec637442fa909826ed175a0e, type: 3}
+    - {fileID: 102900000, guid: 33829685b1a5842258128d2c9dc7eef2, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -67,7 +67,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e8bb1d3461346463a8a09e69e9d0b21e, type: 3}
   - {fileID: 21300000, guid: e0a031647fa194e6690c0749c758613e, type: 3}
   - {fileID: 21300000, guid: dfec25e4cf70a4f408093194340bfcb4, type: 3}
-  - {fileID: 21300000, guid: dad65ba54b30847d0818fbd1eb142e68, type: 3}
   - {fileID: 21300000, guid: b54d69b54857f44d7acfdc7e428ca94e, type: 3}
   - {fileID: 21300000, guid: ec6e82c586d96441e9a01726eae9c6f8, type: 3}
   - {fileID: 21300000, guid: b3fcd616f8250405f8bb1aadd61cc220, type: 3}
@@ -91,7 +90,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2d93daeb29e2746d8a0c30203496d9c7, type: 3}
   - {fileID: 21300000, guid: f88ebb8cd1cd5487ca7c3f4d3e65e76a, type: 3}
   - {fileID: 21300000, guid: e568dcbc864c24ab1a9b731a66e362cb, type: 3}
-  - {fileID: 21300000, guid: a47a18fc02ccb431899ccacc4057977a, type: 3}
   - {fileID: 21300000, guid: 503ad90df363e4587b962551b1fbbae9, type: 3}
   - {fileID: 21300000, guid: adff267d131ae403ab9b47206a665a79, type: 3}
   - {fileID: 21300000, guid: 2b0a6fdd96915402592ab53957ebf5ac, type: 3}
@@ -119,7 +117,6 @@ SpriteAtlas:
   - UncommonThumbnail
   - UniqueThumbnail
   - AvatarStyleIcon
-  - Background
   - InfoCardEpic
   - HatIcon
   - Silhouette003
@@ -143,7 +140,6 @@ SpriteAtlas:
   - CommonThumbnail
   - MaskIcon
   - AllIcon
-  - Floor
   - EpicThumbnail
   - RareThumbnail
   - VisibleIcon
@@ -154,5 +150,5 @@ SpriteAtlas:
   - InfoCardMythic
   - OutfitIcon
   m_RenderDataMap: {}
-  m_Tag: BackpackAtlas
+  m_Tag: BackpackIcons
   m_IsVariant: 0
