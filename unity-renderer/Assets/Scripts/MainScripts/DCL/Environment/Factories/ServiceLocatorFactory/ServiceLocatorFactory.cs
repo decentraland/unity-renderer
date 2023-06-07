@@ -95,14 +95,27 @@ namespace DCL
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
                     transport.WaitTime = TimeSpan.FromSeconds(100);
                     transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
-                    transport.OnConnectEvent += () => task.TrySetResult(transport);
-                    transport.OnErrorEvent += s => task.TrySetException(new Exception(s));
+
+                    void CompleteTaskAndUnsubscribe()
+                    {
+                        task.TrySetResult(transport);
+                        transport.OnConnectEvent -= CompleteTaskAndUnsubscribe;
+                        transport.OnErrorEvent -= FailTaskAndUnsubscribe;
+                    }
+
+                    void FailTaskAndUnsubscribe(string error)
+                    {
+                        task.TrySetException(new Exception(error));
+                        transport.OnConnectEvent -= CompleteTaskAndUnsubscribe;
+                        transport.OnErrorEvent -= FailTaskAndUnsubscribe;
+                    }
+
+                    transport.OnConnectEvent += CompleteTaskAndUnsubscribe;
+                    transport.OnErrorEvent += FailTaskAndUnsubscribe;
 
                     try
                     {
-                        Debug.Log("WebSocketClientTransport.Create.Connect.Pre");
                         transport.ConnectAsync();
-                        Debug.Log("WebSocketClientTransport.Create.Connect.Post");
                     }
                     catch (Exception e)
                     {
