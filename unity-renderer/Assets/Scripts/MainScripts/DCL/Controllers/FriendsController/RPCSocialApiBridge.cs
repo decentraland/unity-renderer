@@ -51,7 +51,7 @@ namespace DCL.Social.Friends
         {
             matrixInitializationBridge.OnReceiveMatrixAccessToken += token => accessToken = token;
 
-            async UniTask InitializeAsync(CancellationToken cancellationToken)
+            async UniTaskVoid InitializeAsync(CancellationToken cancellationToken)
             {
                 await InitializeClient(cancellationToken);
                 await WaitForAccessTokenAsync(cancellationToken);
