@@ -134,7 +134,7 @@ namespace DCL
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
                 {
-                    AssetSource.EMBEDDED, new EmbeddedTextureProvider(addressableResourceProvider)
+                    AssetSource.EMBEDDED, new EmbeddedTextureProvider()
                 },
 
                 {

@@ -18,11 +18,12 @@ namespace DCLPlugins.RealmPlugin
 
         public RealmPlugin(DataStore dataStore)
         {
-            realmsModifiers = new List<IRealmModifier>
+            this.realmsModifiers = new List<IRealmModifier>
             {
                 new RealmBlockerModifier(dataStore.worldBlockers),
                 new RealmMinimapModifier(dataStore.HUDs),
                 new RealmsSkyboxModifier(dataStore.skyboxConfig),
+                new RealmsInfiniteFloorModifier(dataStore.HUDs)
             };
 
             realmAboutConfiguration = dataStore.realm.playerRealmAboutConfiguration;

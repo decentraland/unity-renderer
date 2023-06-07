@@ -1,6 +1,8 @@
 ﻿using DCL.CRDT;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Models;
 using DCLPlugins.ECSComponents.Raycast;
 using ECSSystems.ECSRaycastSystem;
 using NSubstitute;
@@ -38,12 +40,16 @@ namespace Tests
                 internalComponents.physicColliderComponent,
                 internalComponents.onPointerColliderComponent,
                 internalComponents.customLayerColliderComponent,
+                internalComponents.EngineInfo,
                 componentWriter);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 
             scene = testUtils.CreateScene(666);
             entityRaycaster = scene.CreateEntity(512);
+
+            // This is normally initialized by SceneStateHandler when a scene is loaded
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
         }
 
         [TearDown]

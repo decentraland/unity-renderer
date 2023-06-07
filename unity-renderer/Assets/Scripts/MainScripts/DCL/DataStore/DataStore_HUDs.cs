@@ -19,6 +19,8 @@ namespace DCL
         public readonly BaseVariable<bool> isNavMapInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> navmapVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> navmapIsRendered = new BaseVariable<bool>(false);
+        public readonly BaseVariable<Texture> latestDownloadedMainTexture = new BaseVariable<Texture>(null);
+        public readonly BaseVariable<Texture> latestDownloadedMapEstatesTexture = new BaseVariable<Texture>(null);
         public readonly BaseVariable<Texture> mapMainTexture = new BaseVariable<Texture>(null);
         public readonly BaseVariable<Texture> mapEstatesTexture = new BaseVariable<Texture>(null);
         public readonly BaseVariable<bool> chatInputVisible = new BaseVariable<bool>(false);
@@ -46,5 +48,6 @@ namespace DCL
         public readonly BaseVariable<string> openSentFriendRequestDetail = new BaseVariable<string>();
         public readonly BaseVariable<string> openReceivedFriendRequestDetail = new BaseVariable<string>();
         public readonly BaseVariable<(string playerId, string source)> currentPlayerId = new ((null, null));
+        public readonly BaseVariable<bool> tosPopupVisible = new BaseVariable<bool>(false);
     }
 }

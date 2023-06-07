@@ -1,4 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("QuestsServiceTests")]
+[assembly: InternalsVisibleTo("DCL.EditModeTests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] //Needed for nsubstitute
