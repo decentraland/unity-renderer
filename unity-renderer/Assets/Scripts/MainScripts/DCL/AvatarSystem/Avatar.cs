@@ -90,10 +90,14 @@ namespace AvatarSystem
             List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, linkedCt: linkedCt);
 
             GameObject container = loader.bodyshapeContainer;
-            Transform child = loader.bodyshapeContainer.transform.GetChild(0);
 
-            // Asset bundles assets dont have the gltf-scene name as the root, they have the file hash, for this particular object we need it to be Armature
-            child.name = "Armature";
+            if (loader.bodyshapeContainer.transform.childCount > 0)
+            {
+                Transform child = loader.bodyshapeContainer.transform.GetChild(0);
+
+                // Asset bundles assets dont have the gltf-scene name as the root, they have the file hash, for this particular object we need it to be Armature
+                child.name = "Armature";
+            }
 
             animator.Prepare(settings.bodyshapeId, container);
             Prepare(settings, emotes, loader.bodyshapeContainer);
