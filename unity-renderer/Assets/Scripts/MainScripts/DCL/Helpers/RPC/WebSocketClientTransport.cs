@@ -1,16 +1,11 @@
-using DCL.Tasks;
 using rpc_csharp.transport;
 using System;
-using System.Security.Authentication;
-using System.Threading;
 using WebSocketSharp;
 
 namespace RPC.Transports
 {
     public class WebSocketClientTransport : WebSocket, ITransport
     {
-        private CancellationTokenSource pingOverTimeCancellationToken = new ();
-
         public event Action OnCloseEvent;
         public event Action<string> OnErrorEvent;
         public event Action<byte[]> OnMessageEvent;
@@ -36,7 +31,6 @@ namespace RPC.Transports
 
         private void HandleClose(object sender, CloseEventArgs e)
         {
-            pingOverTimeCancellationToken.SafeCancelAndDispose();
             OnCloseEvent?.Invoke();
         }
 

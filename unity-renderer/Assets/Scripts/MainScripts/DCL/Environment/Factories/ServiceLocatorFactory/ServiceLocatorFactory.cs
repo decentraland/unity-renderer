@@ -1,4 +1,5 @@
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
@@ -88,11 +89,14 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                ITransport TransportProvider()
+                UniTask<ITransport> TransportProvider()
                 {
+                    UniTaskCompletionSource<ITransport> task = new ();
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
                     transport.WaitTime = TimeSpan.FromSeconds(100);
                     transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+                    transport.OnConnectEvent += () => task.TrySetResult(transport);
+                    transport.OnErrorEvent += s => task.TrySetException(new Exception(s));
 
                     try
                     {
@@ -105,7 +109,7 @@ namespace DCL
                         Debug.LogException(e);
                     }
 
-                    return transport;
+                    return task.Task;
                 }
 
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
