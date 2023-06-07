@@ -42,6 +42,7 @@ namespace DCL.Quests
                 StartTrackingStartedQuests(disposeCts.Token).Forget();
             }
 
+            questStartedPopupComponentView.OnOpenQuestLog += () => { dataStore.HUDs.questsPanelVisible.Set(true); };
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange += ConfigureQuestLogInFullscreenMenuChanged;
             ConfigureQuestLogInFullscreenMenuChanged(dataStore.exploreV2.configureQuestInFullscreenMenu.Get(), null);
             questLogComponentView.OnPinChange += ChangePinnedQuest;
@@ -50,10 +51,8 @@ namespace DCL.Quests
         private void ChangePinnedQuest(string questId, bool isPinned) =>
             pinnedQuestId.Set(isPinned ? questId : "");
 
-        private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous)
-        {
+        private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous) =>
             questLogComponentView.SetAsFullScreenMenuMode(current);
-        }
 
         private async UniTaskVoid StartTrackingQuests(CancellationToken ct)
         {
@@ -89,7 +88,18 @@ namespace DCL.Quests
 
         private void AddOrUpdateQuestToLog(QuestInstance questInstance)
         {
-
+            QuestDetailsComponentModel quest = new QuestDetailsComponentModel()
+            {
+                questName = questInstance.Quest.Name,
+                //questCreator = questInstance.Quest.,
+                questDescription = questInstance.Quest.Description,
+                questId = questInstance.Id,
+                isPinned = questInstance.Id == pinnedQuestId.Get(),
+                //coordinates = questInstance.Quest.Coordinates,
+                questSteps = new List<QuestStepComponentModel>(),
+                questRewards = new List<QuestRewardComponentModel>()
+            };
+            questLogComponentView.AddActiveQuest(quest);
         }
 
         public void Dispose() =>

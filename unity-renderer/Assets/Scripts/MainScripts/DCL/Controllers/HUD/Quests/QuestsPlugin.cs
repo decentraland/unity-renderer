@@ -39,7 +39,7 @@ public class QuestsPlugin : IPlugin
         questLogComponentView = await resourceProvider.Instantiate<QuestLogComponentView>(QUEST_LOG, $"_{QUEST_LOG}", cts.Token);
         questLogComponentView.gameObject.SetActive(false);
         DataStore.i.Quests.isInitialized.Set(true);
-        //DataStore.i.HUDs.questsPanelVisible.Set(true);
+
         QuestsController controller = new QuestsController(
             null,
             questTrackerComponentView,
