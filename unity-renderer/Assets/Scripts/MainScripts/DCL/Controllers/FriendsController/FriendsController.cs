@@ -112,8 +112,8 @@ namespace DCL.Social.Friends
                     socialApiBridge.OnOutgoingFriendRequestAdded += AddOutgoingFriendRequest;
                     socialApiBridge.OnFriendRequestAccepted += AcceptedFriendRequest;
                     socialApiBridge.OnDeletedByFriend += DeletedByFriend;
-                    socialApiBridge.OnFriendRequestRejected += (userId) => RemoveFriendRequestAndUpdateFriendshipStatus(userId, FriendshipAction.REJECTED);
-                    socialApiBridge.OnFriendRequestCanceled += (userId) => RemoveFriendRequestAndUpdateFriendshipStatus(userId, FriendshipAction.CANCELLED);
+                    socialApiBridge.OnFriendRequestRejected += RemoveFriendRequestFromRejection;
+                    socialApiBridge.OnFriendRequestCanceled += RemoveFriendRequestFromCancellation;
                 }
                 else
                 {
@@ -143,9 +143,12 @@ namespace DCL.Social.Friends
             controllerCancellationTokenSource.SafeCancelAndDispose();
 
             socialApiBridge.OnFriendAdded -= AddFriendToCacheAndTriggerFriendshipUpdate;
-            socialApiBridge.OnFriendRequestRemoved -= RemoveFriendRequest;
             socialApiBridge.OnIncomingFriendRequestAdded -= AddIncomingFriendRequest;
             socialApiBridge.OnOutgoingFriendRequestAdded -= AddOutgoingFriendRequest;
+            socialApiBridge.OnFriendRequestAccepted -= AcceptedFriendRequest;
+            socialApiBridge.OnDeletedByFriend -= DeletedByFriend;
+            socialApiBridge.OnFriendRequestRejected -= RemoveFriendRequestFromRejection;
+            socialApiBridge.OnFriendRequestCanceled -= RemoveFriendRequestFromCancellation;
 
             apiBridge.OnInitialized -= InitializeFriendships;
 
@@ -182,6 +185,12 @@ namespace DCL.Social.Friends
             AddFriendToCacheAndTriggerFriendshipUpdate(friendId);
         }
 
+        private void RemoveFriendRequestFromRejection(string userId) =>
+            RemoveFriendRequestAndUpdateFriendshipStatus(userId, FriendshipAction.REJECTED);
+
+        private void RemoveFriendRequestFromCancellation(string userId) =>
+            RemoveFriendRequestAndUpdateFriendshipStatus(userId, FriendshipAction.CANCELLED);
+
         private void RemoveFriendRequestAndUpdateFriendshipStatus(string userId,
             FriendshipAction newFriendshipAction)
         {
@@ -201,11 +210,6 @@ namespace DCL.Social.Friends
                 userId = userId,
                 action = newFriendshipAction
             });
-        }
-
-        private void RemoveFriendRequest(string userId)
-        {
-            this.friendRequests.Remove(userId);
         }
 
         private void AddFriendToCacheAndTriggerFriendshipUpdate(string friendId)
