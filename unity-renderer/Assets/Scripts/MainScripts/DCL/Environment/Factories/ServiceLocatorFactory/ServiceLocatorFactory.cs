@@ -92,12 +92,12 @@ namespace DCL
                 {
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
                     transport.WaitTime = TimeSpan.FromSeconds(100);
-                    transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls13;
+                    transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
 
                     try
                     {
                         Debug.Log("WebSocketClientTransport.Create.Connect.Pre");
-                        transport.Connect();
+                        transport.ConnectAsync();
                         Debug.Log("WebSocketClientTransport.Create.Connect.Post");
                     }
                     catch (Exception e)
