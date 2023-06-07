@@ -98,20 +98,32 @@ namespace DCL
 
                     void CompleteTaskAndUnsubscribe()
                     {
+                        Unsubscribe();
                         task.TrySetResult(transport);
-                        transport.OnConnectEvent -= CompleteTaskAndUnsubscribe;
-                        transport.OnErrorEvent -= FailTaskAndUnsubscribe;
                     }
 
                     void FailTaskAndUnsubscribe(string error)
                     {
+                        Unsubscribe();
                         task.TrySetException(new Exception(error));
+                    }
+
+                    void FailTaskByDisconnectionAndUnsubscribe()
+                    {
+                        Unsubscribe();
+                        task.TrySetException(new Exception("Cannot connect to social service server, connection closed"));
+                    }
+
+                    void Unsubscribe()
+                    {
                         transport.OnConnectEvent -= CompleteTaskAndUnsubscribe;
                         transport.OnErrorEvent -= FailTaskAndUnsubscribe;
+                        transport.OnCloseEvent -= FailTaskByDisconnectionAndUnsubscribe;
                     }
 
                     transport.OnConnectEvent += CompleteTaskAndUnsubscribe;
                     transport.OnErrorEvent += FailTaskAndUnsubscribe;
+                    transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
 
                     try
                     {
