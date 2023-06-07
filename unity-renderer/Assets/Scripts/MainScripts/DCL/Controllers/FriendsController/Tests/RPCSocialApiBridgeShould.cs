@@ -97,7 +97,7 @@ namespace DCL.Social.Friends
 
             var matrixInitializationBridge = Substitute.For<IMatrixInitializationBridge>();
 
-            rpcSocialApiBridge = new RPCSocialApiBridge(matrixInitializationBridge, userProfileBridge, () => UniTask.FromResult(client));
+            rpcSocialApiBridge = new RPCSocialApiBridge(matrixInitializationBridge, userProfileBridge, ct => UniTask.FromResult(client));
             rpcSocialApiBridge.Initialize();
             yield return rpcSocialApiBridge.InitializeAsync(default(CancellationToken)).ToCoroutine();
 

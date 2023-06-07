@@ -15,7 +15,7 @@ namespace DCL.Social.Friends
 
         private readonly IMatrixInitializationBridge matrixInitializationBridge;
         private readonly IUserProfileBridge userProfileWebInterfaceBridge;
-        private readonly Func<UniTask<ITransport>> clientTransportProvider;
+        private readonly Func<CancellationToken, UniTask<ITransport>> clientTransportProvider;
 
         private string accessToken;
         private ClientFriendshipsService socialClient;
@@ -32,7 +32,7 @@ namespace DCL.Social.Friends
 
         public RPCSocialApiBridge(IMatrixInitializationBridge matrixInitializationBridge,
             IUserProfileBridge userProfileWebInterfaceBridge,
-            Func<UniTask<ITransport>> transportProvider)
+            Func<CancellationToken, UniTask<ITransport>> transportProvider)
         {
             this.matrixInitializationBridge = matrixInitializationBridge;
             this.userProfileWebInterfaceBridge = userProfileWebInterfaceBridge;
@@ -58,9 +58,7 @@ namespace DCL.Social.Friends
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var transport = await clientTransportProvider();
+            var transport = await clientTransportProvider(cancellationToken);
             var client = new RpcClient(transport);
             var socialPort = await client.CreatePort("social-service-port");
 

@@ -27,6 +27,7 @@ using RPC.Transports;
 using System;
 using System.Collections.Generic;
 using System.Security.Authentication;
+using System.Threading;
 using UnityEngine;
 using WorldsFeaturesAnalytics;
 
@@ -89,7 +90,7 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                UniTask<ITransport> CreateWebSocketAndConnect()
+                UniTask<ITransport> CreateWebSocketAndConnect(CancellationToken cancellationToken)
                 {
                     UniTaskCompletionSource<ITransport> task = new ();
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
@@ -99,18 +100,39 @@ namespace DCL
                     void CompleteTaskAndUnsubscribe()
                     {
                         Unsubscribe();
+
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            task.TrySetCanceled(cancellationToken);
+                            return;
+                        }
+
                         task.TrySetResult(transport);
                     }
 
                     void FailTaskAndUnsubscribe(string error)
                     {
                         Unsubscribe();
+
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            task.TrySetCanceled(cancellationToken);
+                            return;
+                        }
+
                         task.TrySetException(new Exception(error));
                     }
 
                     void FailTaskByDisconnectionAndUnsubscribe()
                     {
                         Unsubscribe();
+
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            task.TrySetCanceled(cancellationToken);
+                            return;
+                        }
+
                         task.TrySetException(new Exception("Cannot connect to social service server, connection closed"));
                     }
 
@@ -134,7 +156,7 @@ namespace DCL
                         Debug.LogException(e);
                     }
 
-                    return task.Task;
+                    return task.Task.AttachExternalCancellation(cancellationToken);
                 }
 
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
