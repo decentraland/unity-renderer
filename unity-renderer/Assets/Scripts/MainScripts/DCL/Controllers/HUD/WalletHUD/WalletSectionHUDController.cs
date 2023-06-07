@@ -61,7 +61,7 @@ namespace DCL.Wallet
             view.OnLearnMoreClicked -= GoToLearnMoreUrl;
         }
 
-        private void ConfigureWalletSectionInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
+        private void ConfigureWalletSectionInFullscreenMenuChanged(Transform currentParentTransform, Transform _) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
 
         private void OnWalletSectionVisible(bool isVisible, bool _)
