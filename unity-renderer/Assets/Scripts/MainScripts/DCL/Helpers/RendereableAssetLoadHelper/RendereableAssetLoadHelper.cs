@@ -187,7 +187,7 @@ namespace DCL.Components
             abPromise.OnSuccessEvent += (x) =>
             {
 #if UNITY_EDITOR
-                x.container.name = AB_GO_NAME_PREFIX + x.container.name;
+                x.container.name = AB_GO_NAME_PREFIX + hash + " - " + contentProvider.assetBundlesVersion;
 #endif
                 var r = new Rendereable()
                 {
@@ -238,7 +238,7 @@ namespace DCL.Components
             gltfastPromise.OnSuccessEvent += (Asset_GLTFast_Instance x) =>
             {
 #if UNITY_EDITOR
-                x.container.name = GLTFAST_GO_NAME_PREFIX + x.container.name;
+                x.container.name = GLTFAST_GO_NAME_PREFIX + hash;
 #endif
                 Rendereable r = x.ToRendereable();
 

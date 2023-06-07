@@ -36,12 +36,10 @@ namespace AvatarSystem
                 loaderAssetHelper?.Unload();
 
                 // Before loading the asset, we check if asset bundles exist, then we fill the content provider with it
-                if (IsNewAssetBundleFlagEnabled() && contentProvider.TryGetContentsUrl_Raw(mainFile, out string hash))
+                if (IsNewAssetBundleFlagEnabled())
                 {
                     if (string.IsNullOrEmpty(wearable.entityId))
-                    {
                         Debug.LogError(mainFile + " has no entity ID, check where this wearable was loaded from");
-                    }
                     else
                     {
                         var sceneAb = await FetchSceneAssetBundles(wearable.entityId, contentProvider.assetBundlesBaseUrl);
@@ -50,10 +48,14 @@ namespace AvatarSystem
                         {
                             contentProvider.assetBundles = sceneAb.GetConvertedFiles();
                             contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
-                        } else
-                        {
-                            Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {(wearable != null ? wearable.entityId : hash)}</color>");
+                            contentProvider.assetBundlesVersion = sceneAb.GetVersion();
                         }
+#if UNITY_EDITOR
+                        else
+                        {
+                            Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {wearable.entityId} use this ID to reconvert</color>");
+                        }
+#endif
                     }
                 }
 
