@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Models;
+using ECSSystems.ECSSceneBoundsCheckerSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -86,11 +87,11 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
-        public static void SetAudioSource(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
-            IParcelScene scene, IDCLEntity entity, AudioSource audioSource)
+        public static void SetAudioSBCComponent(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, ISceneBoundsCheckedComponent audioSBCComponent)
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
-            model.audioSource = audioSource;
+            model.audioSourceSBCComponent = audioSBCComponent;
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
@@ -102,7 +103,7 @@ namespace DCL.ECS7.InternalComponents
 
             return model == null || (model.entityPosition == Vector3.zero
                                      && model.entityLocalMeshBounds.size == Vector3.zero
-                                     && model.audioSource == null);
+                                     && model.audioSourceSBCComponent == null);
         }
     }
 }

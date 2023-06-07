@@ -37,7 +37,13 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            audioSourceComponentHandler = new ECSAudioSourceComponentHandler(DataStore.i,Settings.i, AssetPromiseKeeper_AudioClip.i, CommonScriptableObjects.sceneNumber, Substitute.For<IInternalECSComponent<InternalAudioSource>>());
+            audioSourceComponentHandler = new ECSAudioSourceComponentHandler(
+                DataStore.i,
+                Settings.i,
+                AssetPromiseKeeper_AudioClip.i,
+                CommonScriptableObjects.sceneNumber,
+                Substitute.For<IInternalECSComponent<InternalAudioSource>>(),
+                Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);

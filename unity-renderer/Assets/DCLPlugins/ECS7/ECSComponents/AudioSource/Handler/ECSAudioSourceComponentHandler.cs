@@ -5,17 +5,20 @@ using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.SettingsCommon;
+using ECSSystems.ECSSceneBoundsCheckerSystem;
 using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
 {
-    public class ECSAudioSourceComponentHandler : IECSComponentHandler<PBAudioSource>
+    public class ECSAudioSourceComponentHandler : IECSComponentHandler<PBAudioSource>, ISceneBoundsCheckedComponent
     {
         internal AudioSource audioSource;
         internal AssetPromise_AudioClip promiseAudioClip;
 
         private bool isAudioClipReady = false;
+        private bool isPlayerInsideScene = true;
+        private bool isEntityInsideScene = true;
 
         private PBAudioSource model;
         private IParcelScene scene;
@@ -26,14 +29,22 @@ namespace DCL.ECSComponents
         private readonly AssetPromiseKeeper_AudioClip keeperAudioClip;
         private readonly IntVariable sceneNumber;
         private readonly IInternalECSComponent<InternalAudioSource> audioSourceInternalComponent;
+        private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
 
-        public ECSAudioSourceComponentHandler(DataStore dataStoreInstance, Settings settingsInstance, AssetPromiseKeeper_AudioClip keeperInstance, IntVariable sceneNumber, IInternalECSComponent<InternalAudioSource> audioSourceInternalComponent)
+        public ECSAudioSourceComponentHandler(
+            DataStore dataStoreInstance,
+            Settings settingsInstance,
+            AssetPromiseKeeper_AudioClip keeperInstance,
+            IntVariable sceneNumber,
+            IInternalECSComponent<InternalAudioSource> audioSourceInternalComponent,
+            IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
         {
             dataStore = dataStoreInstance;
             settings = settingsInstance;
             keeperAudioClip = keeperInstance;
             this.sceneNumber = sceneNumber;
             this.audioSourceInternalComponent = audioSourceInternalComponent;
+            this.sbcInternalComponent = sbcInternalComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -54,6 +65,8 @@ namespace DCL.ECSComponents
             {
                 audioSource = this.audioSource
             });
+
+            sbcInternalComponent.SetAudioSBCComponent(scene, entity, this);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -98,6 +111,7 @@ namespace DCL.ECSComponents
 
             keeperAudioClip.Forget(promiseAudioClip);
         }
+
         private void Dispose(IDCLEntity entity)
         {
             DisposePromise();
@@ -116,6 +130,8 @@ namespace DCL.ECSComponents
                 GameObject.Destroy(audioSource);
                 audioSource = null;
             }
+
+            sbcInternalComponent.SetAudioSBCComponent(scene, entity, null);
         }
 
         private void ApplyCurrentModel()
@@ -132,16 +148,16 @@ namespace DCL.ECSComponents
             audioSource.spatialBlend = 1;
             audioSource.dopplerLevel = 0.1f;
 
-            if (!model.Playing)
+            if (model.Playing != audioSource.isPlaying)
             {
-                if (audioSource.isPlaying)
-                {
+                if(audioSource.isPlaying)
                     audioSource.Stop();
-                }
+                else if (isAudioClipReady && isPlayerInsideScene && isEntityInsideScene)
+                    audioSource.Play();
             }
-            else if(isAudioClipReady)
+            else if (audioSource.isPlaying && (!isPlayerInsideScene || !isEntityInsideScene))
             {
-                audioSource.Play();
+                audioSource.Stop();
             }
         }
 
@@ -205,15 +221,16 @@ namespace DCL.ECSComponents
 
         private void OnCurrentSceneChanged(int currentSceneNumber, int previousSceneNumber)
         {
-            if (audioSource == null || model == null)
-                return;
+            isPlayerInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == currentSceneNumber;
+            ApplyCurrentModel();
+        }
 
-            float volume = 0;
+        public void UpdateInsideSceneBoundsState(bool isInsideSceneBounds)
+        {
+            if (isEntityInsideScene == isInsideSceneBounds) return;
 
-            if (scene.isPersistent || scene.sceneData.sceneNumber == currentSceneNumber)
-                volume = model.GetVolume();
-
-            audioSource.volume = volume;
+            isEntityInsideScene = isInsideSceneBounds;
+            ApplyCurrentModel();
         }
     }
 }
