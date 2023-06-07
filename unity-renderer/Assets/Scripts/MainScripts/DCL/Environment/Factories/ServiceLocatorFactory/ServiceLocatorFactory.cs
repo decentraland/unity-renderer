@@ -89,11 +89,11 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                UniTask<ITransport> TransportProvider()
+                UniTask<ITransport> CreateWebSocketAndConnect()
                 {
                     UniTaskCompletionSource<ITransport> task = new ();
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
-                    transport.WaitTime = TimeSpan.FromSeconds(100);
+                    transport.WaitTime = TimeSpan.FromSeconds(60);
                     transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
 
                     void CompleteTaskAndUnsubscribe()
@@ -127,7 +127,7 @@ namespace DCL
 
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    TransportProvider);
+                    CreateWebSocketAndConnect);
 
                 return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });
