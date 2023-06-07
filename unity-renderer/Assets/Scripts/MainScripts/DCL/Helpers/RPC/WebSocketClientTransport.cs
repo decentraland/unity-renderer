@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using rpc_csharp.transport;
 using System;
@@ -19,14 +18,12 @@ namespace RPC.Transports
 
         public WebSocketClientTransport(string url, params string[] protocols) : base(url, protocols)
         {
-            this.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+            SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
 
             base.OnMessage += this.HandleMessage;
             base.OnError += this.HandleError;
             base.OnClose += this.HandleClose;
             base.OnOpen += this.HandleOpen;
-
-            base.Connect();
         }
 
         private void HandleMessage(object sender, MessageEventArgs e)
@@ -53,34 +50,6 @@ namespace RPC.Transports
         public void SendMessage(byte[] data)
         {
             Send(data);
-        }
-
-        public void KeepConnectionAlive(TimeSpan signalFrequency, int failureTimesForCancelling)
-        {
-            async UniTask WaitUntilIsConnectedAndPingOverTime(CancellationToken cancellationToken)
-            {
-                while (!IsAlive)
-                    await UniTask.Delay(signalFrequency, cancellationToken: cancellationToken);
-
-                var pingFailedTimes = 0;
-
-                while (IsAlive && pingFailedTimes < failureTimesForCancelling)
-                {
-                    await UniTask.Delay(signalFrequency, cancellationToken: cancellationToken);
-
-                    if (Ping())
-                        pingFailedTimes = 0;
-                    else
-                        pingFailedTimes++;
-                }
-            }
-
-            pingOverTimeCancellationToken = pingOverTimeCancellationToken.SafeRestart();
-
-            UniTask.RunOnThreadPool(async () =>
-            {
-                await WaitUntilIsConnectedAndPingOverTime(pingOverTimeCancellationToken.Token);
-            });
         }
 
         public void Dispose()
