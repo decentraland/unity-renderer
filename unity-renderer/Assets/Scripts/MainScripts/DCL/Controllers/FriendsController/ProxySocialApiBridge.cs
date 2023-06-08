@@ -162,6 +162,7 @@ namespace DCL.Social.Friends
             }
 
             await featureFlagsInitializedTask.Task.AttachExternalCancellation(cancellationToken);
+            await UniTask.NextFrame(cancellationToken);
         }
     }
 }
