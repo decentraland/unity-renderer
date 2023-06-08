@@ -87,8 +87,7 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
             var loadingScreenHintsController = new LoadingScreenHintsController(hintViewPrefab, hintRequestService);
 
             // Act
-            // await loadingScreenHintsController.RequestHints(cancellationToken);
-            // FD:: Carousel started automatically on RequestHints
+            // Carousel started automatically on RequestHints
 
             // Assert
             // Check if the carousel was started
@@ -104,7 +103,7 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
             var loadingScreenHintsController = new LoadingScreenHintsController(GameObject.Instantiate(hintViewPrefab), hintRequestService);
 
             // Act
-            // FD:: Carousel started automatically on RequestHints
+            // Carousel started automatically on RequestHints
 
             // Assert
             // Check if the carousel was started

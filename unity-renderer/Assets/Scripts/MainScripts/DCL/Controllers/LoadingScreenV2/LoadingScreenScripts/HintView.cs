@@ -16,7 +16,6 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void Initialize(Hint hint, Texture2D texture, bool startAsActive = false)
         {
-            Debug.Log("FD:: HintView - Initialize");
             try
             {
                 if (hintText == null)
@@ -30,15 +29,7 @@ namespace DCL.Controllers.LoadingScreenV2
                 throw;
             }
 
-            if (hintText == null)
-                Debug.Log("FD:: HintView - HintText is not assigned!");
             hintText.text = hint.Title;
-
-            if (hintImage == null)
-                Debug.Log("FD:: HintView - HintImage is not assigned!");
-
-            if (texture == null)
-                Debug.Log("FD:: HintView - Texture is null!");
 
             if (texture != null)
                 hintImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
