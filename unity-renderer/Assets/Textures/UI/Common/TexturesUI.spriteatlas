@@ -488,7 +488,7 @@ SpriteAtlas:
   - BookIcon
   - Frame24
   - AcceptButton
-  - CopyIconOutline
+  - CopyIcn
   - QuestOn
   - IconBellActive
   - OkIcon
@@ -517,7 +517,7 @@ SpriteAtlas:
   - ScenesContainer
   - TopGradientPopUp
   - ClaimIcon
-  - JumpInArrowPink
+  - RubyArrow
   - VoiceChatMute
   - DiscordIconHD
   - Button14
@@ -633,7 +633,7 @@ SpriteAtlas:
   - RectRadius16
   - ContainerRectLeft14
   - CardPassportIcon
-  - JumpInIcon
+  - JumpInIcn
   - RoundedContainer34
   - MarketIcon
   - PassportIcon
@@ -741,7 +741,7 @@ SpriteAtlas:
   - LogOutIcon
   - RoundedContainer44
   - CloseButton
-  - JumpIcon
+  - WhiteArrow
   - InputFieldBuilder
   - ControlsIcon
   - WarningIcon
