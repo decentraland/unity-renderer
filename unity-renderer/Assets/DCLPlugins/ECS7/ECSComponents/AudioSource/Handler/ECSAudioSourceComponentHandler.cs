@@ -67,6 +67,8 @@ namespace DCL.ECSComponents
             });
 
             sbcInternalComponent.AddSceneBoundsCheckedComponent(scene, entity, this);
+
+            isPlayerInsideScene = scene.sceneData.sceneNumber == sceneNumber.Get();
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -136,9 +138,9 @@ namespace DCL.ECSComponents
 
         private void ApplyCurrentModel()
         {
-            if (audioSource == null)
+            if (audioSource == null || model == null)
             {
-                Debug.LogWarning("AudioSource is null!.");
+                Debug.LogWarning("AudioSource or model is null!.");
                 return;
             }
 
@@ -203,8 +205,7 @@ namespace DCL.ECSComponents
 
         private void UpdateAudioSourceVolume()
         {
-            bool isCurrentScene = scene.isPersistent || scene.sceneData.sceneNumber == sceneNumber.Get();
-            if (!isCurrentScene)
+            if (!scene.isPersistent && !isPlayerInsideScene)
             {
                 audioSource.volume = 0;
                 return;

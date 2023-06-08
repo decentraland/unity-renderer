@@ -37,6 +37,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
+            Settings.CreateSharedInstance(new DefaultSettingsFactory());
             audioSourceComponentHandler = new ECSAudioSourceComponentHandler(
                 DataStore.i,
                 Settings.i,
@@ -135,12 +136,13 @@ namespace DCL.ECSComponents.Test
             model2.Volume = 1f;
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            Assert.AreEqual(model.Volume, audioSourceComponentHandler.audioSource.volume);
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.volume, model2.Volume);
+            Assert.AreEqual(model2.Volume, audioSourceComponentHandler.audioSource.volume);
         }
 
         [UnityTest]
