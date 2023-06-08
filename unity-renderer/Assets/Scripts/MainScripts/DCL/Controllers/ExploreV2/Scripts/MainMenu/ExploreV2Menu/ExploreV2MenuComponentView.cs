@@ -65,7 +65,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
-        currentWalletCard.OnClicked -= OpenCurrentWalletSection;
+        currentWalletCard.OnWalletCardClicked -= OpenCurrentWalletSection;
         closeAction.OnTriggered -= OnCloseActionTriggered;
         DataStore.i.exploreV2.isSomeModalOpen.OnChange -= IsSomeModalOpen_OnChange;
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
@@ -101,7 +101,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         ConfigureCloseButton();
 
-        currentWalletCard.OnClicked += OpenCurrentWalletSection;
+        currentWalletCard.OnWalletCardClicked += OpenCurrentWalletSection;
     }
 
     public void Update() =>

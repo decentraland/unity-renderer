@@ -15,14 +15,14 @@ namespace DCL.Wallet
         [SerializeField] internal GameObject polygonManaBalanceLoading;
         [SerializeField] internal TMP_Text polygonManaBalanceText;
 
-        public event Action OnClicked;
+        public event Action OnWalletCardClicked;
 
         public override void Awake()
         {
             base.Awake();
 
-            guestButton.onClick.AddListener(() => OnClicked?.Invoke());
-            signedInWalletButton.onClick.AddListener(() => OnClicked?.Invoke());
+            guestButton.onClick.AddListener(() => OnWalletCardClicked?.Invoke());
+            signedInWalletButton.onClick.AddListener(() => OnWalletCardClicked?.Invoke());
         }
 
         public override void Dispose()

@@ -4,7 +4,7 @@ namespace DCL.Wallet
 {
     public interface IWalletCardHUDComponentView
     {
-        event Action OnClicked;
+        event Action OnWalletCardClicked;
 
         void SetWalletCardActive(bool isActive);
         void SetWalletCardAsGuest(bool isGuest);
