@@ -95,7 +95,8 @@ namespace DCL
                 {
                     UniTaskCompletionSource<ITransport> task = new ();
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
-
+                    // it is necessary to set a logger output right after WS creation
+                    // otherwise errors are raised and may break the loading process (webgl issue)
                     transport.Log.Output = (data, s) =>
                     {
                         switch (data.Level)
@@ -178,6 +179,7 @@ namespace DCL
                     try
                     {
                         Debug.Log("SocialClient.Transport.Connect");
+                        // connect async does not work, probably because the lack of multi-threading support in webgl build?
                         // transport.ConnectAsync();
                         transport.Connect();
                     }
