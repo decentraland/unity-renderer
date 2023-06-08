@@ -139,6 +139,7 @@ namespace DCL.Social.Friends
 
         private async UniTask InitializeMatrixTokenThenRetrieveAllFriends(CancellationToken cancellationToken)
         {
+            await UniTask.WaitUntil(() => socialClient != null, cancellationToken: cancellationToken);
             await WaitForAccessTokenAsync(cancellationToken);
 
             var friendsStream = socialClient.GetFriends(new Payload
