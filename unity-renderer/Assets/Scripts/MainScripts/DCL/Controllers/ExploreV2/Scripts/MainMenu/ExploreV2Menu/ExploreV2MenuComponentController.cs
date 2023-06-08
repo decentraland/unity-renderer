@@ -86,11 +86,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
 
         // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
-        walletCardHUDController = new WalletCardHUDController(
-            view.currentWalletCard,
-            new UserProfileWebInterfaceBridge(),
-            Environment.i.platform.serviceProviders.theGraph,
-            DataStore.i);
+        if (DataStore.i.wallet.isInitialized.Get())
+            walletCardHUDController = new WalletCardHUDController(
+                view.currentWalletCard,
+                new UserProfileWebInterfaceBridge(),
+                Environment.i.platform.serviceProviders.theGraph,
+                DataStore.i);
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
