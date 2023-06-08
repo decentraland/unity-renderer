@@ -284,7 +284,10 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private static void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, HashSet<IDCLEntity> entitiesOutsideSceneBounds, InternalSceneBoundsCheck componentModel)
         {
-            componentModel.audioSourceSBCComponent?.UpdateInsideSceneBoundsState(!entitiesOutsideSceneBounds.Contains(entity));
+            foreach (ISceneBoundsCheckedComponent sceneBoundsCheckedComponent in componentModel.sceneBoundsCheckedComponents)
+            {
+                sceneBoundsCheckedComponent.UpdateInsideSceneBoundsState(!entitiesOutsideSceneBounds.Contains(entity));
+            }
         }
 
         private static void ProcessRendererComponentChanges(IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent,

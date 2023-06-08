@@ -87,11 +87,24 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
-        public static void SetAudioSBCComponent(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
-            IParcelScene scene, IDCLEntity entity, ISceneBoundsCheckedComponent audioSBCComponent)
+        public static void AddSceneBoundsCheckedComponent(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, ISceneBoundsCheckedComponent sceneBoundsCheckedComponent)
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
-            model.audioSourceSBCComponent = audioSBCComponent;
+            model.sceneBoundsCheckedComponents.Add(sceneBoundsCheckedComponent);
+
+            sbcInternalComponent.PutFor(scene, entity, model);
+        }
+
+        public static void RemoveSceneBoundsCheckedComponent(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, ISceneBoundsCheckedComponent sceneBoundsCheckedComponent)
+        {
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model;
+
+            if (model == null)
+                return;
+
+            model.sceneBoundsCheckedComponents.Remove(sceneBoundsCheckedComponent);
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
@@ -103,7 +116,7 @@ namespace DCL.ECS7.InternalComponents
 
             return model == null || (model.entityPosition == Vector3.zero
                                      && model.entityLocalMeshBounds.size == Vector3.zero
-                                     && model.audioSourceSBCComponent == null);
+                                     && model.sceneBoundsCheckedComponents.Count == 0);
         }
     }
 }

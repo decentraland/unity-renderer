@@ -85,7 +85,7 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers;
         public KeyValueSet<Collider, uint> physicsColliders;
         public KeyValueSet<Collider, uint> pointerColliders;
-        public ISceneBoundsCheckedComponent audioSourceSBCComponent; // Turn into a collection???
+        public HashSet<ISceneBoundsCheckedComponent> sceneBoundsCheckedComponents = new HashSet<ISceneBoundsCheckedComponent>();
     }
 
     public class InternalVisibility : InternalComponent

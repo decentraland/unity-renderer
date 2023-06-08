@@ -66,7 +66,7 @@ namespace DCL.ECSComponents
                 audioSource = this.audioSource
             });
 
-            sbcInternalComponent.SetAudioSBCComponent(scene, entity, this);
+            sbcInternalComponent.AddSceneBoundsCheckedComponent(scene, entity, this);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -131,7 +131,7 @@ namespace DCL.ECSComponents
                 audioSource = null;
             }
 
-            sbcInternalComponent.SetAudioSBCComponent(scene, entity, null);
+            sbcInternalComponent.RemoveSceneBoundsCheckedComponent(scene, entity, this);
         }
 
         private void ApplyCurrentModel()
