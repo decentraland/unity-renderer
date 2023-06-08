@@ -2,6 +2,7 @@ using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Models;
 using System;
 
 namespace ECSSystems.InputSenderSystem
@@ -11,17 +12,20 @@ namespace ECSSystems.InputSenderSystem
         private class State
         {
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
+            public IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
             public IECSComponentWriter componentWriter;
             public uint lastTimestamp = 0;
         }
 
         public static Action CreateSystem(
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
+            IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
             IECSComponentWriter componentWriter)
         {
             var state = new State()
             {
                 inputResultComponent = inputResultComponent,
+                engineInfoComponent = engineInfoComponent,
                 componentWriter = componentWriter
             };
 
@@ -57,7 +61,8 @@ namespace ECSSystems.InputSenderSystem
                             Button = inputEvent.button,
                             Hit = inputEvent.hit,
                             State = inputEvent.type,
-                            Timestamp = state.lastTimestamp++
+                            Timestamp = state.lastTimestamp++,
+                            TickNumber = state.engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick
                         },
                         ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
                 }

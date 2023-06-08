@@ -9,7 +9,6 @@ using Task = System.Threading.Tasks.Task;
 namespace DCLServices.QuestsService.Tests
 {
     [Category("EditModeCI")]
-    [Explicit(TestUtils.EXPLICIT_INSTANT_STEPS)]
     public class QuestsServiceShould
     {
         private QuestsService questsService;
@@ -35,7 +34,7 @@ namespace DCLServices.QuestsService.Tests
         public void InitializeWithNoUserSubscription()
         {
             var anyQuestUpdated = false;
-            questsService.OnQuestUpdated += (x) => anyQuestUpdated = true;
+            questsService.QuestUpdated.AddListener(_ => anyQuestUpdated = true);
 
             channel.Writer.TryWrite(new UserUpdate()
             {
@@ -71,7 +70,7 @@ namespace DCLServices.QuestsService.Tests
         public void TriggerOnQuestUpdateEvents(int count)
         {
             int questsUpdated = 0;
-            questsService.OnQuestUpdated += (x) => questsUpdated++;
+            questsService.QuestUpdated.AddListener(_ => questsUpdated++);
 
             questsService.SetUserId("user");
 
@@ -100,7 +99,7 @@ namespace DCLServices.QuestsService.Tests
         public void UpdateCurrentStateIfSameQuestIsUpdated(uint updates)
         {
             QuestStateWithData latestUpdate = null;
-            questsService.OnQuestUpdated += (x) => { latestUpdate = x; };
+            questsService.QuestUpdated.AddListener(x => { latestUpdate = x; });
 
             questsService.SetUserId("user");
 
@@ -175,14 +174,16 @@ namespace DCLServices.QuestsService.Tests
         {
             questsService.SetUserId("userId");
             bool questUpdated = false;
-            questsService.OnQuestUpdated += (x) => questUpdated = true;
+            questsService.QuestUpdated.AddListener((x) => questUpdated = true);
 
             questsService.Dispose();
 
             channel.Writer.TryWrite(new UserUpdate()
             {
-                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
-                QuestStateUpdate = new QuestStateUpdate(),
+                QuestStateUpdate = new QuestStateUpdate()
+                {
+                    QuestData = new QuestStateWithData()
+                }
             });
 
             Assert.IsFalse(questUpdated);

@@ -19,6 +19,7 @@ namespace ECSSystems.VideoPlayerSystem
 
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
         private readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
+        private readonly IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
         private readonly IECSComponentWriter componentWriter;
         private Dictionary<IDCLEntity, VideoEventData> videoEvents = new Dictionary<IDCLEntity, VideoEventData>();
 
@@ -27,10 +28,12 @@ namespace ECSSystems.VideoPlayerSystem
         public ECSVideoPlayerSystem(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent,
             IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent,
+            IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
             IECSComponentWriter componentWriter)
         {
             this.videoPlayerComponent = videoPlayerComponent;
             this.videoMaterialComponent = videoMaterialComponent;
+            this.engineInfoComponent = engineInfoComponent;
             this.componentWriter = componentWriter;
         }
 
@@ -86,8 +89,9 @@ namespace ECSSystems.VideoPlayerSystem
                 videoEvents[videoPlayerComponentData.entity] = videoEvent;
 
                 // Update GrowOnlyValueSet VideoEvent component for the video player entity
+                var scene = videoPlayerComponentData.scene;
                 componentWriter.AppendComponent(
-                    videoPlayerComponentData.scene.sceneData.sceneNumber,
+                    scene.sceneData.sceneNumber,
                     videoPlayerComponentData.entity.entityId,
                     ComponentID.VIDEO_EVENT,
                     new PBVideoEvent()
@@ -95,7 +99,8 @@ namespace ECSSystems.VideoPlayerSystem
                         State = videoEvent.videoState,
                         CurrentOffset = videoPlayerModel.videoPlayer.GetTime(),
                         VideoLength = videoPlayerModel.videoPlayer.GetDuration(),
-                        Timestamp = videoEvent.timeStamp
+                        Timestamp = videoEvent.timeStamp,
+                        TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick
                     },
                     ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
                 );

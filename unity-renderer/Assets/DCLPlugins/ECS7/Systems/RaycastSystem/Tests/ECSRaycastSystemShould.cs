@@ -1,4 +1,5 @@
 ﻿using DCL.Configuration;
+using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
@@ -11,6 +12,7 @@ using ECSSystems.ECSRaycastSystem;
 using Google.Protobuf.Collections;
 using NSubstitute;
 using NUnit.Framework;
+using RPC.Context;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -30,8 +32,8 @@ namespace Tests
         private ECS7TestEntity testEntity_CustomCollider1;
         private ECS7TestEntity testEntity_OnPointerCollider;
         private ECS7TestEntity testEntity_CustomCollider2;
-
         private InternalECSComponents internalComponents;
+        private SceneStateHandler sceneStateHandler;
 
         [SetUp]
         protected void SetUp()
@@ -50,6 +52,7 @@ namespace Tests
                 internalComponents.physicColliderComponent,
                 internalComponents.onPointerColliderComponent,
                 internalComponents.customLayerColliderComponent,
+                internalComponents.EngineInfo,
                 componentWriter);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
@@ -57,6 +60,12 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entityRaycaster = scene.CreateEntity(512);
             keepEntityAliveComponent.PutFor(scene, entityRaycaster, new InternalComponent());
+            sceneStateHandler = new SceneStateHandler(
+                Substitute.For<CRDTServiceContext>(),
+                new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
+                internalComponents.EngineInfo,
+                internalComponents.GltfContainerLoadingStateComponent);
+            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
 
             // Test collider entities in line
             testEntity_PhysicsCollider = CreateColliderEntity(513, new Vector3(8, 1, 2), new[] { ColliderLayer.ClPhysics });
@@ -75,6 +84,7 @@ namespace Tests
         protected void TearDown()
         {
             testUtils.Dispose();
+            sceneStateHandler.Dispose();
         }
 
         [Test]
@@ -816,6 +826,33 @@ namespace Tests
             );
         }
 
+        [Test]
+        public void StoreSceneTickInResult()
+        {
+            entityRaycaster.gameObject.transform.position = new Vector3(12f, 0.5f, 0.1f);
+            PBRaycast raycast = new PBRaycast()
+            {
+                GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
+                MaxDistance = 16f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+
+            system.Update();
+            componentWriter.Received(1).PutComponent(
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                Arg.Is<PBRaycastResult>(e => e.TickNumber == 3)
+            );
+        }
 
         private ECS7TestEntity CreateColliderEntity(int entityId, Vector3 position, ColliderLayer[] layers)
         {

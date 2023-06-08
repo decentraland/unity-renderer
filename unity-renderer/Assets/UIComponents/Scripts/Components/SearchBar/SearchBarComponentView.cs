@@ -197,7 +197,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     internal void SetSearchMode()
     {
-        clearSearchButton.gameObject.SetActive(true);
+        clearSearchButton.gameObject.SetActive(!string.IsNullOrEmpty(inputField.text));
         searchSpinner.SetActive(false);
     }
 

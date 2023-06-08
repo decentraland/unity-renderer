@@ -36,8 +36,6 @@ namespace DCL.Helpers
 
     public static class TestUtils
     {
-        public const string EXPLICIT_INSTANT_STEPS = "The test is disabled due to the editor bug: too many instant steps";
-
         public static int testSceneIteration;
         public const string testingSceneName = "DCL_Testing_";
 
