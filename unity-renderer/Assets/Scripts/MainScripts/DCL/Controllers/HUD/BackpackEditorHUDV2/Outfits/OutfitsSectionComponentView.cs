@@ -23,9 +23,24 @@ public class OutfitsSectionComponentView : BaseComponentView
         }
     }
 
-    private void OnEquipOutfit()
+    public void ShowOutfits(OutfitItem[] outfits)
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < outfitComponentViews.Length; i++)
+        {
+            if (i < outfits.Length)
+            {
+                outfitComponentViews[i].SetIsEmpty(false);
+                outfitComponentViews[i].SetOutfit(outfits[i]);
+            }
+            else
+            {
+                outfitComponentViews[i].SetIsEmpty(true);
+            }
+        }
+    }
+
+    private void OnEquipOutfit(OutfitItem outfitItem)
+    {
     }
 
     public override void RefreshControl() { }

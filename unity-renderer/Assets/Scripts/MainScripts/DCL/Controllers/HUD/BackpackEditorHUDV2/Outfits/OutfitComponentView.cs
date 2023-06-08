@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OutfitComponentView : BaseComponentView, IOutfitComponentView
+public class OutfitComponentView : BaseComponentView<OutfitComponentModel>, IOutfitComponentView
 {
     [SerializeField] internal GameObject emptyState;
     [SerializeField] internal GameObject filledState;
@@ -14,7 +15,7 @@ public class OutfitComponentView : BaseComponentView, IOutfitComponentView
     [SerializeField] internal Button saveOutfitButton;
     [SerializeField] internal Button discardOutfitButton;
 
-    public event Action OnEquipOutfit;
+    public event Action<OutfitItem> OnEquipOutfit;
     public event Action OnSaveOutfit;
     public event Action OnDiscardOutfit;
 
@@ -28,7 +29,7 @@ public class OutfitComponentView : BaseComponentView, IOutfitComponentView
     private void InitializeButtonEvents()
     {
         equipButton.onClick.RemoveAllListeners();
-        equipButton.onClick.AddListener(() => OnEquipOutfit?.Invoke());
+        equipButton.onClick.AddListener(() => OnEquipOutfit?.Invoke(model.outfitItem));
         saveOutfitButton.onClick.RemoveAllListeners();
         saveOutfitButton.onClick.AddListener(() => OnSaveOutfit?.Invoke());
         discardOutfitButton.onClick.RemoveAllListeners();
@@ -37,6 +38,12 @@ public class OutfitComponentView : BaseComponentView, IOutfitComponentView
 
     public override void RefreshControl()
     {
+        SetOutfit(model.outfitItem);
+    }
+
+    public void SetOutfit(OutfitItem outfitItem)
+    {
+        model.outfitItem = outfitItem;
     }
 
     public void SetIsEmpty(bool isEmpty)
