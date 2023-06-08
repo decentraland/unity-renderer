@@ -66,7 +66,9 @@ namespace DCL.Social.Friends
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
         {
+            Debug.Log("RPCSocialAPIBridge.InitializeClient.Transport.Pre");
             var transport = await clientTransportProvider(cancellationToken);
+            Debug.Log("RPCSocialAPIBridge.InitializeClient.Transport.Post");
             var client = new RpcClient(transport);
             var socialPort = await client.CreatePort("social-service-port");
 
