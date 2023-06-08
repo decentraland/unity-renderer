@@ -1,3 +1,4 @@
+using DCL.Guests.HUD.ConnectWallet;
 using System;
 using System.Collections;
 using TMPro;
@@ -13,6 +14,9 @@ namespace DCL.Wallet
         private const float COPY_TOAST_VISIBLE_TIME = 3;
         private const string LEARN_MORE_LINK_ID = "learn_more";
 
+        [SerializeField] internal GameObject signedInWalletContainer;
+        [SerializeField] internal GameObject guestContainer;
+        [SerializeField] internal ConnectWalletComponentView connectWalletView;
         [SerializeField] internal TMP_Text walletAddressText;
         [SerializeField] internal Button copyWalletAddressButton;
         [SerializeField] internal ShowHideAnimator copyWalletAddressToast;
@@ -28,6 +32,8 @@ namespace DCL.Wallet
         public event Action OnCopyWalletAddress;
         public event Action OnBuyManaClicked;
         public event Action OnLearnMoreClicked;
+
+        public IConnectWalletComponentView currentConnectWalletView => connectWalletView;
 
         private Transform thisTransform;
         private Coroutine copyToastRoutine;
@@ -54,6 +60,7 @@ namespace DCL.Wallet
 
         public override void RefreshControl()
         {
+            SetWalletSectionAsGuest(model.IsGuest);
             SetWalletAddress(model.WalletAddress);
             SetEthereumManaBalance(model.EthereumManaBalance);
             SetPolygonManaBalance(model.PolygonManaBalance);
@@ -78,6 +85,13 @@ namespace DCL.Wallet
             rectTransform.localPosition = Vector2.zero;
             rectTransform.offsetMax = Vector2.zero;
             rectTransform.offsetMin = Vector2.zero;
+        }
+
+        public void SetWalletSectionAsGuest(bool isGuest)
+        {
+            model.IsGuest = isGuest;
+            signedInWalletContainer.SetActive(!isGuest);
+            guestContainer.SetActive(isGuest);
         }
 
         public void SetWalletAddress(string fullWalletAddress)

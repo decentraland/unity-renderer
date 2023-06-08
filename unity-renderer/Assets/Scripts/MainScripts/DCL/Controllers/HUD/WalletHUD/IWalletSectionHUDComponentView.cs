@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCL.Guests.HUD.ConnectWallet;
+using System;
 using UnityEngine;
 
 namespace DCL.Wallet
@@ -9,7 +10,10 @@ namespace DCL.Wallet
         event Action OnBuyManaClicked;
         event Action OnLearnMoreClicked;
 
+        IConnectWalletComponentView currentConnectWalletView { get; }
+
         void SetAsFullScreenMenuMode(Transform parentTransform);
+        void SetWalletSectionAsGuest(bool isGuest);
         void SetWalletAddress(string fullWalletAddress);
         void SetEthereumManaLoadingActive(bool isActive);
         void SetEthereumManaBalance(double balance);

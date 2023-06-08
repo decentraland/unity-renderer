@@ -109,6 +109,7 @@ namespace DCL.Wallet
                 return;
 
             view.SetWalletAddress(userProfile.userId);
+            view.SetWalletSectionAsGuest(userProfile.isGuest);
         }
 
         private void CopyWalletAddress()
