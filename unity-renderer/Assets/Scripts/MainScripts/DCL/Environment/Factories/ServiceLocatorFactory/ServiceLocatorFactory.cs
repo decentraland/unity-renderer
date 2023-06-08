@@ -91,104 +91,9 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                UniTask<ITransport> CreateWebSocketAndConnect(CancellationToken cancellationToken)
-                {
-                    UniTaskCompletionSource<ITransport> task = new ();
-                    var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
-                    transport.WaitTime = TimeSpan.FromSeconds(60);
-                    transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
-                    transport.Log.Level = LogLevel.Trace;
-                    transport.Log.Output = (data, s) =>
-                    {
-                        switch (data.Level)
-                        {
-                            case LogLevel.Debug:
-                            case LogLevel.Info:
-                            case LogLevel.Trace:
-                                Debug.Log($"SocialClient.Transport.Output: {data.Message}");
-                                break;
-                            case LogLevel.Error:
-                            case LogLevel.Fatal:
-                                Debug.LogError($"SocialClient.Transport.Output: {data.Message}");
-                                break;
-                            case LogLevel.Warn:
-                                Debug.LogWarning($"SocialClient.Transport.Output: {data.Message}");
-                                break;
-                        }
-                    };
-
-                    void CompleteTaskAndUnsubscribe()
-                    {
-                        Debug.Log("SocialClient.Transport.Connect.Success");
-
-                        Unsubscribe();
-
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            task.TrySetCanceled(cancellationToken);
-                            return;
-                        }
-
-                        task.TrySetResult(transport);
-                    }
-
-                    void FailTaskAndUnsubscribe(string error)
-                    {
-                        Debug.Log($"SocialClient.Transport.Error: {error}");
-
-                        Unsubscribe();
-
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            task.TrySetCanceled(cancellationToken);
-                            return;
-                        }
-
-                        task.TrySetException(new Exception(error));
-                    }
-
-                    void FailTaskByDisconnectionAndUnsubscribe()
-                    {
-                        Debug.Log("SocialClient.Transport.Disconnected");
-
-                        Unsubscribe();
-
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            task.TrySetCanceled(cancellationToken);
-                            return;
-                        }
-
-                        task.TrySetException(new Exception("Cannot connect to social service server, connection closed"));
-                    }
-
-                    void Unsubscribe()
-                    {
-                        transport.OnConnectEvent -= CompleteTaskAndUnsubscribe;
-                        transport.OnErrorEvent -= FailTaskAndUnsubscribe;
-                        transport.OnCloseEvent -= FailTaskByDisconnectionAndUnsubscribe;
-                    }
-
-                    transport.OnConnectEvent += CompleteTaskAndUnsubscribe;
-                    transport.OnErrorEvent += FailTaskAndUnsubscribe;
-                    transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
-
-                    try
-                    {
-                        Debug.Log("SocialClient.Transport.Connect");
-                        transport.ConnectAsync();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-
-                    return task.Task.AttachExternalCancellation(cancellationToken);
-                }
-
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    CreateWebSocketAndConnect);
+                    CreateSocialClientWebSocketAndConnect);
 
                 return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });
@@ -282,6 +187,100 @@ namespace DCL
 
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
             return result;
+        }
+
+        private static UniTask<ITransport> CreateSocialClientWebSocketAndConnect(CancellationToken cancellationToken)
+        {
+            UniTaskCompletionSource<ITransport> task = new ();
+            var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
+            transport.WaitTime = TimeSpan.FromSeconds(60);
+            transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+            transport.Log.Level = LogLevel.Trace;
+            transport.Log.Output = LogWebSocketOutput;
+
+            void LogWebSocketOutput(LogData data, string file)
+            {
+                switch (data.Level)
+                {
+                    case LogLevel.Debug:
+                    case LogLevel.Info:
+                    case LogLevel.Trace:
+                        Debug.Log($"SocialClient.Transport.Output: {data.Message}");
+                        break;
+                    case LogLevel.Error:
+                    case LogLevel.Fatal:
+                        Debug.LogError($"SocialClient.Transport.Output: {data.Message}");
+                        break;
+                    case LogLevel.Warn:
+                        Debug.LogWarning($"SocialClient.Transport.Output: {data.Message}");
+                        break;
+                }
+            }
+
+            void CompleteTaskAndUnsubscribe()
+            {
+                Debug.Log("SocialClient.Transport.Connect.Success");
+
+                Unsubscribe();
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    task.TrySetCanceled(cancellationToken);
+                    return;
+                }
+
+                task.TrySetResult(transport);
+            }
+
+            void FailTaskAndUnsubscribe(string error)
+            {
+                Debug.Log($"SocialClient.Transport.Error: {error}");
+
+                Unsubscribe();
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    task.TrySetCanceled(cancellationToken);
+                    return;
+                }
+
+                task.TrySetException(new Exception(error));
+            }
+
+            void FailTaskByDisconnectionAndUnsubscribe()
+            {
+                Debug.Log("SocialClient.Transport.Disconnected");
+
+                Unsubscribe();
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    task.TrySetCanceled(cancellationToken);
+                    return;
+                }
+
+                task.TrySetException(new Exception("Cannot connect to social service server, connection closed"));
+            }
+
+            void Unsubscribe()
+            {
+                transport.OnConnectEvent -= CompleteTaskAndUnsubscribe;
+                transport.OnErrorEvent -= FailTaskAndUnsubscribe;
+                transport.OnCloseEvent -= FailTaskByDisconnectionAndUnsubscribe;
+            }
+
+            transport.OnConnectEvent += CompleteTaskAndUnsubscribe;
+            transport.OnErrorEvent += FailTaskAndUnsubscribe;
+            transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
+
+            try
+            {
+                Debug.Log("SocialClient.Transport.Connect");
+                transport.ConnectAsync();
+            }
+            catch (Exception e) { Debug.LogException(e); }
+
+            return task.Task.AttachExternalCancellation(cancellationToken);
         }
     }
 }
