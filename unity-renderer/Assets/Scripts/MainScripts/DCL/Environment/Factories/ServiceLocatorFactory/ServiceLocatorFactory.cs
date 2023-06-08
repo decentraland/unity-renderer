@@ -95,9 +95,7 @@ namespace DCL
                 {
                     UniTaskCompletionSource<ITransport> task = new ();
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
-                    transport.WaitTime = TimeSpan.FromSeconds(60);
-                    transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
-                    transport.Log.Level = LogLevel.Trace;
+
                     transport.Log.Output = (data, s) =>
                     {
                         switch (data.Level)
@@ -116,6 +114,10 @@ namespace DCL
                                 break;
                         }
                     };
+
+                    transport.Log.Level = LogLevel.Trace;
+                    transport.WaitTime = TimeSpan.FromSeconds(60);
+                    transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
 
                     void CompleteTaskAndUnsubscribe()
                     {
