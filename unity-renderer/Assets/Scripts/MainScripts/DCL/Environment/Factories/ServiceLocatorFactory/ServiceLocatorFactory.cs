@@ -98,7 +98,7 @@ namespace DCL
                     transport.WaitTime = TimeSpan.FromSeconds(60);
                     transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
                     transport.Log.Level = LogLevel.Trace;
-                    transport.Log.Output += (data, s) =>
+                    transport.Log.Output = (data, s) =>
                     {
                         switch (data.Level)
                         {
