@@ -141,7 +141,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     public void Dispose()
     {
         realmController.Dispose();
-        walletCardHUDController.Dispose();
 
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
@@ -172,6 +171,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
 
         DataStore.i.common.isWorld.OnChange -= OnWorldChange;
+
+        walletCardHUDController?.Dispose();
     }
 
     protected internal virtual IExploreV2MenuComponentView CreateView() =>
