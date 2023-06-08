@@ -12,7 +12,7 @@ namespace DCL.Controllers.LoadingScreenV2
         private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
         private const int MAX_HINTS = 15;
 
-        private int currentHintIndex = 0;
+        internal int currentHintIndex = 0;
         private List<HintView> hintViewList;
         private bool isIteratingHints = false;
         internal CancellationToken token;
@@ -22,7 +22,6 @@ namespace DCL.Controllers.LoadingScreenV2
         public HintViewManager(List<HintView> hintViewList)
         {
             this.hintViewList = hintViewList;
-            Debug.Log("FD:: HintViewManager: hintViewList.Count: " + hintViewList.Count);
         }
 
         public void StartCarousel(CancellationToken ct)
@@ -42,7 +41,7 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void CarouselNextHint()
         {
-            if (hintViewList.Count == 0)
+            if (!isIteratingHints || hintViewList.Count == 0)
                 return;
 
             SetHint((currentHintIndex + 1) % hintViewList.Count);
@@ -50,7 +49,7 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void CarouselPreviousHint()
         {
-            if (hintViewList.Count == 0)
+            if (!isIteratingHints || hintViewList.Count == 0)
                 return;
 
             SetHint((currentHintIndex - 1 + hintViewList.Count) % hintViewList.Count);
@@ -67,7 +66,7 @@ namespace DCL.Controllers.LoadingScreenV2
         {
             while (!token.IsCancellationRequested)
             {
-                CarouselNextHint();
+                // CarouselNextHint();
                 try
                 {
                     await UniTask.Delay((int)SHOWING_TIME_HINTS.TotalMilliseconds, cancellationToken: token);
@@ -86,7 +85,6 @@ namespace DCL.Controllers.LoadingScreenV2
         private void UpdateHintView()
         {
             var hintTuple = hintViewList[currentHintIndex];
-            // hintViewList[currentHintIndex].Initialize(hintTuple.Item1, hintTuple.Item2);
             hintViewList[currentHintIndex].ShowHint(true);
 
             OnHintChanged?.Invoke();

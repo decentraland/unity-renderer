@@ -141,7 +141,7 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
 
             // Act
             loadingScreenHintsController.CarouselNextHint();
-            var nextHintIndex = loadingScreenHintsController.currentHintIndex;
+            var nextHintIndex = loadingScreenHintsController.hintViewManager.currentHintIndex;
 
             // Assert
             // Check if the carousel moved to the next hint
@@ -149,7 +149,7 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
 
             // Act
             loadingScreenHintsController.CarouselPreviousHint();
-            var previousHintIndex = loadingScreenHintsController.currentHintIndex;
+            var previousHintIndex = loadingScreenHintsController.hintViewManager.currentHintIndex;
 
             // Assert
             // Check if the carousel moved to the previous hint

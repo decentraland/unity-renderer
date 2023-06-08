@@ -33,7 +33,7 @@ namespace DCL.Controllers.LoadingScreenV2
         internal HintViewManager hintViewManager;
         internal readonly List<HintView> hintViewPool;
         internal Dictionary<int, Tuple<Hint, Texture2D>> hintsDictionary;
-        internal int currentHintIndex = 0;
+        // internal int currentHintIndex = 0;
         // internal int hintCount = 0;
         internal CancellationTokenSource cancellationTokenSource;
 
@@ -73,7 +73,7 @@ namespace DCL.Controllers.LoadingScreenV2
             hintsDictionary.Clear();
 
             Dictionary<Hint, Texture2D> hintsResult = await hintRequestService.RequestHintsFromSources(ctx, MAX_HINTS);
-            Debug.Log($"FD:: Hints received: {hintsResult.Count}");
+
             int index = 0;
             var intializedHints = new List<HintView>();
             foreach (var hintResult in hintsResult)
@@ -88,10 +88,11 @@ namespace DCL.Controllers.LoadingScreenV2
                 }
                 index++;
             }
-            Debug.Log($"FD:: Hints initialized: {hintsDictionary.Count}");
+
             isRequestingHints = false;
             hintViewManager = new HintViewManager(intializedHints);
 
+            StartHintsCarousel();
             OnRequestHintsCompleted?.Invoke();
         }
 
