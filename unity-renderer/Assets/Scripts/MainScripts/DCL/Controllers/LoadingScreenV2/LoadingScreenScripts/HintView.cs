@@ -9,7 +9,7 @@ namespace DCL.Controllers.LoadingScreenV2
     /// <summary>
     /// View responsible of showing the corresponding provided Hint by LoadingScreenHintsController
     /// </summary>
-    public class HintView : MonoBehaviour
+    public class HintView : MonoBehaviour, IHintView
     {
         [SerializeField] internal TMP_Text hintText;
         [SerializeField] internal Image hintImage;

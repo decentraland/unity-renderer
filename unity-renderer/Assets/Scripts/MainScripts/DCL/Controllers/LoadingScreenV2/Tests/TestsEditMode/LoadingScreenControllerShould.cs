@@ -102,6 +102,13 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
             HintView hintViewPrefab = await addressableProvider.GetAddressable<HintView>(sourceHintViewAddressable, cancellationToken);
             var loadingScreenHintsController = new LoadingScreenHintsController(GameObject.Instantiate(hintViewPrefab), hintRequestService);
 
+            // Create a TaskCompletionSource to wait for RequestHints to complete
+            var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
+            loadingScreenHintsController.OnRequestHintsCompleted += () => requestHintsCompletedTaskSource.SetResult(true);
+
+            // Wait for RequestHints to complete
+            await requestHintsCompletedTaskSource.Task;
+
             // Act
             // Carousel started automatically on RequestHints
 

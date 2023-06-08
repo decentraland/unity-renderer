@@ -28,16 +28,16 @@ namespace DCL.Controllers.LoadingScreenV2
         private readonly HintRequestService hintRequestService;
 
         private bool isRequestingHints = false;
-        private bool isIteratingHints = false;
+        // private bool isIteratingHints = false;
 
+        internal HintViewManager hintViewManager;
         internal readonly List<HintView> hintViewPool;
         internal Dictionary<int, Tuple<Hint, Texture2D>> hintsDictionary;
         internal int currentHintIndex = 0;
-        internal int hintCount = 0;
+        // internal int hintCount = 0;
         internal CancellationTokenSource cancellationTokenSource;
 
         public event Action OnRequestHintsCompleted;
-        public event Action OnHintChanged;
 
         public LoadingScreenHintsController(HintView hintViewPrefab, HintRequestService hintRequestService)
         {
@@ -47,6 +47,7 @@ namespace DCL.Controllers.LoadingScreenV2
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
 
+            // Initializing empty hints views
             for (int i = 0; i < MAX_HINTS; i++)
             {
                 HintView newHintView = Object.Instantiate(hintViewPrefab);
@@ -72,107 +73,61 @@ namespace DCL.Controllers.LoadingScreenV2
             hintsDictionary.Clear();
 
             Dictionary<Hint, Texture2D> hintsResult = await hintRequestService.RequestHintsFromSources(ctx, MAX_HINTS);
+            Debug.Log($"FD:: Hints received: {hintsResult.Count}");
             int index = 0;
+            var intializedHints = new List<HintView>();
             foreach (var hintResult in hintsResult)
             {
                 var hintTuple = new Tuple<Hint, Texture2D>(hintResult.Key, hintResult.Value);
-                hintsDictionary.Add(index++, hintTuple);
+                hintsDictionary.Add(index, hintTuple);
 
-                // Check if this is the first hint, if so start the carousel
-                if (index == 1)
+                if (index < hintViewPool.Count)
                 {
-                    StartHintsCarousel();
+                    hintViewPool[index].Initialize(hintResult.Key, hintResult.Value, index == 0);
+                    intializedHints.Add(hintViewPool[index]);
                 }
+                index++;
             }
-            hintCount = hintsDictionary.Count;
+            Debug.Log($"FD:: Hints initialized: {hintsDictionary.Count}");
             isRequestingHints = false;
+            hintViewManager = new HintViewManager(intializedHints);
 
             OnRequestHintsCompleted?.Invoke();
         }
 
         public void StartHintsCarousel()
         {
-            if (isIteratingHints || hintsDictionary.Count == 0)
-                return;
+            cancellationTokenSource = new CancellationTokenSource();
+            hintViewManager.StartCarousel(cancellationTokenSource.Token);
 
-            isIteratingHints = true;
-            IterateHintsAsync(cancellationTokenSource.Token).Forget();
         }
 
         public void StopHintsCarousel()
         {
-            if (cancellationTokenSource == null)
-                return;
-
-            isIteratingHints = false; // stop the iteration
             cancellationTokenSource.Cancel();
-            cancellationTokenSource.Dispose();
+            hintViewManager.StopCarousel();
             cancellationTokenSource = null;
         }
 
-        private async UniTask IterateHintsAsync(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                CarouselNextHint();
-                try
-                {
-                    await UniTask.Delay((int)SHOWING_TIME_HINTS.TotalMilliseconds, cancellationToken: token);
-                }
-                catch (OperationCanceledException)
-                {
-                    // Operation was cancelled
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogException(ex);
-                }
-            }
-        }
 
         public void CarouselNextHint()
         {
-            if (isRequestingHints || hintCount == 0)
-                return;
-
-            SetHint((currentHintIndex + 1) % hintsDictionary.Count);
+            hintViewManager.CarouselNextHint();
         }
 
         public void CarouselPreviousHint()
         {
-            if (isRequestingHints || hintCount == 0)
-                return;
-
-            SetHint((currentHintIndex - 1 + hintsDictionary.Count) % hintsDictionary.Count);
+            hintViewManager.CarouselPreviousHint();
         }
 
         public void SetHint(int index)
         {
-            hintViewPool[currentHintIndex].ShowHint(false);
-            currentHintIndex = index;
-            UpdateHintView();
-        }
-
-        private void UpdateHintView()
-        {
-            var hintTuple = hintsDictionary[currentHintIndex];
-            hintViewPool[currentHintIndex].Initialize(hintTuple.Item1, hintTuple.Item2);
-            hintViewPool[currentHintIndex].ShowHint(true);
-
-            OnHintChanged?.Invoke();
+            hintViewManager.SetHint(index);
         }
 
         public void Dispose()
         {
-            StopHintsCarousel();
-
-            foreach (var hintKvp in hintsDictionary)
-            {
-                Object.Destroy(hintKvp.Value.Item2);
-            }
-
-            hintsDictionary.Clear();
-            hintViewPool.ForEach(hintView => hintView.ShowHint(false));
+            hintViewManager.Dispose();
         }
     }
 }
