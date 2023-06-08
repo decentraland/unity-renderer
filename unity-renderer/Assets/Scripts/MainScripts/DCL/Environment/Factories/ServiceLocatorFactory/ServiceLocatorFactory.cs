@@ -122,8 +122,6 @@ namespace DCL
 
                     void CompleteTaskAndUnsubscribe()
                     {
-                        Debug.Log("SocialClient.Transport.Connect.Success");
-
                         Unsubscribe();
 
                         if (cancellationToken.IsCancellationRequested)
@@ -137,8 +135,6 @@ namespace DCL
 
                     void FailTaskAndUnsubscribe(string error)
                     {
-                        Debug.Log($"SocialClient.Transport.Error: {error}");
-
                         Unsubscribe();
 
                         if (cancellationToken.IsCancellationRequested)
@@ -152,8 +148,6 @@ namespace DCL
 
                     void FailTaskByDisconnectionAndUnsubscribe()
                     {
-                        Debug.Log("SocialClient.Transport.Disconnected");
-
                         Unsubscribe();
 
                         if (cancellationToken.IsCancellationRequested)
@@ -178,7 +172,6 @@ namespace DCL
 
                     try
                     {
-                        Debug.Log("SocialClient.Transport.Connect");
                         // connect async does not work, probably because the lack of multi-threading support in webgl build?
                         // transport.ConnectAsync();
                         transport.Connect();
