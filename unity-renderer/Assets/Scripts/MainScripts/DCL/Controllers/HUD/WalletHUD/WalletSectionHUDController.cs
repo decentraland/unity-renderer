@@ -42,6 +42,12 @@ namespace DCL.Wallet
             ConfigureWalletSectionInFullscreenMenuChanged(dataStore.exploreV2.configureWalletSectionInFullscreenMenu.Get(), null);
 
             dataStore.wallet.isInitialized.Set(true);
+
+            dataStore.wallet.currentEthereumManaBalance.OnChange += OnCurrentEthereumManaBalanceChanged;
+            OnCurrentEthereumManaBalanceChanged(dataStore.wallet.currentEthereumManaBalance.Get(), 0f);
+            dataStore.wallet.currentPolygonManaBalance.OnChange += OnCurrentPolygonManaBalanceChanged;
+            OnCurrentPolygonManaBalanceChanged(dataStore.wallet.currentPolygonManaBalance.Get(), 0f);
+
             dataStore.wallet.isWalletSectionVisible.OnChange += OnWalletSectionVisible;
 
             ownUserProfile.OnUpdate += OnProfileUpdated;
@@ -55,6 +61,8 @@ namespace DCL.Wallet
         public void Dispose()
         {
             dataStore.exploreV2.configureWalletSectionInFullscreenMenu.OnChange -= ConfigureWalletSectionInFullscreenMenuChanged;
+            dataStore.wallet.currentEthereumManaBalance.OnChange -= OnCurrentEthereumManaBalanceChanged;
+            dataStore.wallet.currentPolygonManaBalance.OnChange -= OnCurrentPolygonManaBalanceChanged;
             dataStore.wallet.isWalletSectionVisible.OnChange -= OnWalletSectionVisible;
             ownUserProfile.OnUpdate -= OnProfileUpdated;
             view.OnBuyManaClicked -= GoToManaPurchaseUrl;
@@ -63,6 +71,12 @@ namespace DCL.Wallet
 
         private void ConfigureWalletSectionInFullscreenMenuChanged(Transform currentParentTransform, Transform _) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
+
+        private void OnCurrentEthereumManaBalanceChanged(double currentBalance, double _) =>
+            view.SetEthereumManaBalance(currentBalance);
+
+        private void OnCurrentPolygonManaBalanceChanged(double currentBalance, double _) =>
+            view.SetPolygonManaBalance(currentBalance);
 
         private void OnWalletSectionVisible(bool isVisible, bool _)
         {
@@ -123,6 +137,7 @@ namespace DCL.Wallet
                 if (promise != null)
                 {
                     yield return promise;
+                    dataStore.wallet.currentEthereumManaBalance.Set(promise.value);
                     view.SetEthereumManaBalance(promise.value);
                     view.SetEthereumManaLoadingActive(false);
                 }
@@ -143,6 +158,7 @@ namespace DCL.Wallet
                 if (promise != null)
                 {
                     yield return promise;
+                    dataStore.wallet.currentPolygonManaBalance.Set(promise.value);
                     view.SetPolygonManaBalance(promise.value);
                     view.SetPolygonManaLoadingActive(false);
                 }

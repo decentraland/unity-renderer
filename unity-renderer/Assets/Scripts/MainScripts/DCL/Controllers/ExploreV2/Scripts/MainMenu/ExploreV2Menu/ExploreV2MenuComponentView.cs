@@ -1,10 +1,10 @@
 using DCL;
+using DCL.Wallet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
@@ -15,7 +15,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
-    [SerializeField] internal Button walletCard;
+    [SerializeField] internal WalletCardHUDComponentView walletCard;
     [SerializeField] internal ProfileCardComponentView profileCard;
     [SerializeField] internal RealmViewerComponentView realmViewer;
     [SerializeField] internal ButtonComponentView closeMenuButton;
@@ -43,7 +43,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IRealmSelectorComponentView currentRealmSelectorModal => realmSelectorModal;
-
+    public IWalletCardHUDComponentView currentWalletCard => walletCard;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
 
@@ -65,7 +65,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
-        walletCard.onClick.RemoveAllListeners();
+        currentWalletCard.OnClicked -= OpenCurrentWalletSection;
         closeAction.OnTriggered -= OnCloseActionTriggered;
         DataStore.i.exploreV2.isSomeModalOpen.OnChange -= IsSomeModalOpen_OnChange;
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
@@ -101,7 +101,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         ConfigureCloseButton();
 
-        walletCard.onClick.AddListener(OpenWalletSection);
+        currentWalletCard.OnClicked += OpenCurrentWalletSection;
     }
 
     public void Update() =>
@@ -140,7 +140,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                           ?.onSelect.AddListener(OnSectionSelected(sectionId));
     }
 
-    private void OpenWalletSection()
+    private void OpenCurrentWalletSection()
     {
         foreach (var section in exploreSectionsById)
             if (section.Value != null && section.Value.isVisible)
@@ -329,6 +329,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         mapSection.Hide();
     }
 
-    public void SetWalletActive(bool isActive) =>
-        walletCard.gameObject.SetActive(isActive);
+    public void SetWalletActive(bool isActive, bool isGuest)
+    {
+        currentWalletCard.SetWalletCardActive(isActive);
+        currentWalletCard.SetWalletCardAsGuest(isGuest);
+    }
 }

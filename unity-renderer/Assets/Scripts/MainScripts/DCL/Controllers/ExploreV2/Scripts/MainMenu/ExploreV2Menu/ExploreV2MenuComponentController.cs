@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Social.Friends;
+using DCL.Wallet;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal ExploreSection currentOpenSection;
     internal Dictionary<BaseVariable<bool>, ExploreSection> sectionsByVisibilityVar;
     private ExploreV2ComponentRealmsController realmController;
+    private WalletCardHUDController walletCardHUDController;
 
     private MouseCatcher mouseCatcher;
     private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByInitVar;
@@ -83,6 +85,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         realmController.Initialize();
         view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
 
+        // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
+        walletCardHUDController = new WalletCardHUDController(
+            view.currentWalletCard,
+            new UserProfileWebInterfaceBridge(),
+            Environment.i.platform.serviceProviders.theGraph,
+            DataStore.i);
+
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
@@ -130,6 +139,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     public void Dispose()
     {
         realmController.Dispose();
+        walletCardHUDController.Dispose();
 
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
@@ -234,7 +244,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
                 view.SetSectionAsNew(ExploreSection.Backpack, true);
 
-            view.SetWalletActive(DataStore.i.wallet.isInitialized.Get());
+            view.SetWalletActive(DataStore.i.wallet.isInitialized.Get(), ownUserProfile.isGuest);
 
             if (mouseCatcher != null)
                 mouseCatcher.UnlockCursor();
@@ -243,6 +253,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                 view.GoToSection(DEFAULT_SECTION);
 
             isPromoteChannelsToastVisible.Set(false);
+
+            if (!ownUserProfile.isGuest)
+                walletCardHUDController?.RefreshManaBalances();
         }
         else
         {

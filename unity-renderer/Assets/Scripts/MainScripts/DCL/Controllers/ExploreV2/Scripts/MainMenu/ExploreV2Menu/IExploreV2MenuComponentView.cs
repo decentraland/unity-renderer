@@ -1,9 +1,9 @@
+using DCL.Wallet;
 using System;
 using UnityEngine;
 
 public interface IExploreV2MenuComponentView : IDisposable
 {
-
     /// <summary>
     /// Real viewer component.
     /// </summary>
@@ -13,6 +13,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Realm Selector component.
     /// </summary>
     IRealmSelectorComponentView currentRealmSelectorModal { get; }
+
+    /// <summary>
+    /// Wallet card component.
+    /// </summary>
+    IWalletCardHUDComponentView currentWalletCard { get; }
 
     /// <summary>
     /// Profile card component.
@@ -131,5 +136,6 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Activates/Deactivates the wallet button in the top menu.
     /// </summary>
     /// <param name="isActive">True for activating it.</param>
-    void SetWalletActive(bool isActive);
+    /// <param name="isGuest">True for setting it as guest mode.</param>
+    void SetWalletActive(bool isActive, bool isGuest);
 }

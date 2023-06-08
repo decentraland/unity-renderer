@@ -1,8 +1,8 @@
 ﻿namespace DCL.Wallet
 {
-    public record WalletSectionHUDModel
+    public record WalletCardHUDModel
     {
-        public string WalletAddress;
+        public bool IsGuest;
         public double EthereumManaBalance;
         public double PolygonManaBalance;
     }

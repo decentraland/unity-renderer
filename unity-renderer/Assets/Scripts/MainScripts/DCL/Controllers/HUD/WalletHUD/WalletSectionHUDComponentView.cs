@@ -48,10 +48,16 @@ namespace DCL.Wallet
             copyWalletAddressButton.onClick.RemoveAllListeners();
             buyEthereumManaButton.onClick.RemoveAllListeners();
             buyPolygonManaButton.onClick.RemoveAllListeners();
+
             base.Dispose();
         }
 
-        public override void RefreshControl() { }
+        public override void RefreshControl()
+        {
+            SetWalletAddress(model.WalletAddress);
+            SetEthereumManaBalance(model.EthereumManaBalance);
+            SetPolygonManaBalance(model.PolygonManaBalance);
+        }
 
         public static WalletSectionHUDComponentView Create() =>
             Instantiate(Resources.Load<WalletSectionHUDComponentView>("WalletSectionHUD"));
@@ -74,8 +80,11 @@ namespace DCL.Wallet
             rectTransform.offsetMin = Vector2.zero;
         }
 
-        public void SetWalletAddress(string fullWalletAddress) =>
+        public void SetWalletAddress(string fullWalletAddress)
+        {
+            model.WalletAddress = fullWalletAddress;
             walletAddressText.text = fullWalletAddress;
+        }
 
         public void SetEthereumManaLoadingActive(bool isActive)
         {
@@ -83,8 +92,11 @@ namespace DCL.Wallet
             ethereumManaBalanceLoading.SetActive(isActive);
         }
 
-        public void SetEthereumManaBalance(double balance) =>
-            ethereumManaBalanceText.text = FormatBalanceToString(balance);
+        public void SetEthereumManaBalance(double balance)
+        {
+            model.EthereumManaBalance = balance;
+            ethereumManaBalanceText.text = WalletUtils.FormatBalanceToString(balance);
+        }
 
         public void SetPolygonManaLoadingActive(bool isActive)
         {
@@ -92,8 +104,11 @@ namespace DCL.Wallet
             polygonManaBalanceLoading.SetActive(isActive);
         }
 
-        public void SetPolygonManaBalance(double balance) =>
-            polygonManaBalanceText.text = FormatBalanceToString(balance);
+        public void SetPolygonManaBalance(double balance)
+        {
+            model.PolygonManaBalance = balance;
+            polygonManaBalanceText.text = WalletUtils.FormatBalanceToString(balance);
+        }
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -121,21 +136,6 @@ namespace DCL.Wallet
             copyWalletAddressToast.Show();
             yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
             copyWalletAddressToast.Hide();
-        }
-
-        private string FormatBalanceToString(double balance)
-        {
-            return balance switch
-                   {
-                     >= 100000000 => (balance / 1000000D).ToString("0.#M"),
-                     >= 1000000 => (balance / 1000000D).ToString("0.##M"),
-                     >= 100000 => (balance / 1000D).ToString("0.#K"),
-                     >= 10000 => (balance / 1000D).ToString("0.##K"),
-                     < 0.001 => "0",
-                     <= 1 => balance.ToString("0.###"),
-                     < 100 => balance.ToString("0.##"),
-                     _ => balance.ToString("#,0"),
-                 };
         }
 
         private bool CheckClickOnLearnMoreLink(TMP_Text textToCheck)
