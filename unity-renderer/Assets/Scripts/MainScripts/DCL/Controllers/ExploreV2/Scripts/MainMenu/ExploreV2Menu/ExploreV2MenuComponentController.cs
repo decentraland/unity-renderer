@@ -87,12 +87,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         realmController.Initialize();
         view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
 
-        if (DataStore.i.wallet.isInitialized.Get())
-            walletCardHUDController = new WalletCardHUDController(
-                view.currentWalletCard,
-                new UserProfileWebInterfaceBridge(),
-                Environment.i.platform.serviceProviders.theGraph,
-                DataStore.i);
+        if (isWalletInitialized.Get())
+            OnWalletInitialized(true, false);
+        else
+            isWalletInitialized.OnChange += OnWalletInitialized;
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
@@ -172,11 +170,26 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         DataStore.i.common.isWorld.OnChange -= OnWorldChange;
 
+        isWalletInitialized.OnChange -= OnWalletInitialized;
         walletCardHUDController?.Dispose();
     }
 
     protected internal virtual IExploreV2MenuComponentView CreateView() =>
         ExploreV2MenuComponentView.Create();
+
+    private void OnWalletInitialized(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        isWalletInitialized.OnChange -= OnWalletInitialized;
+
+        walletCardHUDController = new WalletCardHUDController(
+            view.currentWalletCard,
+            new UserProfileWebInterfaceBridge(),
+            Environment.i.platform.serviceProviders.theGraph,
+            DataStore.i);
+    }
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() =>
         new ExploreV2Analytics.ExploreV2Analytics();
@@ -247,7 +260,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
                 view.SetSectionAsNew(ExploreSection.Backpack, true);
 
-            view.SetWalletActive(DataStore.i.wallet.isInitialized.Get(), ownUserProfile.isGuest);
+            view.SetWalletActive(isWalletInitialized.Get(), ownUserProfile.isGuest);
 
             if (mouseCatcher != null)
                 mouseCatcher.UnlockCursor();
