@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Threading;
 using UnityEngine;
+using WebSocketSharp;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -96,7 +97,25 @@ namespace DCL
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
                     transport.WaitTime = TimeSpan.FromSeconds(60);
                     transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
-                    transport.SslConfiguration.ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true;
+                    transport.Log.Level = LogLevel.Debug;
+                    transport.Log.Output += (data, s) =>
+                    {
+                        switch (data.Level)
+                        {
+                            case LogLevel.Debug:
+                            case LogLevel.Info:
+                            case LogLevel.Trace:
+                                Debug.Log($"SocialClient.Transport.Output: {data.Message}");
+                                break;
+                            case LogLevel.Error:
+                            case LogLevel.Fatal:
+                                Debug.LogError($"SocialClient.Transport.Output: {data.Message}");
+                                break;
+                            case LogLevel.Warn:
+                                Debug.LogWarning($"SocialClient.Transport.Output: {data.Message}");
+                                break;
+                        }
+                    };
 
                     void CompleteTaskAndUnsubscribe()
                     {
@@ -158,6 +177,7 @@ namespace DCL
                     {
                         Debug.Log("SocialClient.Transport.Connect");
                         transport.ConnectAsync();
+                        transport.Connect();
                     }
                     catch (Exception e)
                     {
