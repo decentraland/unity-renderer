@@ -96,6 +96,7 @@ namespace DCL
                     var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
                     transport.WaitTime = TimeSpan.FromSeconds(60);
                     transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+                    transport.SslConfiguration.ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true;
 
                     void CompleteTaskAndUnsubscribe()
                     {
