@@ -15,6 +15,8 @@ using Environment = DCL.Environment;
 /// </summary>
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
+    // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
+
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
 
     internal IExploreV2MenuComponentView view;
@@ -85,7 +87,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         realmController.Initialize();
         view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
 
-        // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
         if (DataStore.i.wallet.isInitialized.Get())
             walletCardHUDController = new WalletCardHUDController(
                 view.currentWalletCard,
