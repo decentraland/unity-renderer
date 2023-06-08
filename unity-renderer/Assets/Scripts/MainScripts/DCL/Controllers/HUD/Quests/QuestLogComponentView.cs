@@ -3,6 +3,7 @@ using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -27,15 +28,19 @@ namespace DCL.Quests
 
         public event Action<string, bool> OnPinChange;
 
-        private Dictionary<string, ActiveQuestComponentView> activeQuests = new Dictionary<string, ActiveQuestComponentView>();
-        private Dictionary<string, ActiveQuestComponentView> completedQuests = new Dictionary<string, ActiveQuestComponentView>();
+        private Dictionary<string, ActiveQuestComponentView> activeQuests;
+        private Dictionary<string, ActiveQuestComponentView> completedQuests;
         private UnityObjectPool<ActiveQuestComponentView> questsPool;
         private UnityObjectPool<ActiveQuestComponentView> completedQuestsPool;
+        private string previouslySelectedQuest;
 
-        public void Start()
+        public override void Awake()
         {
-            questsPool = new UnityObjectPool<ActiveQuestComponentView>(activeQuestPrefab, activeQuestsContainer);
+            activeQuests = new ();
+            completedQuests = new ();
+            questsPool = new UnityObjectPool<ActiveQuestComponentView>(activeQuestPrefab, activeQuestsContainer, actionOnDestroy: x => x.Hide());
             questsPool.Prewarm(MAX_QUESTS_COUNT);
+            sectionSelector.Awake();
             sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(COMPLETED_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).onSelect.AddListener((isSelected) =>
@@ -72,25 +77,45 @@ namespace DCL.Quests
         public void AddActiveQuest(QuestDetailsComponentModel activeQuest)
         {
             emptyState.SetActive(false);
-            if (!activeQuests.ContainsKey(activeQuest.questId))
-                activeQuests[activeQuest.questId] = questsPool.Get();
 
+            if (!activeQuests.ContainsKey(activeQuest.questId))
+                activeQuests.Add(activeQuest.questId, questsPool.Get());
+
+            activeQuests[activeQuest.questId].OnActiveQuestSelected -= SelectedQuest;
             activeQuests[activeQuest.questId].SetModel(new ActiveQuestComponentModel()
             {
                 questId = activeQuest.questId,
                 questCreator = activeQuest.questCreator,
                 questName = activeQuest.questName,
                 questImageUri = "",
-                isPinned = false,
+                isPinned = activeQuest.isPinned,
                 questModel = activeQuest
             });
+            activeQuests[activeQuest.questId].OnActiveQuestSelected += SelectedQuest;
+            HandleQuestSelection(activeQuest.questId);
+        }
+
+        private void HandleQuestSelection(string questId)
+        {
+            if(!string.IsNullOrEmpty(previouslySelectedQuest))
+                activeQuests[previouslySelectedQuest].Deselect();
+            activeQuests[questId].OnPointerClick(null);
+            previouslySelectedQuest = questId;
+        }
+
+        private void SelectedQuest(QuestDetailsComponentModel questModel)
+        {
+            if(!string.IsNullOrEmpty(previouslySelectedQuest))
+                activeQuests[previouslySelectedQuest].Deselect();
+            questDetailsComponentView.SetModel(questModel);
+            previouslySelectedQuest = questModel.questId;
         }
 
         public void AddCompletedQuest(QuestDetailsComponentModel completedQuest)
         {
             emptyState.SetActive(false);
             if (!completedQuests.ContainsKey(completedQuest.questId))
-                completedQuests[completedQuest.questId] = questsPool.Get();
+                completedQuests.Add(completedQuest.questId, questsPool.Get());
 
             completedQuests[completedQuest.questId].SetModel(new ActiveQuestComponentModel()
             {
@@ -121,6 +146,9 @@ namespace DCL.Quests
             rectTransform.offsetMin = Vector2.zero;
             gameObject.SetActive(true);
         }
+
+        public void SetIsGuest(bool isGuest) =>
+            questDetailsComponentView.SetIsGuest(isGuest);
 
         public override void RefreshControl()
         {

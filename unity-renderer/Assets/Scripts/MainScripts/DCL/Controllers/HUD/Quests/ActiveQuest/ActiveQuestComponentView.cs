@@ -26,7 +26,7 @@ namespace DCL.Quests
         [SerializeField] internal Color deselectedBackgroundColor;
         [SerializeField] internal Color deselectedBackgroundColorTransparent;
 
-        public event Action<string> OnActiveQuestSelected;
+        public event Action<QuestDetailsComponentModel> OnActiveQuestSelected;
 
         internal bool isSelected = false;
 
@@ -93,7 +93,7 @@ namespace DCL.Quests
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            OnActiveQuestSelected?.Invoke(model.questId);
+            OnActiveQuestSelected?.Invoke(model.questModel);
             isSelected = true;
             focusOutline.SetActive(false);
             selectedOutline.SetActive(true);

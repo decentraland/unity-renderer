@@ -1147,6 +1147,7 @@ MonoBehaviour:
   rewardsParent: {fileID: 1798156650007868679}
   jumpInButton: {fileID: 1018855186851495725}
   pinButton: {fileID: 4364084687773730676}
+  pinButtonText: {fileID: 4935376206346742322}
   abandonButton: {fileID: 5285632930822995178}
   rewardsSection: {fileID: 2111371425988300921}
   guestSection: {fileID: 5884143121228627897}

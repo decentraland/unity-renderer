@@ -3,7 +3,9 @@ using DCL;
 using DCL.Providers;
 using DCL.Quests;
 using DCLServices.QuestsService;
+using Decentraland.Quests;
 using System.Threading;
+using UnityEngine;
 
 public class QuestsPlugin : IPlugin
 {
@@ -19,6 +21,7 @@ public class QuestsPlugin : IPlugin
     private QuestStartedPopupComponentView questStartedPopupComponentView;
     private QuestLogComponentView questLogComponentView;
     private QuestsService questService;
+    private IClientQuestsService questServiceMock;
 
     private CancellationTokenSource cts;
 
@@ -32,20 +35,23 @@ public class QuestsPlugin : IPlugin
 
     private async UniTaskVoid InstantiateUIs(CancellationTokenSource cts)
     {
-        //questService = new QuestsService(null);
+        questServiceMock = await resourceProvider.Instantiate<IClientQuestsService>("MockQuestService", "MockQuestService", cts.Token);
+        questService = new QuestsService(questServiceMock);
         questTrackerComponentView = await resourceProvider.Instantiate<QuestTrackerComponentView>(QUEST_TRACKER_HUD, $"_{QUEST_TRACKER_HUD}", cts.Token);
         questCompletedComponentView = await resourceProvider.Instantiate<QuestCompletedComponentView>(QUEST_COMPLETED_HUD, $"_{QUEST_COMPLETED_HUD}", cts.Token);
         questStartedPopupComponentView = await resourceProvider.Instantiate<QuestStartedPopupComponentView>(QUEST_STARTED_POPUP, $"_{QUEST_STARTED_POPUP}", cts.Token);
         questLogComponentView = await resourceProvider.Instantiate<QuestLogComponentView>(QUEST_LOG, $"_{QUEST_LOG}", cts.Token);
+
         questLogComponentView.gameObject.SetActive(false);
         DataStore.i.Quests.isInitialized.Set(true);
 
         QuestsController controller = new QuestsController(
-            null,
+            questService,
             questTrackerComponentView,
             questCompletedComponentView,
             questStartedPopupComponentView,
             questLogComponentView,
+            userProfileBridge,
             DataStore.i);
     }
 

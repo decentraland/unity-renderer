@@ -12,5 +12,6 @@ namespace DCL.Quests
         void AddActiveQuest(QuestDetailsComponentModel activeQuest);
         void AddCompletedQuest(QuestDetailsComponentModel completedQuest);
         void SetAsFullScreenMenuMode(Transform parentTransform);
+        void SetIsGuest(bool isGuest);
     }
 }

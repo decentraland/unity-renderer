@@ -71,7 +71,7 @@ namespace DCL.Quests
             string questId = "asdasdads";
             string receivedQuestId = "";
             activeQuestComponentView.SetQuestId(questId);
-            activeQuestComponentView.OnActiveQuestSelected += s => receivedQuestId = s;
+            activeQuestComponentView.OnActiveQuestSelected += s => receivedQuestId = s.questId;
             activeQuestComponentView.OnPointerClick(null);
 
             Assert.AreEqual(questId, receivedQuestId, "Even for selected quest was not invoked or was carrying the wrong quest id");

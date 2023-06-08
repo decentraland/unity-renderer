@@ -4,7 +4,7 @@ namespace DCL.Quests
 {
     public interface IActiveQuestComponentView
     {
-        event Action<string> OnActiveQuestSelected;
+        event Action<QuestDetailsComponentModel> OnActiveQuestSelected;
 
         void SetQuestName(string title);
         void SetQuestCreator(string creator);

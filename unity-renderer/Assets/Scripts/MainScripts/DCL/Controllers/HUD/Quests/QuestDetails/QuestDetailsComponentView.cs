@@ -22,6 +22,7 @@ namespace DCL.Quests
         [SerializeField] internal Transform rewardsParent;
         [SerializeField] internal Button jumpInButton;
         [SerializeField] internal Button pinButton;
+        [SerializeField] internal TMP_Text pinButtonText;
         [SerializeField] internal Button abandonButton;
         [SerializeField] internal GameObject rewardsSection;
         [SerializeField] internal GameObject guestSection;
@@ -48,6 +49,7 @@ namespace DCL.Quests
             pinButton.onClick.AddListener(() =>
             {
                 model.isPinned = !model.isPinned;
+                pinButtonText.text = model.isPinned ? "Unpin" : "Pin";
                 OnPinChange?.Invoke(model.questId, model.isPinned);
             });
             abandonButton.onClick.RemoveAllListeners();
@@ -68,6 +70,7 @@ namespace DCL.Quests
 
         public override void RefreshControl()
         {
+            SetIsPinned(model.isPinned);
             SetQuestId(model.questId);
             SetQuestName(model.questName);
             SetQuestCreator(model.questCreator);
@@ -101,18 +104,20 @@ namespace DCL.Quests
         public void SetCoordinates(Vector2Int coordinates) =>
             model.coordinates = coordinates;
 
-        public void SetIsPinned(bool isPinned) =>
+        public void SetIsPinned(bool isPinned)
+        {
             model.isPinned = isPinned;
+            pinButtonText.text = isPinned ? "Unpin" : "Pin";
+        }
 
         public void SetQuestSteps(List<QuestStepComponentModel> questSteps)
         {
             model.questSteps = questSteps;
 
-            for (var i = 0; i < stepsParent.childCount; i++)
-                Destroy(stepsParent.GetChild(i));
-
             foreach (var pooledStep in usedSteps)
                 stepsPool.Release(pooledStep);
+
+            usedSteps.Clear();
 
             foreach (var stepModel in questSteps)
             {
@@ -128,9 +133,6 @@ namespace DCL.Quests
         {
             model.questRewards = questRewards;
 
-            for (var i = 0; i < rewardsParent.childCount; i++)
-                Destroy(rewardsParent.GetChild(i));
-
             if (questRewards == null || questRewards.Count == 0)
             {
                 rewardsSection.SetActive(false);
@@ -141,6 +143,8 @@ namespace DCL.Quests
 
             foreach (var pooledReward in usedRewards)
                 rewardsPool.Release(pooledReward);
+
+            usedRewards.Clear();
 
             foreach (var rewardModel in questRewards)
             {

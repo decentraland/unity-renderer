@@ -32,7 +32,7 @@ namespace DCL.Helpers
         }
 
         public IUniTaskAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = new ()) =>
-            activeProperty.GetAsyncEnumerator(cancellationToken);
+            activeProperty.WithoutCurrent().GetAsyncEnumerator(cancellationToken);
 
         public void Dispose()
         {
