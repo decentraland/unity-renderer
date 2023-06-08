@@ -107,9 +107,14 @@ namespace ECSSystems.ScenesUiSystem
             }
 
             // 'Screen.mainWindowDisplayInfo' cannot be used in WebGL due to 'Screen.GetDisplayInfoForPoint' being unsupported
-            float diagonalPixelsScreenSize = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height));
+            float diagonalPixelsViewportSize = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height));
             float diagonalPixelsRealScreenSize = Mathf.Sqrt((Screen.currentResolution.width * Screen.currentResolution.width) + (Screen.currentResolution.height * Screen.currentResolution.height));
-            Debug.Log($"ratio (diagonal) ???: {diagonalPixelsRealScreenSize / diagonalPixelsScreenSize}");
+            Debug.Log($"ratio (diagonal) ???: {diagonalPixelsRealScreenSize / diagonalPixelsViewportSize}");
+
+            var mainCamera = Camera.main;
+            Debug.Log($"camera pixel res: {mainCamera.pixelWidth}x{mainCamera.pixelHeight}");
+            Debug.Log($"camera pixel rect: {mainCamera.pixelRect}");
+            Debug.Log($"camera scaled pixel res: {mainCamera.scaledPixelWidth}x{mainCamera.scaledPixelHeight}");
 
             componentWriter.PutComponent(
                 currentSceneNumber,
@@ -120,7 +125,7 @@ namespace ECSSystems.ScenesUiSystem
                     InteractableArea = interactableArea,
                     Width = Screen.width,
                     Height = Screen.height,
-                    DevicePixelRatio = diagonalPixelsRealScreenSize / diagonalPixelsScreenSize
+                    DevicePixelRatio = diagonalPixelsRealScreenSize / diagonalPixelsViewportSize
                 });
         }
 
