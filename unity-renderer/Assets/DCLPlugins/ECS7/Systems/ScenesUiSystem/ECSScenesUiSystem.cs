@@ -106,16 +106,6 @@ namespace ECSSystems.ScenesUiSystem
                     isPendingSceneUI = false;
             }
 
-            // 'Screen.mainWindowDisplayInfo' cannot be used in WebGL due to 'Screen.GetDisplayInfoForPoint' being unsupported
-            float diagonalPixelsViewportSize = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height));
-            float diagonalPixelsRealScreenSize = Mathf.Sqrt((Screen.currentResolution.width * Screen.currentResolution.width) + (Screen.currentResolution.height * Screen.currentResolution.height));
-            Debug.Log($"ratio (diagonal) ???: {diagonalPixelsRealScreenSize / diagonalPixelsViewportSize}");
-
-            var mainCamera = Camera.main;
-            Debug.Log($"camera pixel res: {mainCamera.pixelWidth}x{mainCamera.pixelHeight}");
-            Debug.Log($"camera pixel rect: {mainCamera.pixelRect}");
-            Debug.Log($"camera scaled pixel res: {mainCamera.scaledPixelWidth}x{mainCamera.scaledPixelHeight}");
-
             componentWriter.PutComponent(
                 currentSceneNumber,
                 SpecialEntityId.SCENE_ROOT_ENTITY,
@@ -125,7 +115,7 @@ namespace ECSSystems.ScenesUiSystem
                     InteractableArea = interactableArea,
                     Width = Screen.width,
                     Height = Screen.height,
-                    DevicePixelRatio = diagonalPixelsRealScreenSize / diagonalPixelsViewportSize
+                    DevicePixelRatio = CalculateDevicePixelRatio()
                 });
         }
 
@@ -376,6 +366,23 @@ namespace ECSSystems.ScenesUiSystem
                 this.id = id;
                 this.element = element;
             }
+        }
+
+        /*
+         * Calculates what web browsers call "device pixel ratio": a ratio between the application virtual resolution
+         * and the screen resolution. It represents how many physical/real pixels are needed to draw the virtual pixels
+         * of the application. The smaller the application resolution is, compared to the real screen resolution, the
+         * higher the device pixel ratio is. Normally the result can be between 1~3.
+         * Note: Explorer's 'rendering scale' doesn't affect this, as that is only for 3D rendering, so it doesn't affect
+         * the whole application resolution (e.g. UIs are unaffected).
+        */
+        private float CalculateDevicePixelRatio()
+        {
+            // 'Screen.mainWindowDisplayInfo' cannot be used in WebGL due to 'Screen.GetDisplayInfoForPoint' unsupported error
+            float realScreenDiagonalSizeInPixels = Mathf.Sqrt((Screen.currentResolution.width * Screen.currentResolution.width) + (Screen.currentResolution.height * Screen.currentResolution.height));
+            float viewportDiagonalSizeInPixels = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height));
+
+            return realScreenDiagonalSizeInPixels / viewportDiagonalSizeInPixels;
         }
     }
 }
