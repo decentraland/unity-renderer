@@ -11,7 +11,7 @@ namespace RPC.Transports
 {
     public class AuthedWebSocketClientTransport : WebSocket, ITransport
     {
-        private bool VERBOSE = true;
+        private bool VERBOSE = false;
 
         public event Action OnCloseEvent;
         public event Action<string> OnErrorEvent;

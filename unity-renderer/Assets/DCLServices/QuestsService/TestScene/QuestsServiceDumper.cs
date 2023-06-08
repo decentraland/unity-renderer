@@ -1,10 +1,10 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using Decentraland.Quests;
-using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using rpc_csharp;
 using RPC.Transports;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,18 +19,26 @@ namespace DCLServices.QuestsService.TestScene
     /// </summary>
     public class QuestsServiceDumper : MonoBehaviour
     {
-        private readonly List<UserUpdate> updates = new ();
+        public bool justAbortAllOnGoinQuests = false;
+
+        private Quests getAllQuests = null;
+        private readonly List<UserUpdate> userUpdates = new ();
         private readonly List<Quest> definitions = new ();
 
         private ClientQuestsService client;
         private CancellationTokenSource subscribeCTS = new CancellationTokenSource();
-        private bool listeningToQuests = false;
+
+        // You can find more quests here: https://quests.decentraland.zone/quests
+        public string[] questsToStart =
+        {
+            "7d795b67-11f6-4d73-bd88-5d89cf33d679",
+            "e382bd60-3292-484a-996e-7c7b0e4794c9",
+        };
 
         [ContextMenu("start")]
         private void StartDumper()
         {
-            Debug.Log($"Output file for updates can be found at: {ClientQuestsServiceMock.PATH_UPDATES}");
-            Debug.Log($"Output file for definitions can be found at: {ClientQuestsServiceMock.PATH_DEFINITIONS}");
+            Debug.Log($"Output file can be found at: {QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE}");
             Initialize().Forget();
         }
 
@@ -49,32 +57,52 @@ namespace DCLServices.QuestsService.TestScene
             var module = await clientPort.LoadModule(QuestsServiceCodeGen.ServiceName);
             client = new ClientQuestsService(module);
 
-            await CollectQuestsDefinitionsAsync(client);
-            ProgressQuestsAsync(client).Forget();
-            await CollectUpdatesAsync(client, subscribeCTS.Token);
+            if (justAbortAllOnGoinQuests)
+            {
+                var response = await client.GetAllQuests(new Empty());
+                foreach (QuestInstance questsInstance in response.Quests.Instances)
+                {
+                    Debug.Log($"Aborting quest instance {questsInstance.Id}");
+                    await client.AbortQuest(new AbortQuestRequest { QuestInstanceId = questsInstance.Id });
+                }
+                webSocketClientTransport.Close();
+                return;
+            }
+
+            await CollectQuestsDefinitionsAsync();
+            await GetAllQuestsAsync();
+            CollectUpdatesAsync(subscribeCTS.Token).Forget();
+
+            //Wait 2 seconds to give time to all the subscriptions to ready themselves
+            UniTask.Delay(TimeSpan.FromSeconds(2));
+
+            ProgressQuestsAsync().Forget();
         }
 
-        private async UniTask CollectQuestsDefinitionsAsync(ClientQuestsService client)
+        private async UniTask CollectQuestsDefinitionsAsync()
         {
             Debug.Log("Start collecting definitions");
-            definitions.Add((await client.GetQuestDefinition(new GetQuestDefinitionRequest { QuestId = "fa4d36f6-d5fe-484e-a27d-ac03bc8faca6" })).Quest);
-            definitions.Add((await client.GetQuestDefinition(new GetQuestDefinitionRequest { QuestId = "8e9a8bbf-2223-4f51-b7e5-660d35cedef4" })).Quest);
+            foreach (string questId in questsToStart)
+            {
+                definitions.Add((await client.GetQuestDefinition(new GetQuestDefinitionRequest { QuestId = questId })).Quest);
+            }
             Debug.Log("Definitions are ready to be saved");
         }
 
-        private async UniTaskVoid ProgressQuestsAsync(ClientQuestsService client)
+        private async UniTask GetAllQuestsAsync()
+        {
+            Debug.Log("Getting all quests");
+            var response = await client.GetAllQuests(new Empty());
+            getAllQuests = response.Quests;
+            Debug.Log("Done getting all quests");
+        }
+
+        private async UniTaskVoid ProgressQuestsAsync()
         {
             Debug.Log($"Start progressing quests:");
 
-            await UniTask.WaitUntil(() => this.listeningToQuests);
-
             // Do your interaction with the server here, such as:
             // Starting quests
-            string[] questsToStart =
-            {
-                "fa4d36f6-d5fe-484e-a27d-ac03bc8faca6",
-                "8e9a8bbf-2223-4f51-b7e5-660d35cedef4",
-            };
 
             foreach (string questId in questsToStart)
             {
@@ -89,19 +117,20 @@ namespace DCLServices.QuestsService.TestScene
             Debug.Log("All progress is done, waiting for updates to be saved...");
         }
 
-        private async UniTask CollectUpdatesAsync(ClientQuestsService client, CancellationToken ct)
+        private async UniTask CollectUpdatesAsync(CancellationToken ct)
         {
-            listeningToQuests = true;
+            Debug.Log("Start collecting updates");
             await foreach (var userUpdate in client.Subscribe(new Empty()).WithCancellation(ct))
             {
-                updates.Add(userUpdate);
+                Debug.Log($"Update received: {userUpdate}");
+                userUpdates.Add(userUpdate);
                 switch (userUpdate.MessageCase)
                 {
                     case UserUpdate.MessageOneofCase.QuestStateUpdate:
-                        Debug.Log($"Quest updated: {userUpdate.ToString()}");
+                        Debug.Log($"Quest updated: {userUpdate.QuestStateUpdate.InstanceId}");
                         break;
                     case UserUpdate.MessageOneofCase.NewQuestStarted:
-                        Debug.Log($"Quest started: {userUpdate.ToString()}");
+                        Debug.Log($"Quest started: {userUpdate.NewQuestStarted.Quest.Id} with instanceId: {userUpdate.NewQuestStarted.Id}");
                         break;
                 }
             }
@@ -124,7 +153,7 @@ namespace DCLServices.QuestsService.TestScene
             Debug.Log("Starting saving files");
 
             // Abort all quests to remove progress
-            foreach (UserUpdate userUpdate in updates)
+            foreach (UserUpdate userUpdate in userUpdates)
             {
                 string questInstanceId = null;
 
@@ -138,11 +167,13 @@ namespace DCLServices.QuestsService.TestScene
                         break;
                 }
 
+                Debug.Log($"Aborting on-going quest {questInstanceId}");
                 await client.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId });
             }
 
-            await File.WriteAllLinesAsync(ClientQuestsServiceMock.PATH_UPDATES, updates.Select(x => x.ToString()));
-            await File.WriteAllLinesAsync(ClientQuestsServiceMock.PATH_DEFINITIONS, definitions.Select(x => x.ToString()));
+            await File.WriteAllTextAsync(QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE, getAllQuests.ToString());
+            await File.WriteAllLinesAsync(QuestsServiceTestScene_Utils.USER_UPDATES_FILE, userUpdates.Select(x => x.ToString()));
+            await File.WriteAllLinesAsync(QuestsServiceTestScene_Utils.DEFINITIONS_FILE, definitions.Select(x => x.ToString()));
             Debug.Log("Done saving files");
         }
     }
