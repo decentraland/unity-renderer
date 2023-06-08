@@ -356,10 +356,10 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   sectionSelector: {fileID: 7032332384459180580}
   questDetailsComponentView: {fileID: 6291658013447316446}
-  headerText: {fileID: 4192666348144990389}
+  headerText: {fileID: 825943123813219748}
   emptyState: {fileID: 6879322732678902473}
-  emptyActiveState: {fileID: 0}
-  emptyCompletedState: {fileID: 0}
+  emptyActiveState: {fileID: 2862386206595717977}
+  emptyCompletedState: {fileID: 4559525887948752923}
   activeQuestsContainer: {fileID: 6616477266518018369}
   activeQuestPrefab: {fileID: 4299008385477880156, guid: 446d6661e0622443a99e6c2049184954,
     type: 3}
@@ -530,8 +530,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2408353360190536181}
-  - {fileID: 6776747380334672416}
   - {fileID: 3087043428207778138}
+  - {fileID: 6776747380334672416}
   m_Father: {fileID: 6901059328308369354}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2441,7 +2441,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 497212446224576865}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3649,7 +3649,7 @@ PrefabInstance:
     - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
         type: 3}
@@ -3680,6 +3680,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 38
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
         type: 3}
@@ -3719,7 +3734,7 @@ PrefabInstance:
     - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 243.2
+      value: 215
       objectReference: {fileID: 0}
     - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
         type: 3}

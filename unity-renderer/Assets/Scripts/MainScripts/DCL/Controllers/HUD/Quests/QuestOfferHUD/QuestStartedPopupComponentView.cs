@@ -1,9 +1,11 @@
+using Cysharp.Threading.Tasks;
 using System;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Threading;
 
 namespace DCL.Quests
 {
@@ -17,11 +19,16 @@ namespace DCL.Quests
 
         public event Action OnOpenQuestLog;
         internal bool visible = false;
+        private CancellationTokenSource cts;
 
         public override void Awake()
         {
             openQuestLogButton.onClick.RemoveAllListeners();
-            openQuestLogButton.onClick.AddListener(()=>OnOpenQuestLog?.Invoke());
+            openQuestLogButton.onClick.AddListener(()=>
+            {
+                SetVisible(false);
+                OnOpenQuestLog?.Invoke();
+            });
             container.alpha = 0;
         }
 
@@ -37,8 +44,15 @@ namespace DCL.Quests
         public void SetVisible(bool setVisible)
         {
             visible = setVisible;
-            if(setVisible)
+
+            if (setVisible)
+            {
                 Show();
+                cts?.Cancel();
+                cts?.Dispose();
+                cts = new CancellationTokenSource();
+                WaitAndHide(cts).Forget();
+            }
             else
                 Hide();
         }
@@ -48,5 +62,18 @@ namespace DCL.Quests
 
         private void Hide() =>
             container.DOFade(0, DURATION).SetEase(Ease.InOutQuad);
+
+        private async UniTaskVoid WaitAndHide(CancellationTokenSource ct)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(5), cancellationToken: cts.Token);
+            Hide();
+        }
+
+        public override void Dispose()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
+        }
     }
 }

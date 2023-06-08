@@ -43,6 +43,12 @@ namespace DCL.Quests
                 if (isSelected)
                 {
                     headerText.text = IN_PROGRESS_TITLE;
+
+                    if (activeQuests.Count <= 0)
+                    {
+                        emptyActiveState.SetActive(true);
+                        emptyCompletedState.SetActive(false);
+                    }
                 }
             });
             sectionSelector.GetSection(COMPLETED_SECTION_INDEX).onSelect.AddListener((isSelected) =>
@@ -50,14 +56,22 @@ namespace DCL.Quests
                 if (isSelected)
                 {
                     headerText.text = COMPLETED_TITLE;
+
+                    if (completedQuests.Count <= 0)
+                    {
+                        emptyActiveState.SetActive(false);
+                        emptyCompletedState.SetActive(true);
+                    }
                 }
             });
 
             questDetailsComponentView.OnPinChange += (questId, isPinned) => OnPinChange?.Invoke(questId, isPinned);
+            emptyState.SetActive(true);
         }
 
         public void AddActiveQuest(QuestDetailsComponentModel activeQuest)
         {
+            emptyState.SetActive(false);
             if (!activeQuests.ContainsKey(activeQuest.questId))
                 activeQuests[activeQuest.questId] = questsPool.Get();
 
@@ -74,6 +88,7 @@ namespace DCL.Quests
 
         public void AddCompletedQuest(QuestDetailsComponentModel completedQuest)
         {
+            emptyState.SetActive(false);
             if (!completedQuests.ContainsKey(completedQuest.questId))
                 completedQuests[completedQuest.questId] = questsPool.Get();
 
