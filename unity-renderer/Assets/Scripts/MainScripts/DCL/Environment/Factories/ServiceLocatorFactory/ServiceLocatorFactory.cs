@@ -178,7 +178,8 @@ namespace DCL
                     try
                     {
                         Debug.Log("SocialClient.Transport.Connect");
-                        transport.ConnectAsync();
+                        // transport.ConnectAsync();
+                        transport.Connect();
                     }
                     catch (Exception e)
                     {
