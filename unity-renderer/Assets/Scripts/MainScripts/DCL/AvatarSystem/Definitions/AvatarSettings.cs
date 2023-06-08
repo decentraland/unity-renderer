@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -28,6 +29,11 @@ namespace AvatarSystem
         /// Eyes color of the avatar
         /// </summary>
         public Color eyesColor;
+
+        /// <summary>
+        /// Hiding override
+        /// </summary>
+        public HashSet<string> forceRender;
     }
 
 }

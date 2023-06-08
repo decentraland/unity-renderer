@@ -1,0 +1,26 @@
+{
+    "name": "QuestsServiceTestScene",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0e603bcf1e579444aa718c4c1cb63893",
+        "GUID:32414f40c5c02494097836a15ff47eac",
+        "GUID:7deefc26eb4ef824586f2f51caa3b0e7",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:3c7b57a14671040bd8c549056adc04f5",
+        "GUID:46705c1db795144e8a9d4f8e631591da",
+        "GUID:5c01796d064528144a599661eaab93a6",
+        "GUID:36a24ee385df74bbd8b6758b9cf74e64",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:81f3218b29e049144b175dad2ebbac1b",
+        "GUID:bab23c9e6b4c4da469d4688d16c1ee9b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

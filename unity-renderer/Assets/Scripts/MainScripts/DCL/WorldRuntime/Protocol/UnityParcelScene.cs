@@ -1,3 +1,4 @@
+using DCL.Controllers.LoadingScreenV2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace DCL.Models
         public bool sdk7;
         public string[] requiredPermissions;
         public string[] allowedMediaHostnames;
+        public List<Hint> loadingScreenHints;
     }
 
     [Serializable]
@@ -53,6 +55,8 @@ namespace DCL.Models
             public bool sdk7 = false;
             public string[] requiredPermissions;
             public string[] allowedMediaHostnames;
+
+            public List<Hint> loadingScreenHints;
         }
     }
 }

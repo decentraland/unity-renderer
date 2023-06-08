@@ -1,14 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
-using UnityEditor;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Debug = System.Diagnostics.Debug;
 using Material = DCL.Helpers.Material;
 using SkinnedMeshRenderer = UnityEngine.SkinnedMeshRenderer;
 
@@ -16,13 +12,25 @@ public class AvatarMeshCombinerCan
 {
     private static string BASE_MALE_PATH = TestAssetsUtils.GetPath() + "/Avatar/Assets/BaseMale.glb";
 
+    [SetUp]
+    public void SetUp()
+    {
+        var serviceLocator = ServiceLocatorFactory.CreateDefault();
+        Environment.Setup(serviceLocator);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Environment.Dispose();
+    }
+
     [UnityTest]
     public IEnumerator CombineSkinnedMeshes()
     {
-        AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.enabled = false;
+        AssetPromiseKeeper_GLTFast_Instance keeper = new AssetPromiseKeeper_GLTFast_Instance();
         WebRequestController webRequestController = WebRequestController.Create();
-        AssetPromise_GLTF promise = new AssetPromise_GLTF(BASE_MALE_PATH, webRequestController);
+        AssetPromise_GLTFast_Instance promise = new AssetPromise_GLTFast_Instance("", BASE_MALE_PATH, webRequestController);
 
         keeper.Keep(promise);
 
@@ -54,10 +62,9 @@ public class AvatarMeshCombinerCan
     [UnityTest]
     public IEnumerator CombineSkinnedMeshesKeepingPose()
     {
-        AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.enabled = false;
+        AssetPromiseKeeper_GLTFast_Instance keeper = new AssetPromiseKeeper_GLTFast_Instance();
         WebRequestController webRequestController = WebRequestController.Create();
-        AssetPromise_GLTF promise = new AssetPromise_GLTF(BASE_MALE_PATH, webRequestController);
+        AssetPromise_GLTFast_Instance promise = new AssetPromise_GLTFast_Instance("", BASE_MALE_PATH, webRequestController);
 
         keeper.Keep(promise);
 
@@ -92,10 +99,9 @@ public class AvatarMeshCombinerCan
     [UnityTest]
     public IEnumerator CombineSkinnedMeshesNotKeepingPose()
     {
-        AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.enabled = false;
+        AssetPromiseKeeper_GLTFast_Instance keeper = new AssetPromiseKeeper_GLTFast_Instance();
         WebRequestController webRequestController = WebRequestController.Create();
-        AssetPromise_GLTF promise = new AssetPromise_GLTF(BASE_MALE_PATH, webRequestController);
+        AssetPromise_GLTFast_Instance promise = new AssetPromise_GLTFast_Instance("", BASE_MALE_PATH, webRequestController);
 
         keeper.Keep(promise);
 

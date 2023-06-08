@@ -58,6 +58,9 @@ namespace Tests
             context.crdt.SceneController = Environment.i.world.sceneController;
             context.crdt.WorldState = Environment.i.world.state;
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
+            context.crdt.GetSceneTick = (int x) => 1;
+            context.crdt.IncreaseSceneTick = (int x) => { };
+            context.crdt.IsSceneGltfLoadingFinished = (int x) => true;
         }
 
         [TearDown]
@@ -185,7 +188,6 @@ namespace Tests
                 ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
                 ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
                 Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
-
                 context.crdt.CrdtExecutors = crdtExecutors;
 
                 CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager,
@@ -249,6 +251,80 @@ namespace Tests
                 // Check message received correctly, and entity created correctly
                 Assert.IsTrue(messageReceived);
                 Assert.IsTrue(testScene.entities.ContainsKey(ENTITY_ID));
+
+                crdtExecutorsManager.Dispose();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator WaitForSceneInitialGltfLoadBeforeSceneReady()
+        {
+            yield return UniTask.ToCoroutine(async () =>
+            {
+                const int TEST_SCENE_NUMBER = 696;
+                const int ENTITY_ID = 666;
+
+                ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
+                ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+                Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
+                context.crdt.CrdtExecutors = crdtExecutors;
+                CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager,
+                    context.crdt.SceneController, context.crdt);
+                ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
+
+                // client requests `LoadScene()` to have the port open with a scene ready to receive crdt messages
+                try
+                {
+                    await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                // Check scene was created correctly and it has no entities
+                Assert.IsTrue(context.crdt.WorldState.TryGetScene(TEST_SCENE_NUMBER, out IParcelScene testScene));
+                Assert.IsTrue(testScene.entities.Count == 0);
+
+                // Setup context callbacks simulating a GLTF that takes 3 frames to load
+                int framesToWait = 3;
+                int framesCounter = 0;
+                context.crdt.IsSceneGltfLoadingFinished = (int x) =>
+                {
+                    framesCounter++;
+
+                    Assert.IsFalse(testScene.IsInitMessageDone());
+
+                    return framesCounter == framesToWait;
+                };
+                context.crdt.GetSceneTick = (int x) => 0; // first tick
+
+                // Prepare entity creation CRDT message
+                CrdtMessage crdtMessage = new CrdtMessage
+                (
+                    type: CrdtMessageType.PUT_COMPONENT,
+                    entityId: ENTITY_ID,
+                    componentId: 0,
+                    timestamp: 799,
+                    data: new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
+                );
+
+                // Send entity creation CRDT message
+                try
+                {
+                    await rpcClient.SendCrdt(new CRDTSceneMessage()
+                    {
+                        Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
+                    });
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                await UniTask.Yield();
+
+                Assert.IsTrue(testScene.IsInitMessageDone());
 
                 crdtExecutorsManager.Dispose();
             });

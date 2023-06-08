@@ -19,7 +19,7 @@
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.6.6"
       },
-      "hash": "600a6c7dc0ca608685997519e2f356839abba3a2"
+      "hash": "cfd7f4fcbcfb7e025047fbbbc41287f6581b03c7"
     },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",
@@ -143,7 +143,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.21",
+      "version": "3.0.22",
       "depth": 0,
       "source": "registry",
       "dependencies": {

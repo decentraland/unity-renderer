@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using DCL.HelpAndSupportHUD;
 using NSubstitute;
+using Analytics;
 using System;
 
 namespace Tests
@@ -14,7 +15,7 @@ namespace Tests
         protected void SetUp()
         {
             view = Substitute.For<IHelpAndSupportHUDView>();
-            controller = new HelpAndSupportHUDController(view);
+            controller = new HelpAndSupportHUDController(view, Substitute.For<ISupportAnalytics>());
         }
 
         [TearDown]

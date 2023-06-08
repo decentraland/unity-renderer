@@ -1,4 +1,3 @@
-using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.Utils;
@@ -13,7 +12,6 @@ namespace DCL.ECSComponents
     {
         private const int LAYER_PHYSICS = (int)ColliderLayer.ClPhysics;
         private const int LAYER_POINTER = (int)ColliderLayer.ClPointer;
-        private const int LAYER_PHYSICS_POINTER = LAYER_PHYSICS | LAYER_POINTER;
 
         private const int SPHERE_COLLIDER_LONGITUDE = 12;
         private const int SPHERE_COLLIDER_LATITUDE = 6;
@@ -59,6 +57,7 @@ namespace DCL.ECSComponents
 
             bool shouldUpdateMesh = (prevModel?.MeshCase != model.MeshCase)
                                     || (model.MeshCase == PBMeshCollider.MeshOneofCase.Cylinder && !prevModel.Cylinder.Equals(model.Cylinder));
+
             prevModel = model;
 
             if (shouldUpdateMesh)
@@ -87,7 +86,7 @@ namespace DCL.ECSComponents
                 case PBMeshCollider.MeshOneofCase.Plane:
                     BoxCollider box = colliderGameObject.AddComponent<BoxCollider>();
                     collider = box;
-                    box.size = new UnityEngine.Vector3(1, 1, 0.01f);
+                    box.size = new Vector3(1, 1, 0.01f);
                     break;
                 case PBMeshCollider.MeshOneofCase.Sphere:
                 {
@@ -120,6 +119,7 @@ namespace DCL.ECSComponents
                     break;
                 }
             }
+
             AssetPromiseKeeper_PrimitiveMesh.i.Forget(prevMeshPromise);
         }
 
@@ -131,17 +131,16 @@ namespace DCL.ECSComponents
             }
 
             uint colliderLayer = model.GetColliderLayer();
+            int? layer = LayerMaskUtils.SdkLayerMaskToUnityLayer(colliderLayer);
 
-            if ((colliderLayer & LAYER_PHYSICS_POINTER) == LAYER_PHYSICS_POINTER)
-                colliderGameObject.layer = PhysicsLayers.defaultLayer;
-            else if ((colliderLayer & LAYER_PHYSICS) == LAYER_PHYSICS)
-                colliderGameObject.layer = PhysicsLayers.characterOnlyLayer;
-            else if ((colliderLayer & LAYER_POINTER) == LAYER_POINTER)
-                colliderGameObject.layer = PhysicsLayers.onPointerEventLayer;
-            else if (LayerMaskUtils.LayerMaskHasAnySDKCustomLayer((uint)colliderLayer))
-                colliderGameObject.layer = PhysicsLayers.sdkCustomLayer;
-            else if (collider != null)
+            if (layer.HasValue)
+            {
+                colliderGameObject.layer = layer.Value;
+            }
+            else
+            {
                 colliderGameObject.SetActive(false);
+            }
         }
 
         private void SetInternalColliderComponents(IParcelScene scene, IDCLEntity entity, PBMeshCollider model)

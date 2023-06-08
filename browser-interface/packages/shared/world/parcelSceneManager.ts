@@ -68,7 +68,11 @@ export function forceStopScene(sceneId: string) {
 // finds a parcel scene by parcel position (that is not a portable experience)
 export function getLoadedParcelSceneByParcel(parcelPosition: string) {
   for (const [, w] of loadedSceneWorkers) {
-    if (!w.rpcContext.sceneData.isPortableExperience && w.metadata.scene?.parcels?.includes(parcelPosition)) {
+    if (
+      !w.rpcContext.sceneData.isPortableExperience &&
+      !w.rpcContext.sceneData.isGlobalScene &&
+      w.metadata.scene?.parcels?.includes(parcelPosition)
+    ) {
       return w
     }
   }
