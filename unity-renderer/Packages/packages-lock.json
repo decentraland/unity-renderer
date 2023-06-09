@@ -47,7 +47,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "434f7c2dd0a831d259858e6ba3482ffcc24b7268"
+      "hash": "f2621a8b09b68f3a7639eea40a7aba18571f3f28"
     },
     "com.decentraland.unity-shared-dependencies": {
       "version": "https://github.com/decentraland/unity-shared-dependencies.git",
