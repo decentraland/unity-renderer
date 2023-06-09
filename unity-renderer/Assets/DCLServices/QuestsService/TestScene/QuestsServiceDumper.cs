@@ -38,7 +38,7 @@ namespace DCLServices.QuestsService.TestScene
         [ContextMenu("start")]
         private void Awake()
         {
-            Log($"Output file can be found at: {QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE}");
+            MyLog($"Output file can be found at: {QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE}");
             Initialize().Forget();
         }
 
@@ -50,7 +50,7 @@ namespace DCLServices.QuestsService.TestScene
             var rpcSignRequest = new RPCSignRequest(DCL.Environment.i.serviceLocator.Get<IRPC>());
             AuthedWebSocketClientTransport webSocketClientTransport = new AuthedWebSocketClientTransport(rpcSignRequest, "wss://quests-rpc.decentraland.zone");
             await webSocketClientTransport.Connect();
-            Log($"RPC Authenticated");
+            MyLog($"RPC Authenticated");
 
             RpcClient rpcClient = new RpcClient(webSocketClientTransport);
             var clientPort = await rpcClient.CreatePort("UnityTest");
@@ -62,7 +62,7 @@ namespace DCLServices.QuestsService.TestScene
                 var response = await client.GetAllQuests(new Empty());
                 foreach (QuestInstance questsInstance in response.Quests.Instances)
                 {
-                    Log($"Aborting quest instance {questsInstance.Id}");
+                    MyLog($"Aborting quest instance {questsInstance.Id}");
                     await client.AbortQuest(new AbortQuestRequest { QuestInstanceId = questsInstance.Id });
                 }
                 webSocketClientTransport.Close();
@@ -81,25 +81,25 @@ namespace DCLServices.QuestsService.TestScene
 
         private async UniTask CollectQuestsDefinitionsAsync()
         {
-            Log("Start collecting definitions");
+            MyLog("Start collecting definitions");
             foreach (string questId in questsToStart)
             {
                 definitions.Add((await client.GetQuestDefinition(new GetQuestDefinitionRequest { QuestId = questId })).Quest);
             }
-            Log("Definitions are ready to be saved");
+            MyLog("Definitions are ready to be saved");
         }
 
         private async UniTask GetAllQuestsAsync()
         {
-            Log("Getting all quests");
+            MyLog("Getting all quests");
             var response = await client.GetAllQuests(new Empty());
             getAllQuests = response.Quests;
-            Log("Done getting all quests");
+            MyLog("Done getting all quests");
         }
 
         private async UniTaskVoid ProgressQuestsAsync()
         {
-            Log($"Start progressing quests:");
+            MyLog($"Start progressing quests:");
 
             // Do your interaction with the server here, such as:
             // Starting quests
@@ -108,36 +108,36 @@ namespace DCLServices.QuestsService.TestScene
             {
                 var startQuestRequest = new StartQuestRequest { QuestId = questId };
                 var response = await client.StartQuest(startQuestRequest);
-                Log(response.ToString());
+                MyLog(response.ToString());
             }
 
             // Progressing
             //await client.SendEvent(new Decentraland.Quests.Event() { Action = new Action() { Type = ..., Parameters = ... } });
 
-            Log("All progress is done, waiting for updates to be saved...");
+            MyLog("All progress is done, waiting for updates to be saved...");
         }
 
         private async UniTask CollectUpdatesAsync(CancellationToken ct)
         {
-            Log("Start collecting updates");
+            MyLog("Start collecting updates");
             await foreach (var userUpdate in client.Subscribe(new Empty()).WithCancellation(ct))
             {
-                Log($"Update received: {userUpdate}");
+                MyLog($"Update received: {userUpdate}");
                 userUpdates.Add(userUpdate);
                 switch (userUpdate.MessageCase)
                 {
                     case UserUpdate.MessageOneofCase.QuestStateUpdate:
-                        Log($"Quest updated: {userUpdate.QuestStateUpdate.InstanceId}");
+                        MyLog($"Quest updated: {userUpdate.QuestStateUpdate.InstanceId}");
                         break;
                     case UserUpdate.MessageOneofCase.NewQuestStarted:
-                        Log($"Quest started: {userUpdate.NewQuestStarted.Quest.Id} with instanceId: {userUpdate.NewQuestStarted.Id}");
+                        MyLog($"Quest started: {userUpdate.NewQuestStarted.Quest.Id} with instanceId: {userUpdate.NewQuestStarted.Id}");
                         break;
                 }
             }
 
-            Log("Updates are ready to be saved");
+            MyLog("Updates are ready to be saved");
             await UniTask.Delay(TimeSpan.FromSeconds(5));
-            Log("Done saving files");
+            MyLog("Done saving files");
             FinishAsync().Forget();
         }
 
@@ -153,7 +153,7 @@ namespace DCLServices.QuestsService.TestScene
             subscribeCTS?.Dispose();
             subscribeCTS = null;
 
-            Log("Starting saving files");
+            MyLog("Starting saving files");
 
             // Abort all quests to remove progress
             foreach (UserUpdate userUpdate in userUpdates)
@@ -170,22 +170,22 @@ namespace DCLServices.QuestsService.TestScene
                         break;
                 }
 
-                Log($"Aborting on-going quest {questInstanceId}");
+                MyLog($"Aborting on-going quest {questInstanceId}");
                 await client.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId });
             }
 
             // await File.WriteAllTextAsync(QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE, getAllQuests.ToString());
             // await File.WriteAllLinesAsync(QuestsServiceTestScene_Utils.USER_UPDATES_FILE, userUpdates.Select(x => x.ToString()));
             // await File.WriteAllLinesAsync(QuestsServiceTestScene_Utils.DEFINITIONS_FILE, definitions.Select(x => x.ToString()));
-            Log("Done saving files");
+            MyLog("Done saving files");
         }
 
-        private void Log(string l)
+        private void MyLog(string l)
         {
-            bool old = UnityEngine.Debug.unityLogger.logEnabled;
-            UnityEngine.Debug.unityLogger.logEnabled = true;
-            UnityEngine.Debug.Log($"TestQuests: {l}");
-            UnityEngine.Debug.unityLogger.logEnabled = old;
+            bool old = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+            Debug.Log($"TestQuests: {l}");
+            Debug.unityLogger.logEnabled = old;
         }
     }
 }
