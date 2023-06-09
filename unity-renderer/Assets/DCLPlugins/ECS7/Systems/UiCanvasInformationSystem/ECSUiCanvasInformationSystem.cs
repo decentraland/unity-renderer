@@ -88,38 +88,5 @@ namespace ECSSystems.UiCanvasInformationSystem
         {
             UpdateUiCanvasInformationComponent(scene.sceneData.sceneNumber);
         }
-
-        /*[Test]
-        public void UpdateUiCanvasInformationComponent()
-        {
-            IECSComponentWriter componentWriter = Substitute.For<IECSComponentWriter>();
-            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
-            IWorldState worldState = Substitute.For<IWorldState>();
-            worldState.GetCurrentSceneNumber().Returns(666);
-
-            // create system
-            var system = new ECSScenesUiSystem(
-                uiDocument,
-                uiContainerComponent,
-                new BaseList<IParcelScene> { scene },
-                worldState,
-                hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                componentWriter);
-
-            // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
-            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
-
-            // do system update
-            system.Update();
-
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
-                SpecialEntityId.SCENE_ROOT_ENTITY,
-                ComponentID.UI_CANVAS_INFORMATION,
-                Arg.Is<PBUiCanvasInformation>(e => e.Width != 0 && e.Height != 0)
-            );
-        }*/
     }
 }
