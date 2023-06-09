@@ -49,6 +49,7 @@ namespace DCL.Social.Friends
 
         public void Initialize()
         {
+            accessToken = matrixInitializationBridge.AccessToken;
             matrixInitializationBridge.OnReceiveMatrixAccessToken += token => accessToken = token;
 
             async UniTaskVoid InitializeAsync(CancellationToken cancellationToken)
