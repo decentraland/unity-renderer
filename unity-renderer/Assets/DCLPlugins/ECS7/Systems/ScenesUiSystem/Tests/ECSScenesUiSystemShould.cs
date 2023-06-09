@@ -94,8 +94,7 @@ namespace Tests
                 new BaseList<IParcelScene> { scene },
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                Substitute.For<IECSComponentWriter>());
+                new BaseVariable<bool>(true));
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -243,8 +242,7 @@ namespace Tests
                 new BaseList<IParcelScene> { scene },
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                Substitute.For<IECSComponentWriter>());
+                new BaseVariable<bool>(true));
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -272,8 +270,7 @@ namespace Tests
                 loadedScenes,
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                Substitute.For<IECSComponentWriter>());
+                new BaseVariable<bool>(true));
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -317,8 +314,7 @@ namespace Tests
                 loadedScenes,
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                Substitute.For<IECSComponentWriter>());
+                new BaseVariable<bool>(true));
 
             // create root ui for scenes
             InternalUiContainer rootScene1Container = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -398,8 +394,7 @@ namespace Tests
                 new BaseList<IParcelScene>(),
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                Substitute.For<IECSComponentWriter>());
+                new BaseVariable<bool>(true));
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -430,8 +425,7 @@ namespace Tests
                 new BaseList<IParcelScene> { nonGlobalScene },
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                Substitute.For<IECSComponentWriter>());
+                new BaseVariable<bool>(true));
 
             // create root ui for global scene
             InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -655,8 +649,7 @@ namespace Tests
                 new BaseList<IParcelScene>(),
                 Substitute.For<IWorldState>(),
                 hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                Substitute.For<IECSComponentWriter>());
+                new BaseVariable<bool>(true));
 
             StyleEnum<DisplayStyle> style = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
             Assert.IsTrue(style == uiDocument.rootVisualElement.style.display);
@@ -674,8 +667,7 @@ namespace Tests
                 new BaseList<IParcelScene>(),
                 Substitute.For<IWorldState>(),
                 hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                Substitute.For<IECSComponentWriter>());
+                new BaseVariable<bool>(true));
 
             Assert.IsTrue(DisplayStyle.Flex == uiDocument.rootVisualElement.style.display);
 
@@ -725,8 +717,7 @@ namespace Tests
                 loadedScenes,
                 worldState,
                 hideUiEventVariable,
-                sceneVisibilityToggle,
-                Substitute.For<IECSComponentWriter>());
+                sceneVisibilityToggle);
 
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
 
@@ -740,39 +731,6 @@ namespace Tests
 
             sceneVisibilityToggle.Set(true);
             Assert.IsTrue(DisplayStyle.Flex == uiDocument.rootVisualElement[0].style.display);
-        }
-
-        [Test]
-        public void UpdateUiCanvasInformationComponent()
-        {
-            IECSComponentWriter componentWriter = Substitute.For<IECSComponentWriter>();
-            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
-            IWorldState worldState = Substitute.For<IWorldState>();
-            worldState.GetCurrentSceneNumber().Returns(666);
-
-            // create system
-            var system = new ECSScenesUiSystem(
-                uiDocument,
-                uiContainerComponent,
-                new BaseList<IParcelScene> { scene },
-                worldState,
-                hideUiEventVariable,
-                new BaseVariable<bool>(true),
-                componentWriter);
-
-            // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
-            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
-
-            // do system update
-            system.Update();
-
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
-                SpecialEntityId.SCENE_ROOT_ENTITY,
-                ComponentID.UI_CANVAS_INFORMATION,
-                Arg.Is<PBUiCanvasInformation>(e => e.Width != 0 && e.Height != 0)
-            );
         }
     }
 }

@@ -1,0 +1,19 @@
+{
+    "name": "ECS7Plugin.Systems.UiCanvasInformation",
+    "rootNamespace": "",
+    "references": [
+    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+    "GUID:97d8897529779cb49bebd400c7f402a6",
+    "GUID:7eb48a6a47db4795bdee44a726fa8338",
+    "GUID:3c7b57a14671040bd8c549056adc04f5",
+    "GUID:a881b57670b1d2747a6d7f9e32b63230"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

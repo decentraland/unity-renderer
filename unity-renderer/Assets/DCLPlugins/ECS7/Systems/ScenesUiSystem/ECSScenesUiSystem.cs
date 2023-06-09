@@ -1,17 +1,13 @@
 using DCL;
 using DCL.Controllers;
-using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
-using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using Decentraland.Common;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UIElements;
 using Position = UnityEngine.UIElements.Position;
-using Screen = UnityEngine.Device.Screen;
+
 
 namespace ECSSystems.ScenesUiSystem
 {
@@ -23,21 +19,19 @@ namespace ECSSystems.ScenesUiSystem
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly BooleanVariable hideUiEventVariable;
         private readonly BaseVariable<bool> isSceneUIEnabled;
-        private readonly IECSComponentWriter componentWriter;
 
         private int lastSceneNumber;
         private bool isPendingSceneUI;
         private IParcelScene currentScene;
         private HashSet<IParcelScene> scenesUiToSort = new HashSet<IParcelScene>();
-        private BorderRect interactableArea;
+
 
         public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             BaseList<IParcelScene> loadedScenes,
             IWorldState worldState,
             BooleanVariable hideUiEventVariable,
-            BaseVariable<bool> isSceneUIEnabled,
-            IECSComponentWriter componentWriter)
+            BaseVariable<bool> isSceneUIEnabled)
         {
             this.uiDocument = uiDocument;
             this.internalUiContainerComponent = internalUiContainerComponent;
@@ -45,19 +39,10 @@ namespace ECSSystems.ScenesUiSystem
             this.loadedScenes = loadedScenes;
             this.hideUiEventVariable = hideUiEventVariable;
             this.isSceneUIEnabled = isSceneUIEnabled;
-            this.componentWriter = componentWriter;
 
             lastSceneNumber = -1;
             isPendingSceneUI = true;
             currentScene = null;
-
-            interactableArea = new BorderRect()
-            {
-                Bottom = 0,
-                Left = 0,
-                Right = 0,
-                Top = 0
-            };
 
             loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
             hideUiEventVariable.OnChange += OnHideAllUiEvent;
@@ -95,28 +80,18 @@ namespace ECSSystems.ScenesUiSystem
             if (sceneChanged && currentScene != null && currentSceneNumber != currentScene.sceneData.sceneNumber)
                 currentScene = null;
 
+            // we get current scene reference
+            currentScene ??= GetCurrentScene(currentSceneNumber, loadedScenes);
+
             // UI not set for current scene yet
             if (isPendingSceneUI)
             {
-                // we get current scene reference
-                currentScene ??= GetCurrentScene(currentSceneNumber, loadedScenes);
-
                 // we apply current scene UI
                 if (currentScene != null && ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isSceneUIEnabled))
                     isPendingSceneUI = false;
             }
 
-            componentWriter.PutComponent(
-                currentSceneNumber,
-                SpecialEntityId.SCENE_ROOT_ENTITY,
-                ComponentID.UI_CANVAS_INFORMATION,
-                new PBUiCanvasInformation()
-                {
-                    InteractableArea = interactableArea,
-                    Width = Screen.width,
-                    Height = Screen.height,
-                    DevicePixelRatio = CalculateDevicePixelRatio()
-                });
+
         }
 
         private void LoadedScenesOnOnRemoved(IParcelScene scene)
@@ -366,23 +341,6 @@ namespace ECSSystems.ScenesUiSystem
                 this.id = id;
                 this.element = element;
             }
-        }
-
-        /*
-         * Calculates what web browsers call "device pixel ratio": a ratio between the application virtual resolution
-         * and the screen resolution. It represents how many physical/real pixels are needed to draw the virtual pixels
-         * of the application. The smaller the application resolution is, compared to the real screen resolution, the
-         * higher the device pixel ratio is. Normally the result can be between 1~3.
-         * Note: Explorer's 'rendering scale' doesn't affect this, as that is only for 3D rendering, so it doesn't affect
-         * the whole application resolution (e.g. UIs are unaffected).
-        */
-        private float CalculateDevicePixelRatio()
-        {
-            // 'Screen.mainWindowDisplayInfo' cannot be used in WebGL due to 'Screen.GetDisplayInfoForPoint' unsupported error
-            float realScreenDiagonalSizeInPixels = Mathf.Sqrt((Screen.currentResolution.width * Screen.currentResolution.width) + (Screen.currentResolution.height * Screen.currentResolution.height));
-            float viewportDiagonalSizeInPixels = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height));
-
-            return realScreenDiagonalSizeInPixels / viewportDiagonalSizeInPixels;
         }
     }
 }
