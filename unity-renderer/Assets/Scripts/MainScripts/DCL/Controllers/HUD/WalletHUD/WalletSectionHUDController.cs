@@ -1,6 +1,9 @@
-﻿using DCL.Browser;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCL.Helpers;
-using System.Collections;
+using DCL.Tasks;
+using System;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Wallet
@@ -17,8 +20,8 @@ namespace DCL.Wallet
         private readonly IBrowserBridge browserBridge;
         private readonly ITheGraph theGraph;
 
-        private Coroutine fetchEthereumManaIntervalRoutine;
-        private Coroutine fetchPolygonManaIntervalRoutine;
+        private CancellationTokenSource fetchEthereumManaCancellationToken;
+        private CancellationTokenSource fetchPolygonManaCancellationToken;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
@@ -66,6 +69,9 @@ namespace DCL.Wallet
             ownUserProfile.OnUpdate -= OnProfileUpdated;
             view.OnBuyManaClicked -= GoToManaPurchaseUrl;
             view.OnLearnMoreClicked -= GoToLearnMoreUrl;
+
+            fetchEthereumManaCancellationToken.SafeCancelAndDispose();
+            fetchPolygonManaCancellationToken.SafeCancelAndDispose();
         }
 
         private void ConfigureWalletSectionInFullscreenMenuChanged(Transform currentParentTransform, Transform _) =>
@@ -79,66 +85,65 @@ namespace DCL.Wallet
 
         private void OnWalletSectionVisible(bool isVisible, bool _)
         {
-            switch (isVisible)
+            if (isVisible)
             {
-                case true when fetchEthereumManaIntervalRoutine == null:
-                    fetchEthereumManaIntervalRoutine = CoroutineStarter.Start(EthereumManaIntervalRoutine());
-                    break;
-                case false when fetchEthereumManaIntervalRoutine != null:
-                    CoroutineStarter.Stop(fetchEthereumManaIntervalRoutine);
-                    fetchEthereumManaIntervalRoutine = null;
-                    break;
+                fetchEthereumManaCancellationToken = fetchEthereumManaCancellationToken.SafeRestart();
+                fetchPolygonManaCancellationToken = fetchPolygonManaCancellationToken.SafeRestart();
+                RequestEthereumManaAsync(fetchEthereumManaCancellationToken.Token).Forget();
+                RequestPolygonManaAsync(fetchPolygonManaCancellationToken.Token).Forget();
             }
-
-            switch (isVisible)
+            else
             {
-                case true when fetchPolygonManaIntervalRoutine == null:
-                    fetchPolygonManaIntervalRoutine = CoroutineStarter.Start(PolygonManaIntervalRoutine());
-                    break;
-                case false when fetchPolygonManaIntervalRoutine != null:
-                    CoroutineStarter.Stop(fetchPolygonManaIntervalRoutine);
-                    fetchPolygonManaIntervalRoutine = null;
-                    break;
+                fetchEthereumManaCancellationToken.SafeCancelAndDispose();
+                fetchPolygonManaCancellationToken.SafeCancelAndDispose();
             }
         }
 
-        private IEnumerator EthereumManaIntervalRoutine()
+        private async UniTask RequestEthereumManaAsync(CancellationToken cancellationToken)
         {
             while (true)
             {
-                yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+                await UniTask.WaitUntil(() =>
+                    ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId),
+                    cancellationToken: cancellationToken);
 
                 view.SetEthereumManaLoadingActive(true);
                 Promise<double> promise = theGraph.QueryEthereumMana(ownUserProfile.userId);
-
                 if (promise != null)
                 {
-                    yield return promise;
+                    await promise;
                     dataStore.wallet.currentEthereumManaBalance.Set(promise.value);
                     view.SetEthereumManaLoadingActive(false);
                 }
 
-                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
+                await UniTask.Delay(TimeSpan.FromSeconds(WalletUtils.FETCH_MANA_INTERVAL), cancellationToken: cancellationToken);
+
+                if (cancellationToken.IsCancellationRequested)
+                    break;
             }
         }
 
-        private IEnumerator PolygonManaIntervalRoutine()
+        private async UniTask RequestPolygonManaAsync(CancellationToken cancellationToken)
         {
             while (true)
             {
-                yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+                await UniTask.WaitUntil(() =>
+                    ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId),
+                    cancellationToken: cancellationToken);
 
                 view.SetPolygonManaLoadingActive(true);
                 Promise<double> promise = theGraph.QueryPolygonMana(ownUserProfile.userId);
-
                 if (promise != null)
                 {
-                    yield return promise;
+                    await promise;
                     dataStore.wallet.currentPolygonManaBalance.Set(promise.value);
                     view.SetPolygonManaLoadingActive(false);
                 }
 
-                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
+                await UniTask.Delay(TimeSpan.FromSeconds(WalletUtils.FETCH_MANA_INTERVAL), cancellationToken: cancellationToken);
+
+                if (cancellationToken.IsCancellationRequested)
+                    break;
             }
         }
 
