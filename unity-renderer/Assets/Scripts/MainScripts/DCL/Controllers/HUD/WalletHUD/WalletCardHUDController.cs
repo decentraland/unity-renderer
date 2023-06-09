@@ -6,8 +6,6 @@ namespace DCL.Wallet
 {
     public class WalletCardHUDController
     {
-        private const float FETCH_MANA_INTERVAL = 60;
-
         private readonly IWalletCardHUDComponentView view;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly ITheGraph theGraph;
@@ -33,31 +31,15 @@ namespace DCL.Wallet
             OnCurrentEthereumManaBalanceChanged(dataStore.wallet.currentEthereumManaBalance.Get(), 0f);
             dataStore.wallet.currentPolygonManaBalance.OnChange += OnCurrentPolygonManaBalanceChanged;
             OnCurrentPolygonManaBalanceChanged(dataStore.wallet.currentPolygonManaBalance.Get(), 0f);
+
+            dataStore.wallet.isWalletCardVisible.OnChange += OnWalletCardVisible;
         }
 
         public void Dispose()
         {
             dataStore.wallet.currentEthereumManaBalance.OnChange -= OnCurrentEthereumManaBalanceChanged;
             dataStore.wallet.currentPolygonManaBalance.OnChange -= OnCurrentPolygonManaBalanceChanged;
-        }
-
-        public void RefreshManaBalances()
-        {
-            if (fetchEthereumManaIntervalRoutine != null)
-            {
-                CoroutineStarter.Stop(fetchEthereumManaIntervalRoutine);
-                fetchEthereumManaIntervalRoutine = null;
-            }
-
-            fetchEthereumManaIntervalRoutine = CoroutineStarter.Start(EthereumManaIntervalRoutine());
-
-            if (fetchPolygonManaIntervalRoutine != null)
-            {
-                CoroutineStarter.Stop(fetchPolygonManaIntervalRoutine);
-                fetchPolygonManaIntervalRoutine = null;
-            }
-
-            fetchPolygonManaIntervalRoutine = CoroutineStarter.Start(PolygonManaIntervalRoutine());
+            dataStore.wallet.isWalletCardVisible.OnChange -= OnWalletCardVisible;
         }
 
         private void OnCurrentEthereumManaBalanceChanged(double currentBalance, double _) =>
@@ -66,11 +48,39 @@ namespace DCL.Wallet
         private void OnCurrentPolygonManaBalanceChanged(double currentBalance, double _) =>
             view.SetPolygonManaBalance(currentBalance);
 
+        private void OnWalletCardVisible(bool isVisible, bool _)
+        {
+            switch (isVisible)
+            {
+                case true when fetchEthereumManaIntervalRoutine == null:
+                    fetchEthereumManaIntervalRoutine = CoroutineStarter.Start(EthereumManaIntervalRoutine());
+                    break;
+                case false when fetchEthereumManaIntervalRoutine != null:
+                    CoroutineStarter.Stop(fetchEthereumManaIntervalRoutine);
+                    fetchEthereumManaIntervalRoutine = null;
+                    break;
+            }
+
+            switch (isVisible)
+            {
+                case true when fetchPolygonManaIntervalRoutine == null:
+                    fetchPolygonManaIntervalRoutine = CoroutineStarter.Start(PolygonManaIntervalRoutine());
+                    break;
+                case false when fetchPolygonManaIntervalRoutine != null:
+                    CoroutineStarter.Stop(fetchPolygonManaIntervalRoutine);
+                    fetchPolygonManaIntervalRoutine = null;
+                    break;
+            }
+        }
+
         private IEnumerator EthereumManaIntervalRoutine()
         {
             while (true)
             {
-                yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+                yield return new WaitUntil(() =>
+                    ownUserProfile != null &&
+                    !string.IsNullOrEmpty(ownUserProfile.userId) &&
+                    !dataStore.wallet.isWalletSectionVisible.Get());
 
                 view.SetEthereumManaLoadingActive(true);
                 Promise<double> promise = theGraph.QueryEthereumMana(ownUserProfile.userId);
@@ -83,7 +93,7 @@ namespace DCL.Wallet
                     view.SetEthereumManaLoadingActive(false);
                 }
 
-                yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
+                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
             }
         }
 
@@ -91,7 +101,10 @@ namespace DCL.Wallet
         {
             while (true)
             {
-                yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+                yield return new WaitUntil(() =>
+                    ownUserProfile != null &&
+                    !string.IsNullOrEmpty(ownUserProfile.userId) &&
+                    !dataStore.wallet.isWalletSectionVisible.Get());
 
                 view.SetPolygonManaLoadingActive(true);
                 Promise<double> promise = theGraph.QueryPolygonMana(ownUserProfile.userId);
@@ -104,7 +117,7 @@ namespace DCL.Wallet
                     view.SetPolygonManaLoadingActive(false);
                 }
 
-                yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
+                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
             }
         }
     }

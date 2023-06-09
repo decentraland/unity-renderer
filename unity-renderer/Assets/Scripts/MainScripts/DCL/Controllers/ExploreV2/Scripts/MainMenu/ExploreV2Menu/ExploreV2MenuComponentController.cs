@@ -269,9 +269,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                 view.GoToSection(DEFAULT_SECTION);
 
             isPromoteChannelsToastVisible.Set(false);
-
-            if (!ownUserProfile.isGuest)
-                walletCardHUDController?.RefreshManaBalances();
         }
         else
         {
@@ -283,6 +280,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             profileCardIsOpen.Set(false);
         }
 
+        DataStore.i.wallet.isWalletCardVisible.Set(visible);
         view.SetVisible(visible);
     }
 

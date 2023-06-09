@@ -9,7 +9,6 @@ namespace DCL.Wallet
     {
         private const string URL_MANA_INFO = "https://docs.decentraland.org/examples/get-a-wallet";
         private const string URL_MANA_PURCHASE = "https://account.decentraland.org";
-        private const float FETCH_MANA_INTERVAL = 60;
 
         private readonly IWalletSectionHUDComponentView view;
         private readonly DataStore dataStore;
@@ -143,7 +142,7 @@ namespace DCL.Wallet
                     view.SetEthereumManaLoadingActive(false);
                 }
 
-                yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
+                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
             }
         }
 
@@ -164,7 +163,7 @@ namespace DCL.Wallet
                     view.SetPolygonManaLoadingActive(false);
                 }
 
-                yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
+                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
             }
         }
     }

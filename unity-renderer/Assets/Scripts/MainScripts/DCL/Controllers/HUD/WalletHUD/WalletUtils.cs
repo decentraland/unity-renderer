@@ -2,6 +2,8 @@
 {
     public static class WalletUtils
     {
+        public const float FETCH_MANA_INTERVAL = 60;
+
         public static string FormatBalanceToString(double balance)
         {
             return balance switch
