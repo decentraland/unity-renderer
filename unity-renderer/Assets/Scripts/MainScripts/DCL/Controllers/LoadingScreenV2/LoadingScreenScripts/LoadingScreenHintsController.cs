@@ -102,9 +102,11 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void StartHintsCarousel()
         {
+            if (cancellationTokenSource != null)
+                cancellationTokenSource.Cancel();
+
             cancellationTokenSource = new CancellationTokenSource();
             hintViewManager.StartCarousel(cancellationTokenSource.Token);
-
         }
 
         public void StopHintsCarousel()
@@ -117,17 +119,23 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void CarouselNextHint()
         {
-            hintViewManager.CarouselNextHint();
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource = new CancellationTokenSource();
+            hintViewManager.CarouselNextHint(cancellationTokenSource.Token);
         }
 
         public void CarouselPreviousHint()
         {
-            hintViewManager.CarouselPreviousHint();
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource = new CancellationTokenSource();
+            hintViewManager.CarouselPreviousHint(cancellationTokenSource.Token);
         }
 
         public void SetHint(int index)
         {
-            hintViewManager.SetHint(index);
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource = new CancellationTokenSource();
+            hintViewManager.SetSpecificHint(index, cancellationTokenSource.Token);
         }
 
         public void Dispose()

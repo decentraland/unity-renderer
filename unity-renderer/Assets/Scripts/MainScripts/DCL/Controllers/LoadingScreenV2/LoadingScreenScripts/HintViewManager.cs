@@ -7,18 +7,14 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
-    /// <summary>
-    /// HintViewManager class is responsible for managing the carousel of hints.
-    /// It also manages the logic of showing and hiding hints.
-    /// </summary>
-    public class HintViewManager: IHintViewManager
+    public class HintViewManager : IHintViewManager
     {
         private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
         private readonly List<HintView> hintViewList;
 
+        // private CancellationTokenSource delayCts = new CancellationTokenSource();
         private bool isIteratingHints = false;
 
-        internal CancellationToken token;
         internal int currentHintIndex = 0;
 
         public event Action OnHintChanged;
@@ -33,7 +29,6 @@ namespace DCL.Controllers.LoadingScreenV2
             if (isIteratingHints || hintViewList.Count == 0)
                 return;
 
-            token = ct;
             isIteratingHints = true;
             IterateHintsAsync(ct).Forget();
         }
@@ -43,50 +38,73 @@ namespace DCL.Controllers.LoadingScreenV2
             isIteratingHints = false;
         }
 
-        public void CarouselNextHint()
+        public void CarouselNextHint(CancellationToken ct)
         {
-            if (!isIteratingHints || hintViewList.Count == 0)
+            if (CarouselNextHint())
                 return;
 
-            SetHint((currentHintIndex + 1) % hintViewList.Count);
+            if (isIteratingHints)
+            {
+                // Restart the timer
+                IterateHintsAsync(ct).Forget();
+            }
         }
 
-        public void CarouselPreviousHint()
+        private bool CarouselNextHint()
         {
-            if (!isIteratingHints || hintViewList.Count == 0)
+            if (hintViewList.Count == 0)
+                return false;
+
+            SetHint((currentHintIndex + 1) % hintViewList.Count);
+            return true;
+        }
+
+        public void CarouselPreviousHint(CancellationToken ct)
+        {
+            if (hintViewList.Count == 0)
                 return;
 
             SetHint((currentHintIndex - 1 + hintViewList.Count) % hintViewList.Count);
+
+            if (isIteratingHints)
+            {
+                // Restart the timer
+                IterateHintsAsync(ct).Forget();
+            }
         }
 
-        public void SetHint(int index)
+        public void SetSpecificHint(int index, CancellationToken ct)
+        {
+            if (isIteratingHints)
+            {
+                IterateHintsAsync(ct).Forget();
+            }
+            hintViewList[currentHintIndex].ShowHint(false);
+            currentHintIndex = index;
+            UpdateHintView();
+        }
+
+        private void SetHint(int index)
         {
             hintViewList[currentHintIndex].ShowHint(false);
             currentHintIndex = index;
             UpdateHintView();
         }
 
-        /// <summary>
-        /// Iterates and shows the next at the end of the timer
-        /// </summary>
-        /// <param name="token"></param>
         private async UniTask IterateHintsAsync(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                try
-                {
-                    await UniTask.Delay((int)SHOWING_TIME_HINTS.TotalMilliseconds, cancellationToken: token);
-                }
-                catch (OperationCanceledException)
-                {
-                    // Operation was cancelled
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogException(ex);
-                }
+                await UniTask.Delay((int)SHOWING_TIME_HINTS.TotalMilliseconds, cancellationToken: token);
                 CarouselNextHint();
+            }
+            catch (OperationCanceledException)
+            {
+                // Operation was cancelled
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
             }
         }
 
@@ -111,5 +129,3 @@ namespace DCL.Controllers.LoadingScreenV2
         }
     }
 }
-
-
