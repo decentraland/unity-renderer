@@ -12,7 +12,6 @@ namespace DCL.Controllers.LoadingScreenV2
         private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
         private readonly List<HintView> hintViewList;
 
-        // private CancellationTokenSource delayCts = new CancellationTokenSource();
         private bool isIteratingHints = false;
 
         internal int currentHintIndex = 0;

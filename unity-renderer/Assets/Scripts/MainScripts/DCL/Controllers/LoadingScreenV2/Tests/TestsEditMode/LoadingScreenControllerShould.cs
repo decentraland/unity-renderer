@@ -157,7 +157,6 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
 
             // Dispose
             loadingScreenHintsController.cancellationTokenSource.Cancel();
-
         }
 
 
