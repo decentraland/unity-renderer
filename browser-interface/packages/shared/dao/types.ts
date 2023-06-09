@@ -22,7 +22,6 @@ type BaseCandidate = {
   version: { bff: string; comms: string; lambdas: string; content: string }
   elapsed: number
   status: ServerConnectionStatus
-  lastConnectionAttempt?: number
 }
 
 export type Candidate = {
@@ -51,6 +50,7 @@ export type DaoState = {
   network: ETHEREUM_NETWORK | null
   candidates: Candidate[]
   catalystCandidatesReceived: boolean
+  lastConnectedCandidates: Map<string, number>
 }
 
 export type RootDaoState = {
