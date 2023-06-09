@@ -36,7 +36,7 @@ export function registerSignRequestService<_ extends {}>(port: RpcServerPort<Ren
     async getSignedHeaders(req, ctx) {
       const identity = getCurrentIdentity(store.getState())
       if (!identity) {
-        throw new Error(`Signature requested before the user has been initialized`)
+        throw new Error(`Signed header requested before the user has been initialized`)
       }
       let headers = getSignedHeaders('get', req.url, req.metadata, (_payload) =>
         Authenticator.signPayload(identity, _payload)
