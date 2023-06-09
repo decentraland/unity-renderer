@@ -26,6 +26,7 @@ namespace ECSSystems.ECSRaycastSystem
         private readonly IInternalECSComponent<InternalColliders> physicsColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> onPointerColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
+        private readonly IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
         private readonly IECSComponentWriter componentWriter;
 
         public ECSRaycastSystem(
@@ -33,12 +34,14 @@ namespace ECSSystems.ECSRaycastSystem
             IInternalECSComponent<InternalColliders> physicsColliderComponent,
             IInternalECSComponent<InternalColliders> onPointerColliderComponent,
             IInternalECSComponent<InternalColliders> customLayerColliderComponent,
+            IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
             IECSComponentWriter componentWriter)
         {
             this.internalRaycastComponent = internalRaycastComponent;
             this.physicsColliderComponent = physicsColliderComponent;
             this.onPointerColliderComponent = onPointerColliderComponent;
             this.customLayerColliderComponent = customLayerColliderComponent;
+            this.engineInfoComponent = engineInfoComponent;
             this.componentWriter = componentWriter;
         }
 
@@ -74,7 +77,8 @@ namespace ECSSystems.ECSRaycastSystem
                 {
                     Direction = ProtoConvertUtils.UnityVectorToPBVector(ray.direction),
                     GlobalOrigin = ProtoConvertUtils.UnityVectorToPBVector(ray.origin),
-                    Timestamp = model.Timestamp
+                    Timestamp = model.Timestamp,
+                    TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick
                 };
 
                 // Hit everything by default except 'OnPointer' layer
