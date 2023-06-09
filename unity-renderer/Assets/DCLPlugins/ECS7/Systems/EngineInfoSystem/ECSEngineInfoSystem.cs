@@ -37,6 +37,9 @@ namespace ECSSystems.ECSEngineInfoSystem
                 var scene = componentGroup[i].value.scene;
                 var model = componentGroup[i].value.model;
 
+                if (!model.dirty)
+                    continue;
+
                 componentWriter.PutComponent(
                     scene.sceneData.sceneNumber,
                     SpecialEntityId.SCENE_ROOT_ENTITY,

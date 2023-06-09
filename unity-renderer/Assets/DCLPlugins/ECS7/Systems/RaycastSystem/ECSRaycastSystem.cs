@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECS7;
@@ -10,7 +11,7 @@ using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
-using RaycastHit = UnityEngine.RaycastHit;
+using RaycastHit = DCL.ECSComponents.RaycastHit;
 using Vector3 = Decentraland.Common.Vector3;
 
 namespace ECSSystems.ECSRaycastSystem
@@ -48,10 +49,14 @@ namespace ECSSystems.ECSRaycastSystem
         public void Update()
         {
             var raycastComponentGroup = internalRaycastComponent.GetForAll();
+            var physicsColliders = physicsColliderComponent.GetForAll();
+            var onPointerColliders = onPointerColliderComponent.GetForAll();
+            var customLayerColliders = customLayerColliderComponent.GetForAll();
+
             int entitiesCount = raycastComponentGroup.Count;
 
             // Note: the components are traversed backwards as some internal raycast components may be removed during iteration
-            for (int i = entitiesCount - 1; i >= 0 ; i--)
+            for (int i = entitiesCount - 1; i >= 0; i--)
             {
                 PBRaycast model = raycastComponentGroup[i].value.model.raycastModel;
                 IDCLEntity entity = raycastComponentGroup[i].value.entity;
@@ -67,6 +72,7 @@ namespace ECSSystems.ECSRaycastSystem
                 }
 
                 Ray ray = CreateRay(scene, entity, model);
+
                 if (ray.direction == UnityEngine.Vector3.zero)
                 {
                     Debug.LogError("Raycast error: direction cannot be Vector3.Zero(); Raycast aborted.");
@@ -84,26 +90,30 @@ namespace ECSSystems.ECSRaycastSystem
                 // Hit everything by default except 'OnPointer' layer
                 int raycastUnityLayerMask = CreateRaycastLayerMask(model);
 
-                RaycastHit[] hits = null;
+                UnityEngine.RaycastHit[] hits = null;
 
                 // RaycastAll is used because 'Default' layer represents a combination of ClPointer and ClPhysics
                 // and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
                 hits = Physics.RaycastAll(ray, model.MaxDistance, raycastUnityLayerMask);
+
                 if (hits != null)
                 {
-                    DCL.ECSComponents.RaycastHit closestHit = null;
+                    RaycastHit closestHit = null;
+
                     for (int j = 0; j < hits.Length; j++)
                     {
-                        RaycastHit currentHit = hits[j];
+                        UnityEngine.RaycastHit currentHit = hits[j];
                         uint raycastSDKCollisionMask = model.GetCollisionMask();
                         KeyValuePair<IDCLEntity, uint>? hitEntity = null;
 
                         if (LayerMaskUtils.IsInLayerMask(raycastSDKCollisionMask, (int)ColliderLayer.ClPhysics))
-                            hitEntity = FindMatchingColliderEntity(physicsColliderComponent.GetForAll(), currentHit.collider);
-                        if(hitEntity == null && LayerMaskUtils.IsInLayerMask(raycastSDKCollisionMask, (int)ColliderLayer.ClPointer))
-                            hitEntity = FindMatchingColliderEntity(onPointerColliderComponent.GetForAll(), currentHit.collider);
-                        if(hitEntity == null && LayerMaskUtils.LayerMaskHasAnySDKCustomLayer(raycastSDKCollisionMask))
-                            hitEntity = FindMatchingColliderEntity(customLayerColliderComponent.GetForAll(), currentHit.collider);
+                            hitEntity = FindMatchingColliderEntity(physicsColliders, currentHit.collider);
+
+                        if (hitEntity == null && LayerMaskUtils.IsInLayerMask(raycastSDKCollisionMask, (int)ColliderLayer.ClPointer))
+                            hitEntity = FindMatchingColliderEntity(onPointerColliders, currentHit.collider);
+
+                        if (hitEntity == null && LayerMaskUtils.LayerMaskHasAnySDKCustomLayer(raycastSDKCollisionMask))
+                            hitEntity = FindMatchingColliderEntity(customLayerColliders, currentHit.collider);
 
                         var hit = CreateSDKRaycastHit(scene, model, currentHit, hitEntity, result.GlobalOrigin);
                         if (hit == null) continue;
@@ -134,7 +144,7 @@ namespace ECSSystems.ECSRaycastSystem
                 // If the raycast on that entity isn't 'continuous' the internal component is removed and won't
                 // be used for raycasting on the next system iteration. If its timestamp changes, the handler
                 // adds the internal raycast component again.
-                if(!model.HasContinuous || !model.Continuous)
+                if (!model.HasContinuous || !model.Continuous)
                     internalRaycastComponent.RemoveFor(scene, entity);
             }
         }
@@ -142,9 +152,11 @@ namespace ECSSystems.ECSRaycastSystem
         private KeyValuePair<IDCLEntity, uint>? FindMatchingColliderEntity(IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalColliders>>> componentGroup, Collider targetCollider)
         {
             int componentsCount = componentGroup.Count;
+
             for (int i = 0; i < componentsCount; i++)
             {
                 var colliders = componentGroup[i].value.model.colliders;
+
                 if (colliders.ContainsKey(targetCollider))
                 {
                     return new KeyValuePair<IDCLEntity, uint>(componentGroup[i].value.entity, colliders[targetCollider]);
@@ -162,19 +174,24 @@ namespace ECSSystems.ECSRaycastSystem
             UnityEngine.Vector3 rayOrigin = entityTransform.position + (model.OriginOffset != null ? ProtoConvertUtils.PBVectorToUnityVector(model.OriginOffset) : UnityEngine.Vector3.zero);
 
             UnityEngine.Vector3 rayDirection = UnityEngine.Vector3.forward;
+
             switch (model.DirectionCase)
             {
                 case PBRaycast.DirectionOneofCase.LocalDirection:
                     // The direction of the ray in local coordinates (relative to the origin point)
                     UnityEngine.Vector3 localDirectionVector = entityTransform.rotation * ProtoConvertUtils.PBVectorToUnityVector(model.LocalDirection);
-                    if(localDirectionVector != UnityEngine.Vector3.zero)
+
+                    if (localDirectionVector != UnityEngine.Vector3.zero)
                         rayDirection = localDirectionVector;
+
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalTarget:
                     // Target position to cast the ray towards, in global coordinates
                     UnityEngine.Vector3 directionTowardsGlobalTarget = sceneUnityPosition + ProtoConvertUtils.PBVectorToUnityVector(model.GlobalTarget) - entityTransform.position;
-                    if(directionTowardsGlobalTarget != UnityEngine.Vector3.zero)
+
+                    if (directionTowardsGlobalTarget != UnityEngine.Vector3.zero)
                         rayDirection = directionTowardsGlobalTarget;
+
                     break;
                 case PBRaycast.DirectionOneofCase.TargetEntity:
                     // Target entity to cast the ray towards
@@ -185,15 +202,19 @@ namespace ECSSystems.ECSRaycastSystem
                     else
                     {
                         UnityEngine.Vector3 directionTowardsSceneRootEntity = scene.GetSceneTransform().position - entityTransform.position;
+
                         if (directionTowardsSceneRootEntity != UnityEngine.Vector3.zero)
                             rayDirection = directionTowardsSceneRootEntity;
                     }
+
                     break;
                 case PBRaycast.DirectionOneofCase.GlobalDirection:
                     // The direction of the ray in global coordinates
                     UnityEngine.Vector3 globalDirectionVector = ProtoConvertUtils.PBVectorToUnityVector(model.GlobalDirection);
-                    if(globalDirectionVector != UnityEngine.Vector3.zero)
+
+                    if (globalDirectionVector != UnityEngine.Vector3.zero)
                         rayDirection = globalDirectionVector;
+
                     break;
             }
 
@@ -202,14 +223,15 @@ namespace ECSSystems.ECSRaycastSystem
                 origin = rayOrigin,
                 direction = rayDirection.normalized
             };
+
             return ray;
         }
 
-        private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, uint>? hitEntity, Vector3 globalOrigin)
+        private RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, UnityEngine.RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, uint>? hitEntity, Vector3 globalOrigin)
         {
             if (hitEntity == null) return null;
 
-            DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
+            RaycastHit hit = new RaycastHit();
             IDCLEntity entity = hitEntity.Value.Key;
             uint collisionMask = hitEntity.Value.Value;
 
@@ -223,7 +245,7 @@ namespace ECSSystems.ECSRaycastSystem
             hit.Length = unityRaycastHit.distance;
             hit.GlobalOrigin = globalOrigin;
 
-            var worldPosition = DCL.WorldStateUtils.ConvertUnityToScenePosition(unityRaycastHit.point, scene);
+            var worldPosition = WorldStateUtils.ConvertUnityToScenePosition(unityRaycastHit.point, scene);
             hit.Position = new Vector3();
             hit.Position.X = worldPosition.x;
             hit.Position.Y = worldPosition.y;

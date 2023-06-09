@@ -212,6 +212,8 @@ namespace RPC.Services
                     }
                 }
 
+                await UniTask.WaitUntil(() => crdtContext.GetSceneTick(sceneNumber) == currentTick, cancellationToken: ct);
+
                 if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtOutgoing))
                 {
                     sendCrdtMemoryStream.SetLength(0);
