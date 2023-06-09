@@ -1,33 +1,40 @@
+﻿using DCL.Browser;
 using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace DCL.Wallet
 {
-    public class WalletCardHUDControllerShould
+    public class WalletSectionHUDControllerShould
     {
         private const float TEST_ETHEREUM_MANA_BALANCE = 50f;
         private const float TEST_POLYGON_MANA_BALANCE = 124f;
 
-        private WalletCardHUDController walletCardHUDController;
-        private IWalletCardHUDComponentView walletCardHUDComponentView;
+        private WalletSectionHUDController walletSectionHUDController;
+        private IWalletSectionHUDComponentView walletSectionHUDComponentView;
         private IUserProfileBridge userProfileBridge;
         private ITheGraph theGraph;
         private DataStore dataStore;
         private UserProfile ownUserProfile;
+        private IClipboard clipboard;
+        private IBrowserBridge browserBridge;
         private Promise<double> requestEthereumManaPromise;
         private Promise<double> requestPolygonManaPromise;
 
         [SetUp]
         public void SetUp()
         {
-            walletCardHUDComponentView = Substitute.For<IWalletCardHUDComponentView>();
+            walletSectionHUDComponentView = Substitute.For<IWalletSectionHUDComponentView>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             theGraph = Substitute.For<ITheGraph>();
+            clipboard = Substitute.For<IClipboard>();
+            browserBridge = Substitute.For<IBrowserBridge>();
             dataStore = new DataStore();
 
             ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -41,11 +48,13 @@ namespace DCL.Wallet
             requestPolygonManaPromise.Resolve(TEST_POLYGON_MANA_BALANCE);
             theGraph.Configure().QueryPolygonMana(Arg.Any<string>()).Returns(requestPolygonManaPromise);
 
-            walletCardHUDController = new WalletCardHUDController(
-                walletCardHUDComponentView,
+            walletSectionHUDController = new WalletSectionHUDController(
+                walletSectionHUDComponentView,
+                dataStore,
                 userProfileBridge,
-                theGraph,
-                dataStore);
+                clipboard,
+                browserBridge,
+                theGraph);
         }
 
         [TearDown]
@@ -54,7 +63,7 @@ namespace DCL.Wallet
             requestEthereumManaPromise.Dispose();
             requestPolygonManaPromise.Dispose();
             Object.Destroy(ownUserProfile);
-            walletCardHUDController.Dispose();
+            walletSectionHUDController.Dispose();
         }
 
         [Test]
@@ -66,7 +75,7 @@ namespace DCL.Wallet
             dataStore.wallet.currentEthereumManaBalance.Set(balance);
 
             // Assert
-            walletCardHUDComponentView.Received(1).SetEthereumManaBalance(balance);
+            walletSectionHUDComponentView.Received(1).SetEthereumManaBalance(balance);
         }
 
         [Test]
@@ -78,45 +87,77 @@ namespace DCL.Wallet
             dataStore.wallet.currentPolygonManaBalance.Set(balance);
 
             // Assert
-            walletCardHUDComponentView.Received(1).SetPolygonManaBalance(balance);
+            walletSectionHUDComponentView.Received(1).SetPolygonManaBalance(balance);
         }
 
         [UnityTest]
         public IEnumerator RequestEthereumManaBalanceCorrectly()
         {
-            // Arrange
-            dataStore.wallet.isWalletSectionVisible.Set(false, false);
-
             // Act
-            dataStore.wallet.isWalletCardVisible.Set(true, true);
+            dataStore.wallet.isWalletSectionVisible.Set(true, true);
             yield return null;
 
             // Assert
-            walletCardHUDComponentView.Received(1).SetEthereumManaLoadingActive(true);
+            walletSectionHUDComponentView.Received(1).SetEthereumManaLoadingActive(true);
             theGraph.Received(1).QueryEthereumMana(ownUserProfile.userId);
             yield return requestEthereumManaPromise;
             Assert.AreEqual(TEST_ETHEREUM_MANA_BALANCE, dataStore.wallet.currentEthereumManaBalance.Get());
-            walletCardHUDComponentView.Received(1).SetEthereumManaBalance(TEST_ETHEREUM_MANA_BALANCE);
-            walletCardHUDComponentView.Received(1).SetEthereumManaLoadingActive(false);
+            walletSectionHUDComponentView.Received(1).SetEthereumManaBalance(TEST_ETHEREUM_MANA_BALANCE);
+            walletSectionHUDComponentView.Received(1).SetEthereumManaLoadingActive(false);
         }
 
         [UnityTest]
         public IEnumerator RequestPolygonManaBalanceCorrectly()
         {
-            // Arrange
-            dataStore.wallet.isWalletSectionVisible.Set(false, false);
-
             // Act
-            dataStore.wallet.isWalletCardVisible.Set(true, true);
+            dataStore.wallet.isWalletSectionVisible.Set(true, true);
             yield return null;
 
             // Assert
-            walletCardHUDComponentView.Received(1).SetPolygonManaLoadingActive(true);
+            walletSectionHUDComponentView.Received(1).SetPolygonManaLoadingActive(true);
             theGraph.Received(1).QueryPolygonMana(ownUserProfile.userId);
             yield return requestPolygonManaPromise;
             Assert.AreEqual(TEST_POLYGON_MANA_BALANCE, dataStore.wallet.currentPolygonManaBalance.Get());
-            walletCardHUDComponentView.Received(1).SetPolygonManaBalance(TEST_POLYGON_MANA_BALANCE);
-            walletCardHUDComponentView.Received(1).SetPolygonManaLoadingActive(false);
+            walletSectionHUDComponentView.Received(1).SetPolygonManaBalance(TEST_POLYGON_MANA_BALANCE);
+            walletSectionHUDComponentView.Received(1).SetPolygonManaLoadingActive(false);
+        }
+
+        [Test]
+        public void UpdateProfileCorrectly()
+        {
+            // Assert
+            walletSectionHUDComponentView.Received(1).SetWalletAddress(ownUserProfile.userId);
+            walletSectionHUDComponentView.Received(1).SetWalletSectionAsGuest(ownUserProfile.isGuest);
+        }
+
+        [Test]
+        public void CopyWalletAddressCorrectly()
+        {
+            // Act
+            walletSectionHUDComponentView.OnCopyWalletAddress += Raise.Event<Action>();
+
+            // Assert
+            clipboard.Received(1).WriteText(ownUserProfile.userId);
+        }
+
+        [Test]
+        public void GoToManaPurchaseUrlCorrectly()
+        {
+            // Act
+            walletSectionHUDComponentView.OnBuyManaClicked += Raise.Event<Action>();
+
+            // Assert
+            browserBridge.Received(1).OpenUrl("https://account.decentraland.org");
+        }
+
+        [Test]
+        public void GoToLearnMoreUrlCorrectly()
+        {
+            // Act
+            walletSectionHUDComponentView.OnLearnMoreClicked += Raise.Event<Action>();
+
+            // Assert
+            browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/examples/get-a-wallet");
         }
     }
 }

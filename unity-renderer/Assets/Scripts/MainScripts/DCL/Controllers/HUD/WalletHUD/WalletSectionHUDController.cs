@@ -102,6 +102,46 @@ namespace DCL.Wallet
             }
         }
 
+        private IEnumerator EthereumManaIntervalRoutine()
+        {
+            while (true)
+            {
+                yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+
+                view.SetEthereumManaLoadingActive(true);
+                Promise<double> promise = theGraph.QueryEthereumMana(ownUserProfile.userId);
+
+                if (promise != null)
+                {
+                    yield return promise;
+                    dataStore.wallet.currentEthereumManaBalance.Set(promise.value);
+                    view.SetEthereumManaLoadingActive(false);
+                }
+
+                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
+            }
+        }
+
+        private IEnumerator PolygonManaIntervalRoutine()
+        {
+            while (true)
+            {
+                yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+
+                view.SetPolygonManaLoadingActive(true);
+                Promise<double> promise = theGraph.QueryPolygonMana(ownUserProfile.userId);
+
+                if (promise != null)
+                {
+                    yield return promise;
+                    dataStore.wallet.currentPolygonManaBalance.Set(promise.value);
+                    view.SetPolygonManaLoadingActive(false);
+                }
+
+                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
+            }
+        }
+
         private void OnProfileUpdated(UserProfile userProfile)
         {
             if (string.IsNullOrEmpty(userProfile.userId))
@@ -124,47 +164,5 @@ namespace DCL.Wallet
 
         private void GoToLearnMoreUrl() =>
             browserBridge.OpenUrl(URL_MANA_INFO);
-
-        private IEnumerator EthereumManaIntervalRoutine()
-        {
-            while (true)
-            {
-                yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
-
-                view.SetEthereumManaLoadingActive(true);
-                Promise<double> promise = theGraph.QueryEthereumMana(ownUserProfile.userId);
-
-                if (promise != null)
-                {
-                    yield return promise;
-                    dataStore.wallet.currentEthereumManaBalance.Set(promise.value);
-                    view.SetEthereumManaBalance(promise.value);
-                    view.SetEthereumManaLoadingActive(false);
-                }
-
-                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
-            }
-        }
-
-        private IEnumerator PolygonManaIntervalRoutine()
-        {
-            while (true)
-            {
-                yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
-
-                view.SetPolygonManaLoadingActive(true);
-                Promise<double> promise = theGraph.QueryPolygonMana(ownUserProfile.userId);
-
-                if (promise != null)
-                {
-                    yield return promise;
-                    dataStore.wallet.currentPolygonManaBalance.Set(promise.value);
-                    view.SetPolygonManaBalance(promise.value);
-                    view.SetPolygonManaLoadingActive(false);
-                }
-
-                yield return WaitForSecondsCache.Get(WalletUtils.FETCH_MANA_INTERVAL);
-            }
-        }
     }
 }
