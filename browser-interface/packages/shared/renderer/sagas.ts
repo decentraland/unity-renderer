@@ -254,9 +254,6 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
         separator: '-',
         style: 'capital'
       }
-      for (let i = 0; i < 100; i++) {
-        console.log(uniqueNamesGenerator(config));
-      }
       const randomName = uniqueNamesGenerator(config)
       trackEvent('seamless_login tos accepted', {})
       store.dispatch(signUp('', randomName))
