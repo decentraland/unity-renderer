@@ -89,7 +89,6 @@ namespace DCL.Wallet
                 {
                     yield return promise;
                     dataStore.wallet.currentEthereumManaBalance.Set(promise.value);
-                    view.SetEthereumManaBalance(promise.value);
                     view.SetEthereumManaLoadingActive(false);
                 }
 
@@ -113,7 +112,6 @@ namespace DCL.Wallet
                 {
                     yield return promise;
                     dataStore.wallet.currentPolygonManaBalance.Set(promise.value);
-                    view.SetPolygonManaBalance(promise.value);
                     view.SetPolygonManaLoadingActive(false);
                 }
 
