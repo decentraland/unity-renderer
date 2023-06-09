@@ -137,7 +137,7 @@ namespace DCL.ECSComponents
 
         private void ApplyCurrentModel()
         {
-            if (audioSource == null || model == null)
+            if (audioSource == null)
             {
                 Debug.LogWarning("AudioSource or model is null!.");
                 return;
