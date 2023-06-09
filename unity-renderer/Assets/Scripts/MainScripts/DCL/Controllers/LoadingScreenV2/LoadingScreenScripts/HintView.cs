@@ -39,7 +39,8 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void ShowHint(bool active)
         {
-            gameObject.SetActive(active);
+            if (this != null)
+                gameObject.SetActive(active);
         }
     }
 }

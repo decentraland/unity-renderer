@@ -7,15 +7,19 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Controllers.LoadingScreenV2
 {
+    /// <summary>
+    /// HintViewManager class is responsible for managing the carousel of hints.
+    /// It also manages the logic of showing and hiding hints.
+    /// </summary>
     public class HintViewManager: IHintViewManager
     {
         private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
-        private const int MAX_HINTS = 15;
+        private readonly List<HintView> hintViewList;
 
-        internal int currentHintIndex = 0;
-        private List<HintView> hintViewList;
         private bool isIteratingHints = false;
+
         internal CancellationToken token;
+        internal int currentHintIndex = 0;
 
         public event Action OnHintChanged;
 
@@ -62,11 +66,14 @@ namespace DCL.Controllers.LoadingScreenV2
             UpdateHintView();
         }
 
+        /// <summary>
+        /// Iterates and shows the next at the end of the timer
+        /// </summary>
+        /// <param name="token"></param>
         private async UniTask IterateHintsAsync(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-                // CarouselNextHint();
                 try
                 {
                     await UniTask.Delay((int)SHOWING_TIME_HINTS.TotalMilliseconds, cancellationToken: token);
@@ -79,6 +86,7 @@ namespace DCL.Controllers.LoadingScreenV2
                 {
                     Debug.LogException(ex);
                 }
+                CarouselNextHint();
             }
         }
 

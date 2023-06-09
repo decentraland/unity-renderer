@@ -154,6 +154,10 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
             // Assert
             // Check if the carousel moved to the previous hint
             Assert.AreEqual(0, previousHintIndex);
+
+            // Dispose
+            loadingScreenHintsController.cancellationTokenSource.Cancel();
+
         }
 
 
