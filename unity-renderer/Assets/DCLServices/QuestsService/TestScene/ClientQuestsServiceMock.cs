@@ -25,8 +25,8 @@ namespace DCLServices.QuestsService.TestScene
             questDefinitions.Clear();
             userUpdateChannel = Channel.CreateSingleConsumerUnbounded<UserUpdate>();
 
+            #if UNITY_EDITOR
             getAllQuests = Quests.Parser.ParseJson(File.ReadAllText(QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE));
-
             string[] userUpdatesEntries = File.ReadAllLines(QuestsServiceTestScene_Utils.USER_UPDATES_FILE);
             foreach (string userUpdatesEntry in userUpdatesEntries)
                 userUpdates.Enqueue(UserUpdate.Parser.ParseJson(userUpdatesEntry));
@@ -37,6 +37,7 @@ namespace DCLServices.QuestsService.TestScene
                 var definition = Quest.Parser.ParseJson(definitionEntry);
                 questDefinitions[definition.Id] = definition;
             }
+            #endif
         }
 
         public UniTask<GetAllQuestsResponse> GetAllQuests(Empty request) => new (new GetAllQuestsResponse() { Quests = getAllQuests });
