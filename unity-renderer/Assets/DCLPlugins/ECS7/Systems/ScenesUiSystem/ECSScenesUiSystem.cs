@@ -6,7 +6,6 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
-using Position = UnityEngine.UIElements.Position;
 
 
 namespace ECSSystems.ScenesUiSystem
@@ -80,18 +79,16 @@ namespace ECSSystems.ScenesUiSystem
             if (sceneChanged && currentScene != null && currentSceneNumber != currentScene.sceneData.sceneNumber)
                 currentScene = null;
 
-            // we get current scene reference
-            currentScene ??= GetCurrentScene(currentSceneNumber, loadedScenes);
-
             // UI not set for current scene yet
             if (isPendingSceneUI)
             {
+                // we get current scene reference
+                currentScene ??= GetCurrentScene(currentSceneNumber, loadedScenes);
+
                 // we apply current scene UI
                 if (currentScene != null && ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isSceneUIEnabled))
                     isPendingSceneUI = false;
             }
-
-
         }
 
         private void LoadedScenesOnOnRemoved(IParcelScene scene)

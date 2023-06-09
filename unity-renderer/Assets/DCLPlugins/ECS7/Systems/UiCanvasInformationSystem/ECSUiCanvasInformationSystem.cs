@@ -11,14 +11,13 @@ namespace ECSSystems.UiCanvasInformationSystem
 {
     public class ECSUiCanvasInformationSystem : IDisposable
     {
-        public int lastViewportResolutionWidth = -1;
-        public int lastScreenRealResolutionWidth = -1;
-
         private readonly IECSComponentWriter componentWriter;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly BorderRect interactableArea;
 
         private float lastDevicePixelRatio = -1;
+        private int lastViewportResolutionWidth = -1;
+        private int lastScreenRealResolutionWidth = -1;
 
         public ECSUiCanvasInformationSystem(IECSComponentWriter componentWriter, BaseList<IParcelScene> loadedScenes)
         {
@@ -67,7 +66,7 @@ namespace ECSSystems.UiCanvasInformationSystem
          * Note: Explorer's 'rendering scale' doesn't affect this, as that is only for 3D rendering, so it doesn't affect
          * the whole application resolution (e.g. UIs are unaffected).
         */
-        private float CalculateDevicePixelRatio(int viewportPixelsWidth, int realScreenPixelsWidth) => realScreenPixelsWidth / (float)viewportPixelsWidth;
+        private static float CalculateDevicePixelRatio(int viewportPixelsWidth, int realScreenPixelsWidth) => realScreenPixelsWidth / (float)viewportPixelsWidth;
 
         private void UpdateUiCanvasInformationComponent(int sceneNumber)
         {
