@@ -228,6 +228,7 @@ GameObject:
   - component: {fileID: 5195067929605404642}
   - component: {fileID: 2268439034940025698}
   - component: {fileID: 1548634560337433364}
+  - component: {fileID: 5622678805136424953}
   m_Layer: 5
   m_Name: QuestLogHUD
   m_TagString: Untagged
@@ -363,6 +364,22 @@ MonoBehaviour:
   activeQuestsContainer: {fileID: 6616477266518018369}
   activeQuestPrefab: {fileID: 4299008385477880156, guid: 446d6661e0622443a99e6c2049184954,
     type: 3}
+--- !u!114 &5622678805136424953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353294522546651223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08933640a8d9fc442874971ee5e736ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  justAbortAllOnGoinQuests: 0
+  questsToStart:
+  - 7d795b67-11f6-4d73-bd88-5d89cf33d679
+  - e382bd60-3292-484a-996e-7c7b0e4794c9
 --- !u!1 &489303922329482026
 GameObject:
   m_ObjectHideFlags: 0
