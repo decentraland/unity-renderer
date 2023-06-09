@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Providers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,12 +15,11 @@ namespace DCL.Controllers.LoadingScreenV2
     public class LoadingScreenHintsController
     {
         private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
+        private readonly string SOURCE_HINT_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
         private const int MAX_HINTS = 15;
 
-        private readonly HintView hintViewPrefab;
+        private HintView hintViewPrefab;
         private readonly HintRequestService hintRequestService;
-
-        private bool isRequestingHints = false;
 
         internal HintViewManager hintViewManager;
         internal readonly List<HintView> hintViewPool;
@@ -28,28 +28,31 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public event Action OnRequestHintsCompleted;
 
-        public LoadingScreenHintsController(HintView hintViewPrefab, HintRequestService hintRequestService)
+        public LoadingScreenHintsController(HintRequestService hintRequestService)
         {
-            this.hintViewPrefab = hintViewPrefab;
             this.hintRequestService = hintRequestService;
 
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
 
+            InitializeHintsAsync();
+        }
+
+        private async void InitializeHintsAsync()
+        {
+            cancellationTokenSource = new CancellationTokenSource();
+
+            IAddressableResourceProvider  addressableProvider = new AddressableResourceProvider();
+            hintViewPrefab = await addressableProvider.GetAddressable<HintView>(SOURCE_HINT_ADDRESSABLE, cancellationTokenSource.Token);
+
             // Initializing empty hints views
             for (int i = 0; i < MAX_HINTS; i++)
             {
                 HintView newHintView = Object.Instantiate(hintViewPrefab);
-                newHintView.ShowHint(false);
+                newHintView.ToggleHint(false);
                 hintViewPool.Add(newHintView);
             }
 
-            InitializeHints();
-        }
-
-        private async void InitializeHints()
-        {
-            cancellationTokenSource = new CancellationTokenSource();
             await RequestHints(cancellationTokenSource.Token);
         }
 
@@ -59,10 +62,7 @@ namespace DCL.Controllers.LoadingScreenV2
         /// <param name="ctx"></param>
         public async UniTask RequestHints(CancellationToken ctx)
         {
-            if (isRequestingHints) return;
-            isRequestingHints = true;
-
-            hintViewPool.ForEach(hintView => hintView.ShowHint(false));
+            hintViewPool.ForEach(hintView => hintView.ToggleHint(false));
             hintsDictionary.Clear();
 
             Dictionary<Hint, Texture2D> hintsResult = await hintRequestService.RequestHintsFromSources(ctx, MAX_HINTS);
@@ -82,7 +82,6 @@ namespace DCL.Controllers.LoadingScreenV2
                 index++;
             }
 
-            isRequestingHints = false;
             hintViewManager = new HintViewManager(intializedHints);
 
             StartHintsCarousel();
@@ -91,39 +90,27 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void StartHintsCarousel()
         {
-            cancellationTokenSource?.Cancel();
-
-            cancellationTokenSource = new CancellationTokenSource();
-            hintViewManager.StartCarousel(cancellationTokenSource.Token);
+            hintViewManager.StartCarousel();
         }
 
         public void StopHintsCarousel()
         {
-            cancellationTokenSource.Cancel();
             hintViewManager.StopCarousel();
-            cancellationTokenSource = null;
         }
-
 
         public void CarouselNextHint()
         {
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource = new CancellationTokenSource();
-            hintViewManager.CarouselNextHint(cancellationTokenSource.Token);
+            hintViewManager.CarouselNextHint();
         }
 
         public void CarouselPreviousHint()
         {
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource = new CancellationTokenSource();
-            hintViewManager.CarouselPreviousHint(cancellationTokenSource.Token);
+            hintViewManager.CarouselPreviousHint();
         }
 
         public void SetHint(int index)
         {
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource = new CancellationTokenSource();
-            hintViewManager.SetSpecificHint(index, cancellationTokenSource.Token);
+            hintViewManager.SetSpecificHint(index);
         }
 
         public void Dispose()

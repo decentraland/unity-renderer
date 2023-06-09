@@ -34,10 +34,10 @@ namespace DCL.Controllers.LoadingScreenV2
             if (texture != null)
                 hintImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
 
-            ShowHint(startAsActive);
+            ToggleHint(startAsActive);
         }
 
-        public void ShowHint(bool active)
+        public void ToggleHint(bool active)
         {
             if (this != null)
                 gameObject.SetActive(active);

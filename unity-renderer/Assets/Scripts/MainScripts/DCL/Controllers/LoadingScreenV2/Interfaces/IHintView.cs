@@ -7,7 +7,7 @@ namespace DCL.Controllers.LoadingScreenV2
     public interface IHintView
     {
         void Initialize(Hint hint, Texture2D texture, bool startAsActive = false);
-        void ShowHint(bool active);
+        void ToggleHint(bool active);
     }
 }
 

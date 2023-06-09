@@ -10,11 +10,11 @@ namespace DCL.Controllers.LoadingScreenV2
     {
         event Action OnHintChanged;
 
-        void StartCarousel(CancellationToken ct);
+        void StartCarousel();
         void StopCarousel();
-        void CarouselNextHint(CancellationToken ct);
-        void CarouselPreviousHint(CancellationToken ct);
-        void SetSpecificHint(int index, CancellationToken ct);
+        void CarouselNextHint();
+        void CarouselPreviousHint();
+        void SetSpecificHint(int index);
     }
 }
 

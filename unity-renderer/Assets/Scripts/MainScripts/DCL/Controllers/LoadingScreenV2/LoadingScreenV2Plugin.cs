@@ -9,8 +9,10 @@ public class LoadingScreenV2Plugin : IPlugin
 
     public LoadingScreenV2Plugin()
     {
-        controller = new LoadingScreenHintsController((new GameObject().AddComponent<HintView>()),
-            new HintRequestService(new List<IHintRequestSource>(), new SceneController(), new HintTextureRequestHandler()));
+        controller = new LoadingScreenHintsController(
+            new HintRequestService(new List<IHintRequestSource>(),
+                new SceneController(), new HintTextureRequestHandler())
+            );
     }
 
     public void Dispose()
