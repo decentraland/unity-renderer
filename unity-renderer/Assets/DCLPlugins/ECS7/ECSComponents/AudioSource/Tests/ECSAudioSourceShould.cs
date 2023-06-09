@@ -1,9 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
-using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.SettingsCommon;
@@ -13,7 +10,6 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents.Test
 {

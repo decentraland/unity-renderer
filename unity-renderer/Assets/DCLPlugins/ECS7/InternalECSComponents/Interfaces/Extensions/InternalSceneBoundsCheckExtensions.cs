@@ -1,6 +1,6 @@
 using DCL.Controllers;
 using DCL.Models;
-using ECSSystems.ECSSceneBoundsCheckerSystem;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -87,24 +87,24 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
-        public static void AddSceneBoundsCheckedComponent(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
-            IParcelScene scene, IDCLEntity entity, ISceneBoundsCheckedComponent sceneBoundsCheckedComponent)
+        public static void RegisterOnSceneBoundsStateChangeCallback(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, Action<bool> callback)
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
-            model.sceneBoundsCheckedComponents.Add(sceneBoundsCheckedComponent);
+            model.OnSceneBoundsStateChange += callback;
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
-        public static void RemoveSceneBoundsCheckedComponent(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
-            IParcelScene scene, IDCLEntity entity, ISceneBoundsCheckedComponent sceneBoundsCheckedComponent)
+        public static void RemoveOnSceneBoundsStateChangeCallback(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, Action<bool> callback)
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model;
 
             if (model == null)
                 return;
 
-            model.sceneBoundsCheckedComponents.Remove(sceneBoundsCheckedComponent);
+            model.OnSceneBoundsStateChange -= callback;
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
@@ -116,7 +116,7 @@ namespace DCL.ECS7.InternalComponents
 
             return model == null || (model.entityPosition == Vector3.zero
                                      && model.entityLocalMeshBounds.size == Vector3.zero
-                                     && model.sceneBoundsCheckedComponents.Count == 0);
+                                     && model.OnSceneBoundsStateChange == null);
         }
     }
 }

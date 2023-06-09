@@ -4,7 +4,6 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ECSSystems.ECSSceneBoundsCheckerSystem
@@ -284,10 +283,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private static void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, HashSet<IDCLEntity> entitiesOutsideSceneBounds, InternalSceneBoundsCheck componentModel)
         {
-            foreach (ISceneBoundsCheckedComponent sceneBoundsCheckedComponent in componentModel.sceneBoundsCheckedComponents)
-            {
-                sceneBoundsCheckedComponent.UpdateInsideSceneBoundsState(!entitiesOutsideSceneBounds.Contains(entity));
-            }
+            componentModel.OnSceneBoundsStateChange?.Invoke(!entitiesOutsideSceneBounds.Contains(entity));
         }
 
         private static void ProcessRendererComponentChanges(IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent,

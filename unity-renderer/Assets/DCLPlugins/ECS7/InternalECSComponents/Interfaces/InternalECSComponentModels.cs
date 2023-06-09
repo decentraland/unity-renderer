@@ -1,6 +1,6 @@
 using DCL.Components.Video.Plugin;
 using DCL.ECSComponents;
-using ECSSystems.ECSSceneBoundsCheckerSystem;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -85,7 +85,7 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers;
         public KeyValueSet<Collider, uint> physicsColliders;
         public KeyValueSet<Collider, uint> pointerColliders;
-        public HashSet<ISceneBoundsCheckedComponent> sceneBoundsCheckedComponents = new HashSet<ISceneBoundsCheckedComponent>();
+        public Action<bool> OnSceneBoundsStateChange;
     }
 
     public class InternalVisibility : InternalComponent

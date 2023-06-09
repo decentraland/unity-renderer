@@ -5,13 +5,12 @@ using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.SettingsCommon;
-using ECSSystems.ECSSceneBoundsCheckerSystem;
 using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
 {
-    public class ECSAudioSourceComponentHandler : IECSComponentHandler<PBAudioSource>, ISceneBoundsCheckedComponent
+    public class ECSAudioSourceComponentHandler : IECSComponentHandler<PBAudioSource>
     {
         internal AudioSource audioSource;
         internal AssetPromise_AudioClip promiseAudioClip;
@@ -23,6 +22,8 @@ namespace DCL.ECSComponents
         private PBAudioSource model;
         private IParcelScene scene;
         private AudioClip audioClip;
+        private float lastPauseClipTime = -1f;
+        private float lastPauseTime = 0f;
 
         private readonly DataStore dataStore;
         private readonly Settings settings;
@@ -66,7 +67,7 @@ namespace DCL.ECSComponents
                 audioSource = this.audioSource
             });
 
-            sbcInternalComponent.AddSceneBoundsCheckedComponent(scene, entity, this);
+            sbcInternalComponent.RegisterOnSceneBoundsStateChangeCallback(scene, entity, OnSceneBoundsStateChange);
 
             isPlayerInsideScene = scene.sceneData.sceneNumber == sceneNumber.Get();
         }
@@ -133,7 +134,7 @@ namespace DCL.ECSComponents
                 audioSource = null;
             }
 
-            sbcInternalComponent.RemoveSceneBoundsCheckedComponent(scene, entity, this);
+            sbcInternalComponent.RemoveOnSceneBoundsStateChangeCallback(scene, entity, OnSceneBoundsStateChange);
         }
 
         private void ApplyCurrentModel()
@@ -152,14 +153,14 @@ namespace DCL.ECSComponents
 
             if (model.Playing != audioSource.isPlaying)
             {
-                if(audioSource.isPlaying)
-                    audioSource.Stop();
+                if (audioSource.isPlaying)
+                    StopAudio();
                 else if (isAudioClipReady && isPlayerInsideScene && isEntityInsideScene)
-                    audioSource.Play();
+                    PlayAudio();
             }
             else if (audioSource.isPlaying && (!isPlayerInsideScene || !isEntityInsideScene))
             {
-                audioSource.Stop();
+                StopAudio();
             }
         }
 
@@ -172,7 +173,29 @@ namespace DCL.ECSComponents
             bool shouldPlay = model.Playing && !audioSource.isPlaying;
 
             if (audioSource.enabled && model.Playing && shouldPlay)
-                audioSource.Play();
+                PlayAudio();
+        }
+
+        private void PlayAudio()
+        {
+            if (lastPauseClipTime > 0)
+                audioSource.time = lastPauseClipTime + (Time.realtimeSinceStartup - lastPauseTime);
+
+            audioSource.Play();
+            lastPauseClipTime = -1;
+        }
+
+        private void StopAudio()
+        {
+            lastPauseClipTime = -1;
+            audioSource.Stop();
+        }
+
+        private void PauseAudio()
+        {
+            lastPauseClipTime = audioSource.time;
+            lastPauseTime = Time.realtimeSinceStartup;
+            audioSource.Stop();
         }
 
         private void OnAudioClipLoadComplete(Asset_AudioClip assetAudioClip)
@@ -223,10 +246,14 @@ namespace DCL.ECSComponents
         private void OnCurrentSceneChanged(int currentSceneNumber, int previousSceneNumber)
         {
             isPlayerInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == currentSceneNumber;
-            ApplyCurrentModel();
+
+            if (isPlayerInsideScene)
+                ApplyCurrentModel();
+            else
+                PauseAudio();
         }
 
-        public void UpdateInsideSceneBoundsState(bool isInsideSceneBounds)
+        public void OnSceneBoundsStateChange(bool isInsideSceneBounds)
         {
             if (isEntityInsideScene == isInsideSceneBounds) return;
 
