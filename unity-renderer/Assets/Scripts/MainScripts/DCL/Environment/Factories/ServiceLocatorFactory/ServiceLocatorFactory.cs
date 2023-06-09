@@ -139,6 +139,8 @@ namespace DCL
 
                     void CompleteTaskAndUnsubscribe()
                     {
+                        Debug.Log($"SocialClient.Transport.Connected");
+
                         Unsubscribe();
 
                         if (cancellationToken.IsCancellationRequested)
@@ -152,6 +154,8 @@ namespace DCL
 
                     void FailTaskAndUnsubscribe(string error)
                     {
+                        Debug.Log($"SocialClient.Transport.Error: {error}");
+
                         Unsubscribe();
 
                         if (cancellationToken.IsCancellationRequested)
@@ -165,6 +169,8 @@ namespace DCL
 
                     void FailTaskByDisconnectionAndUnsubscribe()
                     {
+                        Debug.Log($"SocialClient.Transport.Disconnected");
+
                         Unsubscribe();
 
                         if (cancellationToken.IsCancellationRequested)
