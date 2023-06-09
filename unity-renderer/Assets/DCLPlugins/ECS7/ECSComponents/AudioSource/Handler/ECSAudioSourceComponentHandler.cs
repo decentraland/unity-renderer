@@ -201,6 +201,8 @@ namespace DCL.ECSComponents
 
         private void UpdateAudioSourceVolume()
         {
+            if (model == null) return;
+
             if (!scene.isPersistent && (!isPlayerInsideScene || !isEntityInsideScene))
             {
                 audioSource.volume = 0;
