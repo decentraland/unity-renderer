@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using WebSocketSharp;
 
 namespace DCLServices.QuestsService.TestScene
 {
@@ -49,6 +50,24 @@ namespace DCLServices.QuestsService.TestScene
 
             var rpcSignRequest = new RPCSignRequest(DCL.Environment.i.serviceLocator.Get<IRPC>());
             AuthedWebSocketClientTransport webSocketClientTransport = new AuthedWebSocketClientTransport(rpcSignRequest, "wss://quests-rpc.decentraland.zone");
+            webSocketClientTransport.Log.Output = (data, s) =>
+            {
+                switch (data.Level)
+                {
+                    case LogLevel.Debug:
+                    case LogLevel.Info:
+                    case LogLevel.Trace:
+                        Debug.Log($"QuestService.Transport.Output: {data.Message}");
+                        break;
+                    case LogLevel.Error:
+                    case LogLevel.Fatal:
+                        Debug.LogError($"QuestService.Transport.Output: {data.Message}");
+                        break;
+                    case LogLevel.Warn:
+                        Debug.LogWarning($"QuestService.Transport.Output: {data.Message}");
+                        break;
+                }
+            };
             await webSocketClientTransport.Connect();
             MyLog($"RPC Authenticated");
 
