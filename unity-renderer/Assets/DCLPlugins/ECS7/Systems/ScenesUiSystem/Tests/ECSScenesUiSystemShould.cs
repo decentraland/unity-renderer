@@ -1,7 +1,6 @@
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
-using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSComponents.UIText;
