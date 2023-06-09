@@ -25,6 +25,34 @@ namespace DCL.Wallet
         }
 
         [Test]
+        public void RaiseOnWalletCardClickedFromGuestButtonCorrectly()
+        {
+            // Arrange
+            var walletCardClicked = false;
+            walletCardHUDView.OnWalletCardClicked += () => walletCardClicked = true;
+
+            // Act
+            walletCardHUDView.guestButton.onClick.Invoke();
+
+            // Assert
+            Assert.IsTrue(walletCardClicked);
+        }
+
+        [Test]
+        public void RaiseOnWalletCardClickedFromSignedInWalletButtonCorrectly()
+        {
+            // Arrange
+            var walletCardClicked = false;
+            walletCardHUDView.OnWalletCardClicked += () => walletCardClicked = true;
+
+            // Act
+            walletCardHUDView.signedInWalletButton.onClick.Invoke();
+
+            // Assert
+            Assert.IsTrue(walletCardClicked);
+        }
+
+        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetWalletCardActiveCorrectly(bool isActive)
