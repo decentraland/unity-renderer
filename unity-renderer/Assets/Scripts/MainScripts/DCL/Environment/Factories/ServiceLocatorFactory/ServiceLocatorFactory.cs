@@ -31,6 +31,10 @@ using System.Threading;
 using UnityEngine;
 using WebSocketSharp;
 using WorldsFeaturesAnalytics;
+#if UNITY_WEBGL && !UNITY_EDITOR
+using HybridWebSocket;
+using WebSocket = HybridWebSocket.WebSocket;
+#endif
 
 namespace DCL
 {
@@ -94,10 +98,20 @@ namespace DCL
                 UniTask<ITransport> CreateWebSocketAndConnect(CancellationToken cancellationToken)
                 {
                     UniTaskCompletionSource<ITransport> task = new ();
-                    var transport = new WebSocketClientTransport("wss://rpc-social-service.decentraland.org");
+                    ITransport transport;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    WebSocket webSocket = WebSocketFactory.CreateInstance(
+                        "wss://rpc-social-service.decentraland.org");
+
+                    WebGLWebSocketTransport webGLWebSocketTransport = new (webSocket);
+
+                    transport = webGLWebSocketTransport;
+#else
+                    WebSocketClientTransport websocketSharpTransport = new ("wss://rpc-social-service.decentraland.org");
                     // it is necessary to set a logger output right after WS creation
                     // otherwise errors are raised and may break the loading process (webgl issue)
-                    transport.Log.Output = (data, s) =>
+                    websocketSharpTransport.Log.Output = (data, s) =>
                     {
                         switch (data.Level)
                         {
@@ -116,9 +130,12 @@ namespace DCL
                         }
                     };
 
-                    transport.Log.Level = LogLevel.Trace;
-                    transport.WaitTime = TimeSpan.FromSeconds(60);
-                    transport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+                    websocketSharpTransport.Log.Level = LogLevel.Trace;
+                    websocketSharpTransport.WaitTime = TimeSpan.FromSeconds(60);
+                    websocketSharpTransport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+
+                    transport = websocketSharpTransport;
+#endif
 
                     void CompleteTaskAndUnsubscribe()
                     {
@@ -170,16 +187,27 @@ namespace DCL
                     transport.OnErrorEvent += FailTaskAndUnsubscribe;
                     transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
                     try
                     {
-                        // connect async does not work, probably because the lack of multi-threading support in webgl build?
-                        // transport.ConnectAsync();
-                        transport.Connect();
+                        webGLWebSocketTransport.Connect();
                     }
                     catch (Exception e)
                     {
                         Debug.LogException(e);
                     }
+#else
+                    try
+                    {
+                        // connect async does not work, probably because the lack of multi-threading support in webgl build?
+                        // transport.ConnectAsync();
+                        websocketSharpTransport.Connect();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
+#endif
 
                     return task.Task.AttachExternalCancellation(cancellationToken);
                 }
