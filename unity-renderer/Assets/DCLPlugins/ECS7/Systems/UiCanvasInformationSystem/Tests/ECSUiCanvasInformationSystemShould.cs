@@ -9,7 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace Tests
+namespace Tests.Systems.UiCanvasInformation
 {
     public class ECSUiCanvasInformationSystemShould
     {

@@ -55,11 +55,12 @@ namespace Tests
             serviceLocator.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());
             Environment.Setup(serviceLocator);
 
+            uint sceneTick = 0;
             context.crdt.SceneController = Environment.i.world.sceneController;
             context.crdt.WorldState = Environment.i.world.state;
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
-            context.crdt.GetSceneTick = (int x) => 1;
-            context.crdt.IncreaseSceneTick = (int x) => { };
+            context.crdt.GetSceneTick = (int x) => sceneTick;
+            context.crdt.IncreaseSceneTick = (int x) => { sceneTick++; };
             context.crdt.IsSceneGltfLoadingFinished = (int x) => true;
         }
 
@@ -268,8 +269,10 @@ namespace Tests
                 ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
                 Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
                 context.crdt.CrdtExecutors = crdtExecutors;
+
                 CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager,
                     context.crdt.SceneController, context.crdt);
+
                 ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
 
                 // client requests `LoadScene()` to have the port open with a scene ready to receive crdt messages
@@ -289,6 +292,7 @@ namespace Tests
                 // Setup context callbacks simulating a GLTF that takes 3 frames to load
                 int framesToWait = 3;
                 int framesCounter = 0;
+
                 context.crdt.IsSceneGltfLoadingFinished = (int x) =>
                 {
                     framesCounter++;
@@ -297,6 +301,7 @@ namespace Tests
 
                     return framesCounter == framesToWait;
                 };
+
                 context.crdt.GetSceneTick = (int x) => 0; // first tick
 
                 // Prepare entity creation CRDT message

@@ -1,25 +1,27 @@
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using ECSSystems.ECSEngineInfoSystem;
 using NSubstitute;
 using NUnit.Framework;
-using RPC.Context;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace Tests
+namespace Tests.Systems.EngineInfo
 {
     public class ECSEngineInfoSystemShould
     {
-        private ECSEngineInfoSystem system;
+        private Action systemUpdate;
         private IECSComponentWriter componentWriter;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
         private InternalECSComponents internalComponents;
-        private SceneStateHandler sceneStateHandler;
+        private IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
 
         [SetUp]
         protected void SetUp()
@@ -30,59 +32,75 @@ namespace Tests
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             componentWriter = Substitute.For<IECSComponentWriter>();
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
+            engineInfoComponent = internalComponents.EngineInfo;
 
             scene = testUtils.CreateScene(666);
 
-            sceneStateHandler = new SceneStateHandler(
-                new CRDTServiceContext(),
-                new RestrictedActionsContext(),
-                new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
-                internalComponents.EngineInfo,
-                internalComponents.GltfContainerLoadingStateComponent,
-                internalComponents.IncreaseSceneTick);
-            system = new ECSEngineInfoSystem(componentWriter, internalComponents.EngineInfo);
+            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY,
+                new InternalEngineInfo()
+                {
+                    SceneTick = 0,
+                    SceneInitialRunTime = Time.realtimeSinceStartup,
+                    SceneInitialFrameCount = Time.frameCount
+                });
+
+            var system = new ECSEngineInfoSystem(componentWriter, engineInfoComponent);
+
+            systemUpdate = () =>
+            {
+                internalComponents.MarkDirtyComponentsUpdate();
+                system.Update();
+                internalComponents.ResetDirtyComponentsUpdate();
+            };
         }
 
         [TearDown]
         protected void TearDown()
         {
             testUtils.Dispose();
-            sceneStateHandler.Dispose();
         }
 
         [Test]
         public void UpdateEngineInfoComponentCorrectly()
         {
-            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
+            void IncreaseSceneTick(IParcelScene scene)
+            {
+                var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
+                model.SceneTick++;
+                engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
+            }
 
-            Assert.IsNotNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
+            Assert.IsNotNull(engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-            system.Update();
+            IncreaseSceneTick(scene);
+            systemUpdate();
 
-            componentWriter.Received(1).PutComponent(
-                Arg.Is<int>((sceneNumberParam) => sceneNumberParam == scene.sceneData.sceneNumber),
-                SpecialEntityId.SCENE_ROOT_ENTITY,
-                ComponentID.ENGINE_INFO,
-                Arg.Is<PBEngineInfo>((componentModel) =>
-                    componentModel.TickNumber == 1
-                    && componentModel.TotalRuntime > 0
-                    && componentModel.FrameNumber > 0)
-            );
+            componentWriter.Received(1)
+                           .PutComponent(
+                                Arg.Is<int>((sceneNumberParam) => sceneNumberParam == scene.sceneData.sceneNumber),
+                                SpecialEntityId.SCENE_ROOT_ENTITY,
+                                ComponentID.ENGINE_INFO,
+                                Arg.Is<PBEngineInfo>((componentModel) =>
+                                    componentModel.TickNumber == 1
+                                    && componentModel.TotalRuntime > 0
+                                    && componentModel.FrameNumber > 0)
+                            );
+
             componentWriter.ClearReceivedCalls();
 
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-            system.Update();
+            IncreaseSceneTick(scene);
+            systemUpdate();
 
-            componentWriter.Received(1).PutComponent(
-                Arg.Is<int>((sceneNumberParam) => sceneNumberParam == scene.sceneData.sceneNumber),
-                SpecialEntityId.SCENE_ROOT_ENTITY,
-                ComponentID.ENGINE_INFO,
-                Arg.Is<PBEngineInfo>((componentModel) =>
-                    componentModel.TickNumber == 2
-                    && componentModel.TotalRuntime > 0
-                    && componentModel.FrameNumber > 0)
-            );
+            componentWriter.Received(1)
+                           .PutComponent(
+                                Arg.Is<int>((sceneNumberParam) => sceneNumberParam == scene.sceneData.sceneNumber),
+                                SpecialEntityId.SCENE_ROOT_ENTITY,
+                                ComponentID.ENGINE_INFO,
+                                Arg.Is<PBEngineInfo>((componentModel) =>
+                                    componentModel.TickNumber == 2
+                                    && componentModel.TotalRuntime > 0
+                                    && componentModel.FrameNumber > 0)
+                            );
         }
     }
 }

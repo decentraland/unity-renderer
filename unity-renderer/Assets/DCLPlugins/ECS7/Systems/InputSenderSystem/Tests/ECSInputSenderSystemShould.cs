@@ -1,4 +1,3 @@
-using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
@@ -8,17 +7,15 @@ using DCL.Models;
 using ECSSystems.InputSenderSystem;
 using NSubstitute;
 using NUnit.Framework;
-using RPC.Context;
 using System;
 using System.Collections.Generic;
 
-namespace Tests
+namespace Tests.Systems.InputSender
 {
     public class ECSInputSenderSystemShould
     {
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
-        private SceneStateHandler sceneStateHandler;
         private IInternalECSComponent<InternalInputEventResults> inputResultComponent;
         private IECSComponentWriter componentWriter;
         private InternalECSComponents internalComponents;
@@ -52,22 +49,13 @@ namespace Tests
                 internalComponents.ResetDirtyComponentsUpdate();
             };
 
-            sceneStateHandler = new SceneStateHandler(
-                new CRDTServiceContext(),
-                new RestrictedActionsContext(),
-                new Dictionary<int, IParcelScene>() { { scene.sceneData.sceneNumber, scene } },
-                internalComponents.EngineInfo,
-                internalComponents.GltfContainerLoadingStateComponent,
-                internalComponents.IncreaseSceneTick);
-
-            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
         }
 
         [TearDown]
         public void TearDown()
         {
             testUtils.Dispose();
-            sceneStateHandler.Dispose();
         }
 
         [Test]
@@ -148,9 +136,10 @@ namespace Tests
                 inputResultComponent.AddEvent(scene, eventData);
             }
 
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo()
+            {
+                SceneTick = 3
+            });
 
             updateSystems();
 
