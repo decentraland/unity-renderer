@@ -17,6 +17,7 @@ namespace DCL.Backpack
         public event Action OnColorPickerToggle;
         public event Action OnContinueSignup;
         public event Action OnAvatarUpdated;
+        public event Action OnOutfitsOpened;
 
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
@@ -78,6 +79,7 @@ namespace DCL.Backpack
         {
             normalSection.SetActive(false);
             outfitSection.SetActive(true);
+            OnOutfitsOpened?.Invoke();
         }
 
         private void ToggleNormalSection()

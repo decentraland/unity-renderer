@@ -1,4 +1,5 @@
 using DCL.Browser;
+using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 
@@ -13,6 +14,11 @@ namespace DCL.Backpack
             IWearablesCatalogService wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
+            var outfitsController = new OutfitsController(
+                new LambdaOutfitsService(
+                    Environment.i.serviceLocator.Get<ILambdasService>(),
+                    Environment.i.serviceLocator.Get<IServiceProviders>()),
+                userProfileBridge);
             var view = BackpackEditorHUDV2ComponentView.Create();
             view.Initialize(
             Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
@@ -54,7 +60,8 @@ namespace DCL.Backpack
                 backpackEmotesSectionController,
                 backpackAnalyticsService,
                 wearableGridController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                outfitsController);
         }
 
         public void Dispose()

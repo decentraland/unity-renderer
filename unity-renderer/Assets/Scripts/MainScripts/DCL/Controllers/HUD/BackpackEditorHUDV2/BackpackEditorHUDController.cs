@@ -20,6 +20,7 @@ namespace DCL.Backpack
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
+        private readonly OutfitsController outfitsController;
         private string currentSlotSelected;
         private bool avatarIsDirty;
         private CancellationTokenSource loadProfileCancellationToken = new ();
@@ -43,7 +44,8 @@ namespace DCL.Backpack
             IBackpackEmotesSectionController backpackEmotesSectionController,
             IBackpackAnalyticsService backpackAnalyticsService,
             WearableGridController wearableGridController,
-            AvatarSlotsHUDController avatarSlotsHUDController)
+            AvatarSlotsHUDController avatarSlotsHUDController,
+            OutfitsController outfitsController)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -54,6 +56,7 @@ namespace DCL.Backpack
             this.backpackAnalyticsService = backpackAnalyticsService;
             this.wearableGridController = wearableGridController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
+            this.outfitsController = outfitsController;
 
             avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfileFromProfileUpdate;
@@ -82,8 +85,14 @@ namespace DCL.Backpack
             view.OnColorChanged += OnWearableColorChanged;
             view.OnColorPickerToggle += OnColorPickerToggled;
             view.OnAvatarUpdated += OnAvatarUpdated;
+            view.OnOutfitsOpened += OnOutfitsOpened;
 
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
+        }
+
+        private void OnOutfitsOpened()
+        {
+            outfitsController.RequestOwnedOutfits();
         }
 
         public void Dispose()
