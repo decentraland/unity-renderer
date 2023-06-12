@@ -443,7 +443,7 @@ SpriteAtlas:
   - SpeakerOn
   - ContainerRadius6
   - VoiceChatCross
-  - DecentralandIsologotipo68
+  - DCLLogo
   - TopRect12
   - SceneInfoContainer
   - Button16
@@ -480,7 +480,7 @@ SpriteAtlas:
   - BackgroundSaturation
   - ContainerRectLeft20
   - ContainerRadius10@2x
-  - DCLLogoColor
+  - DCLIcnColor
   - Outline1Radius12
   - ButtonFlatWhite
   - ExitFullScreenIcon
