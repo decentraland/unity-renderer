@@ -236,8 +236,9 @@ namespace DCL.Social.Friends
                 };
 
                 friends[friendId] = status;
-                IndexUserByNameAsync(status, controllerCancellationTokenSource.Token).Forget();
             }
+
+            IndexUserByNameAsync(status, controllerCancellationTokenSource.Token).Forget();
 
             OnUpdateFriendship?.Invoke(friendId, FriendshipAction.APPROVED);
         }
@@ -294,8 +295,6 @@ namespace DCL.Social.Friends
 
                 // it's impossible to have duplicated timestamps for two different correctly created friend requests
                 outgoingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
-
-                OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.REQUESTED_TO);
             }
             else
             {
