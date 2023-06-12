@@ -40,7 +40,7 @@ namespace DCLServices.QuestsService.TestScene
         private void Awake()
         {
             MyLog($"Output file can be found at: {QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE}");
-            Initialize().Forget();
+            //Initialize().Forget();
         }
 
         private async UniTaskVoid Initialize()
@@ -128,10 +128,24 @@ namespace DCLServices.QuestsService.TestScene
                 var startQuestRequest = new StartQuestRequest { QuestId = questId };
                 var response = await client.StartQuest(startQuestRequest);
                 MyLog(response.ToString());
+
+
             }
 
+
             // Progressing
-            //await client.SendEvent(new Decentraland.Quests.Event() { Action = new Action() { Type = ..., Parameters = ... } });
+            await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "bCdjn5J3uz"},
+            }} });
+            await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "WPJjSiPSPL"},
+            }} });
+            await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "2cvNHyXQfw"}
+            }} });
 
             MyLog("All progress is done, waiting for updates to be saved...");
         }
@@ -193,9 +207,9 @@ namespace DCLServices.QuestsService.TestScene
                 await client.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId });
             }
 
-            // await File.WriteAllTextAsync(QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE, getAllQuests.ToString());
-            // await File.WriteAllLinesAsync(QuestsServiceTestScene_Utils.USER_UPDATES_FILE, userUpdates.Select(x => x.ToString()));
-            // await File.WriteAllLinesAsync(QuestsServiceTestScene_Utils.DEFINITIONS_FILE, definitions.Select(x => x.ToString()));
+            await File.WriteAllTextAsync(QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE, getAllQuests.ToString());
+            await File.WriteAllLinesAsync(QuestsServiceTestScene_Utils.USER_UPDATES_FILE, userUpdates.Select(x => x.ToString()));
+            await File.WriteAllLinesAsync(QuestsServiceTestScene_Utils.DEFINITIONS_FILE, definitions.Select(x => x.ToString()));
             MyLog("Done saving files");
         }
 

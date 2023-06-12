@@ -20,6 +20,8 @@ namespace DCL.Quests
         private readonly DataStore dataStore;
 
         private CancellationTokenSource disposeCts = null;
+        private CancellationTokenSource profileCts = null;
+
         private BaseVariable<string> pinnedQuestId => dataStore.Quests.pinnedQuest;
         private Dictionary<string, QuestInstance> quests;
 
@@ -59,7 +61,7 @@ namespace DCL.Quests
 
             pinnedQuestId.Set(isPinned ? questId : "");
             if(!string.IsNullOrEmpty(previousPinnedQuestId))
-                AddOrUpdateQuestToLog(quests[previousPinnedQuestId]);
+                AddOrUpdateQuestToLog(quests[previousPinnedQuestId]).Forget();
 
             if (string.IsNullOrEmpty(pinnedQuestId.Get()))
             {
@@ -70,7 +72,7 @@ namespace DCL.Quests
             questTrackerComponentView.SetVisible(true);
             questTrackerComponentView.SetQuestTitle(quests[questId].Quest.Name);
             questTrackerComponentView.SetQuestSteps(GetQuestSteps(quests[questId]));
-            AddOrUpdateQuestToLog(quests[pinnedQuestId.Get()]);
+            AddOrUpdateQuestToLog(quests[pinnedQuestId.Get()]).Forget();
         }
 
         private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous) =>
@@ -80,7 +82,7 @@ namespace DCL.Quests
         {
             await foreach (var questInstance in questsService.QuestUpdated.WithCancellation(ct))
             {
-                AddOrUpdateQuestToLog(questInstance);
+                AddOrUpdateQuestToLog(questInstance).Forget();
                 if (questInstance.Id != pinnedQuestId.Get())
                     continue;
 
@@ -110,21 +112,25 @@ namespace DCL.Quests
             {
                 questStartedPopupComponentView.SetQuestName(questStateUpdate.Quest.Name);
                 questStartedPopupComponentView.SetVisible(true);
-                AddOrUpdateQuestToLog(questStateUpdate);
+                AddOrUpdateQuestToLog(questStateUpdate).Forget();
             }
         }
 
-        private void AddOrUpdateQuestToLog(QuestInstance questInstance)
+        private async UniTaskVoid AddOrUpdateQuestToLog(QuestInstance questInstance)
         {
             if (!quests.ContainsKey(questInstance.Id))
                 quests.Add(questInstance.Id, questInstance);
 
-            quests[questInstance.Id] = questInstance;
+            profileCts?.Cancel();
+            profileCts?.Dispose();
+            profileCts = new CancellationTokenSource();
 
+            quests[questInstance.Id] = questInstance;
+            string userName = await GetCreatorName(questInstance.Quest.CreatorAddress, profileCts);
             QuestDetailsComponentModel quest = new QuestDetailsComponentModel()
             {
                 questName = questInstance.Quest.Name,
-                //questCreator = questInstance.Quest.,
+                questCreator = userName,
                 questDescription = questInstance.Quest.Description,
                 questId = questInstance.Id,
                 isPinned = questInstance.Id == pinnedQuestId.Get(),
@@ -133,6 +139,13 @@ namespace DCL.Quests
                 questRewards = new List<QuestRewardComponentModel>()
             };
             questLogComponentView.AddActiveQuest(quest);
+        }
+
+        private async UniTask<string> GetCreatorName(string userId, CancellationTokenSource cts)
+        {
+            UserProfile creatorProfile = userProfileBridge.Get(userId);
+            creatorProfile ??= await userProfileBridge.RequestFullUserProfileAsync(userId, cts.Token);
+            return creatorProfile.userName;
         }
 
         public void Dispose() =>
