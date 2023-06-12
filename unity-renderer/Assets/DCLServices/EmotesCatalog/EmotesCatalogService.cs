@@ -20,7 +20,7 @@ public class EmotesCatalogService : IEmotesCatalogService
     internal readonly Dictionary<string, WearableItem> emotes = new ();
     internal readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new ();
     internal readonly Dictionary<string, int> emotesOnUse = new ();
-    internal readonly Dictionary<string, HashSet<Promise<WearableItem[]>>> ownedEmotesPromisesByUser = new ();
+    internal readonly Dictionary<string, HashSet<Promise<IReadOnlyList<WearableItem>>>> ownedEmotesPromisesByUser = new ();
 
     private readonly IEmotesRequestSource emoteSource;
     private readonly IAddressableResourceProvider addressableResourceProvider;
@@ -70,7 +70,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         emoteSource.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
     }
 
-    private void OnEmotesReceived(WearableItem[] receivedEmotes)
+    private void OnEmotesReceived(IEnumerable<WearableItem> receivedEmotes)
     {
         foreach (var t in receivedEmotes)
         {
@@ -107,10 +107,10 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
     }
 
-    private void OnOwnedEmotesReceived(WearableItem[] receivedEmotes, string userId)
+    private void OnOwnedEmotesReceived(IReadOnlyList<WearableItem> receivedEmotes, string userId)
     {
-        if (!ownedEmotesPromisesByUser.TryGetValue(userId, out HashSet<Promise<WearableItem[]>> ownedEmotesPromises) || ownedEmotesPromises == null)
-            ownedEmotesPromises = new HashSet<Promise<WearableItem[]>>();
+        if (!ownedEmotesPromisesByUser.TryGetValue(userId, out HashSet<Promise<IReadOnlyList<WearableItem>>> ownedEmotesPromises) || ownedEmotesPromises == null)
+            ownedEmotesPromises = new HashSet<Promise<IReadOnlyList<WearableItem>>>();
 
         //Update emotes on use
         foreach (var emote in receivedEmotes)
@@ -123,7 +123,7 @@ public class EmotesCatalogService : IEmotesCatalogService
 
         //Resolve ownedEmotesPromise
         ownedEmotesPromisesByUser.Remove(userId);
-        foreach (Promise<WearableItem[]> promise in ownedEmotesPromises)
+        foreach (Promise<IReadOnlyList<WearableItem>> promise in ownedEmotesPromises)
             promise.Resolve(receivedEmotes);
     }
 
@@ -138,11 +138,11 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public bool TryGetLoadedEmote(string id, out WearableItem emote) { return emotes.TryGetValue(id, out emote); }
 
-    public Promise<WearableItem[]> RequestOwnedEmotes(string userId)
+    public Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId)
     {
-        var promise = new Promise<WearableItem[]>();
+        var promise = new Promise<IReadOnlyList<WearableItem>>();
         if (!ownedEmotesPromisesByUser.ContainsKey(userId) || ownedEmotesPromisesByUser[userId] == null)
-            ownedEmotesPromisesByUser[userId] = new HashSet<Promise<WearableItem[]>>();
+            ownedEmotesPromisesByUser[userId] = new HashSet<Promise<IReadOnlyList<WearableItem>>>();
         ownedEmotesPromisesByUser[userId].Add(promise);
 
         emoteSource.RequestOwnedEmotes(userId);
@@ -150,7 +150,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         return promise;
     }
 
-    public async UniTask<WearableItem[]> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default)
+    public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default)
     {
         const int TIMEOUT = 60;
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
@@ -248,7 +248,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         return promise.value;
     }
 
-    public async UniTask<WearableItem[]> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default)
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
         try

@@ -85,7 +85,6 @@ namespace DCLServices.Lambdas
             TBody postData,
             int timeout = DEFAULT_TIMEOUT,
             int attemptsNumber = DEFAULT_ATTEMPTS_NUMBER,
-            CancellationToken cancellationToken = default,
-            params (string paramName, string paramValue)[] urlEncodedParams);
+            CancellationToken cancellationToken = default);
     }
 }

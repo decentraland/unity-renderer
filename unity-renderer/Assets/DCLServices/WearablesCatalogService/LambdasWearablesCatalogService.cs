@@ -578,12 +578,5 @@ namespace DCLServices.WearablesCatalogService
 
             return false;
         }
-
-        private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds)
-        {
-            List<(string, string id)> valueTuples = wearableIds.Select(id => ("wearableId", id)).ToList();
-            valueTuples.Add(("includeEntities", "true"));
-            return valueTuples.ToArray();
-        }
     }
 }

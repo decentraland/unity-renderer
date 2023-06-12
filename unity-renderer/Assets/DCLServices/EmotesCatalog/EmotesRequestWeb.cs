@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCLServices.Lambdas;
+using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,16 +25,18 @@ namespace DCLServices.EmotesCatalog
             public EmoteRequestDto[] elements;
         }
 
-        public event Action<WearableItem[]> OnEmotesReceived;
+        public event Action<IReadOnlyList<WearableItem>> OnEmotesReceived;
+        public event Action<IReadOnlyList<WearableItem>, string> OnOwnedEmotesReceived;
         public event EmoteRejectedDelegate OnEmoteRejected;
-        public event Action<WearableItem[], string> OnOwnedEmotesReceived;
 
         private readonly ILambdasService lambdasService;
         private readonly ICatalyst catalyst;
         private readonly List<string> pendingRequests = new ();
         private readonly CancellationTokenSource cts;
+        private readonly BaseVariable<FeatureFlag> featureFlags;
+        private readonly EmotesCatalogService.WearableRequest request;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
-        private BaseVariable<FeatureFlag> featureFlags;
+
         private string assetBundlesUrl => featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
 
         public EmotesRequestWeb(ILambdasService lambdasService, IServiceProviders serviceProviders, BaseVariable<FeatureFlag> featureFlags)
@@ -42,6 +45,7 @@ namespace DCLServices.EmotesCatalog
             this.lambdasService = lambdasService;
             this.catalyst = serviceProviders.catalyst;
             cts = new CancellationTokenSource();
+            request = new EmotesCatalogService.WearableRequest { pointers = new List<string>() };
         }
 
         public void Dispose()
@@ -62,9 +66,16 @@ namespace DCLServices.EmotesCatalog
 
             if (!result.success) throw new Exception($"Fetching owned wearables failed! {url}\nAddress: {userId}");
 
-            var emotes = await FetchEmotes(result.response.elements.Select(e => e.urn));
+            var tempList = PoolUtils.RentList<string>();
+            var emoteUrns = tempList.GetList();
+            foreach (OwnedEmotesRequestDto.EmoteRequestDto emoteRequestDto in result.response.elements)
+                emoteUrns.Add(emoteRequestDto.urn);
 
-            OnOwnedEmotesReceived?.Invoke(emotes.ToArray(), userId);
+            var emotes = await FetchEmotes(emoteUrns);
+
+            tempList.Dispose();
+
+            OnOwnedEmotesReceived?.Invoke(emotes, userId);
         }
 
         public void RequestEmote(string emoteId)
@@ -75,28 +86,30 @@ namespace DCLServices.EmotesCatalog
         private async UniTask RequestWearableBatchAsync(string id)
         {
             pendingRequests.Add(id);
-            lastRequestSource ??= new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
+            lastRequestSource ??= new ();
+            var sourceToAwait = lastRequestSource;
 
             // we wait for the latest update possible so we buffer all requests into one
             await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cts.Token);
 
-            List<WearableItem> result = new List<WearableItem>();
+            IReadOnlyList<WearableItem> result;
 
             if (pendingRequests.Count > 0)
             {
-                result.AddRange(await FetchEmotes(pendingRequests));
+                lastRequestSource = null;
 
-                lastRequestSource.TrySetResult(result);
+                result = await FetchEmotes(pendingRequests);
+                sourceToAwait.TrySetResult(result);
             }
             else
-                result = (List<WearableItem>)await lastRequestSource.Task;
+                result = await sourceToAwait.Task;
 
-            OnEmotesReceived?.Invoke(result.ToArray());
+            OnEmotesReceived?.Invoke(result);
         }
 
-        private async UniTask<IEnumerable<WearableItem>> FetchEmotes(IEnumerable<string> ids)
+        private async UniTask<IReadOnlyList<WearableItem>> FetchEmotes(List<string> ids)
         {
-            var request = new EmotesCatalogService.WearableRequest { pointers = new List<string>(ids) };
+            request.pointers = ids;
             var url = $"{catalyst.contentUrl}entities/active";
 
             pendingRequests.Clear();
@@ -114,8 +127,7 @@ namespace DCLServices.EmotesCatalog
                 return wearableItem;
             });
 
-            return wearables;
-
+            return wearables.ToList();
         }
     }
 }

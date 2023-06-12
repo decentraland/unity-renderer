@@ -139,7 +139,7 @@ public class EmotesCatalogServiceShould
                               });
 
         var wearable = new WearableItem { id = "id1" };
-        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { wearable });
+        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<IReadOnlyList<WearableItem>>>(wearable);
 
         Assert.IsFalse(promise1.keepWaiting);
         Assert.AreEqual(wearable, promise1.value);
@@ -183,7 +183,7 @@ public class EmotesCatalogServiceShould
     [Test]
     public void NotAddEmotesToCatalogWhenNoPromises()
     {
-        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { new WearableItem { id = "id1" } });
+        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<IReadOnlyList<WearableItem>>>(new WearableItem { id = "id1" });
 
         Assert.IsFalse(catalog.emotes.ContainsKey("id1"));
         Assert.IsFalse(catalog.emotesOnUse.ContainsKey("id1"));
@@ -195,7 +195,7 @@ public class EmotesCatalogServiceShould
         catalog.promises["id1"] = new HashSet<Promise<WearableItem>>( ) { new Promise<WearableItem>() };
         catalog.emotesOnUse["id1"] = 1;
 
-        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { new WearableItem { id = "id1" } });
+        emotesRequestSource.OnEmotesReceived += Raise.Event<Action<IReadOnlyList<WearableItem>>>(new WearableItem { id = "id1" });
 
         Assert.IsTrue(catalog.emotes.ContainsKey("id1"));
         Assert.IsTrue(catalog.emotesOnUse.ContainsKey("id1"));
@@ -239,7 +239,7 @@ public class EmotesCatalogServiceShould
         emotesRequestSource.When(x => x.RequestEmote(Arg.Any<string>()))
               .Do((x) =>
               {
-                  emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { emote });
+                  emotesRequestSource.OnEmotesReceived += Raise.Event<Action<IReadOnlyList<WearableItem>>>(emote);
               });
 
         var emoteReceived = await catalog.RequestEmoteAsync("id1");
@@ -258,7 +258,7 @@ public class EmotesCatalogServiceShould
         emotesRequestSource.When(x => x.RequestEmote(Arg.Any<string>()))
               .Do((x) =>
               {
-                  emotesRequestSource.OnEmotesReceived += Raise.Event<Action<WearableItem[]>>(new WearableItem[] { emotes[x.Arg<string>()] });
+                  emotesRequestSource.OnEmotesReceived += Raise.Event<Action<IReadOnlyList<WearableItem>>>(emotes[x.Arg<string>()]);
               });
 
         var emotesReceived = await catalog.RequestEmotesAsync(new [] { "id1", "id2" });

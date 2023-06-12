@@ -13,6 +13,7 @@ namespace AvatarSystem
     {
         public const float AVATAR_Y_OFFSET = 0.75f;
         private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
+        private const StringComparison SC = StringComparison.CurrentCultureIgnoreCase;
 
         public static bool IsCategoryRequired(string category) { return WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(category); }
 
@@ -70,13 +71,11 @@ namespace AvatarSystem
                 {
                     // If this is modified, check DecentralandMaterialGenerator.SetMaterialName,
                     // its important for the asset bundles materials to have normalized names but this functionality should work too
+                    string name = material.name;
 
-
-                    string name = material.name.ToLower();
-
-                    if (name.Contains("skin"))
+                    if (name.Contains("skin", SC))
                         material.SetColor(ShaderUtils.BaseColor, skinColor);
-                    else if (name.Contains("hair"))
+                    else if (name.Contains("hair", SC))
                         material.SetColor(ShaderUtils.BaseColor, hairColor);
                 }
             }
@@ -141,30 +140,28 @@ namespace AvatarSystem
 
             foreach (Renderer r in rendereable.renderers)
             {
-                if (!(r is SkinnedMeshRenderer renderer))
+                if (r is not SkinnedMeshRenderer renderer)
                     continue;
 
-                string name = "";
-
-                name = renderer.name.ToLower();
+                string name = renderer.name;
 
                 // we still support the old gltf hierarchy for ABs
-                if (name.Contains("primitive"))
+                if (name.Contains("primitive", SC))
                     name = renderer.transform.parent.name.ToLower();
 
-                if (name.Contains("head"))
+                if (name.Contains("head", SC))
                     head = renderer;
-                else if (name.Contains("ubody"))
+                else if (name.Contains("ubody", SC))
                     upperBody = renderer;
-                else if (name.Contains("lbody"))
+                else if (name.Contains("lbody", SC))
                     lowerBody = renderer;
-                else if (name.Contains("feet"))
+                else if (name.Contains("feet", SC))
                     feet = renderer;
-                else if (name.Contains("eyes"))
+                else if (name.Contains("eyes", SC))
                     eyes = renderer;
-                else if (name.Contains("eyebrows"))
+                else if (name.Contains("eyebrows", SC))
                     eyebrows = renderer;
-                else if (name.Contains("mouth"))
+                else if (name.Contains("mouth", SC))
                     mouth = renderer;
                 else
                     Debug.LogWarning($"{name} is not a body part?", r);
