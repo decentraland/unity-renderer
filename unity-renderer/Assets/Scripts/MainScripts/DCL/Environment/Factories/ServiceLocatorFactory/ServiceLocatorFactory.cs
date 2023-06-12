@@ -141,8 +141,6 @@ namespace DCL
                     {
                         Debug.Log($"SocialClient.Transport.Connected");
 
-                        Unsubscribe();
-
                         if (cancellationToken.IsCancellationRequested)
                         {
                             task.TrySetCanceled(cancellationToken);
@@ -155,8 +153,6 @@ namespace DCL
                     void FailTaskAndUnsubscribe(string error)
                     {
                         Debug.Log($"SocialClient.Transport.Error: {error}");
-
-                        Unsubscribe();
 
                         if (cancellationToken.IsCancellationRequested)
                         {
@@ -171,8 +167,6 @@ namespace DCL
                     {
                         Debug.Log($"SocialClient.Transport.Disconnected");
 
-                        Unsubscribe();
-
                         if (cancellationToken.IsCancellationRequested)
                         {
                             task.TrySetCanceled(cancellationToken);
@@ -182,16 +176,21 @@ namespace DCL
                         task.TrySetException(new Exception("Cannot connect to social service server, connection closed"));
                     }
 
+                    void LogMessage(byte[] data) =>
+                        Debug.Log($"SocialClient.Transport.Message: length {data?.Length ?? 0}");
+
                     void Unsubscribe()
                     {
                         transport.OnConnectEvent -= CompleteTaskAndUnsubscribe;
                         transport.OnErrorEvent -= FailTaskAndUnsubscribe;
                         transport.OnCloseEvent -= FailTaskByDisconnectionAndUnsubscribe;
+                        transport.OnMessageEvent -= LogMessage;
                     }
 
                     transport.OnConnectEvent += CompleteTaskAndUnsubscribe;
                     transport.OnErrorEvent += FailTaskAndUnsubscribe;
                     transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
+                    transport.OnMessageEvent += LogMessage;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
                     try
