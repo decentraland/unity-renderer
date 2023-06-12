@@ -85,6 +85,9 @@ namespace DCL.Wallet
 
         private void OnWalletSectionVisible(bool isVisible, bool _)
         {
+            if (ownUserProfile.isGuest)
+                return;
+
             if (isVisible)
             {
                 fetchEthereumManaCancellationToken = fetchEthereumManaCancellationToken.SafeRestart();
