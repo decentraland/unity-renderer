@@ -21,6 +21,10 @@ MonoBehaviour:
     m_Address: LoadingScreenV2LocalHintsJsonSource
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: c51c73bee03d1c048b0cb720eed5d267
+    m_Address: LoadingScreenV2HintView.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
