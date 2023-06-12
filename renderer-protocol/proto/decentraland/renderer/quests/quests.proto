@@ -13,6 +13,8 @@ message InternalServerError {}
 
 message NotFoundQuestInstance {}
 
+message QuestAlreadyStarted {}
+
 message NotOwner {}
 
 message IgnoredEvent {}
@@ -33,6 +35,7 @@ message StartQuestResponse {
     InvalidQuest invalid_quest = 2;
     NotUUID not_uuid_error = 3;
     InternalServerError internal_server_error = 4;
+    QuestAlreadyStarted quest_already_started = 5;
   }
 }
 
@@ -118,6 +121,7 @@ message Quest {
   string name = 2;
   string description = 3;
   QuestDefinition definition = 4;
+  string creator_address = 5;
 }
 
 message QuestInstance {
@@ -134,10 +138,12 @@ message QuestStateUpdate {
 
 message UserUpdate {
   oneof message {
-    QuestStateUpdate quest_state_update = 1;
-    QuestInstance new_quest_started = 2;
-    fixed32 event_ignored = 4;
+    bool subscribed = 1;
+    QuestStateUpdate quest_state_update = 2;
+    QuestInstance new_quest_started = 3;
+    string event_ignored = 4;
   }
+  string user_address = 5;
 }
 
 message Quests {

@@ -48,7 +48,6 @@ namespace DCLServices.QuestsService.Tests
 
             channel.Writer.TryWrite(new UserUpdate()
             {
-                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
                 QuestStateUpdate = new QuestStateUpdate
                 {
                     QuestState = new QuestState(),
@@ -58,7 +57,6 @@ namespace DCLServices.QuestsService.Tests
 
             channel.Writer.TryWrite(new UserUpdate()
             {
-                EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
                 QuestStateUpdate = new QuestStateUpdate
                 {
                     QuestState = new QuestState(),
@@ -91,7 +89,6 @@ namespace DCLServices.QuestsService.Tests
             {
                 channel.Writer.TryWrite(new UserUpdate()
                 {
-                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
                     QuestStateUpdate = new QuestStateUpdate
                     {
                         QuestState = new QuestState(),
@@ -125,7 +122,6 @@ namespace DCLServices.QuestsService.Tests
             {
                 channel.Writer.TryWrite(new UserUpdate()
                 {
-                    EventIgnored = (int)UserUpdate.MessageOneofCase.QuestStateUpdate,
                     QuestStateUpdate = new QuestStateUpdate
                     {
                         InstanceId = "questInstanceId",
