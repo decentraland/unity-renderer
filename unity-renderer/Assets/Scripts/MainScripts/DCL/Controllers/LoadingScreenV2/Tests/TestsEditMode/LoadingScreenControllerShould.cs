@@ -11,16 +11,14 @@ using UnityEngine;
 
 namespace DCL.Controllers.LoadingScreenV2.Tests
 {
-    public class LoadingScreenControllerShould
+    public class LoadingScreenControllerShould2
     {
         private readonly string sourceHintViewAddressable = "LoadingScreenV2HintView.prefab";
 
         private HintRequestService hintRequestService;
+        private IAddressableResourceProvider addressableProvider;
         private List<IHintRequestSource> hintRequestSources;
-        private ISceneController sceneController;
-        private IHintTextureRequestHandler hintTextureRequestHandler;
         private CancellationToken cancellationToken;
-        // private HintView hintViewPref;
         private Hint premadeHint1;
         private Hint premadeHint2;
 
@@ -44,8 +42,8 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
             hintRequestSources.Add(remoteHintSource);
 
             // setup the rest
-            sceneController = Substitute.For<ISceneController>();
-            hintTextureRequestHandler = new HintTextureRequestHandler();
+            ISceneController sceneController = Substitute.For<ISceneController>();
+            IHintTextureRequestHandler hintTextureRequestHandler = new HintTextureRequestHandler();
             hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
             cancellationToken = new CancellationToken();
         }
@@ -57,35 +55,68 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         }
 
         [Test]
-        public async Task InitializeHintView()
-        {
-            //Arrange
-            var hint = new Hint("https://example.com/image1.png", "title1", "body1", SourceTag.Event);
-
-            IAddressableResourceProvider  addressableProvider = new AddressableResourceProvider();
-            HintView hintViewPrefab = await addressableProvider.GetAddressable<HintView>(sourceHintViewAddressable, cancellationToken);
-
-            //Act
-            hintViewPrefab.Initialize(hint, new Texture2D(2, 2));
-
-            //Assert
-            Assert.IsFalse(hintViewPrefab.isActiveAndEnabled);
-            Assert.AreEqual(hintViewPrefab.hintText.text, hint.Title);
-            Assert.NotNull(hintViewPrefab.hintImage.sprite);
-        }
-
-        [Test]
-        public async Task RequestAndDisplayHints()
+        public async Task StartAndStopHintsCarousel()
         {
             // Arrange
             var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
 
+            // Create a TaskCompletionSource to wait for RequestHints to complete
+            var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
+            loadingScreenHintsController.OnRequestHintsCompleted += () => requestHintsCompletedTaskSource.SetResult(true);
+
+            // Wait for RequestHints to complete
+            await requestHintsCompletedTaskSource.Task;
+
+            // Check if the carousel was started
+            Assert.IsTrue(loadingScreenHintsController.hintViewManager.isIteratingHints);
+
             // Act
-            // Carousel started automatically on RequestHints
+            loadingScreenHintsController.StopHintsCarousel();
+
+            // Check if the carousel was stopped
+            Assert.IsFalse(loadingScreenHintsController.hintViewManager.isIteratingHints);
+        }
+
+        [Test]
+        public async Task InitializeHintsProperlyAsync()
+        {
+            // Arrange
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+
+            // Create a TaskCompletionSource to wait for RequestHints to complete
+            var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
+            loadingScreenHintsController.OnRequestHintsCompleted += () => requestHintsCompletedTaskSource.SetResult(true);
+
+            // Wait for RequestHints to complete
+            await requestHintsCompletedTaskSource.Task;
 
             // Assert
-            // Check if the carousel was started
-            Assert.IsNotNull(loadingScreenHintsController.cancellationTokenSource);
+            Assert.IsNotNull(loadingScreenHintsController.hintViewPrefab);
+            Assert.IsNotNull(loadingScreenHintsController.hintViewPool);
+            Assert.AreEqual(15, loadingScreenHintsController.hintViewPool.Count);
         }
+
+        [Test]
+        public async Task RequestHintsProperlyAsync()
+        {
+            // Arrange
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+
+            // Create a TaskCompletionSource to wait for RequestHints to complete
+            var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
+            loadingScreenHintsController.OnRequestHintsCompleted += () => requestHintsCompletedTaskSource.SetResult(true);
+
+            // Wait for RequestHints to complete
+            await requestHintsCompletedTaskSource.Task;
+
+            // Act
+            // Request hints has been already executed on the constructor
+
+            // Assert
+            Assert.IsNotNull(loadingScreenHintsController.hintsDictionary);
+            Assert.IsTrue(loadingScreenHintsController.hintsDictionary.Count > 0);
+            Assert.IsNotNull(loadingScreenHintsController.hintViewManager);
+        }
+
     }
 }

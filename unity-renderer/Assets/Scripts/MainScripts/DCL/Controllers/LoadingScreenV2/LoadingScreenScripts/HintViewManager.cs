@@ -56,9 +56,10 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void SetSpecificHint(int index)
         {
-            hintViewList[currentHintIndex].ToggleHint(false);
-            currentHintIndex = index;
-            UpdateHintView();
+            if (hintViewList.Count == 0)
+                return;
+
+            SetHint(index);
         }
 
         private void SetHint(int index)
@@ -90,7 +91,6 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private void UpdateHintView()
         {
-            var hintTuple = hintViewList[currentHintIndex];
             hintViewList[currentHintIndex].ToggleHint(true);
 
             if (isIteratingHints)

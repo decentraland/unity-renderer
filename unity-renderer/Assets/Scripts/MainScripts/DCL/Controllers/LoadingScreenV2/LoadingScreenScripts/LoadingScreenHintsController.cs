@@ -18,9 +18,9 @@ namespace DCL.Controllers.LoadingScreenV2
         private readonly string SOURCE_HINT_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
         private const int MAX_HINTS = 15;
 
-        private HintView hintViewPrefab;
         private readonly HintRequestService hintRequestService;
 
+        internal HintView hintViewPrefab;
         internal HintViewManager hintViewManager;
         internal readonly List<HintView> hintViewPool;
         internal Dictionary<int, Tuple<Hint, Texture2D>> hintsDictionary;
@@ -62,7 +62,6 @@ namespace DCL.Controllers.LoadingScreenV2
         /// <param name="ctx"></param>
         public async UniTask RequestHints(CancellationToken ctx)
         {
-            hintViewPool.ForEach(hintView => hintView.ToggleHint(false));
             hintsDictionary.Clear();
 
             Dictionary<Hint, Texture2D> hintsResult = await hintRequestService.RequestHintsFromSources(ctx, MAX_HINTS);
