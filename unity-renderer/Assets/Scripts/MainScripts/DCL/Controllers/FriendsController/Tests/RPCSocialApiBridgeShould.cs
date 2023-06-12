@@ -18,11 +18,11 @@ namespace DCL.Social.Friends
 {
     public class MockSocialServerContext
     {
-        public List<Users> UserList = new List<Users>();
+        public List<Users> UserList = new ();
 
-        public UpdateFriendshipResponse UpdateFriendshipResponse;
+        public UpdateFriendshipResponse UpdateFriendshipResponse = new ();
 
-        public List<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdatesResponses;
+        public List<SubscribeFriendshipEventsUpdatesResponse> SubscribeFriendshipEventsUpdatesResponses = new ();
     }
 
     public class RPCSocialApiBridgeShould
@@ -35,8 +35,8 @@ namespace DCL.Social.Friends
         private const string OWN_ID = "My custom id";
         private const string ACCESS_TOKEN = "Token";
 
-        [UnitySetUp]
-        public IEnumerator SetUp()
+        [SetUp]
+        public void SetUp()
         {
             userProfileBridge = Substitute.For<IUserProfileBridge>();
 
@@ -44,7 +44,7 @@ namespace DCL.Social.Friends
             ownProfile.UpdateData(new UserProfileModel { userId = OWN_ID });
             userProfileBridge.GetOwn().Returns(ownProfile);
 
-            (var client, var server) = MemoryTransport.Create();
+            (ITransport client, ITransport server) = MemoryTransport.Create();
 
             friendshipsService = Substitute.For<IFriendshipsService<MockSocialServerContext>>();
 
@@ -98,17 +98,13 @@ namespace DCL.Social.Friends
             var matrixInitializationBridge = Substitute.For<IMatrixInitializationBridge>();
 
             rpcSocialApiBridge = new RPCSocialApiBridge(matrixInitializationBridge, userProfileBridge, ct => UniTask.FromResult(client));
-            rpcSocialApiBridge.Initialize();
-            // wait for async initialization
-            yield return null;
 
-            matrixInitializationBridge.OnReceiveMatrixAccessToken += Raise.Event<Action<string>>(ACCESS_TOKEN);
+            matrixInitializationBridge.AccessToken.Returns(ACCESS_TOKEN);
         }
 
         [UnityTest]
-        public IEnumerator Initialize()
-        {
-            return UniTask.ToCoroutine(async () =>
+        public IEnumerator Initialize() =>
+            UniTask.ToCoroutine(async () =>
             {
                 var friends = new HashSet<string>();
 
@@ -132,14 +128,6 @@ namespace DCL.Social.Friends
                     }
                 };
 
-                var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-                var userName = "A custom name";
-
-                userProfile.UpdateData(new UserProfileModel()
-                {
-                    name = userName,
-                });
-
                 rpcSocialApiBridge.OnFriendAdded += friendId =>
                 {
                     if (string.IsNullOrEmpty(friendId))
@@ -147,9 +135,6 @@ namespace DCL.Social.Friends
 
                     friends.Add(friendId);
                 };
-
-                userProfileBridge.RequestFullUserProfileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-                                 .Returns(new UniTask<UserProfile>(userProfile));
 
                 var incomingResult = new List<FriendRequest>();
                 var outgoingResult = new List<FriendRequest>();
@@ -192,6 +177,10 @@ namespace DCL.Social.Friends
                                        }
                                    ));
 
+                rpcSocialApiBridge.Initialize();
+                // wait for async initialization
+                await UniTask.NextFrame();
+
                 var response = await rpcSocialApiBridge.GetInitializationInformationAsync();
 
                 Assert.AreEqual(4, friends.Count);
@@ -203,14 +192,12 @@ namespace DCL.Social.Friends
                 CollectionAssert.AreEqual(expectedIncoming.ToList(), incomingResult);
                 CollectionAssert.AreEqual(expectedOutgoing.ToList(), outgoingResult);
             });
-        }
 
         [UnityTest]
         public IEnumerator RequestFriendshipAsync()
         {
             return UniTask.ToCoroutine(async () =>
             {
-                var cancellationToken = new CancellationToken();
                 var friendId = "Friend ID";
                 var message = "Hello friend";
                 var createdAt = 1234;
@@ -220,7 +207,11 @@ namespace DCL.Social.Friends
                     Event = CreateRequestFriendshipResponse(friendId, message, createdAt),
                 };
 
-                var result = await rpcSocialApiBridge.RequestFriendshipAsync(friendId, message, cancellationToken);
+                rpcSocialApiBridge.Initialize();
+                // wait for async initialization
+                await UniTask.NextFrame();
+
+                var result = await rpcSocialApiBridge.RequestFriendshipAsync(friendId, message);
 
                 Assert.AreEqual(result.MessageBody, message);
                 Assert.AreEqual(result.From, OWN_ID);
@@ -233,25 +224,122 @@ namespace DCL.Social.Friends
         {
             return UniTask.ToCoroutine(async () =>
             {
-                var cancellationToken = new CancellationToken();
-                var friendId = "Friend ID";
-                var createdAt = 123;
-                var friendRequestId = $"{friendId}-{createdAt}";
-
-                context.UpdateFriendshipResponse = new UpdateFriendshipResponse()
+                const string FRIEND_ID = "Friend ID";
+                context.UpdateFriendshipResponse = new UpdateFriendshipResponse
                 {
-                    Event = CreateRejectFriendshipResponse(friendId),
+                    Event = CreateRejectFriendshipResponse(FRIEND_ID),
                 };
 
-                var resultUserId = "";
+                rpcSocialApiBridge.Initialize();
+                // wait for async initialization
+                await UniTask.NextFrame();
 
-                rpcSocialApiBridge.OnFriendRequestRejected += userId => { resultUserId = userId; };
+                await rpcSocialApiBridge.RejectFriendshipAsync(FRIEND_ID);
 
-                await rpcSocialApiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
-
-                Assert.AreEqual(friendId, resultUserId);
+                friendshipsService.Received(1)
+                                  .UpdateFriendshipEvent(
+                                       Arg.Is<UpdateFriendshipPayload>(u => u.Event.Reject.User.Address == FRIEND_ID),
+                                       Arg.Any<MockSocialServerContext>(),
+                                       Arg.Any<CancellationToken>());
             });
         }
+
+        [UnityTest]
+        public IEnumerator CancelFriendRequest() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                const string FRIEND_ID = "Friend ID";
+                context.UpdateFriendshipResponse = new UpdateFriendshipResponse
+                {
+                    Event = new FriendshipEventResponse
+                    {
+                        Cancel = new CancelResponse
+                        {
+                            User = new User
+                            {
+                                Address = FRIEND_ID
+                            }
+                        }
+                    }
+                };
+
+                rpcSocialApiBridge.Initialize();
+                // wait for async initialization
+                await UniTask.NextFrame();
+
+                await rpcSocialApiBridge.CancelFriendshipAsync(FRIEND_ID);
+
+                friendshipsService.Received(1)
+                                  .UpdateFriendshipEvent(
+                                       Arg.Is<UpdateFriendshipPayload>(u => u.Event.Cancel.User.Address == FRIEND_ID),
+                                       Arg.Any<MockSocialServerContext>(),
+                                       Arg.Any<CancellationToken>());
+            });
+
+        [UnityTest]
+        public IEnumerator AcceptFriendRequest() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                const string FRIEND_ID = "Friend ID";
+                context.UpdateFriendshipResponse = new UpdateFriendshipResponse
+                {
+                    Event = new FriendshipEventResponse
+                    {
+                        Accept = new AcceptResponse
+                        {
+                            User = new User
+                            {
+                                Address = FRIEND_ID
+                            }
+                        }
+                    }
+                };
+
+                rpcSocialApiBridge.Initialize();
+                // wait for async initialization
+                await UniTask.NextFrame();
+
+                await rpcSocialApiBridge.AcceptFriendshipAsync(FRIEND_ID);
+
+                friendshipsService.Received(1)
+                                  .UpdateFriendshipEvent(
+                                       Arg.Is<UpdateFriendshipPayload>(u => u.Event.Accept.User.Address == FRIEND_ID),
+                                       Arg.Any<MockSocialServerContext>(),
+                                       Arg.Any<CancellationToken>());
+            });
+
+        [UnityTest]
+        public IEnumerator DeleteFriendRequest() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                const string FRIEND_ID = "Friend ID";
+
+                context.UpdateFriendshipResponse = new UpdateFriendshipResponse
+                {
+                    Event = new FriendshipEventResponse
+                    {
+                        Delete = new DeleteResponse
+                        {
+                            User = new User
+                            {
+                                Address = FRIEND_ID
+                            }
+                        }
+                    }
+                };
+
+                rpcSocialApiBridge.Initialize();
+                // wait for async initialization
+                await UniTask.NextFrame();
+
+                await rpcSocialApiBridge.DeleteFriendshipAsync(FRIEND_ID);
+
+                friendshipsService.Received(1)
+                                  .UpdateFriendshipEvent(
+                                       Arg.Is<UpdateFriendshipPayload>(u => u.Event.Delete.User.Address == FRIEND_ID),
+                                       Arg.Any<MockSocialServerContext>(),
+                                       Arg.Any<CancellationToken>());
+            });
 
         [UnityTest]
         public IEnumerator SubscribeToFriendshipEventsEverySuccessfulAnswer()
@@ -264,8 +352,6 @@ namespace DCL.Social.Friends
                 var cancelFriendId = "Cancel";
                 var deleteFriendId = "Delete";
                 var createdAt = 123;
-                var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-                userProfile.UpdateData(new UserProfileModel() { userId = "a user id" });
 
                 var friendRequest = new RequestResponse()
                 {
@@ -313,9 +399,6 @@ namespace DCL.Social.Friends
                     }
                 };
 
-                userProfileBridge.RequestFullUserProfileAsync(acceptFriendId, Arg.Any<CancellationToken>())
-                                 .Returns(UniTask.FromResult(userProfile));
-
                 var expectedFriendRequest = new FriendRequest(
                     $"{friendRequest.User.Address}-{friendRequest.CreatedAt}",
                     friendRequest.CreatedAt,
@@ -329,10 +412,7 @@ namespace DCL.Social.Friends
                 var rejectResult = "";
                 FriendRequest requestResult = null;
 
-                rpcSocialApiBridge.OnFriendRequestAccepted += userId =>
-                {
-                    acceptedResult = userId;
-                };
+                rpcSocialApiBridge.OnFriendRequestAccepted += userId => { acceptedResult = userId; };
 
                 rpcSocialApiBridge.OnFriendRequestCanceled += (userId) => { cancelResult = userId; };
 
@@ -340,6 +420,7 @@ namespace DCL.Social.Friends
                 rpcSocialApiBridge.OnDeletedByFriend += (userId) => { deletedResult = userId; };
                 rpcSocialApiBridge.OnIncomingFriendRequestAdded += (request) => { requestResult = request; };
 
+                rpcSocialApiBridge.Initialize();
                 await UniTask.WaitUntil(() => !string.IsNullOrEmpty(acceptedResult));
 
                 Assert.AreEqual(acceptFriendId, acceptedResult);
@@ -400,6 +481,7 @@ namespace DCL.Social.Friends
                 LogAssert.Expect(LogType.Error, "Subscription to friendship events got internal server error Internal server");
                 LogAssert.Expect(LogType.Error, "Subscription to friendship events got Too many requests error Too many requests");
 
+                rpcSocialApiBridge.Initialize();
                 await UniTask.WaitUntil(() => !string.IsNullOrEmpty(rejectResult));
 
                 // Asserting that reject was correctly received and all errors were parsed correctly
