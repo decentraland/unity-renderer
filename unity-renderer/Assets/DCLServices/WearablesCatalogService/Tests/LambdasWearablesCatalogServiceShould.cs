@@ -67,7 +67,9 @@ namespace DCLServices.WearablesCatalogService
             catalyst.lambdasUrl.Returns(LAMBDAS_URL);
             serviceProviders.catalyst.Returns(catalyst);
 
-            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders, Substitute.For<BaseVariable<FeatureFlag>>());
+            BaseVariable<FeatureFlag> featureFlags = new BaseVariable<FeatureFlag>();
+            featureFlags.Set(new FeatureFlag());
+            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders, featureFlags);
             service.Initialize();
         }
 
@@ -162,14 +164,14 @@ namespace DCLServices.WearablesCatalogService
         public IEnumerator RequestBaseWearables() =>
             UniTask.ToCoroutine(async () =>
             {
-                IReadOnlyList<WearableItem> baseWearables = await service.RequestBaseWearablesAsync(default(CancellationToken));
+                await service.RequestBaseWearablesAsync(default(CancellationToken));
 
                 var url = $"{CONTENT_URL}entities/active/collections/{BASE_WEARABLES_COLLECTION}";
 
                 lambdasService.Received(1)
                               .GetFromSpecificUrl<WearableCollectionResponse>(url, url, cancellationToken: Arg.Any<CancellationToken>());
 
-                WearableItem firstWearable = baseWearables[0];
+                WearableItem firstWearable = service.WearablesCatalog[VALID_WEARABLE_ID];
                 Assert.AreEqual(VALID_WEARABLE_ID, firstWearable.id);
                 Assert.AreEqual("description", firstWearable.description);
                 Assert.AreEqual("rare", firstWearable.rarity);
@@ -178,9 +180,8 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual("baseurl/", firstWearable.baseUrl);
                 Assert.AreEqual(ASSET_BUNDLES_URL_ORG, firstWearable.baseUrlBundles);
                 Assert.IsNull(firstWearable.emoteDataV0);
-                Assert.AreEqual(firstWearable, service.WearablesCatalog[VALID_WEARABLE_ID]);
 
-                WearableItem secondWearable = baseWearables[1];
+                WearableItem secondWearable = service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL];
                 Assert.AreEqual(WEARABLE_WITHOUT_THUMBNAIL, secondWearable.id);
                 Assert.AreEqual("description", secondWearable.description);
                 Assert.AreEqual("rare", secondWearable.rarity);
@@ -189,7 +190,6 @@ namespace DCLServices.WearablesCatalogService
                 Assert.AreEqual($"{CONTENT_URL}contents/", secondWearable.baseUrl);
                 Assert.AreEqual(ASSET_BUNDLES_URL_ORG, secondWearable.baseUrlBundles);
                 Assert.IsNull(secondWearable.emoteDataV0);
-                Assert.AreEqual(secondWearable, service.WearablesCatalog[WEARABLE_WITHOUT_THUMBNAIL]);
             });
 
         [UnityTest]

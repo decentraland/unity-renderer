@@ -12,11 +12,10 @@
         "IService",
         "ServiceProvidersInterfaces",
         "CatalystInterfaces",
-        "FeatureFlagData"
+        "FeatureFlagData",
+        "Utils"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
