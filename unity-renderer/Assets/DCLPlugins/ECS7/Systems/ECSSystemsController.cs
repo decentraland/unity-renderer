@@ -12,6 +12,7 @@ using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
+using ECSSystems.UiCanvasInformationSystem;
 using ECSSystems.UIInputSenderSystem;
 using ECSSystems.VideoPlayerSystem;
 using ECSSystems.VisibilitySystem;
@@ -35,6 +36,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSCameraEntitySystem cameraEntitySystem;
     private readonly ECSPlayerTransformSystem playerTransformSystem;
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
+    private readonly ECSUiCanvasInformationSystem uiCanvasInformationSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
 
@@ -95,7 +97,6 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.renderersComponent,
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.physicColliderComponent,
-            context.internalEcsComponents.audioSourceComponent,
             DataStore.i.debugConfig.isDebugMode.Get());
 
         ECSUiPointerEventsSystem uiPointerEventsSystem = new ECSUiPointerEventsSystem(
@@ -124,6 +125,11 @@ public class ECSSystemsController : IDisposable
             context.componentWriter,
             context.internalEcsComponents.EngineInfo);
 
+        uiCanvasInformationSystem = new ECSUiCanvasInformationSystem(
+            context.componentWriter,
+            DataStore.i.ecs7.scenes
+        );
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -138,7 +144,8 @@ public class ECSSystemsController : IDisposable
             uiSystem.Update,
             pointerInputSystem.Update,
             billboardSystem.Update,
-            videoPlayerSystem.Update
+            videoPlayerSystem.Update,
+            uiCanvasInformationSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]
@@ -165,6 +172,7 @@ public class ECSSystemsController : IDisposable
         cameraEntitySystem.Dispose();
         playerTransformSystem.Dispose();
         sceneBoundsCheckerSystem.Dispose();
+        uiCanvasInformationSystem.Dispose();
         Object.Destroy(hoverCanvas);
         Object.Destroy(scenesUi);
     }
