@@ -261,7 +261,7 @@ namespace DCL
             }
 
             Application.OpenURL(
-                $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.url}");
+                $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&DISABLE_AB-NEW-CDN&ws={DataStore.i.wsCommunication.url}");
 #endif
         }
 

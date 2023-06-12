@@ -7,6 +7,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -70,6 +71,7 @@ namespace DCL.ECSComponents
             transform.SetParent(entity.gameObject.transform);
             transform.ResetLocalTRS();
 
+            this.contentProvider = scene.contentProvider;
             gltfLoader = new RendereableAssetLoadHelper(scene.contentProvider, scene.sceneData.baseUrlBundles);
             gltfLoader.settings.forceGPUOnlyMesh = true;
             gltfLoader.settings.parent = transform;
@@ -77,6 +79,44 @@ namespace DCL.ECSComponents
             gltfLoader.settings.smrUpdateWhenOffScreen = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(SMR_UPDATE_OFFSCREEN_FEATURE_FLAG);
 
             collidersHandler = new GltfContainerCollidersHandler();
+
+        }
+
+        private ContentProvider contentProvider;
+
+        private void CheckLOD(string gltfSource)
+        {
+            if (contentProvider.TryGetContentsUrl_Raw(gltfSource, out string hash))
+            {
+                string hashLod1 = Application.dataPath + "/../AssetBundles/" + hash + "_lod1";
+                if (File.Exists(hashLod1))
+                {
+                    LoadLOD($"{hash}_lod1");
+                }
+                string hashLod2 = Application.dataPath + "/../AssetBundles/" + hash + "_lod2";
+                if (File.Exists(hashLod2))
+                {
+                    LoadLOD($"{hash}_lod2");
+                }
+            }
+        }
+
+        private void LoadLOD(string hash)
+        {
+            AssetPromise_AB_GameObject abPromise = new AssetPromise_AB_GameObject("", hash);
+            abPromise.settings = gltfLoader.settings;
+
+            abPromise.OnSuccessEvent += (x) =>
+            {
+#if UNITY_EDITOR
+                x.container.name = hash;
+#endif
+                x.container.transform.SetParent(gameObject.transform);
+            };
+
+            abPromise.OnFailEvent += (x, exception) => Debug.Log("FAILED TO LOAD LOD " + hash);
+
+            AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -159,6 +199,7 @@ namespace DCL.ECSComponents
 
                 dataStoreEcs7.AddPendingResource(scene.sceneData.sceneNumber, newGltfSrc);
                 gltfLoader.Load(newGltfSrc);
+                CheckLOD(newGltfSrc);
             }
         }
 
