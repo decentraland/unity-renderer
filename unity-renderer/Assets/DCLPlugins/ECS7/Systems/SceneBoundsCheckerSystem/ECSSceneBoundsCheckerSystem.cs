@@ -4,7 +4,6 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ECSSystems.ECSSceneBoundsCheckerSystem
@@ -16,7 +15,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
         private readonly IInternalECSComponent<InternalColliders> pointerCollidersComponent;
         private readonly IInternalECSComponent<InternalColliders> physicsCollidersComponent;
-        private readonly IInternalECSComponent<InternalAudioSource> audioSourceComponent;
         private readonly IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback;
         private readonly Dictionary<int, Tuple<Bounds, Vector3>> scenesOuterBounds = new Dictionary<int, Tuple<Bounds, Vector3>>();
         private readonly Dictionary<int, HashSet<Vector2Int>> scenesHashSetParcels = new Dictionary<int, HashSet<Vector2Int>>();
@@ -30,7 +28,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             IInternalECSComponent<InternalRenderers> renderersComponent,
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicsColliderComponent,
-            IInternalECSComponent<InternalAudioSource> audioSourceComponent,
             bool previewMode = false)
         {
             this.loadedScenes = loadedScenes;
@@ -39,7 +36,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             this.renderersComponent = renderersComponent;
             this.pointerCollidersComponent = pointerColliderComponent;
             this.physicsCollidersComponent = physicsColliderComponent;
-            this.audioSourceComponent = audioSourceComponent;
 
             loadedScenes.OnAdded += OnSceneAdded;
             loadedScenes.OnRemoved += OnSceneRemoved;
@@ -85,7 +81,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             ProcessRendererComponentChanges(sceneBoundsCheckComponent, renderersComponent.GetForAll());
             ProcessPhysicColliderComponentChanges(sceneBoundsCheckComponent, physicsCollidersComponent.GetForAll());
             ProcessPointerColliderComponentChanges(sceneBoundsCheckComponent, pointerCollidersComponent.GetForAll());
-            ProcessAudioSourceComponentChanges(sceneBoundsCheckComponent, audioSourceComponent.GetForAll());
 
             // Note: the components are traversed backwards as we may free the 'fully defaulted' entities from the component
             var sbcComponentGroup = sceneBoundsCheckComponent.GetForAll();
@@ -288,8 +283,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private static void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, HashSet<IDCLEntity> entitiesOutsideSceneBounds, InternalSceneBoundsCheck componentModel)
         {
-            if (componentModel.audioSource != null)
-                componentModel.audioSource.enabled = !entitiesOutsideSceneBounds.Contains(entity);
+            componentModel.OnSceneBoundsStateChange?.Invoke(!entitiesOutsideSceneBounds.Contains(entity));
         }
 
         private static void ProcessRendererComponentChanges(IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent,
@@ -337,22 +331,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 if (!model.dirty || scene.isPersistent) continue;
 
                 sceneBoundsCheckComponent.SetPhysicsColliders(scene, entity, model.colliders);
-            }
-        }
-
-        private static void ProcessAudioSourceComponentChanges(IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent,
-            IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalAudioSource>>> audioSourceComponents)
-        {
-            for (int i = 0; i < audioSourceComponents.Count; i++)
-            {
-                var componentData = audioSourceComponents[i].value;
-                IParcelScene scene = componentData.scene;
-                IDCLEntity entity = componentData.entity;
-                InternalAudioSource model = componentData.model;
-
-                if (!model.dirty || scene.isPersistent) continue;
-
-                sceneBoundsCheckComponent.SetAudioSource(scene, entity, model.audioSource);
             }
         }
 
