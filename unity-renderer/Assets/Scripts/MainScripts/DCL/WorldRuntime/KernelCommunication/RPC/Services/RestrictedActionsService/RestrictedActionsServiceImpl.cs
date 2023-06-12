@@ -29,7 +29,6 @@ namespace RPC.Services
             try
             {
                 ct.ThrowIfCancellationRequested();
-                Debug.Log($"IsSceneRestrictedActionEnabled? {restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber)}");
 
                 if (restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber))
                     restrictedActions.TeleportToPrompt?.Invoke((int)request.WorldCoordinates.X, (int)request.WorldCoordinates.Y);
@@ -57,8 +56,6 @@ namespace RPC.Services
             {
                 ct.ThrowIfCancellationRequested();
 
-                Debug.Log($"IsSceneRestrictedActionEnabled? {restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber)}");
-
                 if (restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber))
                     success = restrictedActions.OpenExternalUrlPrompt?.Invoke(request.Url, sceneNumber) ?? false;
             }
@@ -84,8 +81,6 @@ namespace RPC.Services
             try
             {
                 ct.ThrowIfCancellationRequested();
-
-                Debug.Log($"IsSceneRestrictedActionEnabled? {restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber)}");
 
                 if (restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber))
                 {
@@ -119,8 +114,6 @@ namespace RPC.Services
             {
                 ct.ThrowIfCancellationRequested();
 
-                Debug.Log($"IsSceneRestrictedActionEnabled? {restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber)}");
-
                 // TODO: implement modal
                 success = restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber);
             }
@@ -146,8 +139,6 @@ namespace RPC.Services
             try
             {
                 ct.ThrowIfCancellationRequested();
-
-                Debug.Log($"IsSceneRestrictedActionEnabled? {restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber)}");
 
                 // TODO: implement modal
                 success = restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber);

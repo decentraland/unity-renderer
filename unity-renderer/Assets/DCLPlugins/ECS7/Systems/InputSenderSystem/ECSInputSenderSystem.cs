@@ -4,8 +4,6 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using System;
-using UnityEngine;
-using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace ECSSystems.InputSenderSystem
 {
@@ -48,7 +46,7 @@ namespace ECSSystems.InputSenderSystem
                 var entity = inputResults[i].value.entity;
                 long entityId = entity.entityId;
                 InternalEngineInfo engineInfoModel = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
-                bool checkRestrictedAction = scene.sceneData.sceneNumber == currentSceneNumber;
+                bool checkRestrictedAction = scene.isPersistent || scene.sceneData.sceneNumber == currentSceneNumber;
 
                 int count = model.events.Count;
 
