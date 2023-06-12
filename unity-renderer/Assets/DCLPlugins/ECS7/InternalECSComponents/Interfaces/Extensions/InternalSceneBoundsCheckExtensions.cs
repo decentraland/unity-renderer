@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Models;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -86,11 +87,24 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
-        public static void SetAudioSource(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
-            IParcelScene scene, IDCLEntity entity, AudioSource audioSource)
+        public static void RegisterOnSceneBoundsStateChangeCallback(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, Action<bool> callback)
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
-            model.audioSource = audioSource;
+            model.OnSceneBoundsStateChange += callback;
+
+            sbcInternalComponent.PutFor(scene, entity, model);
+        }
+
+        public static void RemoveOnSceneBoundsStateChangeCallback(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, Action<bool> callback)
+        {
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model;
+
+            if (model == null)
+                return;
+
+            model.OnSceneBoundsStateChange -= callback;
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
@@ -102,7 +116,7 @@ namespace DCL.ECS7.InternalComponents
 
             return model == null || (model.entityPosition == Vector3.zero
                                      && model.entityLocalMeshBounds.size == Vector3.zero
-                                     && model.audioSource == null);
+                                     && model.OnSceneBoundsStateChange == null);
         }
     }
 }
