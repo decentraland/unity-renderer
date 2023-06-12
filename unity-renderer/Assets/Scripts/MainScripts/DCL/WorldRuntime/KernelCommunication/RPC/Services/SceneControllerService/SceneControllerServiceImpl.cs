@@ -230,6 +230,9 @@ namespace RPC.Services
 
                 crdtContext.IncreaseSceneTick(sceneNumber);
             }
+            catch (OperationCanceledException _)
+            { // ignored
+            }
             catch (Exception e)
             {
                 Debug.LogError(e);
