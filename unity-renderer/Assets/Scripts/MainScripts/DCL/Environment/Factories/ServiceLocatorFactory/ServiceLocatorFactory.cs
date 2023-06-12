@@ -179,14 +179,6 @@ namespace DCL
                     void LogMessage(byte[] data) =>
                         Debug.Log($"SocialClient.Transport.Message: length {data?.Length ?? 0}");
 
-                    void Unsubscribe()
-                    {
-                        transport.OnConnectEvent -= CompleteTaskAndUnsubscribe;
-                        transport.OnErrorEvent -= FailTaskAndUnsubscribe;
-                        transport.OnCloseEvent -= FailTaskByDisconnectionAndUnsubscribe;
-                        transport.OnMessageEvent -= LogMessage;
-                    }
-
                     transport.OnConnectEvent += CompleteTaskAndUnsubscribe;
                     transport.OnErrorEvent += FailTaskAndUnsubscribe;
                     transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
