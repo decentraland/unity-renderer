@@ -118,19 +118,19 @@ namespace DCL
                             case LogLevel.Debug:
                             case LogLevel.Info:
                             case LogLevel.Trace:
-                                Debug.Log($"SocialClient.Transport.Output: {data.Message}");
+                                Debug.Log($"SocialClient.Transport: {data.Message}");
                                 break;
                             case LogLevel.Error:
                             case LogLevel.Fatal:
-                                Debug.LogError($"SocialClient.Transport.Output: {data.Message}");
+                                Debug.LogError($"SocialClient.Transport: {data.Message}");
                                 break;
                             case LogLevel.Warn:
-                                Debug.LogWarning($"SocialClient.Transport.Output: {data.Message}");
+                                Debug.LogWarning($"SocialClient.Transport: {data.Message}");
                                 break;
                         }
                     };
 
-                    websocketSharpTransport.Log.Level = LogLevel.Trace;
+                    websocketSharpTransport.Log.Level = LogLevel.Warn;
                     websocketSharpTransport.WaitTime = TimeSpan.FromSeconds(60);
                     websocketSharpTransport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
 
