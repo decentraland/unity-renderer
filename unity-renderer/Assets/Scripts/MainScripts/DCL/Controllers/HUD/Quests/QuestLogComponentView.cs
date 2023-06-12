@@ -45,33 +45,53 @@ namespace DCL.Quests
             sectionSelector.GetSection(COMPLETED_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
-                if (isSelected)
-                {
-                    headerText.text = IN_PROGRESS_TITLE;
+                if (!isSelected) return;
 
-                    if (activeQuests.Count <= 0)
-                    {
-                        emptyActiveState.SetActive(true);
-                        emptyCompletedState.SetActive(false);
-                    }
+                headerText.text = IN_PROGRESS_TITLE;
+                ShowActiveOrCompletedQuests(true);
+                if (activeQuests.Count == 0)
+                {
+                    emptyState.SetActive(true);
+                    emptyActiveState.SetActive(true);
+                    emptyCompletedState.SetActive(false);
+                }
+                else
+                {
+                    emptyState.SetActive(false);
                 }
             });
             sectionSelector.GetSection(COMPLETED_SECTION_INDEX).onSelect.AddListener((isSelected) =>
             {
-                if (isSelected)
-                {
-                    headerText.text = COMPLETED_TITLE;
+                if (!isSelected) return;
 
-                    if (completedQuests.Count <= 0)
-                    {
-                        emptyActiveState.SetActive(false);
-                        emptyCompletedState.SetActive(true);
-                    }
+                headerText.text = COMPLETED_TITLE;
+                ShowActiveOrCompletedQuests(false);
+                if (completedQuests.Count == 0)
+                {
+                    emptyState.SetActive(true);
+                    emptyActiveState.SetActive(false);
+                    emptyCompletedState.SetActive(true);
+                }
+                else
+                {
+                    emptyState.SetActive(false);
                 }
             });
 
             questDetailsComponentView.OnPinChange += (questId, isPinned) => OnPinChange?.Invoke(questId, isPinned);
             emptyState.SetActive(true);
+        }
+
+        private void ShowActiveOrCompletedQuests(bool active)
+        {
+            foreach (var activeQuest in activeQuests.Values)
+            {
+                activeQuest.gameObject.SetActive(active);
+            }
+            foreach (var completedQuest in completedQuests.Values)
+            {
+                completedQuest.gameObject.SetActive(!active);
+            }
         }
 
         public void AddActiveQuest(QuestDetailsComponentModel activeQuest)
