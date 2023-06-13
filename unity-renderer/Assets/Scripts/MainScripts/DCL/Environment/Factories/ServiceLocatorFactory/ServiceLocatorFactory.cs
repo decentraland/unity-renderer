@@ -139,8 +139,6 @@ namespace DCL
 
                     try
                     {
-                        // connect async does not work, probably because the lack of multi-threading support in webgl build?
-                        // transport.ConnectAsync();
                         transport.Connect();
                     }
                     catch (Exception e)
