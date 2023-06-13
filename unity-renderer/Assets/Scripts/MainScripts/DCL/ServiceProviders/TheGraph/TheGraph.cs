@@ -91,12 +91,15 @@ public class TheGraph : ITheGraph
         return promise;
     }
 
-    public Promise<double> QueryEthereumMana(string address)
+    public Promise<double> QueryMana(string address, TheGraphNetwork network)
     {
         Promise<double> promise = new Promise<double>();
 
         string lowerCaseAddress = address.ToLower();
-        Query(MANA_SUBGRAPH_URL_ETHEREUM, TheGraphQueries.getEthereumManaQuery, new AddressVariable() { address = lowerCaseAddress })
+        Query(
+                network == TheGraphNetwork.Ethereum ? MANA_SUBGRAPH_URL_ETHEREUM : MANA_SUBGRAPH_URL_POLYGON,
+                network == TheGraphNetwork.Ethereum ? TheGraphQueries.getEthereumManaQuery : TheGraphQueries.getPolygonManaQuery,
+                new AddressVariable() { address = lowerCaseAddress })
            .Then(resultJson =>
             {
                 try
@@ -114,32 +117,6 @@ public class TheGraph : ITheGraph
                 }
             })
            .Catch(error => promise.Reject(error));
-        return promise;
-    }
-
-    public Promise<double> QueryPolygonMana(string address)
-    {
-        Promise<double> promise = new Promise<double>();
-
-        string lowerCaseAddress = address.ToLower();
-        Query(MANA_SUBGRAPH_URL_POLYGON, TheGraphQueries.getPolygonManaQuery, new AddressVariable() { address = lowerCaseAddress })
-            .Then(resultJson =>
-            {
-                try
-                {
-                    JObject result = JObject.Parse(resultJson);
-                    JToken manaObject = result["data"]?["accounts"].First?["mana"];
-                    if (manaObject == null || !double.TryParse(manaObject.Value<string>(), out double parsedMana))
-                        throw new Exception($"QueryMana response couldn't be parsed: {resultJson}");
-
-                    promise.Resolve(parsedMana / 1e18);
-                }
-                catch (Exception e)
-                {
-                    promise.Reject(e.ToString());
-                }
-            })
-            .Catch(error => promise.Reject(error));
         return promise;
     }
 

@@ -43,10 +43,10 @@ namespace DCL.Wallet
 
             requestEthereumManaPromise = new Promise<double>();
             requestEthereumManaPromise.Resolve(TEST_ETHEREUM_MANA_BALANCE);
-            theGraph.Configure().QueryEthereumMana(Arg.Any<string>()).Returns(requestEthereumManaPromise);
+            theGraph.Configure().QueryMana(Arg.Any<string>(), TheGraphNetwork.Ethereum).Returns(requestEthereumManaPromise);
             requestPolygonManaPromise = new Promise<double>();
             requestPolygonManaPromise.Resolve(TEST_POLYGON_MANA_BALANCE);
-            theGraph.Configure().QueryPolygonMana(Arg.Any<string>()).Returns(requestPolygonManaPromise);
+            theGraph.Configure().QueryMana(Arg.Any<string>(), TheGraphNetwork.Polygon).Returns(requestPolygonManaPromise);
 
             walletSectionHUDController = new WalletSectionHUDController(
                 walletSectionHUDComponentView,
@@ -97,7 +97,7 @@ namespace DCL.Wallet
 
             // Assert
             walletSectionHUDComponentView.Received(1).SetEthereumManaLoadingActive(true);
-            theGraph.Received(1).QueryEthereumMana(ownUserProfile.userId);
+            theGraph.Received(1).QueryMana(ownUserProfile.userId, TheGraphNetwork.Ethereum);
             yield return requestEthereumManaPromise;
             Assert.AreEqual(TEST_ETHEREUM_MANA_BALANCE, dataStore.wallet.currentEthereumManaBalance.Get());
             walletSectionHUDComponentView.Received(1).SetEthereumManaBalance(TEST_ETHEREUM_MANA_BALANCE);
@@ -113,7 +113,7 @@ namespace DCL.Wallet
 
             // Assert
             walletSectionHUDComponentView.Received(1).SetPolygonManaLoadingActive(true);
-            theGraph.Received(1).QueryPolygonMana(ownUserProfile.userId);
+            theGraph.Received(1).QueryMana(ownUserProfile.userId, TheGraphNetwork.Polygon);
             yield return requestPolygonManaPromise;
             Assert.AreEqual(TEST_POLYGON_MANA_BALANCE, dataStore.wallet.currentPolygonManaBalance.Get());
             walletSectionHUDComponentView.Received(1).SetPolygonManaBalance(TEST_POLYGON_MANA_BALANCE);
