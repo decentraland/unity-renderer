@@ -26,15 +26,9 @@ using rpc_csharp.transport;
 using RPC.Transports;
 using System;
 using System.Collections.Generic;
-using System.Security.Authentication;
 using System.Threading;
 using UnityEngine;
-using WebSocketSharp;
 using WorldsFeaturesAnalytics;
-#if UNITY_WEBGL && !UNITY_EDITOR
-using HybridWebSocket;
-using WebSocket = HybridWebSocket.WebSocket;
-#endif
 
 namespace DCL
 {
@@ -98,44 +92,7 @@ namespace DCL
                 UniTask<ITransport> CreateWebSocketAndConnect(CancellationToken cancellationToken)
                 {
                     UniTaskCompletionSource<ITransport> task = new ();
-                    ITransport transport;
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-                    WebSocket webSocket = WebSocketFactory.CreateInstance(
-                        "wss://rpc-social-service.decentraland.org");
-
-                    WebGLWebSocketTransport webGLWebSocketTransport = new (webSocket);
-
-                    transport = webGLWebSocketTransport;
-#else
-                    WebSocketClientTransport websocketSharpTransport = new ("wss://rpc-social-service.decentraland.org");
-                    // it is necessary to set a logger output right after WS creation
-                    // otherwise errors are raised and may break the loading process (webgl issue)
-                    websocketSharpTransport.Log.Output = (data, s) =>
-                    {
-                        switch (data.Level)
-                        {
-                            case LogLevel.Debug:
-                            case LogLevel.Info:
-                            case LogLevel.Trace:
-                                Debug.Log($"SocialClient.Transport: {data.Message}");
-                                break;
-                            case LogLevel.Error:
-                            case LogLevel.Fatal:
-                                Debug.LogError($"SocialClient.Transport: {data.Message}");
-                                break;
-                            case LogLevel.Warn:
-                                Debug.LogWarning($"SocialClient.Transport: {data.Message}");
-                                break;
-                        }
-                    };
-
-                    websocketSharpTransport.Log.Level = LogLevel.Warn;
-                    websocketSharpTransport.WaitTime = TimeSpan.FromSeconds(60);
-                    websocketSharpTransport.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
-
-                    transport = websocketSharpTransport;
-#endif
+                    WebSocketClientTransport transport = new ("wss://rpc-social-service.decentraland.org");
 
                     void CompleteTaskAndUnsubscribe()
                     {
@@ -180,27 +137,16 @@ namespace DCL
                     transport.OnErrorEvent += FailTaskAndUnsubscribe;
                     transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-                    try
-                    {
-                        webGLWebSocketTransport.Connect();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-#else
                     try
                     {
                         // connect async does not work, probably because the lack of multi-threading support in webgl build?
                         // transport.ConnectAsync();
-                        websocketSharpTransport.Connect();
+                        transport.Connect();
                     }
                     catch (Exception e)
                     {
                         Debug.LogException(e);
                     }
-#endif
 
                     return task.Task.AttachExternalCancellation(cancellationToken);
                 }
