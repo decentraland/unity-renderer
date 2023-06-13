@@ -13,6 +13,8 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
 {
     public class HintViewManagerShould : MonoBehaviour
     {
+        private readonly string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
+
         private HintRequestService hintRequestService;
         private List<IHintRequestSource> hintRequestSources;
         private ISceneController sceneController;
@@ -57,7 +59,10 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         public async Task StartAndStopHintsCarousel()
         {
             // Arrange
-            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+            var cts = new CancellationTokenSource();
+            var addressableProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
+            var hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cts.Token);
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, hintViewPrefab);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
@@ -83,7 +88,10 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         public async Task CarouselNextAndPreviousHint()
         {
             // Arrange
-            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+            var cts = new CancellationTokenSource();
+            var addressableProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
+            var hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cts.Token);
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, hintViewPrefab);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();

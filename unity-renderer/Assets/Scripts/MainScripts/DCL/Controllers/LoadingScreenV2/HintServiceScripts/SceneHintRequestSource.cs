@@ -20,9 +20,10 @@ namespace DCL.Controllers.LoadingScreenV2
         private LoadParcelScenesMessage.UnityParcelScene currentSceneBeingLoaded;
         private UniTaskCompletionSource<bool> sceneLoadedCompletionSource;
 
-        public SceneHintRequestSource(string sceneJson, SourceTag sourceTag, ISceneController sceneController, Vector2Int currentDestination)
+        // TODO:: FD:: update commented parameters here in the constructor
+        public SceneHintRequestSource(/*string sceneJson,*/ SourceTag sourceTag, ISceneController sceneController/*, Vector2Int currentDestination*/)
         {
-            Source = sceneJson;
+            // Source = sceneJson;
             this.SourceTag = sourceTag;
             LoadingHints = new List<Hint>();
 

@@ -13,7 +13,7 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
 {
     public class LoadingScreenControllerShould2
     {
-        private readonly string sourceHintViewAddressable = "LoadingScreenV2HintView.prefab";
+        private readonly string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
 
         private HintRequestService hintRequestService;
         private IAddressableResourceProvider addressableProvider;
@@ -21,6 +21,8 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         private CancellationToken cancellationToken;
         private Hint premadeHint1;
         private Hint premadeHint2;
+        private CancellationTokenSource cts;
+        private HintView hintViewPrefab;
 
         [SetUp]
         public void Setup()
@@ -29,6 +31,9 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
             premadeHint1 = new Hint("https://example.com/image1.png", "title1", "body1", SourceTag.Event);
             premadeHint2 = new Hint("https://example.com/image2.png", "title2", "body2", SourceTag.Dcl);
             var sourceUrlJson = "http://remote_source_url";
+            addressableProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
+            cts = new CancellationTokenSource();
+
             var mockWebRequestHandler = Substitute.For<ISourceWebRequestHandler>();
             var mockSceneRensponse = new LoadParcelScenesMessage.UnityParcelScene
             {
@@ -58,7 +63,8 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         public async Task StartAndStopHintsCarousel()
         {
             // Arrange
-            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+            hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cts.Token);
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, hintViewPrefab);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
@@ -81,7 +87,8 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         public async Task InitializeHintsProperlyAsync()
         {
             // Arrange
-            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+            hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cts.Token);
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, hintViewPrefab);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
@@ -100,7 +107,8 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         public async Task RequestHintsProperlyAsync()
         {
             // Arrange
-            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+            hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cts.Token);
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, hintViewPrefab);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();

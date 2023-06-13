@@ -15,7 +15,7 @@ namespace DCL.Controllers.LoadingScreenV2
     public class LoadingScreenHintsController
     {
         private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
-        private readonly string SOURCE_HINT_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
+        // private readonly string SOURCE_HINT_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
         private const int MAX_HINTS = 15;
 
         private readonly HintRequestService hintRequestService;
@@ -28,9 +28,10 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public event Action OnRequestHintsCompleted;
 
-        public LoadingScreenHintsController(HintRequestService hintRequestService)
+        public LoadingScreenHintsController(HintRequestService hintRequestService, HintView hintView)
         {
             this.hintRequestService = hintRequestService;
+            hintViewPrefab = hintView;
 
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
@@ -41,9 +42,6 @@ namespace DCL.Controllers.LoadingScreenV2
         private async void InitializeHintsAsync()
         {
             cancellationTokenSource = new CancellationTokenSource();
-
-            IAddressableResourceProvider  addressableProvider = new AddressableResourceProvider();
-            hintViewPrefab = await addressableProvider.GetAddressable<HintView>(SOURCE_HINT_ADDRESSABLE, cancellationTokenSource.Token);
 
             // Initializing empty hints views
             for (int i = 0; i < MAX_HINTS; i++)
