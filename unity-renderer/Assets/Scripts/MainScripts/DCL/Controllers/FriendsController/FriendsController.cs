@@ -611,6 +611,14 @@ namespace DCL.Social.Friends
 
         private void DeletedByFriend(string friendId)
         {
+            var friendRequest = GetAllocatedFriendRequestByUser(friendId);
+
+            if (friendRequest != null)
+            {
+                outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+            }
+
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
                 userId = friendId,
