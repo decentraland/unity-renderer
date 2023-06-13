@@ -163,130 +163,6 @@ namespace DCL.Social.Friends
             apiBridge.OnTotalFriendCountUpdated -= UpdateTotalFriends;
         }
 
-        private void DeletedByFriend(string friendId)
-        {
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-            {
-                userId = friendId,
-                action = FriendshipAction.DELETED
-            });
-        }
-
-        private void AcceptedFriendRequest(string friendId)
-        {
-            var friendRequest = GetAllocatedFriendRequestByUser(friendId);
-
-            if (friendRequest != null)
-            {
-                outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
-            }
-
-            AddFriendToCacheAndTriggerFriendshipUpdate(friendId);
-        }
-
-        private void RemoveFriendRequestFromRejection(string userId) =>
-            RemoveFriendRequestAndUpdateFriendshipStatus(userId, FriendshipAction.REJECTED);
-
-        private void RemoveFriendRequestFromCancellation(string userId) =>
-            RemoveFriendRequestAndUpdateFriendshipStatus(userId, FriendshipAction.CANCELLED);
-
-        private void RemoveFriendRequestAndUpdateFriendshipStatus(string userId,
-            FriendshipAction newFriendshipAction)
-        {
-            var friendRequest = GetAllocatedFriendRequestByUser(userId);
-
-            if (friendRequest != null)
-            {
-                incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
-
-                outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
-            }
-
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-            {
-                userId = userId,
-                action = newFriendshipAction
-            });
-
-            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
-        }
-
-        private void AddFriendToCacheAndTriggerFriendshipUpdate(string friendId)
-        {
-            async UniTaskVoid IndexUserByNameAsync(UserStatus status, CancellationToken cancellationToken)
-            {
-                UserProfile profile = userProfileBridge.Get(status.userId)
-                                      ?? await userProfileBridge.RequestFullUserProfileAsync(status.userId, cancellationToken);
-
-                status.userName = profile.userName;
-                friendsSortedByName[profile.userName] = status;
-            }
-
-            UserStatus status;
-
-            if (friends.TryGetValue(friendId, out status))
-                status.friendshipStatus = FriendshipStatus.FRIEND;
-            else
-            {
-                status = new UserStatus
-                {
-                    friendshipStatus = FriendshipStatus.FRIEND,
-                    userId = friendId,
-                };
-
-                friends[friendId] = status;
-            }
-
-            IndexUserByNameAsync(status, controllerCancellationTokenSource.Token).Forget();
-
-            OnUpdateFriendship?.Invoke(friendId, FriendshipAction.APPROVED);
-        }
-
-        private void RemoveFriendFromCacheAndTriggerFriendshipUpdate(string userId)
-        {
-            if (!this.friends.ContainsKey(userId))
-            {
-                Debug.LogWarning($"Tried to remove non existing friend {userId}");
-                return;
-            }
-
-            var friend = this.friends[userId];
-            this.friends.Remove(userId);
-
-            if (string.IsNullOrEmpty(friend.userName))
-            {
-                string userNameFound = null;
-
-                foreach (UserStatus status in friendsSortedByName.Values)
-                {
-                    if (status.userId != userId) continue;
-                    userNameFound = status.userName;
-                    break;
-                }
-
-                if (!string.IsNullOrEmpty(userNameFound))
-                    friendsSortedByName.Remove(userNameFound);
-            }
-            else
-                friendsSortedByName.Remove(friend.userName);
-
-            OnUpdateFriendship?.Invoke(userId, FriendshipAction.DELETED);
-        }
-
-        private void InitializeFriendships(FriendshipInitializationMessage msg)
-        {
-            if (IsInitialized) return;
-
-            IsInitialized = true;
-
-            TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
-            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
-            OnInitialized?.Invoke();
-        }
-
         public UserStatus GetUserStatus(string userId)
         {
             if (!friends.ContainsKey(userId))
@@ -338,8 +214,16 @@ namespace DCL.Social.Friends
         }
 
         [Obsolete("Deprecated. Use RequestFriendshipAsync instead")]
-        public void RequestFriendship(string friendUserId) =>
+        public void RequestFriendship(string friendUserId)
+        {
+            if (useSocialApiBridge)
+            {
+                RequestFriendshipAsync(friendUserId, "", controllerCancellationTokenSource.Token)
+                   .Forget();
+                return;
+            }
             apiBridge.RequestFriendship(friendUserId);
+        }
 
         public Dictionary<string, UserStatus> GetAllocatedFriends() =>
             new (friends);
@@ -380,8 +264,17 @@ namespace DCL.Social.Friends
         }
 
         [Obsolete("Deprecated. Use RejectFriendshipAsync instead")]
-        public void RejectFriendship(string friendUserId) =>
+        public void RejectFriendship(string friendUserId)
+        {
+            if (useSocialApiBridge)
+            {
+                FriendRequest friendRequest = GetAllocatedFriendRequestByUser(friendUserId);
+                RejectFriendshipAsync(friendRequest.FriendRequestId, controllerCancellationTokenSource.Token)
+                   .Forget();
+                return;
+            }
             apiBridge.RejectFriendship(friendUserId);
+        }
 
         public async UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken)
         {
@@ -555,9 +448,11 @@ namespace DCL.Social.Friends
             return receivedFriendRequestsToAdd;
         }
 
+        // TODO: implement async function and make the new social service support
         public void GetFriendsWithDirectMessages(int limit, int skip) =>
             apiBridge.GetFriendsWithDirectMessages("", limit, skip);
 
+        // TODO: implement async function and make the new social service support
         public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
             apiBridge.GetFriendsWithDirectMessages(userNameOrId, limit, 0);
 
@@ -612,15 +507,31 @@ namespace DCL.Social.Friends
 
         public async UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken)
         {
-            FriendshipStatus status = await apiBridge.GetFriendshipStatus(userId, cancellationToken);
-
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+            if (useSocialApiBridge)
             {
-                action = ToFriendshipAction(status),
-                userId = userId,
-            });
+                if (friends.TryGetValue(userId, out UserStatus status))
+                    return status.friendshipStatus;
 
-            return status;
+                FriendRequest friendRequest = GetAllocatedFriendRequestByUser(userId);
+                if (friendRequest == null) return FriendshipStatus.NOT_FRIEND;
+                if (outgoingFriendRequestsById.ContainsKey(friendRequest.FriendRequestId))
+                    return FriendshipStatus.REQUESTED_TO;
+                if (incomingFriendRequestsById.ContainsKey(friendRequest.FriendRequestId))
+                    return FriendshipStatus.REQUESTED_FROM;
+                return FriendshipStatus.NOT_FRIEND;
+            }
+            else
+            {
+                FriendshipStatus status = await apiBridge.GetFriendshipStatus(userId, cancellationToken);
+
+                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                {
+                    action = ToFriendshipAction(status),
+                    userId = userId,
+                });
+
+                return status;
+            }
         }
 
         public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId, CancellationToken cancellationToken)
@@ -697,6 +608,130 @@ namespace DCL.Social.Friends
 
         public void AcceptFriendship(string friendUserId) =>
             apiBridge.AcceptFriendship(friendUserId);
+
+        private void DeletedByFriend(string friendId)
+        {
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+            {
+                userId = friendId,
+                action = FriendshipAction.DELETED
+            });
+        }
+
+        private void AcceptedFriendRequest(string friendId)
+        {
+            var friendRequest = GetAllocatedFriendRequestByUser(friendId);
+
+            if (friendRequest != null)
+            {
+                outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+            }
+
+            AddFriendToCacheAndTriggerFriendshipUpdate(friendId);
+        }
+
+        private void RemoveFriendRequestFromRejection(string userId) =>
+            RemoveFriendRequestAndUpdateFriendshipStatus(userId, FriendshipAction.REJECTED);
+
+        private void RemoveFriendRequestFromCancellation(string userId) =>
+            RemoveFriendRequestAndUpdateFriendshipStatus(userId, FriendshipAction.CANCELLED);
+
+        private void RemoveFriendRequestAndUpdateFriendshipStatus(string userId,
+            FriendshipAction newFriendshipAction)
+        {
+            var friendRequest = GetAllocatedFriendRequestByUser(userId);
+
+            if (friendRequest != null)
+            {
+                incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+
+                outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
+                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+            }
+
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+            {
+                userId = userId,
+                action = newFriendshipAction
+            });
+
+            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+        }
+
+        private void AddFriendToCacheAndTriggerFriendshipUpdate(string friendId)
+        {
+            async UniTaskVoid IndexUserByNameAsync(UserStatus status, CancellationToken cancellationToken)
+            {
+                UserProfile profile = userProfileBridge.Get(status.userId)
+                                      ?? await userProfileBridge.RequestFullUserProfileAsync(status.userId, cancellationToken);
+
+                status.userName = profile.userName;
+                friendsSortedByName[profile.userName] = status;
+            }
+
+            UserStatus status;
+
+            if (friends.TryGetValue(friendId, out status))
+                status.friendshipStatus = FriendshipStatus.FRIEND;
+            else
+            {
+                status = new UserStatus
+                {
+                    friendshipStatus = FriendshipStatus.FRIEND,
+                    userId = friendId,
+                };
+
+                friends[friendId] = status;
+            }
+
+            IndexUserByNameAsync(status, controllerCancellationTokenSource.Token).Forget();
+
+            OnUpdateFriendship?.Invoke(friendId, FriendshipAction.APPROVED);
+        }
+
+        private void RemoveFriendFromCacheAndTriggerFriendshipUpdate(string userId)
+        {
+            if (!this.friends.ContainsKey(userId))
+            {
+                Debug.LogWarning($"Tried to remove non existing friend {userId}");
+                return;
+            }
+
+            var friend = this.friends[userId];
+            this.friends.Remove(userId);
+
+            if (string.IsNullOrEmpty(friend.userName))
+            {
+                string userNameFound = null;
+
+                foreach (UserStatus status in friendsSortedByName.Values)
+                {
+                    if (status.userId != userId) continue;
+                    userNameFound = status.userName;
+                    break;
+                }
+
+                if (!string.IsNullOrEmpty(userNameFound))
+                    friendsSortedByName.Remove(userNameFound);
+            }
+            else
+                friendsSortedByName.Remove(friend.userName);
+
+            OnUpdateFriendship?.Invoke(userId, FriendshipAction.DELETED);
+        }
+
+        private void InitializeFriendships(FriendshipInitializationMessage msg)
+        {
+            if (IsInitialized) return;
+
+            IsInitialized = true;
+
+            TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
+            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+            OnInitialized?.Invoke();
+        }
 
         private void FriendNotFound(string name) =>
             OnFriendNotFound?.Invoke(name);
