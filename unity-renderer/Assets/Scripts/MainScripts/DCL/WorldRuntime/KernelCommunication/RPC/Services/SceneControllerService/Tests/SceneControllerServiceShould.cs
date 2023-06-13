@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
-using DCL.ECS7;
 using DCL.ECSRuntime;
 using DCLServices.MapRendererV2;
 using Decentraland.Common;
@@ -189,7 +188,6 @@ namespace Tests
                 ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
                 ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
                 Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
-
                 context.crdt.CrdtExecutors = crdtExecutors;
 
                 CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager,

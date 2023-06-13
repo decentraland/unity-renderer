@@ -20,7 +20,19 @@ SpriteAtlas:
       readable: 0
       crunchedCompression: 0
       sRGB: 1
-    platformSettings: []
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     packingSettings:
       serializedVersion: 2
       padding: 4
@@ -32,14 +44,15 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: e067ff3c556704d6798e8abe55c9ecb2, type: 3}
     - {fileID: 102900000, guid: 0dabbcb147b654ac0a985acf1805a850, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 17bc93623e63c4254bb5799cd55f4b96, type: 3}
   - {fileID: 21300000, guid: b86aa5b2e1b3a4e2bb9e3afe59315b46, type: 3}
+  - {fileID: 21300000, guid: 0492c753b33b04474ac2b7e7d18a2c70, type: 3}
   - {fileID: 21300000, guid: f5c69b65210ee4d918cee88989f0b22e, type: 3}
   - {fileID: 21300000, guid: 3635c175b99b640e6a001fa497597e4e, type: 3}
   - {fileID: 21300000, guid: 7f02a0d56dde24665b43d5483b653d47, type: 3}
@@ -52,7 +65,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ae432d6ee3307da4aac59db911ad410f, type: 3}
   - {fileID: 21300000, guid: eafeb5ee04f824648b1a9f8b4412d485, type: 3}
   m_PackedSpriteNamesToIndex:
+  - NameIcn
   - IntroIcon
+  - LandIcn
   - PassportBackground
   - DecorativeShape001
   - BlockedImg
@@ -60,10 +75,10 @@ SpriteAtlas:
   - FlapShadow
   - LinkIcon
   - BackgroundGuest
-  - WearablesIcon
-  - RhombusShapedGradient
+  - WearablesIcn
+  - RadialGradient
   - 360Icon
-  - EmotesIcon
+  - EmotesIcn
   m_RenderDataMap: {}
   m_Tag: PassportAtlas
   m_IsVariant: 0
