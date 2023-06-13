@@ -150,7 +150,7 @@ namespace DCLServices.QuestsService.TestScene
             {
                 {"id", "0T9iP8SA2I"}
             }} });
-            await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            /*await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
             {
                 {"id", "jus9C7Nx6v"}
             }} });
@@ -223,7 +223,7 @@ namespace DCLServices.QuestsService.TestScene
             }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
             {
                 {"id", "6MgAVjxNi8"}
-            }} });
+            }} });*/
 
             MyLog("All progress is done, waiting for updates to be saved...");
         }
