@@ -6,7 +6,12 @@ namespace RPC.Transports
 {
     public class WebSocketClientTransport : ITransport
     {
-        readonly WebSocket webSocket;
+        private readonly WebSocket webSocket;
+
+        public event Action OnCloseEvent;
+        public event Action<string> OnErrorEvent;
+        public event Action<byte[]> OnMessageEvent;
+        public event Action OnConnectEvent;
 
         public WebSocketClientTransport(string url)
         {
@@ -15,29 +20,10 @@ namespace RPC.Transports
             webSocket.OnError += this.HandleError;
             webSocket.OnClose += this.HandleClose;
             webSocket.OnOpen += this.HandleOpen;
+        }
 
+        public void Connect() =>
             webSocket.Connect();
-        }
-
-        private void HandleMessage(byte[] data)
-        {
-            OnMessageEvent?.Invoke(data);
-        }
-
-        private void HandleError(string errorMsg)
-        {
-            OnErrorEvent?.Invoke(errorMsg);
-        }
-
-        private void HandleClose(WebSocketCloseCode closeCode)
-        {
-            OnCloseEvent?.Invoke();
-        }
-
-        private void HandleOpen()
-        {
-            OnConnectEvent?.Invoke();
-        }
 
         public void SendMessage(byte[] data)
         {
@@ -62,9 +48,24 @@ namespace RPC.Transports
             webSocket.OnOpen -= this.HandleOpen;
         }
 
-        public event Action OnCloseEvent;
-        public event Action<string> OnErrorEvent;
-        public event Action<byte[]> OnMessageEvent;
-        public event Action OnConnectEvent;
+        private void HandleMessage(byte[] data)
+        {
+            OnMessageEvent?.Invoke(data);
+        }
+
+        private void HandleError(string errorMsg)
+        {
+            OnErrorEvent?.Invoke(errorMsg);
+        }
+
+        private void HandleClose(WebSocketCloseCode closeCode)
+        {
+            OnCloseEvent?.Invoke();
+        }
+
+        private void HandleOpen()
+        {
+            OnConnectEvent?.Invoke();
+        }
     }
 }
