@@ -1,16 +1,27 @@
 ﻿using DCL.Browser;
 using DCL.Guests.HUD.ConnectWallet;
+using DCL.Providers;
+using DCL.Tasks;
+using System.Threading;
 
 namespace DCL.Wallet
 {
     public class WalletPlugin : IPlugin
     {
-        private readonly WalletSectionHUDController walletSectionController;
-        private readonly ConnectWalletComponentController connectWalletController;
+        private readonly CancellationTokenSource cts = new ();
+
+        private WalletSectionHUDController walletSectionController;
+        private ConnectWalletComponentController connectWalletController;
 
         public WalletPlugin()
         {
-            var walletSectionView = WalletSectionHUDComponentView.Create();
+            Initialize(cts.Token);
+        }
+
+        private async void Initialize(CancellationToken ct)
+        {
+            var walletSectionView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                     .Instantiate<WalletSectionHUDComponentView>("WalletSectionHUD", cancellationToken: ct);
             var dataStore = DataStore.i;
             var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
             var webInterfaceBrowserBridge = new WebInterfaceBrowserBridge();
@@ -32,6 +43,7 @@ namespace DCL.Wallet
 
         public void Dispose()
         {
+            cts.SafeCancelAndDispose();
             walletSectionController.Dispose();
             connectWalletController.Dispose();
         }

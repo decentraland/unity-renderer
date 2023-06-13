@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using System.Collections;
 using System.Globalization;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace DCL.Wallet
@@ -12,7 +14,10 @@ namespace DCL.Wallet
         [SetUp]
         public void SetUp()
         {
-            walletSectionHUDView = WalletSectionHUDComponentView.Create();
+            WalletSectionHUDComponentView prefab = AssetDatabase.LoadAssetAtPath<WalletSectionHUDComponentView>(
+                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/WalletHUD/Prefabs/WalletSectionHUD.prefab");
+
+            walletSectionHUDView = Object.Instantiate(prefab);
         }
 
         [TearDown]
