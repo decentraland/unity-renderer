@@ -54,12 +54,9 @@ namespace DCL.Social.Friends
 
             async UniTaskVoid InitializeAsync(CancellationToken cancellationToken)
             {
-                Debug.Log("RPCSocialAPIBridge.Initialize.Client");
                 await InitializeClient(cancellationToken);
-                Debug.Log("RPCSocialAPIBridge.Initialize.Wait.AccessToken");
                 await WaitForAccessTokenAsync(cancellationToken);
 
-                Debug.Log("RPCSocialAPIBridge.Initialize.SubscribeToIncomingFriendshipEvents");
                 // this is an endless task that's why is forgotten
                 SubscribeToIncomingFriendshipEvents(cancellationToken).Forget();
             }
@@ -72,22 +69,17 @@ namespace DCL.Social.Friends
         {
             try
             {
-                Debug.Log("RPCSocialAPIBridge.InitializeClient.Transport.Provide");
                 var transport = await clientTransportProvider(cancellationToken);
-                Debug.Log("RPCSocialAPIBridge.InitializeClient.RpcClient.Create");
                 var client = new RpcClient(transport);
-                Debug.Log("RPCSocialAPIBridge.InitializeClient.CreatePort");
                 var socialPort = await client.CreatePort("social-service-port");
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                Debug.Log("RPCSocialAPIBridge.InitializeClient.LoadModule");
                 var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
                 socialClient = new ClientFriendshipsService(module);
-                Debug.Log("RPCSocialAPIBridge.InitializeClient.Success");
             }
             catch (OperationCanceledException) { throw; }
             catch (Exception e) { Debug.LogException(e); }
@@ -95,17 +87,14 @@ namespace DCL.Social.Friends
 
         public async UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default)
         {
-            Debug.Log("RPCSocialAPIBridge.GetInitializationInformationAsync");
             if (initializationInformationTask != null) return await initializationInformationTask.Task.AttachExternalCancellation(cancellationToken);
 
             initializationInformationTask = new UniTaskCompletionSource<FriendshipInitializationMessage>();
 
-            Debug.Log("RPCSocialAPIBridge.InitializeMatrixTokenThenRetrieveAllFriends");
             // TODO: the bridge should not fetch all friends at start, its a responsibility/design issue.
             // It should be fetched by its request function accordingly
             await InitializeMatrixTokenThenRetrieveAllFriends(cancellationToken);
 
-            Debug.Log("RPCSocialAPIBridge.GetFriendRequestsFromServer");
             // TODO: the bridge should not fetch all friend requests at start, its a responsibility/design issue.
             // It should be fetched by its request function accordingly
             var friendshipInitializationMessage = await GetFriendRequestsFromServer(cancellationToken);
@@ -121,7 +110,6 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Debug.Log("RPCSocialAPIBridge.GetFriendRequestsFromServer.Get");
             var requestEvents = await socialClient.GetRequestEvents(new Payload
                 { SynapseToken = accessToken });
 
@@ -129,7 +117,6 @@ namespace DCL.Social.Friends
 
             await UniTask.SwitchToMainThread(cancellationToken);
 
-            Debug.Log($"RPCSocialAPIBridge.GetFriendRequestsFromServer.Incoming: {requestEvents.Events.Incoming.Items.Count}");
             foreach (var friendRequest in requestEvents.Events.Incoming.Items)
             {
                 OnIncomingFriendRequestAdded?.Invoke(new FriendRequest(
@@ -140,7 +127,6 @@ namespace DCL.Social.Friends
                     friendRequest.Message));
             }
 
-            Debug.Log($"RPCSocialAPIBridge.GetFriendRequestsFromServer.Outgoing: {requestEvents.Events.Outgoing.Items.Count}");
             foreach (var friendRequest in requestEvents.Events.Outgoing.Items)
             {
                 OnOutgoingFriendRequestAdded?.Invoke(new FriendRequest(
@@ -151,8 +137,6 @@ namespace DCL.Social.Friends
                     friendRequest.Message));
             }
 
-            Debug.Log("RPCSocialAPIBridge.GetFriendRequestsFromServer.Success");
-
             return new FriendshipInitializationMessage()
             {
                 totalReceivedRequests = requestEvents.Events.Incoming.Items.Count
@@ -161,26 +145,19 @@ namespace DCL.Social.Friends
 
         private async UniTask InitializeMatrixTokenThenRetrieveAllFriends(CancellationToken cancellationToken)
         {
-            Debug.Log("RPCSocialAPIBridge.InitializeMatrixTokenThenRetrieveAllFriends.Wait.socialClient!=null");
             await UniTask.WaitUntil(() => socialClient != null, cancellationToken: cancellationToken);
-            Debug.Log("RPCSocialAPIBridge.InitializeMatrixTokenThenRetrieveAllFriends.Wait.AccessToken");
             await WaitForAccessTokenAsync(cancellationToken);
 
             var friendsStream = socialClient.GetFriends(new Payload
                 { SynapseToken = accessToken });
 
-            Debug.Log("RPCSocialAPIBridge.InitializeMatrixTokenThenRetrieveAllFriends.Get.Friends");
             await foreach (var friends in friendsStream.WithCancellation(cancellationToken))
             {
                 await UniTask.SwitchToMainThread(cancellationToken);
 
-                Debug.Log($"RPCSocialAPIBridge.InitializeMatrixTokenThenRetrieveAllFriends.Get.Friends.Retrieved: {friends.Users.Users_.Count}");
-
                 foreach (User friend in friends.Users.Users_)
                     OnFriendAdded?.Invoke(friend.Address);
             }
-
-            Debug.Log($"RPCSocialAPIBridge.InitializeMatrixTokenThenRetrieveAllFriends.Success");
         }
 
         private async UniTask WaitForAccessTokenAsync(CancellationToken cancellationToken)

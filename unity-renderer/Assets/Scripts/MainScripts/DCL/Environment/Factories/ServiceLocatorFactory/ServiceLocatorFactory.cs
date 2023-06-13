@@ -139,7 +139,7 @@ namespace DCL
 
                     void CompleteTaskAndUnsubscribe()
                     {
-                        Debug.Log($"SocialClient.Transport.Connected");
+                        Debug.Log("SocialClient.Transport.Connected");
 
                         if (cancellationToken.IsCancellationRequested)
                         {
@@ -165,7 +165,7 @@ namespace DCL
 
                     void FailTaskByDisconnectionAndUnsubscribe()
                     {
-                        Debug.Log($"SocialClient.Transport.Disconnected");
+                        Debug.Log("SocialClient.Transport.Disconnected");
 
                         if (cancellationToken.IsCancellationRequested)
                         {
@@ -176,13 +176,9 @@ namespace DCL
                         task.TrySetException(new Exception("Cannot connect to social service server, connection closed"));
                     }
 
-                    void LogMessage(byte[] data) =>
-                        Debug.Log($"SocialClient.Transport.Message: length {data?.Length ?? 0}");
-
                     transport.OnConnectEvent += CompleteTaskAndUnsubscribe;
                     transport.OnErrorEvent += FailTaskAndUnsubscribe;
                     transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
-                    transport.OnMessageEvent += LogMessage;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
                     try

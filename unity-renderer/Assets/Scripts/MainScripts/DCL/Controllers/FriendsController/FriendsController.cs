@@ -210,6 +210,8 @@ namespace DCL.Social.Friends
                 userId = userId,
                 action = newFriendshipAction
             });
+
+            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
         }
 
         private void AddFriendToCacheAndTriggerFriendshipUpdate(string friendId)
@@ -253,7 +255,24 @@ namespace DCL.Social.Friends
 
             var friend = this.friends[userId];
             this.friends.Remove(userId);
-            this.friendsSortedByName.Remove(friend.userName);
+
+            if (string.IsNullOrEmpty(friend.userName))
+            {
+                string userNameFound = null;
+
+                foreach (UserStatus status in friendsSortedByName.Values)
+                {
+                    if (status.userId != userId) continue;
+                    userNameFound = status.userName;
+                    break;
+                }
+
+                if (!string.IsNullOrEmpty(userNameFound))
+                    friendsSortedByName.Remove(userNameFound);
+            }
+            else
+                friendsSortedByName.Remove(friend.userName);
+
             OnUpdateFriendship?.Invoke(userId, FriendshipAction.DELETED);
         }
 
@@ -292,9 +311,10 @@ namespace DCL.Social.Friends
             {
                 friendRequest = await socialApiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
                 outgoingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
-
                 // it's impossible to have duplicated timestamps for two different correctly created friend requests
                 outgoingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
+
+                OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
             }
             else
             {
@@ -341,6 +361,8 @@ namespace DCL.Social.Friends
                 outgoingFriendRequestsByTimestamp.Remove(request.Timestamp);
 
                 AddFriendToCacheAndTriggerFriendshipUpdate(request.From);
+
+                OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
 
                 return request;
             }
