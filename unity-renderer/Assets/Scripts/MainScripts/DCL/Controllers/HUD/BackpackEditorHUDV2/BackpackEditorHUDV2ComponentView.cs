@@ -33,6 +33,7 @@ namespace DCL.Backpack
         [SerializeField] internal ColorPresetsSO colorPresetsSO;
         [SerializeField] internal ColorPresetsSO skinColorPresetsSO;
         [SerializeField] private BackpackFiltersComponentView backpackFiltersComponentView;
+        [SerializeField] private OutfitsSectionComponentView outfitsSectionComponentView;
         [SerializeField] internal Button saveAvatarButton;
         [SerializeField] internal GameObject normalSection;
         [SerializeField] internal GameObject outfitSection;
@@ -42,6 +43,7 @@ namespace DCL.Backpack
         public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
         public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
         public BackpackFiltersComponentView BackpackFiltersComponentView => backpackFiltersComponentView;
+        public OutfitsSectionComponentView OutfitsSectionComponentView => outfitsSectionComponentView;
 
         private Transform thisTransform;
         private bool isAvatarDirty;
@@ -73,6 +75,7 @@ namespace DCL.Backpack
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle += ColorPickerToggle;
             backpackPreviewPanel.OnOutfitButtonPressed += ToggleOutfitSection;
+            outfitsSectionComponentView.OnBackButtonPressed += ToggleNormalSection;
         }
 
         private void ToggleOutfitSection()
@@ -84,8 +87,8 @@ namespace DCL.Backpack
 
         private void ToggleNormalSection()
         {
-            normalSection.SetActive(false);
-            outfitSection.SetActive(true);
+            normalSection.SetActive(true);
+            outfitSection.SetActive(false);
         }
 
         private void Update() =>
@@ -108,6 +111,7 @@ namespace DCL.Backpack
             colorPickerComponentView.OnColorChanged -= OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle -= ColorPickerToggle;
             backpackPreviewPanel.OnOutfitButtonPressed -= ToggleOutfitSection;
+            outfitsSectionComponentView.OnBackButtonPressed -= ToggleNormalSection;
         }
 
         public static BackpackEditorHUDV2ComponentView Create() =>

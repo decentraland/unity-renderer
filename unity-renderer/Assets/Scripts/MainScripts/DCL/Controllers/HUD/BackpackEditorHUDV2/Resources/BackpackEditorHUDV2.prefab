@@ -1009,6 +1009,7 @@ MonoBehaviour:
   colorPresetsSO: {fileID: 11400000, guid: 781459e41352b1f47a5c30b487bb02d2, type: 2}
   skinColorPresetsSO: {fileID: 11400000, guid: 050bf1922cc193047bd7d4f8ccc7882d, type: 2}
   backpackFiltersComponentView: {fileID: 3816535422934981372}
+  outfitsSectionComponentView: {fileID: 1277182454673673540}
   saveAvatarButton: {fileID: 9140011571792178647}
   normalSection: {fileID: 5320030125882044668}
   outfitSection: {fileID: 211765849088223244}
@@ -4372,6 +4373,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8123435181804342355}
     m_Modifications:
+    - target: {fileID: 389451657606281639, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 435314233683519293, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4943,6 +4949,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5703631538347214337, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: outfitIndex
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5764603279095715224, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_SizeDelta.y
@@ -5092,6 +5103,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6256116001068349871, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: outfitIndex
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6258616889928861707, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
@@ -5343,6 +5359,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -0.000091552734
       objectReference: {fileID: 0}
+    - target: {fileID: 8282898158535083830, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: outfitIndex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8559751060532880588, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_IsActive
@@ -5358,6 +5379,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9093793695914031029, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: outfitIndex
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7987c409c7fea4189954a35a350cfd2a, type: 3}
 --- !u!1 &211765849088223244 stripped
@@ -5366,6 +5392,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8375023868890549440}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1277182454673673540 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7314823788943376772, guid: 7987c409c7fea4189954a35a350cfd2a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8375023868890549440}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211765849088223244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5517d9ce20e5246f681d20d89255bdb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1749780642349599266 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7814440172706711266, guid: 7987c409c7fea4189954a35a350cfd2a,
