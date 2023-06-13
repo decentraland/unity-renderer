@@ -102,6 +102,7 @@ namespace DCL.Social.Friends
 
             // TODO: wrap this events into socialApiBridge since it wont be supported by the social service
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
+            apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
 
             void SubscribeToCorrespondingBridgeEvents()
             {
@@ -125,7 +126,6 @@ namespace DCL.Social.Friends
                     apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
                     apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
                     apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
-                    apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
                     apiBridge.OnFriendNotFound += FriendNotFound;
                 }
             }
