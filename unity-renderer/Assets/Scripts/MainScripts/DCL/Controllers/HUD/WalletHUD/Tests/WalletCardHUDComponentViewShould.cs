@@ -52,7 +52,6 @@ namespace DCL.Wallet
             Assert.IsTrue(walletCardClicked);
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetWalletCardActiveCorrectly(bool isActive)
@@ -64,7 +63,6 @@ namespace DCL.Wallet
             Assert.AreEqual(isActive, walletCardHUDView.gameObject.activeSelf);
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetWalletCardAsGuestCorrectly(bool isGuest)
@@ -77,7 +75,6 @@ namespace DCL.Wallet
             Assert.AreEqual(!isGuest, walletCardHUDView.signedInWalletButton.gameObject.activeSelf);
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetEthereumManaLoadingActiveCorrectly(bool isActive)
@@ -90,7 +87,6 @@ namespace DCL.Wallet
             Assert.AreEqual(isActive, walletCardHUDView.ethereumManaBalanceLoading.gameObject.activeSelf);
         }
 
-        [Test]
         [TestCase(23f)]
         [TestCase(0f)]
         public void SetEthereumManaBalanceCorrectly(double balance)
@@ -102,7 +98,6 @@ namespace DCL.Wallet
             Assert.AreEqual(balance.ToString(CultureInfo.InvariantCulture), walletCardHUDView.ethereumManaBalanceText.text);
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetPolygonManaLoadingActiveCorrectly(bool isActive)
@@ -115,7 +110,6 @@ namespace DCL.Wallet
             Assert.AreEqual(isActive, walletCardHUDView.polygonManaBalanceLoading.gameObject.activeSelf);
         }
 
-        [Test]
         [TestCase(23f)]
         [TestCase(0f)]
         public void SetPolygonManaBalanceCorrectly(double balance)

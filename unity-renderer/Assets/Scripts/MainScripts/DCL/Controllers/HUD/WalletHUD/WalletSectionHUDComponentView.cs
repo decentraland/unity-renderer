@@ -66,9 +66,6 @@ namespace DCL.Wallet
             SetPolygonManaBalance(model.PolygonManaBalance);
         }
 
-        public static WalletSectionHUDComponentView Create() =>
-            Instantiate(Resources.Load<WalletSectionHUDComponentView>("WalletSectionHUD"));
-
         public void SetAsFullScreenMenuMode(Transform parentTransform)
         {
             if (parentTransform == null)
