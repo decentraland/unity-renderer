@@ -391,10 +391,7 @@ namespace DCL.Social.Friends
                         userProfile.OnUpdate -= HandleFriendProfileUpdated;
                         userProfile.OnUpdate += HandleFriendProfileUpdated;
                         break;
-                    case FriendshipAction.REQUESTED_FROM: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                        if (isNewFriendRequestsEnabled)
-                            return;
-
+                    case FriendshipAction.REQUESTED_FROM:
                         userProfile = await EnsureProfileOrShowFallbackFriend(userId, userProfile, cancellationToken);
 
                         var requestReceived = friends.ContainsKey(userId)
@@ -408,10 +405,7 @@ namespace DCL.Social.Friends
                         userProfile.OnUpdate -= HandleFriendProfileUpdated;
                         userProfile.OnUpdate += HandleFriendProfileUpdated;
                         break;
-                    case FriendshipAction.REQUESTED_TO: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                        if (isNewFriendRequestsEnabled)
-                            return;
-
+                    case FriendshipAction.REQUESTED_TO:
                         userProfile = await EnsureProfileOrShowFallbackFriend(userId, userProfile, cancellationToken);
 
                         var requestSent = friends.ContainsKey(userId)

@@ -824,9 +824,6 @@ namespace DCL.Social.Friends
                 // Not adding the user to friendsSortedByName because this is only called in the legacy flow of a friendship
             }
 
-            if (ItsAnOutdatedUpdate(userId, friendshipStatus))
-                return;
-
             friends[userId].friendshipStatus = friendshipStatus;
 
             if (friendshipStatus == FriendshipStatus.NOT_FRIEND)
@@ -840,10 +837,6 @@ namespace DCL.Social.Friends
 
             OnUpdateFriendship?.Invoke(userId, msg.action);
         }
-
-        private bool ItsAnOutdatedUpdate(string userId, FriendshipStatus friendshipStatus) =>
-            friendshipStatus == FriendshipStatus.REQUESTED_FROM
-            && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;
 
         private static FriendshipStatus ToFriendshipStatus(FriendshipAction action)
         {
