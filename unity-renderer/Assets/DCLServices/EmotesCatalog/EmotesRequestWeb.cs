@@ -34,7 +34,6 @@ namespace DCLServices.EmotesCatalog
         private readonly List<string> pendingRequests = new ();
         private readonly CancellationTokenSource cts;
         private readonly BaseVariable<FeatureFlag> featureFlags;
-        private readonly EmotesCatalogService.WearableRequest request;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
 
         private string assetBundlesUrl => featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
@@ -45,7 +44,6 @@ namespace DCLServices.EmotesCatalog
             this.lambdasService = lambdasService;
             this.catalyst = serviceProviders.catalyst;
             cts = new CancellationTokenSource();
-            request = new EmotesCatalogService.WearableRequest { pointers = new List<string>() };
         }
 
         public void Dispose()
@@ -65,6 +63,7 @@ namespace DCLServices.EmotesCatalog
             var result = await lambdasService.GetFromSpecificUrl<OwnedEmotesRequestDto>(url, url, cancellationToken: cts.Token);
 
             if (!result.success) throw new Exception($"Fetching owned wearables failed! {url}\nAddress: {userId}");
+            if (result.response.elements.Length <= 0) return;
 
             var tempList = PoolUtils.RentList<string>();
             var emoteUrns = tempList.GetList();
@@ -99,6 +98,9 @@ namespace DCLServices.EmotesCatalog
                 lastRequestSource = null;
 
                 result = await FetchEmotes(pendingRequests);
+
+                pendingRequests.Clear();
+
                 sourceToAwait.TrySetResult(result);
             }
             else
@@ -109,10 +111,9 @@ namespace DCLServices.EmotesCatalog
 
         private async UniTask<IReadOnlyList<WearableItem>> FetchEmotes(List<string> ids)
         {
-            request.pointers = ids;
+            // the copy of the list is intentional
+            var request = new EmotesCatalogService.WearableRequest { pointers = new List<string>(ids) };
             var url = $"{catalyst.contentUrl}entities/active";
-
-            pendingRequests.Clear();
 
             var response = await lambdasService.PostFromSpecificUrl<EmoteEntityDto[], EmotesCatalogService.WearableRequest>(url, url, request, cancellationToken: cts.Token);
 
