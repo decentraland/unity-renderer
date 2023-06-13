@@ -40,7 +40,7 @@ namespace DCLServices.QuestsService.TestScene
         private void Awake()
         {
             MyLog($"Output file can be found at: {QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE}");
-            //Initialize().Forget();
+            Initialize().Forget();
         }
 
         private async UniTaskVoid Initialize()
@@ -145,6 +145,84 @@ namespace DCLServices.QuestsService.TestScene
             await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
             {
                 {"id", "2cvNHyXQfw"}
+            }} });
+            await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "0T9iP8SA2I"}
+            }} });
+            await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "jus9C7Nx6v"}
+            }} });
+            await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "VkJEhYIW9q"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "FzQrSuvvTD"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "teCVvT2avh"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "4tQG9K093S"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "vE3Kgk6kxs"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "mcvXd3t1Sz"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "Qmsj8cOMfe"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "S5tS6Dyljp"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "x7oxKiWatD"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "lbHA0V4ODF"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "EMY3T1FbfL"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "yVXDSVfjyP"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "a3dlL3FVrw"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "EIQ9xKXFtV"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "3GT6ivQQYW"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "Uz20JJ2Jzn"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "xFJtODcwvK"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "EzgJnuSmSf"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "Mt0x92HDZc"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "T5zrtHeZWk"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "jMsR7bmbqT"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "H3a6wdo3KM"}
+            }} });await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
+            {
+                {"id", "6MgAVjxNi8"}
             }} });
 
             MyLog("All progress is done, waiting for updates to be saved...");

@@ -145,7 +145,7 @@ namespace DCL.Quests
         {
             UserProfile creatorProfile = userProfileBridge.Get(userId);
             creatorProfile ??= await userProfileBridge.RequestFullUserProfileAsync(userId, cts.Token);
-            return creatorProfile.userName;
+            return creatorProfile.hasClaimedName ? creatorProfile.userName : creatorProfile.userName + userId;
         }
 
         public void Dispose() =>
