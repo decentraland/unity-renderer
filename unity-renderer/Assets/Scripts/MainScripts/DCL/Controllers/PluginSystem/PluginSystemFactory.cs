@@ -11,6 +11,7 @@ using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
 using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
+using DCL.MyAccount;
 using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
@@ -98,6 +99,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");
 
             pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "wallet");
+            pluginSystem.RegisterWithFlag<MyAccountPlugin>(() => new MyAccountPlugin(), "my_account");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

@@ -3,12 +3,11 @@ using UnityEngine;
 
 namespace DCL.MyAccount
 {
-    public interface IMyProfileSectionComponentView
+    public interface IMyProfileComponentView
     {
         event Action<string, bool> OnCurrentNameChanged;
         event Action OnClaimNameClicked;
 
-        void SetAsFullScreenMenuMode(Transform parentTransform);
         void SetClaimedNameMode(bool isClaimed);
         void SetCurrentName(string newName);
         void SetClaimBannerActive(bool isActive);

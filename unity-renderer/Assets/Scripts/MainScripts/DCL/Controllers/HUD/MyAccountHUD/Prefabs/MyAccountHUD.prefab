@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 5162748506838320610}
   - component: {fileID: 4241928624954537728}
   - component: {fileID: 1194008953749785141}
+  - component: {fileID: 3116743888907601847}
   m_Layer: 5
   m_Name: MyAccountHUD
   m_TagString: Untagged
@@ -415,6 +416,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5162748506838320611}
   m_CullTransparentMesh: 0
+--- !u!114 &3116743888907601847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5162748506838320611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 572dcddba55040628952260f7a14d9aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
+  myProfileComponentView: {fileID: 4575446210914794904}
 --- !u!1 &5750629320452859689
 GameObject:
   m_ObjectHideFlags: 0
@@ -638,7 +653,7 @@ PrefabInstance:
     - target: {fileID: 716215124352047014, guid: 4fa96e450963f8b45b7835edf038262d,
         type: 3}
       propertyPath: m_Name
-      value: MyProfileSection
+      value: MyProfile
       objectReference: {fileID: 0}
     - target: {fileID: 3948086035216379263, guid: 4fa96e450963f8b45b7835edf038262d,
         type: 3}
@@ -753,3 +768,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3059097994089677664}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4575446210914794904 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1516404091816312568, guid: 4fa96e450963f8b45b7835edf038262d,
+    type: 3}
+  m_PrefabInstance: {fileID: 3059097994089677664}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0209e555424353648956e035cd543a47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

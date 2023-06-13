@@ -3,7 +3,7 @@
 namespace DCL.MyAccount
 {
     [Serializable]
-    public record MyProfileSectionModel
+    public record MyProfileModel
     {
         public bool IsClaimedMode;
         public string CurrentName;
