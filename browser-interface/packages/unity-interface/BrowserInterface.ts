@@ -191,6 +191,7 @@ export type RendererSaveOutfits = {
         }
       }
       wearables: string[]
+      forceRender?: string[]
     }
   }[]
   namesForExtraSlots: string[]
@@ -283,7 +284,8 @@ export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
               eyes: color3Schema,
               hair: color3Schema,
               skin: color3Schema,
-              wearables: { type: 'array', items: { type: 'string' } }
+              wearables: { type: 'array', items: { type: 'string' } },
+              forceRender: { type: 'array', items: { type: 'string' }, nullable: true }
             }
           }
         }
