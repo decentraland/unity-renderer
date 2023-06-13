@@ -1,22 +1,24 @@
-using rpc_csharp.transport;
 using System;
 using WebSocketSharp;
+using ErrorEventArgs = WebSocketSharp.ErrorEventArgs;
+using ITransport = rpc_csharp.transport.ITransport;
+using MessageEventArgs = WebSocketSharp.MessageEventArgs;
+using WebSocket = WebSocketSharp.WebSocket;
 
 namespace RPC.Transports
 {
     public class WebSocketClientTransport : WebSocket, ITransport
     {
-        public event Action OnCloseEvent;
-        public event Action<string> OnErrorEvent;
-        public event Action<byte[]> OnMessageEvent;
-        public event Action OnConnectEvent;
-
         public WebSocketClientTransport(string url, params string[] protocols) : base(url, protocols)
         {
+            this.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+
             base.OnMessage += this.HandleMessage;
             base.OnError += this.HandleError;
             base.OnClose += this.HandleClose;
             base.OnOpen += this.HandleOpen;
+
+            base.Connect();
         }
 
         private void HandleMessage(object sender, MessageEventArgs e)
@@ -51,10 +53,15 @@ namespace RPC.Transports
             OnMessageEvent = null;
             OnConnectEvent = null;
 
-            base.OnMessage -= this.HandleMessage;
-            base.OnError -= this.HandleError;
-            base.OnClose -= this.HandleClose;
-            base.OnOpen -= this.HandleOpen;
+            webSocket.OnMessage -= this.HandleMessage;
+            webSocket.OnError -= this.HandleError;
+            webSocket.OnClose -= this.HandleClose;
+            webSocket.OnOpen -= this.HandleOpen;
         }
+
+        public event Action OnCloseEvent;
+        public event Action<string> OnErrorEvent;
+        public event Action<byte[]> OnMessageEvent;
+        public event Action OnConnectEvent;
     }
 }
