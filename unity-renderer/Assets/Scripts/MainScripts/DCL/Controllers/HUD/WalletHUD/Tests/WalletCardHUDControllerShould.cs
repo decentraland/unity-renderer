@@ -57,7 +57,6 @@ namespace DCL.Wallet
             walletCardHUDController.Dispose();
         }
 
-        [Test]
         [TestCase(23f)]
         [TestCase(0f)]
         public void SetEthereumManaBalanceCorrectly(double balance)
@@ -69,7 +68,6 @@ namespace DCL.Wallet
             walletCardHUDComponentView.Received(1).SetEthereumManaBalance(balance);
         }
 
-        [Test]
         [TestCase(23f)]
         [TestCase(0f)]
         public void SetPolygonManaBalanceCorrectly(double balance)
