@@ -1,7 +1,7 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema, WearableCategory } from '@dcl/schemas'
+import { Avatar, generateLazyValidator, JSONSchema, Outfit, WearableCategory } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
@@ -56,7 +56,7 @@ import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
-import {logout, redirectToSignUp, signUp, signUpCancel, tosPopupAccepted} from 'shared/session/actions'
+import { logout, redirectToSignUp, signUp, signUpCancel, tosPopupAccepted } from 'shared/session/actions'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
@@ -161,6 +161,41 @@ export type RendererSaveProfile = {
   isSignUpFlow?: boolean
 }
 
+export type RendererSaveOutfits = {
+  outfits: {
+    slots: number
+    outfit: {
+      bodyShape: string
+      eyes: {
+        color: {
+          r: number
+          g: number
+          b: number
+          a: number
+        }
+      }
+      hair: {
+        color: {
+          r: number
+          g: number
+          b: number
+          a: number
+        }
+      }
+      skin: {
+        color: {
+          r: number
+          g: number
+          b: number
+          a: number
+        }
+      }
+      wearables: string[]
+    }
+  }[]
+  namesForExtraSlots: string[]
+}
+
 const color3Schema: JSONSchema<{ r: number; g: number; b: number; a: number }> = {
   type: 'object',
   required: ['r', 'g', 'b', 'a'],
@@ -229,11 +264,42 @@ export const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
   }
 } as any
 
+export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
+  type: 'object',
+  required: ['outfits', 'namesForExtraSlots'],
+  properties: {
+    outfits: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['slot', 'outfit'],
+        properties: {
+          slot: { type: 'number' },
+          outfit: {
+            type: 'object',
+            required: ['bodyShape', 'eyes', 'hair', 'skin', 'wearables'],
+            properties: {
+              bodyShape: { type: 'string' },
+              eyes: color3Schema,
+              hair: color3Schema,
+              skin: color3Schema,
+              wearables: { type: 'array', items: { type: 'string' } }
+            }
+          }
+        }
+      }
+    },
+    namesForExtraSlots: { type: 'array', items: { type: 'string' } }
+  }
+} as any
+
 // This old schema should keep working until ADR74 is merged and renderer is released
 const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV0)
 
 // This is the new one
 const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
+
+const validateRendererSaveOutfits = generateLazyValidator<RendererSaveOutfits>(rendererSaveOutfitsSchema)
 
 // the BrowserInterface is a visitor for messages received from Unity
 export class BrowserInterface {
@@ -474,6 +540,20 @@ export class BrowserInterface {
         errors: (errors ?? []).map(($) => $.message).join(',')
       })
       defaultLogger.error('Unity sent invalid profile' + JSON.stringify(changes) + ' Errors: ' + JSON.stringify(errors))
+    }
+  }
+
+  public SaveUserOutfits(changes: RendererSaveOutfits) {
+    if (validateRendererSaveOutfits(changes as RendererSaveOutfits)) {
+    } else {
+      const error = validateRendererSaveOutfits.errors
+      defaultLogger.error('Error validating outfit schema', error)
+      trackEvent('invalid_schema', {
+        schema: 'SaveUserOutfit',
+        payload: changes,
+        errors: ''
+      })
+      defaultLogger.error('Unity sent invalid outfit' + JSON.stringify(changes) + ' Errors: ' + JSON.stringify(error))
     }
   }
 
@@ -1140,17 +1220,17 @@ export class BrowserInterface {
 
   //Seamless login, after A/B testing remove this methods and implement a browser-interface<>renderer service
   public ToSPopupAccepted() {
-    trackEvent('seamless_login tos accepted', { })
+    trackEvent('seamless_login tos accepted', {})
     store.dispatch(tosPopupAccepted())
   }
 
   public ToSPopupRejected() {
-    trackEvent('seamless_login tos rejected', { })
+    trackEvent('seamless_login tos rejected', {})
     window.location.href = 'https://decentraland.org'
   }
 
   public ToSPopupGoToToS() {
-    trackEvent('seamless_login go to tos', { })
+    trackEvent('seamless_login go to tos', {})
     globalObservable.emit('openUrl', { url: 'https://decentraland.org/terms' })
   }
 }
