@@ -37,7 +37,7 @@ namespace DCLServices.QuestsService.TestScene
         };
 
         [ContextMenu("start")]
-        private void Awake()
+        private void StartDumper()
         {
             MyLog($"Output file can be found at: {QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE}");
             Initialize().Forget();
@@ -88,7 +88,7 @@ namespace DCLServices.QuestsService.TestScene
                 return;
             }
 
-            await CollectQuestsDefinitionsAsync();
+            //await CollectQuestsDefinitionsAsync();
             await GetAllQuestsAsync();
             CollectUpdatesAsync(subscribeCTS.Token).Forget();
 
@@ -128,10 +128,7 @@ namespace DCLServices.QuestsService.TestScene
                 var startQuestRequest = new StartQuestRequest { QuestId = questId };
                 var response = await client.StartQuest(startQuestRequest);
                 MyLog(response.ToString());
-
-
             }
-
 
             // Progressing
             await client.SendEvent(new Decentraland.Quests.EventRequest() { Action = new Decentraland.Quests.Action() { Type = "CUSTOM", Parameters =
@@ -237,6 +234,11 @@ namespace DCLServices.QuestsService.TestScene
                 userUpdates.Add(userUpdate);
                 switch (userUpdate.MessageCase)
                 {
+
+                    //Re add when proto is updated
+                    // case UserUpdate.MessageOneofCase.Subscribed:
+                    //     MyLog($"Subscription ready: {userUpdate.Subscribed}");
+                    //     break;
                     case UserUpdate.MessageOneofCase.QuestStateUpdate:
                         MyLog($"Quest updated: {userUpdate.QuestStateUpdate.InstanceId}");
                         break;
@@ -247,9 +249,6 @@ namespace DCLServices.QuestsService.TestScene
             }
 
             MyLog("Updates are ready to be saved");
-            await UniTask.Delay(TimeSpan.FromSeconds(5));
-            MyLog("Done saving files");
-            FinishAsync().Forget();
         }
 
         [ContextMenu("Finish")]
