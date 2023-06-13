@@ -109,7 +109,7 @@ namespace DCL
 
                     void FailTaskAndUnsubscribe(string error)
                     {
-                        Debug.Log($"SocialClient.Transport.Error: {error}");
+                        Debug.LogError($"SocialClient.Transport.Error: {error}");
 
                         if (cancellationToken.IsCancellationRequested)
                         {
