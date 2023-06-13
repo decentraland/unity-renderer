@@ -1,7 +1,7 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema, Outfit, WearableCategory } from '@dcl/schemas'
+import { Avatar, generateLazyValidator, JSONSchema, WearableCategory } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
@@ -289,7 +289,7 @@ export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
         }
       }
     },
-    namesForExtraSlots: { type: 'array', items: { type: 'string' } }
+    namesForExtraSlots: { type: 'array', items: { type: 'string' }, uniqueItems: true }
   }
 } as any
 
@@ -547,13 +547,15 @@ export class BrowserInterface {
     if (validateRendererSaveOutfits(changes as RendererSaveOutfits)) {
     } else {
       const error = validateRendererSaveOutfits.errors
-      defaultLogger.error('Error validating outfit schema', error)
+      defaultLogger.error('Error validating outfits schema', error)
       trackEvent('invalid_schema', {
-        schema: 'SaveUserOutfit',
+        schema: 'SaveUserOutfits',
         payload: changes,
         errors: ''
       })
-      defaultLogger.error('Unity sent invalid outfit' + JSON.stringify(changes) + ' Errors: ' + JSON.stringify(error))
+      defaultLogger.error(
+        'Unity sent invalid outfits schema' + JSON.stringify(changes) + ' Errors: ' + JSON.stringify(error)
+      )
     }
   }
 
