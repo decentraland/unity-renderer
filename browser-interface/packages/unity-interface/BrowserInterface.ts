@@ -547,10 +547,23 @@ export class BrowserInterface {
 
   public SaveUserOutfits(changes: RendererSaveOutfits) {
     if (validateRendererSaveOutfits(changes as RendererSaveOutfits)) {
+      const outfits = changes.outfits.map(({ slot, outfit }) => ({
+        slot,
+        outfit: {
+          bodyShape: outfit.bodyShape,
+          eyes: { color: outfit.eyes.color },
+          hair: { color: outfit.hair.color },
+          skin: { color: outfit.skin.color },
+          wearables: outfit.wearables,
+          forceRender: (outfit.forceRender ?? []).map((category) => category as WearableCategory)
+        }
+      }))
+
       const update: Outfits = {
-        outfits: [],
+        outfits,
         namesForExtraSlots: changes.namesForExtraSlots ?? []
       }
+
       store.dispatch(deployOutfits(update))
     } else {
       const error = validateRendererSaveOutfits.errors
