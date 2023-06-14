@@ -1,5 +1,7 @@
-﻿using DCL.Providers;
+﻿using DCL.Browser;
+using DCL.Providers;
 using DCL.Tasks;
+using DCLServices.Lambdas.NamesService;
 using System.Threading;
 
 namespace DCL.MyAccount
@@ -23,7 +25,13 @@ namespace DCL.MyAccount
 
             var dataStore = DataStore.i;
 
-            myProfileController = new MyProfileController(myAccountSectionView.CurrentMyProfileView);
+            myProfileController = new MyProfileController(
+                myAccountSectionView.CurrentMyProfileView,
+                dataStore,
+                new UserProfileWebInterfaceBridge(),
+                Environment.i.serviceLocator.Get<INamesService>(),
+                new WebInterfaceBrowserBridge());
+
             myAccountSectionHUDController = new MyAccountSectionHUDController(
                 myAccountSectionView,
                 dataStore);

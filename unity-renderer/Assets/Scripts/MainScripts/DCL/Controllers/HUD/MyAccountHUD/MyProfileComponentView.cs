@@ -1,14 +1,16 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL.MyAccount
 {
     public class MyProfileComponentView : BaseComponentView<MyProfileModel>, IMyProfileComponentView
     {
-        [Header("MyProfile")]
+        [Header("Names")]
         [SerializeField] internal GameObject nonClaimedNameModeContainer;
         [SerializeField] internal TMP_InputField nonClaimedNameInputField;
         [SerializeField] internal GameObject claimNameBanner;
@@ -18,20 +20,27 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject claimedNameInputContainer;
         [SerializeField] internal TMP_InputField claimedNameInputField;
         [SerializeField] internal Button claimedNameUniqueNameButton;
+        [SerializeField] internal GameObject mainContainer;
+        [SerializeField] internal GameObject loadingContainer;
 
-        public event Action<string, bool> OnCurrentNameChanged;
+        public event Action<string> OnCurrentNameEdited;
+        public event Action<string, bool> OnCurrentNameSubmitted;
         public event Action OnClaimNameClicked;
 
         public override void Awake()
         {
             base.Awake();
 
-            nonClaimedNameInputField.onDeselect.AddListener(newName => OnCurrentNameChanged?.Invoke(newName, false));
-            claimedNameInputField.onDeselect.AddListener(newName => OnCurrentNameChanged?.Invoke(newName, true));
+            nonClaimedNameInputField.onValueChanged.AddListener(newName => OnCurrentNameEdited?.Invoke(newName));
+            nonClaimedNameInputField.onDeselect.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
+            nonClaimedNameInputField.onSubmit.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
+            claimedNameInputField.onValueChanged.AddListener(newName => OnCurrentNameEdited?.Invoke(newName));
+            claimedNameInputField.onDeselect.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
+            claimedNameInputField.onSubmit.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
             claimedNameDropdown.OnOptionSelectionChanged += (isOn, optionId, _) =>
             {
                 if (!isOn) return;
-                OnCurrentNameChanged?.Invoke(optionId, true);
+                OnCurrentNameSubmitted?.Invoke(optionId, true);
             };
             claimNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
@@ -39,8 +48,11 @@ namespace DCL.MyAccount
 
         public override void Dispose()
         {
+            nonClaimedNameInputField.onValueChanged.RemoveAllListeners();
             nonClaimedNameInputField.onDeselect.RemoveAllListeners();
+            nonClaimedNameInputField.onSubmit.RemoveAllListeners();
             claimedNameInputField.onDeselect.RemoveAllListeners();
+            claimedNameInputField.onSubmit.RemoveAllListeners();
             claimNameButton.onClick.RemoveAllListeners();
             claimedNameUniqueNameButton.onClick.RemoveAllListeners();
 
@@ -69,6 +81,7 @@ namespace DCL.MyAccount
             if (model.IsClaimedMode)
             {
                 claimedNameDropdown.SelectOption(newName, false);
+                claimedNameDropdown.SetTitle(newName);
             }
             else
             {
@@ -87,6 +100,36 @@ namespace DCL.MyAccount
         {
             claimedNameInputContainer.SetActive(isInput);
             claimedNameDropdown.gameObject.SetActive(!isInput);
+        }
+
+        public void SetClaimedNameDropdownOptions(List<string> claimedNamesList)
+        {
+            List<ToggleComponentModel> collectionsToAdd = new ();
+
+            foreach (string claimedName in claimedNamesList)
+            {
+                ToggleComponentModel newCollectionModel = new ToggleComponentModel
+                {
+                    id = claimedName,
+                    text = claimedName,
+                    isOn = false,
+                    isTextActive = true,
+                    changeTextColorOnSelect = true,
+                };
+
+                collectionsToAdd.Add(newCollectionModel);
+            }
+
+            if (collectionsToAdd.Count > 0)
+                claimedNameDropdown.SetTitle(collectionsToAdd[0].text);
+
+            claimedNameDropdown.SetOptions(collectionsToAdd);
+        }
+
+        public void SetLoadingActive(bool isActive)
+        {
+            loadingContainer.SetActive(isActive);
+            mainContainer.SetActive(!isActive);
         }
     }
 }
