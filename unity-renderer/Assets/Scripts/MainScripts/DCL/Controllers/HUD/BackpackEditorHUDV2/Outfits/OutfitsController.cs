@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Interface;
 using System;
 using System.Threading;
 
@@ -17,6 +18,12 @@ public class OutfitsController : IDisposable
         this.lambdaOutfitsService = lambdaOutfitsService;
         this.userProfileBridge = userProfileBridge;
         view.OnOutfitEquipped += (outfit)=>OnOutfitEquipped?.Invoke(outfit);
+        view.OnSaveOutfits += SaveOutfits;
+    }
+
+    private void SaveOutfits(OutfitItem[] outfits)
+    {
+        WebInterface.SaveUserOutfits(outfits);
     }
 
     public void RequestOwnedOutfits()

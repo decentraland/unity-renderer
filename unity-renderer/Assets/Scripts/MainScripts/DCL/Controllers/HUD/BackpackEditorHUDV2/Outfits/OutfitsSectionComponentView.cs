@@ -1,3 +1,4 @@
+using DCL.Interface;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using UnityEngine;
@@ -14,11 +15,14 @@ public class OutfitsSectionComponentView : BaseComponentView
 
     public event Action OnBackButtonPressed;
     public event Action<OutfitItem> OnOutfitEquipped;
+    public event Action<OutfitItem[]> OnSaveOutfits;
     private AvatarModel currentAvatarModel;
+    private OutfitItem[] outfits;
 
     public override void Awake()
     {
         base.Awake();
+        outfits = new OutfitItem[5];
         backButton.onClick.RemoveAllListeners();
         backButton.onClick.AddListener(()=>OnBackButtonPressed?.Invoke());
         foreach (OutfitComponentView outfitComponentView in outfitComponentViews)
@@ -72,21 +76,25 @@ public class OutfitsSectionComponentView : BaseComponentView
     private void OnSaveOutfit(int outfitIndex)
     {
         lastIndex = outfitIndex;
-        Debug.Log("Save outfit image");
         characterPreviewController.TakeSnapshots(OnSnapshotSuccess, OnSnapshotFailed);
         outfitComponentViews[outfitIndex].SetIsEmpty(false);
-        outfitComponentViews[outfitIndex].SetModel(new OutfitComponentModel(){outfitItem = new OutfitItem()
+
+        var outfitItem = new OutfitItem()
         {
             outfit = new OutfitItem.Outfit()
             {
                 bodyShape = currentAvatarModel.bodyShape,
-                eyes = new OutfitItem.ElementColor(){color = currentAvatarModel.eyeColor},
-                hair = new OutfitItem.ElementColor(){color = currentAvatarModel.hairColor},
-                skin = new OutfitItem.ElementColor(){color = currentAvatarModel.skinColor},
+                eyes = new OutfitItem.ElementColor() { color = currentAvatarModel.eyeColor },
+                hair = new OutfitItem.ElementColor() { color = currentAvatarModel.hairColor },
+                skin = new OutfitItem.ElementColor() { color = currentAvatarModel.skinColor },
                 wearables = currentAvatarModel.wearables.ToArray()
             },
             slot = outfitIndex
-        }});
+        };
+
+        outfitComponentViews[outfitIndex].SetModel(new OutfitComponentModel(){outfitItem = outfitItem});
+        outfits[outfitIndex] = outfitItem;
+        OnSaveOutfits?.Invoke(outfits);
     }
 
     private void OnSnapshotFailed()

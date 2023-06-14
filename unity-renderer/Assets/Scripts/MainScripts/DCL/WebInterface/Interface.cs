@@ -1313,6 +1313,13 @@ namespace DCL.Interface
             public AvatarModelDTO avatar;
         }
 
+        [System.Serializable]
+        public class SaveUserOutfitsPayload
+        {
+            public OutfitItem[] outfits;
+            public string[] namesForExtraSlots;
+        }
+
         public static class RendererAuthenticationType
         {
             public static string Guest => "guest";
@@ -1376,6 +1383,18 @@ namespace DCL.Interface
                 isSignUpFlow = isSignUpFlow
             };
             SendMessage("SaveUserAvatar", payload);
+        }
+
+        public static void SaveUserOutfits(OutfitItem[] outfits)
+        {
+            Debug.Log("test");
+            var payload = new SaveUserOutfitsPayload()
+            {
+                outfits = outfits,
+                namesForExtraSlots = new string[]{}
+            };
+
+            SendMessage("SaveUserOutfits", payload);
         }
 
         public static void SendAuthentication(string rendererAuthenticationType) { SendMessage("SendAuthentication", new SendAuthenticationPayload { rendererAuthenticationType = rendererAuthenticationType }); }
