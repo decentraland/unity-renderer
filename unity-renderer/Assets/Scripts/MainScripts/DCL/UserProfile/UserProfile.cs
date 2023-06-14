@@ -1,3 +1,4 @@
+using Castle.Core.Internal;
 using DCL;
 using DCL.Helpers;
 using Decentraland.Renderer.KernelServices;
@@ -52,19 +53,19 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         string fallbackStringField = "fallback_" + this.GetInstanceID();
 
         UserProfileModel fallback = new UserProfileModel
-            {
-                userId = fallbackStringField,
-                name = fallbackStringField,
-                description = fallbackStringField,
+        {
+            userId = fallbackStringField,
+            name = fallbackStringField,
+            description = fallbackStringField,
 
-                avatar = AvatarFallback(),
-            };
+            avatar = AvatarFallback(),
+        };
 
         return fallback;
     }
 
     private static AvatarModel AvatarFallback() =>
-        new() { bodyShape = "urn:decentraland:off-chain:base-avatars:BaseMale"};
+        new () { bodyShape = "urn:decentraland:off-chain:base-avatars:BaseMale" };
 
     private int emoteLamportTimestamp = 1;
 
@@ -72,16 +73,15 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         if (newModel == null)
         {
-            Debug.LogError("Model is null! Using fallback model instead.");
-            newModel = ModelFallback();
+            Debug.LogError("Model is null! Using fallback or previous model instead.");
+            newModel = !model.userId.IsNullOrEmpty() ? model : ModelFallback();
         }
         else if (newModel.avatar == null)
         {
-            Debug.LogError("Avatar is null! Using fallback avatar instead.");
-            newModel.avatar = AvatarFallback();
+            Debug.LogError("Avatar is null! Using fallback or previous avatar instead.");
+            newModel.avatar = !model.userId.IsNullOrEmpty() ? model.avatar : AvatarFallback();
         }
 
-        bool isModelDirty = !newModel.Equals(model);
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
         bool bodySnapshotDirty = model.snapshots.body != newModel.snapshots.body;
 
@@ -101,14 +101,13 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.muted = newModel.muted;
         model.version = newModel.version;
 
-        if (model.snapshots != null && faceSnapshotDirty)
+        if (faceSnapshotDirty)
             snapshotObserver.RefreshWithUri(face256SnapshotURL);
 
-        if (model.snapshots != null && bodySnapshotDirty)
+        if (bodySnapshotDirty)
             bodySnapshotObserver.RefreshWithUri(bodySnapshotURL);
 
-        if (isModelDirty)
-            OnUpdate?.Invoke(this);
+        OnUpdate?.Invoke(this);
     }
 
     public int GetItemAmount(string itemId)
