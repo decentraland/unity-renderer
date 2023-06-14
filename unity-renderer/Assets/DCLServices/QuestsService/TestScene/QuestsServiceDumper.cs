@@ -28,6 +28,7 @@ namespace DCLServices.QuestsService.TestScene
 
         private ClientQuestsService client;
         private CancellationTokenSource subscribeCTS = new CancellationTokenSource();
+        private bool isSubscribed = false;
 
         // You can find more quests here: https://quests.decentraland.zone/quests
         public string[] questsToStart =
@@ -88,12 +89,13 @@ namespace DCLServices.QuestsService.TestScene
                 return;
             }
 
-            //await CollectQuestsDefinitionsAsync();
+            isSubscribed = false;
+            await CollectQuestsDefinitionsAsync();
             await GetAllQuestsAsync();
             CollectUpdatesAsync(subscribeCTS.Token).Forget();
 
-            //Wait 2 seconds to give time to all the subscriptions to ready themselves
-            UniTask.Delay(TimeSpan.FromSeconds(2));
+            await UniTask.WaitUntil(() => isSubscribed);
+
 
             ProgressQuestsAsync().Forget();
         }
@@ -234,11 +236,11 @@ namespace DCLServices.QuestsService.TestScene
                 userUpdates.Add(userUpdate);
                 switch (userUpdate.MessageCase)
                 {
-
                     //Re add when proto is updated
-                    // case UserUpdate.MessageOneofCase.Subscribed:
-                    //     MyLog($"Subscription ready: {userUpdate.Subscribed}");
-                    //     break;
+                    case UserUpdate.MessageOneofCase.Subscribed:
+                        isSubscribed = true;
+                        MyLog($"Subscription ready: {userUpdate.Subscribed}");
+                        break;
                     case UserUpdate.MessageOneofCase.QuestStateUpdate:
                         MyLog($"Quest updated: {userUpdate.QuestStateUpdate.InstanceId}");
                         break;
