@@ -250,7 +250,7 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
       const userId: string = yield select(getCurrentUserId)
       yield put(sendProfileToRenderer(userId))
       const config: Config = {
-        dictionaries: [adjectives, colors, animals],
+        dictionaries: [ adjectives.filter((word) => word.length <= 5), colors.filter((word) => word.length <= 5), animals.filter((word) => word.length <= 5)],
         separator: '-',
         style: 'capital'
       }

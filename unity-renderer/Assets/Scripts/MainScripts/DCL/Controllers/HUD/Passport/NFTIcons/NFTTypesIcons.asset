@@ -50,11 +50,11 @@ MonoBehaviour:
   - key: emote
     value: {fileID: 21300000, guid: 05bc7d6b12857fb4b9b7634bf2a4f440, type: 3}
   - key: name
-    value: {fileID: 21300000, guid: dd2c2092a9ae16c49a268766674e5b2b, type: 3}
+    value: {fileID: 21300000, guid: 17bc93623e63c4254bb5799cd55f4b96, type: 3}
   - key: parcel
-    value: {fileID: 21300000, guid: 65e7f4ca46dbf46a1804d5c1509f3482, type: 3}
+    value: {fileID: 21300000, guid: 0492c753b33b04474ac2b7e7d18a2c70, type: 3}
   - key: estate
-    value: {fileID: 21300000, guid: 65e7f4ca46dbf46a1804d5c1509f3482, type: 3}
+    value: {fileID: 21300000, guid: 0492c753b33b04474ac2b7e7d18a2c70, type: 3}
   - key: body_shape
     value: {fileID: 21300000, guid: 98bae2808161c4d678b3f5d109a5ee80, type: 3}
   - key: all
@@ -63,19 +63,19 @@ MonoBehaviour:
   - key: rare
     value: {r: 0.23529412, g: 0.89411765, b: 0.5176471, a: 1}
   - key: epic
-    value: {r: 0.2627451, g: 0.56078434, b: 1, a: 1}
+    value: {r: 0.26274514, g: 0.6907097, b: 1, a: 1}
   - key: uncommon
     value: {r: 1, g: 0.5137255, b: 0.38431373, a: 1}
   - key: legendary
-    value: {r: 0.6313726, g: 0.29411766, b: 0.9529412, a: 1}
+    value: {r: 0.6891846, g: 0.36320752, b: 1, a: 1}
   - key: unique
-    value: {r: 0.99607843, g: 0.63529414, b: 0.09019608, a: 1}
+    value: {r: 1, g: 0.77793264, b: 0.2783019, a: 1}
   - key: common
     value: {r: 0.4509804, g: 0.827451, b: 0.827451, a: 1}
   - key: mythic
     value: {r: 1, g: 0.29411766, b: 0.92941177, a: 1}
   - key: land
-    value: {r: 0, g: 0, b: 0, a: 0.7058824}
+    value: {r: 0.08395632, g: 0.07876467, b: 0.09433961, a: 1}
   - key: name
-    value: {r: 1, g: 0.5137255, b: 0.38431373, a: 1}
-  defaultColor: {r: 0.9254902, g: 0.92156863, b: 0.92941177, a: 0.6862745}
+    value: {r: 1, g: 0.4949912, b: 0.23113209, a: 1}
+  defaultColor: {r: 0.9233713, g: 0.90334636, b: 0.9433962, a: 1}
