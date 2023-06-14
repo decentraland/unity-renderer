@@ -1,4 +1,3 @@
-using Castle.Core.Internal;
 using DCL;
 using DCL.Helpers;
 using Decentraland.Renderer.KernelServices;
@@ -100,7 +99,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
                 Debug.LogError("Model is null when updating UserProfile! Using fallback or previous model instead.");
 
             // Check if there is a previous model to fallback to. Because default model has everything empty or null.
-            newModel = !model.userId.IsNullOrEmpty() ? model : ModelFallback();
+            newModel = string.IsNullOrEmpty(model.userId) ? ModelFallback() : model;
         }
 
         if (newModel.avatar == null)
@@ -109,7 +108,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
                 Debug.LogError("Avatar is null when updating UserProfile! Using fallback or previous avatar instead.");
 
             // Check if there is a previous avatar to fallback to.
-            newModel.avatar = !model.userId.IsNullOrEmpty() ? model.avatar : AvatarFallback();
+            newModel.avatar = string.IsNullOrEmpty(model.userId) ? AvatarFallback() : model.avatar;
         }
 
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
