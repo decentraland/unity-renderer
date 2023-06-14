@@ -33,13 +33,23 @@ namespace DCL
             base.Awake();
 
             DataStore.i.wsCommunication.communicationEstablished.OnChange += OnCommunicationEstablished;
-            DataStore.i.performance.multithreading.Set(true);
-            DataStore.i.performance.maxDownloads.Set(50);
             Texture.allowThreadedTextureCreation = true;
         }
 
         protected override void InitializeDataStore()
         {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.WindowsEditor or RuntimePlatform.WindowsPlayer:
+                    DataStore.i.assetBundles.hashSuffix.Set("_windows");
+                    break;
+                case RuntimePlatform.OSXEditor or RuntimePlatform.OSXPlayer:
+                    DataStore.i.assetBundles.hashSuffix.Set("_osx");
+                    break;
+            }
+
+            DataStore.i.performance.multithreading.Set(true);
+            DataStore.i.performance.maxDownloads.Set(50);
             DataStore.i.textureConfig.gltfMaxSize.Set(TextureCompressionSettingsDesktop.GLTF_TEX_MAX_SIZE_DESKTOP);
             DataStore.i.textureConfig.generalMaxSize.Set(TextureCompressionSettingsDesktop.GENERAL_TEX_MAX_SIZE_DESKTOP);
             DataStore.i.avatarConfig.useHologramAvatar.Set(true);
