@@ -35,6 +35,7 @@ namespace DCL.Chat.Notifications
         {
             chatController = Substitute.For<IChatController>();
             friendsController = Substitute.For<IFriendsController>();
+            friendsController.IsFriend(Arg.Any<string>()).Returns(true);
             mainNotificationsView = Substitute.For<IMainChatNotificationsComponentView>();
             topNotificationsView = Substitute.For<ITopNotificationsComponentView>();
             topPanelTransform = new GameObject("TopPanelTransform");
@@ -536,6 +537,36 @@ namespace DCL.Chat.Notifications
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
                                       m.IsOwnPlayerMentioned && m.ShouldPlayMentionSfx == expectedSfx));
+        }
+
+        [Test]
+        public void DoNotAddPrivateMessageWhenTheUserIsNotFriend()
+        {
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "sender",
+                name = "imsender",
+                snapshots = new UserProfileModel.Snapshots { face256 = "face256" }
+            });
+
+            userProfileBridge.Get("sender").Returns(senderUserProfile);
+            friendsController.IsFriend("sender").Returns(false);
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                        ChatMessage.Type.PRIVATE, "sender", "hey",
+                        (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+                    { recipient = "me" }
+            });
+
+            topNotificationsView.DidNotReceiveWithAnyArgs()
+                                .AddNewChatNotification(default(PrivateChatMessageNotificationModel));
+
+            mainNotificationsView.DidNotReceiveWithAnyArgs()
+                                .AddNewChatNotification(default(PrivateChatMessageNotificationModel));
         }
 
         private void GivenProfile(string userId, string userName)
