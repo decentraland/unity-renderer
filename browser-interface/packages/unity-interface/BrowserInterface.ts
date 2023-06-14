@@ -1,7 +1,7 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema, WearableCategory } from '@dcl/schemas'
+import { Avatar, generateLazyValidator, JSONSchema, Outfits, WearableCategory } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
@@ -50,7 +50,7 @@ import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
 import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
 import { globalObservable } from 'shared/observables'
 import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
-import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
+import { deployOutfits, saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
 import { retrieveProfile } from 'shared/profiles/retrieveProfile'
 import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
@@ -163,7 +163,7 @@ export type RendererSaveProfile = {
 
 export type RendererSaveOutfits = {
   outfits: {
-    slots: number
+    slot: number
     outfit: {
       bodyShape: string
       eyes: {
@@ -547,6 +547,11 @@ export class BrowserInterface {
 
   public SaveUserOutfits(changes: RendererSaveOutfits) {
     if (validateRendererSaveOutfits(changes as RendererSaveOutfits)) {
+      const update: Outfits = {
+        outfits: [],
+        namesForExtraSlots: changes.namesForExtraSlots ?? []
+      }
+      store.dispatch(deployOutfits(update))
     } else {
       const error = validateRendererSaveOutfits.errors
       defaultLogger.error('Error validating outfits schema', error)
