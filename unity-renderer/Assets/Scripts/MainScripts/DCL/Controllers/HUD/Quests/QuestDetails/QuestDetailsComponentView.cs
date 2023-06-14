@@ -21,7 +21,6 @@ namespace DCL.Quests
         [SerializeField] internal TMP_Text questDescription;
         [SerializeField] internal Transform stepsParent;
         [SerializeField] internal Transform rewardsParent;
-        [SerializeField] internal Button jumpInButton;
         [SerializeField] internal Button pinButton;
         [SerializeField] internal TMP_Text pinButtonText;
         [SerializeField] internal Button abandonButton;
@@ -45,8 +44,6 @@ namespace DCL.Quests
 
         public override void Awake()
         {
-            jumpInButton.onClick.RemoveAllListeners();
-            jumpInButton.onClick.AddListener(() => InvokeJumpIn(model.coordinates));
             pinButton.onClick.RemoveAllListeners();
             pinButton.onClick.AddListener(() =>
             {
@@ -80,6 +77,7 @@ namespace DCL.Quests
             SetCoordinates(model.coordinates);
             SetQuestSteps(model.questSteps);
             SetQuestRewards(model.questRewards);
+
             Utils.ForceRebuildLayoutImmediate(parentContent);
         }
 

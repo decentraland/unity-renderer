@@ -27,6 +27,7 @@ namespace DCL.Quests
         [SerializeField] internal ActiveQuestComponentView activeQuestPrefab;
 
         public event Action<string, bool> OnPinChange;
+        public event Action<Vector2Int> OnJumpIn;
 
         private Dictionary<string, ActiveQuestComponentView> activeQuests;
         private Dictionary<string, ActiveQuestComponentView> completedQuests;
@@ -41,6 +42,7 @@ namespace DCL.Quests
             completedQuests = new ();
             questsPool = new UnityObjectPool<ActiveQuestComponentView>(activeQuestPrefab, activeQuestsContainer, actionOnDestroy: x => x.Hide());
             questsPool.Prewarm(MAX_QUESTS_COUNT);
+            questDetailsComponentView.OnJumpIn += (coords) => OnJumpIn?.Invoke(coords);
             sectionSelector.Awake();
             sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(COMPLETED_SECTION_INDEX).onSelect.RemoveAllListeners();

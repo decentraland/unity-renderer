@@ -260,6 +260,7 @@ MonoBehaviour:
     questTitle: 
     coordinates: {x: 0, y: 0}
     questSteps: []
+    supportsJumpIn: 0
   questTitleText: {fileID: 7010195451191973469}
   stepsContainer: {fileID: 6954257778057539821}
   stepPrefab: {fileID: 7491123963639734646, guid: 190afcea4c25a4839abf1d0a44649ef6,

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Action = Decentraland.Quests.Action;
 
 namespace DCL.Quests
 {
@@ -53,10 +54,15 @@ namespace DCL.Quests
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange += ConfigureQuestLogInFullscreenMenuChanged;
             ConfigureQuestLogInFullscreenMenuChanged(dataStore.exploreV2.configureQuestInFullscreenMenu.Get(), null);
             questLogComponentView.OnPinChange += ChangePinnedQuest;
+            questTrackerComponentView.OnJumpIn += JumpIn;
+            questLogComponentView.OnJumpIn += JumpIn;
             foreach (var questsServiceQuestInstance in questsService.QuestInstances)
                 AddOrUpdateQuestToLog(questsServiceQuestInstance.Value);
 
         }
+
+        private void JumpIn(Vector2Int obj) =>
+            Environment.i.world.teleportController.Teleport(obj.x, obj.y);
 
         private void ChangePinnedQuest(string questId, bool isPinned)
         {
@@ -111,7 +117,20 @@ namespace DCL.Quests
                     questSteps.Add(new QuestStepComponentModel { isCompleted = true, text = task.Id });
 
                 foreach (Task task in step.Value.ToDos)
-                    questSteps.Add(new QuestStepComponentModel { isCompleted = false, text = task.Id });
+                {
+                    var supportsJumpIn = false;
+                    Vector2Int coordinates = Vector2Int.zero;
+                    foreach (Action taskActionItem in task.ActionItems)
+                    {
+                        if (taskActionItem.Type == "LOCATION" && taskActionItem.Parameters.TryGetValue("x", out string xCoordinate) && taskActionItem.Parameters.TryGetValue("y", out string yCoordinate))
+                        {
+                            supportsJumpIn = true;
+                            coordinates = new Vector2Int(int.Parse(xCoordinate), int.Parse(yCoordinate));
+                        }
+                    }
+
+                    questSteps.Add(new QuestStepComponentModel { isCompleted = false, text = task.Id, supportsJumpIn = supportsJumpIn, coordinates = coordinates});
+                }
             }
 
             return questSteps;
@@ -133,14 +152,6 @@ namespace DCL.Quests
             if (!quests.ContainsKey(questInstance.Id))
                 quests.Add(questInstance.Id, questInstance);
 
-            /*
-            profileCts?.Cancel();
-            profileCts?.Dispose();
-            profileCts = new CancellationTokenSource();
-
-            quests[questInstance.Id] = questInstance;
-            string userName = await GetCreatorName(questInstance.Quest.CreatorAddress, profileCts);
-            */
             QuestDetailsComponentModel quest = new QuestDetailsComponentModel()
             {
                 questName = questInstance.Quest.Name,
@@ -163,6 +174,7 @@ namespace DCL.Quests
                 {
                     questCompletedComponentView.SetTitle(quest.questName);
                     questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
+                    questCompletedComponentView.SetRewards(new List<QuestRewardComponentModel>());
                     questCompletedComponentView.SetVisible(true);
                 }
 
@@ -170,14 +182,13 @@ namespace DCL.Quests
             }
         }
 
-        private async UniTask<string> GetCreatorName(string userId, CancellationTokenSource cts)
+        public void Dispose()
         {
-            UserProfile creatorProfile = userProfileBridge.Get(userId);
-            creatorProfile ??= await userProfileBridge.RequestFullUserProfileAsync(userId, cts.Token);
-            return creatorProfile.hasClaimedName ? creatorProfile.userName : creatorProfile.userName + userId;
-        }
-
-        public void Dispose() =>
+            questLogComponentView.OnPinChange -= ChangePinnedQuest;
+            questTrackerComponentView.OnJumpIn -= JumpIn;
+            questLogComponentView.OnJumpIn -= JumpIn;
+            dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange -= ConfigureQuestLogInFullscreenMenuChanged;
             disposeCts?.SafeCancelAndDispose();
+        }
     }
 }
