@@ -1,6 +1,6 @@
 using HybridWebSocket;
-using rpc_csharp.transport;
 using System;
+using ITransport = rpc_csharp.transport.ITransport;
 
 namespace RPC.Transports
 {
@@ -16,7 +16,6 @@ namespace RPC.Transports
         public WebSocketClientTransport(string url)
         {
             webSocket = WebSocketFactory.CreateInstance(url);
-
             webSocket.OnMessage += this.HandleMessage;
             webSocket.OnError += this.HandleError;
             webSocket.OnClose += this.HandleClose;
@@ -26,31 +25,15 @@ namespace RPC.Transports
         public void Connect() =>
             webSocket.Connect();
 
-        public void Close() =>
-            webSocket.Close();
-
-        private void HandleMessage(byte[] data)
+        public void SendMessage(byte[] data)
         {
-            OnMessageEvent?.Invoke(data);
-        }
-
-        private void HandleError(string error)
-        {
-            OnErrorEvent?.Invoke(error);
-        }
-
-        private void HandleClose(WebSocketCloseCode closeCode)
-        {
-            OnCloseEvent?.Invoke();
-        }
-
-        private void HandleOpen()
-        {
-            OnConnectEvent?.Invoke();
-        }
-
-        public void SendMessage(byte[] data) =>
             webSocket.Send(data);
+        }
+
+        public void Close()
+        {
+            webSocket.Close();
+        }
 
         public void Dispose()
         {
@@ -63,6 +46,26 @@ namespace RPC.Transports
             webSocket.OnError -= this.HandleError;
             webSocket.OnClose -= this.HandleClose;
             webSocket.OnOpen -= this.HandleOpen;
+        }
+
+        private void HandleMessage(byte[] data)
+        {
+            OnMessageEvent?.Invoke(data);
+        }
+
+        private void HandleError(string errorMsg)
+        {
+            OnErrorEvent?.Invoke(errorMsg);
+        }
+
+        private void HandleClose(WebSocketCloseCode closeCode)
+        {
+            OnCloseEvent?.Invoke();
+        }
+
+        private void HandleOpen()
+        {
+            OnConnectEvent?.Invoke();
         }
     }
 }
