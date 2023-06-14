@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
+using DCL.ECS7;
 using DCL.ECSRuntime;
 using DCLServices.MapRendererV2;
 using Decentraland.Common;
@@ -71,6 +72,7 @@ namespace Tests
             testCancellationSource.Cancel();
             testCancellationSource.Dispose();
             DataStore.Clear();
+            CommonScriptableObjects.UnloadAll();
         }
 
         [UnityTest]
@@ -456,6 +458,70 @@ namespace Tests
                 }
 
                 Assert.AreEqual(crdts.Length, index);
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator IncreaseSceneTick()
+        {
+            yield return UniTask.ToCoroutine(async () =>
+            {
+                const int TEST_SCENE_NUMBER = 696;
+
+                ECS7Plugin plugin = new ECS7Plugin();
+
+                RPCContext _context = DataStore.i.rpc.context;
+                _context.crdt.SceneController = Environment.i.world.sceneController;
+                _context.crdt.WorldState = Environment.i.world.state;
+                _context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
+
+                RpcServer<RPCContext> _rpcServer = null;
+                testCancellationSource = new CancellationTokenSource();
+
+                try
+                {
+                    var (clientTransport, serverTransport) = MemoryTransport.Create();
+
+                    _rpcServer = new RpcServer<RPCContext>();
+                    _rpcServer.AttachTransport(serverTransport, _context);
+
+                    _rpcServer.SetHandler((port, t, c) =>
+                    {
+                        RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl(port));
+                    });
+
+                    ClientRpcSceneControllerService rpcClient = await CreateRpcClient(clientTransport);
+
+                    // client requests `LoadScene()` to have the port open with a scene ready to receive crdt messages
+                    await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
+                    Assert.AreEqual(0, _context.crdt.GetSceneTick(TEST_SCENE_NUMBER));
+
+                    // SendCrdt call should increase scene's tick
+                    await rpcClient.SendCrdt(new CRDTSceneMessage() { });
+
+                    // process tick 0
+                    Assert.AreEqual(0, _context.crdt.GetSceneTick(TEST_SCENE_NUMBER));
+
+                    // SendCrdt call should increase scene's tick
+                    await rpcClient.SendCrdt(new CRDTSceneMessage() { });
+
+                    // process tick 1
+                    Assert.AreEqual(1, _context.crdt.GetSceneTick(TEST_SCENE_NUMBER));
+                    await UniTask.Yield();
+                    await UniTask.Yield();
+
+                    // next tick should be the 2nd
+                    Assert.AreEqual(2, _context.crdt.GetSceneTick(TEST_SCENE_NUMBER));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+                finally
+                {
+                    plugin?.Dispose();
+                    _rpcServer?.Dispose();
+                }
             });
         }
 
