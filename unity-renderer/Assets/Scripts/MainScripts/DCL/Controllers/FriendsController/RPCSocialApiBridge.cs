@@ -24,7 +24,6 @@ namespace DCL.Social.Friends
         private UniTaskCompletionSource<AllFriendsInitializationMessage> initializationInformationTask;
         private CancellationTokenSource initializationCancellationToken = new ();
 
-        public event Action<string> OnFriendAdded;
         public event Action<FriendRequest> OnIncomingFriendRequestAdded;
         public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
         public event Action<string> OnFriendRequestAccepted;

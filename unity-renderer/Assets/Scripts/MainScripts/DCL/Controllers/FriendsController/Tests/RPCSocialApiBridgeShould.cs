@@ -106,41 +106,25 @@ namespace DCL.Social.Friends
         public IEnumerator Initialize() =>
             UniTask.ToCoroutine(async () =>
             {
-                var friends = new HashSet<string>();
-
-                context.UserList = new List<Users>()
+                context.UserList = new List<Users>
                 {
                     new ()
                     {
                         Users_ =
                         {
-                            new User() { Address = "addr1" },
-                            new User() { Address = "addr2" }
+                            new User { Address = "addr1" },
+                            new User { Address = "addr2" }
                         }
                     },
                     new ()
                     {
                         Users_ =
                         {
-                            new User() { Address = "addr3" },
-                            new User() { Address = "addr4" }
+                            new User { Address = "addr3" },
+                            new User { Address = "addr4" }
                         }
                     }
                 };
-
-                rpcSocialApiBridge.OnFriendAdded += friendId =>
-                {
-                    if (string.IsNullOrEmpty(friendId))
-                        throw new Exception("User should have a userId");
-
-                    friends.Add(friendId);
-                };
-
-                var incomingResult = new List<FriendRequest>();
-                var outgoingResult = new List<FriendRequest>();
-
-                rpcSocialApiBridge.OnIncomingFriendRequestAdded += friendRequest => { incomingResult.Add(friendRequest); };
-                rpcSocialApiBridge.OnOutgoingFriendRequestAdded += friendRequest => { outgoingResult.Add(friendRequest); };
 
                 var incomingRequests = new[]
                 {
@@ -159,16 +143,16 @@ namespace DCL.Social.Friends
 
                 friendshipsService.GetRequestEvents(Arg.Any<Payload>(), Arg.Any<MockSocialServerContext>(), Arg.Any<CancellationToken>())
                                   .Returns(UniTask.FromResult(
-                                       new RequestEventsResponse()
+                                       new RequestEventsResponse
                                        {
-                                           Events = new RequestEvents()
+                                           Events = new RequestEvents
                                            {
-                                               Incoming = new Requests()
+                                               Incoming = new Requests
                                                {
                                                    Items = { incomingRequests },
                                                    Total = incomingRequests.Length,
                                                },
-                                               Outgoing = new Requests()
+                                               Outgoing = new Requests
                                                {
                                                    Items = { outgoingRequests },
                                                    Total = outgoingRequests.Length,
@@ -178,19 +162,17 @@ namespace DCL.Social.Friends
                                    ));
 
                 rpcSocialApiBridge.Initialize();
-                // wait for async initialization
-                await UniTask.NextFrame();
 
                 var response = await rpcSocialApiBridge.GetInitializationInformationAsync();
 
-                Assert.AreEqual(4, friends.Count);
+                Assert.AreEqual(4, response.Friends.Count);
                 Assert.AreEqual(incomingRequests.Length, response.totalReceivedRequests);
 
                 var expectedIncoming = incomingRequests.Select(IncomingFriendRequestFromResponse).ToList();
                 var expectedOutgoing = outgoingRequests.Select(OutgoingFriendRequestFromResponse).ToList();
 
-                CollectionAssert.AreEqual(expectedIncoming.ToList(), incomingResult);
-                CollectionAssert.AreEqual(expectedOutgoing.ToList(), outgoingResult);
+                CollectionAssert.AreEqual(expectedIncoming.ToList(), response.IncomingFriendRequests);
+                CollectionAssert.AreEqual(expectedOutgoing.ToList(), response.OutgoingFriendRequests);
             });
 
         [UnityTest]

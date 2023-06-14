@@ -29,12 +29,6 @@ namespace DCL.Social.Friends
             remove => socialApiBridge.OnOutgoingFriendRequestAdded -= value;
         }
 
-        public event Action<string> OnFriendAdded
-        {
-            add => socialApiBridge.OnFriendAdded += value;
-            remove => socialApiBridge.OnFriendAdded -= value;
-        }
-
         public event Action<string> OnFriendRequestAccepted
         {
             add => socialApiBridge.OnFriendRequestAccepted += value;
