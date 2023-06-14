@@ -6,8 +6,10 @@ using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.TestTools;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 using Channel = DCL.Chat.Channels.Channel;
 using Object = UnityEngine.Object;
@@ -35,7 +37,8 @@ namespace DCL.Chat.Notifications
         {
             chatController = Substitute.For<IChatController>();
             friendsController = Substitute.For<IFriendsController>();
-            friendsController.IsFriend(Arg.Any<string>()).Returns(true);
+            friendsController.GetFriendshipStatus(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                             .Returns(UniTask.FromResult(FriendshipStatus.FRIEND));
             mainNotificationsView = Substitute.For<IMainChatNotificationsComponentView>();
             topNotificationsView = Substitute.For<ITopNotificationsComponentView>();
             topPanelTransform = new GameObject("TopPanelTransform");
@@ -552,7 +555,8 @@ namespace DCL.Chat.Notifications
             });
 
             userProfileBridge.Get("sender").Returns(senderUserProfile);
-            friendsController.IsFriend("sender").Returns(false);
+            friendsController.GetFriendshipStatus("sender", Arg.Any<CancellationToken>())
+                             .Returns(UniTask.FromResult(FriendshipStatus.REQUESTED_FROM));
 
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
             {

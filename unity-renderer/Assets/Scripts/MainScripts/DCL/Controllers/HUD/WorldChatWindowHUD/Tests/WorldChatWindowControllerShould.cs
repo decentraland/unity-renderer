@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using DCL;
@@ -10,7 +11,9 @@ using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using System.Threading;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 public class WorldChatWindowControllerShould
 {
@@ -42,7 +45,8 @@ public class WorldChatWindowControllerShould
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
-        friendsController.IsFriend(Arg.Any<string>()).Returns(true);
+        friendsController.GetFriendshipStatus(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(FriendshipStatus.NOT_FRIEND));
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
         channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
@@ -630,7 +634,8 @@ public class WorldChatWindowControllerShould
     {
         const string MESSAGE_BODY = "wow";
 
-        friendsController.IsFriend(FRIEND_ID).Returns(false);
+        friendsController.GetFriendshipStatus(FRIEND_ID)
+                         .Returns(UniTask.FromResult(FriendshipStatus.NOT_FRIEND));
         GivenProfile(FRIEND_ID);
 
         controller.Initialize(view);
@@ -654,6 +659,8 @@ public class WorldChatWindowControllerShould
         friendProfile.UpdateData(new UserProfileModel { userId = friendId, name = friendId });
         userProfileBridge.Get(friendId).Returns(friendProfile);
         friendsController.IsFriend(friendId).Returns(true);
+        friendsController.GetFriendshipStatus(friendId, Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(FriendshipStatus.FRIEND));
 
         friendsController.GetUserStatus(friendId)
                          .Returns(new UserStatus

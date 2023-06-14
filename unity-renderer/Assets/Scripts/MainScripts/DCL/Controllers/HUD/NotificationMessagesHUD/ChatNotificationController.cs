@@ -160,8 +160,16 @@ namespace DCL.Chat.Notifications
             if (message.messageType == ChatMessage.Type.PRIVATE)
             {
                 string peerId = ExtractPeerId(message);
-                // fixes hiding the friend request notification's message since its an incoming DM
-                if (!friendsController.IsFriend(peerId)) return;
+
+                try
+                {
+                    // incoming friend request's message is added as a DM. This check filters it
+                    if (await friendsController.GetFriendshipStatus(peerId, cancellationToken) != FriendshipStatus.FRIEND) return;
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    Debug.LogException(e);
+                }
 
                 UserProfile peerProfile = userProfileBridge.Get(peerId);
                 bool isMyMessage = message.sender == ownUserProfile.userId;
