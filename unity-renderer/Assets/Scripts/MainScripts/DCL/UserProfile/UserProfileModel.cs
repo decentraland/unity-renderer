@@ -54,14 +54,14 @@ public class UserProfileModel
     public ulong updated_at;
     public int version;
     public AvatarModel avatar;
-    public Snapshots snapshots = new Snapshots();
+    public Snapshots snapshots = new ();
     public UserProfileModel Clone() => (UserProfileModel)MemberwiseClone();
 
     public bool hasConnectedWeb3 = true;
 
     public int tutorialFlagsMask;
-    public List<string> blocked;
-    public List<string> muted;
+    public List<string> blocked = new ();
+    public List<string> muted = new ();
     public int tutorialStep;
     public bool hasClaimedName = false;
 

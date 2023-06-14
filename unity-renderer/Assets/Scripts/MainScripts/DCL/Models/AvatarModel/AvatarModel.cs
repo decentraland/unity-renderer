@@ -19,13 +19,14 @@ public class AvatarModel : BaseModel
     public string id;
     public string name;
     public string bodyShape;
+
     public Color skinColor;
     public Color hairColor;
     public Color eyeColor;
-    public List<string> wearables = new List<string>();
-    public HashSet<string> forceRender = new HashSet<string>();
 
-    public List<AvatarEmoteEntry> emotes = new List<AvatarEmoteEntry>();
+    public List<string> wearables = new ();
+    public HashSet<string> forceRender = new ();
+    public List<AvatarEmoteEntry> emotes = new ();
 
     public string expressionTriggerId = null;
     public long expressionTriggerTimestamp = -1;

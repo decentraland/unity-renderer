@@ -44,18 +44,39 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public ILazyTextureObserver snapshotObserver = new LazyTextureObserver();
     public ILazyTextureObserver bodySnapshotObserver = new LazyTextureObserver();
 
-    internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
+    // Empty initialization to avoid null-checks
+    internal UserProfileModel model = new () { avatar = new AvatarModel() };
+
+    private UserProfileModel CreateFallbackModel()
     {
-        avatar = new AvatarModel()
-    };
+        string fallbackStringField = "fallback_" + this.GetInstanceID();
+
+        UserProfileModel fallback = new UserProfileModel
+            {
+                userId = fallbackStringField,
+                name = fallbackStringField,
+                description = fallbackStringField,
+
+                avatar = CreateFallbackAvatarModel(),
+            };
+
+        return fallback;
+    }
+
+    private static AvatarModel CreateFallbackAvatarModel() =>
+        new() { bodyShape = "urn:decentraland:off-chain:base-avatars:BaseMale"};
 
     private int emoteLamportTimestamp = 1;
 
     public void UpdateData(UserProfileModel newModel)
     {
+        newModel = null;
+
         if (newModel == null)
         {
-            model = new UserProfileModel();
+            Debug.LogError("Model is null! Using fallback model instead.");
+            model = CreateFallbackModel();
+            OnUpdate?.Invoke(this);
             return;
         }
 
