@@ -40,7 +40,7 @@ namespace Tests.Systems.InputSender
                 inputResultComponent,
                 internalComponents.EngineInfo,
                 componentWriter,
-                () => 0);
+                () => scene.sceneData.sceneNumber);
 
             updateSystems = () =>
             {
@@ -150,6 +150,108 @@ namespace Tests.Systems.InputSender
                                 ComponentID.POINTER_EVENTS_RESULT,
                                 Arg.Is<PBPointerEventsResult>((result) => result.TickNumber == 3),
                                 ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
+        }
+
+        [Test]
+        public void EnableRestrictedActionsOnValidInput()
+        {
+            const uint CURRENT_TICK = 823;
+
+            inputResultComponent.AddEvent(scene, new InternalInputEventResults.EventData()
+            {
+                button = InputAction.IaPrimary,
+                type = PointerEventType.PetDown,
+                hit = new RaycastHit()
+                {
+                    EntityId = 66
+                }
+            });
+
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo()
+            {
+                SceneTick = CURRENT_TICK,
+                EnableRestrictedActionTick = 0
+            });
+
+            updateSystems();
+
+            var engineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
+            Assert.AreEqual(CURRENT_TICK, engineInfo.EnableRestrictedActionTick);
+        }
+
+        [Test]
+        public void NotEnableRestrictedActionsOnInvalidInputType()
+        {
+            inputResultComponent.AddEvent(scene, new InternalInputEventResults.EventData()
+            {
+                button = InputAction.IaPrimary,
+                type = PointerEventType.PetHoverEnter,
+                hit = new RaycastHit()
+                {
+                    EntityId = 66
+                }
+            });
+
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo()
+            {
+                SceneTick = 823,
+                EnableRestrictedActionTick = 0
+            });
+
+            updateSystems();
+
+            var engineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
+            Assert.AreEqual(0, engineInfo.EnableRestrictedActionTick);
+        }
+
+        [Test]
+        public void NotEnableRestrictedActionsOnInvalidInputHit()
+        {
+            inputResultComponent.AddEvent(scene, new InternalInputEventResults.EventData()
+            {
+                button = InputAction.IaPrimary,
+                type = PointerEventType.PetDown,
+                hit = null
+            });
+
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo()
+            {
+                SceneTick = 823,
+                EnableRestrictedActionTick = 0
+            });
+
+            updateSystems();
+
+            var engineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
+            Assert.AreEqual(0, engineInfo.EnableRestrictedActionTick);
+        }
+
+        [Test]
+        public void NotEnableRestrictedActionsOnValidInputFromOtherScene()
+        {
+            const uint CURRENT_TICK = 823;
+            var sceneWherePlayerIsNotCurrentlyOn = testUtils.CreateScene(667);
+
+            inputResultComponent.AddEvent(sceneWherePlayerIsNotCurrentlyOn, new InternalInputEventResults.EventData()
+            {
+                button = InputAction.IaPrimary,
+                type = PointerEventType.PetDown,
+                hit = new RaycastHit()
+                {
+                    EntityId = 66
+                }
+            });
+
+            internalComponents.EngineInfo.PutFor(sceneWherePlayerIsNotCurrentlyOn, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo()
+            {
+                SceneTick = CURRENT_TICK,
+                EnableRestrictedActionTick = 0
+            });
+
+            updateSystems();
+
+            var engineInfo = internalComponents.EngineInfo.GetFor(sceneWherePlayerIsNotCurrentlyOn, SpecialEntityId.SCENE_ROOT_ENTITY).model;
+            Assert.AreEqual(0, engineInfo.EnableRestrictedActionTick);
         }
     }
 }
