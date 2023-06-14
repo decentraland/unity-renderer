@@ -161,42 +161,6 @@ export type RendererSaveProfile = {
   isSignUpFlow?: boolean
 }
 
-export type RendererSaveOutfits = {
-  outfits: {
-    slot: number
-    outfit: {
-      bodyShape: string
-      eyes: {
-        color: {
-          r: number
-          g: number
-          b: number
-          a: number
-        }
-      }
-      hair: {
-        color: {
-          r: number
-          g: number
-          b: number
-          a: number
-        }
-      }
-      skin: {
-        color: {
-          r: number
-          g: number
-          b: number
-          a: number
-        }
-      }
-      wearables: string[]
-      forceRender?: string[]
-    }
-  }[]
-  namesForExtraSlots: string[]
-}
-
 const color3Schema: JSONSchema<{ r: number; g: number; b: number; a: number }> = {
   type: 'object',
   required: ['r', 'g', 'b', 'a'],
@@ -265,43 +229,11 @@ export const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
   }
 } as any
 
-// export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
-//   type: 'object',
-//   required: ['outfits', 'namesForExtraSlots'],
-//   properties: {
-//     outfits: {
-//       type: 'array',
-//       items: {
-//         type: 'object',
-//         required: ['slot', 'outfit'],
-//         properties: {
-//           slot: { type: 'number' },
-//           outfit: {
-//             type: 'object',
-//             required: ['bodyShape', 'eyes', 'hair', 'skin', 'wearables'],
-//             properties: {
-//               bodyShape: { type: 'string' },
-//               eyes: color3Schema,
-//               hair: color3Schema,
-//               skin: color3Schema,
-//               wearables: { type: 'array', items: { type: 'string' } },
-//               forceRender: { type: 'array', items: { type: 'string' }, nullable: true }
-//             }
-//           }
-//         }
-//       }
-//     },
-//     namesForExtraSlots: { type: 'array', items: { type: 'string' }, uniqueItems: true }
-//   }
-// } as any
-
 // This old schema should keep working until ADR74 is merged and renderer is released
 const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV0)
 
 // This is the new one
 const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
-
-// const validateRendererSaveOutfits = generateLazyValidator<RendererSaveOutfits>(rendererSaveOutfitsSchema)
 
 // the BrowserInterface is a visitor for messages received from Unity
 export class BrowserInterface {
