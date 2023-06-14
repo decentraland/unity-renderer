@@ -39,15 +39,15 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
 
-    internal Dictionary<string, int> inventory = new Dictionary<string, int>();
+    internal Dictionary<string, int> inventory = new ();
 
     public ILazyTextureObserver snapshotObserver = new LazyTextureObserver();
     public ILazyTextureObserver bodySnapshotObserver = new LazyTextureObserver();
 
     // Empty initialization to avoid null-checks
-    internal UserProfileModel model = new () { avatar = new AvatarModel() };
+    internal readonly UserProfileModel model = new () { avatar = new AvatarModel() };
 
-    private UserProfileModel CreateFallbackModel()
+    private UserProfileModel ModelFallback()
     {
         string fallbackStringField = "fallback_" + this.GetInstanceID();
 
@@ -57,27 +57,28 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
                 name = fallbackStringField,
                 description = fallbackStringField,
 
-                avatar = CreateFallbackAvatarModel(),
+                avatar = AvatarFallback(),
             };
 
         return fallback;
     }
 
-    private static AvatarModel CreateFallbackAvatarModel() =>
+    private static AvatarModel AvatarFallback() =>
         new() { bodyShape = "urn:decentraland:off-chain:base-avatars:BaseMale"};
 
     private int emoteLamportTimestamp = 1;
 
     public void UpdateData(UserProfileModel newModel)
     {
-        newModel = null;
-
         if (newModel == null)
         {
             Debug.LogError("Model is null! Using fallback model instead.");
-            model = CreateFallbackModel();
-            OnUpdate?.Invoke(this);
-            return;
+            newModel = ModelFallback();
+        }
+        else if (newModel.avatar == null)
+        {
+            Debug.LogError("Avatar is null! Using fallback avatar instead.");
+            newModel.avatar = AvatarFallback();
         }
 
         bool isModelDirty = !newModel.Equals(model);
