@@ -387,6 +387,8 @@ public class WorldChatWindowController : IHUD
 
             var profile = userProfileBridge.Get(userId);
             if (profile == null) return;
+            // DMs are not allowed if no friendship has been made
+            if (!friendsController.IsFriend(userId)) return;
 
             view.SetPrivateChat(CreatePrivateChatModel(message, profile));
         }
