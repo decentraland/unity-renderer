@@ -99,6 +99,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
                 Debug.LogError("Model is null when updating UserProfile! Using fallback or previous model instead.");
 
+            // Check if there is a previous model to fallback to. Because default model has everything empty or null.
             newModel = !model.userId.IsNullOrEmpty() ? model : ModelFallback();
         }
 
@@ -107,6 +108,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
                 Debug.LogError("Avatar is null when updating UserProfile! Using fallback or previous avatar instead.");
 
+            // Check if there is a previous avatar to fallback to.
             newModel.avatar = !model.userId.IsNullOrEmpty() ? model.avatar : AvatarFallback();
         }
 
