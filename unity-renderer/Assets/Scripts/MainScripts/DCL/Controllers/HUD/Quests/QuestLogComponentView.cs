@@ -32,7 +32,8 @@ namespace DCL.Quests
         private Dictionary<string, ActiveQuestComponentView> completedQuests;
         private UnityObjectPool<ActiveQuestComponentView> questsPool;
         private UnityObjectPool<ActiveQuestComponentView> completedQuestsPool;
-        private string previouslySelectedQuest;
+        private string previouslyActiveSelectedQuest;
+        private string previouslyCompletedSelectedQuest;
 
         public override void Awake()
         {
@@ -112,31 +113,59 @@ namespace DCL.Quests
                 questModel = activeQuest
             });
             activeQuests[activeQuest.questId].OnActiveQuestSelected += SelectedQuest;
-            HandleQuestSelection(activeQuest.questId);
+            HandleActiveQuestSelection(activeQuest.questId);
+            sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).SelectToggle(true);
         }
 
-        private void HandleQuestSelection(string questId)
+        private void HandleActiveQuestSelection(string questId)
         {
-            if(!string.IsNullOrEmpty(previouslySelectedQuest))
-                activeQuests[previouslySelectedQuest].Deselect();
+            if(!string.IsNullOrEmpty(previouslyActiveSelectedQuest))
+                activeQuests[previouslyActiveSelectedQuest].Deselect();
             activeQuests[questId].OnPointerClick(null);
-            previouslySelectedQuest = questId;
+            previouslyActiveSelectedQuest = questId;
+        }
+
+        private void HandleCompletedQuestSelection(string questId)
+        {
+            if(!string.IsNullOrEmpty(previouslyCompletedSelectedQuest))
+                completedQuests[previouslyCompletedSelectedQuest].Deselect();
+            completedQuests[questId].OnPointerClick(null);
+            previouslyCompletedSelectedQuest = questId;
         }
 
         private void SelectedQuest(QuestDetailsComponentModel questModel)
         {
-            if(!string.IsNullOrEmpty(previouslySelectedQuest))
-                activeQuests[previouslySelectedQuest].Deselect();
+            if(!string.IsNullOrEmpty(previouslyActiveSelectedQuest) && activeQuests.TryGetValue(previouslyActiveSelectedQuest, out ActiveQuestComponentView quest))
+                quest.Deselect();
+
             questDetailsComponentView.SetModel(questModel);
-            previouslySelectedQuest = questModel.questId;
+            questDetailsComponentView.SetFooter(true);
+            previouslyActiveSelectedQuest = questModel.questId;
+        }
+
+        private void SelectedCompletedQuest(QuestDetailsComponentModel questModel)
+        {
+            if(!string.IsNullOrEmpty(previouslyCompletedSelectedQuest))
+                completedQuests[previouslyCompletedSelectedQuest].Deselect();
+            questDetailsComponentView.SetModel(questModel);
+            questDetailsComponentView.SetFooter(false);
+            previouslyCompletedSelectedQuest = questModel.questId;
         }
 
         public void AddCompletedQuest(QuestDetailsComponentModel completedQuest)
         {
             emptyState.SetActive(false);
+
+            if (activeQuests.ContainsKey(completedQuest.questId))
+            {
+                questsPool.Release(activeQuests[completedQuest.questId]);
+                activeQuests.Remove(completedQuest.questId);
+            }
+
             if (!completedQuests.ContainsKey(completedQuest.questId))
                 completedQuests.Add(completedQuest.questId, questsPool.Get());
 
+            completedQuests[completedQuest.questId].OnActiveQuestSelected -= SelectedCompletedQuest;
             completedQuests[completedQuest.questId].SetModel(new ActiveQuestComponentModel()
             {
                 questId = completedQuest.questId,
@@ -146,6 +175,9 @@ namespace DCL.Quests
                 isPinned = false,
                 questModel = completedQuest
             });
+            completedQuests[completedQuest.questId].OnActiveQuestSelected += SelectedCompletedQuest;
+            HandleCompletedQuestSelection(completedQuest.questId);
+            sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).SelectToggle(true);
         }
 
         public void SetAsFullScreenMenuMode(Transform parentTransform)

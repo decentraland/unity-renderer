@@ -53,6 +53,9 @@ namespace DCL.Quests
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange += ConfigureQuestLogInFullscreenMenuChanged;
             ConfigureQuestLogInFullscreenMenuChanged(dataStore.exploreV2.configureQuestInFullscreenMenu.Get(), null);
             questLogComponentView.OnPinChange += ChangePinnedQuest;
+            foreach (var questsServiceQuestInstance in questsService.QuestInstances)
+                AddOrUpdateQuestToLog(questsServiceQuestInstance.Value);
+
         }
 
         private void ChangePinnedQuest(string questId, bool isPinned)
@@ -60,8 +63,9 @@ namespace DCL.Quests
             string previousPinnedQuestId = pinnedQuestId.Get();
 
             pinnedQuestId.Set(isPinned ? questId : "");
-            if(!string.IsNullOrEmpty(previousPinnedQuestId))
-                AddOrUpdateQuestToLog(quests[previousPinnedQuestId]).Forget();
+
+            if (!string.IsNullOrEmpty(previousPinnedQuestId))
+                AddOrUpdateQuestToLog(quests[previousPinnedQuestId]);
 
             if (string.IsNullOrEmpty(pinnedQuestId.Get()))
             {
@@ -72,7 +76,8 @@ namespace DCL.Quests
             questTrackerComponentView.SetVisible(true);
             questTrackerComponentView.SetQuestTitle(quests[questId].Quest.Name);
             questTrackerComponentView.SetQuestSteps(GetQuestSteps(quests[questId]));
-            AddOrUpdateQuestToLog(quests[pinnedQuestId.Get()]).Forget();
+
+            AddOrUpdateQuestToLog(quests[pinnedQuestId.Get()]);
         }
 
         private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous) =>
@@ -82,7 +87,8 @@ namespace DCL.Quests
         {
             await foreach (var questInstance in questsService.QuestUpdated.WithCancellation(ct))
             {
-                AddOrUpdateQuestToLog(questInstance).Forget();
+                await UniTask.SwitchToMainThread(ct);
+                AddOrUpdateQuestToLog(questInstance, true);
                 if (questInstance.Id != pinnedQuestId.Get())
                     continue;
 
@@ -91,9 +97,14 @@ namespace DCL.Quests
             }
         }
 
-        private List<QuestStepComponentModel> GetQuestSteps(QuestInstance questInstance)
+        private List<QuestStepComponentModel> GetQuestSteps(QuestInstance questInstance, bool includePreviousSteps = false)
         {
             List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
+
+            if(includePreviousSteps)
+                foreach (var step in questInstance.State.StepsCompleted)
+                    questSteps.Add(new QuestStepComponentModel { isCompleted = true, text = step });
+
             foreach (var step in questInstance.State.CurrentSteps)
             {
                 foreach (Task task in step.Value.TasksCompleted)
@@ -110,35 +121,53 @@ namespace DCL.Quests
         {
             await foreach (var questStateUpdate in questsService.QuestStarted.WithCancellation(ct))
             {
+                await UniTask.SwitchToMainThread(ct);
+                AddOrUpdateQuestToLog(questStateUpdate);
                 questStartedPopupComponentView.SetQuestName(questStateUpdate.Quest.Name);
                 questStartedPopupComponentView.SetVisible(true);
-                AddOrUpdateQuestToLog(questStateUpdate).Forget();
             }
         }
 
-        private async UniTaskVoid AddOrUpdateQuestToLog(QuestInstance questInstance)
+        private void AddOrUpdateQuestToLog(QuestInstance questInstance, bool showCompletedQuestHUD = false)
         {
             if (!quests.ContainsKey(questInstance.Id))
                 quests.Add(questInstance.Id, questInstance);
 
+            /*
             profileCts?.Cancel();
             profileCts?.Dispose();
             profileCts = new CancellationTokenSource();
 
             quests[questInstance.Id] = questInstance;
             string userName = await GetCreatorName(questInstance.Quest.CreatorAddress, profileCts);
+            */
             QuestDetailsComponentModel quest = new QuestDetailsComponentModel()
             {
                 questName = questInstance.Quest.Name,
-                questCreator = userName,
+                questCreator = "userName",
                 questDescription = questInstance.Quest.Description,
                 questId = questInstance.Id,
                 isPinned = questInstance.Id == pinnedQuestId.Get(),
                 //coordinates = questInstance.Quest.Coordinates,
-                questSteps = GetQuestSteps(questInstance),
+                questSteps = GetQuestSteps(questInstance, true),
                 questRewards = new List<QuestRewardComponentModel>()
             };
-            questLogComponentView.AddActiveQuest(quest);
+
+            if(questInstance.State.CurrentSteps.Count > 0)
+                questLogComponentView.AddActiveQuest(quest);
+            else
+            {
+                ChangePinnedQuest(questInstance.Id, false);
+
+                if (showCompletedQuestHUD)
+                {
+                    questCompletedComponentView.SetTitle(quest.questName);
+                    questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
+                    questCompletedComponentView.SetVisible(true);
+                }
+
+                questLogComponentView.AddCompletedQuest(quest);
+            }
         }
 
         private async UniTask<string> GetCreatorName(string userId, CancellationTokenSource cts)

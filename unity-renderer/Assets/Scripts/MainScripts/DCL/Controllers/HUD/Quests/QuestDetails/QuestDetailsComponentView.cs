@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace DCL.Quests
         [SerializeField] internal GameObject rewardsSection;
         [SerializeField] internal GameObject guestSection;
         [SerializeField] internal GameObject footer;
+        [SerializeField] internal RectTransform parentContent;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
         [SerializeField] internal QuestStepComponentView stepPrefab;
@@ -78,6 +80,13 @@ namespace DCL.Quests
             SetCoordinates(model.coordinates);
             SetQuestSteps(model.questSteps);
             SetQuestRewards(model.questRewards);
+            Utils.ForceRebuildLayoutImmediate(parentContent);
+        }
+
+        public void SetFooter(bool isFooterVisible)
+        {
+            abandonButton.gameObject.SetActive(isFooterVisible);
+            pinButton.gameObject.SetActive(isFooterVisible);
         }
 
         public void SetQuestName(string nameText)
