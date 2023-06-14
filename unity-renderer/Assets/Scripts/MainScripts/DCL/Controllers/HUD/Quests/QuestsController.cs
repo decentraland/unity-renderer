@@ -126,7 +126,7 @@ namespace DCL.Quests
             profileCts = new CancellationTokenSource();
 
             quests[questInstance.Id] = questInstance;
-            string userName = await GetCreatorName(FIX IT DAVIDE =D, profileCts);
+            string userName = await GetCreatorName(questInstance.Quest.CreatorAddress, profileCts);
             QuestDetailsComponentModel quest = new QuestDetailsComponentModel()
             {
                 questName = questInstance.Quest.Name,

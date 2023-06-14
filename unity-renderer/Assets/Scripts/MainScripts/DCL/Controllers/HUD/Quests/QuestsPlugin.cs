@@ -4,8 +4,11 @@ using DCL.Providers;
 using DCL.Quests;
 using DCLServices.QuestsService;
 using Decentraland.Quests;
+using rpc_csharp;
+using RPC.Transports;
 using System.Threading;
 using UnityEngine;
+using WebSocketSharp;
 
 public class QuestsPlugin : IPlugin
 {
@@ -21,7 +24,6 @@ public class QuestsPlugin : IPlugin
     private QuestStartedPopupComponentView questStartedPopupComponentView;
     private QuestLogComponentView questLogComponentView;
     private QuestsService questService;
-    private IClientQuestsService questServiceMock;
 
     private CancellationTokenSource cts;
 
@@ -35,8 +37,8 @@ public class QuestsPlugin : IPlugin
 
     private async UniTaskVoid InstantiateUIs(CancellationTokenSource cts)
     {
-        questServiceMock = await resourceProvider.Instantiate<IClientQuestsService>("MockQuestService", "MockQuestService", cts.Token);
-        questService = new QuestsService(questServiceMock);
+        questService = new QuestsService(await GetClientQuestsService());
+        await UniTask.SwitchToMainThread(cts.Token);
         questTrackerComponentView = await resourceProvider.Instantiate<QuestTrackerComponentView>(QUEST_TRACKER_HUD, $"_{QUEST_TRACKER_HUD}", cts.Token);
         questCompletedComponentView = await resourceProvider.Instantiate<QuestCompletedComponentView>(QUEST_COMPLETED_HUD, $"_{QUEST_COMPLETED_HUD}", cts.Token);
         questStartedPopupComponentView = await resourceProvider.Instantiate<QuestStartedPopupComponentView>(QUEST_STARTED_POPUP, $"_{QUEST_STARTED_POPUP}", cts.Token);
@@ -53,6 +55,37 @@ public class QuestsPlugin : IPlugin
             questLogComponentView,
             userProfileBridge,
             DataStore.i);
+    }
+
+    public async UniTask<ClientQuestsService> GetClientQuestsService()
+    {
+        var rpcSignRequest = new RPCSignRequest(DCL.Environment.i.serviceLocator.Get<IRPC>());
+        AuthedWebSocketClientTransport webSocketClientTransport = new AuthedWebSocketClientTransport(rpcSignRequest, "wss://quests-rpc.decentraland.zone");
+
+        webSocketClientTransport.Log.Output = (data, s) =>
+        {
+            switch (data.Level)
+            {
+                case LogLevel.Debug:
+                case LogLevel.Info:
+                case LogLevel.Trace:
+                    Debug.Log($"QuestService.Transport.Output: {data.Message}");
+                    break;
+                case LogLevel.Error:
+                case LogLevel.Fatal:
+                    Debug.LogError($"QuestService.Transport.Output: {data.Message}");
+                    break;
+                case LogLevel.Warn:
+                    Debug.LogWarning($"QuestService.Transport.Output: {data.Message}");
+                    break;
+            }
+        };
+
+        await webSocketClientTransport.Connect();
+        RpcClient rpcClient = new RpcClient(webSocketClientTransport);
+        var clientPort = await rpcClient.CreatePort("UnityTest");
+        var module = await clientPort.LoadModule(QuestsServiceCodeGen.ServiceName);
+        return new ClientQuestsService(module);
     }
 
     public void Dispose()

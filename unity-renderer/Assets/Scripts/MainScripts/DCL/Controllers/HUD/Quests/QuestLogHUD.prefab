@@ -228,7 +228,6 @@ GameObject:
   - component: {fileID: 5195067929605404642}
   - component: {fileID: 2268439034940025698}
   - component: {fileID: 1548634560337433364}
-  - component: {fileID: 5622678805136424953}
   m_Layer: 5
   m_Name: QuestLogHUD
   m_TagString: Untagged
@@ -364,22 +363,6 @@ MonoBehaviour:
   activeQuestsContainer: {fileID: 6616477266518018369}
   activeQuestPrefab: {fileID: 4299008385477880156, guid: 446d6661e0622443a99e6c2049184954,
     type: 3}
---- !u!114 &5622678805136424953
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 353294522546651223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08933640a8d9fc442874971ee5e736ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  justAbortAllOnGoinQuests: 0
-  questsToStart:
-  - 7d795b67-11f6-4d73-bd88-5d89cf33d679
-  - e382bd60-3292-484a-996e-7c7b0e4794c9
 --- !u!1 &489303922329482026
 GameObject:
   m_ObjectHideFlags: 0
@@ -2318,7 +2301,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2288286928228558355
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3599,7 +3582,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4836,7 +4819,7 @@ PrefabInstance:
     - target: {fileID: 5655670538247058486, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6262678989479969489, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
@@ -5041,7 +5024,7 @@ PrefabInstance:
     - target: {fileID: 8936678147167691193, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 480.5
+      value: 472
       objectReference: {fileID: 0}
     - target: {fileID: 8936678147167691193, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
@@ -5051,12 +5034,12 @@ PrefabInstance:
     - target: {fileID: 9016402783536619648, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9016402783536619648, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9016402783536619648, guid: e6000b530c0604e69b5e86cc45c42bf6,
         type: 3}

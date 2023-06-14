@@ -17,7 +17,7 @@ namespace DCLServices.QuestsService
      */
     public class QuestsService : IQuestsService
     {
-        private const bool VERBOSE = false;
+        private const bool VERBOSE = true;
 
         public IAsyncEnumerableWithEvent<QuestInstance> QuestStarted => questStarted;
         public IAsyncEnumerableWithEvent<QuestInstance> QuestUpdated => questUpdated;
@@ -44,8 +44,13 @@ namespace DCLServices.QuestsService
             //Obtain initial state
             var allquests = await clientQuestsService.GetAllQuests(new Empty());
 
+            if(VERBOSE)
+                Debug.Log("[QuestsService] Getting all quests");
+
             foreach (QuestInstance questInstance in allquests.Quests.Instances)
             {
+                if(VERBOSE)
+                    Debug.Log($"[QuestsService]\n{questInstance}");
                 questInstances[questInstance.Id] = questInstance;
                 string questId = questInstance.Quest.Id;
 
@@ -57,15 +62,21 @@ namespace DCLServices.QuestsService
                 questUpdated.Write(questInstance);
             }
 
-            gettingInitialState.TrySetResult();
-
             //Listen to updates
             var enumerable = clientQuestsService.Subscribe(new Empty());
 
+            if(VERBOSE)
+                Debug.Log($"[QuestsService] Subscribing");
+
             await foreach (UserUpdate userUpdate in enumerable.WithCancellation(disposeCts.Token))
             {
+                if(VERBOSE)
+                    Debug.Log($"[QuestsService] Update:\n{userUpdate}");
                 switch (userUpdate.MessageCase)
                 {
+                    case UserUpdate.MessageOneofCase.Subscribed:
+                        gettingInitialState.TrySetResult();
+                        break;
                     case UserUpdate.MessageOneofCase.QuestStateUpdate:
                         if (!questInstances.TryGetValue(userUpdate.QuestStateUpdate.InstanceId, out var questUpdatedInstance))
                         {
