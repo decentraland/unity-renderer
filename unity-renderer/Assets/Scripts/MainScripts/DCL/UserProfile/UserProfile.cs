@@ -73,12 +73,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         if (newModel == null)
         {
-            Debug.LogError("Model is null! Using fallback or previous model instead.");
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
+                Debug.LogException(new Exception("Model is null! Using fallback or previous model instead."));
+
             newModel = !model.userId.IsNullOrEmpty() ? model : ModelFallback();
         }
         else if (newModel.avatar == null)
         {
-            Debug.LogError("Avatar is null! Using fallback or previous avatar instead.");
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
+                Debug.LogException(new Exception("Avatar is null! Using fallback or previous avatar instead."));
+
             newModel.avatar = !model.userId.IsNullOrEmpty() ? model.avatar : AvatarFallback();
         }
 
