@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DCL.MyAccount
 {
-    public class MyAccountHUDComponentView : BaseComponentView, IMyAccountHUDComponentView
+    public class MyAccountSectionHUDComponentView : BaseComponentView, IMyAccountSectionHUDComponentView
     {
         [SerializeField] internal MyProfileComponentView myProfileComponentView;
 

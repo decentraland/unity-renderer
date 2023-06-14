@@ -2,13 +2,13 @@
 
 namespace DCL.MyAccount
 {
-    public class MyAccountHUDController
+    public class MyAccountSectionHUDController
     {
-        private readonly IMyAccountHUDComponentView view;
+        private readonly IMyAccountSectionHUDComponentView view;
         private readonly DataStore dataStore;
 
-        public MyAccountHUDController(
-            IMyAccountHUDComponentView view,
+        public MyAccountSectionHUDController(
+            IMyAccountSectionHUDComponentView view,
             DataStore dataStore)
         {
             this.view = view;
@@ -16,6 +16,8 @@ namespace DCL.MyAccount
 
             dataStore.exploreV2.configureMyAccountSectionInFullscreenMenu.OnChange += ConfigureMyAccountSectionInFullscreenMenuChanged;
             ConfigureMyAccountSectionInFullscreenMenuChanged(dataStore.exploreV2.configureMyAccountSectionInFullscreenMenu.Get(), null);
+
+            dataStore.myAccount.isInitialized.Set(true);
         }
 
         public void Dispose()

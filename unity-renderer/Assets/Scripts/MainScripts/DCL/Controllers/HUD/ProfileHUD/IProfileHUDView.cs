@@ -1,4 +1,5 @@
 
+using DCL.MyAccount;
 using System;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ public interface IProfileHUDView
 
     GameObject GameObject { get; }
     RectTransform ExpandedMenu { get; }
+    RectTransform MyAccountCardMenu { get; }
+    MyAccountCardComponentView MyAccountCardView { get; }
     RectTransform TutorialReference { get; }
 
 
@@ -37,5 +40,5 @@ public interface IProfileHUDView
 
     void SetDescriptionIsEditing(bool isEditing);
     void ShowProfileIcon(bool show);
-    void ShowExpanded(bool show);
+    void ShowExpanded(bool show, bool showMyAccountVersion);
 }

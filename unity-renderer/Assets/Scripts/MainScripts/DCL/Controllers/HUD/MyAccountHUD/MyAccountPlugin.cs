@@ -8,7 +8,7 @@ namespace DCL.MyAccount
     {
         private readonly CancellationTokenSource cts = new ();
 
-        private MyAccountHUDController myAccountHUDController;
+        private MyAccountSectionHUDController myAccountSectionHUDController;
         private MyProfileController myProfileController;
 
         public MyAccountPlugin()
@@ -19,12 +19,12 @@ namespace DCL.MyAccount
         private async void Initialize(CancellationToken ct)
         {
             var myAccountSectionView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                     .Instantiate<MyAccountHUDComponentView>("MyAccountHUD", cancellationToken: ct);
+                                                     .Instantiate<MyAccountSectionHUDComponentView>("MyAccountHUD", cancellationToken: ct);
 
             var dataStore = DataStore.i;
 
             myProfileController = new MyProfileController(myAccountSectionView.CurrentMyProfileView);
-            myAccountHUDController = new MyAccountHUDController(
+            myAccountSectionHUDController = new MyAccountSectionHUDController(
                 myAccountSectionView,
                 dataStore);
         }
@@ -33,7 +33,7 @@ namespace DCL.MyAccount
         {
             cts.SafeCancelAndDispose();
             myProfileController.Dispose();
-            myAccountHUDController.Dispose();
+            myAccountSectionHUDController.Dispose();
         }
     }
 }

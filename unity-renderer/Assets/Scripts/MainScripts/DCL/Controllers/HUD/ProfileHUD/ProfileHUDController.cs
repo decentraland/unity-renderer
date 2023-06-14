@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.MyAccount;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
@@ -30,6 +31,7 @@ public class ProfileHUDController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly DataStore dataStore;
+    private readonly MyAccountCardController myAccountCardController;
 
     public event Action OnOpen;
     public event Action OnClose;
@@ -88,6 +90,8 @@ public class ProfileHUDController : IHUD
             view.ManaPurchasePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_PURCHASE);
         }
 
+        myAccountCardController = new MyAccountCardController(view.MyAccountCardView, dataStore);
+
         ownUserProfile.OnUpdate += OnProfileUpdated;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
@@ -115,7 +119,7 @@ public class ProfileHUDController : IHUD
     private void SetProfileCardExtended(bool isOpenCurrent, bool previous)
     {
         OnOpen?.Invoke();
-        view.ShowExpanded(isOpenCurrent);
+        view.ShowExpanded(isOpenCurrent, dataStore.myAccount.isInitialized.Get());
     }
 
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) =>
@@ -167,6 +171,8 @@ public class ProfileHUDController : IHUD
 
         dataStore.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
         dataStore.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
+
+        myAccountCardController.Dispose();
     }
 
     protected virtual GameObject GetViewPrefab()

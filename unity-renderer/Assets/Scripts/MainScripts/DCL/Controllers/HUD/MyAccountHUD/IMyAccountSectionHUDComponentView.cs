@@ -2,10 +2,8 @@
 
 namespace DCL.MyAccount
 {
-    public interface IMyAccountHUDComponentView
+    public interface IMyAccountSectionHUDComponentView
     {
-        IMyProfileComponentView CurrentMyProfileView { get; }
-
         void SetAsFullScreenMenuMode(Transform parentTransform);
     }
 }
