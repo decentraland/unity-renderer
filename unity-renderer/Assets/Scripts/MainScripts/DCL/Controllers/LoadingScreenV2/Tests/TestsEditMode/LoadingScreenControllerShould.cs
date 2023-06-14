@@ -31,7 +31,7 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
             premadeHint1 = new Hint("https://example.com/image1.png", "title1", "body1", SourceTag.Event);
             premadeHint2 = new Hint("https://example.com/image2.png", "title2", "body2", SourceTag.Dcl);
             var sourceUrlJson = "http://remote_source_url";
-            addressableProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
+            addressableProvider = new AddressableResourceProvider();
             cts = new CancellationTokenSource();
 
             var mockWebRequestHandler = Substitute.For<ISourceWebRequestHandler>();
