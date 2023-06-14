@@ -13,7 +13,7 @@ namespace AvatarSystem
     {
         public const float AVATAR_Y_OFFSET = 0.75f;
         private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
-        private const StringComparison SC = StringComparison.CurrentCultureIgnoreCase;
+        private const StringComparison SC = StringComparison.InvariantCultureIgnoreCase;
 
         public static bool IsCategoryRequired(string category) { return WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(category); }
 
