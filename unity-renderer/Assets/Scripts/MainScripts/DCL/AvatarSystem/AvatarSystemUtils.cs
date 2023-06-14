@@ -143,25 +143,25 @@ namespace AvatarSystem
                 if (r is not SkinnedMeshRenderer renderer)
                     continue;
 
-                string name = renderer.name;
+                string name = renderer.name.ToLower();
 
                 // we still support the old gltf hierarchy for ABs
-                if (name.Contains("primitive", SC))
+                if (name.Contains("primitive"))
                     name = renderer.transform.parent.name.ToLower();
 
-                if (name.Contains("head", SC))
+                if (name.Contains("head"))
                     head = renderer;
-                else if (name.Contains("ubody", SC))
+                else if (name.Contains("ubody"))
                     upperBody = renderer;
-                else if (name.Contains("lbody", SC))
+                else if (name.Contains("lbody"))
                     lowerBody = renderer;
-                else if (name.Contains("feet", SC))
+                else if (name.Contains("feet"))
                     feet = renderer;
-                else if (name.Contains("eyes", SC))
+                else if (name.Contains("eyes"))
                     eyes = renderer;
-                else if (name.Contains("eyebrows", SC))
+                else if (name.Contains("eyebrows"))
                     eyebrows = renderer;
-                else if (name.Contains("mouth", SC))
+                else if (name.Contains("mouth"))
                     mouth = renderer;
                 else
                     Debug.LogWarning($"{name} is not a body part?", r);
