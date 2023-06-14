@@ -62,6 +62,7 @@ namespace Tests
             entity.gameObject.transform.position += Vector3.up * 10;
 
             scene.contentProvider.baseUrl = $"{TestAssetsUtils.GetPath()}/GLB/";
+            scene.contentProvider.fileToHash.Add("gltf-materials", "MaterialsScene.glb");
             scene.contentProvider.fileToHash.Add("palmtree", "PalmTree_01.glb");
             scene.contentProvider.fileToHash.Add("sharknado", "Shark/shark_anim.gltf");
             scene.contentProvider.fileToHash.Add("sci-fi-helmet", "DamagedHelmet/DamagedHelmet.glb");
@@ -102,12 +103,15 @@ namespace Tests
         [UnityTest, VisualTest]
         public IEnumerator VisualTest1()
         {
+            Vector3 cameraPos = entity.gameObject.transform.position + new Vector3(-8, 4, -8);
             VisualTestUtils.RepositionVisualTestsCamera(
                 camera,
-                entity.gameObject.transform.position + new Vector3(0, 10, -10),
-                entity.gameObject.transform.position);
+                cameraPos,
+                cameraPos + Vector3.forward + (Vector3.down * 0.25f));
 
-            PBGltfContainer model = new PBGltfContainer() { Src = "palmtree" };
+            entity.gameObject.transform.Rotate(-Vector3.left, 90);
+
+            PBGltfContainer model = new PBGltfContainer() { Src = "gltf-materials" };
             handler.OnComponentModelUpdated(scene, entity, model);
             yield return handler.gltfLoader.Promise;
 
@@ -154,6 +158,25 @@ namespace Tests
             yield return handler.gltfLoader.Promise;
 
             yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest3", camera);
+        }
+
+        // Manually run to generate baseline image for later comparisons
+        [UnityTest, VisualTest, Explicit]
+        public IEnumerator VisualTest4_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(VisualTest4()); }
+
+        [UnityTest, VisualTest]
+        public IEnumerator VisualTest4()
+        {
+            VisualTestUtils.RepositionVisualTestsCamera(
+                camera,
+                entity.gameObject.transform.position + new Vector3(0, 10, -10),
+                entity.gameObject.transform.position);
+
+            PBGltfContainer model = new PBGltfContainer() { Src = "palmtree" };
+            handler.OnComponentModelUpdated(scene, entity, model);
+            yield return handler.gltfLoader.Promise;
+
+            yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest4", camera);
         }
     }
 }
