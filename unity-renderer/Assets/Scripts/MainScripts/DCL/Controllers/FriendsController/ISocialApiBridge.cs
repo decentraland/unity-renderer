@@ -8,14 +8,12 @@ namespace DCL.Social.Friends
     {
         public event Action<FriendRequest> OnIncomingFriendRequestAdded;
         public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
-        event Action<string> OnFriendAdded;
-        event Action<string> OnFriendRequestRemoved;
         event Action<string> OnFriendRequestAccepted;
         event Action<string> OnFriendRequestRejected;
         event Action<string> OnDeletedByFriend;
         event Action<string> OnFriendRequestCanceled;
 
-        UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default);
+        UniTask<AllFriendsInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default);
 
         UniTask RejectFriendshipAsync(string friendId, CancellationToken cancellationToken = default);
 

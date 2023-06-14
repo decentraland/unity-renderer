@@ -35,12 +35,6 @@ namespace DCL.Social.Friends
             remove => socialApiBridge.OnFriendAdded -= value;
         }
 
-        public event Action<string> OnFriendRequestRemoved
-        {
-            add => socialApiBridge.OnFriendRequestRemoved += value;
-            remove => socialApiBridge.OnFriendRequestRemoved -= value;
-        }
-
         public event Action<string> OnFriendRequestAccepted
         {
             add => socialApiBridge.OnFriendRequestAccepted += value;
@@ -98,12 +92,12 @@ namespace DCL.Social.Friends
                    .Forget();
         }
 
-        public UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default)
+        public UniTask<AllFriendsInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default)
         {
             if (useSocialApiBridge)
                 return socialApiBridge.GetInitializationInformationAsync(cancellationToken);
 
-            return UniTask.Never<FriendshipInitializationMessage>(cancellationToken);
+            return UniTask.Never<AllFriendsInitializationMessage>(cancellationToken);
         }
 
         public UniTask RejectFriendshipAsync(string friendId, CancellationToken cancellationToken = default)

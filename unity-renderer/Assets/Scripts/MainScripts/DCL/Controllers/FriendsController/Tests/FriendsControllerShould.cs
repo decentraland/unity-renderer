@@ -29,6 +29,10 @@ namespace DCL.Social.Friends
             dataStore.featureFlags.flags.Get().SetAsInitialized();
 
             rpcSocialApiBridge = Substitute.For<ISocialApiBridge>();
+
+            rpcSocialApiBridge.GetInitializationInformationAsync(Arg.Any<CancellationToken>())
+                              .Returns(UniTask.FromResult(new AllFriendsInitializationMessage(
+                                   new List<string>(), new List<FriendRequest>(), new List<FriendRequest>())));
             userProfileBridge = Substitute.For<IUserProfileBridge>();
 
             controller = new FriendsController(apiBridge, rpcSocialApiBridge, dataStore, userProfileBridge);
@@ -666,22 +670,20 @@ namespace DCL.Social.Friends
                 GivenUserProfile(THIRD_USER_ID, "searchText");
                 GivenUserProfile(FOURTH_USER_ID, "searchText2");
 
-                var initializationResponse = UniTask.FromResult(new FriendshipInitializationMessage()
-                {
-                    totalReceivedRequests = 0,
-                });
+                var initializationResponse = UniTask.FromResult(new AllFriendsInitializationMessage(
+                    new List<string>
+                    {
+                        FOURTH_USER_ID,
+                        THIRD_USER_ID,
+                        SECOND_USER_ID,
+                        FIRST_USER_ID,
+                    }, new List<FriendRequest>(), new List<FriendRequest>()));
 
                 rpcSocialApiBridge.GetInitializationInformationAsync(Arg.Any<CancellationToken>())
                                   .Returns(initializationResponse);
 
                 controller.Initialize();
-                await controller.InitializeAsync(default(CancellationToken));
-
-                // insert unsorted
-                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<string>>(FOURTH_USER_ID);
-                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<string>>(THIRD_USER_ID);
-                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<string>>(SECOND_USER_ID);
-                rpcSocialApiBridge.OnFriendAdded += Raise.Event<Action<string>>(FIRST_USER_ID);
+                await UniTask.NextFrame();
 
                 IReadOnlyList<string> response = await controller.GetFriendsAsync(100, 0);
                 string[] expected = { FIRST_USER_ID, SECOND_USER_ID, THIRD_USER_ID, FOURTH_USER_ID };
