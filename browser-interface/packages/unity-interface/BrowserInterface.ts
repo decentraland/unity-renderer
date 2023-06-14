@@ -1,7 +1,7 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema, Outfits, WearableCategory } from '@dcl/schemas'
+import { Avatar, generateLazyValidator, JSONSchema, WearableCategory } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
@@ -558,11 +558,6 @@ export class BrowserInterface {
           forceRender: (outfit.forceRender ?? []).map((category) => category as WearableCategory)
         }
       }))
-
-      const update: Outfits = {
-        outfits,
-        namesForExtraSlots: changes.namesForExtraSlots ?? []
-      }
 
       // store.dispatch(deployOutfits(update))
     } else {
