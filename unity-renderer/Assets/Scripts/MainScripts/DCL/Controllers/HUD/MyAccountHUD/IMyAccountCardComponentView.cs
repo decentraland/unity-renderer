@@ -9,5 +9,8 @@ namespace DCL.MyAccount
         event Action OnSignOutClicked;
         event Action OnTermsOfServiceClicked;
         event Action OnPrivacyPolicyClicked;
+
+        void Show(bool instant = false);
+        void Hide(bool instant = false);
     }
 }

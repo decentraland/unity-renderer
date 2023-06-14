@@ -207,14 +207,14 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         if (!show)
         {
             expandedObject.SetActive(false);
-            myAccountCardView.gameObject.SetActive(false);
+            myAccountCardView.Hide();
         }
         else
         {
             if (!showMyAccountVersion)
                 expandedObject.SetActive(true);
             else
-                myAccountCardView.gameObject.SetActive(true);
+                myAccountCardView.Show();
         }
 
         if (show && profile && !showMyAccountVersion)

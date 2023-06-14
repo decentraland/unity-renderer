@@ -31,6 +31,12 @@ namespace DCL.MyAccount
             privacyPolicyButton.onClick.AddListener(() => OnPrivacyPolicyClicked?.Invoke());
         }
 
+        public override void Show(bool instant = false) =>
+            gameObject.SetActive(true);
+
+        public override void Hide(bool instant = false) =>
+            gameObject.SetActive(false);
+
         public override void Dispose()
         {
             previewProfileButton.onClick.RemoveAllListeners();

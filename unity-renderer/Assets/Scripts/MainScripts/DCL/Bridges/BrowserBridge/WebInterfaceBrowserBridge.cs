@@ -8,5 +8,10 @@ namespace DCL.Browser
         {
             WebInterface.OpenURL(url);
         }
+
+        public void LogOut()
+        {
+            WebInterface.LogOut();
+        }
     }
 }

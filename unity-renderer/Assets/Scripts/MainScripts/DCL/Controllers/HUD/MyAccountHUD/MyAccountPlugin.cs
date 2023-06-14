@@ -19,7 +19,7 @@ namespace DCL.MyAccount
         private async void Initialize(CancellationToken ct)
         {
             var myAccountSectionView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                     .Instantiate<MyAccountSectionHUDComponentView>("MyAccountHUD", cancellationToken: ct);
+                                                     .Instantiate<MyAccountSectionHUDComponentView>("MyAccountSectionHUD", "MyAccountSectionHUD", cancellationToken: ct);
 
             var dataStore = DataStore.i;
 

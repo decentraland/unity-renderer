@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Browser;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.MyAccount;
@@ -90,7 +91,12 @@ public class ProfileHUDController : IHUD
             view.ManaPurchasePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_PURCHASE);
         }
 
-        myAccountCardController = new MyAccountCardController(view.MyAccountCardView, dataStore);
+        myAccountCardController = new MyAccountCardController(
+            view.MyAccountCardView,
+            dataStore,
+            userProfileBridge,
+            DCL.SettingsCommon.Settings.i,
+            new WebInterfaceBrowserBridge());
 
         ownUserProfile.OnUpdate += OnProfileUpdated;
 
