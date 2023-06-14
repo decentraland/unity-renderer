@@ -14,11 +14,6 @@ namespace DCL.Backpack
             IWearablesCatalogService wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
-            var outfitsController = new OutfitsController(
-                new LambdaOutfitsService(
-                    Environment.i.serviceLocator.Get<ILambdasService>(),
-                    Environment.i.serviceLocator.Get<IServiceProviders>()),
-                userProfileBridge);
             var view = BackpackEditorHUDV2ComponentView.Create();
             view.Initialize(
             Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
@@ -27,6 +22,15 @@ namespace DCL.Backpack
             new PreviewCameraZoomController());
 
             DataStore dataStore = DataStore.i;
+
+            view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+
+            var outfitsController = new OutfitsController(
+                view.OutfitsSectionComponentView,
+                new LambdaOutfitsService(
+                    Environment.i.serviceLocator.Get<ILambdasService>(),
+                    Environment.i.serviceLocator.Get<IServiceProviders>()),
+                userProfileBridge);
 
             var backpackEmotesSectionController = new BackpackEmotesSectionController(
                 dataStore,

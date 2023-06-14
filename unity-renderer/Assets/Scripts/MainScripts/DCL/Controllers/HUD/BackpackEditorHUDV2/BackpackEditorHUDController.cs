@@ -87,7 +87,21 @@ namespace DCL.Backpack
             view.OnAvatarUpdated += OnAvatarUpdated;
             view.OnOutfitsOpened += OnOutfitsOpened;
 
+            outfitsController.OnOutfitEquipped += OnOutfitEquipped;
+
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
+        }
+
+        private void OnOutfitEquipped(OutfitItem outfit)
+        {
+            model.wearables = new ();
+            if(!string.IsNullOrEmpty(outfit.outfit.bodyShape))
+                EquipWearable(outfit.outfit.bodyShape);
+
+            foreach (string outfitWearable in outfit.outfit.wearables)
+                EquipWearable(outfitWearable);
+
+            SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
         }
 
         private void OnOutfitsOpened()
@@ -265,7 +279,7 @@ namespace DCL.Backpack
                     }
 
                     avatarSlotsHUDController.Recalculate(model.forceRender);
-                    view.UpdateAvatarPreview(model.ToAvatarModel());
+                    UpdateAvatarModel(model.ToAvatarModel());
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogException(e); }
@@ -283,7 +297,7 @@ namespace DCL.Backpack
             foreach (string emoteId in dataStore.emotesCustomization.currentLoadedEmotes.Get())
                 modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
 
-            view.UpdateAvatarPreview(modelToUpdate);
+            UpdateAvatarModel(modelToUpdate);
         }
 
         private void OnNewEmoteAdded(string emoteId) =>
@@ -417,6 +431,7 @@ namespace DCL.Backpack
             bool updateAvatarPreview = true,
             bool resetOverride = true)
         {
+            Debug.Log($"wearable id {wearableId}");
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
                 Debug.LogError($"Cannot equip wearable {wearableId}");
@@ -468,7 +483,7 @@ namespace DCL.Backpack
 
             if (updateAvatarPreview)
             {
-                view.UpdateAvatarPreview(model.ToAvatarModel());
+                UpdateAvatarModel(model.ToAvatarModel());
                 categoryPendingToPlayEmote = wearable.data.category;
             }
         }
@@ -516,7 +531,7 @@ namespace DCL.Backpack
             if (setAsDirty)
                 avatarIsDirty = true;
 
-            view.UpdateAvatarPreview(model.ToAvatarModel());
+            UpdateAvatarModel(model.ToAvatarModel());
         }
 
         private void ResetOverridesOfAffectedCategories(WearableItem wearable, bool setAsDirty = true)
@@ -575,7 +590,23 @@ namespace DCL.Backpack
                 return;
 
             avatarIsDirty = true;
-            view.UpdateAvatarPreview(model.ToAvatarModel());
+            UpdateAvatarModel(model.ToAvatarModel());
+        }
+
+        private void SetAllColors(Color eyesColor, Color hairColor, Color bodyColor)
+        {
+            model.eyesColor = eyesColor;
+            model.hairColor = hairColor;
+            model.skinColor = bodyColor;
+
+            avatarIsDirty = true;
+            UpdateAvatarModel(model.ToAvatarModel());
+        }
+
+        private void UpdateAvatarModel(AvatarModel avatarModel)
+        {
+            view.UpdateAvatarPreview(avatarModel);
+            outfitsController.UpdateAvatarPreview(avatarModel);
         }
 
         private void OnColorPickerToggled() =>
