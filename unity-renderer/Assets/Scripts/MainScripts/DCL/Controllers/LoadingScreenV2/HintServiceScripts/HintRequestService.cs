@@ -49,6 +49,13 @@ namespace DCL.Controllers.LoadingScreenV2
             selectedHints.Clear();
         }
 
+        /// <summary>
+        /// This method will request hints from the hint sources, and return the hints as a dictionary of textures.
+        /// The totalHints parameter is the number of hints to return.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="totalHints"></param>
+        /// <returns>hints</returns>
         public async UniTask<Dictionary<Hint, Texture2D>> RequestHintsFromSources(CancellationToken ctx, int totalHints)
         {
             try
