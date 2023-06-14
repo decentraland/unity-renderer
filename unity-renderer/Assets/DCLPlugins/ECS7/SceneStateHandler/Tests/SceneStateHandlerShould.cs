@@ -88,5 +88,15 @@ namespace Tests
 
             Assert.IsTrue(sceneStateHandler.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber));
         }
+
+        [Test]
+        public void AddIncreaseTickTagComponent()
+        {
+            Assert.IsNull(internalComponents.IncreaseSceneTick.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
+
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+
+            Assert.IsNotNull(internalComponents.IncreaseSceneTick.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
+        }
     }
 }
