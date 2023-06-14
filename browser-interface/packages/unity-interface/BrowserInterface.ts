@@ -265,35 +265,35 @@ export const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
   }
 } as any
 
-export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
-  type: 'object',
-  required: ['outfits', 'namesForExtraSlots'],
-  properties: {
-    outfits: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['slot', 'outfit'],
-        properties: {
-          slot: { type: 'number' },
-          outfit: {
-            type: 'object',
-            required: ['bodyShape', 'eyes', 'hair', 'skin', 'wearables'],
-            properties: {
-              bodyShape: { type: 'string' },
-              eyes: color3Schema,
-              hair: color3Schema,
-              skin: color3Schema,
-              wearables: { type: 'array', items: { type: 'string' } },
-              forceRender: { type: 'array', items: { type: 'string' }, nullable: true }
-            }
-          }
-        }
-      }
-    },
-    namesForExtraSlots: { type: 'array', items: { type: 'string' }, uniqueItems: true }
-  }
-} as any
+// export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
+//   type: 'object',
+//   required: ['outfits', 'namesForExtraSlots'],
+//   properties: {
+//     outfits: {
+//       type: 'array',
+//       items: {
+//         type: 'object',
+//         required: ['slot', 'outfit'],
+//         properties: {
+//           slot: { type: 'number' },
+//           outfit: {
+//             type: 'object',
+//             required: ['bodyShape', 'eyes', 'hair', 'skin', 'wearables'],
+//             properties: {
+//               bodyShape: { type: 'string' },
+//               eyes: color3Schema,
+//               hair: color3Schema,
+//               skin: color3Schema,
+//               wearables: { type: 'array', items: { type: 'string' } },
+//               forceRender: { type: 'array', items: { type: 'string' }, nullable: true }
+//             }
+//           }
+//         }
+//       }
+//     },
+//     namesForExtraSlots: { type: 'array', items: { type: 'string' }, uniqueItems: true }
+//   }
+// } as any
 
 // This old schema should keep working until ADR74 is merged and renderer is released
 const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV0)
@@ -301,7 +301,7 @@ const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>
 // This is the new one
 const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
 
-const validateRendererSaveOutfits = generateLazyValidator<RendererSaveOutfits>(rendererSaveOutfitsSchema)
+// const validateRendererSaveOutfits = generateLazyValidator<RendererSaveOutfits>(rendererSaveOutfitsSchema)
 
 // the BrowserInterface is a visitor for messages received from Unity
 export class BrowserInterface {
@@ -542,35 +542,6 @@ export class BrowserInterface {
         errors: (errors ?? []).map(($) => $.message).join(',')
       })
       defaultLogger.error('Unity sent invalid profile' + JSON.stringify(changes) + ' Errors: ' + JSON.stringify(errors))
-    }
-  }
-
-  public SaveUserOutfits(changes: RendererSaveOutfits) {
-    if (validateRendererSaveOutfits(changes as RendererSaveOutfits)) {
-      const outfits = changes.outfits.map(({ slot, outfit }) => ({
-        slot,
-        outfit: {
-          bodyShape: outfit.bodyShape,
-          eyes: { color: outfit.eyes.color },
-          hair: { color: outfit.hair.color },
-          skin: { color: outfit.skin.color },
-          wearables: outfit.wearables,
-          forceRender: (outfit.forceRender ?? []).map((category) => category as WearableCategory)
-        }
-      }))
-
-      // store.dispatch(deployOutfits(update))
-    } else {
-      const error = validateRendererSaveOutfits.errors
-      defaultLogger.error('Error validating outfits schema', error)
-      trackEvent('invalid_schema', {
-        schema: 'SaveUserOutfits',
-        payload: changes,
-        errors: ''
-      })
-      defaultLogger.error(
-        'Unity sent invalid outfits schema' + JSON.stringify(changes) + ' Errors: ' + JSON.stringify(error)
-      )
     }
   }
 
