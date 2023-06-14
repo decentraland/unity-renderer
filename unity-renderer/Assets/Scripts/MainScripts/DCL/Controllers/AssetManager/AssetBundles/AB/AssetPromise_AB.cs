@@ -25,6 +25,7 @@ namespace DCL
         private CancellationTokenSource cancellationTokenSource;
 
         private Service<IAssetBundleResolver> assetBundleResolver;
+        private BaseVariable<string> hashSuffix => DataStore.i.assetBundles.hashSuffix;
 
         public AssetPromise_AB(string contentUrl, string hash,
             Transform containerTransform = null, AssetSource permittedSources = AssetSource.ALL) : base(contentUrl,
@@ -75,7 +76,14 @@ namespace DCL
 
         private async UniTask LoadAssetBundleWithDeps(string baseUrl, string hash, Action onSuccess, Action<Exception> onFail, CancellationToken cancellationToken)
         {
-            var finalUrl = baseUrl + hash;
+            string finalHash = hash;
+
+            string suffix = hashSuffix.Get();
+
+            if (!string.IsNullOrEmpty(suffix))
+                finalHash += suffix;
+
+            string finalUrl = baseUrl + finalHash;
 
             if (failedRequestUrls.Contains(finalUrl))
             {
@@ -85,10 +93,10 @@ namespace DCL
 
             try
             {
-                var bundle = await assetBundleResolver.Ref.GetAssetBundleAsync(permittedSources, baseUrl, hash, cancellationToken);
+                var bundle = await assetBundleResolver.Ref.GetAssetBundleAsync(permittedSources, baseUrl, finalHash, cancellationToken);
                 SetAssetBundle(bundle);
 
-                var dependencies = await bundle.GetDependenciesAsync(baseUrl, hash, cancellationToken);
+                var dependencies = await bundle.GetDependenciesAsync(baseUrl, finalHash, cancellationToken);
 
                 foreach (string dependency in dependencies)
                 {
