@@ -692,21 +692,8 @@ function getFriendStatusInfo(state: RootState) {
 }
 
 async function getFriendIds(client: SocialAPI): Promise<string[]> {
-  let friends: string[]
-  if (shouldUseSocialServiceForFriendships()) {
-    friends = await client.getAllFriendsAddresses()
-  } else {
-    friends = client.getAllFriends()
-  }
-
+  let friends: string[] = await client.getAllFriendsAddresses()
   return friends.map(($) => parseUserId($)).filter(Boolean) as string[]
-}
-
-function shouldUseSocialServiceForFriendships() {
-  return (
-    !getFeatureFlagEnabled(store.getState(), 'use-synapse-server') &&
-    getFeatureFlagEnabled(store.getState(), 'use-social-server-friendships')
-  )
 }
 
 function getTotalUnseenMessages(client: SocialAPI, ownId: string, friendIds: string[]): number {
