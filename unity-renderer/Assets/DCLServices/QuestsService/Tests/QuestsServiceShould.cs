@@ -32,6 +32,11 @@ namespace DCLServices.QuestsService.Tests
                     },
                 }));
             questsService = new QuestsService(client);
+
+            channel.Writer.TryWrite(new UserUpdate()
+            {
+                Subscribed = true,
+            });
         }
 
         [TearDown]
