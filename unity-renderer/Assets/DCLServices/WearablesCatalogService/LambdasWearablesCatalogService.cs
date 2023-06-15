@@ -421,20 +421,24 @@ namespace DCLServices.WearablesCatalogService
                 {
                     if (!partialResponse.taskResponse.success)
                     {
-                        Exception e = new Exception($"The request of the wearables ('{string.Join(", ", partialResponse.wearablesRequested)}') failed!");
-                        sourceToAwait.TrySetException(e);
-                        throw e;
+                        Debug.Log("VV:: partial response - " + partialResponse.taskResponse);
+
+                        // Exception e = new Exception($"The request of the wearables ('{string.Join(", ", partialResponse.wearablesRequested)}') failed!");
+                        // sourceToAwait.TrySetException(e);
+                        // throw e;
                     }
+                    else
+                    {
+                        var response = partialResponse.taskResponse.response;
 
-                    var response = partialResponse.taskResponse.response;
+                        string contentBaseUrl = $"{catalyst.contentUrl}contents/";
 
-                    string contentBaseUrl = $"{catalyst.contentUrl}contents/";
+                        var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, assetBundlesUrl)).ToList();
 
-                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, assetBundlesUrl)).ToList();
-
-                    MapLambdasDataIntoWearableItem(wearables);
-                    AddWearablesToCatalog(wearables);
-                    result.AddRange(wearables);
+                        MapLambdasDataIntoWearableItem(wearables);
+                        AddWearablesToCatalog(wearables);
+                        result.AddRange(wearables);
+                    }
                 }
 
                 sourceToAwait.TrySetResult(result);
