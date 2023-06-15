@@ -19,7 +19,7 @@
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.6.6"
       },
-      "hash": "19d2adea5b917c1463aa431437fd96beef625e0f"
+      "hash": "76b63cdf60ffbc04c2f2851ffde777496e5ef25e"
     },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",
@@ -40,7 +40,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "c7eedf85c79e2ce06658c8060ca38a282f2ca7ab"
+      "hash": "f2773f585e762480c835ac718b82b87cb111e500"
     },
     "com.decentraland.rpc-csharp": {
       "version": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
@@ -54,7 +54,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "84ee7e29c1284051d69da6dd4127724a6435ccf7"
+      "hash": "75f485918a93247053137aad677521c8ebee1d0b"
     },
     "com.decentraland.videoplayer": {
       "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
