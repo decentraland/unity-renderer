@@ -17,7 +17,7 @@ namespace DCLServices.QuestsService
      */
     public class QuestsService : IQuestsService
     {
-        private const bool VERBOSE = true;
+        private const bool VERBOSE = false;
 
         public IAsyncEnumerableWithEvent<QuestInstance> QuestStarted => questStarted;
         public IAsyncEnumerableWithEvent<QuestInstance> QuestUpdated => questUpdated;
