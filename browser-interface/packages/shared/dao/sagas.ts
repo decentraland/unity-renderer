@@ -127,13 +127,14 @@ function* tryConnectRealm(realm: string) {
  * 4- Best pick from candidate scan (implies sync candidate initialization)
  */
 export function* selectAndReconnectRealm() {
-  while (true) { // we're going to try connect realm until we don't have more realms to try
+  while (true) {
+    // we're going to try connect realm until we don't have more realms to try
     const realm: string | undefined = yield call(selectRealm)
 
     if (realm) {
       try {
         yield call(tryConnectRealm, realm)
-        // if no realm was selected, then do the whole initialization dance
+        break
       } catch (e: any) {
         // if it failed, try changing the queryString
         clearQsRealm()
