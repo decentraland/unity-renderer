@@ -49,12 +49,13 @@ export async function deployOutfits(params: {
   // Build the client
   const catalyst = new ContentClient({ contentUrl: url })
 
+  // The pointer for the outfits is: `<address>:outfits`
   const entity = {
     type: EntityType.OUTFITS,
-    pointers: [identity.address],
+    pointers: [identity.address + ':outfits'],
     files: contentFiles,
     metadata: outfits
-  } as unknown as BuildEntityOptions // TODO Juli: update crypto lib to support outfits entity type
+  } as unknown as BuildEntityOptions
 
   // Build entity and group all files
   const preparationData = await catalyst.buildEntity(entity)
