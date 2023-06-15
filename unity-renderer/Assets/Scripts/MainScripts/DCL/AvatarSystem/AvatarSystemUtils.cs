@@ -71,6 +71,7 @@ namespace AvatarSystem
                     // If this is modified, check DecentralandMaterialGenerator.SetMaterialName,
                     // its important for the asset bundles materials to have normalized names but this functionality should work too
                     string name = material.name.ToLower();
+                    Debug.LogError(name); //logging material name as error to see it in the console
 
                     if (name.Contains("skin"))
                         material.SetColor(ShaderUtils.BaseColor, skinColor);
