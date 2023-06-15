@@ -1,12 +1,13 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Interface;
-using System;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
 
 public class UserProfileWebInterfaceBridge : IUserProfileBridge
 {
+    public void SaveVerifiedName(string name) => WebInterface.SendSaveUserVerifiedName(name);
+
     public void SaveUnverifiedName(string name) => WebInterface.SendSaveUserUnverifiedName(name);
 
     public void SaveDescription(string description) => WebInterface.SendSaveUserDescription(description);

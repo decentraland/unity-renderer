@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL.MyAccount
@@ -19,6 +18,7 @@ namespace DCL.MyAccount
         [SerializeField] internal DropdownComponentView claimedNameDropdown;
         [SerializeField] internal GameObject claimedNameInputContainer;
         [SerializeField] internal TMP_InputField claimedNameInputField;
+        [SerializeField] internal Button claimedNameBackToClaimedNamesListButton;
         [SerializeField] internal Button claimedNameUniqueNameButton;
         [SerializeField] internal GameObject mainContainer;
         [SerializeField] internal GameObject loadingContainer;
@@ -43,6 +43,7 @@ namespace DCL.MyAccount
                 OnCurrentNameSubmitted?.Invoke(optionId, true);
             };
             claimNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
+            claimedNameBackToClaimedNamesListButton.onClick.AddListener(() => SetClaimedModeAsInput(false));
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
         }
 
@@ -54,6 +55,7 @@ namespace DCL.MyAccount
             claimedNameInputField.onDeselect.RemoveAllListeners();
             claimedNameInputField.onSubmit.RemoveAllListeners();
             claimNameButton.onClick.RemoveAllListeners();
+            claimedNameBackToClaimedNamesListButton.onClick.RemoveAllListeners();
             claimedNameUniqueNameButton.onClick.RemoveAllListeners();
 
             base.Dispose();
@@ -65,6 +67,7 @@ namespace DCL.MyAccount
             SetCurrentName(model.CurrentName);
             SetClaimBannerActive(model.ShowClaimBanner);
             SetClaimedModeAsInput(model.ShowInputForClaimedMode);
+            SetClaimedNameDropdownOptions(model.loadedClaimedNames);
         }
 
         public void SetClaimedNameMode(bool isClaimed)
@@ -98,12 +101,30 @@ namespace DCL.MyAccount
 
         public void SetClaimedModeAsInput(bool isInput)
         {
+            claimedNameInputField.text = string.Empty;
             claimedNameInputContainer.SetActive(isInput);
             claimedNameDropdown.gameObject.SetActive(!isInput);
+
+            if (isInput)
+                return;
+
+            if (model.loadedClaimedNames.Contains(model.CurrentName))
+            {
+                claimedNameDropdown.SelectOption(model.CurrentName, false);
+                claimedNameDropdown.SetTitle(model.CurrentName);
+            }
+            else
+            {
+                claimedNameDropdown.SelectOption(string.Empty, false);
+                claimedNameDropdown.SetTitle(string.Empty);
+            }
         }
 
         public void SetClaimedNameDropdownOptions(List<string> claimedNamesList)
         {
+            model.loadedClaimedNames.Clear();
+            model.loadedClaimedNames.AddRange(claimedNamesList);
+
             List<ToggleComponentModel> collectionsToAdd = new ();
 
             foreach (string claimedName in claimedNamesList)

@@ -488,6 +488,10 @@ export class BrowserInterface {
     }
   }
 
+  public SaveUserVerifiedName(changes: { newVerifiedName: string }) {
+    store.dispatch(saveProfileDelta({ name: changes.newVerifiedName, hasClaimedName: true }))
+  }
+
   public SaveUserUnverifiedName(changes: { newUnverifiedName: string }) {
     store.dispatch(saveProfileDelta({ name: changes.newUnverifiedName, hasClaimedName: false }))
   }

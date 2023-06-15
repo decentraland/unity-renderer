@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IUserProfileBridge
 {
+    void SaveVerifiedName(string name);
     void SaveUnverifiedName(string name);
     void SaveDescription(string description);
     void RequestFullUserProfile(string userId);

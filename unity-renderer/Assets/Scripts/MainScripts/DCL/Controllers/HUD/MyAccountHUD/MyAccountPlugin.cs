@@ -25,16 +25,17 @@ namespace DCL.MyAccount
 
             var dataStore = DataStore.i;
 
+            myAccountSectionHUDController = new MyAccountSectionHUDController(
+                myAccountSectionView,
+                dataStore);
+
             myProfileController = new MyProfileController(
                 myAccountSectionView.CurrentMyProfileView,
                 dataStore,
                 new UserProfileWebInterfaceBridge(),
                 Environment.i.serviceLocator.Get<INamesService>(),
-                new WebInterfaceBrowserBridge());
-
-            myAccountSectionHUDController = new MyAccountSectionHUDController(
-                myAccountSectionView,
-                dataStore);
+                new WebInterfaceBrowserBridge(),
+                myAccountSectionHUDController);
         }
 
         public void Dispose()

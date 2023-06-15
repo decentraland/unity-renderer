@@ -25,6 +25,9 @@ namespace DCL.MyAccount
             dataStore.exploreV2.configureMyAccountSectionInFullscreenMenu.OnChange -= ConfigureMyAccountSectionInFullscreenMenuChanged;
         }
 
+        public void ShowAccountSettingsUpdatedToast() =>
+            view.ShowAccountSettingsUpdatedToast();
+
         private void ConfigureMyAccountSectionInFullscreenMenuChanged(Transform currentParentTransform, Transform _) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
     }

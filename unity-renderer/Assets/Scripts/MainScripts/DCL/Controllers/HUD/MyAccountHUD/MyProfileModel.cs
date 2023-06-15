@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DCL.MyAccount
 {
@@ -9,5 +10,6 @@ namespace DCL.MyAccount
         public string CurrentName;
         public bool ShowClaimBanner;
         public bool ShowInputForClaimedMode;
+        public List<string> loadedClaimedNames = new ();
     }
 }

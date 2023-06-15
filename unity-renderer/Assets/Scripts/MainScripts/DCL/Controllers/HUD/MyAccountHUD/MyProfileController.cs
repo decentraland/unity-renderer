@@ -11,7 +11,7 @@ namespace DCL.MyAccount
 {
     public class MyProfileController
     {
-        private const string NON_CLAIMED_NAME_OPTION = "Non-claimed NAME";
+        private const string NON_CLAIMED_NAME_OPTION = "- Non-claimed NAME -";
         private const string CLAIM_UNIQUE_NAME_URL = "https://builder.decentraland.org/claim-name";
 
         private readonly IMyProfileComponentView view;
@@ -19,6 +19,7 @@ namespace DCL.MyAccount
         private readonly IUserProfileBridge userProfileBridge;
         private readonly INamesService namesService;
         private readonly IBrowserBridge browserBridge;
+        private readonly MyAccountSectionHUDController myAccountSectionHUDController;
 
         private CancellationTokenSource cts;
 
@@ -29,13 +30,15 @@ namespace DCL.MyAccount
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             INamesService namesService,
-            IBrowserBridge browserBridge)
+            IBrowserBridge browserBridge,
+            MyAccountSectionHUDController myAccountSectionHUDController)
         {
             this.view = view;
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.namesService = namesService;
             this.browserBridge = browserBridge;
+            this.myAccountSectionHUDController = myAccountSectionHUDController;
 
             dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionVisibleChanged;
             view.OnCurrentNameEdited += OnNameEdited;
@@ -100,14 +103,21 @@ namespace DCL.MyAccount
 
         private void OnNameSubmitted(string newName, bool isClaimed)
         {
+            if (newName == ownUserProfile.userName)
+                return;
+
             if (newName == NON_CLAIMED_NAME_OPTION)
             {
                 view.SetClaimedModeAsInput(true);
                 return;
             }
 
-            // TODO: Deploy new name into the profile...
-            Debug.Log($"SANTI ---> NAME CHANGED!! New Name: {newName} | Is Claimed: {isClaimed}");
+            if (isClaimed)
+                userProfileBridge.SaveVerifiedName(newName);
+            else
+                userProfileBridge.SaveUnverifiedName(newName);
+
+            myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
         }
 
         private void OnClaimNameRequested() =>
