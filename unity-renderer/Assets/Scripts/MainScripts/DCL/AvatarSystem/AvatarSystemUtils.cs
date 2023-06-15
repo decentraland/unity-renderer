@@ -73,17 +73,9 @@ namespace AvatarSystem
                     string name = material.name.ToLower();
 
                     if (name.Contains("skin"))
-                    {
-                        Debug.LogError("> " + name + " contains skin");
                         material.SetColor(ShaderUtils.BaseColor, skinColor);
-                    }
                     else if (name.Contains("hair"))
-                    {
-                        Debug.LogError("> " + name + " contains hair");
                         material.SetColor(ShaderUtils.BaseColor, hairColor);
-                    }
-                    else
-                        Debug.LogError("! " + name);
                 }
             }
         }
