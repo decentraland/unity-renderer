@@ -126,7 +126,8 @@ namespace DCL.Social.Friends
             {
                 incoming.Add(new FriendRequest(
                     GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
-                    friendRequest.CreatedAt,
+                    // timestamps comes in seconds instead of milliseconds, so do the conversion
+                    friendRequest.CreatedAt * 1000L,
                     friendRequest.User.Address,
                     userProfileWebInterfaceBridge.GetOwn().userId,
                     friendRequest.Message));
@@ -136,7 +137,8 @@ namespace DCL.Social.Friends
             {
                 outgoing.Add(new FriendRequest(
                     GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
-                    friendRequest.CreatedAt,
+                    // timestamps comes in seconds instead of milliseconds, so do the conversion
+                    friendRequest.CreatedAt * 1000L,
                     userProfileWebInterfaceBridge.GetOwn().userId,
                     friendRequest.User.Address,
                     friendRequest.Message));
@@ -281,7 +283,8 @@ namespace DCL.Social.Friends
 
             return new FriendRequest(
                 GetFriendRequestId(response.User.Address, response.CreatedAt),
-                response.CreatedAt,
+                // timestamps comes in seconds instead of milliseconds, so do the conversion
+                response.CreatedAt * 1000L,
                 userProfileWebInterfaceBridge.GetOwn().userId,
                 response.User.Address,
                 response.Message);
@@ -344,7 +347,8 @@ namespace DCL.Social.Friends
 
                     var request = new FriendRequest(
                         GetFriendRequestId(response.User.Address, response.CreatedAt),
-                        response.CreatedAt,
+                        // timestamps comes in seconds instead of milliseconds, so do the conversion
+                        response.CreatedAt * 1000L,
                         response.User.Address,
                         userProfileWebInterfaceBridge.GetOwn().userId,
                         response.Message);
