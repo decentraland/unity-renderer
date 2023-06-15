@@ -34,7 +34,7 @@ namespace DCL.Social.Friends
                              .Returns(
                                   (args) =>
                                   {
-                                      args[1] = new FriendRequest(FRIEND_REQUEST_ID, new DateTime(100), SENDER_ID, OWN_ID, "hey");
+                                      args[1] = new FriendRequest(FRIEND_REQUEST_ID, new DateTime(621355968001000000), SENDER_ID, OWN_ID, "hey");
                                       return true;
                                   });
 

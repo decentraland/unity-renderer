@@ -329,7 +329,7 @@ namespace DCL.Social.Friends
             Assert.AreEqual("fr1", request.FriendRequestId);
             Assert.AreEqual("senderId", request.From);
             Assert.AreEqual("ownId", request.To);
-            Assert.AreEqual(100, request.Timestamp);
+            Assert.AreEqual(621355968001000000, request.Timestamp.Ticks);
             Assert.AreEqual("hey!", request.MessageBody);
         }
 
@@ -352,7 +352,7 @@ namespace DCL.Social.Friends
             Assert.AreEqual("fr1", request.FriendRequestId);
             Assert.AreEqual("senderId", request.From);
             Assert.AreEqual("ownId", request.To);
-            Assert.AreEqual(100, request.Timestamp);
+            Assert.AreEqual(621355968001000000, request.Timestamp.Ticks);
             Assert.AreEqual("hey!", request.MessageBody);
         }
 
@@ -413,7 +413,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("fr", request.FriendRequestId);
                     Assert.AreEqual("ownId", request.From);
                     Assert.AreEqual("receiverId", request.To);
-                    Assert.AreEqual(100, request.Timestamp);
+                    Assert.AreEqual(621355968001000000, request.Timestamp.Ticks);
                     Assert.AreEqual("bleh", request.MessageBody);
                 }
 
@@ -451,7 +451,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("fr", request.FriendRequestId);
                     Assert.AreEqual("ownId", request.From);
                     Assert.AreEqual("receiverId", request.To);
-                    Assert.AreEqual(100, request.Timestamp);
+                    Assert.AreEqual(621355968001000000, request.Timestamp.Ticks);
                     Assert.AreEqual("bleh", request.MessageBody);
                 }
 
@@ -493,7 +493,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("fr", request.FriendRequestId);
                     Assert.AreEqual("senderId", request.From);
                     Assert.AreEqual("receiverId", request.To);
-                    Assert.AreEqual(100, request.Timestamp);
+                    Assert.AreEqual(621355968001000000, request.Timestamp.Ticks);
                     Assert.AreEqual("bleh", request.MessageBody);
                 }
 
@@ -531,7 +531,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("fr", request.FriendRequestId);
                     Assert.AreEqual("senderId", request.From);
                     Assert.AreEqual("receiverId", request.To);
-                    Assert.AreEqual(100, request.Timestamp);
+                    Assert.AreEqual(621355968001000000, request.Timestamp.Ticks);
                     Assert.AreEqual("bleh", request.MessageBody);
                 }
 
@@ -569,7 +569,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual(payload.friendRequestId, request.FriendRequestId);
                     Assert.AreEqual(payload.from, request.From);
                     Assert.AreEqual(payload.to, request.To);
-                    Assert.AreEqual(payload.timestamp, request.Timestamp);
+                    Assert.AreEqual(DateTimeOffset.FromUnixTimeMilliseconds(payload.timestamp).Ticks, request.Timestamp.Ticks);
                     Assert.AreEqual(payload.messageBody, request.MessageBody);
                 }
 
