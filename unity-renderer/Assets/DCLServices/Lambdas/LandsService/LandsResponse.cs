@@ -10,13 +10,13 @@ namespace DCLServices.Lambdas.LandsService
         [Serializable]
         public class LandEntry
         {
-            [SerializeField] private string name;
-            [SerializeField] private string contractAddress;
-            [SerializeField] private string category;
-            [SerializeField] private string x;
-            [SerializeField] private string y;
-            [SerializeField] private string price;
-            [SerializeField] private string image;
+            public string name;
+            public string contractAddress;
+            public string category;
+            public string x;
+            public string y;
+            public string price;
+            public string image;
 
             public string Name => name;
             public string ContractAddress => contractAddress;
@@ -34,7 +34,7 @@ namespace DCLServices.Lambdas.LandsService
                 };
         }
 
-        [SerializeField] private List<LandEntry> elements;
+        public List<LandEntry> elements;
 
         public IReadOnlyList<LandEntry> Elements => elements;
     }

@@ -10,9 +10,9 @@ namespace DCLServices.Lambdas.NamesService
         [Serializable]
         public class NameEntry
         {
-            [SerializeField] private string name;
-            [SerializeField] private string contractAddress;
-            [SerializeField] private string price;
+            public string name;
+            public string contractAddress;
+            public string price;
 
             public string Name => name;
             public string ContractAddress => contractAddress;
@@ -26,7 +26,7 @@ namespace DCLServices.Lambdas.NamesService
                 };
         }
 
-        [SerializeField] private List<NameEntry> elements;
+        public List<NameEntry> elements;
 
         public IReadOnlyList<NameEntry> Elements => elements;
     }
