@@ -84,9 +84,9 @@ public class OutfitsSectionComponentView : BaseComponentView
             outfit = new OutfitItem.Outfit()
             {
                 bodyShape = currentAvatarModel.bodyShape,
-                eyes = new OutfitItem.ElementColor() { color = currentAvatarModel.eyeColor },
-                hair = new OutfitItem.ElementColor() { color = currentAvatarModel.hairColor },
-                skin = new OutfitItem.ElementColor() { color = currentAvatarModel.skinColor },
+                eyes = currentAvatarModel.eyeColor,
+                hair = currentAvatarModel.hairColor,
+                skin = currentAvatarModel.skinColor,
                 wearables = currentAvatarModel.wearables.ToArray()
             },
             slot = outfitIndex

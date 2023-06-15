@@ -101,7 +101,7 @@ namespace DCL.Backpack
             foreach (string outfitWearable in outfit.outfit.wearables)
                 EquipWearable(outfitWearable);
 
-            SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
+            SetAllColors(outfit.outfit.eyes, outfit.outfit.hair, outfit.outfit.skin);
         }
 
         private void OnOutfitsOpened()

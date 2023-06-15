@@ -1387,7 +1387,6 @@ namespace DCL.Interface
 
         public static void SaveUserOutfits(OutfitItem[] outfits)
         {
-            Debug.Log("test");
             var payload = new SaveUserOutfitsPayload()
             {
                 outfits = outfits,
