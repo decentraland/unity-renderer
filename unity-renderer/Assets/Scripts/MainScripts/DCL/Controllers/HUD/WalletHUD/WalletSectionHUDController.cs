@@ -133,7 +133,12 @@ namespace DCL.Wallet
                     }
                 }
                 catch (OperationCanceledException) { }
-                catch (Exception e) { Debug.LogError(e.Message); }
+                catch (Exception)
+                {
+                    Debug.LogError(network == TheGraphNetwork.Ethereum ?
+                        "Error requesting Ethereum MANA balance from TheGraph!" :
+                        "Error requesting Polygon MANA balance from TheGraph!");
+                }
                 finally
                 {
                     if (network == TheGraphNetwork.Ethereum)
