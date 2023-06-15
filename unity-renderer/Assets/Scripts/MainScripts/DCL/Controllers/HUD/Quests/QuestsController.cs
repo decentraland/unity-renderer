@@ -42,20 +42,22 @@ namespace DCL.Quests
             this.questLogComponentView = questLogComponentView;
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
+
             disposeCts = new CancellationTokenSource();
             quests = new ();
-            if (questsService != null)
-            {
-                StartTrackingQuests(disposeCts.Token).Forget();
-                StartTrackingStartedQuests(disposeCts.Token).Forget();
-            }
+
+            StartTrackingQuests(disposeCts.Token).Forget();
+            StartTrackingStartedQuests(disposeCts.Token).Forget();
+
             questLogComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
+
             questStartedPopupComponentView.OnOpenQuestLog += () => { dataStore.HUDs.questsPanelVisible.Set(true); };
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange += ConfigureQuestLogInFullscreenMenuChanged;
             ConfigureQuestLogInFullscreenMenuChanged(dataStore.exploreV2.configureQuestInFullscreenMenu.Get(), null);
             questLogComponentView.OnPinChange += ChangePinnedQuest;
             questTrackerComponentView.OnJumpIn += JumpIn;
             questLogComponentView.OnJumpIn += JumpIn;
+
             foreach (var questsServiceQuestInstance in questsService.QuestInstances)
                 AddOrUpdateQuestToLog(questsServiceQuestInstance.Value);
 
@@ -159,7 +161,6 @@ namespace DCL.Quests
                 questDescription = questInstance.Quest.Description,
                 questId = questInstance.Id,
                 isPinned = questInstance.Id == pinnedQuestId.Get(),
-                //coordinates = questInstance.Quest.Coordinates,
                 questSteps = GetQuestSteps(questInstance, true),
                 questRewards = new List<QuestRewardComponentModel>()
             };
