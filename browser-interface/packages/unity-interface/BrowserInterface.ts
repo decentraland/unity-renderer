@@ -191,7 +191,6 @@ export type RendererSaveOutfits = {
         }
       }
       wearables: string[]
-      forceRender?: string[]
     }
   }[]
   namesForExtraSlots: string[]
@@ -284,8 +283,7 @@ export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
               eyes: color3Schema,
               hair: color3Schema,
               skin: color3Schema,
-              wearables: { type: 'array', items: { type: 'string' } },
-              forceRender: { type: 'array', items: { type: 'string' }, nullable: true }
+              wearables: { type: 'array', items: { type: 'string' } }
             }
           }
         }
@@ -554,8 +552,7 @@ export class BrowserInterface {
           eyes: { color: outfit.eyes.color },
           hair: { color: outfit.hair.color },
           skin: { color: outfit.skin.color },
-          wearables: outfit.wearables,
-          forceRender: (outfit.forceRender ?? []).map((category) => category as WearableCategory)
+          wearables: outfit.wearables
         }
       }))
 
