@@ -12,7 +12,7 @@ namespace DCL.MyAccount
         void SetClaimedNameMode(bool isClaimed);
         void SetCurrentName(string newName);
         void SetClaimBannerActive(bool isActive);
-        void SetClaimedModeAsInput(bool isInput);
+        void SetClaimedModeAsInput(bool isInput, bool cleanInputField = false);
         void SetClaimedNameDropdownOptions(List<string> claimedNamesList);
         void SetLoadingActive(bool isActive);
     }

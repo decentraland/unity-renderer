@@ -99,10 +99,13 @@ namespace DCL.MyAccount
             claimNameBanner.SetActive(isActive);
         }
 
-        public void SetClaimedModeAsInput(bool isInput)
+        public void SetClaimedModeAsInput(bool isInput, bool cleanInputField = false)
         {
             claimedNameInputContainer.SetActive(isInput);
             claimedNameDropdown.gameObject.SetActive(!isInput);
+
+            if (cleanInputField)
+                claimedNameInputField.text = string.Empty;
 
             if (isInput)
                 return;

@@ -26,6 +26,8 @@ namespace DCL.MyAccount
         private CancellationTokenSource cts;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
+        private string ownUserMainName => SplitUserName(ownUserProfile.userName).mainName;
+        private string ownUserNonClaimedHashtag => SplitUserName(ownUserProfile.userName).nonClaimedHashtag;
 
         public MyProfileController(
             IMyProfileComponentView view,
@@ -106,7 +108,7 @@ namespace DCL.MyAccount
         {
             view.SetClaimedNameMode(loadedNames.Count > 0);
             view.SetClaimedModeAsInput(!ownUserProfile.hasClaimedName);
-            view.SetCurrentName(ownUserProfile.userName);
+            view.SetCurrentName(ownUserMainName);
             view.SetClaimBannerActive(loadedNames.Count == 0);
             view.SetLoadingActive(false);
         }
@@ -118,12 +120,12 @@ namespace DCL.MyAccount
 
         private void OnNameSubmitted(string newName, bool isClaimed)
         {
-            if (newName == ownUserProfile.userName)
+            if (newName == ownUserMainName)
                 return;
 
             if (newName == NON_CLAIMED_NAME_OPTION)
             {
-                view.SetClaimedModeAsInput(true);
+                view.SetClaimedModeAsInput(true, ownUserProfile.hasClaimedName);
                 return;
             }
 
@@ -135,15 +137,30 @@ namespace DCL.MyAccount
             myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
         }
 
-        private void OnClaimNameRequested() =>
-            browserBridge.OpenUrl(CLAIM_UNIQUE_NAME_URL);
-
         private void OnOwnUserProfileUpdated(UserProfile userProfile)
         {
             if (userProfile == null)
                 return;
 
             RefreshNamesSectionStatus();
+        }
+
+        private void OnClaimNameRequested() =>
+            browserBridge.OpenUrl(CLAIM_UNIQUE_NAME_URL);
+
+        private (string mainName, string nonClaimedHashtag) SplitUserName(string userName)
+        {
+            (string mainName, string nonClaimedHashtag) result = (string.Empty, string.Empty);
+
+            string[] splitName = userName.Split('#');
+
+            if (splitName.Length > 0)
+                result.mainName = splitName[0];
+
+            if (splitName.Length > 1)
+                result.nonClaimedHashtag = splitName[1];
+
+            return result;
         }
     }
 }
