@@ -1,6 +1,6 @@
 import { Authenticator } from '@dcl/crypto'
 import { EntityType, Outfits } from '@dcl/schemas'
-import { BuildEntityOptions, BuildEntityWithoutFilesOptions, ContentClient, DeploymentData } from 'dcl-catalyst-client'
+import { BuildEntityOptions, ContentClient, DeploymentData } from 'dcl-catalyst-client'
 import defaultLogger from 'lib/logger'
 import { call, select } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
@@ -45,17 +45,9 @@ export async function deployOutfits(params: {
 }) {
   const { url, identity, outfits } = params
   const contentFiles = params.contentFiles || new Map<string, Uint8Array>()
-  const contentHashes = params.contentHashes || new Map<string, string>()
 
   // Build the client
   const catalyst = new ContentClient({ contentUrl: url })
-
-  const entityWithoutNewFilesPayload = {
-    type: EntityType.OUTFITS,
-    pointers: [identity.address],
-    hashesByKey: contentHashes,
-    metadata: outfits
-  } as unknown as BuildEntityWithoutFilesOptions // TODO Juli: update crypto lib to support outfits entity type
 
   const entity = {
     type: EntityType.OUTFITS,
@@ -65,9 +57,7 @@ export async function deployOutfits(params: {
   } as unknown as BuildEntityOptions // TODO Juli: update crypto lib to support outfits entity type
 
   // Build entity and group all files
-  const preparationData = await (contentFiles.size
-    ? catalyst.buildEntity(entity)
-    : catalyst.buildEntityWithoutNewFiles(entityWithoutNewFilesPayload))
+  const preparationData = await catalyst.buildEntity(entity)
 
   // Sign the entity id
   const authChain = Authenticator.signPayload(identity, preparationData.entityId)
@@ -75,6 +65,6 @@ export async function deployOutfits(params: {
   // Build the deploy data
   const deployData: DeploymentData = { ...preparationData, authChain }
 
-  // Deploy the actual entity
+  // Deploy the entity
   return catalyst.deploy(deployData)
 }

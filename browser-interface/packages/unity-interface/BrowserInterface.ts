@@ -168,26 +168,26 @@ export type RendererSaveOutfits = {
       bodyShape: string
       eyes: {
         color: {
-          r: number
-          g: number
-          b: number
           a: number
+          b: number
+          g: number
+          r: number
         }
       }
       hair: {
         color: {
-          r: number
-          g: number
-          b: number
           a: number
+          b: number
+          g: number
+          r: number
         }
       }
       skin: {
         color: {
-          r: number
-          g: number
-          b: number
           a: number
+          b: number
+          g: number
+          r: number
         }
       }
       wearables: string[]
