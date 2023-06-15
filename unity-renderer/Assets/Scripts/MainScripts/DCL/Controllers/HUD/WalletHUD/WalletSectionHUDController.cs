@@ -110,24 +110,40 @@ namespace DCL.Wallet
                         ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId),
                     cancellationToken: cancellationToken);
 
-                if (network == TheGraphNetwork.Ethereum)
-                    view.SetEthereumManaLoadingActive(true);
-                else
-                    view.SetPolygonManaLoadingActive(true);
+                double ethereumManaBalanceResult = dataStore.wallet.currentEthereumManaBalance.Get();
+                double polygonManaBalanceResult = dataStore.wallet.currentPolygonManaBalance.Get();
 
-                Promise<double> promise = theGraph.QueryMana(ownUserProfile.userId, network);
-                if (promise != null)
+                try
                 {
-                    await promise;
+                    if (network == TheGraphNetwork.Ethereum)
+                        view.SetEthereumManaLoadingActive(true);
+                    else
+                        view.SetPolygonManaLoadingActive(true);
 
+                    Promise<double> promise = theGraph.QueryMana(ownUserProfile.userId, network);
+
+                    if (promise != null)
+                    {
+                        await promise;
+
+                        if (network == TheGraphNetwork.Ethereum)
+                            ethereumManaBalanceResult = promise.value;
+                        else
+                            polygonManaBalanceResult = promise.value;
+                    }
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e) { Debug.LogError(e.Message); }
+                finally
+                {
                     if (network == TheGraphNetwork.Ethereum)
                     {
-                        dataStore.wallet.currentEthereumManaBalance.Set(promise.value);
+                        dataStore.wallet.currentEthereumManaBalance.Set(ethereumManaBalanceResult);
                         view.SetEthereumManaLoadingActive(false);
                     }
                     else
                     {
-                        dataStore.wallet.currentPolygonManaBalance.Set(promise.value);
+                        dataStore.wallet.currentPolygonManaBalance.Set(polygonManaBalanceResult);
                         view.SetPolygonManaLoadingActive(false);
                     }
                 }
