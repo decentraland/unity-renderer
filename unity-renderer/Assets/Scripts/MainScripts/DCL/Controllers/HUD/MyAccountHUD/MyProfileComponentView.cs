@@ -101,7 +101,6 @@ namespace DCL.MyAccount
 
         public void SetClaimedModeAsInput(bool isInput)
         {
-            claimedNameInputField.text = string.Empty;
             claimedNameInputContainer.SetActive(isInput);
             claimedNameDropdown.gameObject.SetActive(!isInput);
 

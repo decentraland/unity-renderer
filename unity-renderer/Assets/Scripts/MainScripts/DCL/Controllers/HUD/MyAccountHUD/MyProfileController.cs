@@ -2,6 +2,7 @@
 using DCL.Browser;
 using DCL.Tasks;
 using DCLServices.Lambdas.NamesService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -20,6 +21,7 @@ namespace DCL.MyAccount
         private readonly INamesService namesService;
         private readonly IBrowserBridge browserBridge;
         private readonly MyAccountSectionHUDController myAccountSectionHUDController;
+        private readonly List<string> loadedNames = new ();
 
         private CancellationTokenSource cts;
 
@@ -44,6 +46,7 @@ namespace DCL.MyAccount
             view.OnCurrentNameEdited += OnNameEdited;
             view.OnCurrentNameSubmitted += OnNameSubmitted;
             view.OnClaimNameClicked += OnClaimNameRequested;
+            ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
         }
 
         public void Dispose()
@@ -52,6 +55,7 @@ namespace DCL.MyAccount
             view.OnCurrentNameEdited -= OnNameEdited;
             view.OnCurrentNameSubmitted -= OnNameSubmitted;
             view.OnClaimNameClicked -= OnClaimNameRequested;
+            ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
         }
 
         private void OnMyAccountSectionVisibleChanged(bool isVisible, bool _)
@@ -73,26 +77,37 @@ namespace DCL.MyAccount
 
         private async UniTask LoadOwnedNamesAsync(CancellationToken ct)
         {
-            view.SetLoadingActive(true);
-            var names = await namesService.RequestOwnedNamesAsync(
-                ownUserProfile.userId,
-                1,
-                int.MaxValue,
-                true,
-                ct);
-
-            if (names.names.Count > 0)
+            try
             {
-                var optionsToLoad = new List<string>();
-                optionsToLoad.AddRange(names.names.Select(x => x.Name));
-                optionsToLoad.Add(NON_CLAIMED_NAME_OPTION);
-                view.SetClaimedNameDropdownOptions(optionsToLoad);
-            }
+                loadedNames.Clear();
+                view.SetLoadingActive(true);
+                var names = await namesService.RequestOwnedNamesAsync(
+                    ownUserProfile.userId,
+                    1,
+                    int.MaxValue,
+                    true,
+                    ct);
 
-            view.SetClaimedNameMode(ownUserProfile.hasClaimedName);
+                if (names.names is { Count: > 0 })
+                {
+                    var optionsToLoad = new List<string>();
+                    optionsToLoad.AddRange(names.names.Select(x => x.Name));
+                    optionsToLoad.Add(NON_CLAIMED_NAME_OPTION);
+                    view.SetClaimedNameDropdownOptions(optionsToLoad);
+                    loadedNames.AddRange(optionsToLoad);
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e) { Debug.LogError(e.Message); }
+            finally { RefreshNamesSectionStatus(); }
+        }
+
+        private void RefreshNamesSectionStatus()
+        {
+            view.SetClaimedNameMode(loadedNames.Count > 0);
+            view.SetClaimedModeAsInput(!ownUserProfile.hasClaimedName);
             view.SetCurrentName(ownUserProfile.userName);
-            view.SetClaimBannerActive(names.names.Count == 0);
-            view.SetClaimedModeAsInput(false);
+            view.SetClaimBannerActive(loadedNames.Count == 0);
             view.SetLoadingActive(false);
         }
 
@@ -122,5 +137,13 @@ namespace DCL.MyAccount
 
         private void OnClaimNameRequested() =>
             browserBridge.OpenUrl(CLAIM_UNIQUE_NAME_URL);
+
+        private void OnOwnUserProfileUpdated(UserProfile userProfile)
+        {
+            if (userProfile == null)
+                return;
+
+            RefreshNamesSectionStatus();
+        }
     }
 }
