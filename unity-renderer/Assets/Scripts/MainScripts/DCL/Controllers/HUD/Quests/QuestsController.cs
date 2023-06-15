@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.QuestsService;
 using Decentraland.Quests;
@@ -12,12 +13,15 @@ namespace DCL.Quests
 {
     public class QuestsController : IDisposable
     {
+        private const string PINNED_QUEST_KEY = "PinnedQuestId";
+
         private readonly IQuestsService questsService;
         private readonly IQuestTrackerComponentView questTrackerComponentView;
         private readonly IQuestCompletedComponentView questCompletedComponentView;
         private readonly IQuestStartedPopupComponentView questStartedPopupComponentView;
         private readonly IQuestLogComponentView questLogComponentView;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly IPlayerPrefs playerPrefs;
         private readonly DataStore dataStore;
 
         private CancellationTokenSource disposeCts = null;
@@ -33,6 +37,7 @@ namespace DCL.Quests
             IQuestStartedPopupComponentView questStartedPopupComponentView,
             IQuestLogComponentView questLogComponentView,
             IUserProfileBridge userProfileBridge,
+            IPlayerPrefs playerPrefs,
             DataStore dataStore)
         {
             this.questsService = questsService;
@@ -41,6 +46,7 @@ namespace DCL.Quests
             this.questStartedPopupComponentView = questStartedPopupComponentView;
             this.questLogComponentView = questLogComponentView;
             this.userProfileBridge = userProfileBridge;
+            this.playerPrefs = playerPrefs;
             this.dataStore = dataStore;
 
             disposeCts = new CancellationTokenSource();
@@ -61,6 +67,7 @@ namespace DCL.Quests
             foreach (var questsServiceQuestInstance in questsService.QuestInstances)
                 AddOrUpdateQuestToLog(questsServiceQuestInstance.Value);
 
+            ChangePinnedQuest(playerPrefs.GetString(PINNED_QUEST_KEY, ""), true);
         }
 
         private void JumpIn(Vector2Int obj) =>
@@ -71,6 +78,9 @@ namespace DCL.Quests
             string previousPinnedQuestId = pinnedQuestId.Get();
 
             pinnedQuestId.Set(isPinned ? questId : "");
+
+            playerPrefs.Set(PINNED_QUEST_KEY, pinnedQuestId.Get());
+            playerPrefs.Save();
 
             if (!string.IsNullOrEmpty(previousPinnedQuestId))
                 AddOrUpdateQuestToLog(quests[previousPinnedQuestId]);
@@ -105,6 +115,20 @@ namespace DCL.Quests
             }
         }
 
+        private async UniTaskVoid StartTrackingStartedQuests(CancellationToken ct)
+        {
+            await foreach (var questStateUpdate in questsService.QuestStarted.WithCancellation(ct))
+            {
+                await UniTask.SwitchToMainThread(ct);
+                AddOrUpdateQuestToLog(questStateUpdate);
+                questStartedPopupComponentView.SetQuestName(questStateUpdate.Quest.Name);
+                questStartedPopupComponentView.SetVisible(true);
+
+                if(string.IsNullOrEmpty(pinnedQuestId.Get()))
+                    ChangePinnedQuest(questStateUpdate.Id, true);
+            }
+        }
+
         private List<QuestStepComponentModel> GetQuestSteps(QuestInstance questInstance, bool includePreviousSteps = false)
         {
             List<QuestStepComponentModel> questSteps = new List<QuestStepComponentModel>();
@@ -136,17 +160,6 @@ namespace DCL.Quests
             }
 
             return questSteps;
-        }
-
-        private async UniTaskVoid StartTrackingStartedQuests(CancellationToken ct)
-        {
-            await foreach (var questStateUpdate in questsService.QuestStarted.WithCancellation(ct))
-            {
-                await UniTask.SwitchToMainThread(ct);
-                AddOrUpdateQuestToLog(questStateUpdate);
-                questStartedPopupComponentView.SetQuestName(questStateUpdate.Quest.Name);
-                questStartedPopupComponentView.SetVisible(true);
-            }
         }
 
         private void AddOrUpdateQuestToLog(QuestInstance questInstance, bool showCompletedQuestHUD = false)

@@ -25,6 +25,7 @@ namespace DCL.Quests
 
         public event Action<string, bool> OnPinChange;
         public event Action<Vector2Int> OnJumpIn;
+        public event Action<string> OnQuestAbandon;
 
         private Dictionary<string, ActiveQuestComponentView> activeQuests;
         private Dictionary<string, ActiveQuestComponentView> completedQuests;
@@ -38,11 +39,13 @@ namespace DCL.Quests
             completedQuests = new ();
             questsPool = new UnityObjectPool<ActiveQuestComponentView>(activeQuestPrefab, activeQuestsContainer, actionOnDestroy: x => x.Hide());
             questsPool.Prewarm(MAX_QUESTS_COUNT);
-            questDetailsComponentView.OnJumpIn += (coords) => OnJumpIn?.Invoke(coords);
 
             InitialiseSectionSelector();
 
+            questDetailsComponentView.OnJumpIn += (coords) => OnJumpIn?.Invoke(coords);
             questDetailsComponentView.OnPinChange += (questId, isPinned) => OnPinChange?.Invoke(questId, isPinned);
+            questDetailsComponentView.OnQuestAbandon += (questId) => OnQuestAbandon?.Invoke(questId);
+
             emptyState.SetActive(true);
         }
 
@@ -154,10 +157,11 @@ namespace DCL.Quests
             if (parentTransform == null)
                 return;
 
-            transform.SetParent(parentTransform);
-            transform.localScale = Vector3.one;
+            Transform panelTransform;
+            (panelTransform = transform).SetParent(parentTransform);
+            panelTransform.localScale = Vector3.one;
 
-            RectTransform rectTransform = transform as RectTransform;
+            RectTransform rectTransform = panelTransform as RectTransform;
             if (rectTransform == null) return;
             rectTransform.anchorMin = Vector2.zero;
             rectTransform.anchorMax = Vector2.one;

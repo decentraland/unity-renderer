@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Providers;
 using DCL.Quests;
 using DCLServices.QuestsService;
@@ -55,6 +56,7 @@ public class QuestsPlugin : IPlugin
             questStartedPopupComponentView,
             questLogComponentView,
             userProfileBridge,
+            new DefaultPlayerPrefs(),
             DataStore.i);
     }
 
