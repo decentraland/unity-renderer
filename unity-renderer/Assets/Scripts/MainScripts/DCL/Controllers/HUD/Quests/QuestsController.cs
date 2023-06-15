@@ -77,7 +77,6 @@ namespace DCL.Quests
                 ChangePinnedQuest(questId, false);
             questsService.AbortQuest(questId).Forget();
             questLogComponentView.RemoveQuestIfExists(questId);
-            questLogComponentView.
         }
 
         private void JumpIn(Vector2Int obj) =>
