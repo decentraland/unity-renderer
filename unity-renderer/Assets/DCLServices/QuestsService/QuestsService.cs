@@ -113,7 +113,11 @@ namespace DCLServices.QuestsService
         public async UniTask<AbortQuestResponse> AbortQuest(string questInstanceId)
         {
             await gettingInitialState.Task;
-            return await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId });
+            AbortQuestResponse abortQuestResponse = await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId });
+
+            if (abortQuestResponse.ResponseCase == AbortQuestResponse.ResponseOneofCase.Accepted)
+                questInstances.Remove(questInstanceId);
+            return abortQuestResponse;
         }
 
         public UniTask<Quest> GetDefinition(string questId, CancellationToken cancellationToken = default)
