@@ -61,6 +61,7 @@ namespace DCL.Quests
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange += ConfigureQuestLogInFullscreenMenuChanged;
             ConfigureQuestLogInFullscreenMenuChanged(dataStore.exploreV2.configureQuestInFullscreenMenu.Get(), null);
             questLogComponentView.OnPinChange += ChangePinnedQuest;
+            questLogComponentView.OnQuestAbandon += AbandonQuest;
             questTrackerComponentView.OnJumpIn += JumpIn;
             questLogComponentView.OnJumpIn += JumpIn;
 
@@ -68,6 +69,15 @@ namespace DCL.Quests
                 AddOrUpdateQuestToLog(questsServiceQuestInstance.Value);
 
             ChangePinnedQuest(playerPrefs.GetString(PINNED_QUEST_KEY, ""), true);
+        }
+
+        private void AbandonQuest(string questId)
+        {
+            if(pinnedQuestId.Get().Equals(questId))
+                ChangePinnedQuest(questId, false);
+            questsService.AbortQuest(questId).Forget();
+            questLogComponentView.RemoveQuestIfExists(questId);
+            questLogComponentView.
         }
 
         private void JumpIn(Vector2Int obj) =>
@@ -85,7 +95,7 @@ namespace DCL.Quests
             if (!string.IsNullOrEmpty(previousPinnedQuestId))
                 AddOrUpdateQuestToLog(quests[previousPinnedQuestId]);
 
-            if (string.IsNullOrEmpty(pinnedQuestId.Get()))
+            if (string.IsNullOrEmpty(pinnedQuestId.Get()) || !quests.ContainsKey(questId))
             {
                 questTrackerComponentView.SetVisible(false);
                 return;
@@ -124,7 +134,7 @@ namespace DCL.Quests
                 questStartedPopupComponentView.SetQuestName(questStateUpdate.Quest.Name);
                 questStartedPopupComponentView.SetVisible(true);
 
-                if(string.IsNullOrEmpty(pinnedQuestId.Get()))
+                if(string.IsNullOrEmpty(pinnedQuestId.Get()) || quests.ContainsKey(pinnedQuestId.Get()))
                     ChangePinnedQuest(questStateUpdate.Id, true);
             }
         }

@@ -152,6 +152,14 @@ namespace DCL.Quests
             sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).SelectToggle(true);
         }
 
+        public void RemoveQuestIfExists(string questId)
+        {
+            if (!activeQuests.ContainsKey(questId)) return;
+
+            questsPool.Release(activeQuests[questId]);
+            activeQuests.Remove(questId);
+        }
+
         public void SetAsFullScreenMenuMode(Transform parentTransform)
         {
             if (parentTransform == null)
