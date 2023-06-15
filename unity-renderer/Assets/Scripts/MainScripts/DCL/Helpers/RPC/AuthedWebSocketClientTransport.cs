@@ -1,15 +1,21 @@
 ﻿using Cysharp.Threading.Tasks;
-using Newtonsoft.Json;
+using HybridWebSocket;
 using rpc_csharp.transport;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using UnityEngine;
-using WebSocketSharp;
 
 namespace RPC.Transports
 {
-    public class AuthedWebSocketClientTransport : WebSocket, ITransport
+    /// <summary>
+    /// This WebSocketClientTransport contains authentication with signed headers out of the box. The process is the following:
+    /// 1. Request the signed headers using the IRPCSignRequest provided.
+    /// 2. Connect to the WebSocket server.
+    /// 3. Send the signed headers to the server.
+    /// </summary>
+    public class AuthedWebSocketClientTransport : ITransport
     {
         private bool VERBOSE = false;
 
@@ -19,61 +25,94 @@ namespace RPC.Transports
         public event Action OnConnectEvent;
 
         private readonly IRPCSignRequest signRequest;
+        private readonly WebSocket webSocket;
 
-        public AuthedWebSocketClientTransport(IRPCSignRequest signRequest, string url, params string[] protocols) : base(url, protocols)
+        public AuthedWebSocketClientTransport(IRPCSignRequest signRequest, string url)
         {
+            webSocket = WebSocketFactory.CreateInstance(url);
             this.signRequest = signRequest;
-            this.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
         }
 
-        public new async UniTask Connect() =>
-            await this.Connect(default(CancellationToken));
-
-        public async UniTask Connect(CancellationToken ct)
+        public async UniTask Connect(string requestUrl, CancellationToken ct = default)
         {
-            base.OnMessage += this.HandleMessage;
-            base.OnError += this.HandleError;
-            base.OnClose += this.HandleClose;
-            base.OnOpen += this.HandleOpen;
-
-            base.Connect();
-
-            // TODO: Quest Server is not accepting the correct url and by now it needs "/". Change it as soon as QuestServer is ready to have a generic authed WebSocket Client
-            string signResponse = await signRequest.RequestSignedHeaders("/", new Dictionary<string, string>(), ct);
+            webSocket.OnMessage += this.HandleMessage;
+            webSocket.OnError += this.HandleError;
+            webSocket.OnClose += this.HandleClose;
+            webSocket.OnOpen += this.HandleOpen;
 
             if (VERBOSE)
-                Debug.Log($"Signed  Headers received:\n{signResponse}");
+                Debug.Log($"[{nameof(GetType)}]: Requesting signed headers...");
 
-            Send(signResponse);
+            string signResponse = await signRequest.RequestSignedHeaders(requestUrl, new Dictionary<string, string>(), ct);
+
+            if (VERBOSE)
+                Debug.Log($"[{nameof(GetType)}]: Signed Headers received:\n{signResponse}");
+
+            webSocket.Connect();
+            // We have to wait for connection to be done to send the signed headers for authentication
+            var connected = false;
+            void OnReady()
+            {
+                connected = true;
+            }
+            webSocket.OnOpen += OnReady;
+
+            if (VERBOSE)
+                Debug.Log($"[{nameof(GetType)}]: Waiting for connection...");
+            webSocket.Connect();
+            await UniTask.WaitUntil(() => connected, cancellationToken: ct);
+            if (VERBOSE)
+                Debug.Log($"[{nameof(GetType)}]: Connected");
+            webSocket.OnOpen -= OnReady;
+
+            if (VERBOSE)
+                Debug.Log($"[{nameof(GetType)}]: Sending the signed headers");
+            webSocket.Send(signResponse);
         }
 
-        private void HandleMessage(object sender, MessageEventArgs e)
+        private void HandleMessage(byte[] data)
         {
-            OnMessageEvent?.Invoke(e.RawData);
+            OnMessageEvent?.Invoke(data);
         }
 
-        private void HandleError(object sender, ErrorEventArgs e)
+        private void HandleError(string errorMsg)
         {
             if(VERBOSE)
-                Debug.Log(e.Message);
-            OnErrorEvent?.Invoke(e.Message);
+                Debug.Log($"[{nameof(GetType)}]: Error\n{errorMsg}");
+            OnErrorEvent?.Invoke(errorMsg);
         }
 
-        private void HandleClose(object sender, CloseEventArgs e)
+        private void HandleClose(WebSocketCloseCode closeCode)
         {
-            if(VERBOSE)
-                Debug.Log(e.Reason);
+            if (VERBOSE)
+                Debug.Log($"[{nameof(GetType)}]: Closed WebSocket: {closeCode}");
             OnCloseEvent?.Invoke();
         }
 
-        private void HandleOpen(object sender, EventArgs e)
+        private void HandleOpen()
         {
+            if (VERBOSE)
+                Debug.Log($"[{nameof(GetType)}]: Open WebSocket:");
             OnConnectEvent?.Invoke();
         }
 
         public void SendMessage(byte[] data)
         {
-            Send(data);
+            if (VERBOSE)
+                Debug.Log($"[{nameof(GetType)}]: Sending bytes UTF8 decoded:\n{Encoding.UTF8.GetString(data)}");
+            webSocket.Send(data);
+        }
+
+        public void SendMessage(string data)
+        {
+            if (VERBOSE)
+                Debug.Log($"[{nameof(GetType)}]: Sending data:\n{data}");
+            webSocket.Send(data);
+        }
+
+        public void Close()
+        {
+            webSocket.Close();
         }
 
         public void Dispose()
@@ -83,10 +122,10 @@ namespace RPC.Transports
             OnMessageEvent = null;
             OnConnectEvent = null;
 
-            base.OnMessage -= this.HandleMessage;
-            base.OnError -= this.HandleError;
-            base.OnClose -= this.HandleClose;
-            base.OnOpen -= this.HandleOpen;
+            webSocket.OnMessage -= this.HandleMessage;
+            webSocket.OnError -= this.HandleError;
+            webSocket.OnClose -= this.HandleClose;
+            webSocket.OnOpen -= this.HandleOpen;
         }
     }
 }

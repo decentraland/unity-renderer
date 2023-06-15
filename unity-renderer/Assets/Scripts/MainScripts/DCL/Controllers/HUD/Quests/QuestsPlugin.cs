@@ -65,28 +65,11 @@ public class QuestsPlugin : IPlugin
         var rpcSignRequest = new RPCSignRequest(DCL.Environment.i.serviceLocator.Get<IRPC>());
         AuthedWebSocketClientTransport webSocketClientTransport = new AuthedWebSocketClientTransport(rpcSignRequest, "wss://quests-rpc.decentraland.zone");
 
-        webSocketClientTransport.Log.Output = (data, s) =>
-        {
-            switch (data.Level)
-            {
-                case LogLevel.Debug:
-                case LogLevel.Info:
-                case LogLevel.Trace:
-                    Debug.Log($"QuestService.Transport.Output: {data.Message}");
-                    break;
-                case LogLevel.Error:
-                case LogLevel.Fatal:
-                    Debug.LogError($"QuestService.Transport.Output: {data.Message}");
-                    break;
-                case LogLevel.Warn:
-                    Debug.LogWarning($"QuestService.Transport.Output: {data.Message}");
-                    break;
-            }
-        };
+        //TODO Quest Server is not accepting the correct url and by now it needs "/". Change it as soon as QuestServer is ready to have a generic authed WebSocket Client
+        await webSocketClientTransport.Connect("/");
 
-        await webSocketClientTransport.Connect();
         RpcClient rpcClient = new RpcClient(webSocketClientTransport);
-        var clientPort = await rpcClient.CreatePort("UnityTest");
+        var clientPort = await rpcClient.CreatePort("Unity_QuestsService");
         var module = await clientPort.LoadModule(QuestsServiceCodeGen.ServiceName);
         return new ClientQuestsService(module);
     }
