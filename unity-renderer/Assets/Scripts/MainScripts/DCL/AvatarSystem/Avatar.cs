@@ -107,7 +107,10 @@ namespace AvatarSystem
                 }
             }
             else
-                container = GetDeepParentOf(loader.bodyshapeContainer, "Armature");
+            {
+                GameObject parent = GetDeepParentOf(loader.bodyshapeContainer, "Armature");
+                container = parent != null ? parent : container;
+            }
 
             animator.Prepare(settings.bodyshapeId, container);
             Prepare(settings, emotes, loader.bodyshapeContainer);
