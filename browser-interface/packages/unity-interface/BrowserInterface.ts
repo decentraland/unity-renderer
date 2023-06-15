@@ -167,28 +167,22 @@ export type RendererSaveOutfits = {
     outfit: {
       bodyShape: string
       eyes: {
-        color: {
-          a: number
-          b: number
-          g: number
-          r: number
-        }
+        a: number
+        b: number
+        g: number
+        r: number
       }
       hair: {
-        color: {
-          a: number
-          b: number
-          g: number
-          r: number
-        }
+        a: number
+        b: number
+        g: number
+        r: number
       }
       skin: {
-        color: {
-          a: number
-          b: number
-          g: number
-          r: number
-        }
+        a: number
+        b: number
+        g: number
+        r: number
       }
       wearables: string[]
     }
@@ -549,9 +543,9 @@ export class BrowserInterface {
         slot,
         outfit: {
           bodyShape: outfit.bodyShape,
-          eyes: { color: outfit.eyes.color },
-          hair: { color: outfit.hair.color },
-          skin: { color: outfit.skin.color },
+          eyes: { color: outfit.eyes },
+          hair: { color: outfit.hair },
+          skin: { color: outfit.skin },
           wearables: outfit.wearables
         }
       }))
