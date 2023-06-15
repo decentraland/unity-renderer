@@ -364,9 +364,9 @@ namespace DCL.Social.Friends
             controller.Initialize();
 
             FriendRequest CreateFriendRequest(int number) =>
-                new ($"id{number}", number, $"from{number}", $"to{number}", $"a message {number}");
+                new ($"id{number}", new DateTime(number), $"from{number}", $"to{number}", $"a message {number}");
 
-            var lateUser1Request = new FriendRequest($"id1", 10, "from1", "to1", "a message 2");
+            var lateUser1Request = new FriendRequest($"id1", new DateTime(10), "from1", "to1", "a message 2");
 
             var outgoingFriendRequests = new[]
             {
@@ -720,7 +720,7 @@ namespace DCL.Social.Friends
                 controller.Initialize();
 
                 FriendRequest CreateFriendRequest(int number) =>
-                    new ($"id{number}", number, $"from{number}", $"to{number}", $"a message {number}");
+                    new ($"id{number}", new DateTime(number), $"from{number}", $"to{number}", $"a message {number}");
 
                 var outgoingFriendRequests = new[]
                 {
@@ -831,8 +831,8 @@ namespace DCL.Social.Friends
                 controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
 
                 var friendRequestId = $"{FRIEND_ID}-1";
-                FriendRequest sentFriendRequest = new (friendRequestId, 1, OWN_USER_ID, FRIEND_ID, MESSAGE_BODY);
-                FriendRequest receivedFriendRequest = new (friendRequestId, 1, FRIEND_ID, OWN_USER_ID, MESSAGE_BODY);
+                FriendRequest sentFriendRequest = new (friendRequestId, new DateTime(1), OWN_USER_ID, FRIEND_ID, MESSAGE_BODY);
+                FriendRequest receivedFriendRequest = new (friendRequestId, new DateTime(1), FRIEND_ID, OWN_USER_ID, MESSAGE_BODY);
 
                 rpcSocialApiBridge.RequestFriendshipAsync(FRIEND_ID, MESSAGE_BODY, Arg.Any<CancellationToken>())
                                   .Returns(UniTask.FromResult(sentFriendRequest));

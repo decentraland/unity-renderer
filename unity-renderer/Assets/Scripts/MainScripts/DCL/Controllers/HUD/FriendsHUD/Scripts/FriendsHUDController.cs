@@ -333,8 +333,8 @@ namespace DCL.Social.Friends
                         return;
 
                     var sentRequest = friends.ContainsKey(userId)
-                        ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
-                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                        ? new FriendRequestEntryModel(friends[userId], string.Empty, false, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                     sentRequest.CopyFrom(status);
                     sentRequest.blocked = IsUserBlocked(userId);
@@ -347,8 +347,8 @@ namespace DCL.Social.Friends
                         return;
 
                     var receivedRequest = friends.ContainsKey(userId)
-                        ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
-                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                        ? new FriendRequestEntryModel(friends[userId], string.Empty, true, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                     receivedRequest.CopyFrom(status);
                     receivedRequest.blocked = IsUserBlocked(userId);
@@ -395,8 +395,8 @@ namespace DCL.Social.Friends
                         userProfile = await EnsureProfileOrShowFallbackFriend(userId, userProfile, cancellationToken);
 
                         var requestReceived = friends.ContainsKey(userId)
-                            ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
-                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                            ? new FriendRequestEntryModel(friends[userId], string.Empty, true, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                         requestReceived.CopyFrom(userProfile);
                         requestReceived.blocked = IsUserBlocked(userId);
@@ -409,8 +409,8 @@ namespace DCL.Social.Friends
                         userProfile = await EnsureProfileOrShowFallbackFriend(userId, userProfile, cancellationToken);
 
                         var requestSent = friends.ContainsKey(userId)
-                            ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
-                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                            ? new FriendRequestEntryModel(friends[userId], string.Empty, false, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                         requestSent.CopyFrom(userProfile);
                         requestSent.blocked = IsUserBlocked(userId);

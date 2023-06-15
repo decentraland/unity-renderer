@@ -383,7 +383,7 @@ namespace DCL.Social.Friends
 
                 var expectedFriendRequest = new FriendRequest(
                     $"{friendRequest.User.Address}-{friendRequest.CreatedAt}",
-                    friendRequest.CreatedAt,
+                    DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.CreatedAt * 1000L).DateTime,
                     friendRequest.User.Address,
                     OWN_ID,
                     friendRequest.Message);
@@ -515,7 +515,7 @@ namespace DCL.Social.Friends
         private static FriendRequest IncomingFriendRequestFromResponse(RequestResponse response) =>
             new FriendRequest(
                 $"{response.User.Address}-{response.CreatedAt}",
-                response.CreatedAt,
+                DateTimeOffset.FromUnixTimeMilliseconds(response.CreatedAt * 1000L).DateTime,
                 response.User.Address,
                 OWN_ID,
                 response.Message);
@@ -523,7 +523,7 @@ namespace DCL.Social.Friends
         private static FriendRequest OutgoingFriendRequestFromResponse(RequestResponse response) =>
             new FriendRequest(
                 $"{response.User.Address}-{response.CreatedAt}",
-                response.CreatedAt,
+                DateTimeOffset.FromUnixTimeMilliseconds(response.CreatedAt * 1000L).DateTime,
                 OWN_ID,
                 response.User.Address,
                 response.Message);

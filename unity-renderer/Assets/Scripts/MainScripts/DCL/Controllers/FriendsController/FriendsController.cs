@@ -202,7 +202,7 @@ namespace DCL.Social.Friends
                 friendRequest = await socialApiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
                 outgoingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
                 // it's impossible to have duplicated timestamps for two different correctly created friend requests
-                outgoingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
+                outgoingFriendRequestsByTimestamp[friendRequest.Timestamp.Ticks] = friendRequest;
 
                 OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
             }
@@ -213,7 +213,7 @@ namespace DCL.Social.Friends
                 FriendRequestPayload friendRequestPayload = payload.friendRequest;
 
                 friendRequest = new (friendRequestPayload.friendRequestId,
-                    friendRequestPayload.timestamp,
+                    DateTimeOffset.FromUnixTimeMilliseconds(friendRequestPayload.timestamp).DateTime,
                     friendRequestPayload.from,
                     friendRequestPayload.to,
                     friendRequestPayload.messageBody);
@@ -254,9 +254,9 @@ namespace DCL.Social.Friends
                 await socialApiBridge.AcceptFriendshipAsync(request.From, cancellationToken);
 
                 incomingFriendRequestsById.Remove(request.FriendRequestId);
-                incomingFriendRequestsByTimestamp.Remove(request.Timestamp);
+                incomingFriendRequestsByTimestamp.Remove(request.Timestamp.Ticks);
                 outgoingFriendRequestsById.Remove(request.FriendRequestId);
-                outgoingFriendRequestsByTimestamp.Remove(request.Timestamp);
+                outgoingFriendRequestsByTimestamp.Remove(request.Timestamp.Ticks);
 
                 AddFriendToCacheAndTriggerFriendshipUpdate(request.From);
 
@@ -489,9 +489,9 @@ namespace DCL.Social.Friends
                 foreach (var request in incomingFriendRequestsById.Values)
                 {
                     if (request.From != userId && request.To != userId) continue;
-                    if (request.Timestamp <= max) continue;
+                    if (request.Timestamp.Ticks <= max) continue;
                     result = request;
-                    max = request.Timestamp;
+                    max = request.Timestamp.Ticks;
                     break;
                 }
 
@@ -501,7 +501,7 @@ namespace DCL.Social.Friends
 
                     // we do check for max here because within a single session there can be a
                     // sent and a received request with the same user and we want to show the latest one
-                    if (request.Timestamp <= max) continue;
+                    if (request.Timestamp.Ticks <= max) continue;
                     return request;
                 }
             }
@@ -510,9 +510,9 @@ namespace DCL.Social.Friends
                 foreach (var request in friendRequests.Values)
                 {
                     if (request.From != userId && request.To != userId) continue;
-                    if (request.Timestamp <= max) continue;
+                    if (request.Timestamp.Ticks <= max) continue;
                     result = request;
-                    max = request.Timestamp;
+                    max = request.Timestamp.Ticks;
                 }
             }
 
@@ -583,7 +583,7 @@ namespace DCL.Social.Friends
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.CANCELLED, userId = friendUserId });
 
-            return new FriendRequest("", 0, "", friendUserId, "");
+            return new FriendRequest("", new DateTime(), "", friendUserId, "");
         }
 
         [Obsolete("Deprecated. Use CancelRequestAsync instead")]
@@ -630,7 +630,7 @@ namespace DCL.Social.Friends
             if (friendRequest != null)
             {
                 outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp.Ticks);
             }
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
@@ -647,7 +647,7 @@ namespace DCL.Social.Friends
             if (friendRequest != null)
             {
                 outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp.Ticks);
             }
 
             AddFriendToCacheAndTriggerFriendshipUpdate(friendId);
@@ -670,10 +670,10 @@ namespace DCL.Social.Friends
             if (friendRequest != null)
             {
                 incomingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                incomingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp.Ticks);
 
                 outgoingFriendRequestsById.Remove(friendRequest.FriendRequestId);
-                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp);
+                outgoingFriendRequestsByTimestamp.Remove(friendRequest.Timestamp.Ticks);
             }
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
@@ -900,7 +900,7 @@ namespace DCL.Social.Friends
         private FriendRequest ToFriendRequest(FriendRequestPayload friendRequest) =>
             new (
                 friendRequest.friendRequestId,
-                friendRequest.timestamp,
+                DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.timestamp).DateTime,
                 friendRequest.from,
                 friendRequest.to,
                 friendRequest.messageBody);
@@ -931,7 +931,7 @@ namespace DCL.Social.Friends
         private void AddIncomingFriendRequest(FriendRequest friendRequest, bool notify)
         {
             this.incomingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
-            this.incomingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
+            this.incomingFriendRequestsByTimestamp[friendRequest.Timestamp.Ticks] = friendRequest;
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REQUESTED_FROM, userId = friendRequest.From });
@@ -949,7 +949,7 @@ namespace DCL.Social.Friends
         private void AddOutgoingFriendRequest(FriendRequest friendRequest, bool notify)
         {
             this.outgoingFriendRequestsById[friendRequest.FriendRequestId] = friendRequest;
-            this.outgoingFriendRequestsByTimestamp[friendRequest.Timestamp] = friendRequest;
+            this.outgoingFriendRequestsByTimestamp[friendRequest.Timestamp.Ticks] = friendRequest;
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.From });

@@ -253,7 +253,7 @@ namespace DCL.Chat.Notifications
                 friendRequestName,
                 "Friend Request received",
                 "wants to be your friend.",
-                (ulong)friendRequest.Timestamp,
+                friendRequest.Timestamp,
                 false);
 
             mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
@@ -275,7 +275,7 @@ namespace DCL.Chat.Notifications
                 friendRequestProfile.userName,
                 "Friend Request accepted",
                 "and you are friends now!",
-                (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                DateTime.UtcNow,
                 true);
 
             mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);

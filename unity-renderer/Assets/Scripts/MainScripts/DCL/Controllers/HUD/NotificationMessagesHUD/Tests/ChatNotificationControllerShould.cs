@@ -6,10 +6,8 @@ using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.TestTools;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 using Channel = DCL.Chat.Channels.Channel;
 using Object = UnityEngine.Object;
@@ -227,7 +225,7 @@ namespace DCL.Chat.Notifications
 
             friendsController.OnFriendRequestReceived += Raise.Event<Action<FriendRequest>>(new FriendRequest(
                 "test",
-                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                DateTime.UtcNow,
                 "sender",
                 OWN_USER_ID,
                 "hey"));
@@ -408,7 +406,7 @@ namespace DCL.Chat.Notifications
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
             friendsController.OnSentFriendRequestApproved += Raise.Event<Action<FriendRequest>>(
-                new FriendRequest("friendRequestId", 0, "ownId", "friendId", "hey"));
+                new FriendRequest("friendRequestId", new DateTime(0), "ownId", "friendId", "hey"));
 
             mainNotificationsView.Received(1)
                                  .AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(f =>
@@ -434,7 +432,7 @@ namespace DCL.Chat.Notifications
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
             friendsController.OnFriendRequestReceived += Raise.Event<Action<FriendRequest>>(
-                new FriendRequest("friendRequestId", 100, "friendId", OWN_USER_ID, "hey!"));
+                new FriendRequest("friendRequestId", new DateTime(100), "friendId", OWN_USER_ID, "hey!"));
 
             mainNotificationsView.Received(1)
                                  .AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(f =>
@@ -461,7 +459,7 @@ namespace DCL.Chat.Notifications
             friendsController.TryGetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
                              .Returns((args) =>
                               {
-                                  args[1] = new FriendRequest("fr", 100, "sender", "receiver", "");
+                                  args[1] = new FriendRequest("fr", new DateTime(100), "sender", "receiver", "");
                                   return true;
                               });
 
@@ -477,7 +475,7 @@ namespace DCL.Chat.Notifications
             friendsController.TryGetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
                              .Returns((args) =>
                               {
-                                  args[1] = new FriendRequest("fr", 100, "sender", "receiver", "");
+                                  args[1] = new FriendRequest("fr", new DateTime(100), "sender", "receiver", "");
                                   return true;
                               });
 
