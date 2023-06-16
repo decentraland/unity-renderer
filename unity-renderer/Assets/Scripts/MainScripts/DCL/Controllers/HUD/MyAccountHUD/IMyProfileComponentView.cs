@@ -7,6 +7,7 @@ namespace DCL.MyAccount
     {
         event Action<string> OnCurrentNameEdited;
         event Action<string, bool> OnCurrentNameSubmitted;
+        event Action OnGoFromClaimedToNonClaimNameClicked;
         event Action OnClaimNameClicked;
 
         void SetClaimedNameMode(bool isClaimed);

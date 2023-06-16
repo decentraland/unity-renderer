@@ -12,7 +12,6 @@ namespace DCL.MyAccount
 {
     public class MyProfileController
     {
-        private const string NON_CLAIMED_NAME_OPTION = "- Non-claimed NAME -";
         private const string CLAIM_UNIQUE_NAME_URL = "https://builder.decentraland.org/claim-name";
 
         private readonly IMyProfileComponentView view;
@@ -47,6 +46,7 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionVisibleChanged;
             view.OnCurrentNameEdited += OnNameEdited;
             view.OnCurrentNameSubmitted += OnNameSubmitted;
+            view.OnGoFromClaimedToNonClaimNameClicked += GoFromClaimedToNonClaimName;
             view.OnClaimNameClicked += OnClaimNameRequested;
             ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
         }
@@ -56,6 +56,7 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.OnChange -= OnMyAccountSectionVisibleChanged;
             view.OnCurrentNameEdited -= OnNameEdited;
             view.OnCurrentNameSubmitted -= OnNameSubmitted;
+            view.OnGoFromClaimedToNonClaimNameClicked -= GoFromClaimedToNonClaimName;
             view.OnClaimNameClicked -= OnClaimNameRequested;
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
         }
@@ -94,7 +95,6 @@ namespace DCL.MyAccount
                 {
                     var optionsToLoad = new List<string>();
                     optionsToLoad.AddRange(names.names.Select(x => x.Name));
-                    optionsToLoad.Add(NON_CLAIMED_NAME_OPTION);
                     view.SetClaimedNameDropdownOptions(optionsToLoad);
                     loadedNames.AddRange(optionsToLoad);
                 }
@@ -120,14 +120,8 @@ namespace DCL.MyAccount
 
         private void OnNameSubmitted(string newName, bool isClaimed)
         {
-            if (newName == ownUserMainName)
+            if (string.IsNullOrEmpty(newName) || newName == ownUserMainName)
                 return;
-
-            if (newName == NON_CLAIMED_NAME_OPTION)
-            {
-                view.SetClaimedModeAsInput(true, ownUserProfile.hasClaimedName);
-                return;
-            }
 
             if (isClaimed)
                 userProfileBridge.SaveVerifiedName(newName);
@@ -144,6 +138,9 @@ namespace DCL.MyAccount
 
             RefreshNamesSectionStatus();
         }
+
+        private void GoFromClaimedToNonClaimName() =>
+            view.SetClaimedModeAsInput(true, ownUserProfile.hasClaimedName);
 
         private void OnClaimNameRequested() =>
             browserBridge.OpenUrl(CLAIM_UNIQUE_NAME_URL);

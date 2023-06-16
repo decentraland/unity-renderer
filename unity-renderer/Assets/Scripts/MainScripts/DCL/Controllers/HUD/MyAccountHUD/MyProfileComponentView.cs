@@ -16,6 +16,7 @@ namespace DCL.MyAccount
         [SerializeField] internal Button claimNameButton;
         [SerializeField] internal GameObject claimedNameModeContainer;
         [SerializeField] internal DropdownComponentView claimedNameDropdown;
+        [SerializeField] internal Button claimedNameGoToNonClaimedNameButton;
         [SerializeField] internal GameObject claimedNameInputContainer;
         [SerializeField] internal TMP_InputField claimedNameInputField;
         [SerializeField] internal Button claimedNameBackToClaimedNamesListButton;
@@ -25,6 +26,7 @@ namespace DCL.MyAccount
 
         public event Action<string> OnCurrentNameEdited;
         public event Action<string, bool> OnCurrentNameSubmitted;
+        public event Action OnGoFromClaimedToNonClaimNameClicked;
         public event Action OnClaimNameClicked;
 
         public override void Awake()
@@ -43,6 +45,7 @@ namespace DCL.MyAccount
                 OnCurrentNameSubmitted?.Invoke(optionId, true);
             };
             claimNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
+            claimedNameGoToNonClaimedNameButton.onClick.AddListener(() => OnGoFromClaimedToNonClaimNameClicked?.Invoke());
             claimedNameBackToClaimedNamesListButton.onClick.AddListener(() => SetClaimedModeAsInput(false));
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
         }
@@ -55,6 +58,7 @@ namespace DCL.MyAccount
             claimedNameInputField.onDeselect.RemoveAllListeners();
             claimedNameInputField.onSubmit.RemoveAllListeners();
             claimNameButton.onClick.RemoveAllListeners();
+            claimedNameGoToNonClaimedNameButton.onClick.RemoveAllListeners();
             claimedNameBackToClaimedNamesListButton.onClick.RemoveAllListeners();
             claimedNameUniqueNameButton.onClick.RemoveAllListeners();
 
@@ -103,6 +107,7 @@ namespace DCL.MyAccount
         {
             claimedNameInputContainer.SetActive(isInput);
             claimedNameDropdown.gameObject.SetActive(!isInput);
+            claimedNameGoToNonClaimedNameButton.gameObject.SetActive(!isInput);
 
             if (cleanInputField)
                 claimedNameInputField.text = string.Empty;
