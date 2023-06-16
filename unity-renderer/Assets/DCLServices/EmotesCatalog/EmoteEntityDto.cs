@@ -68,6 +68,7 @@ namespace DCLServices.EmotesCatalog
             if (metadataDto == null) return wearable;
 
             wearable.description = metadataDto.description;
+            wearable.rarity = metadataDto.rarity;
             wearable.i18n = metadataDto.i18n;
             wearable.id = metadataDto.id;
             wearable.thumbnail = GetContentHashByFileName(metadataDto.thumbnail);
