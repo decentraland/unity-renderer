@@ -89,69 +89,9 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                UniTask<ITransport> CreateWebSocketAndConnect(CancellationToken cancellationToken)
-                {
-                    UniTaskCompletionSource<ITransport> task = new ();
-                    WebSocketClientTransport transport = new ("wss://rpc-social-service.decentraland.org");
-
-                    void CompleteTaskAndUnsubscribe()
-                    {
-                        Debug.Log("SocialClient.Transport.Connected");
-
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            task.TrySetCanceled(cancellationToken);
-                            return;
-                        }
-
-                        task.TrySetResult(transport);
-                    }
-
-                    void FailTaskAndUnsubscribe(string error)
-                    {
-                        Debug.LogError($"SocialClient.Transport.Error: {error}");
-
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            task.TrySetCanceled(cancellationToken);
-                            return;
-                        }
-
-                        task.TrySetException(new Exception(error));
-                    }
-
-                    void FailTaskByDisconnectionAndUnsubscribe()
-                    {
-                        Debug.Log("SocialClient.Transport.Disconnected");
-
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            task.TrySetCanceled(cancellationToken);
-                            return;
-                        }
-
-                        task.TrySetException(new Exception("Cannot connect to social service server, connection closed"));
-                    }
-
-                    transport.OnConnectEvent += CompleteTaskAndUnsubscribe;
-                    transport.OnErrorEvent += FailTaskAndUnsubscribe;
-                    transport.OnCloseEvent += FailTaskByDisconnectionAndUnsubscribe;
-
-                    try
-                    {
-                        transport.Connect();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-
-                    return task.Task.AttachExternalCancellation(cancellationToken);
-                }
-
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    CreateWebSocketAndConnect);
+                    new RPCSocialClientProvider("wss://rpc-social-service.decentraland.org"));
 
                 return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });

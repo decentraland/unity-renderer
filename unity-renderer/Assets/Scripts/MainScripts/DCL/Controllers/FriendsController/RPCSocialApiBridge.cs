@@ -2,8 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
-using rpc_csharp;
-using rpc_csharp.transport;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,10 +15,10 @@ namespace DCL.Social.Friends
 
         private readonly IMatrixInitializationBridge matrixInitializationBridge;
         private readonly IUserProfileBridge userProfileWebInterfaceBridge;
-        private readonly Func<CancellationToken, UniTask<ITransport>> clientTransportProvider;
+        private readonly ISocialClientProvider socialClientProvider;
 
         private string accessToken;
-        private ClientFriendshipsService socialClient;
+        private IClientFriendshipsService socialClient;
         private UniTaskCompletionSource<AllFriendsInitializationMessage> initializationInformationTask;
         private CancellationTokenSource initializationCancellationToken = new ();
 
@@ -33,11 +31,11 @@ namespace DCL.Social.Friends
 
         public RPCSocialApiBridge(IMatrixInitializationBridge matrixInitializationBridge,
             IUserProfileBridge userProfileWebInterfaceBridge,
-            Func<CancellationToken, UniTask<ITransport>> transportProvider)
+            ISocialClientProvider socialClientProvider)
         {
             this.matrixInitializationBridge = matrixInitializationBridge;
             this.userProfileWebInterfaceBridge = userProfileWebInterfaceBridge;
-            clientTransportProvider = transportProvider;
+            this.socialClientProvider = socialClientProvider;
         }
 
         public void Dispose()
@@ -66,20 +64,7 @@ namespace DCL.Social.Friends
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var transport = await clientTransportProvider(cancellationToken);
-                var client = new RpcClient(transport);
-                var socialPort = await client.CreatePort("social-service-port");
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var module = await socialPort.LoadModule(FriendshipsServiceCodeGen.ServiceName);
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                socialClient = new ClientFriendshipsService(module);
-            }
+            try { socialClient = await socialClientProvider.Provide(cancellationToken); }
             catch (OperationCanceledException) { throw; }
             catch (Exception e) { Debug.LogException(e); }
         }
@@ -126,6 +111,7 @@ namespace DCL.Social.Friends
             {
                 incoming.Add(new FriendRequest(
                     GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
+
                     // timestamps comes in seconds instead of milliseconds, so do the conversion
                     DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.CreatedAt * 1000L).DateTime,
                     friendRequest.User.Address,
@@ -137,6 +123,7 @@ namespace DCL.Social.Friends
             {
                 outgoing.Add(new FriendRequest(
                     GetFriendRequestId(friendRequest.User.Address, friendRequest.CreatedAt),
+
                     // timestamps comes in seconds instead of milliseconds, so do the conversion
                     DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.CreatedAt * 1000L).DateTime,
                     userProfileWebInterfaceBridge.GetOwn().userId,
@@ -283,6 +270,7 @@ namespace DCL.Social.Friends
 
             return new FriendRequest(
                 GetFriendRequestId(response.User.Address, response.CreatedAt),
+
                 // timestamps comes in seconds instead of milliseconds, so do the conversion
                 DateTimeOffset.FromUnixTimeMilliseconds(response.CreatedAt * 1000L).DateTime,
                 userProfileWebInterfaceBridge.GetOwn().userId,
@@ -317,6 +305,7 @@ namespace DCL.Social.Friends
                                 // just log the exception so we keep receiving updates in the loop
                                 Debug.LogException(e);
                             }
+
                             break;
                         default:
                         {
@@ -347,6 +336,7 @@ namespace DCL.Social.Friends
 
                     var request = new FriendRequest(
                         GetFriendRequestId(response.User.Address, response.CreatedAt),
+
                         // timestamps comes in seconds instead of milliseconds, so do the conversion
                         DateTimeOffset.FromUnixTimeMilliseconds(response.CreatedAt * 1000L).DateTime,
                         response.User.Address,
