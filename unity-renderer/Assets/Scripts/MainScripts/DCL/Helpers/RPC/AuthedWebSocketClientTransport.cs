@@ -55,6 +55,10 @@ namespace RPC.Transports
             var connected = false;
             void OnReady()
             {
+                UnityEngine.Debug.unityLogger.logEnabled = true;
+                if (VERBOSE)
+                    Debug.Log($"[{GetType().Name}]: Open called");
+                UnityEngine.Debug.unityLogger.logEnabled = false;
                 webSocket.OnOpen -= OnReady;
                 connected = true;
             }
@@ -94,15 +98,19 @@ namespace RPC.Transports
 
         private void HandleClose(WebSocketCloseCode closeCode)
         {
+            UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
                 Debug.Log($"[{GetType().Name}]: Closed WebSocket: {closeCode}");
+            UnityEngine.Debug.unityLogger.logEnabled = false;
             OnCloseEvent?.Invoke();
         }
 
         private void HandleOpen()
         {
+            UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
                 Debug.Log($"[{GetType().Name}]: Open WebSocket:");
+            UnityEngine.Debug.unityLogger.logEnabled = false;
             OnConnectEvent?.Invoke();
         }
 
