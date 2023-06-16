@@ -48,7 +48,6 @@ namespace RPC.Transports
             if (VERBOSE)
                 Debug.Log($"[{nameof(GetType)}]: Signed Headers received:\n{signResponse}");
 
-            webSocket.Connect();
             // We have to wait for connection to be done to send the signed headers for authentication
             var connected = false;
             void OnReady()
