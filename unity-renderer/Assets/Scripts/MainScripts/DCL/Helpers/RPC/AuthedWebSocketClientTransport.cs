@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using HybridWebSocket;
 using rpc_csharp.transport;
+using Sentry.Unity;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,7 +18,7 @@ namespace RPC.Transports
     /// </summary>
     public class AuthedWebSocketClientTransport : ITransport
     {
-        private bool VERBOSE = false;
+        private bool VERBOSE = true;
 
         public event Action OnCloseEvent;
         public event Action<string> OnErrorEvent;
@@ -40,13 +41,16 @@ namespace RPC.Transports
             webSocket.OnClose += this.HandleClose;
             webSocket.OnOpen += this.HandleOpen;
 
+            UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
                 Debug.Log($"[{nameof(GetType)}]: Requesting signed headers...");
+            UnityEngine.Debug.unityLogger.logEnabled = false;
 
             string signResponse = await signRequest.RequestSignedHeaders(requestUrl, new Dictionary<string, string>(), ct);
-
+            UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
                 Debug.Log($"[{nameof(GetType)}]: Signed Headers received:\n{signResponse}");
+            UnityEngine.Debug.unityLogger.logEnabled = false;
 
             webSocket.Connect();
             // We have to wait for connection to be done to send the signed headers for authentication
@@ -56,17 +60,22 @@ namespace RPC.Transports
                 connected = true;
             }
             webSocket.OnOpen += OnReady;
-
+            UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
                 Debug.Log($"[{nameof(GetType)}]: Waiting for connection...");
+            UnityEngine.Debug.unityLogger.logEnabled = false;
             webSocket.Connect();
             await UniTask.WaitUntil(() => connected, cancellationToken: ct);
+            UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
                 Debug.Log($"[{nameof(GetType)}]: Connected");
             webSocket.OnOpen -= OnReady;
+            UnityEngine.Debug.unityLogger.logEnabled = false;
 
+            UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
                 Debug.Log($"[{nameof(GetType)}]: Sending the signed headers");
+            UnityEngine.Debug.unityLogger.logEnabled = false;
             webSocket.Send(signResponse);
         }
 
