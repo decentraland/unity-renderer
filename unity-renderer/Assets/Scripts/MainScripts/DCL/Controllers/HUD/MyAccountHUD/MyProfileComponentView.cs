@@ -9,6 +9,10 @@ namespace DCL.MyAccount
 {
     public class MyProfileComponentView : BaseComponentView<MyProfileModel>, IMyProfileComponentView
     {
+        [Header("General")]
+        [SerializeField] internal GameObject mainContainer;
+        [SerializeField] internal GameObject loadingContainer;
+
         [Header("Names")]
         [SerializeField] internal GameObject nonClaimedNameModeContainer;
         [SerializeField] internal TMP_InputField nonClaimedNameInputField;
@@ -21,8 +25,8 @@ namespace DCL.MyAccount
         [SerializeField] internal TMP_InputField claimedNameInputField;
         [SerializeField] internal Button claimedNameBackToClaimedNamesListButton;
         [SerializeField] internal Button claimedNameUniqueNameButton;
-        [SerializeField] internal GameObject mainContainer;
-        [SerializeField] internal GameObject loadingContainer;
+        [SerializeField] internal GameObject nameValidationsContainer;
+        [SerializeField] internal TMP_Text nameCharCounter;
 
         public event Action<string> OnCurrentNameEdited;
         public event Action<string, bool> OnCurrentNameSubmitted;
@@ -33,10 +37,18 @@ namespace DCL.MyAccount
         {
             base.Awake();
 
-            nonClaimedNameInputField.onValueChanged.AddListener(newName => OnCurrentNameEdited?.Invoke(newName));
+            nonClaimedNameInputField.onValueChanged.AddListener(newName =>
+            {
+                UpdateNameCharLimit(newName.Length, nonClaimedNameInputField.characterLimit);
+                OnCurrentNameEdited?.Invoke(newName);
+            });
             nonClaimedNameInputField.onDeselect.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
             nonClaimedNameInputField.onSubmit.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
-            claimedNameInputField.onValueChanged.AddListener(newName => OnCurrentNameEdited?.Invoke(newName));
+            claimedNameInputField.onValueChanged.AddListener(newName =>
+            {
+                UpdateNameCharLimit(newName.Length, claimedNameInputField.characterLimit);
+                OnCurrentNameEdited?.Invoke(newName);
+            });
             claimedNameInputField.onDeselect.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
             claimedNameInputField.onSubmit.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
             claimedNameDropdown.OnOptionSelectionChanged += (isOn, optionId, _) =>
@@ -79,6 +91,7 @@ namespace DCL.MyAccount
             model.IsClaimedMode = isClaimed;
             nonClaimedNameModeContainer.SetActive(!isClaimed);
             claimedNameModeContainer.SetActive(isClaimed);
+            nameValidationsContainer.SetActive(!isClaimed || model.ShowInputForClaimedMode);
         }
 
         public void SetCurrentName(string newName)
@@ -108,6 +121,8 @@ namespace DCL.MyAccount
             claimedNameInputContainer.SetActive(isInput);
             claimedNameDropdown.gameObject.SetActive(!isInput);
             claimedNameGoToNonClaimedNameButton.gameObject.SetActive(!isInput);
+            nameValidationsContainer.SetActive(isInput);
+            nameValidationsContainer.SetActive(!model.IsClaimedMode || isInput);
 
             if (cleanInputField)
                 claimedNameInputField.text = string.Empty;
@@ -159,5 +174,8 @@ namespace DCL.MyAccount
             loadingContainer.SetActive(isActive);
             mainContainer.SetActive(!isActive);
         }
+
+        private void UpdateNameCharLimit(int currentLenght, int maxLength) =>
+            nameCharCounter.text = $"{currentLenght}/{maxLength}";
     }
 }

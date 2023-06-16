@@ -5,6 +5,7 @@ using DCLServices.Lambdas.NamesService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 
@@ -20,9 +21,11 @@ namespace DCL.MyAccount
         private readonly INamesService namesService;
         private readonly IBrowserBridge browserBridge;
         private readonly MyAccountSectionHUDController myAccountSectionHUDController;
+        private readonly KernelConfig kernelConfig;
         private readonly List<string> loadedNames = new ();
 
         private CancellationTokenSource cts;
+        private Regex nameRegex;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private string ownUserMainName => SplitUserName(ownUserProfile.userName).mainName;
@@ -34,7 +37,8 @@ namespace DCL.MyAccount
             IUserProfileBridge userProfileBridge,
             INamesService namesService,
             IBrowserBridge browserBridge,
-            MyAccountSectionHUDController myAccountSectionHUDController)
+            MyAccountSectionHUDController myAccountSectionHUDController,
+            KernelConfig kernelConfig)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -42,6 +46,7 @@ namespace DCL.MyAccount
             this.namesService = namesService;
             this.browserBridge = browserBridge;
             this.myAccountSectionHUDController = myAccountSectionHUDController;
+            this.kernelConfig = kernelConfig;
 
             dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionVisibleChanged;
             view.OnCurrentNameEdited += OnNameEdited;
@@ -49,6 +54,12 @@ namespace DCL.MyAccount
             view.OnGoFromClaimedToNonClaimNameClicked += GoFromClaimedToNonClaimName;
             view.OnClaimNameClicked += OnClaimNameRequested;
             ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
+
+            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
+            {
+                kernelConfig.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
+                kernelConfig.OnChange += OnKernelConfigChanged;
+            }
         }
 
         public void Dispose()
@@ -59,7 +70,13 @@ namespace DCL.MyAccount
             view.OnGoFromClaimedToNonClaimNameClicked -= GoFromClaimedToNonClaimName;
             view.OnClaimNameClicked -= OnClaimNameRequested;
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
+
+            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
+                kernelConfig.OnChange -= OnKernelConfigChanged;
         }
+
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel _) =>
+            nameRegex = new Regex(current.profiles.nameValidRegex);
 
         private void OnMyAccountSectionVisibleChanged(bool isVisible, bool _)
         {
@@ -115,13 +132,23 @@ namespace DCL.MyAccount
 
         private void OnNameEdited(string newName)
         {
-            // TODO: Name validations...
+            if (string.IsNullOrEmpty(newName) || newName == ownUserMainName)
+                return;
+
+            if (!IsValidUserName(newName))
+                Debug.Log($"SANTI ---> '{newName}' is not a valid name!");
         }
 
         private void OnNameSubmitted(string newName, bool isClaimed)
         {
             if (string.IsNullOrEmpty(newName) || newName == ownUserMainName)
                 return;
+
+            if (!IsValidUserName(newName))
+            {
+                Debug.Log($"SANTI ---> '{newName}' is not a valid name!");
+                return;
+            }
 
             if (isClaimed)
                 userProfileBridge.SaveVerifiedName(newName);
@@ -130,6 +157,9 @@ namespace DCL.MyAccount
 
             myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
         }
+
+        private bool IsValidUserName(string newName) =>
+            nameRegex == null || nameRegex.IsMatch(newName);
 
         private void OnOwnUserProfileUpdated(UserProfile userProfile)
         {
