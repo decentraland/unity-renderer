@@ -1,10 +1,12 @@
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using RPC;
+using RPC.Context;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class ComponentCrdtWriteSystem : IDisposable
 {
@@ -19,15 +21,14 @@ public class ComponentCrdtWriteSystem : IDisposable
         public ECSComponentWriteType writeType;
     }
 
-    private readonly RPCContext rpcContext;
+    private readonly CRDTServiceContext rpcContext;
     private readonly ISceneController sceneController;
     private readonly IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors;
 
-    private readonly Dictionary<int, DualKeyValueSet<int, long, CrdtMessage>> outgoingCrdt = new Dictionary<int, DualKeyValueSet<int, long, CrdtMessage>>(60);
     private readonly Queue<MessageData> queuedMessages = new Queue<MessageData>(60);
     private readonly Queue<MessageData> messagesPool = new Queue<MessageData>(60);
 
-    public ComponentCrdtWriteSystem(IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors, ISceneController sceneController, RPCContext rpcContext)
+    public ComponentCrdtWriteSystem(IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors, ISceneController sceneController, CRDTServiceContext rpcContext)
     {
         this.sceneController = sceneController;
         this.rpcContext = rpcContext;
@@ -105,39 +106,21 @@ public class ComponentCrdtWriteSystem : IDisposable
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))
             {
+                var outgoingCrdt = rpcContext.scenesOutgoingCrdts;
+
                 if (!outgoingCrdt.TryGetValue(message.sceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtList))
                 {
                     sceneCrdtList = new DualKeyValueSet<int, long, CrdtMessage>();
                     outgoingCrdt[message.sceneNumber] = sceneCrdtList;
                 }
 
-                if (!sceneCrdtList.TryGetValue(message.componentId, message.entityId, out CrdtMessage currentMsg))
-                {
-                    sceneCrdtList.Add(message.componentId, message.entityId, crdt);
-                }
-                else
-                {
-                    sceneCrdtList[message.componentId, message.entityId] = new CrdtMessage
-                    (
-                        currentMsg.Type,
-                        currentMsg.EntityId,
-                        currentMsg.ComponentId,
-                        currentMsg.Timestamp,
-                        message.data
-                    );
-                }
-
-                if (!rpcContext.crdt.scenesOutgoingCrdts.ContainsKey(message.sceneNumber))
-                {
-                    rpcContext.crdt.scenesOutgoingCrdts.Add(message.sceneNumber, sceneCrdtList);
-                }
+                sceneCrdtList[message.componentId, message.entityId] = crdt;
             }
         }
     }
 
     private void OnSceneRemoved(IParcelScene scene)
     {
-        outgoingCrdt.Remove(scene.sceneData.sceneNumber);
-        rpcContext.crdt.scenesOutgoingCrdts.Remove(scene.sceneData.sceneNumber);
+        rpcContext.scenesOutgoingCrdts.Remove(scene.sceneData.sceneNumber);
     }
 }

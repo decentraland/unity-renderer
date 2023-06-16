@@ -39,7 +39,7 @@ namespace DCL.ECS7
 
             crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, rpcCrdtContext);
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(crdtExecutors, sceneController, DataStore.i.rpc.context);
+            crdtWriteSystem = new ComponentCrdtWriteSystem(crdtExecutors, sceneController, rpcCrdtContext);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
@@ -59,7 +59,8 @@ namespace DCL.ECS7
                 sceneNumberMapping,
                 internalEcsComponents.EngineInfo,
                 internalEcsComponents.GltfContainerLoadingStateComponent,
-                internalEcsComponents.IncreaseSceneTick);
+                internalEcsComponents.IncreaseSceneTick,
+                (ECSComponent<PBEngineInfo>)componentsManager.GetOrCreateComponent(ComponentID.ENGINE_INFO));
 
             sceneController.OnNewSceneAdded += SceneControllerOnNewSceneAdded;
             sceneController.OnSceneRemoved += SceneControllerOnSceneRemoved;

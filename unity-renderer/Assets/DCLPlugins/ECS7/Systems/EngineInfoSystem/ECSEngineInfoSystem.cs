@@ -32,6 +32,7 @@ namespace ECSSystems.ECSEngineInfoSystem
             var componentGroup = internalEngineInfo.GetForAll();
 
             int entitiesCount = componentGroup.Count;
+
             for (int i = 0; i < entitiesCount; i++)
             {
                 var scene = componentGroup[i].value.scene;

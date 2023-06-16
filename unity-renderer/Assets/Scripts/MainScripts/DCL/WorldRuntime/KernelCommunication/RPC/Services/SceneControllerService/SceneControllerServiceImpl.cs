@@ -178,6 +178,11 @@ namespace RPC.Services
 
             try
             {
+                bool tick0 = currentTick == 0;
+
+                currentTick++;
+                crdtContext.IncreaseSceneTick(sceneNumber);
+
                 await UniTask.WaitUntil(() => crdtContext.GetSceneTick(sceneNumber) == currentTick, cancellationToken: ct);
 
                 if (!request.Payload.IsEmpty)
@@ -194,14 +199,14 @@ namespace RPC.Services
                     }
                 }
 
-                if (currentTick == 0)
+                if (tick0)
                 {
                     // pause scene update until GLTFs are loaded
                     await UniTask.WaitUntil(() => crdtContext.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber), cancellationToken: ct);
 
                     // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
                     // kernel won't be sending that message for those scenes
-                    if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
+                    if (!scene.IsInitMessageDone())
                     {
                         crdtContext.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
                         {
@@ -217,7 +222,6 @@ namespace RPC.Services
                 if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtOutgoing))
                 {
                     sendCrdtMemoryStream.SetLength(0);
-                    crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
 
                     for (int i = 0; i < sceneCrdtOutgoing.Count; i++)
                     {
@@ -227,8 +231,6 @@ namespace RPC.Services
                     sceneCrdtOutgoing.Clear();
                     reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
                 }
-
-                crdtContext.IncreaseSceneTick(sceneNumber);
             }
             catch (OperationCanceledException _)
             { // ignored
@@ -238,7 +240,6 @@ namespace RPC.Services
                 Debug.LogError(e);
             }
 
-            currentTick++;
             return reusableCrdtMessageResult;
         }
 
@@ -268,15 +269,10 @@ namespace RPC.Services
             {
                 getStateMemoryStream.SetLength(0);
 
-                // serialize outgoing messages
-                crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
-
                 foreach (var msg in outgoingMessages)
                 {
                     CRDTSerializer.Serialize(getStateBinaryWriter, msg.value);
                 }
-
-                outgoingMessages.Clear();
 
                 // serialize scene state
                 if (sceneState != null)

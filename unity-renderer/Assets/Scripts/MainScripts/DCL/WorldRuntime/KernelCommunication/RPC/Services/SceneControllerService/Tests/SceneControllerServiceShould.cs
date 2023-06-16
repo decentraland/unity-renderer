@@ -3,6 +3,7 @@ using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCLServices.MapRendererV2;
 using Decentraland.Common;
@@ -494,24 +495,22 @@ namespace Tests
 
                     // client requests `LoadScene()` to have the port open with a scene ready to receive crdt messages
                     await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
-                    Assert.AreEqual(0, _context.crdt.GetSceneTick(TEST_SCENE_NUMBER));
 
                     // SendCrdt call should increase scene's tick
-                    await rpcClient.SendCrdt(new CRDTSceneMessage() { });
+                    var sendCrdt = await rpcClient.SendCrdt(new CRDTSceneMessage() { });
+                    Assert.AreEqual(1, GetSceneTick(sendCrdt.Payload.Memory));
 
-                    // process tick 0
-                    Assert.AreEqual(0, _context.crdt.GetSceneTick(TEST_SCENE_NUMBER));
+                    // GetCurrentState should return same scene tick
+                    var getState = await rpcClient.GetCurrentState(new GetCurrentStateMessage() { });
+                    Assert.AreEqual(1, GetSceneTick(getState.Payload.Memory));
 
                     // SendCrdt call should increase scene's tick
-                    await rpcClient.SendCrdt(new CRDTSceneMessage() { });
+                    sendCrdt = await rpcClient.SendCrdt(new CRDTSceneMessage() { });
+                    Assert.AreEqual(2, GetSceneTick(sendCrdt.Payload.Memory));
 
-                    // process tick 1
-                    Assert.AreEqual(1, _context.crdt.GetSceneTick(TEST_SCENE_NUMBER));
-                    await UniTask.Yield();
-                    await UniTask.Yield();
-
-                    // next tick should be the 2nd
-                    Assert.AreEqual(2, _context.crdt.GetSceneTick(TEST_SCENE_NUMBER));
+                    // SendCrdt call should increase scene's tick
+                    sendCrdt = await rpcClient.SendCrdt(new CRDTSceneMessage() { });
+                    Assert.AreEqual(3, GetSceneTick(sendCrdt.Payload.Memory));
                 }
                 catch (Exception e)
                 {
@@ -589,6 +588,26 @@ namespace Tests
             RpcClientModule module = await port.LoadModule(RpcSceneControllerServiceCodeGen.ServiceName);
             ClientRpcSceneControllerService clientRpcSceneControllerService = new ClientRpcSceneControllerService(module);
             return clientRpcSceneControllerService;
+        }
+
+        private static uint GetSceneTick(ReadOnlyMemory<byte> payload)
+        {
+            using (var iterator = CRDTDeserializer.DeserializeBatch(payload))
+            {
+                while (iterator.MoveNext())
+                {
+                    if (!(iterator.Current is CrdtMessage crdtMessage))
+                        continue;
+
+                    if (crdtMessage.ComponentId == ComponentID.ENGINE_INFO)
+                    {
+                        var engineInfo = ProtoSerialization.Deserialize<PBEngineInfo>(crdtMessage.Data);
+                        return engineInfo.TickNumber;
+                    }
+                }
+            }
+
+            throw new Exception("ENGINE_INFO component not found in payload");
         }
     }
 }

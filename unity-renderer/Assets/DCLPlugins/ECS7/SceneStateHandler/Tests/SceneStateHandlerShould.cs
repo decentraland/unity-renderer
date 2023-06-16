@@ -1,14 +1,13 @@
-using NUnit.Framework;
-using NSubstitute;
 using DCL.Controllers;
 using DCL.CRDT;
-using DCL.ECSRuntime;
-using DCL.Models;
-using RPC.Context;
-using System.Collections.Generic;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
+using DCL.Models;
+using NUnit.Framework;
+using RPC.Context;
+using System.Collections.Generic;
 
 namespace Tests
 {
@@ -33,10 +32,11 @@ namespace Tests
             sceneStateHandler = new SceneStateHandler(
                 new CRDTServiceContext(),
                 new RestrictedActionsContext(),
-                new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
+                new Dictionary<int, IParcelScene>() { { scene.sceneData.sceneNumber, scene } },
                 internalComponents.EngineInfo,
                 internalComponents.GltfContainerLoadingStateComponent,
-                internalComponents.IncreaseSceneTick);
+                internalComponents.IncreaseSceneTick,
+                (ECSComponent<PBEngineInfo>)componentsManager.GetOrCreateComponent(ComponentID.ENGINE_INFO));
         }
 
         [TearDown]

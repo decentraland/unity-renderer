@@ -28,7 +28,7 @@ namespace Tests
             scene.sceneData.sceneNumber = SCENE_NUMBER;
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(new Dictionary<int, ICRDTExecutor>() { { SCENE_NUMBER, crdtExecutor } },
-                Substitute.For<ISceneController>(), DataStore.i.rpc.context);
+                Substitute.For<ISceneController>(), DataStore.i.rpc.context.crdt);
         }
 
         [TearDown]

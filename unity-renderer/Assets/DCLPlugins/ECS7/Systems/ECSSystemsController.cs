@@ -168,7 +168,7 @@ public class ECSSystemsController : IDisposable
             gltfContainerLoadingStateSystem.Update,
             raycastSystem.Update, // Should always be after player/entity transformations update
             sceneBoundsCheckerSystem.Update, // Should always run after all systems that might affect bound checks
-            increaseSceneTickSystem.Update // Should always be the last system
+            increaseSceneTickSystem.Update
         };
     }
 
