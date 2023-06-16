@@ -16,5 +16,6 @@ namespace DCL.MyAccount
         void SetClaimedModeAsInput(bool isInput, bool cleanInputField = false);
         void SetClaimedNameDropdownOptions(List<string> claimedNamesList);
         void SetLoadingActive(bool isActive);
+        void SetNonValidNameWarningActive(bool isActive);
     }
 }

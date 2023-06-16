@@ -133,22 +133,25 @@ namespace DCL.MyAccount
         private void OnNameEdited(string newName)
         {
             if (string.IsNullOrEmpty(newName) || newName == ownUserMainName)
+            {
+                view.SetNonValidNameWarningActive(false);
                 return;
+            }
 
-            if (!IsValidUserName(newName))
-                Debug.Log($"SANTI ---> '{newName}' is not a valid name!");
+            view.SetNonValidNameWarningActive(!IsValidUserName(newName));
         }
 
         private void OnNameSubmitted(string newName, bool isClaimed)
         {
             if (string.IsNullOrEmpty(newName) || newName == ownUserMainName)
-                return;
-
-            if (!IsValidUserName(newName))
             {
-                Debug.Log($"SANTI ---> '{newName}' is not a valid name!");
+                view.SetNonValidNameWarningActive(false);
                 return;
             }
+
+            view.SetNonValidNameWarningActive(!IsValidUserName(newName));
+            if (!IsValidUserName(newName))
+                return;
 
             if (isClaimed)
                 userProfileBridge.SaveVerifiedName(newName);

@@ -27,6 +27,7 @@ namespace DCL.MyAccount
         [SerializeField] internal Button claimedNameUniqueNameButton;
         [SerializeField] internal GameObject nameValidationsContainer;
         [SerializeField] internal TMP_Text nameCharCounter;
+        [SerializeField] internal GameObject nonValidNameWarning;
 
         public event Action<string> OnCurrentNameEdited;
         public event Action<string, bool> OnCurrentNameSubmitted;
@@ -174,6 +175,9 @@ namespace DCL.MyAccount
             loadingContainer.SetActive(isActive);
             mainContainer.SetActive(!isActive);
         }
+
+        public void SetNonValidNameWarningActive(bool isActive) =>
+            nonValidNameWarning.SetActive(isActive);
 
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>
             nameCharCounter.text = $"{currentLenght}/{maxLength}";
