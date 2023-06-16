@@ -1,61 +1,24 @@
 using DCL;
-using DCL.CRDT;
 using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class GltfContainerVisualTests
+    public class GltfContainerVisualTests : ECSVisualTestsBase
     {
-        private ECS7TestUtilsScenesAndEntities testUtils;
-        private ECS7TestScene scene;
+        private const string SNAPSHOT_BASE_FILENAME = "SDK7_GltfContainerVisualTests_";
         private ECS7TestEntity entity;
         private GltfContainerHandler handler;
 
-        private Camera camera;
-        private AnisotropicFiltering originalAnisoSetting;
-        private const string SNAPSHOT_BASE_FILENAME = "SDK7_GltfContainerVisualTests_";
-
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
-            VisualTestUtils.SetSSAOActive(false);
-            VisualTestUtils.snapshotIndex = 0;
-            VisualTestUtils.SetTestingRenderSettings();
+            base.SetUp();
 
-            // Deterministic rendering settings
-            originalAnisoSetting = QualitySettings.anisotropicFiltering;
-            QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
-            camera = new GameObject("VisualTestsCamera").AddComponent<Camera>();
-            camera.clearFlags = CameraClearFlags.Skybox;
-            camera.allowHDR = true;
-            camera.GetUniversalAdditionalCameraData().renderPostProcessing = true;
-            camera.GetUniversalAdditionalCameraData().volumeLayerMask = LayerMask.GetMask("PostProcessing");
-            camera.GetUniversalAdditionalCameraData().renderShadows = true;
-            RenderSettings.fog = true;
-            RenderSettings.fogMode = FogMode.Linear;
-            RenderSettings.fogStartDistance = 100;
-            RenderSettings.fogEndDistance = 110;
-
-            // Scene settings
-            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
-            serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
-            Environment.Setup(serviceLocator);
-
-            ECSComponentsFactory componentFactory = new ECSComponentsFactory();
-            ECSComponentsManager componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
-            var executors = new Dictionary<int, ICRDTExecutor>();
-            InternalECSComponents internalEcsComponents = new InternalECSComponents(componentsManager, componentFactory, executors);
-
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
-            scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(23423);
 
             // Dcl shaders won't render anything below Y = 0 so the entity has to be repositioned
@@ -86,14 +49,11 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
+        public override void TearDown()
         {
             AssetPromiseKeeper_GLTFast_Instance.i.Cleanup();
-            testUtils.Dispose();
-            PoolManager.i.Dispose();
 
-            Object.Destroy(camera.gameObject);
-            QualitySettings.anisotropicFiltering = originalAnisoSetting;
+            base.TearDown();
         }
 
         // Manually run to generate baseline image for later comparisons
