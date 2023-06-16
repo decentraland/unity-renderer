@@ -3,6 +3,7 @@ using DCL.Backpack;
 using DCL.Chat.HUD;
 using DCL.Chat.Notifications;
 using DCL.ConfirmationPopup;
+using DCL.Controllers.LoadingScreenV2;
 using DCL.ECS7;
 using DCL.Emotes;
 using DCL.EmotesWheel;
@@ -14,11 +15,13 @@ using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
+using DCL.Wallet;
 using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
 using DCLPlugins.SentryPlugin;
 using DCLPlugins.SignupHUDPlugin;
+using DCLPlugins.ToSPopupHUDPlugin;
 using DCLPlugins.UIRefresherPlugin;
 
 namespace DCL
@@ -38,7 +41,7 @@ namespace DCL
             pluginSystem.Register<DebugShapesBoundingBoxDisplayer>(() => new DebugShapesBoundingBoxDisplayer());
             pluginSystem.Register<TransactionFeature>(() => new TransactionFeature());
             pluginSystem.Register<PreviewMenuPlugin>(() => new PreviewMenuPlugin());
-            pluginSystem.Register<SkyboxController>(() => new SkyboxController());
+            pluginSystem.Register<SkyboxController>(() => new SkyboxController(DataStore.i));
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
             pluginSystem.Register<TeleportHUDPlugin>(() => new TeleportHUDPlugin());
@@ -74,6 +77,8 @@ namespace DCL
             pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
             pluginSystem.RegisterWithFlag<FavoritePlacesPlugin>(() => new FavoritePlacesPlugin(), "favourite_places");
             pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
+            pluginSystem.RegisterWithFlag<LoadingScreenV2Plugin>(() => new LoadingScreenV2Plugin(), "loading_screen_v2");
+            pluginSystem.RegisterWithFlag<ToSPopupHUDPlugin>(() => new ToSPopupHUDPlugin(), "seamless_login_variant");
 
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 Environment.i.serviceLocator.Get<IFriendsController>(),
@@ -87,9 +92,12 @@ namespace DCL
 
             pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()));
 
+            pluginSystem.RegisterWithFlag<QuestsPlugin>(() => new QuestsPlugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()), "quests");
             pluginSystem.RegisterWithFlag<BackpackEditorV2Plugin>(() => new BackpackEditorV2Plugin(), "backpack_editor_v2");
             // TODO: remove the v1 backpack editor when v2 is confirmed to be completely functional
             pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");
+
+            pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "wallet");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

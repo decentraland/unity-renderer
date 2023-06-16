@@ -1,40 +1,48 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Providers;
-using System.Threading.Tasks;
+using DCLServices.Lambdas;
+using System;
 using UnityEngine;
 
 public class EmotesCatalogService : IEmotesCatalogService
 {
-    private readonly IEmotesCatalogBridge bridge;
+    [Serializable]
+    internal class WearableRequest
+    {
+        public List<string> pointers;
+    }
 
-    internal readonly Dictionary<string, WearableItem> emotes = new Dictionary<string, WearableItem>();
-    internal readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new Dictionary<string, HashSet<Promise<WearableItem>>>();
-    internal readonly Dictionary<string, int> emotesOnUse = new Dictionary<string, int>();
-    internal readonly Dictionary<string, HashSet<Promise<WearableItem[]>>> ownedEmotesPromisesByUser = new Dictionary<string, HashSet<Promise<WearableItem[]>>>();
+    internal readonly Dictionary<string, WearableItem> emotes = new ();
+    internal readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new ();
+    internal readonly Dictionary<string, int> emotesOnUse = new ();
+    internal readonly Dictionary<string, HashSet<Promise<IReadOnlyList<WearableItem>>>> ownedEmotesPromisesByUser = new ();
 
-    private IAddressableResourceProvider addressableResourceProvider;
-    private EmbeddedEmotesSO embeddedEmotesSO;
-    private CancellationTokenSource addressableCTS;
+    private readonly IEmotesRequestSource emoteSource;
+    private readonly IAddressableResourceProvider addressableResourceProvider;
+
+    private EmbeddedEmotesSO embeddedEmotesSo;
+    private CancellationTokenSource addressableCts;
     private int retryCount = 3;
 
-    public EmotesCatalogService(IEmotesCatalogBridge bridge, IAddressableResourceProvider addressableResourceProvider)
+    public EmotesCatalogService(IEmotesRequestSource emoteSource, IAddressableResourceProvider addressableResourceProvider)
     {
-        this.bridge = bridge;
+        this.emoteSource = emoteSource;
         this.addressableResourceProvider = addressableResourceProvider;
-        InitializeAsyncEmbeddedEmotes();
+
+        InitializeAsyncEmbeddedEmotes().Forget();
     }
 
     private async UniTaskVoid InitializeAsyncEmbeddedEmotes()
     {
         try
         {
-            addressableCTS = new CancellationTokenSource();
-            embeddedEmotesSO = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset", addressableCTS.Token);
+            addressableCts = new CancellationTokenSource();
+            embeddedEmotesSo = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset", addressableCts.Token);
         }
         catch (OperationCanceledException) { return; }
         catch (Exception e)
@@ -42,14 +50,14 @@ public class EmotesCatalogService : IEmotesCatalogService
             retryCount--;
             if (retryCount < 0)
             {
-                embeddedEmotesSO = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-                embeddedEmotesSO.emotes = new EmbeddedEmote[] { };
+                embeddedEmotesSo = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+                embeddedEmotesSo.emotes = new EmbeddedEmote[] { };
                 throw new Exception("Embedded Emotes retry limit reached, they wont work correctly. Please check the Essentials group is set up correctly");
             }
 
             Debug.LogWarning("Retrying embedded emotes addressables async request...");
             DisposeCT();
-            InitializeAsyncEmbeddedEmotes();
+            InitializeAsyncEmbeddedEmotes().Forget();
         }
 
         EmbedEmotes();
@@ -57,31 +65,32 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public void Initialize()
     {
-        bridge.OnEmotesReceived += OnEmotesReceived;
-        bridge.OnEmoteRejected += OnEmoteRejected;
-        bridge.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
+        emoteSource.OnEmotesReceived += OnEmotesReceived;
+        emoteSource.OnEmoteRejected += OnEmoteRejected;
+        emoteSource.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
     }
 
-    private void OnEmotesReceived(WearableItem[] receivedEmotes)
+    private void OnEmotesReceived(IEnumerable<WearableItem> receivedEmotes)
     {
-        for (var i = 0; i < receivedEmotes.Length; i++)
+        foreach (var t in receivedEmotes)
         {
-            WearableItem emote = receivedEmotes[i];
+            OnEmoteReceived(t);
+        }
+    }
 
-            if (!emotesOnUse.ContainsKey(emote.id) || emotesOnUse[emote.id] <= 0)
-                continue;
+    private void OnEmoteReceived(WearableItem emote)
+    {
+        if (!emotesOnUse.ContainsKey(emote.id) || emotesOnUse[emote.id] <= 0)
+            return;
 
-            emotes[emote.id] = emote;
+        emotes[emote.id] = emote;
 
-            if (promises.TryGetValue(emote.id, out var emotePromises))
-            {
-                foreach (Promise<WearableItem> promise in emotePromises)
-                {
-                    promise.Resolve(emote);
-                }
+        if (promises.TryGetValue(emote.id, out var emotePromises))
+        {
+            foreach (Promise<WearableItem> promise in emotePromises)
+                promise.Resolve(emote);
 
-                promises.Remove(emote.id);
-            }
+            promises.Remove(emote.id);
         }
     }
 
@@ -98,17 +107,15 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
     }
 
-    private void OnOwnedEmotesReceived(WearableItem[] receivedEmotes, string userId)
+    private void OnOwnedEmotesReceived(IReadOnlyList<WearableItem> receivedEmotes, string userId)
     {
-        if (!ownedEmotesPromisesByUser.TryGetValue(userId, out HashSet<Promise<WearableItem[]>> ownedEmotesPromises) || ownedEmotesPromises == null)
-            ownedEmotesPromises = new HashSet<Promise<WearableItem[]>>();
+        if (!ownedEmotesPromisesByUser.TryGetValue(userId, out HashSet<Promise<IReadOnlyList<WearableItem>>> ownedEmotesPromises) || ownedEmotesPromises == null)
+            ownedEmotesPromises = new HashSet<Promise<IReadOnlyList<WearableItem>>>();
 
         //Update emotes on use
-        for (var i = 0; i < receivedEmotes.Length; i++)
+        foreach (var emote in receivedEmotes)
         {
-            var emote = receivedEmotes[i];
-            if (!emotesOnUse.ContainsKey(emote.id))
-                emotesOnUse[emote.id] = 0;
+            emotesOnUse.TryAdd(emote.id, 0);
             emotesOnUse[emote.id] += ownedEmotesPromises.Count;
         }
 
@@ -116,15 +123,13 @@ public class EmotesCatalogService : IEmotesCatalogService
 
         //Resolve ownedEmotesPromise
         ownedEmotesPromisesByUser.Remove(userId);
-        foreach (Promise<WearableItem[]> promise in ownedEmotesPromises)
-        {
+        foreach (Promise<IReadOnlyList<WearableItem>> promise in ownedEmotesPromises)
             promise.Resolve(receivedEmotes);
-        }
     }
 
     private void EmbedEmotes()
     {
-        foreach (WearableItem embeddedEmote in embeddedEmotesSO.emotes)
+        foreach (EmbeddedEmote embeddedEmote in embeddedEmotesSo.emotes)
         {
             emotes[embeddedEmote.id] = embeddedEmote;
             emotesOnUse[embeddedEmote.id] = 5000;
@@ -133,18 +138,19 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public bool TryGetLoadedEmote(string id, out WearableItem emote) { return emotes.TryGetValue(id, out emote); }
 
-    public Promise<WearableItem[]> RequestOwnedEmotes(string userId)
+    public Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId)
     {
-        var promise = new Promise<WearableItem[]>();
+        var promise = new Promise<IReadOnlyList<WearableItem>>();
         if (!ownedEmotesPromisesByUser.ContainsKey(userId) || ownedEmotesPromisesByUser[userId] == null)
-            ownedEmotesPromisesByUser[userId] = new HashSet<Promise<WearableItem[]>>();
+            ownedEmotesPromisesByUser[userId] = new HashSet<Promise<IReadOnlyList<WearableItem>>>();
         ownedEmotesPromisesByUser[userId].Add(promise);
-        bridge.RequestOwnedEmotes(userId);
+
+        emoteSource.RequestOwnedEmotes(userId);
 
         return promise;
     }
 
-    public async UniTask<WearableItem[]> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default)
+    public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default)
     {
         const int TIMEOUT = 60;
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
@@ -184,9 +190,13 @@ public class EmotesCatalogService : IEmotesCatalogService
         if (!promises.ContainsKey(id) || promises[id] == null)
             promises[id] = new HashSet<Promise<WearableItem>>();
         promises[id].Add(promise);
-        bridge.RequestEmote(id);
+
+        emoteSource.RequestEmote(id);
+
         return promise;
     }
+
+
 
     public List<Promise<WearableItem>> RequestEmotes(IList<string> ids)
     {
@@ -238,7 +248,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         return promise.value;
     }
 
-    public async UniTask<WearableItem[]> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default)
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
         try
@@ -279,26 +289,26 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes()
     {
-        if(embeddedEmotesSO == null)
-            await UniTask.WaitUntil(() => embeddedEmotesSO != null);
-        return embeddedEmotesSO;
+        if(embeddedEmotesSo == null)
+            await UniTask.WaitUntil(() => embeddedEmotesSo != null);
+        return embeddedEmotesSo;
     }
 
     public void Dispose()
     {
-        bridge.OnEmotesReceived -= OnEmotesReceived;
-        bridge.OnEmoteRejected -= OnEmoteRejected;
-        bridge.OnOwnedEmotesReceived -= OnOwnedEmotesReceived;
+        emoteSource.OnEmotesReceived -= OnEmotesReceived;
+        emoteSource.OnEmoteRejected -= OnEmoteRejected;
+        emoteSource.OnOwnedEmotesReceived -= OnOwnedEmotesReceived;
         DisposeCT();
     }
 
     private void DisposeCT()
     {
-        if (addressableCTS != null)
+        if (addressableCts != null)
         {
-            addressableCTS.Cancel();
-            addressableCTS.Dispose();
-            addressableCTS = null;
+            addressableCts.Cancel();
+            addressableCts.Dispose();
+            addressableCts = null;
         }
     }
 }

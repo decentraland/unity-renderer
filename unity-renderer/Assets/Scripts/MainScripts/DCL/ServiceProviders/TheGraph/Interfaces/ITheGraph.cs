@@ -8,10 +8,16 @@ public enum TheGraphCache
     UseCache
 }
 
+public enum TheGraphNetwork
+{
+    Ethereum,
+    Polygon,
+}
+
 public interface ITheGraph : IDisposable
 {
     Promise<List<Land>> QueryLands(string network, string address, float cacheMaxAgeSeconds);
-    Promise<double> QueryPolygonMana(string address);
+    Promise<double> QueryMana(string address, TheGraphNetwork network);
 
     /// <summary>
     /// Get the list of NFTs owned by an user.

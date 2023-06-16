@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -37,6 +38,12 @@ public interface ISectionToggle
     void SelectToggle(bool reselectIfAlreadyOn = false);
 
     /// <summary>
+    /// Invoke the action of un-selecting the toggle.
+    /// </summary>
+    /// <param name="reUnSelectIfAlreadyOff">True for apply the un-selection even if the toggle was already off.</param>
+    void UnSelectToggle(bool reUnSelectIfAlreadyOff = false);
+
+    /// <summary>
     /// Set the toggle visuals as selected.
     /// </summary>
     void SetSelectedVisuals();
@@ -57,11 +64,18 @@ public interface ISectionToggle
     /// </summary>
     /// <returns>True if it is actived.</returns>
     bool IsActive();
+
+    /// <summary>
+    /// Show/Hide the NEW tag.
+    /// </summary>
+    /// <param name="isNew">True for showing the tag.</param>
+    void SetAsNew(bool isNew);
 }
 
 public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
 {
     [SerializeField] private Toggle toggle;
+    [SerializeField] private GameObject newTag;
 
     [Header("Visual Configuration When Selected")]
     [SerializeField] private Image selectedIcon;
@@ -103,7 +117,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
             backgroundTransitionColorsForSelected = backgroundTransitionColorsForSelected,
             unselectedTextColor = unselectedTextColor,
             unselectedImageColor = unselectedImageColor,
-            backgroundTransitionColorsForUnselected = backgroundTransitionColorsForUnselected
+            backgroundTransitionColorsForUnselected = backgroundTransitionColorsForUnselected,
+            showNewTag = newTag != null && newTag.activeSelf,
         };
     }
 
@@ -136,6 +151,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
             unselectedIcon.color = model.unselectedImageColor;
         }
 
+        SetAsNew(model.showNewTag);
+
         backgroundTransitionColorsForSelected = model.backgroundTransitionColorsForSelected;
         backgroundTransitionColorsForUnselected = model.backgroundTransitionColorsForUnselected;
         selectedTextColor = model.selectedTextColor;
@@ -157,6 +174,18 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
 
         if(!toggle.isOn)
             toggle.isOn = true;
+    }
+
+    public void UnSelectToggle(bool reUnSelectIfAlreadyOff = false)
+    {
+        if (toggle == null)
+            return;
+
+        if (reUnSelectIfAlreadyOff)
+            toggle.isOn = true;
+
+        if(toggle.isOn)
+            toggle.isOn = false;
     }
 
     public void SetSelectedVisuals()
@@ -196,6 +225,14 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
     public bool IsActive() { return gameObject.activeSelf; }
+
+    public void SetAsNew(bool isNew)
+    {
+        if (newTag == null)
+            return;
+
+        newTag.SetActive(isNew);
+    }
 
     internal void ConfigureDefaultOnSelectAction()
     {

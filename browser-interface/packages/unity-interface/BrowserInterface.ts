@@ -1,7 +1,7 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
+import { Avatar, generateLazyValidator, JSONSchema, WearableCategory } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
@@ -56,7 +56,7 @@ import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
-import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
+import {logout, redirectToSignUp, signUp, signUpCancel, tosPopupAccepted} from 'shared/session/actions'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
@@ -150,6 +150,7 @@ export type RendererSaveProfile = {
       a: number
     }
     wearables: string[]
+    forceRender?: string[]
     emotes: {
       slot: number
       urn: string
@@ -197,6 +198,7 @@ export const rendererSaveProfileSchemaV0: JSONSchema<RendererSaveProfile> = {
         hairColor: color3Schema,
         skinColor: color3Schema,
         wearables: { type: 'array', items: { type: 'string' } },
+        forceRender: { type: 'array', items: { type: 'string' }, nullable: true },
         emotes: { type: 'array', items: emoteSchema }
       }
     }
@@ -220,6 +222,7 @@ export const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
         hairColor: color3Schema,
         skinColor: color3Schema,
         wearables: { type: 'array', items: { type: 'string' } },
+        forceRender: { type: 'array', items: { type: 'string' }, nullable: true },
         emotes: { type: 'array', items: emoteSchema }
       }
     }
@@ -436,6 +439,7 @@ export class BrowserInterface {
           hair: { color: changes.avatar.hairColor },
           skin: { color: changes.avatar.skinColor },
           wearables: changes.avatar.wearables,
+          forceRender: (changes.avatar.forceRender ?? []).map((category) => category as WearableCategory),
           snapshots: {
             body: changes.body,
             face256: changes.face256
@@ -452,6 +456,7 @@ export class BrowserInterface {
           hair: { color: changes.avatar.hairColor },
           skin: { color: changes.avatar.skinColor },
           wearables: changes.avatar.wearables,
+          forceRender: (changes.avatar.forceRender ?? []).map((category) => category as WearableCategory),
           emotes: (changes.avatar.emotes ?? []).map((value, index) => ({ slot: index, urn: value as any as string })),
           snapshots: {
             body: changes.body,
@@ -1131,6 +1136,22 @@ export class BrowserInterface {
         logger.log(data.message)
         break
     }
+  }
+
+  //Seamless login, after A/B testing remove this methods and implement a browser-interface<>renderer service
+  public ToSPopupAccepted() {
+    trackEvent('seamless_login tos accepted', { })
+    store.dispatch(tosPopupAccepted())
+  }
+
+  public ToSPopupRejected() {
+    trackEvent('seamless_login tos rejected', { })
+    window.location.href = 'https://decentraland.org'
+  }
+
+  public ToSPopupGoToToS() {
+    trackEvent('seamless_login go to tos', { })
+    globalObservable.emit('openUrl', { url: 'https://decentraland.org/terms' })
   }
 }
 

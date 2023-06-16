@@ -19,7 +19,7 @@
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.6.6"
       },
-      "hash": "600a6c7dc0ca608685997519e2f356839abba3a2"
+      "hash": "76b63cdf60ffbc04c2f2851ffde777496e5ef25e"
     },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",
@@ -40,21 +40,21 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "c7eedf85c79e2ce06658c8060ca38a282f2ca7ab"
+      "hash": "f2773f585e762480c835ac718b82b87cb111e500"
     },
     "com.decentraland.rpc-csharp": {
       "version": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "434f7c2dd0a831d259858e6ba3482ffcc24b7268"
+      "hash": "f2621a8b09b68f3a7639eea40a7aba18571f3f28"
     },
     "com.decentraland.unity-shared-dependencies": {
       "version": "https://github.com/decentraland/unity-shared-dependencies.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "1b462119ed2ca0a100d22cea1e482d28dde41dc8"
+      "hash": "75f485918a93247053137aad677521c8ebee1d0b"
     },
     "com.decentraland.videoplayer": {
       "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
@@ -143,7 +143,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.21",
+      "version": "3.0.22",
       "depth": 0,
       "source": "registry",
       "dependencies": {

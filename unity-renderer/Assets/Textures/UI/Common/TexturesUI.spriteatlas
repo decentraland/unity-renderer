@@ -72,6 +72,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9d8a1240643c848f38c614260af68c76, type: 3}
   - {fileID: 21300000, guid: 88dde3500b2da42c89518050e5250b21, type: 3}
   - {fileID: 21300000, guid: 91681e50568d84e93b76b1767abc283f, type: 3}
+  - {fileID: 21300000, guid: 75995f508b57640ae8b619e4b4d76183, type: 3}
   - {fileID: 21300000, guid: 9ee0d9605c0e04a57946e54a0b997c90, type: 3}
   - {fileID: 21300000, guid: 881fad601c25545beaf8ff83632e9ce2, type: 3}
   - {fileID: 21300000, guid: b6b6bf6065bcc4d26939c4f9986de3da, type: 3}
@@ -176,6 +177,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c6bfc325bda1f44ba9affb7ecdf26a11, type: 3}
   - {fileID: 21300000, guid: 6fbdd825c58334612a3d1645eba6da25, type: 3}
   - {fileID: 21300000, guid: 4e9a4135cdf6d42afb73b12a76bf53f2, type: 3}
+  - {fileID: 21300000, guid: 17e94f45af7624a0996b2a78cf3009ad, type: 3}
   - {fileID: 21300000, guid: 47acd065431664e80a9a8cdedf8acb31, type: 3}
   - {fileID: 21300000, guid: 7ec9c5651d0c04c2db1086ffdad1a3d0, type: 3}
   - {fileID: 21300000, guid: e0a2bc75af20840e79cb10bba9987431, type: 3}
@@ -205,6 +207,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a55ecfa6bafe1486da42b025ec8edbd8, type: 3}
   - {fileID: 21300000, guid: 51bee6e6d6f314363a939973c91dff7a, type: 3}
   - {fileID: 21300000, guid: 518e3be6157b64d5a9fabd3e9c35622d, type: 3}
+  - {fileID: 21300000, guid: 463b39f697f51426c83cdef0cf23aa3b, type: 3}
   - {fileID: 21300000, guid: 100172170ea424b1f94f8c64e2d48da1, type: 3}
   - {fileID: 21300000, guid: e4194917179d34ea897e31a5b487a894, type: 3}
   - {fileID: 21300000, guid: 71bec2279cc084440b3820533c062b92, type: 3}
@@ -260,6 +263,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1c63e329c16184c1bb493ada5f85c91b, type: 3}
   - {fileID: 21300000, guid: 13bc1439c14df4c03a3bfc3c087d017f, type: 3}
   - {fileID: 21300000, guid: f9934449af9e15443befe12f639d5979, type: 3}
+  - {fileID: 21300000, guid: 801b2e4946a664b06873a855ca5bd8ef, type: 3}
   - {fileID: 21300000, guid: e36f3569fbdef4c609c33f7a1cebace5, type: 3}
   - {fileID: 21300000, guid: c4b955690452948efa830562d3ca8ed4, type: 3}
   - {fileID: 21300000, guid: ad6a5c692d0a34fbe8f1e4dd9bee0c2b, type: 3}
@@ -275,6 +279,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a1317b1aff4d943b9b7361cc061816bf, type: 3}
   - {fileID: 21300000, guid: 7b9d8b2a13149489fac02d8d802c41b6, type: 3}
   - {fileID: 21300000, guid: 4716bd3a235374a27bd75705f5b7a1af, type: 3}
+  - {fileID: 21300000, guid: 96f72d4a8759b47cea1df19e01632e26, type: 3}
   - {fileID: 21300000, guid: 0b63c85aaf7c44493a7613587a1a8a4f, type: 3}
   - {fileID: 21300000, guid: df21406aac3b94b18b9edcf3e6ae36c4, type: 3}
   - {fileID: 21300000, guid: 2656696aa53c7404f8c5fb49468ee219, type: 3}
@@ -283,6 +288,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8db90f8afd6a349dea8d959b88ddae43, type: 3}
   - {fileID: 21300000, guid: ad45379ab95744ed290d6c7808b89084, type: 3}
   - {fileID: 21300000, guid: 877d19aa5b7d74c25862a30311503ed4, type: 3}
+  - {fileID: 21300000, guid: 1707afaaf67d6474eabb6c9829ed3cf3, type: 3}
   - {fileID: 21300000, guid: 63cedfaa776dc4d69a9f4848cd966364, type: 3}
   - {fileID: 21300000, guid: 96af52ba6c86845beb91f068f1cabe94, type: 3}
   - {fileID: 21300000, guid: 6c9da2cade77947d3bc10b1ad5c4f532, type: 3}
@@ -333,9 +339,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f89f754c892ba4e8faa6b3390ff07e16, type: 3}
   - {fileID: 21300000, guid: 9440a54c9ef22324ebdbd9239d2e6021, type: 3}
   - {fileID: 21300000, guid: b3dde05c995029e4c8e4a4acd0f99337, type: 3}
+  - {fileID: 21300000, guid: eaad235cc6bf34bdf899e5095b412398, type: 3}
   - {fileID: 21300000, guid: 2dcab87c551ac42a3b30debae889baad, type: 3}
   - {fileID: 21300000, guid: f0bcc87cbbf78438ebfb049f6c1aa203, type: 3}
   - {fileID: 21300000, guid: 6017049c5a0dc43f6a4a68f1b4e28664, type: 3}
+  - {fileID: 21300000, guid: 0c1f94bccfacc415f8b7916a4f3ae512, type: 3}
   - {fileID: 21300000, guid: 31a98abcdcc4e4022b74038cdc7154be, type: 3}
   - {fileID: 21300000, guid: 21fb0bbc6fe494c8789ea7221ac96c59, type: 3}
   - {fileID: 21300000, guid: ce0e66cca3918473693726f3bf7da082, type: 3}
@@ -412,6 +420,7 @@ SpriteAtlas:
   - RadialGradient
   - CellBright
   - Mic off
+  - VisibleIcon
   - Spinner
   - NoFavoritesImage
   - RectRadius8
@@ -481,7 +490,7 @@ SpriteAtlas:
   - BookIcon
   - Frame24
   - AcceptButton
-  - CopyIconOutline
+  - CopyIcn
   - QuestOn
   - IconBellActive
   - OkIcon
@@ -508,14 +517,15 @@ SpriteAtlas:
   - BackpackOff
   - MessageReceived
   - ScenesContainer
-  - TopGradientPopUp
+  - ShortGradientTop
   - ClaimIcon
-  - JumpInArrowPink
+  - RubyArrow
   - VoiceChatMute
   - DiscordIconHD
   - Button14
   - ContainerShadowRadiusSix
   - JumpInSquare
+  - LeftClickIcn
   - BubblePeak
   - Frame5
   - ArrowUp
@@ -545,6 +555,7 @@ SpriteAtlas:
   - CatalogIcon
   - Frame10
   - BlockPlayerIcon
+  - EmptyIconNew
   - BackgroundPattern
   - CheckmarkContainer
   - ContainerRadius20Shadow
@@ -600,6 +611,7 @@ SpriteAtlas:
   - Frame12
   - RoundedButtonShadow
   - ContainerRadius24Shadow
+  - HideUIIconNew
   - Ellipse128
   - SearchChannelIcon
   - FriendsOff
@@ -615,6 +627,7 @@ SpriteAtlas:
   - OngoingEventIcon
   - Handle
   - MicrophoneIcon
+  - WheelIcn
   - ContainerRadius16
   - CardCollectiblesIcon
   - PinOutline
@@ -622,7 +635,8 @@ SpriteAtlas:
   - RectRadius16
   - ContainerRectLeft14
   - CardPassportIcon
-  - JumpInIcon
+  - JumpInIcn
+  - Container12RectRight
   - RoundedContainer34
   - MarketIcon
   - PassportIcon
@@ -673,16 +687,18 @@ SpriteAtlas:
   - CursorInteractive
   - RarityCornerEmotes
   - InputRed
+  - Container12RectLeft
   - CrowdIcon
   - OutlineGradient
   - EndVoiceChat
-  - HelpIcon
+  - RightClickIcn
+  - HelpIcn
   - SettingsOff
   - VoiceChatPlayer
   - FavoritesIcon
   - HideNameIcon
   - ChatOff
-  - LinearGradientNFTs
+  - LargeGradientBottom
   - ArrowGradient
   - NotFavoriteIcon
   - ContainerOutline100
@@ -710,7 +726,7 @@ SpriteAtlas:
   - CardBlockIcon
   - LiveContainer
   - Button10
-  - BottomRect12
+  - Container12RectBottom
   - ContainerRectTop
   - StarIcon
   - Button6
@@ -729,7 +745,7 @@ SpriteAtlas:
   - LogOutIcon
   - RoundedContainer44
   - CloseButton
-  - JumpIcon
+  - WhiteArrow
   - InputFieldBuilder
   - ControlsIcon
   - WarningIcon

@@ -350,7 +350,7 @@ namespace Decentraland.Sdk.Ecs6 {
             "ZnNldF94QhIKEF9zaGFkb3dfb2Zmc2V0X3lCDwoNX3NoYWRvd19jb2xvckIP",
             "Cg1faF90ZXh0X2FsaWduQg8KDV92X3RleHRfYWxpZ25CDgoMX3BhZGRpbmdf",
             "dG9wQhAKDl9wYWRkaW5nX3JpZ2h0QhEKD19wYWRkaW5nX2JvdHRvbUIPCg1f",
-            "cGFkZGluZ19sZWZ0IrwNChhFQ1M2Q29tcG9uZW50VWlJbnB1dFRleHQSEQoE",
+            "cGFkZGluZ19sZWZ0IuQNChhFQ1M2Q29tcG9uZW50VWlJbnB1dFRleHQSEQoE",
             "bmFtZRgBIAEoCUgAiAEBEhQKB3Zpc2libGUYAiABKAhIAYgBARIUCgdvcGFj",
             "aXR5GAMgASgCSAKIAQESFAoHaF9hbGlnbhgEIAEoCUgDiAEBEhQKB3ZfYWxp",
             "Z24YBSABKAlIBIgBARIyCgV3aWR0aBgGIAEoCzIeLmRlY2VudHJhbGFuZC5z",
@@ -376,92 +376,21 @@ namespace Decentraland.Sdk.Ecs6 {
             "HIgBARIbCg5wYWRkaW5nX2JvdHRvbRgfIAEoAkgdiAEBEhkKDHBhZGRpbmdf",
             "bGVmdBggIAEoAkgeiAEBEhwKD29uX3RleHRfY2hhbmdlZBgkIAEoCUgfiAEB",
             "EhUKCG9uX2ZvY3VzGCUgASgJSCCIAQESFAoHb25fYmx1chgmIAEoCUghiAEB",
-            "EhsKDm9uX3RleHRfc3VibWl0GCggASgJSCKIAQFCBwoFX25hbWVCCgoIX3Zp",
-            "c2libGVCCgoIX29wYWNpdHlCCgoIX2hfYWxpZ25CCgoIX3ZfYWxpZ25CCAoG",
-            "X3dpZHRoQgkKB19oZWlnaHRCDQoLX3Bvc2l0aW9uX3hCDQoLX3Bvc2l0aW9u",
-            "X3lCFQoTX2lzX3BvaW50ZXJfYmxvY2tlckITChFfcGFyZW50X2NvbXBvbmVu",
-            "dEIQCg5fb3V0bGluZV93aWR0aEIQCg5fb3V0bGluZV9jb2xvckIICgZfY29s",
-            "b3JCDAoKX2ZvbnRfc2l6ZUIHCgVfZm9udEIICgZfdmFsdWVCDgoMX3BsYWNl",
-            "aG9sZGVyQgkKB19tYXJnaW5CFQoTX2ZvY3VzZWRfYmFja2dyb3VuZEIQCg5f",
-            "dGV4dF93cmFwcGluZ0IOCgxfc2hhZG93X2JsdXJCEgoQX3NoYWRvd19vZmZz",
-            "ZXRfeEISChBfc2hhZG93X29mZnNldF95Qg8KDV9zaGFkb3dfY29sb3JCDwoN",
-            "X2hfdGV4dF9hbGlnbkIPCg1fdl90ZXh0X2FsaWduQg4KDF9wYWRkaW5nX3Rv",
-            "cEIQCg5fcGFkZGluZ19yaWdodEIRCg9fcGFkZGluZ19ib3R0b21CDwoNX3Bh",
-            "ZGRpbmdfbGVmdEISChBfb25fdGV4dF9jaGFuZ2VkQgsKCV9vbl9mb2N1c0IK",
-            "Cghfb25fYmx1ckIRCg9fb25fdGV4dF9zdWJtaXQiiAgKFEVDUzZDb21wb25l",
-            "bnRVaUltYWdlEhEKBG5hbWUYASABKAlIAIgBARIUCgd2aXNpYmxlGAIgASgI",
-            "SAGIAQESFAoHb3BhY2l0eRgDIAEoAkgCiAEBEhQKB2hfYWxpZ24YBCABKAlI",
-            "A4gBARIUCgd2X2FsaWduGAUgASgJSASIAQESMgoFd2lkdGgYBiABKAsyHi5k",
-            "ZWNlbnRyYWxhbmQuc2RrLmVjczYuVWlWYWx1ZUgFiAEBEjMKBmhlaWdodBgH",
-            "IAEoCzIeLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5VaVZhbHVlSAaIAQESNwoK",
-            "cG9zaXRpb25feBgIIAEoCzIeLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5VaVZh",
-            "bHVlSAeIAQESNwoKcG9zaXRpb25feRgJIAEoCzIeLmRlY2VudHJhbGFuZC5z",
-            "ZGsuZWNzNi5VaVZhbHVlSAiIAQESHwoSaXNfcG9pbnRlcl9ibG9ja2VyGAog",
-            "ASgISAmIAQESHQoQcGFyZW50X2NvbXBvbmVudBgWIAEoCUgKiAEBEhgKC3Nv",
-            "dXJjZV9sZWZ0GAsgASgCSAuIAQESFwoKc291cmNlX3RvcBgMIAEoAkgMiAEB",
-            "EhkKDHNvdXJjZV93aWR0aBgNIAEoAkgNiAEBEhoKDXNvdXJjZV9oZWlnaHQY",
-            "DiABKAJIDogBARITCgZzb3VyY2UYDyABKAlID4gBARIYCgtwYWRkaW5nX3Rv",
-            "cBgQIAEoAkgQiAEBEhoKDXBhZGRpbmdfcmlnaHQYESABKAJIEYgBARIbCg5w",
-            "YWRkaW5nX2JvdHRvbRgSIAEoAkgSiAEBEhkKDHBhZGRpbmdfbGVmdBgTIAEo",
-            "AkgTiAEBEhsKDnNpemVfaW5fcGl4ZWxzGBQgASgISBSIAQESFQoIb25fY2xp",
-            "Y2sYFSABKAlIFYgBAUIHCgVfbmFtZUIKCghfdmlzaWJsZUIKCghfb3BhY2l0",
-            "eUIKCghfaF9hbGlnbkIKCghfdl9hbGlnbkIICgZfd2lkdGhCCQoHX2hlaWdo",
-            "dEINCgtfcG9zaXRpb25feEINCgtfcG9zaXRpb25feUIVChNfaXNfcG9pbnRl",
-            "cl9ibG9ja2VyQhMKEV9wYXJlbnRfY29tcG9uZW50Qg4KDF9zb3VyY2VfbGVm",
-            "dEINCgtfc291cmNlX3RvcEIPCg1fc291cmNlX3dpZHRoQhAKDl9zb3VyY2Vf",
-            "aGVpZ2h0QgkKB19zb3VyY2VCDgoMX3BhZGRpbmdfdG9wQhAKDl9wYWRkaW5n",
-            "X3JpZ2h0QhEKD19wYWRkaW5nX2JvdHRvbUIPCg1fcGFkZGluZ19sZWZ0QhEK",
-            "D19zaXplX2luX3BpeGVsc0ILCglfb25fY2xpY2siiAgKGUVDUzZDb21wb25l",
-            "bnRVaVNjcm9sbFJlY3QSEQoEbmFtZRgLIAEoCUgAiAEBEhQKB3Zpc2libGUY",
-            "DCABKAhIAYgBARIUCgdvcGFjaXR5GA0gASgCSAKIAQESFAoHaF9hbGlnbhgO",
-            "IAEoCUgDiAEBEhQKB3ZfYWxpZ24YDyABKAlIBIgBARIyCgV3aWR0aBgQIAEo",
-            "CzIeLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5VaVZhbHVlSAWIAQESMwoGaGVp",
-            "Z2h0GBEgASgLMh4uZGVjZW50cmFsYW5kLnNkay5lY3M2LlVpVmFsdWVIBogB",
-            "ARI3Cgpwb3NpdGlvbl94GBIgASgLMh4uZGVjZW50cmFsYW5kLnNkay5lY3M2",
-            "LlVpVmFsdWVIB4gBARI3Cgpwb3NpdGlvbl95GBMgASgLMh4uZGVjZW50cmFs",
-            "YW5kLnNkay5lY3M2LlVpVmFsdWVICIgBARIfChJpc19wb2ludGVyX2Jsb2Nr",
-            "ZXIYFCABKAhICYgBARIdChBwYXJlbnRfY29tcG9uZW50GBUgASgJSAqIAQES",
-            "FAoHdmFsdWVfeBgBIAEoAkgLiAEBEhQKB3ZhbHVlX3kYAiABKAJIDIgBARJA",
-            "ChBiYWNrZ3JvdW5kX2NvbG9yGAMgASgLMiEuZGVjZW50cmFsYW5kLnNkay5l",
-            "Y3M2LkVDUzZDb2xvcjRIDYgBARIaCg1pc19ob3Jpem9udGFsGAQgASgISA6I",
-            "AQESGAoLaXNfdmVydGljYWwYBSABKAhID4gBARIYCgtwYWRkaW5nX3RvcBgG",
-            "IAEoAkgQiAEBEhoKDXBhZGRpbmdfcmlnaHQYByABKAJIEYgBARIbCg5wYWRk",
-            "aW5nX2JvdHRvbRgIIAEoAkgSiAEBEhkKDHBhZGRpbmdfbGVmdBgJIAEoAkgT",
-            "iAEBEhcKCm9uX2NoYW5nZWQYCiABKAlIFIgBAUIHCgVfbmFtZUIKCghfdmlz",
-            "aWJsZUIKCghfb3BhY2l0eUIKCghfaF9hbGlnbkIKCghfdl9hbGlnbkIICgZf",
-            "d2lkdGhCCQoHX2hlaWdodEINCgtfcG9zaXRpb25feEINCgtfcG9zaXRpb25f",
-            "eUIVChNfaXNfcG9pbnRlcl9ibG9ja2VyQhMKEV9wYXJlbnRfY29tcG9uZW50",
-            "QgoKCF92YWx1ZV94QgoKCF92YWx1ZV95QhMKEV9iYWNrZ3JvdW5kX2NvbG9y",
-            "QhAKDl9pc19ob3Jpem9udGFsQg4KDF9pc192ZXJ0aWNhbEIOCgxfcGFkZGlu",
-            "Z190b3BCEAoOX3BhZGRpbmdfcmlnaHRCEQoPX3BhZGRpbmdfYm90dG9tQg8K",
-            "DV9wYWRkaW5nX2xlZnRCDQoLX29uX2NoYW5nZWQivgQKHkVDUzZDb21wb25l",
-            "bnRVaVdvcmxkU3BhY2VTaGFwZRIRCgRuYW1lGAEgASgJSACIAQESFAoHdmlz",
-            "aWJsZRgCIAEoCEgBiAEBEhQKB29wYWNpdHkYAyABKAJIAogBARIUCgdoX2Fs",
-            "aWduGAQgASgJSAOIAQESFAoHdl9hbGlnbhgFIAEoCUgEiAEBEjIKBXdpZHRo",
-            "GAYgASgLMh4uZGVjZW50cmFsYW5kLnNkay5lY3M2LlVpVmFsdWVIBYgBARIz",
-            "CgZoZWlnaHQYByABKAsyHi5kZWNlbnRyYWxhbmQuc2RrLmVjczYuVWlWYWx1",
-            "ZUgGiAEBEjcKCnBvc2l0aW9uX3gYCCABKAsyHi5kZWNlbnRyYWxhbmQuc2Rr",
-            "LmVjczYuVWlWYWx1ZUgHiAEBEjcKCnBvc2l0aW9uX3kYCSABKAsyHi5kZWNl",
-            "bnRyYWxhbmQuc2RrLmVjczYuVWlWYWx1ZUgIiAEBEh8KEmlzX3BvaW50ZXJf",
-            "YmxvY2tlchgKIAEoCEgJiAEBEh0KEHBhcmVudF9jb21wb25lbnQYCyABKAlI",
-            "CogBAUIHCgVfbmFtZUIKCghfdmlzaWJsZUIKCghfb3BhY2l0eUIKCghfaF9h",
-            "bGlnbkIKCghfdl9hbGlnbkIICgZfd2lkdGhCCQoHX2hlaWdodEINCgtfcG9z",
-            "aXRpb25feEINCgtfcG9zaXRpb25feUIVChNfaXNfcG9pbnRlcl9ibG9ja2Vy",
-            "QhMKEV9wYXJlbnRfY29tcG9uZW50Ir8ECh9FQ1M2Q29tcG9uZW50VWlTY3Jl",
-            "ZW5TcGFjZVNoYXBlEhEKBG5hbWUYASABKAlIAIgBARIUCgd2aXNpYmxlGAIg",
-            "ASgISAGIAQESFAoHb3BhY2l0eRgDIAEoAkgCiAEBEhQKB2hfYWxpZ24YBCAB",
-            "KAlIA4gBARIUCgd2X2FsaWduGAUgASgJSASIAQESMgoFd2lkdGgYBiABKAsy",
-            "Hi5kZWNlbnRyYWxhbmQuc2RrLmVjczYuVWlWYWx1ZUgFiAEBEjMKBmhlaWdo",
-            "dBgHIAEoCzIeLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5VaVZhbHVlSAaIAQES",
-            "NwoKcG9zaXRpb25feBgIIAEoCzIeLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5V",
-            "aVZhbHVlSAeIAQESNwoKcG9zaXRpb25feRgJIAEoCzIeLmRlY2VudHJhbGFu",
-            "ZC5zZGsuZWNzNi5VaVZhbHVlSAiIAQESHwoSaXNfcG9pbnRlcl9ibG9ja2Vy",
-            "GAogASgISAmIAQESHQoQcGFyZW50X2NvbXBvbmVudBgLIAEoCUgKiAEBQgcK",
-            "BV9uYW1lQgoKCF92aXNpYmxlQgoKCF9vcGFjaXR5QgoKCF9oX2FsaWduQgoK",
-            "CF92X2FsaWduQggKBl93aWR0aEIJCgdfaGVpZ2h0Qg0KC19wb3NpdGlvbl94",
-            "Qg0KC19wb3NpdGlvbl95QhUKE19pc19wb2ludGVyX2Jsb2NrZXJCEwoRX3Bh",
-            "cmVudF9jb21wb25lbnQivgQKHkVDUzZDb21wb25lbnRVaUZ1bGxTY3JlZW5T",
-            "aGFwZRIRCgRuYW1lGAEgASgJSACIAQESFAoHdmlzaWJsZRgCIAEoCEgBiAEB",
+            "EhsKDm9uX3RleHRfc3VibWl0GCggASgJSCKIAQESFwoKb25fY2hhbmdlZBgp",
+            "IAEoCUgjiAEBQgcKBV9uYW1lQgoKCF92aXNpYmxlQgoKCF9vcGFjaXR5QgoK",
+            "CF9oX2FsaWduQgoKCF92X2FsaWduQggKBl93aWR0aEIJCgdfaGVpZ2h0Qg0K",
+            "C19wb3NpdGlvbl94Qg0KC19wb3NpdGlvbl95QhUKE19pc19wb2ludGVyX2Js",
+            "b2NrZXJCEwoRX3BhcmVudF9jb21wb25lbnRCEAoOX291dGxpbmVfd2lkdGhC",
+            "EAoOX291dGxpbmVfY29sb3JCCAoGX2NvbG9yQgwKCl9mb250X3NpemVCBwoF",
+            "X2ZvbnRCCAoGX3ZhbHVlQg4KDF9wbGFjZWhvbGRlckIJCgdfbWFyZ2luQhUK",
+            "E19mb2N1c2VkX2JhY2tncm91bmRCEAoOX3RleHRfd3JhcHBpbmdCDgoMX3No",
+            "YWRvd19ibHVyQhIKEF9zaGFkb3dfb2Zmc2V0X3hCEgoQX3NoYWRvd19vZmZz",
+            "ZXRfeUIPCg1fc2hhZG93X2NvbG9yQg8KDV9oX3RleHRfYWxpZ25CDwoNX3Zf",
+            "dGV4dF9hbGlnbkIOCgxfcGFkZGluZ190b3BCEAoOX3BhZGRpbmdfcmlnaHRC",
+            "EQoPX3BhZGRpbmdfYm90dG9tQg8KDV9wYWRkaW5nX2xlZnRCEgoQX29uX3Rl",
+            "eHRfY2hhbmdlZEILCglfb25fZm9jdXNCCgoIX29uX2JsdXJCEQoPX29uX3Rl",
+            "eHRfc3VibWl0Qg0KC19vbl9jaGFuZ2VkIogIChRFQ1M2Q29tcG9uZW50VWlJ",
+            "bWFnZRIRCgRuYW1lGAEgASgJSACIAQESFAoHdmlzaWJsZRgCIAEoCEgBiAEB",
             "EhQKB29wYWNpdHkYAyABKAJIAogBARIUCgdoX2FsaWduGAQgASgJSAOIAQES",
             "FAoHdl9hbGlnbhgFIAEoCUgEiAEBEjIKBXdpZHRoGAYgASgLMh4uZGVjZW50",
             "cmFsYW5kLnNkay5lY3M2LlVpVmFsdWVIBYgBARIzCgZoZWlnaHQYByABKAsy",
@@ -469,11 +398,83 @@ namespace Decentraland.Sdk.Ecs6 {
             "aW9uX3gYCCABKAsyHi5kZWNlbnRyYWxhbmQuc2RrLmVjczYuVWlWYWx1ZUgH",
             "iAEBEjcKCnBvc2l0aW9uX3kYCSABKAsyHi5kZWNlbnRyYWxhbmQuc2RrLmVj",
             "czYuVWlWYWx1ZUgIiAEBEh8KEmlzX3BvaW50ZXJfYmxvY2tlchgKIAEoCEgJ",
-            "iAEBEh0KEHBhcmVudF9jb21wb25lbnQYCyABKAlICogBAUIHCgVfbmFtZUIK",
-            "CghfdmlzaWJsZUIKCghfb3BhY2l0eUIKCghfaF9hbGlnbkIKCghfdl9hbGln",
-            "bkIICgZfd2lkdGhCCQoHX2hlaWdodEINCgtfcG9zaXRpb25feEINCgtfcG9z",
-            "aXRpb25feUIVChNfaXNfcG9pbnRlcl9ibG9ja2VyQhMKEV9wYXJlbnRfY29t",
-            "cG9uZW50YgZwcm90bzM="));
+            "iAEBEh0KEHBhcmVudF9jb21wb25lbnQYFiABKAlICogBARIYCgtzb3VyY2Vf",
+            "bGVmdBgLIAEoAkgLiAEBEhcKCnNvdXJjZV90b3AYDCABKAJIDIgBARIZCgxz",
+            "b3VyY2Vfd2lkdGgYDSABKAJIDYgBARIaCg1zb3VyY2VfaGVpZ2h0GA4gASgC",
+            "SA6IAQESEwoGc291cmNlGA8gASgJSA+IAQESGAoLcGFkZGluZ190b3AYECAB",
+            "KAJIEIgBARIaCg1wYWRkaW5nX3JpZ2h0GBEgASgCSBGIAQESGwoOcGFkZGlu",
+            "Z19ib3R0b20YEiABKAJIEogBARIZCgxwYWRkaW5nX2xlZnQYEyABKAJIE4gB",
+            "ARIbCg5zaXplX2luX3BpeGVscxgUIAEoCEgUiAEBEhUKCG9uX2NsaWNrGBUg",
+            "ASgJSBWIAQFCBwoFX25hbWVCCgoIX3Zpc2libGVCCgoIX29wYWNpdHlCCgoI",
+            "X2hfYWxpZ25CCgoIX3ZfYWxpZ25CCAoGX3dpZHRoQgkKB19oZWlnaHRCDQoL",
+            "X3Bvc2l0aW9uX3hCDQoLX3Bvc2l0aW9uX3lCFQoTX2lzX3BvaW50ZXJfYmxv",
+            "Y2tlckITChFfcGFyZW50X2NvbXBvbmVudEIOCgxfc291cmNlX2xlZnRCDQoL",
+            "X3NvdXJjZV90b3BCDwoNX3NvdXJjZV93aWR0aEIQCg5fc291cmNlX2hlaWdo",
+            "dEIJCgdfc291cmNlQg4KDF9wYWRkaW5nX3RvcEIQCg5fcGFkZGluZ19yaWdo",
+            "dEIRCg9fcGFkZGluZ19ib3R0b21CDwoNX3BhZGRpbmdfbGVmdEIRCg9fc2l6",
+            "ZV9pbl9waXhlbHNCCwoJX29uX2NsaWNrIogIChlFQ1M2Q29tcG9uZW50VWlT",
+            "Y3JvbGxSZWN0EhEKBG5hbWUYCyABKAlIAIgBARIUCgd2aXNpYmxlGAwgASgI",
+            "SAGIAQESFAoHb3BhY2l0eRgNIAEoAkgCiAEBEhQKB2hfYWxpZ24YDiABKAlI",
+            "A4gBARIUCgd2X2FsaWduGA8gASgJSASIAQESMgoFd2lkdGgYECABKAsyHi5k",
+            "ZWNlbnRyYWxhbmQuc2RrLmVjczYuVWlWYWx1ZUgFiAEBEjMKBmhlaWdodBgR",
+            "IAEoCzIeLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5VaVZhbHVlSAaIAQESNwoK",
+            "cG9zaXRpb25feBgSIAEoCzIeLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5VaVZh",
+            "bHVlSAeIAQESNwoKcG9zaXRpb25feRgTIAEoCzIeLmRlY2VudHJhbGFuZC5z",
+            "ZGsuZWNzNi5VaVZhbHVlSAiIAQESHwoSaXNfcG9pbnRlcl9ibG9ja2VyGBQg",
+            "ASgISAmIAQESHQoQcGFyZW50X2NvbXBvbmVudBgVIAEoCUgKiAEBEhQKB3Zh",
+            "bHVlX3gYASABKAJIC4gBARIUCgd2YWx1ZV95GAIgASgCSAyIAQESQAoQYmFj",
+            "a2dyb3VuZF9jb2xvchgDIAEoCzIhLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5F",
+            "Q1M2Q29sb3I0SA2IAQESGgoNaXNfaG9yaXpvbnRhbBgEIAEoCEgOiAEBEhgK",
+            "C2lzX3ZlcnRpY2FsGAUgASgISA+IAQESGAoLcGFkZGluZ190b3AYBiABKAJI",
+            "EIgBARIaCg1wYWRkaW5nX3JpZ2h0GAcgASgCSBGIAQESGwoOcGFkZGluZ19i",
+            "b3R0b20YCCABKAJIEogBARIZCgxwYWRkaW5nX2xlZnQYCSABKAJIE4gBARIX",
+            "Cgpvbl9jaGFuZ2VkGAogASgJSBSIAQFCBwoFX25hbWVCCgoIX3Zpc2libGVC",
+            "CgoIX29wYWNpdHlCCgoIX2hfYWxpZ25CCgoIX3ZfYWxpZ25CCAoGX3dpZHRo",
+            "QgkKB19oZWlnaHRCDQoLX3Bvc2l0aW9uX3hCDQoLX3Bvc2l0aW9uX3lCFQoT",
+            "X2lzX3BvaW50ZXJfYmxvY2tlckITChFfcGFyZW50X2NvbXBvbmVudEIKCghf",
+            "dmFsdWVfeEIKCghfdmFsdWVfeUITChFfYmFja2dyb3VuZF9jb2xvckIQCg5f",
+            "aXNfaG9yaXpvbnRhbEIOCgxfaXNfdmVydGljYWxCDgoMX3BhZGRpbmdfdG9w",
+            "QhAKDl9wYWRkaW5nX3JpZ2h0QhEKD19wYWRkaW5nX2JvdHRvbUIPCg1fcGFk",
+            "ZGluZ19sZWZ0Qg0KC19vbl9jaGFuZ2VkIr4ECh5FQ1M2Q29tcG9uZW50VWlX",
+            "b3JsZFNwYWNlU2hhcGUSEQoEbmFtZRgBIAEoCUgAiAEBEhQKB3Zpc2libGUY",
+            "AiABKAhIAYgBARIUCgdvcGFjaXR5GAMgASgCSAKIAQESFAoHaF9hbGlnbhgE",
+            "IAEoCUgDiAEBEhQKB3ZfYWxpZ24YBSABKAlIBIgBARIyCgV3aWR0aBgGIAEo",
+            "CzIeLmRlY2VudHJhbGFuZC5zZGsuZWNzNi5VaVZhbHVlSAWIAQESMwoGaGVp",
+            "Z2h0GAcgASgLMh4uZGVjZW50cmFsYW5kLnNkay5lY3M2LlVpVmFsdWVIBogB",
+            "ARI3Cgpwb3NpdGlvbl94GAggASgLMh4uZGVjZW50cmFsYW5kLnNkay5lY3M2",
+            "LlVpVmFsdWVIB4gBARI3Cgpwb3NpdGlvbl95GAkgASgLMh4uZGVjZW50cmFs",
+            "YW5kLnNkay5lY3M2LlVpVmFsdWVICIgBARIfChJpc19wb2ludGVyX2Jsb2Nr",
+            "ZXIYCiABKAhICYgBARIdChBwYXJlbnRfY29tcG9uZW50GAsgASgJSAqIAQFC",
+            "BwoFX25hbWVCCgoIX3Zpc2libGVCCgoIX29wYWNpdHlCCgoIX2hfYWxpZ25C",
+            "CgoIX3ZfYWxpZ25CCAoGX3dpZHRoQgkKB19oZWlnaHRCDQoLX3Bvc2l0aW9u",
+            "X3hCDQoLX3Bvc2l0aW9uX3lCFQoTX2lzX3BvaW50ZXJfYmxvY2tlckITChFf",
+            "cGFyZW50X2NvbXBvbmVudCK/BAofRUNTNkNvbXBvbmVudFVpU2NyZWVuU3Bh",
+            "Y2VTaGFwZRIRCgRuYW1lGAEgASgJSACIAQESFAoHdmlzaWJsZRgCIAEoCEgB",
+            "iAEBEhQKB29wYWNpdHkYAyABKAJIAogBARIUCgdoX2FsaWduGAQgASgJSAOI",
+            "AQESFAoHdl9hbGlnbhgFIAEoCUgEiAEBEjIKBXdpZHRoGAYgASgLMh4uZGVj",
+            "ZW50cmFsYW5kLnNkay5lY3M2LlVpVmFsdWVIBYgBARIzCgZoZWlnaHQYByAB",
+            "KAsyHi5kZWNlbnRyYWxhbmQuc2RrLmVjczYuVWlWYWx1ZUgGiAEBEjcKCnBv",
+            "c2l0aW9uX3gYCCABKAsyHi5kZWNlbnRyYWxhbmQuc2RrLmVjczYuVWlWYWx1",
+            "ZUgHiAEBEjcKCnBvc2l0aW9uX3kYCSABKAsyHi5kZWNlbnRyYWxhbmQuc2Rr",
+            "LmVjczYuVWlWYWx1ZUgIiAEBEh8KEmlzX3BvaW50ZXJfYmxvY2tlchgKIAEo",
+            "CEgJiAEBEh0KEHBhcmVudF9jb21wb25lbnQYCyABKAlICogBAUIHCgVfbmFt",
+            "ZUIKCghfdmlzaWJsZUIKCghfb3BhY2l0eUIKCghfaF9hbGlnbkIKCghfdl9h",
+            "bGlnbkIICgZfd2lkdGhCCQoHX2hlaWdodEINCgtfcG9zaXRpb25feEINCgtf",
+            "cG9zaXRpb25feUIVChNfaXNfcG9pbnRlcl9ibG9ja2VyQhMKEV9wYXJlbnRf",
+            "Y29tcG9uZW50Ir4ECh5FQ1M2Q29tcG9uZW50VWlGdWxsU2NyZWVuU2hhcGUS",
+            "EQoEbmFtZRgBIAEoCUgAiAEBEhQKB3Zpc2libGUYAiABKAhIAYgBARIUCgdv",
+            "cGFjaXR5GAMgASgCSAKIAQESFAoHaF9hbGlnbhgEIAEoCUgDiAEBEhQKB3Zf",
+            "YWxpZ24YBSABKAlIBIgBARIyCgV3aWR0aBgGIAEoCzIeLmRlY2VudHJhbGFu",
+            "ZC5zZGsuZWNzNi5VaVZhbHVlSAWIAQESMwoGaGVpZ2h0GAcgASgLMh4uZGVj",
+            "ZW50cmFsYW5kLnNkay5lY3M2LlVpVmFsdWVIBogBARI3Cgpwb3NpdGlvbl94",
+            "GAggASgLMh4uZGVjZW50cmFsYW5kLnNkay5lY3M2LlVpVmFsdWVIB4gBARI3",
+            "Cgpwb3NpdGlvbl95GAkgASgLMh4uZGVjZW50cmFsYW5kLnNkay5lY3M2LlVp",
+            "VmFsdWVICIgBARIfChJpc19wb2ludGVyX2Jsb2NrZXIYCiABKAhICYgBARId",
+            "ChBwYXJlbnRfY29tcG9uZW50GAsgASgJSAqIAQFCBwoFX25hbWVCCgoIX3Zp",
+            "c2libGVCCgoIX29wYWNpdHlCCgoIX2hfYWxpZ25CCgoIX3ZfYWxpZ25CCAoG",
+            "X3dpZHRoQgkKB19oZWlnaHRCDQoLX3Bvc2l0aW9uX3hCDQoLX3Bvc2l0aW9u",
+            "X3lCFQoTX2lzX3BvaW50ZXJfYmxvY2tlckITChFfcGFyZW50X2NvbXBvbmVu",
+            "dGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, global::Decentraland.Common.ColorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -515,7 +516,7 @@ namespace Decentraland.Sdk.Ecs6 {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack), global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "AdaptWidth", "AdaptHeight", "Color", "StackOrientation", "Spacing" }, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "AdaptWidth", "AdaptHeight", "Color", "StackOrientation", "Spacing" }, new[]{ typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiContainerStack.Types.UIStackOrientation) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton), global::Decentraland.Sdk.Ecs6.ECS6ComponentUiButton.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "FontSize", "FontWeight", "Thickness", "CornerRadius", "Color", "Background", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "Text" }, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "FontSize", "FontWeight", "Thickness", "CornerRadius", "Color", "Background", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "Text" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText), global::Decentraland.Sdk.Ecs6.ECS6ComponentUiText.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "OutlineWidth", "OutlineColor", "Color", "FontSize", "FontAutoSize", "Font", "Value", "LineSpacing", "LineCount", "AdaptWidth", "AdaptHeight", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "HTextAlign", "VTextAlign", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft" }, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "OutlineWidth", "OutlineColor", "Color", "FontSize", "FontAutoSize", "Font", "Value", "LineSpacing", "LineCount", "AdaptWidth", "AdaptHeight", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "HTextAlign", "VTextAlign", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText), global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "OutlineWidth", "OutlineColor", "Color", "FontSize", "Font", "Value", "Placeholder", "Margin", "FocusedBackground", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "HTextAlign", "VTextAlign", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnTextChanged", "OnFocus", "OnBlur", "OnTextSubmit" }, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "OutlineWidth", "OutlineColor", "Color", "FontSize", "Font", "Value", "Placeholder", "Margin", "FocusedBackground", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "HTextAlign", "VTextAlign", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnTextChanged", "OnFocus", "OnBlur", "OnTextSubmit" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText), global::Decentraland.Sdk.Ecs6.ECS6ComponentUiInputText.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "OutlineWidth", "OutlineColor", "Color", "FontSize", "Font", "Value", "Placeholder", "Margin", "FocusedBackground", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "HTextAlign", "VTextAlign", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnTextChanged", "OnFocus", "OnBlur", "OnTextSubmit", "OnChanged" }, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "OutlineWidth", "OutlineColor", "Color", "FontSize", "Font", "Value", "Placeholder", "Margin", "FocusedBackground", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "HTextAlign", "VTextAlign", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnTextChanged", "OnFocus", "OnBlur", "OnTextSubmit", "OnChanged" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage), global::Decentraland.Sdk.Ecs6.ECS6ComponentUiImage.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "SourceLeft", "SourceTop", "SourceWidth", "SourceHeight", "Source", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "SizeInPixels", "OnClick" }, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "SourceLeft", "SourceTop", "SourceWidth", "SourceHeight", "Source", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "SizeInPixels", "OnClick" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect), global::Decentraland.Sdk.Ecs6.ECS6ComponentUiScrollRect.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "ValueX", "ValueY", "BackgroundColor", "IsHorizontal", "IsVertical", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnChanged" }, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent", "ValueX", "ValueY", "BackgroundColor", "IsHorizontal", "IsVertical", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnChanged" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Sdk.Ecs6.ECS6ComponentUiWorldSpaceShape), global::Decentraland.Sdk.Ecs6.ECS6ComponentUiWorldSpaceShape.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent" }, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "ParentComponent" }, null, null, null),
@@ -20592,6 +20593,7 @@ namespace Decentraland.Sdk.Ecs6 {
       onFocus_ = other.onFocus_;
       onBlur_ = other.onBlur_;
       onTextSubmit_ = other.onTextSubmit_;
+      onChanged_ = other.onChanged_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -21365,6 +21367,30 @@ namespace Decentraland.Sdk.Ecs6 {
       onTextSubmit_ = null;
     }
 
+    /// <summary>Field number for the "on_changed" field.</summary>
+    public const int OnChangedFieldNumber = 41;
+    private string onChanged_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string OnChanged {
+      get { return onChanged_ ?? ""; }
+      set {
+        onChanged_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "on_changed" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasOnChanged {
+      get { return onChanged_ != null; }
+    }
+    /// <summary>Clears the value of the "on_changed" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearOnChanged() {
+      onChanged_ = null;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -21415,6 +21441,7 @@ namespace Decentraland.Sdk.Ecs6 {
       if (OnFocus != other.OnFocus) return false;
       if (OnBlur != other.OnBlur) return false;
       if (OnTextSubmit != other.OnTextSubmit) return false;
+      if (OnChanged != other.OnChanged) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -21457,6 +21484,7 @@ namespace Decentraland.Sdk.Ecs6 {
       if (HasOnFocus) hash ^= OnFocus.GetHashCode();
       if (HasOnBlur) hash ^= OnBlur.GetHashCode();
       if (HasOnTextSubmit) hash ^= OnTextSubmit.GetHashCode();
+      if (HasOnChanged) hash ^= OnChanged.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -21615,6 +21643,10 @@ namespace Decentraland.Sdk.Ecs6 {
         output.WriteRawTag(194, 2);
         output.WriteString(OnTextSubmit);
       }
+      if (HasOnChanged) {
+        output.WriteRawTag(202, 2);
+        output.WriteString(OnChanged);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -21765,6 +21797,10 @@ namespace Decentraland.Sdk.Ecs6 {
         output.WriteRawTag(194, 2);
         output.WriteString(OnTextSubmit);
       }
+      if (HasOnChanged) {
+        output.WriteRawTag(202, 2);
+        output.WriteString(OnChanged);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -21879,6 +21915,9 @@ namespace Decentraland.Sdk.Ecs6 {
       }
       if (HasOnTextSubmit) {
         size += 2 + pb::CodedOutputStream.ComputeStringSize(OnTextSubmit);
+      }
+      if (HasOnChanged) {
+        size += 2 + pb::CodedOutputStream.ComputeStringSize(OnChanged);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -22020,6 +22059,9 @@ namespace Decentraland.Sdk.Ecs6 {
       }
       if (other.HasOnTextSubmit) {
         OnTextSubmit = other.OnTextSubmit;
+      }
+      if (other.HasOnChanged) {
+        OnChanged = other.OnChanged;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -22200,6 +22242,10 @@ namespace Decentraland.Sdk.Ecs6 {
             OnTextSubmit = input.ReadString();
             break;
           }
+          case 330: {
+            OnChanged = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -22377,6 +22423,10 @@ namespace Decentraland.Sdk.Ecs6 {
           }
           case 322: {
             OnTextSubmit = input.ReadString();
+            break;
+          }
+          case 330: {
+            OnChanged = input.ReadString();
             break;
           }
         }

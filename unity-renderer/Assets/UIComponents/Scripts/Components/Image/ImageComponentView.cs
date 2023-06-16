@@ -67,6 +67,8 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     internal string currentUriLoading = null;
     internal string lastLoadedUri = null;
 
+    public Image ImageComponent => image;
+
     public void Start()
     {
         image.useSpriteMesh = false;

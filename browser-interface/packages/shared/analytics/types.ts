@@ -86,4 +86,10 @@ export type TrackEvents = PositionTrackEvents & {
   ['invalid_comms_message_too_big']: { message: string }
   ['onboarding_started']: { onboardingRealm: string }
   ['disconnection_cause']: { context: string; message: string; liveKitRoomSid: string; liveKitParticipantSid: string }
+
+  // Seamless login A/B
+  ['seamless_login show tos']: Record<string, never> // {}
+  ['seamless_login tos accepted']: Record<string, never> // {}
+  ['seamless_login tos rejected']: Record<string, never> // {}
+  ['seamless_login go to tos']: Record<string, never> // {}
 }

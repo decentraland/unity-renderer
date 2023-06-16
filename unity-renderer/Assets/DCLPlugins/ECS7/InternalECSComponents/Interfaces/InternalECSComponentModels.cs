@@ -1,5 +1,6 @@
 using DCL.Components.Video.Plugin;
 using DCL.ECSComponents;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -84,7 +85,7 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers;
         public KeyValueSet<Collider, uint> physicsColliders;
         public KeyValueSet<Collider, uint> pointerColliders;
-        public AudioSource audioSource;
+        public Action<bool> OnSceneBoundsStateChange;
     }
 
     public class InternalVisibility : InternalComponent
@@ -169,5 +170,12 @@ namespace DCL.ECS7.InternalComponents
     {
         public LoadingState LoadingState;
         public bool GltfContainerRemoved;
+    }
+
+    public class InternalEngineInfo : InternalComponent
+    {
+        public uint SceneTick = 0;
+        public float SceneInitialRunTime = 0;
+        public float SceneInitialFrameCount = Time.frameCount;
     }
 }

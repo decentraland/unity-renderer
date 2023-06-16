@@ -9,7 +9,11 @@
         "BaseVariable",
         "LambdasService",
         "UniTask",
-        "IService"
+        "IService",
+        "ServiceProvidersInterfaces",
+        "CatalystInterfaces",
+        "FeatureFlagData",
+        "Utils"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

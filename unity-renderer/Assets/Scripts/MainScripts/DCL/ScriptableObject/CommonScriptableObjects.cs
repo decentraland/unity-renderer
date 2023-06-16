@@ -36,6 +36,21 @@ public static class AudioScriptableObjects
     private static AudioEvent buttonClickEvent;
     public static AudioEvent buttonClick => CommonScriptableObjects.GetOrLoad(ref buttonClickEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonClick");
 
+    private static AudioEvent equipEvent;
+    public static AudioEvent equip => CommonScriptableObjects.GetOrLoad(ref equipEvent, "ScriptableObjects/AudioEvents/HUDCommon/Equip");
+
+    private static AudioEvent unequipEvent;
+    public static AudioEvent unequip => CommonScriptableObjects.GetOrLoad(ref unequipEvent, "ScriptableObjects/AudioEvents/HUDCommon/Unequip");
+
+    private static AudioEvent hideEvent;
+    public static AudioEvent hide => CommonScriptableObjects.GetOrLoad(ref hideEvent, "ScriptableObjects/AudioEvents/HUDCommon/Hide");
+
+    private static AudioEvent showEvent;
+    public static AudioEvent show => CommonScriptableObjects.GetOrLoad(ref showEvent, "ScriptableObjects/AudioEvents/HUDCommon/Show");
+
+    private static AudioEvent_WithRandomPitch inputEvent;
+    public static AudioEvent_WithRandomPitch input => CommonScriptableObjects.GetOrLoad(ref inputEvent, "ScriptableObjects/AudioEvents/HUDCommon/InputField");
+
     private static AudioEvent buttonReleaseEvent;
     public static AudioEvent buttonRelease => CommonScriptableObjects.GetOrLoad(ref buttonReleaseEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonRelease");
 
@@ -117,6 +132,8 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(cameraFadeOutEvent);
         Resources.UnloadAsset(buttonHoverEvent);
         Resources.UnloadAsset(buttonClickEvent);
+        Resources.UnloadAsset(equipEvent);
+        Resources.UnloadAsset(unequipEvent);
         Resources.UnloadAsset(buttonReleaseEvent);
         Resources.UnloadAsset(cancelEvent);
         Resources.UnloadAsset(confirmEvent);

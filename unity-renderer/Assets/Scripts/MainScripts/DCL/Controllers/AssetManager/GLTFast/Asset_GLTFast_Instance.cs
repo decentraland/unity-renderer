@@ -48,15 +48,20 @@ namespace DCL
             HashSet<Material> materials = new HashSet<Material>();
             HashSet<Texture> textures = new HashSet<Texture>();
 
+            var tris = 0;
             foreach (Renderer renderer in renderers)
             {
                 switch (renderer)
                 {
                     case SkinnedMeshRenderer skinnedMeshRenderer:
-                        meshes.Add(skinnedMeshRenderer.sharedMesh);
+                        Mesh skinnedMesh = skinnedMeshRenderer.sharedMesh;
+                        meshes.Add(skinnedMesh);
+                        tris += skinnedMesh.triangles.Length;
                         break;
                     case MeshRenderer:
-                        meshes.Add(renderer.GetComponent<MeshFilter>().sharedMesh);
+                        Mesh mesh = renderer.GetComponent<MeshFilter>().sharedMesh;
+                        meshes.Add(mesh);
+                        tris += mesh.triangles.Length;
                         break;
                 }
 
@@ -71,8 +76,12 @@ namespace DCL
             var animationClips = ownerPromise.asset.GltfImport.GetAnimationClips();
 
             if (animationClips != null)
+            {
                 foreach (AnimationClip clip in animationClips)
+                {
                     animations.Add(clip);
+                }
+            }
 
             return new Rendereable
             {
@@ -85,10 +94,9 @@ namespace DCL
                 animationClips = animations,
 
                 // TODO: Fill me!
-                totalTriangleCount = 0,
+                totalTriangleCount = tris,
                 animationClipSize = 0,
-                meshDataSize = 0,
-                isGLTFast = true
+                meshDataSize = 0
             };
         }
     }

@@ -46,6 +46,9 @@ public class Catalyst : ICatalyst
                 realmContentServerUrl = aboutContent.Get().PublicUrl;
         }
 
+        if (!realmContentServerUrl.EndsWith('/'))
+            realmContentServerUrl += "/";
+
         playerRealm.OnChange += PlayerRealmOnChange;
         aboutContent.OnChange += PlayerRealmAboutContentOnChange;
         aboutLambdas.OnChange += PlayerRealmAboutLambdasOnChange;

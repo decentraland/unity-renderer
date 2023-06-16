@@ -7,26 +7,19 @@ namespace DCLPlugins.RealmPlugin
 {
     public class RealmBlockerModifierTests
     {
-        private RealmPlugin realmPlugin;
         private const string ENABLE_GREEN_BLOCKERS_WORLDS_FF = "realms_blockers_in_worlds";
 
-        private RealmBlockerModifier realmBlockerModiferSubstitute;
+        private RealmBlockerModifier realmBlockerModifer;
 
         [SetUp]
         public void SetUp()
         {
-            realmPlugin = new RealmPlugin(DataStore.i);
-            realmBlockerModiferSubstitute = Substitute.For<RealmBlockerModifier>(DataStore.i.worldBlockers);
-
-            var substituteModifiers = new List<IRealmModifier>
-                { realmBlockerModiferSubstitute };
-
-            realmPlugin.realmsModifiers = substituteModifiers;
+            realmBlockerModifer = new RealmBlockerModifier(DataStore.i.worldBlockers);
         }
 
         [TearDown]
         public void TearDown() =>
-            realmPlugin.Dispose();
+            realmBlockerModifer.Dispose();
 
         [TestCaseSource(nameof(GreenBlockerCases))]
         public void GreenBlockerAddedOnRealmChange(bool[] isWorld, int[] requiredLimit)
@@ -34,7 +27,7 @@ namespace DCLPlugins.RealmPlugin
             for (var i = 0; i < isWorld.Length; i++)
             {
                 // Act
-                RealmPluginTestsUtils.SetRealm(isWorld[i]);
+                realmBlockerModifer.OnEnteredRealm(isWorld[i], RealmPluginTestsUtils.GetAboutConfiguration(isWorld[i]));
 
                 // Assert
                 if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_GREEN_BLOCKERS_WORLDS_FF))

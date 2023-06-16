@@ -1,5 +1,5 @@
 import { AnyAction } from 'redux'
-import { SET_CATALYST_CANDIDATES, SELECT_NETWORK, SelectNetworkAction } from './actions'
+import { SET_CATALYST_CANDIDATES, SELECT_NETWORK, SelectNetworkAction, SET_LAST_CONNECTED_CANDIDATES } from './actions'
 import { DaoState } from './types'
 
 export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
@@ -7,7 +7,8 @@ export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
     return {
       network: null,
       candidates: [],
-      catalystCandidatesReceived: false
+      catalystCandidatesReceived: false,
+      lastConnectedCandidates: new Map()
     }
   }
   if (!action) {
@@ -24,6 +25,11 @@ export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
         ...state,
         catalystCandidatesReceived: true,
         candidates: action.payload
+      }
+    case SET_LAST_CONNECTED_CANDIDATES:
+      return {
+        ...state,
+        lastConnectedCandidates: action.payload
       }
   }
   return state

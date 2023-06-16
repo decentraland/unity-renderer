@@ -12,6 +12,13 @@ namespace DCL.Backpack
         [SerializeField] internal Button exitButton;
         [SerializeField] internal TMP_Text categoryName;
         [SerializeField] internal Image icon;
+        [SerializeField] internal Image backgroundImage;
+        [SerializeField] internal Color selectedBackgroundColor;
+        [SerializeField] internal Color selectedFontColor;
+        [SerializeField] internal Color unselectedBackgroundColor;
+        [SerializeField] internal Color unselectedFontColor;
+        [SerializeField] internal Color selectedIconColor;
+        [SerializeField] internal Color unselectedIconColor;
 
         public event Action<NftSubCategoryFilterModel> OnNavigate;
         public event Action<NftSubCategoryFilterModel> OnExit;
@@ -37,6 +44,10 @@ namespace DCL.Backpack
 
             icon.sprite = model.Icon;
             icon.gameObject.SetActive(model.Icon != null);
+
+            backgroundImage.color = model.IsSelected ? selectedBackgroundColor : unselectedBackgroundColor;
+            categoryName.color = model.IsSelected ? selectedFontColor : unselectedFontColor;
+            icon.color = model.IsSelected ? selectedIconColor : unselectedIconColor;
         }
     }
 }
