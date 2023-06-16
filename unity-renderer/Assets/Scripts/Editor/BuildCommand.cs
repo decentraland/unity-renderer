@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build.Reporting;
+using UnityEngine.Profiling;
 
 static class BuildCommand
 {
@@ -113,6 +114,21 @@ static class BuildCommand
         return (TEnum) Enum.Parse(typeof(TEnum), strEnumValue);
     }
 
+    static bool IsDevelopmentBuild()
+    {
+        string[] args = Environment.GetCommandLineArgs();
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i].Contains("-customDevelopmentBuild"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     static string getEnv(string key, bool secret = false, bool verbose = true)
     {
         var env_var = Environment.GetEnvironmentVariable(key);
@@ -158,7 +174,30 @@ static class BuildCommand
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
         }
 
-        var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
+        var buildOptions = GetBuildOptions();
+
+        if (IsDevelopmentBuild())
+        {
+            EditorUserBuildSettings.development = true;
+            EditorUserBuildSettings.connectProfiler = true;
+
+            buildOptions |= BuildOptions.Development |
+                            BuildOptions.ConnectWithProfiler |
+                            BuildOptions.CleanBuildCache;
+
+            Profiler.maxUsedMemory = 16777000;
+            if (buildTarget.ToString().ToLower().Contains("webgl"))
+            {
+                PlayerSettings.WebGL.emscriptenArgs += " -s INITIAL_MEMORY=1GB ";
+            }
+            else
+            {
+                buildOptions |= BuildOptions.EnableDeepProfilingSupport;
+            }
+            Console.WriteLine(":: Development Build");
+        }
+
+        var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, buildOptions);
         Console.WriteLine(":: Done with build process");
 
         if (buildSummary.summary.result != BuildResult.Succeeded)

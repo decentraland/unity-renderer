@@ -147,11 +147,7 @@ namespace DCL
         {
             url = url.ToLower();
 
-#if UNITY_EDITOR
-            if (url.StartsWith("file://")) { return true; }
 
-            if (url.StartsWith(TestAssetsUtils.GetPath())) { return true; }
-#endif
             return false;
         }
 
