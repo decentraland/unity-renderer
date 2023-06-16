@@ -43,14 +43,17 @@ namespace Tests
             base.TearDown();
         }
 
-        private IEnumerator CreateMesh(ECS7TestEntity entity, PBMaterial materialModel)
+        private IEnumerator CreateMesh(ECS7TestEntity entity, PBMaterial materialModel, bool sphere = true)
         {
             // Create mesh
             var meshRendererHandler = new MeshRendererHandler(new DataStore_ECS7(),
                 internalEcsComponents.texturizableComponent,
                 internalEcsComponents.renderersComponent);
-            // PBMeshRenderer meshModel = new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() };
+
             PBMeshRenderer meshModel = new PBMeshRenderer() { Sphere = new PBMeshRenderer.Types.SphereMesh() };
+            if (!sphere)
+                meshModel = new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() };
+
             meshRendererHandler.OnComponentCreated(scene, entity);
             meshRendererHandler.OnComponentModelUpdated(scene, entity, meshModel);
             yield return null;
@@ -89,15 +92,15 @@ namespace Tests
                         R = Color.green.r,
                         G = Color.green.g,
                         B = Color.green.b,
-                        A = 0.75f
+                        A = 0.5f
                     }
                 }
             });
 
+            // Emissive values working
             var entity2 = scene.CreateEntity(6662);
             entity2.gameObject.transform.position = new Vector3(-1, 11, 0);
-            // entity2.gameObject.transform.localScale *= 2;
-            entity2.gameObject.transform.Rotate(Vector3.up, -90);
+            entity2.gameObject.transform.localScale *= 2;
             yield return CreateMesh(entity2, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
@@ -124,7 +127,80 @@ namespace Tests
                     },
                     EmissiveIntensity = 100
                 }
+            }, false);
+
+            // alpha texture working
+            var entity3 = scene.CreateEntity(6663);
+            entity3.gameObject.transform.position = new Vector3(1, 11, 0);
+            entity3.gameObject.transform.Rotate(Vector3.up, -90);
+            yield return CreateMesh(entity3, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1, A = 1 },
+                    Texture = new TextureUnion()
+                    {
+                        Texture = new Texture() { Src = TestAssetsUtils.GetPath() + "/Images/alphaTexture.png" }
+                    },
+                    TransparencyMode = MaterialTransparencyMode.MtmAlphaBlend
+                }
             });
+
+            // Same albedo-alpha texture
+            var entity4 = scene.CreateEntity(6664);
+            entity4.gameObject.transform.position = new Vector3(3, 11, 0);
+            entity4.gameObject.transform.localScale *= 2;
+            yield return CreateMesh(entity4, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                    Texture = new TextureUnion()
+                    {
+                        Texture = new Texture() { Src = TestAssetsUtils.GetPath() + "/Images/avatar.png" }
+                    },
+                    AlphaTexture = new TextureUnion()
+                    {
+                        Texture = new Texture() { Src = TestAssetsUtils.GetPath() + "/Images/avatar.png" }
+                    },
+                    TransparencyMode = MaterialTransparencyMode.MtmAlphaBlend
+                }
+            }, false);
+
+            /*var entity5 = scene.CreateEntity(6665);
+            entity5.gameObject.transform.position = new Vector3(-3, 8, 0);
+            yield return CreateMesh(entity5, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                }
+            });
+
+            var entity6 = scene.CreateEntity(6666);
+            entity6.gameObject.transform.position = new Vector3(-1, 8, 0);
+            yield return CreateMesh(entity6, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                }
+            });
+
+            var entity7 = scene.CreateEntity(6667);
+            entity7.gameObject.transform.position = new Vector3(1, 8, 0);
+            yield return CreateMesh(entity7, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                }
+            });
+
+            var entity8 = scene.CreateEntity(6668);
+            entity8.gameObject.transform.position = new Vector3(3, 8, 0);
+            yield return CreateMesh(entity8, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                }
+            });*/
 
             yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
         }
