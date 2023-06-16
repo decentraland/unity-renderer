@@ -1,12 +1,10 @@
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
-using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using RPC.Context;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class ComponentCrdtWriteSystem : IDisposable
 {
