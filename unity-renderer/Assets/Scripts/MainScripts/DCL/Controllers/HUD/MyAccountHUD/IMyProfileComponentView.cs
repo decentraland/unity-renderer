@@ -11,7 +11,7 @@ namespace DCL.MyAccount
         event Action OnClaimNameClicked;
 
         void SetClaimedNameMode(bool isClaimed);
-        void SetCurrentName(string newName);
+        void SetCurrentName(string newName, string nonClaimedHashtag);
         void SetClaimBannerActive(bool isActive);
         void SetClaimedModeAsInput(bool isInput, bool cleanInputField = false);
         void SetClaimedNameDropdownOptions(List<string> claimedNamesList);

@@ -7,7 +7,8 @@ namespace DCL.MyAccount
     public record MyProfileModel
     {
         public bool IsClaimedMode;
-        public string CurrentName;
+        public string MainName;
+        public string NonClaimedHashtag;
         public bool ShowClaimBanner;
         public bool ShowInputForClaimedMode;
         public List<string> loadedClaimedNames = new ();

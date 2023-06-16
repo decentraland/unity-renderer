@@ -125,7 +125,7 @@ namespace DCL.MyAccount
         {
             view.SetClaimedNameMode(loadedNames.Count > 0);
             view.SetClaimedModeAsInput(!ownUserProfile.hasClaimedName);
-            view.SetCurrentName(ownUserMainName);
+            view.SetCurrentName(ownUserMainName, ownUserNonClaimedHashtag);
             view.SetClaimBannerActive(loadedNames.Count == 0);
             view.SetLoadingActive(false);
         }

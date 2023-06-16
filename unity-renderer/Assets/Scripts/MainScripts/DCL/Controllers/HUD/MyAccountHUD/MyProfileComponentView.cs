@@ -81,7 +81,7 @@ namespace DCL.MyAccount
         public override void RefreshControl()
         {
             SetClaimedNameMode(model.IsClaimedMode);
-            SetCurrentName(model.CurrentName);
+            SetCurrentName(model.MainName, model.NonClaimedHashtag);
             SetClaimBannerActive(model.ShowClaimBanner);
             SetClaimedModeAsInput(model.ShowInputForClaimedMode);
             SetClaimedNameDropdownOptions(model.loadedClaimedNames);
@@ -95,9 +95,10 @@ namespace DCL.MyAccount
             nameValidationsContainer.SetActive(!isClaimed || model.ShowInputForClaimedMode);
         }
 
-        public void SetCurrentName(string newName)
+        public void SetCurrentName(string newName, string nonClaimedHashtag)
         {
-            model.CurrentName = newName;
+            model.MainName = newName;
+            model.NonClaimedHashtag = nonClaimedHashtag;
 
             if (model.IsClaimedMode)
             {
@@ -107,7 +108,9 @@ namespace DCL.MyAccount
             else
             {
                 claimedNameInputField.text = newName;
+                //nonClaimedHashtag
                 nonClaimedNameInputField.text = newName;
+                //nonClaimedHashtag
             }
         }
 
@@ -119,6 +122,7 @@ namespace DCL.MyAccount
 
         public void SetClaimedModeAsInput(bool isInput, bool cleanInputField = false)
         {
+            model.ShowInputForClaimedMode = isInput;
             claimedNameInputContainer.SetActive(isInput);
             claimedNameDropdown.gameObject.SetActive(!isInput);
             claimedNameGoToNonClaimedNameButton.gameObject.SetActive(!isInput);
@@ -131,10 +135,10 @@ namespace DCL.MyAccount
             if (isInput)
                 return;
 
-            if (model.loadedClaimedNames.Contains(model.CurrentName))
+            if (model.loadedClaimedNames.Contains(model.MainName))
             {
-                claimedNameDropdown.SelectOption(model.CurrentName, false);
-                claimedNameDropdown.SetTitle(model.CurrentName);
+                claimedNameDropdown.SelectOption(model.MainName, false);
+                claimedNameDropdown.SetTitle(model.MainName);
             }
             else
             {
