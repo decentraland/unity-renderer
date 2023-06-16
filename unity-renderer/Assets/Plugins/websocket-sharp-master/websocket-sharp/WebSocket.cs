@@ -1418,9 +1418,7 @@ namespace WebSocketSharp
                     _retryCountForConnect++;
 
                     _logger.Fatal(ex.ToString());
-                    // _logger.Debug(ex.ToString());
 
-                    // UnityEngine.Debug.Log("Ex: " + ex.Message);
                     var msg = "An exception has occurred while attempting to connect.";
                     fatal(msg, ex);
 
