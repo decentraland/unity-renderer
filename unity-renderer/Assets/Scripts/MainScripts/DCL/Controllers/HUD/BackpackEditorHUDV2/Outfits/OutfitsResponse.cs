@@ -4,10 +4,16 @@ using System.Collections.Generic;
 [Serializable]
 public class OutfitsResponse
 {
-    public List<OutfitItem> elements;
-    public OutfitsResponse(List<OutfitItem> elements)
+    public Metadata metadata;
+    public OutfitsResponse(Metadata metadata)
     {
-        this.elements = elements;
+        this.metadata = metadata;
+    }
+
+    [Serializable]
+    public class Metadata
+    {
+        public OutfitItem[] outfits;
     }
 
     public OutfitsResponse() { }

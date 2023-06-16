@@ -1,37 +1,65 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCLServices.WearablesCatalogService;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using UnityEngine;
 
 public class OutfitsController : IDisposable
 {
     private readonly LambdaOutfitsService lambdaOutfitsService;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly OutfitsSectionComponentView view;
+    private readonly IWearablesCatalogService wearablesCatalogService;
     public event Action<OutfitItem> OnOutfitEquipped;
 
     private CancellationTokenSource cts;
 
-    public OutfitsController(OutfitsSectionComponentView view, LambdaOutfitsService lambdaOutfitsService, IUserProfileBridge userProfileBridge)
+    public OutfitsController(OutfitsSectionComponentView view, LambdaOutfitsService lambdaOutfitsService, IUserProfileBridge userProfileBridge, IWearablesCatalogService wearablesCatalogService)
     {
         this.view = view;
         this.lambdaOutfitsService = lambdaOutfitsService;
         this.userProfileBridge = userProfileBridge;
-        view.OnOutfitEquipped += (outfit)=>OnOutfitEquipped?.Invoke(outfit);
+        this.wearablesCatalogService = wearablesCatalogService;
+        view.OnOutfitEquipped += EquipOutfit;
         view.OnSaveOutfits += SaveOutfits;
     }
 
-    private void SaveOutfits(OutfitItem[] outfits)
+    private void EquipOutfit(OutfitItem outfitItem)
     {
-        WebInterface.SaveUserOutfits(outfits);
+        async UniTaskVoid LoadOutfitWearables(CancellationToken cancellationToken)
+        {
+            Debug.Log($"Bodyshape: {outfitItem.outfit.bodyShape}");
+            wearablesCatalogService.WearablesCatalog.TryGetValue(outfitItem.outfit.bodyShape, out var bodyShape);
+            bodyShape ??= await wearablesCatalogService.RequestWearableAsync(outfitItem.outfit.bodyShape, cancellationToken);
+            foreach (string outfitWearable in outfitItem.outfit.wearables)
+            {
+                wearablesCatalogService.WearablesCatalog.TryGetValue(outfitWearable, out var wearable);
+                wearable ??= await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken);
+            }
+            OnOutfitEquipped?.Invoke(outfitItem);
+        }
+
+        LoadOutfitWearables(cts.Token).Forget();
     }
+
+    private void SaveOutfits(OutfitItem[] outfits) =>
+        WebInterface.SaveUserOutfits(outfits);
 
     public void RequestOwnedOutfits()
     {
         cts?.Cancel();
         cts?.Dispose();
         cts = new CancellationTokenSource();
-        //lambdaOutfitsService.RequestOwnedOutfits(userProfileBridge.GetOwn().userId, cancellationToken: cts.Token).Forget();
+        RequestOwnedOutfitsAsync().Forget();
+    }
+
+    private async UniTask RequestOwnedOutfitsAsync()
+    {
+        (IReadOnlyList<OutfitItem> outfits, int totalAmount) requestOwnedOutfits = await lambdaOutfitsService.RequestOwnedOutfits(userProfileBridge.GetOwn().userId, cancellationToken: cts.Token);
+        view.ShowOutfits(requestOwnedOutfits.outfits.ToArray()).Forget();
     }
 
     public void UpdateAvatarPreview(AvatarModel newAvatarModel) =>

@@ -23,15 +23,20 @@ public class LambdaOutfitsService
         CancellationToken cancellationToken)
     {
         await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
-        //webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
+
         (OutfitsResponse response, bool success) = await lambdasService.Get<OutfitsResponse>(
             OUTFITS_ENDPOINT + userId,
             OUTFITS_ENDPOINT + userId,
             cancellationToken: cancellationToken);
 
+        foreach (OutfitItem responseElement in response.metadata.outfits)
+        {
+            Debug.Log(responseElement.slot + " " + responseElement.outfit.bodyShape + " " +  responseElement.outfit.eyes + " " +  responseElement.outfit.hair + " " +  responseElement.outfit.skin + " " +  responseElement.outfit.wearables.Length);
+        }
+
         if (!success)
             throw new Exception($"The request of outfits for '{userId}' failed!");
 
-        return (response.elements, response.elements.Count);
+        return (response.metadata.outfits, response.metadata.outfits.Length);
     }
 }

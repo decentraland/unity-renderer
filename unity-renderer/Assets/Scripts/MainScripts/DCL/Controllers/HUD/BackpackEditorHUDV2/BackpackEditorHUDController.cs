@@ -94,6 +94,7 @@ namespace DCL.Backpack
 
         private void OnOutfitEquipped(OutfitItem outfit)
         {
+            Debug.Log("Equip");
             model.wearables = new ();
             if(!string.IsNullOrEmpty(outfit.outfit.bodyShape))
                 EquipWearable(outfit.outfit.bodyShape);
@@ -101,7 +102,7 @@ namespace DCL.Backpack
             foreach (string outfitWearable in outfit.outfit.wearables)
                 EquipWearable(outfitWearable);
 
-            SetAllColors(outfit.outfit.eyes, outfit.outfit.hair, outfit.outfit.skin);
+            SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
         }
 
         private void OnOutfitsOpened()

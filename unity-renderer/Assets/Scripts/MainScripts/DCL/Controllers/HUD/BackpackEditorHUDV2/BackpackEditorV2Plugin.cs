@@ -30,7 +30,8 @@ namespace DCL.Backpack
                 new LambdaOutfitsService(
                     Environment.i.serviceLocator.Get<ILambdasService>(),
                     Environment.i.serviceLocator.Get<IServiceProviders>()),
-                userProfileBridge);
+                userProfileBridge,
+                wearablesCatalogService);
 
             var backpackEmotesSectionController = new BackpackEmotesSectionController(
                 dataStore,

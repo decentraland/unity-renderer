@@ -17,7 +17,7 @@ public class OutfitComponentView : BaseComponentView<OutfitComponentModel>, IOut
 
     public event Action<OutfitItem> OnEquipOutfit;
     public event Action<int> OnSaveOutfit;
-    public event Action OnDiscardOutfit;
+    public event Action<int> OnDiscardOutfit;
 
     public override void Awake()
     {
@@ -50,7 +50,7 @@ public class OutfitComponentView : BaseComponentView<OutfitComponentModel>, IOut
         saveOutfitButton.onClick.RemoveAllListeners();
         saveOutfitButton.onClick.AddListener(() => OnSaveOutfit?.Invoke(outfitIndex));
         discardOutfitButton.onClick.RemoveAllListeners();
-        discardOutfitButton.onClick.AddListener(() => OnDiscardOutfit?.Invoke());
+        discardOutfitButton.onClick.AddListener(() => OnDiscardOutfit?.Invoke(outfitIndex));
     }
 
     public override void RefreshControl()

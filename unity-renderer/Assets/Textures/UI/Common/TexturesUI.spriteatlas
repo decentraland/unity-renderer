@@ -730,7 +730,7 @@ SpriteAtlas:
   - CardBlockIcon
   - LiveContainer
   - Button10
-  - BottomRect12
+  - Container12RectBottom
   - ContainerRectTop
   - StarIcon
   - Button6
@@ -749,7 +749,7 @@ SpriteAtlas:
   - LogOutIcon
   - RoundedContainer44
   - CloseButton
-  - JumpIcon
+  - WhiteArrow
   - InputFieldBuilder
   - ControlsIcon
   - WarningIcon

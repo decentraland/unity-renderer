@@ -11,9 +11,25 @@ public class OutfitItem
     public class Outfit
     {
         public string bodyShape;
-        public Color eyes;
-        public Color hair;
-        public Color skin;
+        public eyes eyes;
+        public hair hair;
+        public skin skin;
         public string[] wearables;
+    }
+
+    [Serializable]
+    public class eyes
+    {
+        public Color color;
+    }
+    [Serializable]
+    public class hair
+    {
+        public Color color;
+    }
+    [Serializable]
+    public class skin
+    {
+        public Color color;
     }
 }

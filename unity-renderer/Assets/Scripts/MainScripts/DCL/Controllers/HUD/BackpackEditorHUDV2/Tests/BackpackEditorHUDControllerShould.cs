@@ -85,7 +85,7 @@ namespace DCL.Backpack
                 backpackAnalyticsService,
                 wearableGridController,
                 avatarSlotsHUDController,
-                new OutfitsController(null, new LambdaOutfitsService(Substitute.For<ILambdasService>(),Substitute.For<IServiceProviders>()), userProfileBridge));
+                new OutfitsController(null, new LambdaOutfitsService(Substitute.For<ILambdasService>(),Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<IWearablesCatalogService>()));
         }
 
         [TearDown]
