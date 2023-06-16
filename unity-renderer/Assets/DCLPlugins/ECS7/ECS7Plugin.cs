@@ -59,8 +59,7 @@ namespace DCL.ECS7
                 sceneNumberMapping,
                 internalEcsComponents.EngineInfo,
                 internalEcsComponents.GltfContainerLoadingStateComponent,
-                internalEcsComponents.IncreaseSceneTick,
-                (ECSComponent<PBEngineInfo>)componentsManager.GetOrCreateComponent(ComponentID.ENGINE_INFO));
+                internalEcsComponents.IncreaseSceneTick);
 
             sceneController.OnNewSceneAdded += SceneControllerOnNewSceneAdded;
             sceneController.OnSceneRemoved += SceneControllerOnSceneRemoved;

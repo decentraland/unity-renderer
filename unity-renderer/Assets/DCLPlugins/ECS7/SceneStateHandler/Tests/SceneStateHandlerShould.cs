@@ -35,8 +35,7 @@ namespace Tests
                 new Dictionary<int, IParcelScene>() { { scene.sceneData.sceneNumber, scene } },
                 internalComponents.EngineInfo,
                 internalComponents.GltfContainerLoadingStateComponent,
-                internalComponents.IncreaseSceneTick,
-                (ECSComponent<PBEngineInfo>)componentsManager.GetOrCreateComponent(ComponentID.ENGINE_INFO));
+                internalComponents.IncreaseSceneTick);
         }
 
         [TearDown]

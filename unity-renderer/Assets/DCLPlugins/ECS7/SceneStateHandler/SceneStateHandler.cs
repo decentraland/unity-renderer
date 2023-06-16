@@ -1,7 +1,6 @@
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using DCL.Models;
 using RPC.Context;
 using System;
@@ -12,10 +11,9 @@ namespace DCL.ECS7
 {
     public class SceneStateHandler : IDisposable
     {
-        private readonly IInternalECSComponent<InternalEngineInfo> internalEngineInfoComponent;
+        private readonly IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
         private readonly IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingState;
         private readonly IInternalECSComponent<InternalIncreaseTickTagComponent> increaseSceneTickTagComponent;
-        private readonly ECSComponent<PBEngineInfo> engineInfoComponent;
         private readonly CRDTServiceContext rpcCrdtContext;
         private IReadOnlyDictionary<int, IParcelScene> scenes;
 
@@ -23,17 +21,15 @@ namespace DCL.ECS7
             CRDTServiceContext rpcCrdtContext,
             RestrictedActionsContext rpcRestrictedActionContext,
             IReadOnlyDictionary<int, IParcelScene> scenes,
-            IInternalECSComponent<InternalEngineInfo> internalEngineInfoComponent,
+            IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
             IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingState,
-            IInternalECSComponent<InternalIncreaseTickTagComponent> increaseSceneTickTagComponent,
-            ECSComponent<PBEngineInfo> engineInfoComponent)
+            IInternalECSComponent<InternalIncreaseTickTagComponent> increaseSceneTickTagComponent)
         {
             this.rpcCrdtContext = rpcCrdtContext;
             this.scenes = scenes;
-            this.internalEngineInfoComponent = internalEngineInfoComponent;
+            this.engineInfoComponent = engineInfoComponent;
             this.gltfContainerLoadingState = gltfContainerLoadingState;
             this.increaseSceneTickTagComponent = increaseSceneTickTagComponent;
-            this.engineInfoComponent = engineInfoComponent;
 
             rpcCrdtContext.GetSceneTick += GetSceneTick;
             rpcCrdtContext.IncreaseSceneTick += IncreaseSceneTick;
@@ -52,7 +48,7 @@ namespace DCL.ECS7
         {
             if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
 
-            internalEngineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY,
+            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY,
                 new InternalEngineInfo()
                 {
                     SceneTick = 0,
@@ -64,9 +60,7 @@ namespace DCL.ECS7
         internal uint GetSceneTick(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
-            {
-                return engineInfoComponent.Get(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.TickNumber;
-            }
+                return engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
 
             return 0;
         }
@@ -102,7 +96,7 @@ namespace DCL.ECS7
 
             if (scenes.TryGetValue(sceneNumber, out var scene))
             {
-                InternalEngineInfo engineInfo = internalEngineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
+                InternalEngineInfo engineInfo = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
                 uint sceneTick = engineInfo.SceneTick;
 
                 const uint TICK_THRESHOLD = 2;

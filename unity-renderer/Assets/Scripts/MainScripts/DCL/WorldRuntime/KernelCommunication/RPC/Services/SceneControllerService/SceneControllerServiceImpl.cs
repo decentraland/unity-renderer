@@ -219,6 +219,9 @@ namespace RPC.Services
                     }
                 }
 
+                await UniTask.Yield();
+                await UniTask.Yield();
+
                 if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtOutgoing))
                 {
                     sendCrdtMemoryStream.SetLength(0);
