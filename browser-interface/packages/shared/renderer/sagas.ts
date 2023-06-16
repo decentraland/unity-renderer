@@ -248,6 +248,11 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   if (action.payload.isSignUp) {
     if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
       const userId: string = yield select(getCurrentUserId)
+      console.log("alex:")
+      console.log(userId)
+      var profile = yield select(getInformationToSubmitProfileFromStore, userId)
+      console.log("alex:")
+      console.log(profile)
       yield put(sendProfileToRenderer(userId))
       const config: Config = {
         dictionaries: [ adjectives.filter((word) => word.length <= 5), colors.filter((word) => word.length <= 5), animals.filter((word) => word.length <= 5)],

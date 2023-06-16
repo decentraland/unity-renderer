@@ -139,12 +139,15 @@ function* authenticate(action: AuthenticateAction) {
   yield call(waitForRealm)
   const avatar = yield call(initialRemoteProfileLoad)
 
+  console.log("alex")
+  console.log(avatar)
   // 3. continue with signin/signup (only not in preview)
   let isSignUp = avatar.version <= 0 && !PREVIEW
   if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
 
+    //const tosShown: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_shown')) as boolean)
     const tosAccepted: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
-    isSignUp = avatar.version <= 0 && !tosAccepted && !PREVIEW
+    isSignUp = !tosAccepted && !PREVIEW
   }
 
   if (isSignUp) {
