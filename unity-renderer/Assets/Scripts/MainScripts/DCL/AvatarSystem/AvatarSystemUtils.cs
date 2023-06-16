@@ -68,9 +68,13 @@ namespace AvatarSystem
             {
                 foreach (Material material in renderer.materials)
                 {
-                    if (material.name.ToLower().Contains("skin"))
+                    // If this is modified, check DecentralandMaterialGenerator.SetMaterialName,
+                    // its important for the asset bundles materials to have normalized names but this functionality should work too
+                    string name = material.name.ToLower();
+
+                    if (name.Contains("skin"))
                         material.SetColor(ShaderUtils.BaseColor, skinColor);
-                    else if (material.name.ToLower().Contains("hair"))
+                    else if (name.Contains("hair"))
                         material.SetColor(ShaderUtils.BaseColor, hairColor);
                 }
             }
@@ -135,12 +139,10 @@ namespace AvatarSystem
 
             foreach (Renderer r in rendereable.renderers)
             {
-                if (!(r is SkinnedMeshRenderer renderer))
+                if (r is not SkinnedMeshRenderer renderer)
                     continue;
 
-                string name = "";
-
-                name = renderer.name.ToLower();
+                string name = renderer.name.ToLower();
 
                 // we still support the old gltf hierarchy for ABs
                 if (name.Contains("primitive"))
