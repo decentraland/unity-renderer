@@ -27,20 +27,18 @@ public class OutfitsController : IDisposable
         view.OnSaveOutfits += SaveOutfits;
     }
 
-
-
     private void EquipOutfit(OutfitItem outfitItem)
     {
         async UniTaskVoid LoadOutfitWearables(CancellationToken cancellationToken)
         {
-            Debug.Log($"Bodyshape: {outfitItem.outfit.bodyShape}");
             wearablesCatalogService.WearablesCatalog.TryGetValue(outfitItem.outfit.bodyShape, out var bodyShape);
             bodyShape ??= await wearablesCatalogService.RequestWearableAsync(outfitItem.outfit.bodyShape, cancellationToken);
             foreach (string outfitWearable in outfitItem.outfit.wearables)
             {
-                wearablesCatalogService.WearablesCatalog.TryGetValue(outfitWearable, out var wearable);
-                wearable ??= await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken);
+                if (!wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable))
+                    await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken);
             }
+
             OnOutfitEquipped?.Invoke(outfitItem);
         }
 

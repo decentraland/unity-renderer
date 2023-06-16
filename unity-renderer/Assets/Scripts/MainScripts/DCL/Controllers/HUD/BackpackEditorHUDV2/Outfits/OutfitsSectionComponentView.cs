@@ -125,7 +125,8 @@ public class OutfitsSectionComponentView : BaseComponentView
                 eyes = new OutfitItem.eyes(){ color = currentAvatarModel.eyeColor},
                 hair = new OutfitItem.hair(){ color = currentAvatarModel.hairColor},
                 skin = new OutfitItem.skin(){ color = currentAvatarModel.skinColor},
-                wearables = new List<string>(currentAvatarModel.wearables).ToArray()
+                wearables = new List<string>(currentAvatarModel.wearables).ToArray(),
+                forceRender = new List<string>(currentAvatarModel.forceRender).ToArray()
             },
             slot = outfitIndex
         };

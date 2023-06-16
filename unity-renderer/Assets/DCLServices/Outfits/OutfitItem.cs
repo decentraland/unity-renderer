@@ -15,6 +15,7 @@ public class OutfitItem
         public hair hair;
         public skin skin;
         public string[] wearables;
+        public string[] forceRender;
     }
 
     [Serializable]

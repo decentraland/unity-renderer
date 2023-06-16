@@ -94,8 +94,13 @@ namespace DCL.Backpack
 
         private void OnOutfitEquipped(OutfitItem outfit)
         {
-            Debug.Log("Equip");
-            model.wearables = new ();
+            Dictionary<string, WearableItem> keyValuePairs = new Dictionary<string, WearableItem>(model.wearables);
+            foreach (KeyValuePair<string, WearableItem> keyValuePair in keyValuePairs)
+                UnEquipWearable(keyValuePair.Key, UnequipWearableSource.None);
+
+            foreach (string forcedCategory in model.forceRender)
+                UpdateOverrideHides(forcedCategory, false);
+
             if(!string.IsNullOrEmpty(outfit.outfit.bodyShape))
                 EquipWearable(outfit.outfit.bodyShape);
 
@@ -103,6 +108,9 @@ namespace DCL.Backpack
                 EquipWearable(outfitWearable);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
+
+            foreach (string forcedCategory in outfit.outfit.forceRender)
+                UpdateOverrideHides(forcedCategory, true);
         }
 
         private void OnOutfitsOpened()

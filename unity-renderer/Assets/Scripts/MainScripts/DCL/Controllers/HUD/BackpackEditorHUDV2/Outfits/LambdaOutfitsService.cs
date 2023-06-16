@@ -29,11 +29,6 @@ public class LambdaOutfitsService
             OUTFITS_ENDPOINT + userId,
             cancellationToken: cancellationToken);
 
-        foreach (OutfitItem responseElement in response.metadata.outfits)
-        {
-            //Debug.Log(responseElement.slot + " " + responseElement.outfit.bodyShape + " " +  responseElement.outfit.eyes + " " +  responseElement.outfit.hair + " " +  responseElement.outfit.skin + " " +  responseElement.outfit.wearables.Length);
-        }
-
         if (!success)
             throw new Exception($"The request of outfits for '{userId}' failed!");
 
