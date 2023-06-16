@@ -16,16 +16,18 @@ namespace DCL.Social.Friends
 {
     public class RPCSocialApiBridgeShould
     {
+        private const string OWN_ID = "My custom id";
+        private const string ACCESS_TOKEN = "Token";
+
         private RPCSocialApiBridge rpcSocialApiBridge;
         private IUserProfileBridge userProfileBridge;
         private IClientFriendshipsService friendshipsService;
-
-        private const string OWN_ID = "My custom id";
-        private const string ACCESS_TOKEN = "Token";
+        private CancellationTokenSource testsCancellationToken;
 
         [SetUp]
         public void SetUp()
         {
+            testsCancellationToken = new CancellationTokenSource();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
 
             var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -47,7 +49,7 @@ namespace DCL.Social.Friends
                                }));
 
             friendshipsService.UpdateFriendshipEvent(Arg.Any<UpdateFriendshipPayload>())
-                              .Returns(UniTask.FromException<UpdateFriendshipResponse>(new Exception("Mock missing")));
+                              .Returns(UniTask.Never<UpdateFriendshipResponse>(testsCancellationToken.Token));
 
             friendshipsService.SubscribeFriendshipEventsUpdates(Arg.Any<Payload>())
                               .Returns(UniTaskAsyncEnumerable.Never<SubscribeFriendshipEventsUpdatesResponse>());
@@ -74,6 +76,13 @@ namespace DCL.Social.Friends
             rpcSocialApiBridge = new RPCSocialApiBridge(matrixInitializationBridge, userProfileBridge, socialClientProvider);
 
             matrixInitializationBridge.AccessToken.Returns(ACCESS_TOKEN);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            testsCancellationToken.Cancel();
+            testsCancellationToken.Dispose();
         }
 
         [UnityTest]
