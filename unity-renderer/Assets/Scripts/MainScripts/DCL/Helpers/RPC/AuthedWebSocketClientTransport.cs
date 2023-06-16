@@ -91,8 +91,10 @@ namespace RPC.Transports
 
         private void HandleError(string errorMsg)
         {
+            UnityEngine.Debug.unityLogger.logEnabled = true;
             if(VERBOSE)
                 Debug.Log($"[{GetType().Name}]: Error\n{errorMsg}");
+            UnityEngine.Debug.unityLogger.logEnabled = false;
             OnErrorEvent?.Invoke(errorMsg);
         }
 
