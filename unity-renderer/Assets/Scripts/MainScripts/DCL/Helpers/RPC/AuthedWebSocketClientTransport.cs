@@ -43,38 +43,39 @@ namespace RPC.Transports
 
             UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Requesting signed headers...");
+                Debug.Log($"[{GetType().Name}]: Requesting signed headers...");
             UnityEngine.Debug.unityLogger.logEnabled = false;
 
             string signResponse = await signRequest.RequestSignedHeaders(requestUrl, new Dictionary<string, string>(), ct);
             UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Signed Headers received:\n{signResponse}");
+                Debug.Log($"[{GetType().Name}]: Signed Headers received:\n{signResponse}");
             UnityEngine.Debug.unityLogger.logEnabled = false;
 
-            webSocket.Connect();
-            // We have to wait for connection to be done to send the signed headers for authentication
             var connected = false;
             void OnReady()
             {
+                webSocket.OnOpen -= OnReady;
                 connected = true;
             }
             webSocket.OnOpen += OnReady;
+            webSocket.Connect();
+            // We have to wait for connection to be done to send the signed headers for authentication
             UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Waiting for connection...");
+                Debug.Log($"[{GetType().Name}]: Waiting for connection...");
             UnityEngine.Debug.unityLogger.logEnabled = false;
             webSocket.Connect();
             await UniTask.WaitUntil(() => connected, cancellationToken: ct);
             UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Connected");
+                Debug.Log($"[{GetType().Name}]: Connected");
             webSocket.OnOpen -= OnReady;
             UnityEngine.Debug.unityLogger.logEnabled = false;
 
             UnityEngine.Debug.unityLogger.logEnabled = true;
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Sending the signed headers");
+                Debug.Log($"[{GetType().Name}]: Sending the signed headers");
             UnityEngine.Debug.unityLogger.logEnabled = false;
             webSocket.Send(signResponse);
         }
@@ -87,35 +88,35 @@ namespace RPC.Transports
         private void HandleError(string errorMsg)
         {
             if(VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Error\n{errorMsg}");
+                Debug.Log($"[{GetType().Name}]: Error\n{errorMsg}");
             OnErrorEvent?.Invoke(errorMsg);
         }
 
         private void HandleClose(WebSocketCloseCode closeCode)
         {
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Closed WebSocket: {closeCode}");
+                Debug.Log($"[{GetType().Name}]: Closed WebSocket: {closeCode}");
             OnCloseEvent?.Invoke();
         }
 
         private void HandleOpen()
         {
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Open WebSocket:");
+                Debug.Log($"[{GetType().Name}]: Open WebSocket:");
             OnConnectEvent?.Invoke();
         }
 
         public void SendMessage(byte[] data)
         {
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Sending bytes UTF8 decoded:\n{Encoding.UTF8.GetString(data)}");
+                Debug.Log($"[{GetType().Name}]: Sending bytes UTF8 decoded:\n{Encoding.UTF8.GetString(data)}");
             webSocket.Send(data);
         }
 
         public void SendMessage(string data)
         {
             if (VERBOSE)
-                Debug.Log($"[{nameof(GetType)}]: Sending data:\n{data}");
+                Debug.Log($"[{GetType().Name}]: Sending data:\n{data}");
             webSocket.Send(data);
         }
 
