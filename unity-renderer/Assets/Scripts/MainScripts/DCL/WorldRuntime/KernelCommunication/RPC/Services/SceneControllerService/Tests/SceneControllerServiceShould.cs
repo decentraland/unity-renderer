@@ -305,7 +305,7 @@ namespace Tests
                     return framesCounter == framesToWait;
                 };
 
-                context.crdt.GetSceneTick = (int x) => 0; // first tick
+                context.crdt.GetSceneTick = (int x) => 1; // first tick
 
                 // Prepare entity creation CRDT message
                 CrdtMessage crdtMessage = new CrdtMessage
