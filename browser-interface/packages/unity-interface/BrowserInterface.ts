@@ -167,22 +167,25 @@ export type RendererSaveOutfits = {
     outfit: {
       bodyShape: string
       eyes: {
-        a: number
-        b: number
-        g: number
-        r: number
+        color: {
+          b: number
+          g: number
+          r: number
+        }
       }
       hair: {
-        a: number
-        b: number
-        g: number
-        r: number
+        color: {
+          b: number
+          g: number
+          r: number
+        }
       }
       skin: {
-        a: number
-        b: number
-        g: number
-        r: number
+        color: {
+          b: number
+          g: number
+          r: number
+        }
       }
       wearables: string[]
       forceRender?: string[]
@@ -199,6 +202,16 @@ const color3Schema: JSONSchema<{ r: number; g: number; b: number; a: number }> =
     g: { type: 'number', nullable: false },
     b: { type: 'number', nullable: false },
     a: { type: 'number', nullable: false }
+  }
+} as any
+
+const color3SchemaV2: JSONSchema<{ r: number; g: number; b: number }> = {
+  type: 'object',
+  required: ['r', 'g', 'b'],
+  properties: {
+    r: { type: 'number', nullable: false },
+    g: { type: 'number', nullable: false },
+    b: { type: 'number', nullable: false }
   }
 } as any
 
@@ -275,9 +288,27 @@ export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
             required: ['bodyShape', 'eyes', 'hair', 'skin', 'wearables'],
             properties: {
               bodyShape: { type: 'string' },
-              eyes: color3Schema,
-              hair: color3Schema,
-              skin: color3Schema,
+              eyes: {
+                type: 'object',
+                required: ['color'],
+                properties: {
+                  color: color3SchemaV2
+                }
+              },
+              hair: {
+                type: 'object',
+                required: ['color'],
+                properties: {
+                  color: color3SchemaV2
+                }
+              },
+              skin: {
+                type: 'object',
+                required: ['color'],
+                properties: {
+                  color: color3SchemaV2
+                }
+              },
               wearables: { type: 'array', items: { type: 'string' } },
               forceRender: { type: 'array', items: { type: 'string' }, nullable: true }
             }
@@ -545,9 +576,9 @@ export class BrowserInterface {
         slot,
         outfit: {
           bodyShape: outfit.bodyShape,
-          eyes: { color: outfit.eyes },
-          hair: { color: outfit.hair },
-          skin: { color: outfit.skin },
+          eyes: { color: outfit.eyes.color },
+          hair: { color: outfit.hair.color },
+          skin: { color: outfit.skin.color },
           wearables: outfit.wearables,
           forceRender: (outfit.forceRender ?? []).map((category) => category as WearableCategory)
         }
