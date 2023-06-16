@@ -432,7 +432,6 @@ namespace DCL.Backpack
             bool updateAvatarPreview = true,
             bool resetOverride = true)
         {
-            Debug.Log($"wearable id {wearableId}");
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
                 Debug.LogError($"Cannot equip wearable {wearableId}");
@@ -607,7 +606,7 @@ namespace DCL.Backpack
         private void UpdateAvatarModel(AvatarModel avatarModel)
         {
             view.UpdateAvatarPreview(avatarModel);
-            outfitsController.UpdateAvatarPreview(avatarModel);
+            outfitsController.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
         private void OnColorPickerToggled() =>

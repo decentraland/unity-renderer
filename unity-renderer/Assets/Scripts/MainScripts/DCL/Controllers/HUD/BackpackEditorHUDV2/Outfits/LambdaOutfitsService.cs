@@ -31,7 +31,7 @@ public class LambdaOutfitsService
 
         foreach (OutfitItem responseElement in response.metadata.outfits)
         {
-            Debug.Log(responseElement.slot + " " + responseElement.outfit.bodyShape + " " +  responseElement.outfit.eyes + " " +  responseElement.outfit.hair + " " +  responseElement.outfit.skin + " " +  responseElement.outfit.wearables.Length);
+            //Debug.Log(responseElement.slot + " " + responseElement.outfit.bodyShape + " " +  responseElement.outfit.eyes + " " +  responseElement.outfit.hair + " " +  responseElement.outfit.skin + " " +  responseElement.outfit.wearables.Length);
         }
 
         if (!success)

@@ -27,6 +27,8 @@ public class OutfitsController : IDisposable
         view.OnSaveOutfits += SaveOutfits;
     }
 
+
+
     private void EquipOutfit(OutfitItem outfitItem)
     {
         async UniTaskVoid LoadOutfitWearables(CancellationToken cancellationToken)
@@ -70,5 +72,7 @@ public class OutfitsController : IDisposable
         cts?.Cancel();
         cts?.Dispose();
         cts = null;
+        view.OnOutfitEquipped -= EquipOutfit;
+        view.OnSaveOutfits -= SaveOutfits;
     }
 }

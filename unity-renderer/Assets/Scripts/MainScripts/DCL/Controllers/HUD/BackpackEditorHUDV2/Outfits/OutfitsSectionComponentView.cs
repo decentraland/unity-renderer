@@ -1,7 +1,9 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -19,7 +21,7 @@ public class OutfitsSectionComponentView : BaseComponentView
     public event Action OnBackButtonPressed;
     public event Action<OutfitItem> OnOutfitEquipped;
     public event Action<OutfitItem[]> OnSaveOutfits;
-    private AvatarModel currentAvatarModel;
+    private readonly AvatarModel currentAvatarModel = new AvatarModel();
     private OutfitItem[] outfits;
 
     public override void Awake()
@@ -27,11 +29,11 @@ public class OutfitsSectionComponentView : BaseComponentView
         base.Awake();
         outfits = new OutfitItem[]
         {
-            new OutfitItem(){slot = 0},
-            new OutfitItem(){slot = 1},
-            new OutfitItem(){slot = 2},
-            new OutfitItem(){slot = 3},
-            new OutfitItem(){slot = 4}
+            new (){slot = 0},
+            new (){slot = 1},
+            new (){slot = 2},
+            new (){slot = 3},
+            new (){slot = 4}
         };
 
         backButton.onClick.RemoveAllListeners();
@@ -44,16 +46,20 @@ public class OutfitsSectionComponentView : BaseComponentView
         }
     }
 
+    public override void RefreshControl()
+    {
+    }
+
     private void DiscardOutfit(int outfitIndex)
     {
         outfitComponentViews[outfitIndex].SetIsEmpty(true);
-        outfits[outfitIndex] = null;
+        outfits[outfitIndex] = new OutfitItem(){slot = outfitIndex};
         OnSaveOutfits?.Invoke(outfits);
     }
 
     public void UpdateAvatarPreview(AvatarModel newAvatarModel)
     {
-        currentAvatarModel = newAvatarModel;
+        currentAvatarModel.CopyFrom(newAvatarModel);
         characterPreviewController.SetEnabled(true);
         characterPreviewController.TryUpdateModelAsync(currentAvatarModel);
     }
@@ -71,40 +77,46 @@ public class OutfitsSectionComponentView : BaseComponentView
 
     public async UniTaskVoid ShowOutfits(OutfitItem[] outfitsToShow)
     {
-        for (int i = 0; i < outfitComponentViews.Length; i++)
+        foreach (OutfitItem outfitItem in outfitsToShow)
         {
-            if (i < outfitsToShow.Length && !string.IsNullOrEmpty(outfitsToShow[i].outfit.bodyShape))
+            outfits[outfitItem.slot] = outfitItem;
+
+            if (string.IsNullOrEmpty(outfitItem.outfit.bodyShape))
             {
-                outfitComponentViews[i].SetIsEmpty(false);
-                outfitComponentViews[i].SetOutfit(outfitsToShow[i]);
-                AvatarModel avatarModel = currentAvatarModel;
-                avatarModel.bodyShape = outfitsToShow[i].outfit.bodyShape;
-                avatarModel.wearables = outfitsToShow[i].outfit.wearables.ToList();
-                avatarModel.eyeColor = outfitsToShow[i].outfit.eyes.color;
-                avatarModel.hairColor = outfitsToShow[i].outfit.hair.color;
-                avatarModel.skinColor = outfitsToShow[i].outfit.skin.color;
-                await characterPreviewController.TryUpdateModelAsync(avatarModel);
-                Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
-                outfitComponentViews[i].SetOutfitPreviewImage(bodySnapshot);
+                outfitComponentViews[outfitItem.slot].SetIsEmpty(true);
+                continue;
             }
-            else
-            {
-                outfitComponentViews[i].SetIsEmpty(true);
-            }
+
+            outfitComponentViews[outfitItem.slot].SetIsEmpty(false);
+            outfitComponentViews[outfitItem.slot].SetOutfit(outfitItem);
+            await characterPreviewController.TryUpdateModelAsync(GenerateAvatarModel(outfitItem));
+            Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
+            outfitComponentViews[outfitItem.slot].SetOutfitPreviewImage(bodySnapshot);
         }
+        await characterPreviewController.TryUpdateModelAsync(currentAvatarModel);
+    }
+
+    private AvatarModel GenerateAvatarModel(OutfitItem outfitItem)
+    {
+        AvatarModel avatarModel = new AvatarModel();
+        avatarModel.CopyFrom(currentAvatarModel);
+        avatarModel.bodyShape = outfitItem.outfit.bodyShape;
+        avatarModel.wearables = new List<string>(outfitItem.outfit.wearables.ToList());
+        avatarModel.eyeColor = outfitItem.outfit.eyes.color;
+        avatarModel.hairColor = outfitItem.outfit.hair.color;
+        avatarModel.skinColor = outfitItem.outfit.skin.color;
+        return avatarModel;
     }
 
     private void OnEquipOutfit(OutfitItem outfitItem) =>
         OnOutfitEquipped?.Invoke(outfitItem);
 
-    private int lastIndex;
+    private void OnSaveOutfit(int outfitIndex) =>
+        SaveOutfitAsync(outfitIndex).Forget();
 
-    private void OnSaveOutfit(int outfitIndex)
+    private async UniTaskVoid SaveOutfitAsync(int outfitIndex)
     {
-        lastIndex = outfitIndex;
-        characterPreviewController.TakeSnapshots(OnSnapshotSuccess, OnSnapshotFailed);
         outfitComponentViews[outfitIndex].SetIsEmpty(false);
-
         var outfitItem = new OutfitItem()
         {
             outfit = new OutfitItem.Outfit()
@@ -113,28 +125,15 @@ public class OutfitsSectionComponentView : BaseComponentView
                 eyes = new OutfitItem.eyes(){ color = currentAvatarModel.eyeColor},
                 hair = new OutfitItem.hair(){ color = currentAvatarModel.hairColor},
                 skin = new OutfitItem.skin(){ color = currentAvatarModel.skinColor},
-                wearables = currentAvatarModel.wearables.ToArray()
+                wearables = new List<string>(currentAvatarModel.wearables).ToArray()
             },
             slot = outfitIndex
         };
 
         outfitComponentViews[outfitIndex].SetModel(new OutfitComponentModel(){outfitItem = outfitItem});
         outfits[outfitIndex] = outfitItem;
+        Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
+        outfitComponentViews[outfitIndex].SetOutfitPreviewImage(bodySnapshot);
         OnSaveOutfits?.Invoke(outfits);
-    }
-
-    private void OnSnapshotFailed()
-    {
-        Debug.Log("Snapshot failed");
-    }
-
-    private void OnSnapshotSuccess(Texture2D face256, Texture2D body)
-    {
-        outfitComponentViews[lastIndex].SetOutfitPreviewImage(body);
-        outfitComponentViews[lastIndex].SetIsEmpty(false);
-    }
-
-    public override void RefreshControl()
-    {
     }
 }

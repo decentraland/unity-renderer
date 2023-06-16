@@ -1387,13 +1387,9 @@ namespace DCL.Interface
 
         public static void SaveUserOutfits(OutfitItem[] outfits)
         {
-            foreach (OutfitItem outfitItem in outfits.Where(o => o!=null).ToArray())
-            {
-                Debug.Log($"saving outfititm {outfitItem.slot}");
-            }
             var payload = new SaveUserOutfitsPayload()
             {
-                outfits = outfits.Where(o => o!=null).ToArray(),
+                outfits = outfits,
                 namesForExtraSlots = new string[]{}
             };
 
