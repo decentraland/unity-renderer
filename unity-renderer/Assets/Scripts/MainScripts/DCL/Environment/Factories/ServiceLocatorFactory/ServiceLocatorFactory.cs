@@ -10,6 +10,7 @@ using DCL.Services;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
@@ -110,7 +111,14 @@ namespace DCL
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
 
-            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
+            result.Register<IEmotesCatalogService>(() =>
+            {
+                var emotesRequest = new EmotesRequestWeb(
+                    result.Get<ILambdasService>(),
+                    result.Get<IServiceProviders>(),
+                    DataStore.i.featureFlags.flags);
+                return new EmotesCatalogService(emotesRequest, addressableResourceProvider);
+            });
 
             result.Register<ITeleportController>(() => new TeleportController());
 
@@ -121,7 +129,8 @@ namespace DCL
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables,
                     result.Get<ILambdasService>(),
-                    result.Get<IServiceProviders>()),
+                    result.Get<IServiceProviders>(),
+                    DataStore.i.featureFlags.flags),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,
