@@ -23,26 +23,8 @@ public class OutfitsController : IDisposable
         this.lambdaOutfitsService = lambdaOutfitsService;
         this.userProfileBridge = userProfileBridge;
         this.wearablesCatalogService = wearablesCatalogService;
-        view.OnOutfitEquipped += EquipOutfit;
+        view.OnOutfitEquipped += (outfit)=>OnOutfitEquipped?.Invoke(outfit);
         view.OnSaveOutfits += SaveOutfits;
-    }
-
-    private void EquipOutfit(OutfitItem outfitItem)
-    {
-        async UniTaskVoid LoadOutfitWearables(CancellationToken cancellationToken)
-        {
-            wearablesCatalogService.WearablesCatalog.TryGetValue(outfitItem.outfit.bodyShape, out var bodyShape);
-            bodyShape ??= await wearablesCatalogService.RequestWearableAsync(outfitItem.outfit.bodyShape, cancellationToken);
-            foreach (string outfitWearable in outfitItem.outfit.wearables)
-            {
-                if (!wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable))
-                    await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken);
-            }
-
-            OnOutfitEquipped?.Invoke(outfitItem);
-        }
-
-        LoadOutfitWearables(cts.Token).Forget();
     }
 
     private void SaveOutfits(OutfitItem[] outfits) =>
@@ -70,7 +52,6 @@ public class OutfitsController : IDisposable
         cts?.Cancel();
         cts?.Dispose();
         cts = null;
-        view.OnOutfitEquipped -= EquipOutfit;
         view.OnSaveOutfits -= SaveOutfits;
     }
 }

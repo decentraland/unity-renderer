@@ -25,6 +25,7 @@ namespace DCL.Backpack
         private bool avatarIsDirty;
         private CancellationTokenSource loadProfileCancellationToken = new ();
         private CancellationTokenSource setVisibilityCancellationToken = new ();
+        private CancellationTokenSource outfitLoadCancellationToken = new ();
         private string categoryPendingToPlayEmote;
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
@@ -96,16 +97,30 @@ namespace DCL.Backpack
         {
             Dictionary<string, WearableItem> keyValuePairs = new Dictionary<string, WearableItem>(model.wearables);
             foreach (KeyValuePair<string, WearableItem> keyValuePair in keyValuePairs)
-                UnEquipWearable(keyValuePair.Key, UnequipWearableSource.None);
+                UnEquipWearable(keyValuePair.Key, UnequipWearableSource.None, false);
 
             foreach (string forcedCategory in model.forceRender)
                 UpdateOverrideHides(forcedCategory, false);
 
+            outfitLoadCancellationToken = new CancellationTokenSource();
+            LoadAndEquipOutfitWearables(outfit, outfitLoadCancellationToken.Token).Forget();
+        }
+
+        private async UniTaskVoid LoadAndEquipOutfitWearables(OutfitItem outfit, CancellationToken cancellationToken)
+        {
+            if (!wearablesCatalogService.WearablesCatalog.ContainsKey(outfit.outfit.bodyShape))
+                await wearablesCatalogService.RequestWearableAsync(outfit.outfit.bodyShape, cancellationToken);
+            foreach (string outfitWearable in outfit.outfit.wearables)
+            {
+                if (!wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable))
+                    await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken);
+            }
+
             if(!string.IsNullOrEmpty(outfit.outfit.bodyShape))
-                EquipWearable(outfit.outfit.bodyShape);
+                EquipWearable(outfit.outfit.bodyShape, setAsDirty: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
-                EquipWearable(outfitWearable);
+                EquipWearable(outfitWearable, setAsDirty: false);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 

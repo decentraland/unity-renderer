@@ -61,7 +61,7 @@ namespace DCL.Backpack
                 dataStore,
                 CommonScriptableObjects.rendererState,
                 userProfileBridge,
-                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
+                wearablesCatalogService,
                 backpackEmotesSectionController,
                 backpackAnalyticsService,
                 wearableGridController,
