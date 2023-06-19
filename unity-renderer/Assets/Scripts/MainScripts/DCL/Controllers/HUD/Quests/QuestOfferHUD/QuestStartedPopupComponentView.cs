@@ -11,7 +11,8 @@ namespace DCL.Quests
 {
     public class QuestStartedPopupComponentView : BaseComponentView<QuestStartedPopupComponentModel>, IQuestStartedPopupComponentView
     {
-        private const float DURATION = 0.167f;
+        private const float FADE_DURATION = 0.167f;
+        private const float SHOW_HUD_TIME = 10f;
 
         [SerializeField] internal TMP_Text questNameText;
         [SerializeField] internal Button openQuestLogButton;
@@ -58,14 +59,14 @@ namespace DCL.Quests
         }
 
         private void Show() =>
-            container.DOFade(1, DURATION).SetEase(Ease.InOutQuad);
+            container.DOFade(1, FADE_DURATION).SetEase(Ease.InOutQuad);
 
         private void Hide() =>
-            container.DOFade(0, DURATION).SetEase(Ease.InOutQuad);
+            container.DOFade(0, FADE_DURATION).SetEase(Ease.InOutQuad);
 
         private async UniTaskVoid WaitAndHide(CancellationTokenSource ct)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(5), cancellationToken: cts.Token);
+            await UniTask.Delay(TimeSpan.FromSeconds(SHOW_HUD_TIME), cancellationToken: cts.Token);
             Hide();
         }
 
