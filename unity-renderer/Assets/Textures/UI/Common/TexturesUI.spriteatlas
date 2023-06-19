@@ -443,7 +443,7 @@ SpriteAtlas:
   - SpeakerOn
   - ContainerRadius6
   - VoiceChatCross
-  - DecentralandIsologotipo68
+  - DCLLogo
   - TopRect12
   - SceneInfoContainer
   - Button16
@@ -480,7 +480,7 @@ SpriteAtlas:
   - BackgroundSaturation
   - ContainerRectLeft20
   - ContainerRadius10@2x
-  - DCLLogoColor
+  - DCLIcnColor
   - Outline1Radius12
   - ButtonFlatWhite
   - ExitFullScreenIcon
@@ -559,7 +559,7 @@ SpriteAtlas:
   - BackgroundPattern
   - CheckmarkContainer
   - ContainerRadius20Shadow
-  - PlacesIcon
+  - PlacesIcn
   - ProfileHudTopContainer
   - no-image-icon-32
   - ChatOn
@@ -589,7 +589,7 @@ SpriteAtlas:
   - NFTStarUniqueContainer
   - ContainerRadius20@2x
   - Square32x32
-  - HighlightsIcon
+  - HighlightsIcn
   - Container12
   - UIicon
   - PromoteChannelsToastBackground
@@ -695,7 +695,7 @@ SpriteAtlas:
   - HelpIcn
   - SettingsOff
   - VoiceChatPlayer
-  - FavoritesIcon
+  - FavoritesIcn
   - HideNameIcon
   - ChatOff
   - LargeGradientBottom
@@ -708,7 +708,7 @@ SpriteAtlas:
   - ContainerStroke10
   - LeftClick
   - Home
-  - EventsIcon
+  - EventsIcn
   - Div
   - EllipticalShadow
   - rectangle_100
