@@ -3,6 +3,7 @@ using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace DCL.Social.Friends
         private readonly ISocialAnalytics socialAnalytics;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
+        private readonly Regex ethAddressRegex = new (@"^0x[a-fA-F0-9]{40}$");
 
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
         private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
@@ -254,24 +256,29 @@ namespace DCL.Social.Friends
                 {
                     if (isNewFriendRequestsEnabled)
                     {
-                        FriendRequest request;
-
                         try
                         {
-                            request = await friendsController.RequestFriendshipAsync(userNameOrId, "", cancellationToken);
+                            string userId = SolveUserIdFromUserInput(userNameOrId);
 
-                            socialAnalytics.SendFriendRequestSent(request.From, request.To, request.MessageBody?.Length ?? 0,
-                                PlayerActionSource.FriendsHUD);
+                            if (!string.IsNullOrEmpty(userId))
+                            {
+                                FriendRequest request = await friendsController.RequestFriendshipAsync(userId, "", cancellationToken);
+
+                                ShowFriendRequest(request);
+
+                                socialAnalytics.SendFriendRequestSent(request.From, request.To, request.MessageBody?.Length ?? 0,
+                                    PlayerActionSource.FriendsHUD);
+                            }
+                            else
+                                View.ShowRequestSendError(FriendRequestError.UserNotFound);
                         }
                         catch (Exception e) when (e is not OperationCanceledException)
                         {
                             e.ReportFriendRequestErrorToAnalyticsAsSender(userNameOrId, PlayerActionSource.FriendsHUD.ToString(),
                                 userProfileBridge, socialAnalytics);
 
-                            throw;
+                            Debug.LogException(e);
                         }
-
-                        ShowFriendRequest(request);
                     }
                     else
                     {
@@ -286,6 +293,19 @@ namespace DCL.Social.Friends
             }
 
             HandleRequestFriendshipAsync(userNameOrId, RestartFriendsOperationsCancellationToken()).Forget();
+        }
+
+        private string SolveUserIdFromUserInput(string userNameOrId)
+        {
+            Match ethAddressMatch = ethAddressRegex.Match(userNameOrId);
+
+            if (ethAddressMatch.Success)
+                return userNameOrId;
+
+            // TODO: a request to the catalyst is needed to retrieve a user profile by user name
+            // the user may exist with the name but not loaded in the current catalog
+            UserProfile profile = userProfileBridge.GetByName(userNameOrId, false);
+            return profile?.userId ?? "";
         }
 
         private bool AreAlreadyFriends(string userNameOrId)
@@ -333,8 +353,8 @@ namespace DCL.Social.Friends
                         return;
 
                     var sentRequest = friends.ContainsKey(userId)
-                        ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
-                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                        ? new FriendRequestEntryModel(friends[userId], string.Empty, false, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                     sentRequest.CopyFrom(status);
                     sentRequest.blocked = IsUserBlocked(userId);
@@ -347,8 +367,8 @@ namespace DCL.Social.Friends
                         return;
 
                     var receivedRequest = friends.ContainsKey(userId)
-                        ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
-                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                        ? new FriendRequestEntryModel(friends[userId], string.Empty, true, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                     receivedRequest.CopyFrom(status);
                     receivedRequest.blocked = IsUserBlocked(userId);
@@ -391,15 +411,12 @@ namespace DCL.Social.Friends
                         userProfile.OnUpdate -= HandleFriendProfileUpdated;
                         userProfile.OnUpdate += HandleFriendProfileUpdated;
                         break;
-                    case FriendshipAction.REQUESTED_FROM: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                        if (isNewFriendRequestsEnabled)
-                            return;
-
+                    case FriendshipAction.REQUESTED_FROM:
                         userProfile = await EnsureProfileOrShowFallbackFriend(userId, userProfile, cancellationToken);
 
                         var requestReceived = friends.ContainsKey(userId)
-                            ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
-                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                            ? new FriendRequestEntryModel(friends[userId], string.Empty, true, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                         requestReceived.CopyFrom(userProfile);
                         requestReceived.blocked = IsUserBlocked(userId);
@@ -408,15 +425,12 @@ namespace DCL.Social.Friends
                         userProfile.OnUpdate -= HandleFriendProfileUpdated;
                         userProfile.OnUpdate += HandleFriendProfileUpdated;
                         break;
-                    case FriendshipAction.REQUESTED_TO: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                        if (isNewFriendRequestsEnabled)
-                            return;
-
+                    case FriendshipAction.REQUESTED_TO:
                         userProfile = await EnsureProfileOrShowFallbackFriend(userId, userProfile, cancellationToken);
 
                         var requestSent = friends.ContainsKey(userId)
-                            ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
-                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                            ? new FriendRequestEntryModel(friends[userId], string.Empty, false, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                         requestSent.CopyFrom(userProfile);
                         requestSent.blocked = IsUserBlocked(userId);

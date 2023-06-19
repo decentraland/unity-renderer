@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using System;
 using System.Threading;
 
@@ -9,18 +8,21 @@ namespace DCL.Social.Friends
     {
         public event Action<FriendRequest> OnIncomingFriendRequestAdded;
         public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
-        event Action<UserStatus> OnFriendAdded;
-        event Action<string> OnFriendRemoved;
-        event Action<FriendRequest> OnFriendRequestAdded;
-        event Action<string> OnFriendRequestRemoved;
-        event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
-        event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
-        event Action<FriendRequestPayload> OnFriendRequestReceived;
+        event Action<string> OnFriendRequestAccepted;
+        event Action<string> OnFriendRequestRejected;
+        event Action<string> OnDeletedByFriend;
+        event Action<string> OnFriendRequestCanceled;
 
-        UniTask<FriendshipInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default);
+        UniTask<AllFriendsInitializationMessage> GetInitializationInformationAsync(CancellationToken cancellationToken = default);
 
-        UniTask RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
+        UniTask RejectFriendshipAsync(string friendId, CancellationToken cancellationToken = default);
 
-        UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody, CancellationToken cancellationToken = default);
+        UniTask CancelFriendshipAsync(string friendId, CancellationToken cancellationToken = default);
+
+        UniTask AcceptFriendshipAsync(string friendId, CancellationToken cancellationToken = default);
+
+        UniTask DeleteFriendshipAsync(string friendId, CancellationToken cancellationToken = default);
+
+        UniTask<FriendRequest> RequestFriendshipAsync(string friendId, string messageBody, CancellationToken cancellationToken = default);
     }
 }
