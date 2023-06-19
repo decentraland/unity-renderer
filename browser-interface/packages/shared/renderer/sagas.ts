@@ -252,23 +252,16 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
       yield call(saveToPersistentStorage, 'tos_popup_shown', true)
       const userId: string = yield select(getCurrentUserId)
       yield put(sendProfileToRenderer(userId))
-      console.log("alex:")
-      console.log(userId)
       var profileInfo = yield select(getInformationToSubmitProfileFromStore, userId)
-      var profile = profileInfo.profile
-
-      console.log("alex:")
-      console.log(profile)
 
       const config: Config = {
         dictionaries: [ adjectives.filter((word) => word.length <= 5), colors.filter((word) => word.length <= 5), animals.filter((word) => word.length <= 5)],
         separator: '-',
         style: 'capital'
       }
-      let name = profile?.data?.name
+      let name = profileInfo.profile?.data?.name
       if(!name || name === 'Guest')
         name = uniqueNamesGenerator(config)
-      console.log("alex:  + name")
       store.dispatch(signUp('', name))
 
       getUnityInstance().ShowAvatarEditorInSignIn()

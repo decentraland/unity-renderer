@@ -119,7 +119,6 @@ const names = [
 ]
 
 export const createFakeName = (userId?: string) => {
-  console.trace("Alex")
   let number = Math.floor(Math.random() * names.length)
 
   if (userId) {
