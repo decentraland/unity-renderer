@@ -147,7 +147,8 @@ function* authenticate(action: AuthenticateAction) {
 
     const isNewUser : boolean = avatar.version <= 0
     const tosAccepted: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
-    isSignUp = !PREVIEW && isNewUser && !tosAccepted
+    const tosShown: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_shown')) as boolean)
+    isSignUp = !PREVIEW && (isNewUser || tosShown) && !tosAccepted
   }
 
   if (isSignUp) {
