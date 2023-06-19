@@ -63,9 +63,6 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         if (newModel == null)
         {
-            model =  new () { avatar = new AvatarModel() };
-            return;
-
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
                 Debug.LogError("Model is null when updating UserProfile! Using fallback or previous model instead.");
 
@@ -73,16 +70,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             newModel = string.IsNullOrEmpty(model.userId) ? ModelFallback() : model;
         }
 
-        // if (newModel.avatar == null)
-        // {
-        //     model.avatar = new AvatarModel();
-        //
-        //     if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
-        //         Debug.LogError("Avatar is null when updating UserProfile! Using fallback or previous avatar instead.");
-        //
-        //     // Check if there is a previous avatar to fallback to.
-        //     newModel.avatar = string.IsNullOrEmpty(model.userId) ? AvatarFallback() : model.avatar;
-        // }
+        if (newModel.avatar == null)
+        {
+            model.avatar = new AvatarModel();
+
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
+                Debug.LogError("Avatar is null when updating UserProfile! Using fallback or previous avatar instead.");
+
+            // Check if there is a previous avatar to fallback to.
+            newModel.avatar = string.IsNullOrEmpty(model.userId) ? AvatarFallback() : model.avatar;
+        }
 
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
         bool bodySnapshotDirty = model.snapshots.body != newModel.snapshots.body;
