@@ -81,9 +81,10 @@ namespace Tests
             Vector3 cameraPos = (Vector3.up * 10) + (Vector3.back * 4);
             VisualTestUtils.RepositionVisualTestsCamera( camera, cameraPos, cameraPos + Vector3.forward);
 
-            var entity1 = scene.CreateEntity(6661);
-            entity1.gameObject.transform.position = new Vector3(-3, 11, 0);
-            yield return CreateMesh(entity1, new PBMaterial()
+            var entity_test_alpha = scene.CreateEntity(6661);
+            entity_test_alpha.gameObject.transform.position = new Vector3(-3, 11, 0);
+            entity_test_alpha.gameObject.transform.localScale *= 0.5f;
+            yield return CreateMesh(entity_test_alpha, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
@@ -94,10 +95,23 @@ namespace Tests
             });
 
             // Emissive values working
-            var entity2 = scene.CreateEntity(6662);
-            entity2.gameObject.transform.position = new Vector3(-1, 11, 0);
-            entity2.gameObject.transform.localScale *= 2;
-            yield return CreateMesh(entity2, new PBMaterial()
+            var entity_test_emissive = scene.CreateEntity(6662);
+            entity_test_emissive.gameObject.transform.position = new Vector3(-2f, 11, 0);
+            entity_test_emissive.gameObject.transform.localScale *= 0.5f;
+            yield return CreateMesh(entity_test_emissive, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1, A = 1f },
+                    EmissiveColor = new Color3() { R = 0, G = 0, B = 1 },
+                    EmissiveIntensity = 100
+                }
+            });
+
+            var entity_test_emissive2 = scene.CreateEntity(6663);
+            entity_test_emissive2.gameObject.transform.position = new Vector3(-1, 11, 0);
+            entity_test_emissive2.gameObject.transform.localScale *= 2;
+            yield return CreateMesh(entity_test_emissive2, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
@@ -121,10 +135,10 @@ namespace Tests
             }, false);
 
             // alpha texture working
-            var entity3 = scene.CreateEntity(6663);
-            entity3.gameObject.transform.position = new Vector3(1, 11, 0);
-            entity3.gameObject.transform.Rotate(Vector3.up, -90);
-            yield return CreateMesh(entity3, new PBMaterial()
+            var entity_test_alpha_tex = scene.CreateEntity(6664);
+            entity_test_alpha_tex.gameObject.transform.position = new Vector3(0, 11, 0);
+            entity_test_alpha_tex.gameObject.transform.Rotate(Vector3.up, -90);
+            yield return CreateMesh(entity_test_alpha_tex, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
@@ -138,10 +152,10 @@ namespace Tests
             });
 
             // Same albedo-alpha texture
-            var entity4 = scene.CreateEntity(6664);
-            entity4.gameObject.transform.position = new Vector3(3, 11, 0);
-            entity4.gameObject.transform.localScale *= 2;
-            yield return CreateMesh(entity4, new PBMaterial()
+            var entity_test_same_albedo_alpha = scene.CreateEntity(6665);
+            entity_test_same_albedo_alpha.gameObject.transform.position = new Vector3(1.5f, 11, 0);
+            entity_test_same_albedo_alpha.gameObject.transform.localScale *= 2;
+            yield return CreateMesh(entity_test_same_albedo_alpha, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
@@ -157,9 +171,10 @@ namespace Tests
                 }
             }, false);
 
-            var entity5 = scene.CreateEntity(6665);
-            entity5.gameObject.transform.position = new Vector3(-3, 9, 0);
-            yield return CreateMesh(entity5, new PBMaterial()
+            // Metallic and Roughness
+            var entity_test_metallic_roughness1 = scene.CreateEntity(6666);
+            entity_test_metallic_roughness1.gameObject.transform.position = new Vector3(3, 11, 0);
+            yield return CreateMesh(entity_test_metallic_roughness1, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
@@ -169,12 +184,12 @@ namespace Tests
                 }
             });
 
-            var entity6 = scene.CreateEntity(6666);
-            entity6.gameObject.transform.position = new Vector3(-1, 9, 0);
-            entity6.gameObject.transform.localScale *= 2;
-            entity6.gameObject.transform.Rotate(Vector3.up, -22f);
-            entity6.gameObject.transform.Rotate(Vector3.right, -30f);
-            yield return CreateMesh(entity6, new PBMaterial()
+            var entity_test_metallic_roughness2 = scene.CreateEntity(6667);
+            entity_test_metallic_roughness2.gameObject.transform.position = new Vector3(-2.5f, 9, 0);
+            entity_test_metallic_roughness2.gameObject.transform.localScale *= 2;
+            entity_test_metallic_roughness2.gameObject.transform.Rotate(Vector3.up, -22f);
+            entity_test_metallic_roughness2.gameObject.transform.Rotate(Vector3.right, -30f);
+            yield return CreateMesh(entity_test_metallic_roughness2, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
@@ -188,9 +203,9 @@ namespace Tests
                 }
             });
 
-            var entity7 = scene.CreateEntity(6667);
-            entity7.gameObject.transform.position = new Vector3(1, 9, 0);
-            yield return CreateMesh(entity7, new PBMaterial()
+            var entity_test_metallic_roughness3 = scene.CreateEntity(6668);
+            entity_test_metallic_roughness3.gameObject.transform.position = new Vector3(-0.5f, 9, 0);
+            yield return CreateMesh(entity_test_metallic_roughness3, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
@@ -200,15 +215,27 @@ namespace Tests
                 }
             });
 
-            var entity8 = scene.CreateEntity(6668);
-            entity8.gameObject.transform.position = new Vector3(3, 9, 0);
-            yield return CreateMesh(entity8, new PBMaterial()
+            var entity_test_metallic_roughness4 = scene.CreateEntity(6669);
+            entity_test_metallic_roughness4.gameObject.transform.position = new Vector3(1, 9, 0);
+            yield return CreateMesh(entity_test_metallic_roughness4, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
                     AlbedoColor = new Color4() { R = 0, G = 0, B = 1f, A = 1 },
                     Metallic = 1,
                     Roughness = 0
+                }
+            });
+
+            var entity_test_metallic_roughness5 = scene.CreateEntity(6670);
+            entity_test_metallic_roughness5.gameObject.transform.position = new Vector3(2.5f, 9, 0);
+            yield return CreateMesh(entity_test_metallic_roughness5, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1f, A = 1 },
+                    Metallic = 1,
+                    Roughness = 1
                 }
             });
 
