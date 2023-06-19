@@ -65,6 +65,7 @@ namespace Tests
             PoolManager.i.Dispose();
             Object.Destroy(camera.gameObject);
             QualitySettings.anisotropicFiltering = originalAnisoSetting;
+            Environment.Dispose();
         }
     }
 }

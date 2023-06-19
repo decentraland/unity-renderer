@@ -39,6 +39,8 @@ namespace Tests
         [TearDown]
         public override void TearDown()
         {
+            AssetPromiseKeeper_Material.i.Cleanup();
+            AssetPromiseKeeper_Texture.i.Cleanup();
             base.TearDown();
         }
 
