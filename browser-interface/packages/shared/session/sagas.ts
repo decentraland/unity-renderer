@@ -139,8 +139,6 @@ function* authenticate(action: AuthenticateAction) {
   yield call(waitForRealm)
   const avatar = yield call(initialRemoteProfileLoad)
 
-  console.log("alex")
-  console.log(avatar)
   // 3. continue with signin/signup (only not in preview)
   let isSignUp = avatar.version <= 0 && !PREVIEW
   if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
@@ -242,8 +240,6 @@ function* signUpHandler(action: SignUpAction) {
   if (!identity) {
     throw new Error('missing identity in signup session')
   }
-  console.log("Alex")
-  console.log(JSON.stringify(action))
   yield put(
     saveProfileDelta({
       name: action.payload.name,
