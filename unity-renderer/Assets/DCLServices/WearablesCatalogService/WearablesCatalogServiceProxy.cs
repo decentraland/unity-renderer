@@ -79,10 +79,10 @@ namespace DCLServices.WearablesCatalogService
             return await wearablesCatalogServiceInUse.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, cleanCachedPages, ct);
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
+        public async UniTask RequestBaseWearablesAsync(CancellationToken ct)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
-            return await wearablesCatalogServiceInUse.RequestBaseWearablesAsync(ct);
+            await wearablesCatalogServiceInUse.RequestBaseWearablesAsync(ct);
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)

@@ -17,9 +17,9 @@ import { OFFLINE_REALM } from 'shared/realm/types'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { checkValidRealm } from './sagas'
-import { getAllCatalystCandidates } from './selectors'
 import { Candidate, Parcel, ServerConnectionStatus } from './types'
 import { ask } from './utils/ping'
+import { getCatalystCandidates } from './selectors'
 
 async function fetchCatalystNodes(endpoint: string | undefined): Promise<CatalystNode[]> {
   if (endpoint) {
@@ -139,8 +139,8 @@ export async function resolveRealmAboutFromBaseUrl(
   realmString: string
 ): Promise<{ about: AboutResponse; baseUrl: string } | undefined> {
   // load candidates if necessary
-  const allCandidates: Candidate[] = getAllCatalystCandidates(store.getState())
-  const realmBaseUrl = resolveRealmBaseUrlFromRealmQueryParameter(realmString, allCandidates).replace(/\/+$/, '')
+  const candidates: Candidate[] = getCatalystCandidates(store.getState())
+  const realmBaseUrl = resolveRealmBaseUrlFromRealmQueryParameter(realmString, candidates).replace(/\/+$/, '')
 
   if (!realmBaseUrl) {
     throw new Error(`Can't resolve realm ${realmString}`)
@@ -243,11 +243,11 @@ export async function changeRealm(realmString: string, forceChange: boolean = fa
 // TODO: unify this function with the one implementing the realm selection algorithm
 export async function changeToMostPopulatedRealm(): Promise<void> {
   const realmAdapter = getRealmAdapter(store.getState())
-  const allCandidates: Candidate[] = getAllCatalystCandidates(store.getState())
+  const candidates: Candidate[] = getCatalystCandidates(store.getState())
   let isDAORealm: boolean = false
 
-  for (let i = 0; i < allCandidates.length; i++) {
-    if (allCandidates[i].catalystName === realmAdapter?.about.configurations?.realmName) {
+  for (let i = 0; i < candidates.length; i++) {
+    if (candidates[i].catalystName === realmAdapter?.about.configurations?.realmName) {
       isDAORealm = true
     }
   }
@@ -257,7 +257,7 @@ export async function changeToMostPopulatedRealm(): Promise<void> {
     return
   }
 
-  const sortedArray: Candidate[] = allCandidates.sort((n1, n2) => {
+  const sortedArray: Candidate[] = candidates.sort((n1, n2) => {
     if (n1.usersCount < n2.usersCount) {
       return 1
     }

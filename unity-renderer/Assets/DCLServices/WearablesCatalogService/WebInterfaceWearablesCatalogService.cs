@@ -87,7 +87,7 @@ namespace DCLServices.WearablesCatalogService
 
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct) =>
+        public async UniTask RequestBaseWearablesAsync(CancellationToken ct) =>
             await RequestWearablesByContextAsync(null, null, new[] { BASE_WEARABLES_COLLECTION_ID }, BASE_WEARABLES_CONTEXT, false, ct);
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)

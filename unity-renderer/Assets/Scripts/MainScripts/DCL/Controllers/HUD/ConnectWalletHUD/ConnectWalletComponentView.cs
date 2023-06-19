@@ -19,16 +19,24 @@ namespace DCL.Guests.HUD.ConnectWallet
         {
             base.Awake();
 
-            backgroundButton.onClick.AddListener(() => OnCancel?.Invoke());
-            closeButton.onClick.AddListener(() => OnCancel?.Invoke());
+            if (backgroundButton != null)
+                backgroundButton.onClick.AddListener(() => OnCancel?.Invoke());
+
+            if (closeButton != null)
+                closeButton.onClick.AddListener(() => OnCancel?.Invoke());
+
             connectButton.onClick.AddListener(() => OnConnect?.Invoke());
             helpButton.onClick.AddListener(() => OnHelp?.Invoke());
         }
 
         public override void Dispose()
         {
-            backgroundButton.onClick.RemoveAllListeners();
-            closeButton.onClick.RemoveAllListeners();
+            if (backgroundButton != null)
+                backgroundButton.onClick.RemoveAllListeners();
+
+            if (closeButton != null)
+                closeButton.onClick.RemoveAllListeners();
+
             connectButton.onClick.RemoveAllListeners();
             helpButton.onClick.RemoveAllListeners();
 

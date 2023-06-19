@@ -64,8 +64,7 @@ namespace DCL.Emotes
             Rendereable rendereable = new Rendereable { container = container, };
             retriever.Retrieve(
                          Arg.Any<GameObject>(),
-                         Arg.Any<ContentProvider>(),
-                         Arg.Any<string>(),
+                         Arg.Any<WearableItem>(),
                          Arg.Any<string>(),
                          Arg.Any<CancellationToken>())
                      .Returns(new UniTask<Rendereable>(rendereable));
