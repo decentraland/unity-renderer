@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UIComponents.Scripts.Components;
+using Object = UnityEngine.Object;
 
 namespace DCL.LoadingScreen.V2
 {
@@ -71,9 +72,9 @@ namespace DCL.LoadingScreen.V2
             // hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cancellationTokenSource.Token);
             // var hintsContainer = loadingScreenView.GetHintContainer();
             // Initializing empty hints views
-            for (int i = 0; i < MAX_HINTS; i++)
+            for (var i = 0; i < MAX_HINTS; i++)
             {
-                HintView newHintView = UnityEngine.Object.Instantiate(hintViewPrefab, hintsContainer, true);
+                HintView newHintView = Object.Instantiate(hintViewPrefab, hintsContainer, true);
                 newHintView.ToggleHint(false);
                 hintViewPool.Add(newHintView);
             }

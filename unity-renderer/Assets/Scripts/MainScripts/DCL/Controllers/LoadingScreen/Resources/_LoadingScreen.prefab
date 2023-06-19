@@ -1353,7 +1353,7 @@ MonoBehaviour:
   percentageView: {fileID: 804295394028792594}
   timeoutView: {fileID: 5845767337085515950}
   rawImage: {fileID: 5435335981741838515}
-  hintContainer: {fileID: 2534115111890674828}
+  hintContainer: {fileID: 5693004996163576585}
 --- !u!225 &1054737520794358197
 CanvasGroup:
   m_ObjectHideFlags: 0
