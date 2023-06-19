@@ -254,7 +254,8 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
       yield put(sendProfileToRenderer(userId))
       console.log("alex:")
       console.log(userId)
-      var profile = yield select(getInformationToSubmitProfileFromStore, userId)
+      var profileInfo = yield select(getInformationToSubmitProfileFromStore, userId)
+      var profile = profileInfo.profile
 
       console.log("alex:")
       console.log(profile)
