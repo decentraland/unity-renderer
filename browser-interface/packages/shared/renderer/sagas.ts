@@ -260,7 +260,7 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
         separator: '-',
         style: 'capital'
       }
-      if(profile.data.name === 'Guest') {
+      if(profile?.data?.name === 'Guest') {
         trackEvent('seamless_login tos shown', {})
         store.dispatch(signUp('', uniqueNamesGenerator(config)))
       }
