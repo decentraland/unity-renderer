@@ -204,5 +204,56 @@ namespace Tests
 
             yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
         }
+
+        // Manually run to generate baseline image for later comparisons
+        [UnityTest, VisualTest, Explicit]
+        public IEnumerator VisualTest2_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(VisualTest2()); }
+
+        [UnityTest, VisualTest]
+        public IEnumerator VisualTest2()
+        {
+            Vector3 cameraPos = (Vector3.up * 10) + (Vector3.back * 4);
+            VisualTestUtils.RepositionVisualTestsCamera( camera, cameraPos, cameraPos + Vector3.forward);
+
+            var entity1 = scene.CreateEntity(6661);
+            entity1.gameObject.transform.position = new Vector3(0.2f, 10, 0.4f);
+            yield return CreateMesh(entity1, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                    TransparencyMode = MaterialTransparencyMode.MtmOpaque,
+                    AlbedoColor = new Color4() { R = 1, G = 0, B = 0, A = 1 }
+                }
+            }, false);
+
+            var entity2 = scene.CreateEntity(6662);
+            entity2.gameObject.transform.position = new Vector3(-0.35f, 10, 0.2f);
+            yield return CreateMesh(entity2, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                    TransparencyMode = MaterialTransparencyMode.MtmOpaque,
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1, A = 1 }
+                }
+            }, false);
+
+            var entity3 = scene.CreateEntity(6663);
+            entity3.gameObject.transform.position = new Vector3(0, 9.75f, 0);
+            yield return CreateMesh(entity3, new PBMaterial()
+            {
+                Pbr = new PBMaterial.Types.PbrMaterial()
+                {
+                    Texture = new TextureUnion()
+                    {
+                        Texture = new Texture() { Src = TestAssetsUtils.GetPath() + "/Images/avatar.png" }
+                    },
+                    AlphaTest =  1f,
+                    TransparencyMode = MaterialTransparencyMode.MtmAlphaTest,
+                    AlbedoColor = new Color4() { R = 1, G = 1, B = 1, A = 1}
+                }
+            }, false);
+
+            yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest2", camera);
+        }
     }
 }
