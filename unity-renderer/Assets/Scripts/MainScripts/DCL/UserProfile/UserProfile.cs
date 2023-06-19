@@ -33,7 +33,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string face256SnapshotURL => model.ComposeCorrectUrl(model.snapshots.face256);
     public string baseUrl => model.baseUrl;
     public UserProfileModel.ParcelsWithAccess[] parcelsWithAccess => model.parcelsWithAccess;
-    public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
+    public List<string> blocked => model.blocked ?? new List<string>();
     public List<string> muted => model.muted ?? new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
     public bool hasClaimedName => model.hasClaimedName;
@@ -49,45 +49,13 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     internal static UserProfile ownUserProfile;
 
     // Empty initialization to avoid null-checks
-    internal readonly UserProfileModel model = new () { avatar = new AvatarModel() };
+    internal UserProfileModel model = new () { avatar = new AvatarModel() };
 
-    private UserProfileModel ModelFallback()
-    {
-        var fallbackId = $"{FALLBACK_NAME}_{this.GetInstanceID()}";
+    private UserProfileModel ModelFallback() =>
+        UserProfileModel.FallbackModel(FALLBACK_NAME, this.GetInstanceID());
 
-        UserProfileModel fallback = new UserProfileModel
-        {
-            // Required fields (otherwise exceptions will be thrown by OnUpdate subscribers)
-            userId = fallbackId,
-            name = FALLBACK_NAME,
-            description = "There was a problem with loading this profile. This is a fallback profile",
-
-            avatar = AvatarFallback(),
-
-            // Not-required/exceptions-free fields
-            ethAddress = fallbackId,
-            email = fallbackId,
-            baseUrl = fallbackId,
-        };
-
-        return fallback;
-    }
-
-    private AvatarModel AvatarFallback()
-    {
-        var fallbackId = $"{FALLBACK_NAME}_{this.GetInstanceID()}";
-
-        return new AvatarModel
-        {
-            id = fallbackId,
-            name = FALLBACK_NAME,
-            bodyShape = "urn:decentraland:off-chain:base-avatars:BaseMale",
-
-            skinColor = new Color(0.800f, 0.608f, 0.467f),
-            hairColor = new Color(0.596f, 0.373f, 0.216f),
-            eyeColor = new Color(0.373f, 0.224f, 0.196f),
-        };
-    }
+    private AvatarModel AvatarFallback() =>
+        AvatarModel.FallbackModel(FALLBACK_NAME, this.GetInstanceID());
 
     private int emoteLamportTimestamp = 1;
 
@@ -95,6 +63,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         if (newModel == null)
         {
+            model =  new () { avatar = new AvatarModel() };
+            return;
+
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
                 Debug.LogError("Model is null when updating UserProfile! Using fallback or previous model instead.");
 
@@ -102,14 +73,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             newModel = string.IsNullOrEmpty(model.userId) ? ModelFallback() : model;
         }
 
-        if (newModel.avatar == null)
-        {
-            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
-                Debug.LogError("Avatar is null when updating UserProfile! Using fallback or previous avatar instead.");
-
-            // Check if there is a previous avatar to fallback to.
-            newModel.avatar = string.IsNullOrEmpty(model.userId) ? AvatarFallback() : model.avatar;
-        }
+        // if (newModel.avatar == null)
+        // {
+        //     model.avatar = new AvatarModel();
+        //
+        //     if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
+        //         Debug.LogError("Avatar is null when updating UserProfile! Using fallback or previous avatar instead.");
+        //
+        //     // Check if there is a previous avatar to fallback to.
+        //     newModel.avatar = string.IsNullOrEmpty(model.userId) ? AvatarFallback() : model.avatar;
+        // }
 
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
         bool bodySnapshotDirty = model.snapshots.body != newModel.snapshots.body;

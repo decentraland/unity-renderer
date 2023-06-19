@@ -65,6 +65,26 @@ public class UserProfileModel
     public int tutorialStep;
     public bool hasClaimedName = false;
 
+    public static UserProfileModel FallbackModel(string name, int id)
+    {
+        var fallbackId = $"{name}_{id}";
+
+        return new UserProfileModel
+        {
+            // Required fields (otherwise exceptions will be thrown by UserProfile.OnUpdate subscribers)
+            userId = fallbackId,
+            name = name,
+            description = "There was a problem with loading this profile. This is a fallback profile",
+
+            avatar = AvatarModel.FallbackModel(name, id),
+
+            // Optional (exceptions-free) fields
+            ethAddress = fallbackId,
+            email = fallbackId,
+            baseUrl = fallbackId,
+        };
+    }
+
     public bool Equals(UserProfileModel model)
     {
         if (model == null) return false;
@@ -127,6 +147,4 @@ public class UserProfileModel
 
         return baseUrl + url;
     }
-
-
 }
