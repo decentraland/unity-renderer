@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,13 +11,13 @@ namespace DCLServices.Lambdas.LandsService
         [Serializable]
         public class LandEntry
         {
-            public string name;
-            public string contractAddress;
-            public string category;
-            public string x;
-            public string y;
-            public string price;
-            public string image;
+            [JsonProperty] private string name;
+            [JsonProperty] private string contractAddress;
+            [JsonProperty] private string category;
+            [JsonProperty] private string x;
+            [JsonProperty] private string y;
+            [JsonProperty] private string price;
+            [JsonProperty] private string image;
 
             public string Name => name;
             public string ContractAddress => contractAddress;
@@ -34,7 +35,7 @@ namespace DCLServices.Lambdas.LandsService
                 };
         }
 
-        public List<LandEntry> elements;
+        [JsonProperty] private List<LandEntry> elements;
 
         public IReadOnlyList<LandEntry> Elements => elements;
     }

@@ -365,7 +365,7 @@ namespace DCl.Social.Friends
                                                                 .GetFriendshipStatus(new GetFriendshipStatusRequest
                                                                  {
                                                                      UserId = userId
-                                                                 });
+                                                                 }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
