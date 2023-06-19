@@ -1,4 +1,5 @@
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
@@ -17,14 +18,17 @@ using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
-using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.FriendsController;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using rpc_csharp.transport;
 using RPC.Transports;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -86,12 +90,9 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                ITransport TransportProvider() =>
-                    new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
-
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    TransportProvider);
+                    new RPCSocialClientProvider("wss://rpc-social-service.decentraland.org"));
 
                 return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });
@@ -105,7 +106,7 @@ namespace DCL
                         webInterfaceFriendsApiBridge,
                         RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
                         DataStore.i), result.Get<ISocialApiBridge>(),
-                    DataStore.i);
+                    DataStore.i, userProfileWebInterfaceBridge);
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
