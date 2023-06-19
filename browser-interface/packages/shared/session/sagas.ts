@@ -145,9 +145,9 @@ function* authenticate(action: AuthenticateAction) {
   let isSignUp = avatar.version <= 0 && !PREVIEW
   if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
 
-    //const tosShown: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_shown')) as boolean)
+    const isNewUser : boolean = avatar.version <= 0
     const tosAccepted: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
-    isSignUp = !tosAccepted && !PREVIEW
+    isSignUp = !PREVIEW && isNewUser && !tosAccepted
   }
 
   if (isSignUp) {

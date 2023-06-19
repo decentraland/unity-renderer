@@ -251,17 +251,21 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
       console.log("alex:")
       console.log(userId)
       var profile = yield select(getInformationToSubmitProfileFromStore, userId)
+
       console.log("alex:")
       console.log(profile)
-      yield put(sendProfileToRenderer(userId))
+
       const config: Config = {
         dictionaries: [ adjectives.filter((word) => word.length <= 5), colors.filter((word) => word.length <= 5), animals.filter((word) => word.length <= 5)],
         separator: '-',
         style: 'capital'
       }
-      const randomName = uniqueNamesGenerator(config)
-      trackEvent('seamless_login tos accepted', {})
-      store.dispatch(signUp('', randomName))
+      if(profile.data.name === 'Guest') {
+        trackEvent('seamless_login tos shown', {})
+        store.dispatch(signUp('', uniqueNamesGenerator(config)))
+      }
+
+      yield put(sendProfileToRenderer(userId))
       getUnityInstance().ShowAvatarEditorInSignIn()
     } else {
       getUnityInstance().ShowAvatarEditorInSignIn()
