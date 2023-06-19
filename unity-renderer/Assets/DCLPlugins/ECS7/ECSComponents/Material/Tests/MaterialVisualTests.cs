@@ -87,13 +87,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    AlbedoColor = new Color4()
-                    {
-                        R = Color.green.r,
-                        G = Color.green.g,
-                        B = Color.green.b,
-                        A = 0.5f
-                    }
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1, A = 0.5f },
+                    Metallic = 0,
+                    Roughness = 0
                 }
             });
 
@@ -119,12 +115,7 @@ namespace Tests
                         Texture = new Texture() { Src = TestAssetsUtils.GetPath() + "/Images/Gradient A4.png" }
                     },
                     TransparencyMode = MaterialTransparencyMode.MtmAlphaBlend,
-                    EmissiveColor =  new Color3()
-                    {
-                        R = Color.blue.r,
-                        G = Color.blue.g,
-                        B = Color.blue.b
-                    },
+                    EmissiveColor =  new Color3() { R = 0, G = 0, B = 1 },
                     EmissiveIntensity = 100
                 }
             }, false);
@@ -166,41 +157,60 @@ namespace Tests
                 }
             }, false);
 
-            /*var entity5 = scene.CreateEntity(6665);
-            entity5.gameObject.transform.position = new Vector3(-3, 8, 0);
+            var entity5 = scene.CreateEntity(6665);
+            entity5.gameObject.transform.position = new Vector3(-3, 9, 0);
             yield return CreateMesh(entity5, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1f, A = 1 },
+                    Metallic = 0,
+                    Roughness = 1
                 }
             });
 
             var entity6 = scene.CreateEntity(6666);
-            entity6.gameObject.transform.position = new Vector3(-1, 8, 0);
+            entity6.gameObject.transform.position = new Vector3(-1, 9, 0);
+            entity6.gameObject.transform.localScale *= 2;
+            entity6.gameObject.transform.Rotate(Vector3.up, -22f);
+            entity6.gameObject.transform.Rotate(Vector3.right, -30f);
             yield return CreateMesh(entity6, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1f, A = 1 },
+                    Metallic = 0.5f,
+                    Roughness = 0.25f,
+                    BumpTexture = new TextureUnion()
+                    {
+                        Texture = new Texture() { Src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Textures/Lantern Bump Map.png" }
+                    }
                 }
             });
 
             var entity7 = scene.CreateEntity(6667);
-            entity7.gameObject.transform.position = new Vector3(1, 8, 0);
+            entity7.gameObject.transform.position = new Vector3(1, 9, 0);
             yield return CreateMesh(entity7, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1f, A = 1 },
+                    Metallic = 0.5f,
+                    Roughness = 0.5f
                 }
             });
 
             var entity8 = scene.CreateEntity(6668);
-            entity8.gameObject.transform.position = new Vector3(3, 8, 0);
+            entity8.gameObject.transform.position = new Vector3(3, 9, 0);
             yield return CreateMesh(entity8, new PBMaterial()
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
+                    AlbedoColor = new Color4() { R = 0, G = 0, B = 1f, A = 1 },
+                    Metallic = 1,
+                    Roughness = 0
                 }
-            });*/
+            });
 
             yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
         }
