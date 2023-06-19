@@ -1,4 +1,4 @@
-using DCL.Controllers.LoadingScreenV2;
+using DCL.LoadingScreen.V2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
