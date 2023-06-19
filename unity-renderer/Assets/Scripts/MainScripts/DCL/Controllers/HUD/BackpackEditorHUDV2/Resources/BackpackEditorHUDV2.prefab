@@ -4376,7 +4376,7 @@ PrefabInstance:
     - target: {fileID: 389451657606281639, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 1253.9999
       objectReference: {fileID: 0}
     - target: {fileID: 435314233683519293, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
@@ -4438,6 +4438,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WearablesSection
       objectReference: {fileID: 0}
+    - target: {fileID: 963474931021153107, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f57d8e78f64d542e098dbaf497a8b139,
+        type: 3}
     - target: {fileID: 1443158977377259793, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_Sprite
@@ -5049,6 +5055,12 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6110637588268522651, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7c57e911f193247528edac05922ca019,
+        type: 3}
     - target: {fileID: 6115577156700254361, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -5129,6 +5141,12 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6344514488988462104, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: feb17d16b84e84e55a6dc530923024ef,
+        type: 3}
     - target: {fileID: 6589327243438037204, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -5304,6 +5322,12 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7573020293673459116, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b3fcd616f8250405f8bb1aadd61cc220,
+        type: 3}
     - target: {fileID: 7639681550671311545, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -5359,6 +5383,12 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -0.000091552734
       objectReference: {fileID: 0}
+    - target: {fileID: 8137348273113227778, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4d7db0ddbeffb45699b8fdea65aa4fb4,
+        type: 3}
     - target: {fileID: 8282898158535083830, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: outfitIndex

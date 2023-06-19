@@ -139,6 +139,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public async UniTask<Texture2D> TakeBodySnapshotAsync()
         {
+            global::DCL.Environment.i.platform.cullingController.Stop();
             if (avatar.status != IAvatar.Status.Loaded)
                 return null;
 
@@ -155,6 +156,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             SetFocus(PreviewCameraFocus.DefaultEditing, false);
 
             cameraController.SetTargetTexture(current);
+            global::DCL.Environment.i.platform.cullingController.Start();
 
             return body;
         }
