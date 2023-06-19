@@ -7,7 +7,6 @@ using ECSSystems.MaterialSystem;
 using NUnit.Framework;
 using System;
 using System.Collections;
-using UnityEngine;
 using UnityEngine.TestTools;
 using Vector3 = UnityEngine.Vector3;
 using Texture = Decentraland.Common.Texture;
