@@ -114,7 +114,7 @@ namespace DCL.Quests
         public void SetIsPinned(bool isPinned)
         {
             model.isPinned = isPinned;
-            pinButtonText.text = isPinned ? "Unpin" : "Pin";
+            pinButtonText.text = isPinned ? "PINNED" : "PIN";
         }
 
         public void SetQuestSteps(List<QuestStepComponentModel> questSteps)
