@@ -256,7 +256,7 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
 
       const config: Config = {
         dictionaries: [ adjectives.filter((word) => word.length <= 5), colors.filter((word) => word.length <= 5), animals.filter((word) => word.length <= 5)],
-        separator: '-',
+        separator: '',
         style: 'capital'
       }
       let name = profileInfo.profile?.data?.name
