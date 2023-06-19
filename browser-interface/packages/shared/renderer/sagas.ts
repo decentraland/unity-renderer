@@ -264,7 +264,10 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
         separator: '-',
         style: 'capital'
       }
-      const name = profile?.data?.name === 'Guest' ? uniqueNamesGenerator(config) : profile?.data?.name
+      let name = profile?.data?.name
+      if(!name || name === 'Guest')
+        name = uniqueNamesGenerator(config)
+      console.log("alex:  + name")
       store.dispatch(signUp('', name))
 
       getUnityInstance().ShowAvatarEditorInSignIn()
