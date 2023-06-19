@@ -77,6 +77,7 @@ public class OutfitsSectionComponentView : BaseComponentView
 
     public async UniTaskVoid ShowOutfits(OutfitItem[] outfitsToShow)
     {
+        SetSlotsAsLoading(outfitsToShow);
         foreach (OutfitItem outfitItem in outfitsToShow)
         {
             outfits[outfitItem.slot] = outfitItem;
@@ -96,6 +97,12 @@ public class OutfitsSectionComponentView : BaseComponentView
             outfitComponentViews[outfitItem.slot].SetIsLoading(false);
         }
         await characterPreviewController.TryUpdateModelAsync(currentAvatarModel);
+    }
+
+    private void SetSlotsAsLoading(OutfitItem[] outfitsToShow)
+    {
+        foreach (var outfitItem in outfitsToShow)
+            outfitComponentViews[outfitItem.slot].SetIsLoading(true);
     }
 
     private AvatarModel GenerateAvatarModel(OutfitItem outfitItem)

@@ -51,8 +51,14 @@ public class OutfitComponentView : BaseComponentView<OutfitComponentModel>, IOut
         filledState.SetActive(!isEmpty);
     }
 
-    public void SetIsLoading(bool isLoading) =>
+    public void SetIsLoading(bool isLoading)
+    {
         loadingState.SetActive(isLoading);
+
+        if (!isLoading) return;
+        emptyState.SetActive(false);
+        filledState.SetActive(false);
+    }
 
     public override void OnFocus()
     {
