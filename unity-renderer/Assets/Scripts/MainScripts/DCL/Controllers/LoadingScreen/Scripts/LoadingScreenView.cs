@@ -13,6 +13,7 @@ namespace DCL.LoadingScreen
         [SerializeField] private LoadingScreenPercentageView percentageView;
         [SerializeField] private LoadingScreenTimeoutView timeoutView;
         [SerializeField] private RawImage rawImage;
+        [SerializeField] private RectTransform hintContainer;
         private RenderTexture renderTexture;
         private RectTransform rawImageRectTransform;
 
@@ -35,6 +36,9 @@ namespace DCL.LoadingScreen
 
         public LoadingScreenTipsView GetTipsView() =>
             tipsView;
+
+        public RectTransform GetHintContainer() =>
+            hintContainer;
 
         public LoadingScreenPercentageView GetPercentageView() =>
             percentageView;

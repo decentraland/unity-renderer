@@ -6,7 +6,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     /// <summary>
     ///     The HintRequestService class is a central manager for retrieving loading screen hints from different sources

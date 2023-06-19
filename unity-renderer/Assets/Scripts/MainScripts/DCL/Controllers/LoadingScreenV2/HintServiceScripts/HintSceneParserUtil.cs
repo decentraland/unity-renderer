@@ -2,7 +2,7 @@ using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     /// <summary>
     ///     The HintSceneParserUtil class is a utility class designed to handle the deserialization and conversion of JSON data into a list of Hint objects.

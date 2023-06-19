@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2.Tests
+namespace DCL.LoadingScreen.V2.Tests
 {
     public class HintRequestServiceShould
     {

@@ -1,10 +1,10 @@
-using DCL.Controllers.LoadingScreenV2;
+using DCL.LoadingScreen.V2;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     public interface IHintViewManager
     {

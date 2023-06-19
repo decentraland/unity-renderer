@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.LoadingScreen.V2;
 using DCL.NotificationModel;
 using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System;
@@ -35,6 +36,7 @@ namespace DCL.LoadingScreen
         private bool isFadingOut;
         private readonly IShaderPrewarm shaderPrewarm;
         private readonly CancellationTokenSource cancellationTokenSource;
+        private readonly ILoadingScreenHintsController loadingScreenHintController; // FD:: <<---
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore, IShaderPrewarm shaderPrewarm)

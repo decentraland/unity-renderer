@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     /// <summary>
     ///     RemoteHintRequestSource provides remote hint request functionality.

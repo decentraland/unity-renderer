@@ -4,23 +4,24 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     public class HintViewManager : IHintViewManager
     {
-        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
         private readonly List<HintView> hintViewList;
 
         private CancellationTokenSource cancellationTokenSource;
+        private TimeSpan hintShowTime;
 
         internal bool isIteratingHints = false;
         internal int currentHintIndex = 0;
 
         public event Action OnHintChanged;
 
-        public HintViewManager(List<HintView> hintViewList)
+        public HintViewManager(List<HintView> hintViewList, TimeSpan hintShowTime)
         {
             this.hintViewList = hintViewList;
+            this.hintShowTime = hintShowTime;
         }
 
         public void StartCarousel()
@@ -76,7 +77,7 @@ namespace DCL.Controllers.LoadingScreenV2
 
             try
             {
-                await UniTask.Delay(SHOWING_TIME_HINTS, cancellationToken: cancellationTokenSource.Token);
+                await UniTask.Delay(hintShowTime, cancellationToken: cancellationTokenSource.Token);
                 CarouselNextHint();
             }
             catch (OperationCanceledException)

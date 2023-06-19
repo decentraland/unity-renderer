@@ -41,12 +41,11 @@ namespace DCLPlugins.LoadingScreenPlugin
 
         public LoadingScreenPlugin()
         {
+            this.addressableProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
             dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Set(true);
 
             cancellationTokenSource = new CancellationTokenSource();
             CreateLoadingScreen(cancellationTokenSource.Token).Forget();
-
-            this.addressableProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
         }
 
         private async UniTaskVoid CreateLoadingScreen(CancellationToken cancellationToken = default)
@@ -82,7 +81,7 @@ namespace DCLPlugins.LoadingScreenPlugin
             hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
             Debug.Log("FD:: LoadingScreenPlugin - InitializeHintSystem 4");
             // var hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cancellationToken);
-            loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService/*, hintViewPrefab*/, loadingScreenView);
+            loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, loadingScreenView, addressableProvider);
         }
 #endregion
 

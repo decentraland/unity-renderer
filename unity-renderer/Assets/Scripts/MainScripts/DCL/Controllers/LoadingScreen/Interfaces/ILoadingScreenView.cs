@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace DCL.LoadingScreen
 {
@@ -15,5 +16,7 @@ namespace DCL.LoadingScreen
         LoadingScreenPercentageView GetPercentageView();
 
         ILoadingScreenTimeoutView GetTimeoutView();
+
+        RectTransform GetHintContainer();
     }
 }

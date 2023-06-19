@@ -4,21 +4,23 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using UIComponents.Scripts.Components;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     /// <summary>
+    /// TODO:: FD:: Delete this plugin if not needed anymore
     /// Controller responsible of managing the hints views and requesting hints from the HintRequestService
     /// And also responsible of showing the hints in the LoadingScreen using the HintViewManager carousel
     /// </summary>
-    public class LoadingScreenHintsController
+    public class LoadingScreenHintsController: ILoadingScreenHintsController
     {
-        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
-        // private readonly string SOURCE_HINT_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
         private const int MAX_HINTS = 15;
-
+        private const string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
+        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
         private readonly HintRequestService hintRequestService;
+        private readonly IAddressableResourceProvider addressableProvider;
+        private readonly ILoadingScreenView loadingScreenView;
 
         internal HintView hintViewPrefab;
         internal HintViewManager hintViewManager;
@@ -28,10 +30,12 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public event Action OnRequestHintsCompleted;
 
-        public LoadingScreenHintsController(HintRequestService hintRequestService, HintView hintView)
+        public LoadingScreenHintsController(HintRequestService hintRequestService, ILoadingScreenView loadingScreenView, IAddressableResourceProvider addressableProvider)
         {
+            // addressableProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
+            this.addressableProvider = addressableProvider;
             this.hintRequestService = hintRequestService;
-            hintViewPrefab = hintView;
+            this.loadingScreenView = loadingScreenView;
 
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
@@ -41,12 +45,35 @@ namespace DCL.Controllers.LoadingScreenV2
 
         private async void InitializeHintsAsync()
         {
+            Debug.Log("FD:: LoadingScreenHintsController - InitializeHintsAsync");
             cancellationTokenSource = new CancellationTokenSource();
 
+            if (addressableProvider == null) {
+                Debug.Log("FD:: addressableProvider is null");
+            }
+            hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cancellationTokenSource.Token);
+
+            if (hintViewPrefab == null) {
+                Debug.Log("FD:: hintViewPrefab is null");
+            }
+
+            if (loadingScreenView == null) {
+                Debug.Log("FD:: loadingScreenView is null");
+            }
+            var hintsContainer = loadingScreenView.GetHintContainer();
+
+            if (hintsContainer == null) {
+                Debug.Log("FD:: hintsContainer is null");
+            }
+
+            // FD:: original without debugs
+            // cancellationTokenSource = new CancellationTokenSource();
+            // hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cancellationTokenSource.Token);
+            // var hintsContainer = loadingScreenView.GetHintContainer();
             // Initializing empty hints views
             for (int i = 0; i < MAX_HINTS; i++)
             {
-                HintView newHintView = Object.Instantiate(hintViewPrefab);
+                HintView newHintView = UnityEngine.Object.Instantiate(hintViewPrefab, hintsContainer, true);
                 newHintView.ToggleHint(false);
                 hintViewPool.Add(newHintView);
             }
@@ -58,7 +85,7 @@ namespace DCL.Controllers.LoadingScreenV2
         /// Requests hints from the HintRequestService and initializes the hints views with the results
         /// </summary>
         /// <param name="ctx"></param>
-        public async UniTask RequestHints(CancellationToken ctx)
+        private async UniTask RequestHints(CancellationToken ctx)
         {
             hintsDictionary.Clear();
 
@@ -79,7 +106,7 @@ namespace DCL.Controllers.LoadingScreenV2
                 index++;
             }
 
-            hintViewManager = new HintViewManager(intializedHints);
+            hintViewManager = new HintViewManager(intializedHints, SHOWING_TIME_HINTS);
 
             StartHintsCarousel();
             OnRequestHintsCompleted?.Invoke();
