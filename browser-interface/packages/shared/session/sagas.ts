@@ -242,7 +242,8 @@ function* signUpHandler(action: SignUpAction) {
   if (!identity) {
     throw new Error('missing identity in signup session')
   }
-
+  console.log("Alex")
+  console.log(JSON.stringify(action))
   yield put(
     saveProfileDelta({
       name: action.payload.name,
