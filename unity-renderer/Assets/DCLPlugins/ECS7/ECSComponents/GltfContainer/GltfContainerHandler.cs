@@ -8,6 +8,7 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -83,6 +84,9 @@ namespace DCL.ECSComponents
         }
 
         private ContentProvider contentProvider;
+        private LODGroup lodGroup;
+        private LOD[] lodsContainer;
+        private int lodLoaded;
 
         private void CheckLOD(string gltfSource)
         {
@@ -91,32 +95,58 @@ namespace DCL.ECSComponents
                 string hashLod1 = Application.dataPath + "/../AssetBundles/" + hash + "_lod1";
                 if (File.Exists(hashLod1))
                 {
-                    LoadLOD($"{hash}_lod1");
-                }
-                string hashLod2 = Application.dataPath + "/../AssetBundles/" + hash + "_lod2";
-                if (File.Exists(hashLod2))
-                {
-                    LoadLOD($"{hash}_lod2");
+                    lodGroup = gameObject.AddComponent<LODGroup>();
+                    lodGroup.fadeMode = LODFadeMode.CrossFade;
+                    lodGroup.transform.SetParent(gameObject.transform);
+                    lodGroup.transform.localPosition = Vector3.zero;
+                    lodsContainer = new LOD[3];
+                    
+                    LOD baseLOD = new LOD();
+                    baseLOD.renderers = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
+                    baseLOD.screenRelativeTransitionHeight = 0.15f;
+                    lodsContainer[0] = baseLOD;
+
+                    LoadLOD($"{hash}_lod1", 1);
+                    LoadLOD($"{hash}_lod2", 2);
                 }
             }
         }
 
-        private void LoadLOD(string hash)
+        private void LoadLOD(string hash, int lodLevel)
         {
             AssetPromise_AB_GameObject abPromise = new AssetPromise_AB_GameObject("", hash);
             abPromise.settings = gltfLoader.settings;
 
             abPromise.OnSuccessEvent += (x) =>
             {
-#if UNITY_EDITOR
-                x.container.name = hash;
-#endif
-                x.container.transform.SetParent(gameObject.transform);
+                LODLoadedSucess(x,hash,lodLevel);
             };
 
             abPromise.OnFailEvent += (x, exception) => Debug.Log("FAILED TO LOAD LOD " + hash);
 
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
+        }
+
+        private void LODLoadedSucess(Asset_AB_GameObject lodLoadedAsset, string hash, int lodLevel)
+        {
+#if UNITY_EDITOR
+            lodLoadedAsset.container.name = hash;
+#endif
+            lodLoadedAsset.container.transform.SetParent(gameObject.transform);
+
+
+            LOD newLod = new LOD();
+            newLod.renderers = lodLoadedAsset.renderers.ToArray();
+            newLod.screenRelativeTransitionHeight = lodLevel == 1 ? 0.10f : 0f;
+            lodsContainer[lodLevel] = newLod;
+            lodLoaded++;
+
+            if (lodLoaded == 2)
+            {
+                lodGroup.SetLODs(lodsContainer);
+                lodGroup.RecalculateBounds();
+            }
+
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -199,7 +229,6 @@ namespace DCL.ECSComponents
 
                 dataStoreEcs7.AddPendingResource(scene.sceneData.sceneNumber, newGltfSrc);
                 gltfLoader.Load(newGltfSrc);
-                CheckLOD(newGltfSrc);
             }
         }
 
@@ -248,6 +277,8 @@ namespace DCL.ECSComponents
                 invisibleActiveColliders.CustomLayerColliders);
 
             SetGltfLoaded(scene, entity, gameObject, model.Src, gltfContainerLoadingStateComponent, dataStoreEcs7);
+            
+            CheckLOD(model.Src);
         }
 
         private void UnloadGltf(IParcelScene scene, IDCLEntity entity, string gltfSrc)

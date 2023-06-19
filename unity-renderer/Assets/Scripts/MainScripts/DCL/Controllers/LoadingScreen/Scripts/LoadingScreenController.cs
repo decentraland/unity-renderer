@@ -115,6 +115,7 @@ namespace DCL.LoadingScreen
         {
             if (onSignUpFlow) return;
 
+            
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
 
             if (IsNewRealm() || IsNewScene(currentDestinationCandidate))
@@ -129,7 +130,7 @@ namespace DCL.LoadingScreen
                 timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
             }
-            else if (IsSceneLoaded(currentDestinationCandidate))
+            else if (true)
                 HandlePlayerLoading();
         }
 
