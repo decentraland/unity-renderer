@@ -63,7 +63,12 @@ namespace DCLServices.EmotesCatalog
             var result = await lambdasService.GetFromSpecificUrl<OwnedEmotesRequestDto>(url, url, cancellationToken: cts.Token);
 
             if (!result.success) throw new Exception($"Fetching owned wearables failed! {url}\nAddress: {userId}");
-            if (result.response.elements.Length <= 0) return;
+
+            if (result.response.elements.Length <= 0)
+            {
+                OnOwnedEmotesReceived?.Invoke(new List<WearableItem>(), userId);
+                return;
+            }
 
             var tempList = PoolUtils.RentList<string>();
             var emoteUrns = tempList.GetList();

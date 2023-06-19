@@ -73,7 +73,7 @@ namespace DCL.Social.Friends
             }
 
             view.SetBodyMessage(friendRequest.MessageBody);
-            view.SetTimestamp(DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.Timestamp).DateTime);
+            view.SetTimestamp(friendRequest.Timestamp);
 
             var recipientProfile = userProfileBridge.Get(friendRequest.To);
 
