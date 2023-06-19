@@ -103,7 +103,7 @@ namespace DCL.ECSComponents
                     
                     LOD baseLOD = new LOD();
                     baseLOD.renderers = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
-                    baseLOD.screenRelativeTransitionHeight = 0.15f;
+                    baseLOD.screenRelativeTransitionHeight = 0.5f;
                     lodsContainer[0] = baseLOD;
 
                     LoadLOD($"{hash}_lod1", 1);
@@ -137,7 +137,7 @@ namespace DCL.ECSComponents
 
             LOD newLod = new LOD();
             newLod.renderers = lodLoadedAsset.renderers.ToArray();
-            newLod.screenRelativeTransitionHeight = lodLevel == 1 ? 0.10f : 0f;
+            newLod.screenRelativeTransitionHeight = lodLevel == 1 ? 0.3f : 0f;
             lodsContainer[lodLevel] = newLod;
             lodLoaded++;
 
