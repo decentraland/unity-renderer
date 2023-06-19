@@ -105,6 +105,7 @@ namespace DCL.Controllers
                 {
                     contentProvider.assetBundles = sceneAb.GetConvertedFiles();
                     contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
+                    contentProvider.assetBundlesVersion = sceneAb.GetVersion();
                 }
             }
 

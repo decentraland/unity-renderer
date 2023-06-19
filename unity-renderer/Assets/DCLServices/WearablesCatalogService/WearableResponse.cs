@@ -96,6 +96,7 @@ namespace DCLServices.WearablesCatalogService
 
                 public MetadataDto metadata;
                 public ContentDto[] content;
+                public string id;
 
                 public string GetContentHashByFileName(string fileName)
                 {
@@ -104,6 +105,59 @@ namespace DCLServices.WearablesCatalogService
                             return dto.hash;
 
                     return null;
+                }
+
+                public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl)
+                {
+                    WearableItem wearable = new WearableItem
+                    {
+                        data = new WearableItem.Data
+                        {
+                            representations = new WearableItem.Representation[metadata.data.representations.Length],
+                            category = metadata.data.category,
+                            hides = metadata.data.hides,
+                            replaces = metadata.data.replaces,
+                            tags = metadata.data.tags,
+                        },
+                        baseUrl = contentBaseUrl,
+                        baseUrlBundles = bundlesBaseUrl,
+                        emoteDataV0 = null,
+                        description = metadata.description,
+                        i18n = metadata.i18n,
+                        id = metadata.id,
+                        entityId = id,
+                        rarity = metadata.rarity,
+                        thumbnail = GetContentHashByFileName(metadata.thumbnail),
+                    };
+
+                    for (var i = 0; i < metadata.data.representations.Length; i++)
+                    {
+                        MetadataDto.Representation representation = metadata.data.representations[i];
+
+                        wearable.data.representations[i] = new WearableItem.Representation
+                        {
+                            bodyShapes = representation.bodyShapes,
+                            mainFile = representation.mainFile,
+                            overrideHides = representation.overrideHides,
+                            overrideReplaces = representation.overrideReplaces,
+                            contents = new WearableItem.MappingPair[representation.contents.Length],
+                        };
+
+                        for (var z = 0; z < representation.contents.Length; z++)
+                        {
+                            string fileName = representation.contents[z];
+                            string hash = GetContentHashByFileName(fileName);
+
+                            wearable.data.representations[i].contents[z] = new WearableItem.MappingPair
+                            {
+                                url = $"{contentBaseUrl}/{hash}",
+                                hash = hash,
+                                key = fileName,
+                            };
+                        }
+                    }
+
+                    return wearable;
                 }
             }
 
@@ -132,57 +186,9 @@ namespace DCLServices.WearablesCatalogService
 
             public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl)
             {
-                EntityDto.MetadataDto metadata = entity.metadata;
-
-                WearableItem wearable = new WearableItem
-                {
-                    data = new WearableItem.Data
-                    {
-                        representations = new WearableItem.Representation[metadata.data.representations.Length],
-                        category = metadata.data.category,
-                        hides = metadata.data.hides,
-                        replaces = metadata.data.replaces,
-                        tags = metadata.data.tags,
-                    },
-                    baseUrl = contentBaseUrl,
-                    baseUrlBundles = bundlesBaseUrl,
-                    emoteDataV0 = null,
-                    description = metadata.description,
-                    i18n = metadata.i18n,
-                    id = metadata.id,
-                    rarity = metadata.rarity ?? rarity,
-                    thumbnail = entity.GetContentHashByFileName(metadata.thumbnail),
-                    MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(GetMostRecentTransferTimestamp())
-                                                              .DateTime,
-                };
-
-                for (var i = 0; i < metadata.data.representations.Length; i++)
-                {
-                    EntityDto.MetadataDto.Representation representation = metadata.data.representations[i];
-
-                    wearable.data.representations[i] = new WearableItem.Representation
-                    {
-                        bodyShapes = representation.bodyShapes,
-                        mainFile = representation.mainFile,
-                        overrideHides = representation.overrideHides,
-                        overrideReplaces = representation.overrideReplaces,
-                        contents = new WearableItem.MappingPair[representation.contents.Length],
-                    };
-
-                    for (var z = 0; z < representation.contents.Length; z++)
-                    {
-                        string fileName = representation.contents[z];
-                        string hash = entity.GetContentHashByFileName(fileName);
-
-                        wearable.data.representations[i].contents[z] = new WearableItem.MappingPair
-                        {
-                            url = $"{contentBaseUrl}/{hash}",
-                            hash = hash,
-                            key = fileName,
-                        };
-                    }
-                }
-
+                var wearable = entity.ToWearableItem(contentBaseUrl, bundlesBaseUrl);
+                wearable.rarity ??= rarity;
+                wearable.MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(GetMostRecentTransferTimestamp()).DateTime;
                 return wearable;
             }
         }

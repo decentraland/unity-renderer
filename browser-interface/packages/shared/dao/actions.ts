@@ -17,3 +17,8 @@ export type SelectNetworkAction = ReturnType<typeof selectNetwork>
 export const CATALYST_REALMS_SCAN_REQUESTED = '[Request] Catalyst Realms scan'
 export const catalystRealmsScanRequested = () => action(CATALYST_REALMS_SCAN_REQUESTED)
 export type CatalystRealmsScanRequested = ReturnType<typeof catalystRealmsScanRequested>
+
+export const SET_LAST_CONNECTED_CANDIDATES = 'Set Last Connected Candidates'
+export const setLastConnectedCandidates = (lastConnectedCandidates: Map<string, number>) =>
+  action(SET_LAST_CONNECTED_CANDIDATES, lastConnectedCandidates)
+export type SetLastConnectedCandidates = ReturnType<typeof setLastConnectedCandidates>

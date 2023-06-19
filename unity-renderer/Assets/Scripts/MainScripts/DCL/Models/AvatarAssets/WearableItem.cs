@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
+// TODO: We need to separate this entity into WearableItem and EmoteItem they both can inherit a EntityItem and just have different metadata
 [Serializable]
 public class WearableItem
 {
@@ -66,7 +68,8 @@ public class WearableItem
 
     public Data data;
     public EmoteDataV0 emoteDataV0;
-    public string id;
+    public string id; // urn
+    public string entityId;
 
     public string baseUrl;
     public string baseUrlBundles;
@@ -162,6 +165,7 @@ public class WearableItem
         return new ContentProvider
         {
             baseUrl = baseUrl,
+            assetBundlesBaseUrl = baseUrlBundles,
             contents = contents.Select(mapping => new ContentServerUtils.MappingPair()
                                    { file = mapping.key, hash = mapping.hash })
                                .ToList()

@@ -6,7 +6,8 @@ public enum ExploreSection
     Quest = 1,
     Backpack = 2,
     Map = 3,
-    Settings = 4
+    Settings = 4,
+    Wallet = 5,
 }
 
 public interface IExploreV2MenuComponentController : IDisposable
