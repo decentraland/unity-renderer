@@ -428,34 +428,6 @@ function* configureMatrixClient(action: SetMatrixClient) {
     }
   })
 
-  client.onFriendshipRequest((socialId, messageBody) =>
-    handleIncomingFriendshipUpdateStatus(FriendshipAction.REQUESTED_FROM, socialId, messageBody).catch((error) => {
-      const message = 'Failed while processing friendship request'
-      defaultLogger.error(message, error)
-
-      trackEvent('error', {
-        context: 'kernel#saga',
-        message: message,
-        stack: '' + error
-      })
-    })
-  )
-
-  client.onFriendshipRequestCancellation((socialId) =>
-    handleIncomingFriendshipUpdateStatus(FriendshipAction.CANCELED, socialId)
-  )
-
-  client.onFriendshipRequestApproval(async (socialId) => {
-    await handleIncomingFriendshipUpdateStatus(FriendshipAction.APPROVED, socialId)
-    updateUserStatus(client, socialId)
-  })
-
-  client.onFriendshipDeletion((socialId) => handleIncomingFriendshipUpdateStatus(FriendshipAction.DELETED, socialId))
-
-  client.onFriendshipRequestRejection((socialId) =>
-    handleIncomingFriendshipUpdateStatus(FriendshipAction.REJECTED, socialId)
-  )
-
   client.onChannelMembership(async (conversation, membership) => {
     if (!areChannelsEnabled()) return
 
@@ -505,6 +477,35 @@ function* configureMatrixClient(action: SetMatrixClient) {
         break
     }
   })
+
+  const socialClientEnabled = yield select(getFeatureFlagEnabled, 'use-social-client')
+
+  // Legacy Flow for presence updates
+  if (!socialClientEnabled) { 
+    client.onFriendshipRequest((socialId, messageBody) =>
+      handleIncomingFriendshipUpdateStatus(FriendshipAction.REQUESTED_FROM, socialId, messageBody).catch((error) => {
+        const message = 'Failed while processing friendship request'
+        defaultLogger.error(message, error)
+
+        trackEvent('error', {
+          context: 'kernel#saga',
+          message: message,
+          stack: '' + error
+        })
+      })
+    )
+    client.onFriendshipRequestCancellation((socialId) =>
+      handleIncomingFriendshipUpdateStatus(FriendshipAction.CANCELED, socialId)
+    )
+    client.onFriendshipRequestApproval(async (socialId) => {
+      await handleIncomingFriendshipUpdateStatus(FriendshipAction.APPROVED, socialId)
+      updateUserStatus(client, socialId)
+    })
+    client.onFriendshipDeletion((socialId) => handleIncomingFriendshipUpdateStatus(FriendshipAction.DELETED, socialId))
+    client.onFriendshipRequestRejection((socialId) =>
+      handleIncomingFriendshipUpdateStatus(FriendshipAction.REJECTED, socialId)
+    )
+  }
 }
 
 /**
