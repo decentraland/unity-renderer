@@ -113,7 +113,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private IAvatar CreateAvatarWithHologram()
         {
             var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
-
             return avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), this.animator, NoLODs.i, new Visibility());
         }
 

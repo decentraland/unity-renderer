@@ -1,0 +1,16 @@
+{
+    "name": "HybridWebSocket",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7deefc26eb4ef824586f2f51caa3b0e7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,10 +1,13 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using MainScripts.DCL.Helpers.SentryUtils;
+using Newtonsoft.Json;
 using Sentry;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -16,6 +19,7 @@ namespace DCLServices.Lambdas
 
         private Service<IWebRequestController> webRequestController;
         private Service<IWebRequestMonitor> urlTransactionMonitor;
+        private readonly Dictionary<string, string> jsonHeaders = new() { { "Content-Type", "application/json" } };
 
         public async UniTask<(TResponse response, bool success)> Post<TResponse, TBody>(
             string endPointTemplate,
@@ -32,7 +36,7 @@ namespace DCLServices.Lambdas
             var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
 
-            return await SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
+            return await SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction);
         }
 
         public async UniTask<(TResponse response, bool success)> Get<TResponse>(
@@ -48,7 +52,7 @@ namespace DCLServices.Lambdas
             var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
-            return await SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
+            return await SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction);
         }
 
         public UniTask<(TResponse response, bool success)> GetFromSpecificUrl<TResponse>(
@@ -63,21 +67,39 @@ namespace DCLServices.Lambdas
             var wr = webRequestController.Ref.Get(urlWithParams, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, urlWithParams, transaction, urlEncodedParams);
+            return SendRequestAsync<TResponse>(wr, cancellationToken, urlWithParams, transaction);
+        }
+
+        public async UniTask<(TResponse response, bool success)> PostFromSpecificUrl<TResponse, TBody>(
+            string endPointTemplate,
+            string url,
+            TBody postData,
+            int timeout = ILambdasService.DEFAULT_TIMEOUT,
+            int attemptsNumber = ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
+            CancellationToken cancellationToken = default)
+        {
+            var postDataJson = JsonUtility.ToJson(postData);
+            await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
+            var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false, headers: jsonHeaders);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
+
+            return await SendRequestAsync<TResponse>(wr, cancellationToken, url, transaction);
         }
 
         private async UniTask<(TResponse response, bool success)> SendRequestAsync<TResponse>(
             IWebRequestAsyncOperation webRequestAsyncOperation,
             CancellationToken cancellationToken,
             string endPoint,
-            DisposableTransaction transaction,
-            (string paramName, string paramValue)[] urlEncodedParams)
+            DisposableTransaction transaction)
         {
             using var disposable = transaction;
             await webRequestAsyncOperation.WithCancellation(cancellationToken);
 
             if (!webRequestAsyncOperation.isSucceeded)
+            {
+                Debug.LogError($"{webRequestAsyncOperation.asyncOp.webRequest.error} {webRequestAsyncOperation.asyncOp.webRequest.url}");
                 return (default, false);
+            }
 
             string textResponse = webRequestAsyncOperation.webRequest.downloadHandler.text;
             webRequestAsyncOperation.Dispose();
@@ -159,7 +181,7 @@ namespace DCLServices.Lambdas
         {
             try
             {
-                response = JsonUtility.FromJson<TResponse>(textResponse);
+                response = JsonConvert.DeserializeObject<TResponse>(textResponse);
                 return true;
             }
             catch (Exception e)

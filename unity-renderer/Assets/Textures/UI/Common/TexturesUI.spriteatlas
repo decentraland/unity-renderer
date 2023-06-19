@@ -517,7 +517,7 @@ SpriteAtlas:
   - BackpackOff
   - MessageReceived
   - ScenesContainer
-  - TopGradientPopUp
+  - ShortGradientTop
   - ClaimIcon
   - RubyArrow
   - VoiceChatMute
@@ -698,7 +698,7 @@ SpriteAtlas:
   - FavoritesIcn
   - HideNameIcon
   - ChatOff
-  - LinearGradientNFTs
+  - LargeGradientBottom
   - ArrowGradient
   - NotFavoriteIcon
   - ContainerOutline100
