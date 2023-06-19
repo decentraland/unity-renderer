@@ -248,6 +248,7 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   if (action.payload.isSignUp) {
     if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
       const userId: string = yield select(getCurrentUserId)
+      yield put(sendProfileToRenderer(userId))
       console.log("alex:")
       console.log(userId)
       var profile = yield select(getInformationToSubmitProfileFromStore, userId)
@@ -265,7 +266,6 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
         store.dispatch(signUp('', uniqueNamesGenerator(config)))
       }
 
-      yield put(sendProfileToRenderer(userId))
       getUnityInstance().ShowAvatarEditorInSignIn()
     } else {
       getUnityInstance().ShowAvatarEditorInSignIn()
