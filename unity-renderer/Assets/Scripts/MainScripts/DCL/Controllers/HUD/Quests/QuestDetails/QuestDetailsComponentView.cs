@@ -48,7 +48,7 @@ namespace DCL.Quests
             pinButton.onClick.AddListener(() =>
             {
                 model.isPinned = !model.isPinned;
-                pinButtonText.text = model.isPinned ? "Unpin" : "Pin";
+                pinButtonText.text = model.isPinned ? "PINNED" : "PIN";
                 OnPinChange?.Invoke(model.questId, model.isPinned);
             });
             abandonButton.onClick.RemoveAllListeners();
