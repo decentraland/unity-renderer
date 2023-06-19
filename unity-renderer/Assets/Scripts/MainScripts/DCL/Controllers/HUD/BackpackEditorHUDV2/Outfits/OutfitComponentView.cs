@@ -7,6 +7,7 @@ public class OutfitComponentView : BaseComponentView<OutfitComponentModel>, IOut
 {
     [SerializeField] internal GameObject emptyState;
     [SerializeField] internal GameObject filledState;
+    [SerializeField] internal GameObject loadingState;
     [SerializeField] internal GameObject[] hoverStates;
     [SerializeField] internal GameObject[] normalStates;
     [SerializeField] internal Button equipButton;
@@ -22,25 +23,7 @@ public class OutfitComponentView : BaseComponentView<OutfitComponentModel>, IOut
     public override void Awake()
     {
         base.Awake();
-
         InitializeButtonEvents();
-        /*
-        SetOutfit(new OutfitItem()
-        {
-            outfit = new OutfitItem.Outfit()
-            {
-                wearables = new []{
-                    "urn:decentraland:matic:collections-v2:0xd96b73293f278d1d5ee440a2fd859679170dbbdb:0",
-                    "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162:6",
-                    "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162:0"},
-                bodyShape = "urn:decentraland:off-chain:base-avatars:BaseFemale",
-                eyes = new OutfitItem.ElementColor(){color = new Color(0,0,0)},
-                hair = new OutfitItem.ElementColor(){color = new Color(0,0,0)},
-                skin = new OutfitItem.ElementColor(){color = new Color(0,0,0)},
-            }
-        });
-
-        SetIsEmpty(false);*/
     }
 
     private void InitializeButtonEvents()
@@ -53,26 +36,23 @@ public class OutfitComponentView : BaseComponentView<OutfitComponentModel>, IOut
         discardOutfitButton.onClick.AddListener(() => OnDiscardOutfit?.Invoke(outfitIndex));
     }
 
-    public override void RefreshControl()
-    {
+    public override void RefreshControl() =>
         SetOutfit(model.outfitItem);
-    }
 
-    public void SetOutfit(OutfitItem outfitItem)
-    {
+    public void SetOutfit(OutfitItem outfitItem) =>
         model.outfitItem = outfitItem;
-    }
 
-    public void SetOutfitPreviewImage(Texture bodyTexture)
-    {
+    public void SetOutfitPreviewImage(Texture bodyTexture) =>
         outfitPreviewImage.texture = bodyTexture;
-    }
 
     public void SetIsEmpty(bool isEmpty)
     {
         emptyState.SetActive(isEmpty);
         filledState.SetActive(!isEmpty);
     }
+
+    public void SetIsLoading(bool isLoading) =>
+        loadingState.SetActive(isLoading);
 
     public override void OnFocus()
     {

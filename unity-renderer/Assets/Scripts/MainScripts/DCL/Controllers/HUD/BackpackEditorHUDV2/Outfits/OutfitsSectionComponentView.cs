@@ -83,15 +83,17 @@ public class OutfitsSectionComponentView : BaseComponentView
 
             if (string.IsNullOrEmpty(outfitItem.outfit.bodyShape))
             {
+                outfitComponentViews[outfitItem.slot].SetIsLoading(false);
                 outfitComponentViews[outfitItem.slot].SetIsEmpty(true);
                 continue;
             }
-
+            outfitComponentViews[outfitItem.slot].SetIsLoading(true);
             outfitComponentViews[outfitItem.slot].SetIsEmpty(false);
             outfitComponentViews[outfitItem.slot].SetOutfit(outfitItem);
             await characterPreviewController.TryUpdateModelAsync(GenerateAvatarModel(outfitItem));
             Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
             outfitComponentViews[outfitItem.slot].SetOutfitPreviewImage(bodySnapshot);
+            outfitComponentViews[outfitItem.slot].SetIsLoading(false);
         }
         await characterPreviewController.TryUpdateModelAsync(currentAvatarModel);
     }
@@ -116,6 +118,7 @@ public class OutfitsSectionComponentView : BaseComponentView
 
     private async UniTaskVoid SaveOutfitAsync(int outfitIndex)
     {
+        outfitComponentViews[outfitIndex].SetIsLoading(true);
         outfitComponentViews[outfitIndex].SetIsEmpty(false);
         var outfitItem = new OutfitItem()
         {
@@ -135,6 +138,7 @@ public class OutfitsSectionComponentView : BaseComponentView
         outfits[outfitIndex] = outfitItem;
         Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
         outfitComponentViews[outfitIndex].SetOutfitPreviewImage(bodySnapshot);
+        outfitComponentViews[outfitIndex].SetIsLoading(false);
         OnSaveOutfits?.Invoke(outfits);
     }
 }

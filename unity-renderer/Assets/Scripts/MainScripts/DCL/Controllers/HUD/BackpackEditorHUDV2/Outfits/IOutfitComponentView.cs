@@ -8,4 +8,5 @@ public interface IOutfitComponentView
 
     void SetOutfit(OutfitItem outfitItem);
     void SetIsEmpty(bool isEmpty);
+    void SetIsLoading(bool isLoading);
 }
