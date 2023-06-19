@@ -41,11 +41,14 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
   try {
     const currentVersion: number = Math.max(savedProfile?.version || 0, 0)
 
+    console.log("alex")
+
     const profile: Avatar = {
       // Default values to populate if they are missing
       hasClaimedName: false,
       description: '',
       tutorialStep: 0,
+
 
       // Populate with the current data
       ...savedProfile,
@@ -58,6 +61,7 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
       ethAddress: userId,
       hasConnectedWeb3: identity?.hasConnectedWeb3
     } as Avatar
+    console.log(profile)
 
     if (deepEqual(savedProfile, profile)) {
       // No action required
