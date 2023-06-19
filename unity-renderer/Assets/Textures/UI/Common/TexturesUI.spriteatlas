@@ -266,6 +266,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 801b2e4946a664b06873a855ca5bd8ef, type: 3}
   - {fileID: 21300000, guid: e36f3569fbdef4c609c33f7a1cebace5, type: 3}
   - {fileID: 21300000, guid: c4b955690452948efa830562d3ca8ed4, type: 3}
+  - {fileID: 21300000, guid: 7ff198699317441fb8a438d0b4643ab4, type: 3}
   - {fileID: 21300000, guid: ad6a5c692d0a34fbe8f1e4dd9bee0c2b, type: 3}
   - {fileID: 21300000, guid: 46524689a799e4be9941af9ef6f45a89, type: 3}
   - {fileID: 21300000, guid: 247c07994d33848d5be25ccac8f0538d, type: 3}
@@ -614,6 +615,7 @@ SpriteAtlas:
   - HideUIIconNew
   - Ellipse128
   - SearchChannelIcon
+  - PinIcon
   - FriendsOff
   - FloorLight
   - MessageIcon

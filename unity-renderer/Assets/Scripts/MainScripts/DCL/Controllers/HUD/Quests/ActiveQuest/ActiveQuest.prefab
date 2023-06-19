@@ -355,7 +355,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c5a46d6e8b3d645649baea76db91f811, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7ff198699317441fb8a438d0b4643ab4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -856,6 +856,15 @@ MonoBehaviour:
     questName: MyQuest
     questImageUri: 
     isPinned: 1
+    questModel:
+      questName: 
+      questCreator: 
+      questDescription: 
+      questId: 
+      isPinned: 0
+      coordinates: {x: 0, y: 0}
+      questSteps: []
+      questRewards: []
   questName: {fileID: 7027256138643246735}
   questCreator: {fileID: 5338740450652071097}
   pinnedIcon: {fileID: 3261236996376990718}
