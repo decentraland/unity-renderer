@@ -1,9 +1,4 @@
-import {
-  ETHEREUM_NETWORK,
-  PIN_CATALYST,
-  PREVIEW,
-  rootURLPreviewMode
-} from 'config'
+import { ETHEREUM_NETWORK, PIN_CATALYST, PREVIEW, rootURLPreviewMode } from 'config'
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 import defaultLogger from 'lib/logger'
 import { waitFor } from 'lib/redux'
@@ -31,17 +26,18 @@ import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
-import { changeRealm, fetchCatalystRealms, fetchCatalystStatuses } from '.'
+import { changeRealm, fetchCatalystRealms, fetchCatalystStatuses, resolveRealmConfigFromString } from '.'
 import { waitForMetaConfigurationInitialization, waitForNetworkSelected } from '../meta/sagas'
 import {
   catalystRealmsScanRequested,
   setCatalystCandidates,
   SetCatalystCandidates,
-  SET_CATALYST_CANDIDATES
+  SET_CATALYST_CANDIDATES,
+  setLastConnectedCandidates
 } from './actions'
 import { defaultChainConfig } from './pick-realm-algorithm/defaults'
 import { createAlgorithm } from './pick-realm-algorithm/index'
-import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
+import { getCatalystCandidates, getCatalystCandidatesReceived, getLastConnectedCandidates } from './selectors'
 import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
 import { ask, ping } from './utils/ping'
 import { saveProfileDelta } from '../profiles/actions'
@@ -61,16 +57,30 @@ export function* daoSaga(): any {
 }
 
 function* pickCatalystRealm() {
-  const { candidates, currentUserParcel, config } = (yield select(getInformationForCatalystPicker)) as ReturnType<
+  const { currentUserParcel, config } = (yield select(getInformationForCatalystPicker)) as ReturnType<
     typeof getInformationForCatalystPicker
   >
+
+  const candidates: Candidate[] = yield select(getCatalystCandidates)
+  const lastConnectedCandidates = (yield select(getLastConnectedCandidates)) as ReturnType<
+    typeof getLastConnectedCandidates
+  >
+
   if (candidates.length === 0) return undefined
+
+  const filteredCandidates = candidates.filter((candidate: Candidate) => {
+    const lastConnected = lastConnectedCandidates.get(candidate.domain)
+    if (lastConnected && Date.now() - lastConnected < 60 * 1000) {
+      return false
+    }
+    return true
+  })
 
   const algorithm = createAlgorithm(config)
 
   const realm: Realm = yield call(
     candidateToRealm,
-    algorithm.pickCandidate(candidates, [currentUserParcel.x, currentUserParcel.y])
+    algorithm.pickCandidate(filteredCandidates, [currentUserParcel.x, currentUserParcel.y])
   )
 
   return urlWithProtocol(realm.hostname)
@@ -79,7 +89,7 @@ function* pickCatalystRealm() {
 function getInformationForCatalystPicker(state: RootState) {
   const config = getPickRealmsAlgorithmConfig(state)
   return {
-    candidates: getAllCatalystCandidates(state),
+    candidates: getCatalystCandidates(state),
     currentUserParcel: getParcelPosition(state),
     config: !config || !config.length ? defaultChainConfig : config
   }
@@ -96,15 +106,15 @@ function clearQsRealm() {
   globalThis.history.replaceState({}, 'realm', `?${q.toString()}`)
 }
 
-function* tryConnectRealm() {
-  const realm: string | undefined = yield call(selectRealm)
+function* tryConnectRealm(realm: string) {
+  const realmConfig = yield call(resolveRealmConfigFromString, realm)
 
-  if (realm) {
-    yield call(waitForExplorerIdentity)
-    yield call(changeRealm, realm, true)
-  } else {
-    throw new Error("Couldn't select a suitable realm to join.")
-  }
+  const lastConnectedCandidates = yield select(getLastConnectedCandidates)
+  lastConnectedCandidates.set(realmConfig.baseUrl, Date.now())
+  yield put(setLastConnectedCandidates(lastConnectedCandidates))
+
+  yield call(waitForExplorerIdentity)
+  yield call(changeRealm, realm, true)
 }
 
 /**
@@ -117,19 +127,20 @@ function* tryConnectRealm() {
  * 4- Best pick from candidate scan (implies sync candidate initialization)
  */
 export function* selectAndReconnectRealm() {
-  try {
-    yield call(tryConnectRealm)
-    // if no realm was selected, then do the whole initialization dance
-  } catch (e: any) {
-    // if it failed, try changing the queryString
-    clearQsRealm()
-    try {
-      // and try again
-      yield call(tryConnectRealm)
-    } catch (e: any) {
-      debugger
-      BringDownClientAndReportFatalError(e, 'comms#init')
-      throw e
+  while (true) {
+    // we're going to try connect realm until we don't have more realms to try
+    const realm: string | undefined = yield call(selectRealm)
+
+    if (realm) {
+      try {
+        yield call(tryConnectRealm, realm)
+        break
+      } catch (e: any) {
+        // if it failed, try changing the queryString
+        clearQsRealm()
+      }
+    } else {
+      throw new Error("Couldn't select a suitable realm to join.")
     }
   }
 }
@@ -256,9 +267,9 @@ function* cacheCatalystRealm() {
 }
 
 function* cacheCatalystCandidates(_action: SetCatalystCandidates) {
-  const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
+  const candidates: Candidate[] = yield select(getCatalystCandidates)
   const network: ETHEREUM_NETWORK = yield call(waitForNetworkSelected)
-  yield call(saveToPersistentStorage, getLastRealmCandidatesCacheKey(network), allCandidates)
+  yield call(saveToPersistentStorage, getLastRealmCandidatesCacheKey(network), candidates)
 }
 
 export const waitForRoomConnection = waitFor(getCommsRoom, SET_ROOM_CONNECTION)

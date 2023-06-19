@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -35,7 +36,7 @@ namespace DCLServices.WearablesCatalogService
         public void TearDown()
         {
             service.Dispose();
-            Object.Destroy(gameObject);
+            Utils.SafeDestroy(gameObject);
         }
 
         [UnityTest]
@@ -90,12 +91,12 @@ namespace DCLServices.WearablesCatalogService
                         GivenValidWearableItem("w3"),
                     });
 
-                IReadOnlyList<WearableItem> wearables = await service.RequestBaseWearablesAsync(default(CancellationToken));
+                await service.RequestBaseWearablesAsync(default(CancellationToken));
 
-                ThenWearableIsValid("w1", wearables[0]);
-                ThenWearableIsValid("w2", wearables[1]);
-                ThenWearableIsValid("w3", wearables[2]);
-                Assert.AreEqual(3, wearables.Count);
+                ThenWearableIsValid("w1", service.WearablesCatalog["w1"]);
+                ThenWearableIsValid("w2", service.WearablesCatalog["w2"]);
+                ThenWearableIsValid("w3", service.WearablesCatalog["w3"]);
+                Assert.AreEqual(3, service.WearablesCatalog.Count());
             });
 
         [UnityTest]
@@ -106,7 +107,7 @@ namespace DCLServices.WearablesCatalogService
 
                 try
                 {
-                    IReadOnlyList<WearableItem> wearables = await service.RequestBaseWearablesAsync(default(CancellationToken));
+                    await service.RequestBaseWearablesAsync(default(CancellationToken));
 
                     Assert.Fail();
                 }

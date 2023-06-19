@@ -223,7 +223,7 @@ public class ProfileHUDController : IHUD
         {
             yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
 
-            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryPolygonMana(ownUserProfile.userId);
+            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryMana(ownUserProfile.userId, TheGraphNetwork.Polygon);
 
             // This can be null if theGraph is mocked
             if (promise != null)

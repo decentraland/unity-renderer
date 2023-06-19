@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 public class FriendsController_Mock : IFriendsController
@@ -15,7 +14,6 @@ public class FriendsController_Mock : IFriendsController
     public event Action OnInitialized;
     public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
     public event Action<int, int> OnTotalFriendRequestUpdated;
-    public event Action<int> OnTotalFriendsUpdated;
     public event Action<FriendRequest> OnFriendRequestReceived;
     public event Action<FriendRequest> OnSentFriendRequestApproved;
 
@@ -39,7 +37,7 @@ public class FriendsController_Mock : IFriendsController
     }
 
     public UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken) =>
-        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
+        UniTask.FromResult(new FriendRequest(friendRequestId, new DateTime(0), "", "", ""));
 
     public void RejectFriendship(string friendUserId)
     {
@@ -48,7 +46,7 @@ public class FriendsController_Mock : IFriendsController
     }
 
     public UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken) =>
-        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
+        UniTask.FromResult(new FriendRequest(friendRequestId, new DateTime(0), "", "", ""));
 
     public bool IsFriend(string userId) =>
         friends.ContainsKey(userId);
@@ -59,6 +57,9 @@ public class FriendsController_Mock : IFriendsController
         friends.Remove(friendId);
         OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
     }
+
+    public UniTask RemoveFriendAsync(string friendId, CancellationToken cancellationToken) =>
+        UniTask.CompletedTask;
 
     public UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default) =>
         UniTask.FromResult(new string[0]);
@@ -107,7 +108,7 @@ public class FriendsController_Mock : IFriendsController
             friends.Add(friendUserId, new UserStatus { friendshipStatus = FriendshipStatus.REQUESTED_TO });
 
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.REQUESTED_TO);
-        return UniTask.FromResult(new FriendRequest("oiqwdjqowi", 0, "me", friendUserId, messageBody));
+        return UniTask.FromResult(new FriendRequest("oiqwdjqowi", new DateTime(0), "me", friendUserId, messageBody));
     }
 
     public void RequestFriendship(string friendUserId) { }
@@ -117,13 +118,13 @@ public class FriendsController_Mock : IFriendsController
         if (!friends.ContainsKey(friendUserId)) return null;
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.CANCELLED);
-        return new FriendRequest(friendUserId, 0, "", "", "");
+        return new FriendRequest(friendUserId, new DateTime(0), "", "", "");
     }
 
     public void CancelRequestByUserId(string friendUserId) { }
 
     public UniTask<FriendRequest> CancelRequestAsync(string friendRequestId, CancellationToken cancellationToken) =>
-        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
+        UniTask.FromResult(new FriendRequest(friendRequestId, new DateTime(0), "", "", ""));
 
     public void AcceptFriendship(string friendUserId)
     {

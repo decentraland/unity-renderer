@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Social.Friends;
+using DCL.Wallet;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ using Environment = DCL.Environment;
 /// </summary>
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
+    // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
+
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
 
     internal IExploreV2MenuComponentView view;
@@ -24,6 +27,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal ExploreSection currentOpenSection;
     internal Dictionary<BaseVariable<bool>, ExploreSection> sectionsByVisibilityVar;
     private ExploreV2ComponentRealmsController realmController;
+    private WalletCardHUDController walletCardHUDController;
 
     private MouseCatcher mouseCatcher;
     private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByInitVar;
@@ -42,6 +46,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
     internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
     internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
+    internal BaseVariable<bool> isWalletInitialized => DataStore.i.wallet.isInitialized;
+    internal BaseVariable<bool> walletVisible => DataStore.i.wallet.isWalletSectionVisible;
 
     internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -65,6 +71,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             { ExploreSection.Map, (isNavmapInitialized, navmapVisible) },
             { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
+            { ExploreSection.Wallet, (isWalletInitialized, walletVisible) },
         };
 
         sectionsByInitVar = sectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
@@ -79,6 +86,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         realmController = new ExploreV2ComponentRealmsController(DataStore.i.realm, view);
         realmController.Initialize();
         view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
+
+        if (isWalletInitialized.Get())
+            OnWalletInitialized(true, false);
+        else
+            isWalletInitialized.OnChange += OnWalletInitialized;
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
@@ -119,6 +131,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Wallet, DataStore.i.exploreV2.configureWalletSectionInFullscreenMenu);
 
         DataStore.i.common.isWorld.OnChange += OnWorldChange;
     }
@@ -156,10 +169,27 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
 
         DataStore.i.common.isWorld.OnChange -= OnWorldChange;
+
+        isWalletInitialized.OnChange -= OnWalletInitialized;
+        walletCardHUDController?.Dispose();
     }
 
     protected internal virtual IExploreV2MenuComponentView CreateView() =>
         ExploreV2MenuComponentView.Create();
+
+    private void OnWalletInitialized(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        isWalletInitialized.OnChange -= OnWalletInitialized;
+
+        walletCardHUDController = new WalletCardHUDController(
+            view.currentWalletCard,
+            new UserProfileWebInterfaceBridge(),
+            Environment.i.platform.serviceProviders.theGraph,
+            DataStore.i);
+    }
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() =>
         new ExploreV2Analytics.ExploreV2Analytics();
@@ -230,6 +260,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
                 view.SetSectionAsNew(ExploreSection.Backpack, true);
 
+            view.SetWalletActive(isWalletInitialized.Get(), ownUserProfile.isGuest);
+
             if (mouseCatcher != null)
                 mouseCatcher.UnlockCursor();
 
@@ -248,12 +280,17 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             profileCardIsOpen.Set(false);
         }
 
+        DataStore.i.wallet.isWalletCardVisible.Set(visible);
         view.SetVisible(visible);
     }
 
     private void OnSectionVisibilityChanged(BaseVariable<bool> visibilityVar, bool visible, bool previous = false)
     {
         ExploreSection section = sectionsByVisibilityVar[visibilityVar];
+
+        if (section == ExploreSection.Wallet)
+            return;
+
         BaseVariable<bool> initVar = section == ExploreSection.Explore ? isInitialized : sectionsVariables[section].initVar;
 
         if (!initVar.Get() || DataStore.i.common.isSignUpFlow.Get())

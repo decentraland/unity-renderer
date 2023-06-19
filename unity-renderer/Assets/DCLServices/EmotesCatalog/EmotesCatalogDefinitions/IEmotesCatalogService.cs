@@ -9,9 +9,9 @@ public interface IEmotesCatalogService : IService
 {
     bool TryGetLoadedEmote(string id, out WearableItem emote);
 
-    Promise<WearableItem[]> RequestOwnedEmotes(string userId);
+    Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId);
 
-    UniTask<WearableItem[]> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default);
+    UniTask<IReadOnlyList<WearableItem>> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default);
 
     Promise<WearableItem> RequestEmote(string id);
 
@@ -19,7 +19,7 @@ public interface IEmotesCatalogService : IService
 
     UniTask<WearableItem> RequestEmoteAsync(string id, CancellationToken ct = default);
 
-    UniTask<WearableItem[]> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default);
+    UniTask<IReadOnlyList<WearableItem>> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default);
 
     UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes();
 
