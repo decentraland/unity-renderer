@@ -261,10 +261,9 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
         separator: '-',
         style: 'capital'
       }
-      if(profile?.data?.name === 'Guest') {
-        trackEvent('seamless_login tos shown', {})
-        store.dispatch(signUp('', uniqueNamesGenerator(config)))
-      }
+      const name = profile?.data?.name === 'Guest' ? uniqueNamesGenerator(config) : profile?.data?.name
+      trackEvent('seamless_login tos shown', {})
+      store.dispatch(signUp('', name))
 
       getUnityInstance().ShowAvatarEditorInSignIn()
     } else {
