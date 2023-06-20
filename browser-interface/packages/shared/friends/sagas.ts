@@ -130,6 +130,7 @@ import {
   ChatMessageType,
   CreateChannelPayload,
   FriendshipAction,
+  FriendshipStatusJuli,
   FriendsInitializationMessage,
   FriendsInitializeChatPayload,
   GetChannelInfoPayload,
@@ -152,6 +153,7 @@ import {
   UpdateTotalUnseenMessagesByChannelPayload,
   UpdateTotalUnseenMessagesByUserPayload,
   UpdateTotalUnseenMessagesPayload,
+  UpdateUserStatusMessage,
   UpdateUserUnseenMessagesPayload
 } from 'shared/types'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -481,7 +483,7 @@ function* configureMatrixClient(action: SetMatrixClient) {
   const socialClientEnabled = yield select(getFeatureFlagEnabled, 'use-social-client')
 
   // Legacy Flow for presence updates
-  if (!socialClientEnabled) { 
+  if (!socialClientEnabled) {
     client.onFriendshipRequest((socialId, messageBody) =>
       handleIncomingFriendshipUpdateStatus(FriendshipAction.REQUESTED_FROM, socialId, messageBody).catch((error) => {
         const message = 'Failed while processing friendship request'
@@ -1094,11 +1096,13 @@ function sendUpdateUserStatus(id: string, status: CurrentUserStatus) {
   // treat 'unavailable' status as 'online'
   const isOnline = isPeerAvatarAvailable(userId) || status.presence !== PresenceType.OFFLINE
 
-  const updateMessage = {
+  const updateMessage: UpdateUserStatusMessage = {
     userId,
+    userName: '',
     realm: status.realm,
     position: status.position,
-    presence: isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE
+    presence: isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE,
+    friendshipStatus: FriendshipStatusJuli.FRIENDS
   }
 
   getUnityInstance().UpdateUserPresence(updateMessage)
