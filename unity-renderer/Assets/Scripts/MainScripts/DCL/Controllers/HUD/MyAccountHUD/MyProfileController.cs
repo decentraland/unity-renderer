@@ -203,13 +203,16 @@ namespace DCL.MyAccount
 
         private void OnAddLinkRequested((string title, string url) obj)
         {
-            if (ownUserProfile.Links.Count >= 5) return;
+            if (ownUserProfile.Links?.Count >= 5) return;
+            // TODO: links should be added through user profile bridge
             ownUserProfile.AddLink(new UserProfileModel.Link(obj.title, obj.url));
             ShowLinks(ownUserProfile);
+            view.ClearLinkInput();
         }
 
         private void OnRemoveLinkRequested((string title, string url) obj)
         {
+            // TODO: links should be removed through user profile bridge
             ownUserProfile.RemoveLink(obj.title, obj.url);
             ShowLinks(ownUserProfile);
         }

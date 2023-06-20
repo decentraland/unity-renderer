@@ -20,5 +20,6 @@ namespace DCL.MyAccount
         void SetLoadingActive(bool isActive);
         void SetNonValidNameWarningActive(bool isActive);
         void SetLinks(List<(string title, string url)> links);
+        void ClearLinkInput();
     }
 }

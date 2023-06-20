@@ -65,8 +65,8 @@ namespace DCL.MyAccount
             claimedNameBackToClaimedNamesListButton.onClick.AddListener(() => SetClaimedModeAsInput(false));
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
 
-            linkListView.OnAddedNew += OnLinkAdded;
-            linkListView.OnRemoved += OnLinkRemoved;
+            linkListView.OnAddedNew += tuple => OnLinkAdded?.Invoke((tuple.title, tuple.url));
+            linkListView.OnRemoved += tuple => OnLinkRemoved?.Invoke((tuple.title, tuple.url));
         }
 
         public override void Dispose()
@@ -196,6 +196,9 @@ namespace DCL.MyAccount
             foreach ((string title, string url) link in links)
                 linkListView.Add(link.title, link.url);
         }
+
+        public void ClearLinkInput() =>
+            linkListView.ClearInput();
 
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>
             nameCharCounter.text = $"{currentLenght}/{maxLength}";
