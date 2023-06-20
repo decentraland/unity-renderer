@@ -1,7 +1,6 @@
 import { Authenticator } from '@dcl/crypto'
 import { EntityType, Outfits } from '@dcl/schemas'
-import { DeploymentData, createContentClient } from 'dcl-catalyst-client'
-import { createFetchComponent } from '@well-known-components/fetch-component'
+import { BuildEntityOptions, ContentClient, DeploymentData } from 'dcl-catalyst-client'
 import defaultLogger from 'lib/logger'
 import { call, select } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
@@ -11,7 +10,6 @@ import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import { ExplorerIdentity } from 'shared/session/types'
 import { DeployOutfits } from '../actions'
-import { BuildEntityOptions } from 'dcl-catalyst-client/dist/client/types'
 
 export function* handleDeployOutfits(deployOutfitsAction: DeployOutfits) {
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
@@ -49,8 +47,7 @@ export async function deployOutfits(params: {
   const contentFiles = params.contentFiles || new Map<string, Uint8Array>()
 
   // Build the client
-  const fetcher = createFetchComponent()
-  const catalyst = createContentClient({ url, fetcher })
+  const catalyst = new ContentClient({ contentUrl: url })
 
   // The pointer for the outfits is: `<address>:outfits`
   const entity = {
@@ -58,7 +55,7 @@ export async function deployOutfits(params: {
     pointers: [identity.address + ':outfits'],
     files: contentFiles,
     metadata: outfits
-  } as BuildEntityOptions
+  } as unknown as BuildEntityOptions
 
   // Build entity and group all files
   const preparationData = await catalyst.buildEntity(entity)
