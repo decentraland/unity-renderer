@@ -1351,7 +1351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetRectTransform: {fileID: 2293051074121960227}
-  hoverScale: 1.1
+  hoverScale: 1.025
   normalScale: 1
 --- !u!114 &829838056953812470
 MonoBehaviour:
