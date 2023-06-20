@@ -53,6 +53,8 @@ namespace DCL.MyAccount
             view.OnCurrentNameSubmitted += OnNameSubmitted;
             view.OnGoFromClaimedToNonClaimNameClicked += GoFromClaimedToNonClaimName;
             view.OnClaimNameClicked += OnClaimNameRequested;
+            view.OnLinkAdded += OnAddLinkRequested;
+            view.OnLinkRemoved += OnRemoveLinkRequested;
             ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
@@ -69,6 +71,8 @@ namespace DCL.MyAccount
             view.OnCurrentNameSubmitted -= OnNameSubmitted;
             view.OnGoFromClaimedToNonClaimNameClicked -= GoFromClaimedToNonClaimName;
             view.OnClaimNameClicked -= OnClaimNameRequested;
+            view.OnLinkAdded -= OnAddLinkRequested;
+            view.OnLinkRemoved -= OnRemoveLinkRequested;
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
@@ -170,7 +174,11 @@ namespace DCL.MyAccount
                 return;
 
             RefreshNamesSectionStatus();
+            ShowLinks(userProfile);
         }
+
+        private void ShowLinks(UserProfile userProfile) =>
+            view.SetLinks(userProfile.Links.Select(link => (link.title, link.url)).ToList());
 
         private void GoFromClaimedToNonClaimName() =>
             view.SetClaimedModeAsInput(true, ownUserProfile.hasClaimedName);
@@ -191,6 +199,19 @@ namespace DCL.MyAccount
                 result.nonClaimedHashtag = splitName[1];
 
             return result;
+        }
+
+        private void OnAddLinkRequested((string title, string url) obj)
+        {
+            if (ownUserProfile.Links.Count >= 5) return;
+            ownUserProfile.AddLink(new UserProfileModel.Link(obj.title, obj.url));
+            ShowLinks(ownUserProfile);
+        }
+
+        private void OnRemoveLinkRequested((string title, string url) obj)
+        {
+            ownUserProfile.RemoveLink(obj.title, obj.url);
+            ShowLinks(ownUserProfile);
         }
     }
 }

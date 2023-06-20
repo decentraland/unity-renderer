@@ -16,7 +16,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         EmotesWheel,
         Shortcut,
         Command,
-        Backpack
+        Backpack,
     }
 
     public event Action<UserProfile> OnUpdate;
@@ -30,7 +30,6 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string bodySnapshotURL => model.ComposeCorrectUrl(model.snapshots.body);
     public string face256SnapshotURL => model.ComposeCorrectUrl(model.snapshots.face256);
     public string baseUrl => model.baseUrl;
-    public UserProfileModel.ParcelsWithAccess[] parcelsWithAccess => model.parcelsWithAccess;
     public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
     public List<string> muted => model.muted ?? new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
@@ -38,13 +37,14 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public bool isGuest => !model.hasConnectedWeb3;
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
+    public List<UserProfileModel.Link> Links => model.links;
 
-    internal Dictionary<string, int> inventory = new Dictionary<string, int>();
+    internal Dictionary<string, int> inventory = new ();
 
     public ILazyTextureObserver snapshotObserver = new LazyTextureObserver();
     public ILazyTextureObserver bodySnapshotObserver = new LazyTextureObserver();
 
-    internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
+    internal UserProfileModel model = new () //Empty initialization to avoid nullchecks
     {
         avatar = new AvatarModel()
     };
@@ -78,6 +78,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.blocked = newModel.blocked;
         model.muted = newModel.muted;
         model.version = newModel.version;
+        model.links = newModel.links;
 
         if (model.snapshots != null && faceSnapshotDirty)
             snapshotObserver.RefreshWithUri(face256SnapshotURL);
@@ -141,23 +142,20 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
 
-    public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
-
     internal static UserProfile ownUserProfile;
 
     public static UserProfile GetOwnUserProfile()
     {
         if (ownUserProfile == null)
-        {
             ownUserProfile = Resources.Load<UserProfile>("ScriptableObjects/OwnUserProfile");
-        }
 
         return ownUserProfile;
     }
 
     public UserProfileModel CloneModel() => model.Clone();
 
-    public bool IsBlocked(string userId) { return blocked != null && blocked.Contains(userId); }
+    public bool IsBlocked(string userId) =>
+        blocked != null && blocked.Contains(userId);
 
     public void Block(string userId)
     {
@@ -169,6 +167,12 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public void Unblock(string userId) { blocked.Remove(userId); }
 
     public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
+
+    public void AddLink(UserProfileModel.Link link) =>
+        model.links.Add(link);
+
+    public void RemoveLink(string title, string url) =>
+        model.links.RemoveAll(link => link.title == title && link.url == url);
 
 #if UNITY_EDITOR
     private void OnEnable()

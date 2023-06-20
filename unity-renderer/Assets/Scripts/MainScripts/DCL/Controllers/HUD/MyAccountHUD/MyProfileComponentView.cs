@@ -28,11 +28,14 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject nameValidationsContainer;
         [SerializeField] internal TMP_Text nameCharCounter;
         [SerializeField] internal GameObject nonValidNameWarning;
+        [SerializeField] internal MyProfileLinkListComponentView linkListView;
 
         public event Action<string> OnCurrentNameEdited;
         public event Action<string, bool> OnCurrentNameSubmitted;
         public event Action OnGoFromClaimedToNonClaimNameClicked;
         public event Action OnClaimNameClicked;
+        public event Action<(string title, string url)> OnLinkAdded;
+        public event Action<(string title, string url)> OnLinkRemoved;
 
         public override void Awake()
         {
@@ -61,6 +64,9 @@ namespace DCL.MyAccount
             claimedNameGoToNonClaimedNameButton.onClick.AddListener(() => OnGoFromClaimedToNonClaimNameClicked?.Invoke());
             claimedNameBackToClaimedNamesListButton.onClick.AddListener(() => SetClaimedModeAsInput(false));
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
+
+            linkListView.OnAddedNew += OnLinkAdded;
+            linkListView.OnRemoved += OnLinkRemoved;
         }
 
         public override void Dispose()
@@ -182,6 +188,14 @@ namespace DCL.MyAccount
 
         public void SetNonValidNameWarningActive(bool isActive) =>
             nonValidNameWarning.SetActive(isActive);
+
+        public void SetLinks(List<(string title, string url)> links)
+        {
+            linkListView.Clear();
+
+            foreach ((string title, string url) link in links)
+                linkListView.Add(link.title, link.url);
+        }
 
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>
             nameCharCounter.text = $"{currentLenght}/{maxLength}";
