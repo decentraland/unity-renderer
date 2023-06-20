@@ -18,7 +18,7 @@ namespace DCL.LoadingScreen.V2
     {
         private const int MAX_HINTS = 15;
         private const string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
-        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
+        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(1f);
         private readonly HintRequestService hintRequestService;
         private readonly IAddressableResourceProvider addressableProvider;
         private readonly ILoadingScreenView loadingScreenView;

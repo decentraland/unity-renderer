@@ -1354,6 +1354,7 @@ MonoBehaviour:
   timeoutView: {fileID: 5845767337085515950}
   rawImage: {fileID: 5435335981741838515}
   hintContainer: {fileID: 5693004996163576585}
+  teleportLoadingAnimation: {fileID: 1938718776940217313}
 --- !u!225 &1054737520794358197
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1606,6 +1607,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2da37fa1269fc1f48a3470d0ca3e9450, type: 3}
+--- !u!1 &1938718776940217313 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1938718776407171916, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
+    type: 3}
+  m_PrefabInstance: {fileID: 566747309}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6281035913215727768 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6281035912691726389, guid: 2da37fa1269fc1f48a3470d0ca3e9450,

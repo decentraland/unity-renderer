@@ -36,18 +36,20 @@ namespace DCLPlugins.LoadingScreenPlugin
         private async UniTaskVoid CreateLoadingScreen(CancellationToken cancellationToken = default)
         {
             var loadingScreenView = CreateLoadingScreenView();
-            loadingScreenController = new LoadingScreenController(
-                loadingScreenView,
-                Environment.i.world.sceneController, Environment.i.world.state, NotificationsController.i,
-                DataStore.i.player, DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm, new ShaderPrewarm(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()));
 
             Debug.Log("FD:: LoadingScreenPlugin - CreateLoadingScreen");
+            // FD:: remove the comment if LoadingScreenV2 is finalized
             // if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("loading_screen_v2"))
             // {
+                loadingScreenView.ToggleTeleportLoadingAnimation(false);
                 var loadingScreenV2ProxyPlugin = new LoadingScreenV2ProxyPlugin();
                 loadingScreenHintsController = await loadingScreenV2ProxyPlugin.InitializeAsync(loadingScreenView, addressableProvider, cancellationToken);
-                // }
+            // }
 
+            loadingScreenController = new LoadingScreenController(
+                loadingScreenView, loadingScreenHintsController,
+                Environment.i.world.sceneController, Environment.i.world.state, NotificationsController.i,
+                DataStore.i.player, DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm, new ShaderPrewarm(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()));
         }
 
         public static LoadingScreenView CreateLoadingScreenView() =>
@@ -60,7 +62,8 @@ namespace DCLPlugins.LoadingScreenPlugin
 
             loadingScreenController.Dispose();
 
-            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("loading_screen_v2"))
+            // FD:: remove the comment if LoadingScreenV2 is finalized
+            // if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("loading_screen_v2"))
                 loadingScreenHintsController.Dispose();
         }
     }

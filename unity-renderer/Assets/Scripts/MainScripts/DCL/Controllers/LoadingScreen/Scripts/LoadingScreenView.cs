@@ -14,6 +14,7 @@ namespace DCL.LoadingScreen
         [SerializeField] private LoadingScreenTimeoutView timeoutView;
         [SerializeField] private RawImage rawImage;
         [SerializeField] private RectTransform hintContainer;
+        [SerializeField] private GameObject teleportLoadingAnimation;
         private RenderTexture renderTexture;
         private RectTransform rawImageRectTransform;
 
@@ -66,6 +67,11 @@ namespace DCL.LoadingScreen
         }
 
         public override void RefreshControl() { }
+
+        public void ToggleTeleportLoadingAnimation(bool active)
+        {
+            teleportLoadingAnimation.SetActive(active);
+        }
 
         private void FadeInFinish(ShowHideAnimator obj)
         {

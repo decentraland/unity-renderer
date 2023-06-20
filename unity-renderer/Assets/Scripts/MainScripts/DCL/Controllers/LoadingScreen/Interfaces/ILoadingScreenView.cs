@@ -18,5 +18,7 @@ namespace DCL.LoadingScreen
         ILoadingScreenTimeoutView GetTimeoutView();
 
         RectTransform GetHintContainer();
+
+        void ToggleTeleportLoadingAnimation(bool active);
     }
 }

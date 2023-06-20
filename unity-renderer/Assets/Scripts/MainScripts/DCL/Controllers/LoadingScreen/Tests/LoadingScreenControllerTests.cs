@@ -3,6 +3,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using DCL.Helpers;
+using DCL.LoadingScreen.V2;
 using DCL.Providers;
 using DCLPlugins.LoadingScreenPlugin;
 using Decentraland.Bff;
@@ -21,6 +22,7 @@ namespace DCL.LoadingScreen.Test
         private ISceneController sceneController;
         private IWorldState worldState;
         private ILoadingScreenTimeoutView loadingScreenTimeoutView;
+        private ILoadingScreenHintsController loadingScreenHintsController;
 
         private Vector2Int destination = Utils.WorldToGridPosition(Vector3.zero);
 
@@ -39,6 +41,7 @@ namespace DCL.LoadingScreen.Test
             sceneController = Substitute.For<ISceneController>();
             worldState = Substitute.For<IWorldState>();
             shaderPrewarm = Substitute.For<IShaderPrewarm>();
+            loadingScreenHintsController = Substitute.For<ILoadingScreenHintsController>();
             playerDataStore = new DataStore_Player();
             commonDataStore = new DataStore_Common();
             loadingScreenDataStore = new DataStore_LoadingScreen();
@@ -56,7 +59,7 @@ namespace DCL.LoadingScreen.Test
             NotificationsController notificationsController = auxiliaryViews.gameObject.AddComponent<NotificationsController>();
             notificationsController.allowNotifications = false;
 
-            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, worldState, notificationsController, playerDataStore, commonDataStore, loadingScreenDataStore, realmDataStore, shaderPrewarm);
+            loadingScreenController = new LoadingScreenController(loadingScreenView, loadingScreenHintsController, sceneController, worldState, notificationsController, playerDataStore, commonDataStore, loadingScreenDataStore, realmDataStore, shaderPrewarm);
         }
 
         [Category("EditModeCI")]
