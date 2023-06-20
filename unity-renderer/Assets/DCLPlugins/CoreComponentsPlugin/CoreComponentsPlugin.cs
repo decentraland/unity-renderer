@@ -3,6 +3,7 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
+using Unity.Profiling;
 using UnityEngine;
 
 public class CoreComponentsPlugin : IPlugin
@@ -68,7 +69,7 @@ public class CoreComponentsPlugin : IPlugin
         CoroutineStarter.Start(PrewarmPoolablePools());
     }
 
-    IEnumerator PrewarmPoolablePools()
+    private IEnumerator PrewarmPoolablePools()
     {
         yield return null;
         poolableComponentFactory.PrewarmPools();
@@ -94,9 +95,11 @@ public class CoreComponentsPlugin : IPlugin
         return new T();
     }
 
+    ProfilerMarker<int> m_BuildPoolableComponent = new ("VV.Plugin.BuildPoolableComponent", "Class ID");
     private IComponent BuildPoolableComponent(int classId)
     {
-        return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT) classId);
+        using (m_BuildPoolableComponent.Auto(classId))
+            return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT)classId);
     }
 
     public void Dispose()
