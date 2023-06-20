@@ -20,7 +20,7 @@ public class OutfitsSectionComponentView : BaseComponentView
 
     public event Action OnBackButtonPressed;
     public event Action<OutfitItem> OnOutfitEquipped;
-    public event Action<OutfitItem[]> OnSaveOutfits;
+    public event Action<OutfitItem[]> OnUpdateLocalOutfits;
     private readonly AvatarModel currentAvatarModel = new AvatarModel();
     private OutfitItem[] outfits;
 
@@ -52,9 +52,11 @@ public class OutfitsSectionComponentView : BaseComponentView
 
     private void DiscardOutfit(int outfitIndex)
     {
+        if (outfits[outfitIndex].outfit == null) return;
+
         outfitComponentViews[outfitIndex].SetIsEmpty(true);
         outfits[outfitIndex] = new OutfitItem(){slot = outfitIndex};
-        OnSaveOutfits?.Invoke(outfits);
+        OnUpdateLocalOutfits?.Invoke(outfits);
     }
 
     public void UpdateAvatarPreview(AvatarModel newAvatarModel)
@@ -114,6 +116,7 @@ public class OutfitsSectionComponentView : BaseComponentView
         avatarModel.eyeColor = outfitItem.outfit.eyes.color;
         avatarModel.hairColor = outfitItem.outfit.hair.color;
         avatarModel.skinColor = outfitItem.outfit.skin.color;
+        avatarModel.forceRender = new HashSet<string>(outfitItem.outfit.forceRender);
         return avatarModel;
     }
 
@@ -146,6 +149,6 @@ public class OutfitsSectionComponentView : BaseComponentView
         Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
         outfitComponentViews[outfitIndex].SetOutfitPreviewImage(bodySnapshot);
         outfitComponentViews[outfitIndex].SetIsLoading(false);
-        OnSaveOutfits?.Invoke(outfits);
+        OnUpdateLocalOutfits?.Invoke(outfits);
     }
 }

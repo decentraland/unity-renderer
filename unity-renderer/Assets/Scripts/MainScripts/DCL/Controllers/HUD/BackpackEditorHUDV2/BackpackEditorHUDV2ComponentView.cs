@@ -125,6 +125,7 @@ namespace DCL.Backpack
 
         public override void Hide(bool instant = false)
         {
+            ToggleNormalSection();
             gameObject.SetActive(false);
             backpackPreviewPanel.SetPreviewEnabled(false);
             colorPickerComponentView.SetActive(false);

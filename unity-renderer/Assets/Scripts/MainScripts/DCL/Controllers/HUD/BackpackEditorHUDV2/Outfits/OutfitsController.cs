@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Interface;
 using DCLServices.WearablesCatalogService;
 using System;
@@ -16,19 +17,33 @@ public class OutfitsController : IDisposable
     public event Action<OutfitItem> OnOutfitEquipped;
 
     private CancellationTokenSource cts;
+    private OutfitItem[] localOutfits;
+    private bool shouldDeploy;
 
-    public OutfitsController(OutfitsSectionComponentView view, LambdaOutfitsService lambdaOutfitsService, IUserProfileBridge userProfileBridge, IWearablesCatalogService wearablesCatalogService)
+    public OutfitsController(OutfitsSectionComponentView view, LambdaOutfitsService lambdaOutfitsService, IUserProfileBridge userProfileBridge, IWearablesCatalogService wearablesCatalogService, DataStore dataStore)
     {
         this.view = view;
         this.lambdaOutfitsService = lambdaOutfitsService;
         this.userProfileBridge = userProfileBridge;
         this.wearablesCatalogService = wearablesCatalogService;
+
         view.OnOutfitEquipped += (outfit)=>OnOutfitEquipped?.Invoke(outfit);
-        view.OnSaveOutfits += SaveOutfits;
+        view.OnUpdateLocalOutfits += UpdateLocalOutfits;
+
+        dataStore.HUDs.avatarEditorVisible.OnChange += ChangedVisibility;
     }
 
-    private void SaveOutfits(OutfitItem[] outfits) =>
-        WebInterface.SaveUserOutfits(outfits);
+    private void ChangedVisibility(bool current, bool previous)
+    {
+        if(shouldDeploy)
+            WebInterface.SaveUserOutfits(localOutfits);
+    }
+
+    private void UpdateLocalOutfits(OutfitItem[] outfits)
+    {
+        shouldDeploy = true;
+        localOutfits = outfits;
+    }
 
     public void RequestOwnedOutfits()
     {
@@ -52,6 +67,6 @@ public class OutfitsController : IDisposable
         cts?.Cancel();
         cts?.Dispose();
         cts = null;
-        view.OnSaveOutfits -= SaveOutfits;
+        view.OnUpdateLocalOutfits -= UpdateLocalOutfits;
     }
 }

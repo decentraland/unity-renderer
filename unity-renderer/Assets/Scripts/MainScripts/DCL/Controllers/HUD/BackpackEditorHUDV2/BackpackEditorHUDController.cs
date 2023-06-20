@@ -35,6 +35,7 @@ namespace DCL.Backpack
         private readonly BackpackEditorHUDModel model = new ();
 
         private int currentAnimationIndexShown;
+        private bool shouldRequestOutfits = true;
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -130,7 +131,10 @@ namespace DCL.Backpack
 
         private void OnOutfitsOpened()
         {
+            if (!shouldRequestOutfits) return;
+
             outfitsController.RequestOwnedOutfits();
+            shouldRequestOutfits = false;
         }
 
         public void Dispose()
