@@ -138,12 +138,13 @@ namespace DCL.Components
         private void OnUpdate()
         {
             // Cameras are not detected while loading, so we can not load the camera on Awake or Start
-            if (cachedModel.billboard && CameraFound)
+            if (cachedModel is { billboard: true } && CameraFound)
                 transform.forward = mainCamera.transform.forward;
         }
 
 
-        new public Model GetModel() { return cachedModel; }
+        public new Model GetModel() =>
+            cachedModel;
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
