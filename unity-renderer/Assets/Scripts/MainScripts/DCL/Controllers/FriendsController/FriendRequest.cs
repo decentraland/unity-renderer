@@ -20,13 +20,13 @@ namespace DCL.Social.Friends
             HashCode.Combine(FriendRequestId, Timestamp, From, To, MessageBody);
 
         public string FriendRequestId { get; }
-        public long Timestamp { get; }
+        public DateTime Timestamp { get; }
         public string From { get; }
         public string To { get; }
         public string MessageBody { get; }
         public bool HasBodyMessage => !string.IsNullOrEmpty(MessageBody);
 
-        public FriendRequest(string friendRequestId, long timestamp, string from, string to, string messageBody)
+        public FriendRequest(string friendRequestId, DateTime timestamp, string from, string to, string messageBody)
         {
             FriendRequestId = friendRequestId;
             Timestamp = timestamp;

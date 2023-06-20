@@ -218,7 +218,7 @@ namespace DCL.Social.Passports
                 showViewAllButton = names.totalAmount > MAX_NFT_COUNT;
             }
             catch (OperationCanceledException) { }
-            catch (Exception e) { Debug.LogError(e.Message); }
+            catch (Exception e) { Debug.LogException(e); }
             finally
             {
                 view.SetCollectibleNames(namesResult);

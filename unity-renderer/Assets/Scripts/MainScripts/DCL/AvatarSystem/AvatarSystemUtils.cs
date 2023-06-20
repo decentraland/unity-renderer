@@ -13,7 +13,6 @@ namespace AvatarSystem
     {
         public const float AVATAR_Y_OFFSET = 0.75f;
         private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
-        private const StringComparison SC = StringComparison.InvariantCultureIgnoreCase;
 
         public static bool IsCategoryRequired(string category) { return WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(category); }
 
@@ -71,11 +70,11 @@ namespace AvatarSystem
                 {
                     // If this is modified, check DecentralandMaterialGenerator.SetMaterialName,
                     // its important for the asset bundles materials to have normalized names but this functionality should work too
-                    string name = material.name;
+                    string name = material.name.ToLower();
 
-                    if (name.Contains("skin", SC))
+                    if (name.Contains("skin"))
                         material.SetColor(ShaderUtils.BaseColor, skinColor);
-                    else if (name.Contains("hair", SC))
+                    else if (name.Contains("hair"))
                         material.SetColor(ShaderUtils.BaseColor, hairColor);
                 }
             }
