@@ -101,7 +101,7 @@ namespace DCL.Backpack
                 UnEquipWearable(keyValuePair.Key, UnequipWearableSource.None, false);
 
             foreach (string forcedCategory in model.forceRender)
-                UpdateOverrideHides(forcedCategory, false);
+                UpdateOverrideHides(forcedCategory, false, false);
 
             outfitLoadCancellationToken = new CancellationTokenSource();
             LoadAndEquipOutfitWearables(outfit, outfitLoadCancellationToken.Token).Forget();
@@ -126,7 +126,7 @@ namespace DCL.Backpack
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 
             foreach (string forcedCategory in outfit.outfit.forceRender)
-                UpdateOverrideHides(forcedCategory, true);
+                UpdateOverrideHides(forcedCategory, true, false);
         }
 
         private void OnOutfitsOpened()

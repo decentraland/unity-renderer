@@ -104,7 +104,17 @@ public class OutfitsSectionComponentView : BaseComponentView
     private void SetSlotsAsLoading(OutfitItem[] outfitsToShow)
     {
         foreach (var outfitItem in outfitsToShow)
-            outfitComponentViews[outfitItem.slot].SetIsLoading(true);
+        {
+            if (outfitItem.outfit == null)
+            {
+                outfitComponentViews[outfitItem.slot].SetIsLoading(false);
+                outfitComponentViews[outfitItem.slot].SetIsEmpty(true);
+            }
+            else
+            {
+                outfitComponentViews[outfitItem.slot].SetIsLoading(true);
+            }
+        }
     }
 
     private AvatarModel GenerateAvatarModel(OutfitItem outfitItem)
