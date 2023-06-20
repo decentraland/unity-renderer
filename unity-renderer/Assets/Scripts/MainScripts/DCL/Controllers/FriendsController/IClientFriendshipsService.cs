@@ -4,8 +4,8 @@ namespace MainScripts.DCL.Controllers.FriendsController
 {
     public interface IMatrixInitializationBridge
     {
-        event Action<string> OnReceiveMatrixAccessToken;
+        public string AccessToken { get; }
 
-        void InitializeMatrix(string json);
+        event Action<string> OnReceiveMatrixAccessToken;
     }
 }

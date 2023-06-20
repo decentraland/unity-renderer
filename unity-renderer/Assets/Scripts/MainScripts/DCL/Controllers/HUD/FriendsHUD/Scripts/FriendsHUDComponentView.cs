@@ -178,6 +178,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             case FriendRequestError.AlreadyFriends:
                 friendRequestsTab.ShowAlreadyFriendsNotification();
                 break;
+            case FriendRequestError.UserNotFound:
+                friendRequestsTab.ShowUserNotFoundNotification();
+                break;
         }
     }
 

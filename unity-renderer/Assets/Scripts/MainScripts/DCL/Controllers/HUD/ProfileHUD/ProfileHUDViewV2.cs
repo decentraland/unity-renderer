@@ -304,9 +304,9 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     {
         textName.text = string.IsNullOrEmpty(userProfile.userName) || userProfile.userName.Length <= NAME_POSTFIX_LENGTH
             ? userProfile.userName
-            : userProfile.userName.Substring(0, userProfile.userName.Length - NAME_POSTFIX_LENGTH - 1);
+            : userProfile.userName[..(userProfile.userName.Length - NAME_POSTFIX_LENGTH - 1)];
 
-        textPostfix.text = $"#{userProfile.userId.Substring(userProfile.userId.Length - NAME_POSTFIX_LENGTH)}";
+        textPostfix.text = $"#{userProfile.userId[^NAME_POSTFIX_LENGTH..]}";
         SetActiveUnverifiedNameGOs(true);
     }
 
