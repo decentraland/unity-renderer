@@ -14,15 +14,15 @@
     "allowedMediaHostnames": [],
     "loadingScreenHints": [
         {
-            "textureUrl": "https://images.ctfassets.net/ea2ybdmmn1kv/68n98WZjhr7gAUb06eqtJt/1998a3ce149568c98c986d4f07465728/listings-map-7153be5e12cfd439e8cd8e5fa6f02293.webp",
-            "title": "local hint title 1",
+            "textureUrl": "https://api.decentraland.org/v1/minimap.png",
+            "title": "local hint title 01",
             "body": "local hint body 1 where you can put a lot of text just to be sure that the hints are working as expected",
             "sourceTag": 2
         },
         {
-          "textureUrl": "https://images.ctfassets.net/ea2ybdmmn1kv/68n98WZjhr7gAUb06eqtJt/1998a3ce149568c98c986d4f07465728/listings-map-7153be5e12cfd439e8cd8e5fa6f02293.webp",
-          "title": "local hint title 2",
-          "body": "local hint body 22222222222222222222222",
+          "textureUrl": "https://api.decentraland.org/v1/estatemap.png",
+          "title": "local hint title 02",
+          "body": "local hint body 22222222222222222222222 where you can put a lot of text just to be sure that the hints are working as expected",
           "sourceTag": 2
         }
     ]

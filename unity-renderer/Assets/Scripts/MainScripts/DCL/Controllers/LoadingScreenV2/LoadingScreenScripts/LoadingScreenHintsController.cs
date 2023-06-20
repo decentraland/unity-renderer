@@ -74,7 +74,8 @@ namespace DCL.LoadingScreen.V2
             // Initializing empty hints views
             for (var i = 0; i < MAX_HINTS; i++)
             {
-                HintView newHintView = Object.Instantiate(hintViewPrefab, hintsContainer, true);
+                HintView newHintView = Object.Instantiate(hintViewPrefab, hintsContainer, false);
+                newHintView.transform.localPosition = Vector3.zero;
                 newHintView.ToggleHint(false);
                 hintViewPool.Add(newHintView);
             }

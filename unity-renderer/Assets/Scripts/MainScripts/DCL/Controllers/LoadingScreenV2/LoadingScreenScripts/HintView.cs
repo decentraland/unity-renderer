@@ -11,15 +11,18 @@ namespace DCL.LoadingScreen.V2
     /// </summary>
     public class HintView : MonoBehaviour, IHintView
     {
-        [SerializeField] internal TMP_Text hintText;
+        [SerializeField] internal TMP_Text hintTitleText;
+        [SerializeField] internal TMP_Text hintBodyText;
         [SerializeField] internal Image hintImage;
 
         public void Initialize(Hint hint, Texture2D texture, bool startAsActive = false)
         {
             try
             {
-                if (hintText == null)
+                if (hintTitleText == null)
                     throw new System.Exception("HintView - HintText is not assigned!");
+                if (hintTitleText == null)
+                    throw new System.Exception("HintView - HintBodyText is not assigned!");
                 if (hintImage == null)
                     throw new System.Exception("HintView - HintImage is not assigned!");
             }
@@ -29,7 +32,8 @@ namespace DCL.LoadingScreen.V2
                 throw;
             }
 
-            hintText.text = hint.Title;
+            hintTitleText.text = hint.Title;
+            hintBodyText.text = hint.Body;
 
             if (texture != null)
                 hintImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
@@ -40,7 +44,10 @@ namespace DCL.LoadingScreen.V2
         public void ToggleHint(bool active)
         {
             if (this != null)
+            {
+                transform.localPosition = Vector3.zero;
                 gameObject.SetActive(active);
+            }
         }
     }
 }
