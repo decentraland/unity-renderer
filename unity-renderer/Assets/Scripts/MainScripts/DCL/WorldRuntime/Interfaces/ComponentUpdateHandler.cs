@@ -1,6 +1,7 @@
 ﻿using DCL.Components;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -82,6 +83,9 @@ namespace DCL
             routine = null;
         }
 
+        ProfilerMarker m_RaiseOnAppliedChanges = new ("VV.ComponentUpdateHandler.RaiseOnAppliedChanges");
+
+
         public virtual IEnumerator ApplyChangesWrapper(BaseModel model)
         {
 #if UNITY_EDITOR
@@ -97,10 +101,14 @@ namespace DCL
                     yield return enumerator;
                 }
             }
+
 #if UNITY_EDITOR
             applyChangesRunning = false;
 #endif
+
+            m_RaiseOnAppliedChanges.Begin();
             owner.RaiseOnAppliedChanges();
+            m_RaiseOnAppliedChanges.End();
         }
     }
 }

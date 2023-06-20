@@ -2,6 +2,7 @@
 using DCL.Components;
 using DCL.Models;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace DCL
@@ -18,20 +19,20 @@ namespace DCL
 
     public class PoolableComponentFactory : ScriptableObject, IPoolableComponentFactory
     {
-        [System.Serializable]
+        [Serializable]
         public class Item
         {
             public CLASS_ID_COMPONENT classId;
             public Component prefab;
 
-            [Header("Pool Options")] public bool usePool;
-
+            [Header("Pool Options")]
+            public bool usePool;
             public int prewarmCount;
         }
 
         public Item[] factoryList;
 
-        Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
+        private Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
 
         public void EnsureFactoryDictionary()
         {
@@ -107,9 +108,12 @@ namespace DCL
             pool.useLifecycleHandlers = true;
         }
 
+        ProfilerMarker m_CreateItemFromId = new ("VV.Factory.CreateItemFromId");
+
         public ItemType CreateItemFromId<ItemType>(CLASS_ID_COMPONENT id)
             where ItemType : IPoolableObjectContainer
         {
+            m_CreateItemFromId.Begin(id.ToString());
             EnsureFactoryDictionary();
 
             if (!factoryDict.ContainsKey(id))
@@ -117,6 +121,7 @@ namespace DCL
 #if UNITY_EDITOR
                 Debug.LogError("Class " + id + " can't be instantiated because the field doesn't exist!");
 #endif
+                m_CreateItemFromId.End();
                 return default(ItemType);
             }
 
@@ -125,6 +130,7 @@ namespace DCL
             if (factoryItem.prefab == null)
             {
                 Debug.LogError("Prefab for class " + id + " is null!");
+                m_CreateItemFromId.End();
                 return default(ItemType);
             }
 
@@ -145,6 +151,7 @@ namespace DCL
             ItemType item = instancedGo.GetComponent<ItemType>();
             item.poolableObject = poolableObject;
 
+            m_CreateItemFromId.End();
             return item;
         }
     }
