@@ -103,8 +103,7 @@ namespace DCL
                 return;
 
             GameObject original = Instantiate(item.prefab.gameObject);
-            pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount,
-                isPersistent: true);
+            pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount, isPersistent: true);
             pool.useLifecycleHandlers = true;
         }
 
@@ -148,8 +147,13 @@ namespace DCL
                 instancedGo = Instantiate(factoryItem.prefab.gameObject);
             }
 
-            ItemType item = instancedGo.GetComponent<ItemType>();
-            item.poolableObject = poolableObject;
+            ItemType item = default;
+
+            if(instancedGo != null)
+            {
+                item = instancedGo.GetComponent<ItemType>();
+                item.poolableObject = poolableObject;
+            }
 
             m_CreateItemFromId.End();
             return item;
