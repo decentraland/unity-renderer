@@ -130,7 +130,6 @@ import {
   ChatMessageType,
   CreateChannelPayload,
   FriendshipAction,
-  FriendshipStatusJuli,
   FriendsInitializationMessage,
   FriendsInitializeChatPayload,
   GetChannelInfoPayload,
@@ -1098,11 +1097,9 @@ function sendUpdateUserStatus(id: string, status: CurrentUserStatus) {
 
   const updateMessage: UpdateUserStatusMessage = {
     userId,
-    userName: '',
     realm: status.realm,
     position: status.position,
-    presence: isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE,
-    friendshipStatus: FriendshipStatusJuli.FRIENDS
+    presence: isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE
   }
 
   getUnityInstance().UpdateUserPresence(updateMessage)

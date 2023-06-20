@@ -509,24 +509,13 @@ export enum PresenceStatus {
 
 type Realm = {
   serverName: string
-  layer: string
-}
-
-export enum FriendshipStatusJuli {
-  NONE,
-  FRIENDS,
-  NON_FRIENDS,
-  REQUESTED_TO,
-  REQUESTED_FROM
 }
 
 export type UpdateUserStatusMessage = {
-  userName: string
   userId: string
   realm: Realm | undefined
   position: Vector2 | undefined
   presence: PresenceStatus
-  friendshipStatus: FriendshipStatusJuli
 }
 
 export interface AddFriendsPayload {
