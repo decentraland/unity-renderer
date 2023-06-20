@@ -46,6 +46,7 @@ import {
   isPartialWearable
 } from './types'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
+import { CatalystClient } from 'dcl-catalyst-client/dist/CatalystClient'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -54,10 +55,8 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { IRealmAdapter } from 'shared/realm/types'
 import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
+import { OwnedItemsWithDefinition } from 'dcl-catalyst-client/dist/LambdasAPI'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { OwnedItemsWithDefinition } from 'dcl-catalyst-client/dist/client/types'
-import { LambdasClient, createLambdasClient } from 'dcl-catalyst-client'
-import { createFetchComponent } from '@well-known-components/fetch-component'
 
 const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
 const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
@@ -121,10 +120,7 @@ function* fetchItemsFromCatalyst(
   // TODO: stop using CatalystClient and move endpoints to BFF
   const catalystUrl: string = contentBaseUrl.replace(/\/content\/?.*$/, '')
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
-
-  const fetcher = createFetchComponent()
-  const client = createLambdasClient({ url: catalystUrl, fetcher })
-
+  const client: CatalystClient = new CatalystClient({ catalystUrl })
   const network: ETHEREUM_NETWORK = yield select(getSelectedNetwork)
   const COLLECTIONS_OR_ITEMS_ALLOWED =
     PREVIEW || ((DEBUG || getTLD() !== 'org') && network !== ETHEREUM_NETWORK.MAINNET)
@@ -254,23 +250,23 @@ function* fetchItemsFromCatalyst(
     .filter((item) => !!item)
 }
 
-function fetchOwnedThirdPartyWearables(ethAddress: string, thirdPartyId: string, client: LambdasClient) {
+function fetchOwnedThirdPartyWearables(ethAddress: string, thirdPartyId: string, client: CatalystClient) {
   return client.fetchOwnedThirdPartyWearables(ethAddress, thirdPartyId, true)
 }
 
-function fetchOwnedWearables(ethAddress: string, client: LambdasClient) {
+function fetchOwnedWearables(ethAddress: string, client: CatalystClient) {
   return client.fetchOwnedWearables(ethAddress, true)
 }
 
-function fetchOwnedEmotes(ethAddress: string, client: LambdasClient) {
+function fetchOwnedEmotes(ethAddress: string, client: CatalystClient) {
   return client.fetchOwnedEmotes(ethAddress, true)
 }
 
-async function fetchWearablesByFilters(filters: WearablesRequestFilters, client: LambdasClient) {
+async function fetchWearablesByFilters(filters: WearablesRequestFilters, client: CatalystClient) {
   return client.fetchWearables(filters)
 }
 
-async function fetchEmotesByFilters(filters: EmotesRequestFilters, client: LambdasClient) {
+async function fetchEmotesByFilters(filters: EmotesRequestFilters, client: CatalystClient) {
   return client.fetchEmotes(filters)
 }
 

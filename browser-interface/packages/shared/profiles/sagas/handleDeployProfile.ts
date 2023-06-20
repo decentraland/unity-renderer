@@ -1,7 +1,12 @@
 import { Authenticator } from '@dcl/crypto'
 import { hashV1 } from '@dcl/hashing'
 import { Avatar, EntityType, Profile, Snapshots } from '@dcl/schemas'
-import { createFetchComponent } from '@well-known-components/fetch-component'
+import {
+  BuildEntityOptions,
+  BuildEntityWithoutFilesOptions,
+  ContentClient
+} from 'dcl-catalyst-client/dist/ContentClient'
+import type { DeploymentData } from 'dcl-catalyst-client/dist/utils/DeploymentBuilder'
 import { base64ToBuffer } from 'lib/encoding/base64ToBlob'
 import { call, put, select } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
@@ -15,8 +20,6 @@ import type { DeployProfile } from '../actions'
 import { deployProfileFailure, deployProfileSuccess } from '../actions'
 import { buildServerMetadata } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import type { ContentFile } from '../types'
-import { createContentClient } from 'dcl-catalyst-client'
-import { BuildEntityOptions, BuildEntityWithoutFilesOptions, DeploymentData } from 'dcl-catalyst-client/dist/client/types'
 
 export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
@@ -104,8 +107,7 @@ async function deploy(
   contentHashes: Map<string, string>
 ) {
   // Build the client
-  const fetcher = createFetchComponent()
-  const catalyst = createContentClient({ url, fetcher })
+  const catalyst = new ContentClient({ contentUrl: url })
 
   const entityWithoutNewFilesPayload = {
     type: EntityType.PROFILE,
@@ -130,7 +132,7 @@ async function deploy(
   // Build the deploy data
   const deployData: DeploymentData = { ...preparationData, authChain }
   // Deploy the actual entity
-  return catalyst.deploy(deployData)
+  return catalyst.deployEntity(deployData)
 }
 
 async function makeContentFile(path: string, content: Uint8Array | ArrayBuffer): Promise<ContentFile> {
