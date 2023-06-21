@@ -7330,6 +7330,11 @@ PrefabInstance:
       propertyPath: outfitIndex
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8392361563229294383, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8559751060532880588, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_IsActive
