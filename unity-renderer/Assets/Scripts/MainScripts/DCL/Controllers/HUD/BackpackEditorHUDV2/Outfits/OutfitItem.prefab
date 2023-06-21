@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8295837223743633863}
   - component: {fileID: 8546480752096707556}
   - component: {fileID: 776432054024113608}
+  - component: {fileID: 6137716338417786674}
   m_Layer: 5
   m_Name: EquipButton
   m_TagString: Untagged
@@ -122,6 +123,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6137716338417786674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 567167605175107643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &732553044885975513
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,6 +513,7 @@ GameObject:
   - component: {fileID: 3159008340754821537}
   - component: {fileID: 1275784127591451939}
   - component: {fileID: 325920924774804626}
+  - component: {fileID: 6936782006123317519}
   m_Layer: 5
   m_Name: SaveSlot
   m_TagString: Untagged
@@ -607,6 +625,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6936782006123317519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3015624420799642481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &3648007673229364808
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,6 +699,7 @@ GameObject:
   - component: {fileID: 7618682557053027906}
   - component: {fileID: 5865778208057832014}
   - component: {fileID: 647465370268838745}
+  - component: {fileID: 2531719887188824124}
   m_Layer: 5
   m_Name: DiscardOutfit
   m_TagString: Untagged
@@ -775,6 +810,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2531719887188824124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3695279943827400440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 0
+  extraClickEvent: {fileID: 0}
 --- !u!1 &5011879625025039993
 GameObject:
   m_ObjectHideFlags: 0
