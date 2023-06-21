@@ -23,6 +23,10 @@ namespace DCL.Backpack
 
             DataStore dataStore = DataStore.i;
 
+            var backpackAnalyticsService = new BackpackAnalyticsService(
+                Environment.i.platform.serviceProviders.analytics,
+                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
+
             view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(), userProfileBridge, dataStore);
 
             var outfitsController = new OutfitsController(
@@ -31,18 +35,14 @@ namespace DCL.Backpack
                     Environment.i.serviceLocator.Get<ILambdasService>(),
                     Environment.i.serviceLocator.Get<IServiceProviders>()),
                 userProfileBridge,
-                wearablesCatalogService,
-                dataStore);
+                dataStore,
+                backpackAnalyticsService);
 
             var backpackEmotesSectionController = new BackpackEmotesSectionController(
                 dataStore,
                 view.EmotesSectionTransform,
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
-
-            var backpackAnalyticsService = new BackpackAnalyticsService(
-                Environment.i.platform.serviceProviders.analytics,
-                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
 
             var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 

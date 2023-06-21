@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Backpack;
 using DCL.Interface;
 using DCLServices.WearablesCatalogService;
 using System;
@@ -13,7 +14,7 @@ public class OutfitsController : IDisposable
     private readonly LambdaOutfitsService lambdaOutfitsService;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IOutfitsSectionComponentView view;
-    private readonly IWearablesCatalogService wearablesCatalogService;
+    private readonly IBackpackAnalyticsService backpackAnalyticsService;
     public event Action<OutfitItem> OnOutfitEquipped;
 
     private CancellationTokenSource cts;
@@ -24,18 +25,36 @@ public class OutfitsController : IDisposable
         IOutfitsSectionComponentView view,
         LambdaOutfitsService lambdaOutfitsService,
         IUserProfileBridge userProfileBridge,
-        IWearablesCatalogService wearablesCatalogService,
-        DataStore dataStore)
+        DataStore dataStore,
+        IBackpackAnalyticsService backpackAnalyticsService)
     {
         this.view = view;
         this.lambdaOutfitsService = lambdaOutfitsService;
         this.userProfileBridge = userProfileBridge;
-        this.wearablesCatalogService = wearablesCatalogService;
+        this.backpackAnalyticsService = backpackAnalyticsService;
 
-        view.OnOutfitEquipped += (outfit)=>OnOutfitEquipped?.Invoke(outfit);
+        view.OnOutfitEquipped += OutfitEquip;
+        view.OnOutfitDiscarded += DiscardOutfit;
+        view.OnOutfitEquipped += EquipOutfit;
         view.OnUpdateLocalOutfits += UpdateLocalOutfits;
 
         dataStore.HUDs.avatarEditorVisible.OnChange += ChangedVisibility;
+    }
+
+    private void EquipOutfit(OutfitItem outfit)
+    {
+        backpackAnalyticsService.SendOutfitSave(outfit.slot);
+    }
+
+    private void DiscardOutfit(OutfitItem outfit)
+    {
+        backpackAnalyticsService.SendOutfitDelete(outfit.slot);
+    }
+
+    private void OutfitEquip(OutfitItem outfit)
+    {
+        backpackAnalyticsService.SendOutfitEquipped(outfit.slot);
+        OnOutfitEquipped?.Invoke(outfit);
     }
 
     private void ChangedVisibility(bool current, bool previous)
@@ -73,5 +92,6 @@ public class OutfitsController : IDisposable
         cts?.Dispose();
         cts = null;
         view.OnUpdateLocalOutfits -= UpdateLocalOutfits;
+        view.OnOutfitEquipped -= OutfitEquip;
     }
 }

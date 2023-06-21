@@ -23,6 +23,8 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
 
     public event Action OnBackButtonPressed;
     public event Action<OutfitItem> OnOutfitEquipped;
+    public event Action<OutfitItem> OnOutfitDiscarded;
+    public event Action<OutfitItem> OnOutfitSaved;
     public event Action<OutfitItem[]> OnUpdateLocalOutfits;
     private readonly AvatarModel currentAvatarModel = new AvatarModel();
     private OutfitItem[] outfits;
@@ -71,6 +73,7 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
     private void CompleteDiscardOutfit()
     {
         outfitComponentViews[indexToBeDiscarded].SetIsEmpty(true);
+        OnOutfitDiscarded?.Invoke(outfits[indexToBeDiscarded]);
         outfits[indexToBeDiscarded] = new OutfitItem(){slot = indexToBeDiscarded};
         OnUpdateLocalOutfits?.Invoke(outfits);
         discardOutfitModal.SetActive(false);
@@ -189,6 +192,7 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
 
         outfitComponentViews[outfitIndex].SetModel(new OutfitComponentModel(){outfitItem = outfitItem});
         outfits[outfitIndex] = outfitItem;
+        OnOutfitSaved?.Invoke(outfitItem);
         Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
         outfitComponentViews[outfitIndex].SetOutfitPreviewImage(bodySnapshot);
         outfitComponentViews[outfitIndex].SetIsLoading(false);
