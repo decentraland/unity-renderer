@@ -361,7 +361,7 @@ GameObject:
   - component: {fileID: 810649795769108263}
   - component: {fileID: 2133216215866117301}
   m_Layer: 5
-  m_Name: Background
+  m_Name: HintBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -376,7 +376,7 @@ RectTransform:
   m_GameObject: {fileID: 4557946592730176500}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1999999, y: 1.1999999, z: 1.1999999}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2944169527387221701}
@@ -407,19 +407,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.015686275}
+  m_Material: {fileID: 2100000, guid: 870f0ab266e01194abe6696a94ddde86, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d7095b4a66a3b4aec97db439447fa78c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 71985a09feaca874fa1ca3913fa8dbc8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
+  m_FillMethod: 2
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
@@ -438,7 +438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 4
-  m_AspectRatio: 4
+  m_AspectRatio: 1
 --- !u!1 &8875804876341703708
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,6 +496,7 @@ MonoBehaviour:
   hintTitleText: {fileID: 1194563920933136163}
   hintBodyText: {fileID: 80060309417816108}
   hintImage: {fileID: 8107552351602172411}
+  hintBackgroundImage: {fileID: 810649795769108263}
   canvasGroup: {fileID: 4596254253088379067}
 --- !u!225 &4596254253088379067
 CanvasGroup:

@@ -16,6 +16,7 @@ namespace DCL.LoadingScreen.V2
         [SerializeField] private TMP_Text hintTitleText;
         [SerializeField] private TMP_Text hintBodyText;
         [SerializeField] private Image hintImage;
+        [FormerlySerializedAs("hintBagroundImage")] [SerializeField] private Image hintBackgroundImage;
         [SerializeField] private CanvasGroup canvasGroup;
 
         private const float FADE_DURATION = 0.4f;
@@ -43,7 +44,12 @@ namespace DCL.LoadingScreen.V2
             hintBodyText.text = hint.Body;
 
             if (texture != null)
-                hintImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            {
+                var newSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+                hintImage.sprite = newSprite;
+                hintBackgroundImage.sprite = newSprite;
+            }
+
 
             ToggleHint(startAsActive);
         }
