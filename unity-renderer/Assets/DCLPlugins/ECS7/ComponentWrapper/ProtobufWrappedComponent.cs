@@ -5,7 +5,7 @@ using System.IO;
 
 namespace DCL.ECS7.ComponentWrapper
 {
-    public class ProtobufWrappedComponent<T> : IWrappedComponent<T> where T: class, IMessage<T>
+    public record ProtobufWrappedComponent<T> : IWrappedComponent<T> where T: class, IMessage<T>
     {
         private readonly T model;
 

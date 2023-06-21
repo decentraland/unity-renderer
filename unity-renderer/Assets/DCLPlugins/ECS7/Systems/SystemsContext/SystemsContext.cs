@@ -11,6 +11,7 @@ public record SystemsContext
     public readonly IInternalECSComponents internalEcsComponents;
     public readonly IComponentGroups componentGroups;
     public readonly ECSComponent<PBBillboard> billboards;
+    public readonly ECSComponent<ECSTransform> TransformComponent;
     public readonly WrappedComponentPool<IWrappedComponent<PBCameraMode>> CameraModePool;
     public readonly WrappedComponentPool<IWrappedComponent<PBPointerLock>> PointerLockPool;
     public readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> TransformPool;
@@ -21,6 +22,7 @@ public record SystemsContext
         IInternalECSComponents internalEcsComponents,
         IComponentGroups componentGroups,
         ECSComponent<PBBillboard> billboards,
+        ECSComponent<ECSTransform> transformComponent,
         WrappedComponentPool<IWrappedComponent<PBCameraMode>> cameraModePool,
         WrappedComponentPool<IWrappedComponent<PBPointerLock>> pointerLockPool,
         WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool,
@@ -30,6 +32,7 @@ public record SystemsContext
         this.internalEcsComponents = internalEcsComponents;
         this.componentGroups = componentGroups;
         this.billboards = billboards;
+        TransformComponent = transformComponent;
         CameraModePool = cameraModePool;
         PointerLockPool = pointerLockPool;
         TransformPool = transformPool;

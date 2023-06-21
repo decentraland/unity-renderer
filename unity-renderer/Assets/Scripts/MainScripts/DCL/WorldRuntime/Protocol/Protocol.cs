@@ -17,7 +17,6 @@ namespace DCL.Models
         public const long SCENE_ROOT_ENTITY = 0;
         public const long PLAYER_ENTITY = 1;
         public const long CAMERA_ENTITY = 2;
-        public const long INTERNAL_PLAYER_ENTITY_REPRESENTATION = 510;
 
         // To be deprecated soon
         public const long AVATAR_ENTITY_REFERENCE = 3;

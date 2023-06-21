@@ -352,6 +352,7 @@ namespace RPC.Services
                         continue;
                     }
 
+                    CRDTProtocol crdtProtocol = executor.crdtProtocol;
                     CrdtMessage crdtMessage;
 
                     if (msg.MessageType == CrdtMessageType.APPEND_COMPONENT || msg.MessageType == CrdtMessageType.PUT_COMPONENT)
@@ -359,18 +360,27 @@ namespace RPC.Services
 
                     if (msg.MessageType == CrdtMessageType.APPEND_COMPONENT)
                     {
-                        crdtMessage = executor.crdtProtocol.CreateSetMessage(entityId, componentId, buffer.ToArray());
+                        crdtMessage = crdtProtocol.CreateSetMessage(entityId, componentId, buffer.ToArray());
                     }
                     else if (msg.MessageType == CrdtMessageType.PUT_COMPONENT)
                     {
-                        crdtMessage = executor.crdtProtocol.CreateLwwMessage(entityId, componentId, buffer.ToArray());
+                        crdtMessage = crdtProtocol.CreateLwwMessage(entityId, componentId, buffer.ToArray());
                     }
                     else
                     {
-                        crdtMessage = executor.crdtProtocol.CreateLwwMessage(entityId, componentId, null);
+                        crdtMessage = crdtProtocol.CreateLwwMessage(entityId, componentId, null);
                     }
 
-                    CRDTSerializer.Serialize(sendCrdtBinaryWriter, crdtMessage);
+                    CRDTProtocol.ProcessMessageResultType resultType = crdtProtocol.ProcessMessage(crdtMessage);
+
+                    if (resultType == CRDTProtocol.ProcessMessageResultType.StateUpdatedData ||
+                        resultType == CRDTProtocol.ProcessMessageResultType.StateUpdatedTimestamp ||
+                        resultType == CRDTProtocol.ProcessMessageResultType.EntityWasDeleted ||
+                        resultType == CRDTProtocol.ProcessMessageResultType.StateElementAddedToSet)
+                    {
+                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, crdtMessage);
+                    }
+
                     msg.PooledWrappedComponent.Dispose();
                 }
 

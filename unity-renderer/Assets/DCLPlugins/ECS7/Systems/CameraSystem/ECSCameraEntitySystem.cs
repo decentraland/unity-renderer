@@ -4,10 +4,12 @@ using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 namespace ECSSystems.CameraSystem
@@ -22,6 +24,7 @@ namespace ECSSystems.CameraSystem
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
         private readonly BaseVariableAsset<CameraMode.ModeId> cameraMode;
+        private readonly ECSComponent<ECSTransform> transformComponent;
 
         private Vector3 lastCameraPosition = Vector3.zero;
         private Quaternion lastCameraRotation = Quaternion.identity;
@@ -31,6 +34,7 @@ namespace ECSSystems.CameraSystem
             WrappedComponentPool<IWrappedComponent<PBCameraMode>> cameraModePool,
             WrappedComponentPool<IWrappedComponent<PBPointerLock>> pointerLockPool,
             WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool,
+            ECSComponent<ECSTransform> transformComponent,
             BaseList<IParcelScene> loadedScenes, BaseVariable<Transform> cameraTransform, Vector3Variable worldOffset,
             BaseVariableAsset<CameraMode.ModeId> cameraMode)
         {
@@ -42,6 +46,7 @@ namespace ECSSystems.CameraSystem
             this.cameraModePool = cameraModePool;
             this.pointerLockPool = pointerLockPool;
             this.transformPool = transformPool;
+            this.transformComponent = transformComponent;
 
             loadedScenes.OnAdded += LoadedScenesOnOnAdded;
         }
@@ -97,6 +102,16 @@ namespace ECSSystems.CameraSystem
                 t.rotation = cameraRotation;
 
                 writer.Put(SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM, pooledTransformComponent);
+
+                if (scene.entities.TryGetValue(SpecialEntityId.CAMERA_ENTITY, out var entity))
+                {
+                    ECSTransform stored = transformComponent.Get(scene, entity).model ?? new ECSTransform();
+                    stored.position = t.position;
+                    stored.rotation = t.rotation;
+                    stored.scale = t.scale;
+                    stored.parentId = t.parentId;
+                    transformComponent.SetModel(scene, entity, stored);
+                }
             }
         }
 
