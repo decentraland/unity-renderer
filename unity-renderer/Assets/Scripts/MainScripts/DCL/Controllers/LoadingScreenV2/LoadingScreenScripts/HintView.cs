@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,20 +13,25 @@ namespace DCL.LoadingScreen.V2
     /// </summary>
     public class HintView : MonoBehaviour, IHintView
     {
-        [SerializeField] internal TMP_Text hintTitleText;
-        [SerializeField] internal TMP_Text hintBodyText;
-        [SerializeField] internal Image hintImage;
+        [SerializeField] private TMP_Text hintTitleText;
+        [SerializeField] private TMP_Text hintBodyText;
+        [SerializeField] private Image hintImage;
+        [SerializeField] private CanvasGroup canvasGroup;
+
+        private const float FADE_DURATION = 0.4f;
 
         public void Initialize(Hint hint, Texture2D texture, bool startAsActive = false)
         {
             try
             {
+                if (canvasGroup == null)
+                    throw new WarningException("HintView - CanvasGroup has not been found!");
                 if (hintTitleText == null)
-                    throw new System.Exception("HintView - HintText is not assigned!");
+                    throw new WarningException("HintView - HintText is not assigned!");
                 if (hintTitleText == null)
-                    throw new System.Exception("HintView - HintBodyText is not assigned!");
+                    throw new WarningException("HintView - HintBodyText is not assigned!");
                 if (hintImage == null)
-                    throw new System.Exception("HintView - HintImage is not assigned!");
+                    throw new WarningException("HintView - HintImage is not assigned!");
             }
             catch (System.Exception e)
             {
@@ -45,8 +52,43 @@ namespace DCL.LoadingScreen.V2
         {
             if (this != null)
             {
-                transform.localPosition = Vector3.zero;
-                gameObject.SetActive(active);
+                ToggleHintAsync(active).Forget();
+            }
+        }
+
+        public UniTask ToggleHintAsync(bool active)
+        {
+            if (this != null)
+            {
+                return Fade(active);
+            }
+            return UniTask.CompletedTask;
+        }
+
+        private async UniTask Fade(bool fadeIn)
+        {
+            if (fadeIn)
+            {
+                gameObject.SetActive(true);
+            }
+
+            float startAlpha = fadeIn ? 0 : 1;
+            float endAlpha = fadeIn ? 1 : 0;
+            float elapsedTime = 0;
+
+            while (elapsedTime < FADE_DURATION)
+            {
+                elapsedTime += Time.unscaledDeltaTime;
+                float newAlpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / FADE_DURATION);
+                canvasGroup.alpha = newAlpha;
+                await UniTask.Yield(PlayerLoopTiming.Update);
+            }
+
+            canvasGroup.alpha = endAlpha;
+
+            if (!fadeIn)
+            {
+                gameObject.SetActive(false);
             }
         }
     }

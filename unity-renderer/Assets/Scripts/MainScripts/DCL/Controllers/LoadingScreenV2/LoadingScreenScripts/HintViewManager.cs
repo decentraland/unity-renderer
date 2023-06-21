@@ -77,7 +77,8 @@ namespace DCL.LoadingScreen.V2
             {
                 await UniTask.Delay(hintShowTime, cancellationToken: localCts.Token);
                 // Continue with the next hint without stopping the carousel.
-                SetHint((currentHintIndex + 1) % hintViewList.Count);
+                if (hintViewList.Count > 0)
+                    SetHint((currentHintIndex + 1) % hintViewList.Count);
             }
             catch (OperationCanceledException)
             {

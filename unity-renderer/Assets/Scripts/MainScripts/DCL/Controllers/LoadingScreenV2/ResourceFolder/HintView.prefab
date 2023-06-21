@@ -449,6 +449,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2944169527387221701}
   - component: {fileID: 3321709087155896621}
+  - component: {fileID: 4596254253088379067}
   m_Layer: 5
   m_Name: HintView
   m_TagString: Untagged
@@ -495,3 +496,16 @@ MonoBehaviour:
   hintTitleText: {fileID: 1194563920933136163}
   hintBodyText: {fileID: 80060309417816108}
   hintImage: {fileID: 8107552351602172411}
+  canvasGroup: {fileID: 4596254253088379067}
+--- !u!225 &4596254253088379067
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8875804876341703708}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
