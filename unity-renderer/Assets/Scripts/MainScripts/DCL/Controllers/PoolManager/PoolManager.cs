@@ -112,7 +112,7 @@ namespace DCL
             if (USE_POOL_CONTAINERS)
             {
                 pool.container.transform.parent = container.transform;
-                pool.original.name = "Original";
+                pool.original.name = "Original_" + id;
                 pool.original.transform.SetParent(pool.container.transform, true);
             }
             else
