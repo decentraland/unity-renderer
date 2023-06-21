@@ -35,21 +35,17 @@ public class OutfitsController : IDisposable
 
         view.OnOutfitEquipped += OutfitEquip;
         view.OnOutfitDiscarded += DiscardOutfit;
-        view.OnOutfitEquipped += EquipOutfit;
+        view.OnOutfitSaved += SaveOutfit;
         view.OnUpdateLocalOutfits += UpdateLocalOutfits;
 
         dataStore.HUDs.avatarEditorVisible.OnChange += ChangedVisibility;
     }
 
-    private void EquipOutfit(OutfitItem outfit)
-    {
+    private void SaveOutfit(OutfitItem outfit) =>
         backpackAnalyticsService.SendOutfitSave(outfit.slot);
-    }
 
-    private void DiscardOutfit(OutfitItem outfit)
-    {
+    private void DiscardOutfit(OutfitItem outfit) =>
         backpackAnalyticsService.SendOutfitDelete(outfit.slot);
-    }
 
     private void OutfitEquip(OutfitItem outfit)
     {
