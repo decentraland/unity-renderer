@@ -112,5 +112,8 @@ namespace DCL.Social.Friends
 
         public UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken) =>
             newFriendsApiBridge.GetFriendshipStatus(userId, cancellationToken);
+
+        public void AddFriend(string userId) =>
+            newFriendsApiBridge.AddFriend(userId);
     }
 }

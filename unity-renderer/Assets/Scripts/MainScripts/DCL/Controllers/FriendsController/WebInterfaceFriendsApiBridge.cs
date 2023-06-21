@@ -314,5 +314,8 @@ namespace DCL.Social.Friends
 
         public UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken) =>
             throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
+
+        public void AddFriend(string userId) =>
+            WebInterface.AddFriend(userId);
     }
 }

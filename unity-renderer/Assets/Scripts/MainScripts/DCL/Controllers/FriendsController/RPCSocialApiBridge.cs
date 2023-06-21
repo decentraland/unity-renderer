@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCl.Social.Friends;
 using DCL.Tasks;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
@@ -16,6 +17,7 @@ namespace DCL.Social.Friends
         private readonly IMatrixInitializationBridge matrixInitializationBridge;
         private readonly IUserProfileBridge userProfileWebInterfaceBridge;
         private readonly ISocialClientProvider socialClientProvider;
+        private readonly IFriendsApiBridge kernelAPIBridge;
 
         private string accessToken;
         private IClientFriendshipsService socialClient;
@@ -31,11 +33,13 @@ namespace DCL.Social.Friends
 
         public RPCSocialApiBridge(IMatrixInitializationBridge matrixInitializationBridge,
             IUserProfileBridge userProfileWebInterfaceBridge,
-            ISocialClientProvider socialClientProvider)
+            ISocialClientProvider socialClientProvider,
+            IFriendsApiBridge kernelAPIBridge)
         {
             this.matrixInitializationBridge = matrixInitializationBridge;
             this.userProfileWebInterfaceBridge = userProfileWebInterfaceBridge;
             this.socialClientProvider = socialClientProvider;
+            this.kernelAPIBridge = kernelAPIBridge;
         }
 
         public void Dispose()
@@ -222,6 +226,9 @@ namespace DCL.Social.Friends
             };
 
             await this.UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
+
+            // Notify kernel that there's a new friend
+            kernelAPIBridge.AddFriend(friendId);
         }
 
         public async UniTask DeleteFriendshipAsync(string friendId, CancellationToken cancellationToken = default)
@@ -244,6 +251,9 @@ namespace DCL.Social.Friends
             };
 
             await this.UpdateFriendship(updateFriendshipPayload, friendId, cancellationToken);
+
+            // Notify kernel that a friend was deleted
+            kernelAPIBridge.RemoveFriend(friendId);
         }
 
         public async UniTask<FriendRequest> RequestFriendshipAsync(string friendId, string messageBody, CancellationToken cancellationToken = default)
@@ -349,12 +359,18 @@ namespace DCL.Social.Friends
                     cancellationToken.ThrowIfCancellationRequested();
 
                     OnFriendRequestAccepted?.Invoke(friendshipEvent.Accept.User.Address);
+
+                    // Notify kernel that there's a new friend
+                    kernelAPIBridge.AddFriend(friendshipEvent.Accept.User.Address);
                     break;
                 case FriendshipEventResponse.BodyOneofCase.Reject:
                     OnFriendRequestRejected?.Invoke(friendshipEvent.Reject.User.Address);
                     break;
                 case FriendshipEventResponse.BodyOneofCase.Delete:
                     OnDeletedByFriend?.Invoke(friendshipEvent.Delete.User.Address);
+
+                    // Notify kernel that a friend was deleted
+                    kernelAPIBridge.RemoveFriend(friendshipEvent.Delete.User.Address);
                     break;
                 case FriendshipEventResponse.BodyOneofCase.Cancel:
                     OnFriendRequestCanceled?.Invoke(friendshipEvent.Cancel.User.Address);

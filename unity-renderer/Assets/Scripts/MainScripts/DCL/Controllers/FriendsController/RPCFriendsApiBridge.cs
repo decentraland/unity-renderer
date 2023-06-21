@@ -111,7 +111,8 @@ namespace DCl.Social.Friends
                                                                    .RejectFriendRequest(new KernelRejectFriendRequestPayload
                                                                     {
                                                                         FriendRequestId = friendRequestId
-                                                                    }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+                                                                    })
+                                                                   .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -126,10 +127,7 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            finally
-            {
-                await UniTask.SwitchToMainThread();
-            }
+            finally { await UniTask.SwitchToMainThread(); }
         }
 
         public void RemoveFriend(string userId) =>
@@ -179,10 +177,7 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            finally
-            {
-                await UniTask.SwitchToMainThread();
-            }
+            finally { await UniTask.SwitchToMainThread(); }
         }
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
@@ -220,10 +215,7 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            finally
-            {
-                await UniTask.SwitchToMainThread();
-            }
+            finally { await UniTask.SwitchToMainThread(); }
         }
 
         public async UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId,
@@ -238,7 +230,8 @@ namespace DCl.Social.Friends
                                                                 .CancelFriendRequest(new KernelCancelFriendRequestPayload
                                                                  {
                                                                      FriendRequestId = friendRequestId
-                                                                 }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+                                                                 })
+                                                                .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -253,10 +246,7 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            finally
-            {
-                await UniTask.SwitchToMainThread(cancellationToken);
-            }
+            finally { await UniTask.SwitchToMainThread(cancellationToken); }
         }
 
         public UniTask CancelRequestByUserIdAsync(string userId, CancellationToken cancellationToken) =>
@@ -333,7 +323,8 @@ namespace DCl.Social.Friends
                                                              .AcceptFriendRequest(new AcceptFriendRequestPayload
                                                               {
                                                                   FriendRequestId = friendRequestId
-                                                              }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+                                                              })
+                                                             .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -348,10 +339,7 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            finally
-            {
-                await UniTask.SwitchToMainThread();
-            }
+            finally { await UniTask.SwitchToMainThread(); }
         }
 
         public async UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken)
@@ -365,7 +353,8 @@ namespace DCl.Social.Friends
                                                                 .GetFriendshipStatus(new GetFriendshipStatusRequest
                                                                  {
                                                                      UserId = userId
-                                                                 }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+                                                                 })
+                                                                .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -375,11 +364,11 @@ namespace DCl.Social.Friends
 
                 return status;
             }
-            finally
-            {
-                await UniTask.SwitchToMainThread();
-            }
+            finally { await UniTask.SwitchToMainThread(); }
         }
+
+        public void AddFriend(string userId) =>
+            fallbackApiBridge.AddFriend(userId);
 
         private FriendshipStatus ToFriendshipStatus(RPCFriendshipStatus status)
         {
@@ -398,7 +387,7 @@ namespace DCl.Social.Friends
         }
 
         private static FriendRequestPayload ToFriendRequestPayload(FriendRequestInfo request) =>
-            new()
+            new ()
             {
                 from = request.From,
                 timestamp = (long)request.Timestamp,

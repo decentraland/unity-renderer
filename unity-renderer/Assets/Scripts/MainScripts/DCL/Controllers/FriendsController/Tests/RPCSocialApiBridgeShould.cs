@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
+using DCl.Social.Friends;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
 using NSubstitute;
@@ -23,6 +24,7 @@ namespace DCL.Social.Friends
         private IUserProfileBridge userProfileBridge;
         private IClientFriendshipsService friendshipsService;
         private CancellationTokenSource testsCancellationToken;
+        private IFriendsApiBridge kernelApiBridge;
 
         [SetUp]
         public void SetUp()
@@ -73,7 +75,9 @@ namespace DCL.Social.Friends
             socialClientProvider.Provide(Arg.Any<CancellationToken>())
                                 .Returns(UniTask.FromResult(friendshipsService));
 
-            rpcSocialApiBridge = new RPCSocialApiBridge(matrixInitializationBridge, userProfileBridge, socialClientProvider);
+            kernelApiBridge = Substitute.For<IFriendsApiBridge>();
+
+            rpcSocialApiBridge = new RPCSocialApiBridge(matrixInitializationBridge, userProfileBridge, socialClientProvider, kernelApiBridge);
 
             matrixInitializationBridge.AccessToken.Returns(ACCESS_TOKEN);
         }
@@ -397,6 +401,7 @@ namespace DCL.Social.Friends
                 rpcSocialApiBridge.OnIncomingFriendRequestAdded += (request) => { requestResult = request; };
 
                 rpcSocialApiBridge.Initialize();
+
                 // wait for async initialization
                 await UniTask.NextFrame();
 

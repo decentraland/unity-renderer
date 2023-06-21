@@ -90,9 +90,13 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
+                WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
+
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    new RPCSocialClientProvider("wss://rpc-social-service.decentraland.org"));
+                    new RPCSocialClientProvider("wss://rpc-social-service.decentraland.org"),
+                    webInterfaceFriendsApiBridge
+                );
 
                 return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });
@@ -117,6 +121,7 @@ namespace DCL
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
                     DataStore.i.featureFlags.flags);
+
                 return new EmotesCatalogService(emotesRequest, addressableResourceProvider);
             });
 
