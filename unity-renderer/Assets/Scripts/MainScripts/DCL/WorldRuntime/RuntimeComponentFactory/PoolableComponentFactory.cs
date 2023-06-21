@@ -2,7 +2,6 @@
 using DCL.Components;
 using DCL.Models;
 using System.Collections.Generic;
-using Unity.Profiling;
 using UnityEngine;
 
 namespace DCL
@@ -91,14 +90,12 @@ namespace DCL
         private object GetIdForPool(Item item)
         {
 #if UNITY_EDITOR
-            return item.classId.ToString() + "_POOL";
+            return item.classId + "_POOL";
 #else
             return item.classId;
 #endif
         }
 
-
-        ProfilerMarker m_AddPool = new ("VV.Factory.AddPool");
 
         private void EnsurePoolForItem(Item item)
         {
@@ -107,21 +104,14 @@ namespace DCL
             if (pool != null)
                 return;
 
-            m_AddPool.Begin(item.classId.ToString());
             GameObject original = Instantiate(item.prefab.gameObject);
             pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount, isPersistent: true);
             pool.useLifecycleHandlers = true;
-            m_AddPool.End();
         }
-
-        ProfilerMarker m_CreateItemFromId = new ("VV.Factory.CreateItemFromId");
-        ProfilerMarker m_CreateItemFromIdUsePool = new ("VV.Factory.CreateItemFromId.UsePool");
-        ProfilerMarker m_CreateItemFromIdInstantiate = new ("VV.Factory.CreateItemFromId.Instantiate");
 
         public ItemType CreateItemFromId<ItemType>(CLASS_ID_COMPONENT id)
             where ItemType : IPoolableObjectContainer
         {
-            m_CreateItemFromId.Begin(id.ToString());
             EnsureFactoryDictionary();
 
             if (!factoryDict.ContainsKey(id))
@@ -129,7 +119,6 @@ namespace DCL
 #if UNITY_EDITOR
                 Debug.LogError("Class " + id + " can't be instantiated because the field doesn't exist!");
 #endif
-                m_CreateItemFromId.End();
                 return default(ItemType);
             }
 
@@ -138,7 +127,6 @@ namespace DCL
             if (factoryItem.prefab == null)
             {
                 Debug.LogError("Prefab for class " + id + " is null!");
-                m_CreateItemFromId.End();
                 return default(ItemType);
             }
 
@@ -147,29 +135,23 @@ namespace DCL
 
             if (factoryItem.usePool)
             {
-                m_CreateItemFromIdUsePool.Begin(id.ToString());
-
                 EnsurePoolForItem(factoryItem);
                 poolableObject = GetPoolForItem(factoryItem).Get();
                 instancedGo = poolableObject.gameObject;
-                m_CreateItemFromIdUsePool.End();
             }
             else
             {
-                m_CreateItemFromIdInstantiate.Begin(id.ToString());
                 instancedGo = Instantiate(factoryItem.prefab.gameObject);
-                m_CreateItemFromIdInstantiate.End();
             }
 
             ItemType item = default;
 
-            if(instancedGo != null)
+            if (instancedGo != null)
             {
                 item = instancedGo.GetComponent<ItemType>();
                 item.poolableObject = poolableObject;
             }
 
-            m_CreateItemFromId.End();
             return item;
         }
     }

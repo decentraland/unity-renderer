@@ -1,7 +1,6 @@
 ﻿using DCL.Components;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -83,10 +82,7 @@ namespace DCL
             routine = null;
         }
 
-        ProfilerMarker m_RaiseOnAppliedChanges = new ("VV.ComponentUpdateHandler.RaiseOnAppliedChanges");
-
-
-        public virtual IEnumerator ApplyChangesWrapper(BaseModel model)
+        protected virtual IEnumerator ApplyChangesWrapper(BaseModel model)
         {
 #if UNITY_EDITOR
             Assert.IsFalse(applyChangesRunning, "ApplyChanges routine was interrupted when it shouldn't!");
@@ -106,9 +102,7 @@ namespace DCL
             applyChangesRunning = false;
 #endif
 
-            m_RaiseOnAppliedChanges.Begin();
             owner.RaiseOnAppliedChanges();
-            m_RaiseOnAppliedChanges.End();
         }
     }
 }

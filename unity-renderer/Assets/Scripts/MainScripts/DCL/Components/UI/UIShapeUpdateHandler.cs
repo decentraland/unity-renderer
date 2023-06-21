@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Unity.Profiling;
 
 namespace DCL.Components
 {
@@ -8,24 +7,21 @@ namespace DCL.Components
         where ModelType : UIShape.Model
 
     {
-        public UIShape<ReferencesContainerType, ModelType> uiShapeOwner;
+        private readonly UIShape<ReferencesContainerType, ModelType> uiShapeOwner;
 
-        public UIShapeUpdateHandler(IDelayedComponent owner) : base(owner) { uiShapeOwner = owner as UIShape<ReferencesContainerType, ModelType>; }
-
-        ProfilerMarker m_PreApplyChanges = new ("VV.UIShapeUpdateHandler.PreApplyChanges");
-
-        public override IEnumerator ApplyChangesWrapper(BaseModel newModel)
+        public UIShapeUpdateHandler(IDelayedComponent owner) : base(owner)
         {
-            m_PreApplyChanges.Begin();
+            uiShapeOwner = owner as UIShape<ReferencesContainerType, ModelType>;
+        }
+
+        protected override IEnumerator ApplyChangesWrapper(BaseModel newModel)
+        {
             uiShapeOwner.PreApplyChanges(newModel);
-            m_PreApplyChanges.End();
 
             var enumerator = base.ApplyChangesWrapper(newModel);
 
             if (enumerator != null)
-            {
-                    yield return enumerator;
-            }
+                yield return enumerator;
         }
     }
 }
