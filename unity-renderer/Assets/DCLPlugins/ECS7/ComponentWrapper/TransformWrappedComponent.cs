@@ -21,26 +21,24 @@ namespace DCL.ECS7.ComponentWrapper
             this.model = model;
         }
 
-        public void SerializeTo(MemoryStream buffer, CodedOutputStream stream)
+        public void SerializeTo(MemoryStream buffer, CodedOutputStream _)
         {
             buffer.SetLength(0);
 
-            stream.WriteFloat(model.position.x);
-            stream.WriteFloat(model.position.y);
-            stream.WriteFloat(model.position.z);
+            WriteSingle(model.position.x, buffer);
+            WriteSingle(model.position.y, buffer);
+            WriteSingle(model.position.z, buffer);
 
-            stream.WriteFloat(model.rotation.x);
-            stream.WriteFloat(model.rotation.y);
-            stream.WriteFloat(model.rotation.z);
-            stream.WriteFloat(model.rotation.w);
+            WriteSingle(model.rotation.x, buffer);
+            WriteSingle(model.rotation.y, buffer);
+            WriteSingle(model.rotation.z, buffer);
+            WriteSingle(model.rotation.w, buffer);
 
-            stream.WriteFloat(model.scale.x);
-            stream.WriteFloat(model.scale.y);
-            stream.WriteFloat(model.scale.z);
+            WriteSingle(model.scale.x, buffer);
+            WriteSingle(model.scale.y, buffer);
+            WriteSingle(model.scale.z, buffer);
 
-            stream.WriteInt32((int)model.parentId);
-
-            stream.Flush();
+            WriteInt32((int)model.parentId, buffer);
         }
 
         public unsafe void DeserializeFrom(ReadOnlySpan<byte> bytes)
@@ -61,6 +59,24 @@ namespace DCL.ECS7.ComponentWrapper
             model.rotation = Quaternion.identity;
             model.scale = Vector3.one;
             model.parentId = 0;
+        }
+
+        private static unsafe void WriteInt32(int value, MemoryStream buffer)
+        {
+            byte* ptr = (byte*)&value;
+            buffer.WriteByte(ptr[0]);
+            buffer.WriteByte(ptr[1]);
+            buffer.WriteByte(ptr[2]);
+            buffer.WriteByte(ptr[3]);
+        }
+
+        public unsafe void WriteSingle(float value, MemoryStream buffer)
+        {
+            byte* ptr = (byte*)&value;
+            buffer.WriteByte(ptr[0]);
+            buffer.WriteByte(ptr[1]);
+            buffer.WriteByte(ptr[2]);
+            buffer.WriteByte(ptr[3]);
         }
     }
 }
