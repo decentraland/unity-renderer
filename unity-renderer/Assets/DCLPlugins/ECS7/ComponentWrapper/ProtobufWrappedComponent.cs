@@ -1,10 +1,11 @@
+using DCL.ECS7.ComponentWrapper.Generic;
 using Google.Protobuf;
 using System;
 using System.IO;
 
 namespace DCL.ECS7.ComponentWrapper
 {
-    public readonly struct ProtobufWrappedComponent<T> : IWrappedComponent<T> where T: class, IMessage<T>
+    public class ProtobufWrappedComponent<T> : IWrappedComponent<T> where T: class, IMessage<T>
     {
         private readonly T model;
 

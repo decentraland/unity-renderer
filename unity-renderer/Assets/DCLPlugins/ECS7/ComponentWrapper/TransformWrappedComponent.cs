@@ -1,3 +1,4 @@
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
 using Google.Protobuf;
 using System;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace DCL.ECS7.ComponentWrapper
 {
-    public readonly struct TransformWrappedComponent : IWrappedComponent<ECSTransform>
+    public record TransformWrappedComponent : IWrappedComponent<ECSTransform>
     {
         public ECSTransform Model => model;
 

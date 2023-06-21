@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace DCL.ECS7.ComponentWrapper
+namespace DCL.ECS7.ComponentWrapper.Generic
 {
-    public readonly struct WrappedComponentPool<T> where T: IWrappedComponent<T>
+    public record WrappedComponentPool<T> where T: class, IWrappedComponent
     {
         private readonly Queue<PooledWrappedComponent<T>> queue;
         private readonly Func<T> objectFactory;
@@ -29,27 +29,6 @@ namespace DCL.ECS7.ComponentWrapper
         public void AddElement(PooledWrappedComponent<T> element)
         {
             queue.Enqueue(element);
-        }
-    }
-
-    public readonly struct PooledWrappedComponent<T> : IDisposable where T: IWrappedComponent<T>
-    {
-        private readonly WrappedComponentPool<T> pool;
-
-        public readonly T WrappedComponent;
-
-        public static implicit operator T(PooledWrappedComponent<T> pooled) =>
-            pooled.WrappedComponent;
-
-        internal PooledWrappedComponent(T wrappedComponent, WrappedComponentPool<T> pool)
-        {
-            this.WrappedComponent = wrappedComponent;
-            this.pool = pool;
-        }
-
-        public void Dispose()
-        {
-            pool.AddElement(this);
         }
     }
 }

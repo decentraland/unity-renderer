@@ -12,9 +12,4 @@ namespace DCL.ECS7.ComponentWrapper
 
         void ClearFields();
     }
-
-    public interface IWrappedComponent<out T> : IWrappedComponent
-    {
-        T Model { get; }
-    }
 }
