@@ -3,7 +3,6 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
-using Unity.Profiling;
 using UnityEngine;
 
 public class CoreComponentsPlugin : IPlugin
@@ -89,18 +88,11 @@ public class CoreComponentsPlugin : IPlugin
         }
     }
 
-    protected T BuildComponent<T>()
-        where T : IComponent, new()
-    {
-        return new T();
-    }
+    private static T BuildComponent<T>() where T: IComponent, new() =>
+        new ();
 
-    ProfilerMarker<int> m_BuildPoolableComponent = new ("VV.Plugin.BuildPoolableComponent", "Class ID");
-    private IComponent BuildPoolableComponent(int classId)
-    {
-        using (m_BuildPoolableComponent.Auto(classId))
-            return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT)classId);
-    }
+    private IComponent BuildPoolableComponent(int classId) =>
+        poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT)classId);
 
     public void Dispose()
     {

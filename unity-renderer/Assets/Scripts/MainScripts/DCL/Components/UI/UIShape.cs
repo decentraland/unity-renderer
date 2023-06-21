@@ -9,7 +9,6 @@ using UnityEngine.UI;
 using Object = UnityEngine.Object;
 using Decentraland.Sdk.Ecs6;
 using MainScripts.DCL.Components;
-using Unity.Profiling;
 
 namespace DCL.Components
 {
@@ -30,14 +29,12 @@ namespace DCL.Components
         bool raiseOnAttached;
         bool firstApplyChangesCall;
 
-        ProfilerMarker m_UIShapePreApplyChanges = new ("VV.UIShape.PreApplyChanges");
 
         /// <summary>
         /// This is called by UIShapeUpdateHandler before calling ApplyChanges.
         /// </summary>
         public void PreApplyChanges(BaseModel newModel)
         {
-            m_UIShapePreApplyChanges.Begin();
             model = (ModelType) newModel;
 
             raiseOnAttached = false;
@@ -54,7 +51,6 @@ namespace DCL.Components
             {
                 raiseOnAttached = true;
             }
-            m_UIShapePreApplyChanges.End();
         }
 
         public override void RaiseOnAppliedChanges()
@@ -211,11 +207,9 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(BaseModel newJson) { return null; }
 
-        ProfilerMarker m_UIShapeInstantiateUIGameObject = new ("VV.UIShape.InstantiateUIGameObject");
 
         internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
-            m_UIShapeInstantiateUIGameObject.Begin();
             Model model = (Model) this.model;
 
             GameObject uiGameObject = null;
@@ -242,7 +236,7 @@ namespace DCL.Components
             uiGameObject =
                 Object.Instantiate(
                     Resources.Load(prefabPath),
-                    parentUIComponent != null ? parentUIComponent.childHookRectTransform : null) as GameObject;
+                    parentUIComponent?.childHookRectTransform) as GameObject;
 
             referencesContainer = uiGameObject.GetComponent<T>();
 
@@ -252,7 +246,6 @@ namespace DCL.Components
 
             referencesContainer.owner = this;
 
-            m_UIShapeInstantiateUIGameObject.End();
             return referencesContainer as T;
         }
 
@@ -299,32 +292,20 @@ namespace DCL.Components
                 rootParent.OnLayoutRefresh += OnRefresh;
         }
 
-        ProfilerMarker m_UIShapeRefreshDCLLayout = new ("VV.UIShape.RefreshDCLLayout");
-        ProfilerMarker m_UIShapeRefreshDCLSize = new ("VV.UIShape.RefreshDCLSize");
-        ProfilerMarker m_UIShapeRefreshDCLAlignmentAndPosition = new ("VV.UIShape.RefreshDCLAlignmentAndPosition");
-
-
         public void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
         {
-            m_UIShapeRefreshDCLLayout.Begin();
             RectTransform parentRT = referencesContainer.GetComponentInParent<RectTransform>();
 
             if (refreshSize)
             {
-                m_UIShapeRefreshDCLSize.Begin();
                 RefreshDCLSize(parentRT);
-                m_UIShapeRefreshDCLSize.End();
             }
 
             if (refreshAlignmentAndPosition)
             {
-                m_UIShapeRefreshDCLAlignmentAndPosition.Begin();
                 // Alignment (Alignment uses size so we should always align AFTER resizing)
                 RefreshDCLAlignmentAndPosition(parentRT);
-                m_UIShapeRefreshDCLAlignmentAndPosition.End();
             }
-
-            m_UIShapeRefreshDCLLayout.End();
         }
 
         protected virtual void RefreshDCLSize(RectTransform parentTransform = null)
