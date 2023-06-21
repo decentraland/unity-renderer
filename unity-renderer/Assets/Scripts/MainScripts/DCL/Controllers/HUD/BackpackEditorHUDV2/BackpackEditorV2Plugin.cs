@@ -23,7 +23,7 @@ namespace DCL.Backpack
 
             DataStore dataStore = DataStore.i;
 
-            view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+            view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(), userProfileBridge, dataStore);
 
             var outfitsController = new OutfitsController(
                 view.OutfitsSectionComponentView,

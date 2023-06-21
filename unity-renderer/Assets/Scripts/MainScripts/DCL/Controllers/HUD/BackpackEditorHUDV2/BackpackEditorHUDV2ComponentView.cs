@@ -32,11 +32,13 @@ namespace DCL.Backpack
         [SerializeField] internal ColorPickerComponentView colorPickerComponentView;
         [SerializeField] internal ColorPresetsSO colorPresetsSO;
         [SerializeField] internal ColorPresetsSO skinColorPresetsSO;
+        [SerializeField] internal Color selectedOutfitButtonColor;
         [SerializeField] private BackpackFiltersComponentView backpackFiltersComponentView;
         [SerializeField] private OutfitsSectionComponentView outfitsSectionComponentView;
         [SerializeField] internal Button saveAvatarButton;
         [SerializeField] internal GameObject normalSection;
         [SerializeField] internal GameObject outfitSection;
+        [SerializeField] internal Button outfitButton;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
@@ -74,7 +76,8 @@ namespace DCL.Backpack
                 avatarPreviewZoomController);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle += ColorPickerToggle;
-            backpackPreviewPanel.OnOutfitButtonPressed += ToggleOutfitSection;
+            outfitButton.onClick.RemoveAllListeners();
+            outfitButton.onClick.AddListener(ToggleOutfitSection);
             outfitsSectionComponentView.OnBackButtonPressed += ToggleNormalSection;
         }
 
@@ -82,6 +85,7 @@ namespace DCL.Backpack
         {
             normalSection.SetActive(false);
             outfitSection.SetActive(true);
+            outfitButton.image.color = selectedOutfitButtonColor;
             OnOutfitsOpened?.Invoke();
         }
 
@@ -89,6 +93,7 @@ namespace DCL.Backpack
         {
             normalSection.SetActive(true);
             outfitSection.SetActive(false);
+            outfitButton.image.color = Color.white;
         }
 
         private void Update() =>
@@ -110,7 +115,6 @@ namespace DCL.Backpack
 
             colorPickerComponentView.OnColorChanged -= OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle -= ColorPickerToggle;
-            backpackPreviewPanel.OnOutfitButtonPressed -= ToggleOutfitSection;
             outfitsSectionComponentView.OnBackButtonPressed -= ToggleNormalSection;
         }
 

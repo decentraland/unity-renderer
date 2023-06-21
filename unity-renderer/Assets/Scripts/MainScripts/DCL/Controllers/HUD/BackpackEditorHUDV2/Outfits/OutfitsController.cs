@@ -20,7 +20,12 @@ public class OutfitsController : IDisposable
     private OutfitItem[] localOutfits;
     private bool shouldDeploy;
 
-    public OutfitsController(OutfitsSectionComponentView view, LambdaOutfitsService lambdaOutfitsService, IUserProfileBridge userProfileBridge, IWearablesCatalogService wearablesCatalogService, DataStore dataStore)
+    public OutfitsController(
+        OutfitsSectionComponentView view,
+        LambdaOutfitsService lambdaOutfitsService,
+        IUserProfileBridge userProfileBridge,
+        IWearablesCatalogService wearablesCatalogService,
+        DataStore dataStore)
     {
         this.view = view;
         this.lambdaOutfitsService = lambdaOutfitsService;

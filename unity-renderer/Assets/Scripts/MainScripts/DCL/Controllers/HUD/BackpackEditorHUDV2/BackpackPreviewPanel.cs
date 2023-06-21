@@ -47,11 +47,7 @@ namespace DCL.Backpack
         [SerializeField] internal float zoomSpeed = 5.0f;
         [SerializeField] internal float smoothTime = 0.2f;
 
-        [Header("BUTTONS")]
-        [SerializeField] internal Button outfitButton;
-
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
-        public event Action OnOutfitButtonPressed;
 
         private ICharacterPreviewController characterPreviewController;
         private IPreviewCameraRotationController avatarPreviewRotationController;
@@ -104,9 +100,6 @@ namespace DCL.Backpack
                 smoothTime,
                 characterPreviewInputDetector);
             this.avatarPreviewZoomController.OnZoom += OnPreviewZoom;
-
-            outfitButton.onClick.RemoveAllListeners();
-            outfitButton.onClick.AddListener(() => OnOutfitButtonPressed?.Invoke());
         }
 
         public override void Dispose()

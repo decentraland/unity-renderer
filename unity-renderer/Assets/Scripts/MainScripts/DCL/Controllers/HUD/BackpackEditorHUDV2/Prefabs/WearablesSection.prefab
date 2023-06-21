@@ -1871,6 +1871,10 @@ MonoBehaviour:
   - {fileID: 9093793695914031029}
   - {fileID: 6256116001068349871}
   avatarPreviewImage: {fileID: 5258594482942463339}
+  discardOutfitModal: {fileID: 0}
+  confirmDiscardOutfit: {fileID: 0}
+  cancelDiscardOutfit: {fileID: 0}
+  closeDiscardOutfit: {fileID: 0}
 --- !u!1 &8760655797402333076
 GameObject:
   m_ObjectHideFlags: 0

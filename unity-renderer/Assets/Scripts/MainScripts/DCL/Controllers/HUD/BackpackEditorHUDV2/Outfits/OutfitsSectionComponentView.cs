@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Interface;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NUnit.Framework;
@@ -15,14 +16,21 @@ public class OutfitsSectionComponentView : BaseComponentView
     [SerializeField] internal Button backButton;
     [SerializeField] internal OutfitComponentView[] outfitComponentViews;
     [SerializeField] private RawImage avatarPreviewImage;
+    [SerializeField] private GameObject discardOutfitModal;
+    [SerializeField] private Button confirmDiscardOutfit;
+    [SerializeField] private Button cancelDiscardOutfit;
+    [SerializeField] private Button closeDiscardOutfit;
 
     private ICharacterPreviewController characterPreviewController;
+    private IUserProfileBridge userProfileBridge;
+    private DataStore dataStore;
 
     public event Action OnBackButtonPressed;
     public event Action<OutfitItem> OnOutfitEquipped;
     public event Action<OutfitItem[]> OnUpdateLocalOutfits;
     private readonly AvatarModel currentAvatarModel = new AvatarModel();
     private OutfitItem[] outfits;
+    private int indexToBeDiscarded;
 
     public override void Awake()
     {
@@ -44,6 +52,20 @@ public class OutfitsSectionComponentView : BaseComponentView
             outfitComponentView.OnSaveOutfit += OnSaveOutfit;
             outfitComponentView.OnDiscardOutfit += DiscardOutfit;
         }
+        confirmDiscardOutfit.onClick.RemoveAllListeners();
+        confirmDiscardOutfit.onClick.AddListener(CompleteDiscardOutfit);
+        cancelDiscardOutfit.onClick.RemoveAllListeners();
+        cancelDiscardOutfit.onClick.AddListener(() => discardOutfitModal.SetActive(false));
+        closeDiscardOutfit.onClick.RemoveAllListeners();
+        closeDiscardOutfit.onClick.AddListener(() => discardOutfitModal.SetActive(false));
+    }
+
+    private void CompleteDiscardOutfit()
+    {
+        outfitComponentViews[indexToBeDiscarded].SetIsEmpty(true);
+        outfits[indexToBeDiscarded] = new OutfitItem(){slot = indexToBeDiscarded};
+        OnUpdateLocalOutfits?.Invoke(outfits);
+        discardOutfitModal.SetActive(false);
     }
 
     public override void RefreshControl()
@@ -54,9 +76,8 @@ public class OutfitsSectionComponentView : BaseComponentView
     {
         if (outfits[outfitIndex].outfit == null) return;
 
-        outfitComponentViews[outfitIndex].SetIsEmpty(true);
-        outfits[outfitIndex] = new OutfitItem(){slot = outfitIndex};
-        OnUpdateLocalOutfits?.Invoke(outfits);
+        indexToBeDiscarded = outfitIndex;
+        discardOutfitModal.SetActive(true);
     }
 
     public void UpdateAvatarPreview(AvatarModel newAvatarModel)
@@ -66,7 +87,7 @@ public class OutfitsSectionComponentView : BaseComponentView
         characterPreviewController.TryUpdateModelAsync(currentAvatarModel);
     }
 
-    public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
+    public void Initialize(ICharacterPreviewFactory characterPreviewFactory, IUserProfileBridge profileBridge, DataStore dtaStore)
     {
         characterPreviewController = characterPreviewFactory.Create(
             loadingMode: CharacterPreviewMode.WithoutHologram,
@@ -75,6 +96,8 @@ public class OutfitsSectionComponentView : BaseComponentView
             previewCameraFocus: PreviewCameraFocus.DefaultEditing,
             isAvatarShadowActive: true);
         characterPreviewController.SetFocus(PreviewCameraFocus.DefaultEditing);
+        this.userProfileBridge = profileBridge;
+        this.dataStore = dtaStore;
     }
 
     public async UniTaskVoid ShowOutfits(OutfitItem[] outfitsToShow)
@@ -138,6 +161,12 @@ public class OutfitsSectionComponentView : BaseComponentView
 
     private async UniTaskVoid SaveOutfitAsync(int outfitIndex)
     {
+        if (userProfileBridge.GetOwn().isGuest)
+        {
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
+            return;
+        }
+
         outfitComponentViews[outfitIndex].SetIsLoading(true);
         outfitComponentViews[outfitIndex].SetIsEmpty(false);
         var outfitItem = new OutfitItem()
