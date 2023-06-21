@@ -12,7 +12,7 @@ public class OutfitsController : IDisposable
 {
     private readonly LambdaOutfitsService lambdaOutfitsService;
     private readonly IUserProfileBridge userProfileBridge;
-    private readonly OutfitsSectionComponentView view;
+    private readonly IOutfitsSectionComponentView view;
     private readonly IWearablesCatalogService wearablesCatalogService;
     public event Action<OutfitItem> OnOutfitEquipped;
 
@@ -21,7 +21,7 @@ public class OutfitsController : IDisposable
     private bool shouldDeploy;
 
     public OutfitsController(
-        OutfitsSectionComponentView view,
+        IOutfitsSectionComponentView view,
         LambdaOutfitsService lambdaOutfitsService,
         IUserProfileBridge userProfileBridge,
         IWearablesCatalogService wearablesCatalogService,

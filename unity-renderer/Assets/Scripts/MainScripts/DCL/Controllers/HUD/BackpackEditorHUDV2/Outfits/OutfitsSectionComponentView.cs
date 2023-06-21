@@ -10,9 +10,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OutfitsSectionComponentView : BaseComponentView
+public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionComponentView
 {
-
     [SerializeField] internal Button backButton;
     [SerializeField] internal OutfitComponentView[] outfitComponentViews;
     [SerializeField] private RawImage avatarPreviewImage;
@@ -52,12 +51,24 @@ public class OutfitsSectionComponentView : BaseComponentView
             outfitComponentView.OnSaveOutfit += OnSaveOutfit;
             outfitComponentView.OnDiscardOutfit += DiscardOutfit;
         }
-        confirmDiscardOutfit.onClick.RemoveAllListeners();
-        confirmDiscardOutfit.onClick.AddListener(CompleteDiscardOutfit);
-        cancelDiscardOutfit.onClick.RemoveAllListeners();
-        cancelDiscardOutfit.onClick.AddListener(() => discardOutfitModal.SetActive(false));
-        closeDiscardOutfit.onClick.RemoveAllListeners();
-        closeDiscardOutfit.onClick.AddListener(() => discardOutfitModal.SetActive(false));
+
+        if (confirmDiscardOutfit != null)
+        {
+            confirmDiscardOutfit.onClick.RemoveAllListeners();
+            confirmDiscardOutfit.onClick.AddListener(CompleteDiscardOutfit);
+        }
+
+        if (cancelDiscardOutfit != null)
+        {
+            cancelDiscardOutfit.onClick.RemoveAllListeners();
+            cancelDiscardOutfit.onClick.AddListener(() => discardOutfitModal.SetActive(false));
+        }
+
+        if (closeDiscardOutfit != null)
+        {
+            closeDiscardOutfit.onClick.RemoveAllListeners();
+            closeDiscardOutfit.onClick.AddListener(() => discardOutfitModal.SetActive(false));
+        }
     }
 
     private void CompleteDiscardOutfit()
