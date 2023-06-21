@@ -855,6 +855,19 @@ namespace DCL.Interface
             public string error;
         }
 
+        [Serializable]
+        public class SaveLinksPayload
+        {
+            [Serializable]
+            public class Link
+            {
+                public string title;
+                public string url;
+            }
+
+            public List<Link> links;
+        }
+
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -1957,6 +1970,11 @@ namespace DCL.Interface
         public static void SendGoToTos()
         {
             SendMessage("ToSPopupGoToToS");
+        }
+
+        public static void SaveProfileLinks(SaveLinksPayload payload)
+        {
+            SendMessage("SaveProfileLinks", payload);
         }
     }
 }

@@ -168,15 +168,6 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 
-    public void AddLink(UserProfileModel.Link link)
-    {
-        model.links ??= new List<UserProfileModel.Link>();
-        model.links.Add(link);
-    }
-
-    public void RemoveLink(string title, string url) =>
-        model.links?.RemoveAll(link => link.title == title && link.url == url);
-
 #if UNITY_EDITOR
     private void OnEnable()
     {

@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
@@ -42,4 +43,7 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false) =>
         WebInterface.SendSaveAvatar(avatar, face256Snapshot, bodySnapshot, isSignUpFlow);
+
+    public UniTask<UserProfile> SaveLinks(List<UserProfileModel.Link> links, CancellationToken cancellationToken) =>
+        UserProfileController.i.SaveLinks(links, cancellationToken);
 }

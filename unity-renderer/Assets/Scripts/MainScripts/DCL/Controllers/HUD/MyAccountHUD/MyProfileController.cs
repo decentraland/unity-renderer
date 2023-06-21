@@ -24,6 +24,7 @@ namespace DCL.MyAccount
         private readonly KernelConfig kernelConfig;
         private readonly List<string> loadedNames = new ();
 
+        private CancellationTokenSource saveLinkCancellationToken = new ();
         private CancellationTokenSource cts;
         private Regex nameRegex;
 
@@ -204,17 +205,46 @@ namespace DCL.MyAccount
         private void OnAddLinkRequested((string title, string url) obj)
         {
             if (ownUserProfile.Links?.Count >= 5) return;
-            // TODO: links should be added through user profile bridge
-            ownUserProfile.AddLink(new UserProfileModel.Link(obj.title, obj.url));
-            ShowLinks(ownUserProfile);
-            view.ClearLinkInput();
+
+            async UniTaskVoid AddAndSaveLinkAsync(string title, string url, CancellationToken cancellationToken)
+            {
+                List<UserProfileModel.Link> links = new (ownUserProfile.Links)
+                    {new UserProfileModel.Link(title, url)};
+
+                try
+                {
+                    UserProfile profile = await userProfileBridge.SaveLinks(links, cancellationToken);
+
+                    ShowLinks(profile);
+                    view.ClearLinkInput();
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e) { Debug.LogException(e); }
+            }
+
+            saveLinkCancellationToken = saveLinkCancellationToken.SafeRestart();
+            AddAndSaveLinkAsync(obj.title, obj.url, saveLinkCancellationToken.Token).Forget();
         }
 
         private void OnRemoveLinkRequested((string title, string url) obj)
         {
-            // TODO: links should be removed through user profile bridge
-            ownUserProfile.RemoveLink(obj.title, obj.url);
-            ShowLinks(ownUserProfile);
+            async UniTaskVoid RemoveAndSaveLinkAsync(string title, string url, CancellationToken cancellationToken)
+            {
+                List<UserProfileModel.Link> links = new (ownUserProfile.Links);
+                links.RemoveAll(link => link.title == title && link.url == url);
+
+                try
+                {
+                    UserProfile profile = await userProfileBridge.SaveLinks(links, cancellationToken);
+
+                    ShowLinks(profile);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e) { Debug.LogException(e); }
+            }
+
+            saveLinkCancellationToken = saveLinkCancellationToken.SafeRestart();
+            RemoveAndSaveLinkAsync(obj.title, obj.url, saveLinkCancellationToken.Token).Forget();
         }
     }
 }

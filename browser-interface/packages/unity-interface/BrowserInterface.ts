@@ -500,6 +500,10 @@ export class BrowserInterface {
     store.dispatch(saveProfileDelta({ description: changes.description }))
   }
 
+  public SaveProfileLinks(changes: { links: { title: string, url: string }[] }) {
+    store.dispatch(saveProfileDelta({ links: changes.links }))
+  }
+
   public GetFriends(getFriendsRequest: GetFriendsPayload) {
     getFriends(getFriendsRequest).catch(defaultLogger.error)
   }

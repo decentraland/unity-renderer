@@ -7,8 +7,12 @@ public class UserProfileModel
     [Serializable]
     public class Link
     {
-        public readonly string title;
-        public readonly string url;
+        public string title;
+        public string url;
+
+        public Link()
+        {
+        }
 
         public Link(string title, string url)
         {

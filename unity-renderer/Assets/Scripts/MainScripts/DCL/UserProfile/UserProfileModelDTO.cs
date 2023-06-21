@@ -23,6 +23,7 @@ public class UserProfileModelDTO
     public List<string> muted;
     public int tutorialStep;
     public bool hasClaimedName = false;
+    public List<UserProfileModel.Link> links;
 
     public UserProfileModel ToUserProfileModel()
     {
@@ -46,6 +47,7 @@ public class UserProfileModelDTO
                 muted = this.muted,
                 tutorialStep = this.tutorialStep,
                 hasClaimedName = this.hasClaimedName,
+                links = this.links,
             };
 
         return userProfileModel;
