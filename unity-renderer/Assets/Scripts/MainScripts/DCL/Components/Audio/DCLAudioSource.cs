@@ -202,7 +202,9 @@ namespace DCL.Components
                 Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
 
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
-            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+
+            if (entity != null)
+                DataStore.i.sceneBoundariesChecker.Remove(entity, this);
 
             lastDCLAudioClip = null;
             audioSource = null;
