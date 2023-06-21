@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers.HUD;
+using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
 using SocialFeaturesAnalytics;
@@ -29,7 +30,7 @@ public class HUDDesktopFactory : HUDFactory
                     DataStore.i);
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
+                hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i, DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>());
                 break;
 
             default:

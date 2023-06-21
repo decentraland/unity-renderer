@@ -18,6 +18,7 @@ using System.Threading;
 using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
 using Analytics;
+using DCLServices.PlacesAPIService;
 
 public class HUDFactory : IHUDFactory
 {
@@ -55,7 +56,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i);
+                return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i, Environment.i.serviceLocator.Get<IPlacesAPIService>());
             case HUDElementID.PROFILE_HUD:
                 return new ProfileHUDController(new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(

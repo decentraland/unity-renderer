@@ -1,5 +1,6 @@
 using DCL;
 using DCLServices.MapRendererV2;
+using DCLServices.PlacesAPIService;
 using NUnit.Framework;
 using System.Collections;
 using TMPro;
@@ -17,7 +18,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i);
+            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i, DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>());
             controller.Initialize();
         }
 
