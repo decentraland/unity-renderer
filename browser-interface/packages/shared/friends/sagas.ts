@@ -1105,7 +1105,7 @@ function sendUpdateUserStatus(id: string, status: CurrentUserStatus) {
   getUnityInstance().UpdateUserPresence(updateMessage)
 }
 
-function updateUserStatus(client: SocialAPI, ...socialIds: string[]) {
+export function updateUserStatus(client: SocialAPI, ...socialIds: string[]) {
   const statuses = client.getUserStatuses(...socialIds)
   const lastStatuses = getLastStatusOfFriends(store.getState())
 
@@ -1175,7 +1175,7 @@ export function getStatusUpdateIntervalInfo(state: RootState) {
  * The social id for the time being should always be of the form `@ethAddress:server`
  * @param socialId a string with the aforementioned pattern
  */
-function parseUserId(socialId: string) {
+export function parseUserId(socialId: string) {
   if (EthAddress.validate(socialId) as any) return socialId
   const result = socialId.match(/@(\w+):.*/)
   if (!result || result.length < 2) {

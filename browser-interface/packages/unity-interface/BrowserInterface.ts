@@ -39,8 +39,10 @@ import {
   markAsSeenChannelMessages,
   markAsSeenPrivateChatMessages,
   muteChannel,
+  parseUserId,
   searchChannels,
-  UpdateFriendshipAsPromise
+  UpdateFriendshipAsPromise,
+  updateUserStatus
 } from 'shared/friends/sagas'
 import { areChannelsEnabled, getMatrixIdFromUser } from 'shared/friends/utils'
 import { updateStatusMessage } from 'shared/loading/actions'
@@ -110,6 +112,7 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
+import { getSocialClient } from 'shared/friends/selectors'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -500,7 +503,7 @@ export class BrowserInterface {
     getFriends(getFriendsRequest).catch(defaultLogger.error)
   }
 
-  // @TODO! @deprecated
+  /** @deprecated */
   public GetFriendRequests(getFriendRequestsPayload: GetFriendRequestsPayload) {
     getFriendRequests(getFriendRequestsPayload).catch((err) => {
       defaultLogger.error('error getFriendRequestsDeprecate', err),
@@ -715,6 +718,47 @@ export class BrowserInterface {
     store.dispatch(setVoiceChatPolicy(settingsMessage.voiceChatAllowCategory))
   }
 
+
+  public async AddFriend(data: { userId: string }) {
+    try {
+      defaultLogger.info(`Adding new friend`, data.userId)
+
+      // map social id to user id
+      const socialId = parseUserId(data.userId)
+    
+      if (!socialId) {
+        defaultLogger.warn(`cannot parse user id from social id`, data.userId)
+        throw new Error(`cannot parse user id from social id ${data.userId}`)
+      }
+    
+      store.dispatch(updateUserData(socialId, socialId))
+    
+      // ensure user profile is initialized and send to renderer
+      await ensureFriendProfile(socialId)
+
+      const client = getSocialClient(store.getState())
+      if (!client) {
+        throw new Error(`cannot get social client`)
+      }
+      updateUserStatus(client, socialId)
+    }
+    catch (error) {
+        const message = 'Failed while processing updating friendship status to accepted'
+        defaultLogger.error(message, error)
+  
+        trackEvent('error', {
+          context: 'kernel#saga',
+          message: message,
+          stack: '' + error
+        })
+      }
+  }
+
+  public RemoveFriend(data: { userId: string }) {
+  }
+
+
+  /** @deprecated */
   // @TODO! @deprecated - With the new friend request flow, the only action that will be triggered by this message is FriendshipAction.DELETED.
   public async UpdateFriendshipStatus(message: FriendshipUpdateStatusMessage) {
     try {

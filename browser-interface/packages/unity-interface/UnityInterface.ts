@@ -435,7 +435,7 @@ export class UnityInterface implements IUnityInterface {
   }
 
   public UpdateUserPresence(status: UpdateUserStatusMessage) {
-    this.SendMessageToUnity('Bridges', 'UpdateUserPresence', JSON.stringify(status))
+    this.SendMessageToUnity('Main', 'UpdateUserPresence', JSON.stringify(status))
   }
 
   public FriendNotFound(queryString: string) {
