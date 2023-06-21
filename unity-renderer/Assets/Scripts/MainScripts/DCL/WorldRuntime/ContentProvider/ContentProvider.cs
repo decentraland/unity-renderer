@@ -13,6 +13,7 @@ namespace DCL
 
         public string baseUrl;
         public string assetBundlesBaseUrl;
+        public string assetBundlesVersion;
         public string sceneCid;
 
         public List<MappingPair> contents = new ();

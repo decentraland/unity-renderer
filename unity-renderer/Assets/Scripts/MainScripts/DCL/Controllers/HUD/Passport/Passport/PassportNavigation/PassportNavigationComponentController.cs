@@ -192,7 +192,7 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedEmotes(UserProfile userProfile)
         {
             view.SetCollectibleEmotesLoadingActive(true);
-            WearableItem[] emotes = await emotesCatalogService.RequestOwnedEmotesAsync(userProfile.userId, cts.Token);
+            var emotes = await emotesCatalogService.RequestOwnedEmotesAsync(userProfile.userId, cts.Token);
             WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
             view.SetCollectibleEmotes(emoteItems);
             view.SetCollectibleEmotesLoadingActive(false);
@@ -218,7 +218,7 @@ namespace DCL.Social.Passports
                 showViewAllButton = names.totalAmount > MAX_NFT_COUNT;
             }
             catch (OperationCanceledException) { }
-            catch (Exception e) { Debug.LogError(e.Message); }
+            catch (Exception e) { Debug.LogException(e); }
             finally
             {
                 view.SetCollectibleNames(namesResult);

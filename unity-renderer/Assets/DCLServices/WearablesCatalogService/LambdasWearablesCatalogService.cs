@@ -7,8 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
+using static DCLServices.WearablesCatalogService.WearableWithEntityResponseDto.ElementDto;
 
 namespace DCLServices.WearablesCatalogService
 {
@@ -17,9 +19,30 @@ namespace DCLServices.WearablesCatalogService
     /// </summary>
     public class LambdasWearablesCatalogService : IWearablesCatalogService, ILambdaServiceConsumer<WearableWithDefinitionResponse>
     {
+        [Serializable]
+        public class WearableRequest
+        {
+            public List<string> pointers;
+        }
+
+        [Serializable]
+        public class WearableCollectionResponse
+        {
+            public int total;
+            public EntityDto[] entities;
+
+            public WearableCollectionResponse()
+            {
+            }
+
+            public WearableCollectionResponse(EntityDto[] entities)
+            {
+                this.entities = entities;
+            }
+        }
+
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
-        private const string ASSET_BUNDLES_URL_ORG = "https://content-assets-as-bundle.decentraland.org/";
         private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
@@ -33,6 +56,9 @@ namespace DCLServices.WearablesCatalogService
         private readonly Dictionary<(string userId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string userId, string collectionId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
+        private readonly BaseVariable<FeatureFlag> featureFlags;
+        private string assetBundlesUrl => featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
+
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
         private ICatalyst catalyst;
@@ -42,16 +68,21 @@ namespace DCLServices.WearablesCatalogService
 #endif
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog,
             ILambdasService lambdasService,
-            IServiceProviders serviceProviders)
+            IServiceProviders serviceProviders,
+            BaseVariable<FeatureFlag> featureFlags)
         {
+            this.featureFlags = featureFlags;
             this.lambdasService = lambdasService;
             this.serviceProviders = serviceProviders;
             WearablesCatalog = wearablesCatalog;
             catalyst = serviceProviders.catalyst;
+
         }
 
-        public void Initialize() =>
+        public void Initialize()
+        {
             serviceCts = serviceCts.SafeRestart();
+        }
 
         public void Dispose()
         {
@@ -127,7 +158,7 @@ namespace DCLServices.WearablesCatalogService
 
             List<WearableItem> wearables = ValidateWearables(response.elements,
                 $"{catalyst.contentUrl}/contents/",
-                ASSET_BUNDLES_URL_ORG);
+                assetBundlesUrl);
 
             AddWearablesToCatalog(wearables);
 
@@ -173,22 +204,25 @@ namespace DCLServices.WearablesCatalogService
             return (wearables, pageResponse.response.TotalAmount);
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
+        public async UniTask RequestBaseWearablesAsync(CancellationToken ct)
         {
-            var serviceResponse = await lambdasService.Get<WearableWithoutDefinitionResponse>(
-                NON_PAGINATED_WEARABLES_END_POINT,
-                NON_PAGINATED_WEARABLES_END_POINT,
-                REQUESTS_TIME_OUT_SECONDS,
-                urlEncodedParams: ("collectionId", BASE_WEARABLES_COLLECTION_ID),
-                cancellationToken: ct);
+            var url = $"{catalyst.contentUrl}entities/active/collections/{BASE_WEARABLES_COLLECTION_ID}";
 
-            if (!serviceResponse.success)
+            var request = await lambdasService.GetFromSpecificUrl<WearableCollectionResponse>(url, url, cancellationToken: ct);
+
+            if (!request.success)
                 throw new Exception("The request of the base wearables failed!");
 
-            MapLambdasDataIntoWearableItem(serviceResponse.response.wearables);
-            AddWearablesToCatalog(serviceResponse.response.wearables);
+            var poolList = PoolUtils.RentList<WearableItem>();
+            IList<WearableItem> wearableItems = poolList.GetList();
 
-            return serviceResponse.response.wearables;
+            foreach (EntityDto entityDto in request.response.entities)
+                wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl));
+
+            MapLambdasDataIntoWearableItem(wearableItems);
+            AddWearablesToCatalog(wearableItems);
+
+            poolList.Dispose();
         }
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages,
@@ -349,7 +383,7 @@ namespace DCLServices.WearablesCatalogService
                 // When the number of wearables to request is greater than MAX_WEARABLES_PER_REQUEST, we split the request into several smaller ones.
                 // In this way we avoid to send a very long url string that would fail due to the web request size limitations.
                 int numberOfPartialRequests = (wearableIds.Count + MAX_WEARABLES_PER_REQUEST - 1) / MAX_WEARABLES_PER_REQUEST;
-                var awaitingPartialTasksPool = PoolUtils.RentList<(UniTask<(WearableWithoutDefinitionResponse response, bool success)> task, IEnumerable<string> wearablesRequested)>();
+                var awaitingPartialTasksPool = PoolUtils.RentList<(UniTask<(EntityDto[] response, bool success)> task, IEnumerable<string> wearablesRequested)>();
                 var awaitingPartialTasks = awaitingPartialTasksPool.GetList();
 
                 for (var i = 0; i < numberOfPartialRequests; i++)
@@ -360,18 +394,16 @@ namespace DCLServices.WearablesCatalogService
 
                     var wearablesToRequest = wearableIds.Take(numberOfWearablesToRequest).ToList();
 
-                    var partialTask = lambdasService.Get<WearableWithoutDefinitionResponse>(
-                        NON_PAGINATED_WEARABLES_END_POINT,
-                        NON_PAGINATED_WEARABLES_END_POINT,
-                        REQUESTS_TIME_OUT_SECONDS,
-                        urlEncodedParams: GetWearablesUrlParams(wearablesToRequest),
-                        cancellationToken: serviceCts.Token);
+                    var request = new WearableRequest { pointers = wearablesToRequest };
+                    var url = $"{catalyst.contentUrl}entities/active";
+
+                    var partialTask = lambdasService.PostFromSpecificUrl<EntityDto[], WearableRequest>(url, url, request, cancellationToken: ct);
 
                     wearableIds.RemoveRange(0, numberOfWearablesToRequest);
                     awaitingPartialTasks.Add((partialTask, wearablesToRequest));
                 }
 
-                var servicePartialResponsesPool = PoolUtils.RentList<((WearableWithoutDefinitionResponse response, bool success) taskResponse, IEnumerable<string> wearablesRequested)>();
+                var servicePartialResponsesPool = PoolUtils.RentList<((EntityDto[] response, bool success) taskResponse, IEnumerable<string> wearablesRequested)>();
                 var servicePartialResponses = servicePartialResponsesPool.GetList();
 
                 try
@@ -394,7 +426,11 @@ namespace DCLServices.WearablesCatalogService
                         throw e;
                     }
 
-                    var wearables = partialResponse.taskResponse.response.wearables;
+                    var response = partialResponse.taskResponse.response;
+
+                    string contentBaseUrl = $"{catalyst.contentUrl}contents/";
+
+                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, assetBundlesUrl)).ToList();
 
                     MapLambdasDataIntoWearableItem(wearables);
                     AddWearablesToCatalog(wearables);
@@ -420,8 +456,8 @@ namespace DCLServices.WearablesCatalogService
 
             foreach (var item in wearableElements)
             {
-                WearableWithEntityResponseDto.ElementDto.EntityDto entity = item.entity;
-                WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto metadata = entity.metadata;
+                EntityDto entity = item.entity;
+                EntityDto.MetadataDto metadata = entity.metadata;
 
                 if (IsInvalidWearable(metadata))
                     continue;
@@ -464,8 +500,8 @@ namespace DCLServices.WearablesCatalogService
                     string newThumbnail = thumbnail[(index + 1)..];
                     string newBaseUrl = thumbnail[..(index + 1)];
                     wearable.thumbnail = newThumbnail;
-                    wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? $"{catalyst.contentUrl}/contents/" : newBaseUrl;
-                    wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
+                    wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? $"{catalyst.contentUrl}contents/" : newBaseUrl;
+                    wearable.baseUrlBundles = assetBundlesUrl;
                     wearable.emoteDataV0 = null;
                 }
                 catch (Exception e)
@@ -513,7 +549,7 @@ namespace DCLServices.WearablesCatalogService
             return false;
         }
 
-        private bool IsInvalidWearable(WearableWithEntityResponseDto.ElementDto.EntityDto.MetadataDto metadata)
+        private bool IsInvalidWearable(EntityDto.MetadataDto metadata)
         {
             if (metadata == null)
             {
@@ -547,8 +583,5 @@ namespace DCLServices.WearablesCatalogService
 
             return false;
         }
-
-        private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
-            wearableIds.Select(id => ("wearableId", id)).ToArray();
     }
 }

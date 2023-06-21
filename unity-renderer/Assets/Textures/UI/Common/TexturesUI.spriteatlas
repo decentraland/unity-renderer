@@ -288,6 +288,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8db90f8afd6a349dea8d959b88ddae43, type: 3}
   - {fileID: 21300000, guid: ad45379ab95744ed290d6c7808b89084, type: 3}
   - {fileID: 21300000, guid: 877d19aa5b7d74c25862a30311503ed4, type: 3}
+  - {fileID: 21300000, guid: 1707afaaf67d6474eabb6c9829ed3cf3, type: 3}
   - {fileID: 21300000, guid: 63cedfaa776dc4d69a9f4848cd966364, type: 3}
   - {fileID: 21300000, guid: 96af52ba6c86845beb91f068f1cabe94, type: 3}
   - {fileID: 21300000, guid: 6c9da2cade77947d3bc10b1ad5c4f532, type: 3}
@@ -338,6 +339,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f89f754c892ba4e8faa6b3390ff07e16, type: 3}
   - {fileID: 21300000, guid: 9440a54c9ef22324ebdbd9239d2e6021, type: 3}
   - {fileID: 21300000, guid: b3dde05c995029e4c8e4a4acd0f99337, type: 3}
+  - {fileID: 21300000, guid: eaad235cc6bf34bdf899e5095b412398, type: 3}
   - {fileID: 21300000, guid: 2dcab87c551ac42a3b30debae889baad, type: 3}
   - {fileID: 21300000, guid: f0bcc87cbbf78438ebfb049f6c1aa203, type: 3}
   - {fileID: 21300000, guid: 6017049c5a0dc43f6a4a68f1b4e28664, type: 3}
@@ -488,7 +490,7 @@ SpriteAtlas:
   - BookIcon
   - Frame24
   - AcceptButton
-  - CopyIconOutline
+  - CopyIcn
   - QuestOn
   - IconBellActive
   - OkIcon
@@ -515,9 +517,9 @@ SpriteAtlas:
   - BackpackOff
   - MessageReceived
   - ScenesContainer
-  - TopGradientPopUp
+  - ShortGradientTop
   - ClaimIcon
-  - JumpInArrowPink
+  - RubyArrow
   - VoiceChatMute
   - DiscordIconHD
   - Button14
@@ -633,7 +635,8 @@ SpriteAtlas:
   - RectRadius16
   - ContainerRectLeft14
   - CardPassportIcon
-  - JumpInIcon
+  - JumpInIcn
+  - Container12RectRight
   - RoundedContainer34
   - MarketIcon
   - PassportIcon
@@ -684,6 +687,7 @@ SpriteAtlas:
   - CursorInteractive
   - RarityCornerEmotes
   - InputRed
+  - Container12RectLeft
   - CrowdIcon
   - OutlineGradient
   - EndVoiceChat
@@ -694,7 +698,7 @@ SpriteAtlas:
   - FavoritesIcon
   - HideNameIcon
   - ChatOff
-  - LinearGradientNFTs
+  - LargeGradientBottom
   - ArrowGradient
   - NotFavoriteIcon
   - ContainerOutline100
@@ -722,7 +726,7 @@ SpriteAtlas:
   - CardBlockIcon
   - LiveContainer
   - Button10
-  - BottomRect12
+  - Container12RectBottom
   - ContainerRectTop
   - StarIcon
   - Button6
@@ -741,7 +745,7 @@ SpriteAtlas:
   - LogOutIcon
   - RoundedContainer44
   - CloseButton
-  - JumpIcon
+  - WhiteArrow
   - InputFieldBuilder
   - ControlsIcon
   - WarningIcon
