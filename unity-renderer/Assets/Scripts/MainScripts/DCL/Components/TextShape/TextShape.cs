@@ -101,7 +101,7 @@ namespace DCL.Components
         public TextMeshPro text;
         public RectTransform rectTransform;
         private Model cachedModel;
-        private static Material cachedFontMaterial;
+        private Material cachedFontMaterial;
         private Camera mainCamera;
         private bool cameraFound;
 
@@ -126,8 +126,7 @@ namespace DCL.Components
         {
             model = new Model();
 
-            if(cachedFontMaterial == null)
-                cachedFontMaterial = new Material(text.fontSharedMaterial);
+            cachedFontMaterial = new Material(text.fontSharedMaterial);
 
             text.fontSharedMaterial = cachedFontMaterial;
             text.text = string.Empty;

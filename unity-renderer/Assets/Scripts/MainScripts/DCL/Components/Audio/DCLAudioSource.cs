@@ -169,9 +169,11 @@ namespace DCL.Components
                     audioSettingsData.masterVolume);
             }
 
-            bool isCurrentScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
-
-            audioSource.volume = isCurrentScene ? newVolume : 0f;
+            if (scene != null)
+            {
+                bool isCurrentScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
+                audioSource.volume = isCurrentScene ? newVolume : 0f;
+            }
         }
 
         private void OnCurrentSceneChanged(int currentSceneNumber, int previousSceneNumber)
