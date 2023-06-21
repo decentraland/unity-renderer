@@ -246,7 +246,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
                 continue;
             }
 
-            data._dirty = true;
+            data.dirty = true;
             crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
             removeAsDirtyComponents[markAsDirty[i].key] = new ComponentWriteData(data, isRemoval);
         }
@@ -277,7 +277,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             }
             else
             {
-                data._dirty = false;
+                data.dirty = false;
                 crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
             }
         }

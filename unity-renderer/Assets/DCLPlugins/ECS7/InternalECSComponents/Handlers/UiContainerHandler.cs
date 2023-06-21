@@ -21,7 +21,7 @@ public class UiContainerHandler : IECSComponentHandler<InternalUiContainer>
         if (containerData != null)
         {
             containerData.model.parentElement?.Remove(containerData.model.rootElement);
-            containerData.model.parentElement = null;
+            // containerData.model.parentElement = null;
         }
     }
 

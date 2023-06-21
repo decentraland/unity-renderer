@@ -42,10 +42,13 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, componentsManager, componentsFactory, null,
-                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
-                executors);
+
+            // TODO: Fix this...
+            // var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+            //     0, componentsManager, componentsFactory, null,
+            //     new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
+            //     executors);
+
             componentWriter = Substitute.For<IECSComponentWriter>();
             system = new ECSRaycastSystem(
                 internalComponents.raycastComponent,
@@ -59,7 +62,7 @@ namespace Tests
 
             scene = testUtils.CreateScene(666);
             entityRaycaster = scene.CreateEntity(512);
-            keepEntityAliveComponent.PutFor(scene, entityRaycaster, new InternalComponent());
+            // keepEntityAliveComponent.PutFor(scene, entityRaycaster, new InternalComponent());
             sceneStateHandler = new SceneStateHandler(
                 Substitute.For<CRDTServiceContext>(),
                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },

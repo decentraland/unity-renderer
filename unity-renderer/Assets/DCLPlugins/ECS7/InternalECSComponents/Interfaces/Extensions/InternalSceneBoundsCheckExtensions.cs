@@ -13,17 +13,22 @@ namespace DCL.ECS7.InternalComponents
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model;
 
+            InternalSceneBoundsCheck finalModel;
             if (model == null)
             {
                 if (!createComponentIfMissing)
                     return;
 
-                model = new InternalSceneBoundsCheck();
+                finalModel = new InternalSceneBoundsCheck();
+            }
+            else
+            {
+                finalModel = model.Value;
             }
 
-            model.entityPosition = newEntityPosition;
+            finalModel.entityPosition = newEntityPosition;
 
-            sbcInternalComponent.PutFor(scene, entity, model);
+            sbcInternalComponent.PutFor(scene, entity, finalModel);
 
             // Update children position in their SBCComponent as well
             IList<long> childrenId = entity.childrenId;
@@ -104,9 +109,10 @@ namespace DCL.ECS7.InternalComponents
             if (model == null)
                 return;
 
-            model.OnSceneBoundsStateChange -= callback;
+            InternalSceneBoundsCheck finalModel = model.Value;
+            finalModel.OnSceneBoundsStateChange -= callback;
 
-            sbcInternalComponent.PutFor(scene, entity, model);
+            sbcInternalComponent.PutFor(scene, entity, finalModel);
         }
 
         public static bool IsFullyDefaulted(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
@@ -114,9 +120,9 @@ namespace DCL.ECS7.InternalComponents
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model;
 
-            return model == null || (model.entityPosition == Vector3.zero
-                                     && model.entityLocalMeshBounds.size == Vector3.zero
-                                     && model.OnSceneBoundsStateChange == null);
+            return model == null || (model.Value.entityPosition == Vector3.zero
+                                     && model.Value.entityLocalMeshBounds.size == Vector3.zero
+                                     && model.Value.OnSceneBoundsStateChange == null);
         }
     }
 }

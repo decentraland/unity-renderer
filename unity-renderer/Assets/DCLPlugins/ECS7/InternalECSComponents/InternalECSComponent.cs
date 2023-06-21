@@ -79,35 +79,32 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: Interna
         }
     }
 
-    public void RemoveFor(IParcelScene scene, IDCLEntity entity, T defaultModel = null)
-    {
-        RemoveFor(scene, entity.entityId, defaultModel);
-    }
+    public void RemoveFor(IParcelScene scene, IDCLEntity entity, T defaultModel) => RemoveFor(scene, entity.entityId, defaultModel);
 
-    public void RemoveFor(IParcelScene scene, long entityId, T defaultModel = null)
-    {
-        RemoveFor(scene.sceneData.sceneNumber, entityId, defaultModel);
-    }
+    public void RemoveFor(IParcelScene scene, long entityId, T defaultModel) => RemoveFor(scene.sceneData.sceneNumber, entityId, defaultModel);
 
-    public void RemoveFor(int sceneNumber, long entityId, T defaultModel = null)
+    public void RemoveFor(int sceneNumber, long entityId, T defaultModel)
     {
         if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
-        {
             return;
-        }
 
-        if (defaultModel != null)
-        {
-            markAsDirtyComponents[new ComponentIdentifier(sceneNumber, entityId, componentId)] =
-                new ComponentWriteData(defaultModel, true);
+        markAsDirtyComponents[new ComponentIdentifier(sceneNumber, entityId, componentId)] =
+            new ComponentWriteData(defaultModel, true);
 
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, defaultModel);
-        }
-        else
-        {
-            markAsDirtyComponents.Remove(new ComponentIdentifier(sceneNumber, entityId, componentId));
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
-        }
+        crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, defaultModel);
+    }
+
+    public void RemoveFor(IParcelScene scene, IDCLEntity entity) => RemoveFor(scene, entity.entityId);
+
+    public void RemoveFor(IParcelScene scene, long entityId) => RemoveFor(scene.sceneData.sceneNumber, entityId);
+
+    public void RemoveFor(int sceneNumber, long entityId)
+    {
+        if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
+            return;
+
+        markAsDirtyComponents.Remove(new ComponentIdentifier(sceneNumber, entityId, componentId));
+        crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
     }
 
     public IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, IDCLEntity entity)

@@ -91,7 +91,7 @@ namespace ECSSystems.UIInputSenderSystem
             params (IMessage resultMessage, int componentId)[] results)
         {
             var model = new InternalUIInputResults();
-            model._dirty = dirty;
+            model.dirty = dirty;
 
             foreach (var result in results) { model.Results.Enqueue(new InternalUIInputResults.Result(result.resultMessage, result.componentId)); }
 

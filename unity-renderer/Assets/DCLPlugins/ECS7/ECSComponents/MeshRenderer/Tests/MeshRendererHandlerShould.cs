@@ -37,9 +37,10 @@ namespace Tests
             handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent,
                 Substitute.For<IInternalECSComponent<InternalRenderers>>());
 
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, manager, factory, null, new KeyValueSet<ComponentIdentifier,ComponentWriteData>(), executors);
-            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
+            // TODO: Fix this...
+            // var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+            //     0, manager, factory, null, new KeyValueSet<ComponentIdentifier,ComponentWriteData>(), executors);
+            // keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]

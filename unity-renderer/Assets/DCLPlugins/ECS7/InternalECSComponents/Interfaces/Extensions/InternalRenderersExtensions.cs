@@ -18,15 +18,15 @@ namespace DCL.ECS7.InternalComponents
             if (model == null)
                 return;
 
-            model.renderers.Remove(renderer);
+            model.Value.renderers.Remove(renderer);
 
-            if (model.renderers.Count == 0)
+            if (model.Value.renderers.Count == 0)
             {
                 renderersInternalComponent.RemoveFor(scene, entity, new InternalRenderers());
                 return;
             }
 
-            renderersInternalComponent.PutFor(scene, entity, model);
+            renderersInternalComponent.PutFor(scene, entity, model.Value);
         }
 
         public static void RemoveRenderers(this IInternalECSComponent<InternalRenderers> renderersInternalComponent,
@@ -42,16 +42,16 @@ namespace DCL.ECS7.InternalComponents
 
             foreach (Renderer renderer in renderers)
             {
-                model.renderers.Remove(renderer);
+                model.Value.renderers.Remove(renderer);
             }
 
-            if (model.renderers.Count == 0)
+            if (model.Value.renderers.Count == 0)
             {
                 renderersInternalComponent.RemoveFor(scene, entity, new InternalRenderers());
                 return;
             }
 
-            renderersInternalComponent.PutFor(scene, entity, model);
+            renderersInternalComponent.PutFor(scene, entity, model.Value);
         }
 
         public static void AddRenderer(this IInternalECSComponent<InternalRenderers> renderersInternalComponent,

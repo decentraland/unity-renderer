@@ -49,11 +49,12 @@ namespace Tests
                 assetRetriever,
                 renderersComponent);
 
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, manager, factory, null,
-                new KeyValueSet<ComponentIdentifier, ComponentWriteData>(), executors);
+            // TODO: Fix This...
+            // var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+            //     0, manager, factory, null,
+            //     new KeyValueSet<ComponentIdentifier, ComponentWriteData>(), executors);
 
-            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
+            // keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]

@@ -27,10 +27,11 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
 
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, componentsManager, componentsFactory, null,
-                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
-                executors);
+            // TODO: Fix This...
+            // var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+            //     0, componentsManager, componentsFactory, null,
+            //     new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
+            //     executors);
 
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
@@ -43,7 +44,7 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1101);
 
-            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
+            // keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]

@@ -1,31 +1,49 @@
 using DCL.Components.Video.Plugin;
 using DCL.ECSComponents;
+using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
 
+// TODO: Which internal properties can be turned to READONLY ???
+// TODO: Check every model constructor is being called correctly
+
 namespace DCL.ECS7.InternalComponents
 {
-    public class InternalComponent
+    public interface InternalComponent
     {
-        public bool dirty => _dirty;
-        internal bool _dirty = false;
+        bool dirty { get; set; }
     }
 
-    public class InternalTexturizable : InternalComponent
+    public struct InternalTexturizable : InternalComponent
     {
-        public IList<Renderer> renderers = new List<Renderer>();
+        public bool dirty { get; set; }
+        public IList<Renderer> renderers;
+
+        public InternalTexturizable(List<Renderer> initialRenderers = null)
+        {
+            this.dirty = false;
+            this.renderers = initialRenderers ?? new List<Renderer>();
+        }
     }
 
-    public class InternalMaterial : InternalComponent
+    public struct InternalMaterial : InternalComponent
     {
-        public Material material = null;
-        public bool castShadows = true;
+        public bool dirty { get; set; }
+        public Material material;
+        public bool castShadows;
+
+        public InternalMaterial(Material material = null, bool castShadows = true)
+        {
+            this.dirty = false;
+            this.material = material;
+            this.castShadows = castShadows;
+        }
     }
 
-    public class InternalVideoMaterial : InternalComponent
+    public struct InternalVideoMaterial : InternalComponent
     {
         public readonly struct VideoTextureData
         {
@@ -39,11 +57,19 @@ namespace DCL.ECS7.InternalComponents
             }
         }
 
-        public Material material = null;
+        public bool dirty { get; set; }
+        public Material material;
         public IList<VideoTextureData> videoTextureDatas;
+
+        public InternalVideoMaterial(Material material = null, IList<VideoTextureData> videoTextureDatas = null)
+        {
+            this.dirty = false;
+            this.material = material;
+            this.videoTextureDatas = videoTextureDatas;
+        }
     }
 
-    public class InternalVideoPlayer : InternalComponent
+    public struct InternalVideoPlayer : InternalComponent
     {
         public readonly struct MaterialAssigned
         {
@@ -57,43 +83,93 @@ namespace DCL.ECS7.InternalComponents
             }
         }
 
-        public WebVideoPlayer videoPlayer = null;
+        public bool dirty { get; set; }
+        public bool removed;
+        public WebVideoPlayer videoPlayer;
         public IList<MaterialAssigned> assignedMaterials;
-        public bool removed = false;
+
+        public InternalVideoPlayer(WebVideoPlayer videoPlayer = null, IList<MaterialAssigned> assignedMaterials = null)
+        {
+            this.dirty = false;
+            this.removed = false;
+            this.videoPlayer = videoPlayer;
+            this.assignedMaterials = assignedMaterials;
+        }
     }
 
-    public class InternalColliders : InternalComponent
+    public struct InternalColliders : InternalComponent
     {
-        public KeyValueSet<Collider, uint> colliders = new KeyValueSet<Collider, uint>();
+        public bool dirty { get; set; }
+        public KeyValueSet<Collider, uint> colliders;
+
+        public InternalColliders(KeyValueSet<Collider, uint> colliders = null)
+        {
+            this.dirty = false;
+            this.colliders = colliders ?? new KeyValueSet<Collider, uint>();
+        }
     }
 
-    public class InternalRenderers : InternalComponent
+    public struct InternalRenderers : InternalComponent
     {
-        public IList<Renderer> renderers = new List<Renderer>();
+        public bool dirty { get; set; }
+        public IList<Renderer> renderers;
+
+        public InternalRenderers(IList<Renderer> renderers = null)
+        {
+            this.dirty = false;
+            this.renderers = renderers ?? new List<Renderer>();
+        }
     }
 
-    public class InternalAudioSource : InternalComponent
+    public struct InternalAudioSource : InternalComponent
     {
+        public bool dirty { get; set; }
         public AudioSource audioSource;
+
+        public InternalAudioSource(AudioSource audioSource = null)
+        {
+            this.dirty = false;
+            this.audioSource = audioSource;
+        }
     }
 
-    public class InternalSceneBoundsCheck : InternalComponent
+    public struct InternalSceneBoundsCheck : InternalComponent
     {
-        public Vector3 entityPosition = Vector3.zero;
-        public Bounds entityLocalMeshBounds = new Bounds();
-        public bool meshesDirty = false;
+        public bool dirty { get; set; }
+        public Vector3 entityPosition; // Vector3.zero
+        public Bounds entityLocalMeshBounds; //  new Bounds()
+        public bool meshesDirty; // false
         public IList<Renderer> renderers;
         public KeyValueSet<Collider, uint> physicsColliders;
         public KeyValueSet<Collider, uint> pointerColliders;
         public Action<bool> OnSceneBoundsStateChange;
+
+        public InternalSceneBoundsCheck(IList<Renderer> renderers = null)
+        {
+            this.dirty = false;
+            this.entityPosition = Vector3.zero;
+            this.entityLocalMeshBounds = new Bounds();
+            this.meshesDirty = false;
+            this.renderers = renderers;
+            this.physicsColliders = null;
+            this.pointerColliders = null;
+            this.OnSceneBoundsStateChange = null;
+        }
     }
 
-    public class InternalVisibility : InternalComponent
+    public struct InternalVisibility : InternalComponent
     {
-        public bool visible = true;
+        public bool dirty { get; set; }
+        public bool visible;
+
+        public InternalVisibility(bool visible = true)
+        {
+            this.dirty = false;
+            this.visible = visible;
+        }
     }
 
-    public class InternalInputEventResults : InternalComponent
+    public struct InternalInputEventResults : InternalComponent
     {
         public struct EventData
         {
@@ -102,25 +178,41 @@ namespace DCL.ECS7.InternalComponents
             public PointerEventType type;
         }
 
-        public readonly IList<EventData> events = new List<EventData>(20);
+        public bool dirty { get; set; }
+        public readonly IList<EventData> events;
+
+        public InternalInputEventResults(List<EventData> events = null)
+        {
+            this.dirty = false;
+            this.events = events ?? new List<EventData>(20);
+        }
     }
 
-    public class InternalUiContainer : InternalComponent
+    public struct InternalUiContainer : InternalComponent
     {
-        public readonly VisualElement rootElement = new VisualElement();
-        public readonly HashSet<int> components = new HashSet<int>();
+        public bool dirty { get; set; }
+        public readonly VisualElement rootElement;
+        public readonly HashSet<int> components;
         public VisualElement parentElement;
         public long parentId;
-        public long rigthOf;
+        public long rightOf;
         public bool shouldSort;
 
         public InternalUiContainer(long entityId)
         {
+            this.dirty = false;
+            this.components = new HashSet<int>();
+            this.parentElement = null;
+            this.parentId = -1;
+            this.rightOf = -1;
+            this.shouldSort = false;
+
+            this.rootElement = new VisualElement();
             rootElement.name += $"(Id: {entityId})";
         }
     }
 
-    public class InternalPointerEvents : InternalComponent
+    public struct InternalPointerEvents : InternalComponent
     {
         public readonly struct Entry
         {
@@ -150,32 +242,101 @@ namespace DCL.ECS7.InternalComponents
             }
         }
 
-        public readonly List<Entry> PointerEvents = new List<Entry>();
+        public bool dirty { get; set; }
+        public readonly List<Entry> PointerEvents;
+
+        public InternalPointerEvents(List<Entry> PointerEvents = null)
+        {
+            this.dirty = false;
+            this.PointerEvents = PointerEvents ?? new List<Entry>();
+        }
     }
 
-    public class InternalRegisteredUiPointerEvents : InternalComponent
+    public struct InternalRegisteredUiPointerEvents : InternalComponent
     {
+        public bool dirty { get; set; }
         public EventCallback<PointerDownEvent> OnPointerDownCallback;
         public EventCallback<PointerUpEvent> OnPointerUpCallback;
         public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
         public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
+
+        public InternalRegisteredUiPointerEvents(
+            EventCallback<PointerDownEvent> onPointerDownCallback = null,
+            EventCallback<PointerUpEvent> OnPointerUpCallback = null,
+            EventCallback<PointerEnterEvent> OnPointerEnterCallback = null,
+            EventCallback<PointerLeaveEvent> OnPointerLeaveCallback = null)
+        {
+            this.dirty = false;
+            this.OnPointerDownCallback = onPointerDownCallback;
+            this.OnPointerUpCallback = OnPointerUpCallback;
+            this.OnPointerEnterCallback = OnPointerEnterCallback;
+            this.OnPointerLeaveCallback = OnPointerLeaveCallback;
+        }
     }
 
-    public class InternalRaycast : InternalComponent
+    public struct InternalRaycast : InternalComponent
     {
+        public bool dirty { get; set; }
         public PBRaycast raycastModel;
+
+        public InternalRaycast(PBRaycast raycastModel)
+        {
+            this.dirty = false;
+            this.raycastModel = raycastModel;
+        }
     }
 
-    public class InternalGltfContainerLoadingState : InternalComponent
+    public struct InternalGltfContainerLoadingState : InternalComponent
     {
+        public bool dirty { get; set; }
         public LoadingState LoadingState;
         public bool GltfContainerRemoved;
+
+        public InternalGltfContainerLoadingState(LoadingState loadingState = LoadingState.Unknown, bool gltfContainerRemoved = false)
+        {
+            this.dirty = false;
+            this.LoadingState = loadingState;
+            this.GltfContainerRemoved = gltfContainerRemoved;
+        }
     }
 
-    public class InternalEngineInfo : InternalComponent
+    public struct InternalEngineInfo : InternalComponent
     {
-        public uint SceneTick = 0;
-        public float SceneInitialRunTime = 0;
-        public float SceneInitialFrameCount = Time.frameCount;
+        public bool dirty { get; set; }
+        public uint SceneTick;
+        public float SceneInitialRunTime;
+        public float SceneInitialFrameCount;
+
+        public InternalEngineInfo(uint sceneTick = 0, float sceneInitialRunTime = 0)
+        {
+            this.dirty = false;
+            this.SceneTick = sceneTick;
+            this.SceneInitialRunTime = sceneInitialRunTime;
+            this.SceneInitialFrameCount = Time.frameCount;
+        }
+    }
+
+    public struct InternalUIInputResults : InternalComponent
+    {
+        public readonly struct Result
+        {
+            public readonly IMessage Message;
+            public readonly int ComponentId;
+
+            public Result(IMessage message, int componentId)
+            {
+                this.Message = message;
+                this.ComponentId = componentId;
+            }
+        }
+
+        public bool dirty { get; set; }
+        public readonly Queue<Result> Results;
+
+        public InternalUIInputResults(Queue<Result> results = null)
+        {
+            this.dirty = false;
+            this.Results = results ?? new Queue<Result>();
+        }
     }
 }
