@@ -119,12 +119,8 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
             outfits[outfitItem.slot] = outfitItem;
 
             if (string.IsNullOrEmpty(outfitItem.outfit.bodyShape))
-            {
-                outfitComponentViews[outfitItem.slot].SetIsLoading(false);
-                outfitComponentViews[outfitItem.slot].SetIsEmpty(true);
                 continue;
-            }
-            outfitComponentViews[outfitItem.slot].SetIsLoading(true);
+
             outfitComponentViews[outfitItem.slot].SetIsEmpty(false);
             outfitComponentViews[outfitItem.slot].SetOutfit(outfitItem);
             await characterPreviewController.TryUpdateModelAsync(GenerateAvatarModel(outfitItem));
@@ -139,7 +135,7 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
     {
         foreach (var outfitItem in outfitsToShow)
         {
-            if (outfitItem.outfit == null)
+            if (string.IsNullOrEmpty(outfitItem.outfit.bodyShape))
             {
                 outfitComponentViews[outfitItem.slot].SetIsLoading(false);
                 outfitComponentViews[outfitItem.slot].SetIsEmpty(true);
