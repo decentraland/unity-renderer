@@ -1,5 +1,6 @@
 using DCL;
 using DCL.CRDT;
+using DCL.ECS7;
 using System;
 using System.Collections.Generic;
 
@@ -17,5 +18,7 @@ namespace RPC.Context
         public Func<int, uint> GetSceneTick;
         public Action<int> IncreaseSceneTick;
         public Func<int, bool> IsSceneGltfLoadingFinished;
+        public readonly Dictionary<int, DualKeyValueSet<long, int, WriteData>> scenesOutgoingMsgs =
+            new Dictionary<int, DualKeyValueSet<long, int, WriteData>>(24);
     }
 }

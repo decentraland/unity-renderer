@@ -1,5 +1,4 @@
 using DCL;
-using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.ECSEngineInfoSystem;
@@ -65,22 +64,25 @@ public class ECSSystemsController : IDisposable
             CommonScriptableObjects.allUIHidden,
             DataStore.i.HUDs.isSceneUIEnabled);
 
-
         ECSBillboardSystem billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
 
         ECSVideoPlayerSystem videoPlayerSystem = new ECSVideoPlayerSystem(
             context.internalEcsComponents.videoPlayerComponent,
             context.internalEcsComponents.videoMaterialComponent,
             context.internalEcsComponents.EngineInfo,
-            context.componentWriter);
+            context.ComponentWriters,
+            context.VideoEventPool);
 
-        cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
+        cameraEntitySystem = new ECSCameraEntitySystem(context.ComponentWriters, context.CameraModePool, context.PointerLockPool, context.TransformPool,
             DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
 
+        //context.componentWriter
         playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter, DataStore.i.ecs7.scenes,
             DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
-        ECSUIInputSenderSystem uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
+        ECSUIInputSenderSystem uiInputSenderSystem = new ECSUIInputSenderSystem(
+            context.internalEcsComponents.uiInputResultsComponent,
+            context.componentWriter);
 
         ECSRaycastSystem raycastSystem = new ECSRaycastSystem(
             context.internalEcsComponents.raycastComponent,
@@ -106,7 +108,6 @@ public class ECSSystemsController : IDisposable
             context.componentGroups.RegisteredUiPointerEvents,
             context.componentGroups.RegisteredUiPointerEventsWithUiRemoved,
             context.componentGroups.RegisteredUiPointerEventsWithPointerEventsRemoved);
-
 
         ECSPointerInputSystem pointerInputSystem = new ECSPointerInputSystem(
             context.internalEcsComponents.onPointerColliderComponent,

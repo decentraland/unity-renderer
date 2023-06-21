@@ -6,6 +6,7 @@ using DCL.Helpers;
 using DCL.Models;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
+using MainScripts.DCL.Components;
 using rpc_csharp;
 using RPC.Context;
 using System;
@@ -14,7 +15,6 @@ using System.IO;
 using System.Threading;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
-using MainScripts.DCL.Components;
 
 namespace RPC.Services
 {
@@ -177,6 +177,7 @@ namespace RPC.Services
 
             if (isFirstMessage && (!request.Payload.IsEmpty || receivedSendCrdtCalls > 0))
                 isFirstMessage = false;
+
             receivedSendCrdtCalls++;
 
             try
@@ -215,19 +216,23 @@ namespace RPC.Services
                     }
                 }
 
-                if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtOutgoing))
-                {
-                    sendCrdtMemoryStream.SetLength(0);
-                    crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
+                sendCrdtMemoryStream.SetLength(0);
 
-                    for (int i = 0; i < sceneCrdtOutgoing.Count; i++)
-                    {
-                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, sceneCrdtOutgoing.Pairs[i].value);
-                    }
+                // if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtOutgoing))
+                // {
+                //     crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
+                //
+                //     for (int i = 0; i < sceneCrdtOutgoing.Count; i++)
+                //     {
+                //         CRDTSerializer.Serialize(sendCrdtBinaryWriter, sceneCrdtOutgoing.Pairs[i].value);
+                //     }
+                //
+                //     sceneCrdtOutgoing.Clear();
+                // }
 
-                    sceneCrdtOutgoing.Clear();
-                    reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
-                }
+                SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, true);
+
+                reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
 
                 if (!isFirstMessage)
                     crdtContext.IncreaseSceneTick(sceneNumber);
@@ -267,14 +272,15 @@ namespace RPC.Services
                 getStateMemoryStream.SetLength(0);
 
                 // serialize outgoing messages
-                crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
-
-                foreach (var msg in outgoingMessages)
-                {
-                    CRDTSerializer.Serialize(getStateBinaryWriter, msg.value);
-                }
-
-                outgoingMessages.Clear();
+                // crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
+                //
+                // foreach (var msg in outgoingMessages)
+                // {
+                //     CRDTSerializer.Serialize(getStateBinaryWriter, msg.value);
+                // }
+                //
+                // outgoingMessages.Clear();
+                //SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, false);
 
                 // serialize scene state
                 if (sceneState != null)
@@ -304,6 +310,7 @@ namespace RPC.Services
             try
             {
                 RendererManyEntityActions sceneRequest = RendererManyEntityActions.Parser.ParseFrom(request.Payload);
+
                 for (var i = 0; i < sceneRequest.Actions.Count; i++)
                 {
                     context.crdt.SceneController.EnqueueSceneMessage(
@@ -317,6 +324,59 @@ namespace RPC.Services
             }
 
             return defaultSendBatchResult;
+        }
+
+        private static readonly MemoryStream buffer = new MemoryStream();
+        private static readonly CodedOutputStream stream = new CodedOutputStream(buffer);
+
+        private static void SendSceneMessages(CRDTServiceContext crdtContext, int sceneNumber, BinaryWriter sendCrdtBinaryWriter, bool clearMessages)
+        {
+            if (!crdtContext.CrdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor executor))
+                return;
+
+            if (crdtContext.scenesOutgoingMsgs.TryGetValue(sceneNumber, out var msgs))
+            {
+                var pairs = msgs.Pairs;
+
+                for (int i = 0; i < pairs.Count; i++)
+                {
+                    var msg = pairs[i].value;
+                    int entityId = (int)pairs[i].key1;
+                    int componentId = pairs[i].key2;
+
+                    if (msg.MessageType != CrdtMessageType.APPEND_COMPONENT
+                        && msg.MessageType != CrdtMessageType.PUT_COMPONENT
+                        && msg.MessageType != CrdtMessageType.DELETE_COMPONENT)
+                    {
+                        msg.PooledWrappedComponent.Dispose();
+                        continue;
+                    }
+
+                    CrdtMessage crdtMessage;
+
+                    if (msg.MessageType == CrdtMessageType.APPEND_COMPONENT || msg.MessageType == CrdtMessageType.PUT_COMPONENT)
+                        msg.PooledWrappedComponent.WrappedComponentBase.SerializeTo(buffer, stream);
+
+                    if (msg.MessageType == CrdtMessageType.APPEND_COMPONENT)
+                    {
+                        crdtMessage = executor.crdtProtocol.CreateSetMessage(entityId, componentId, buffer.ToArray());
+                    }
+                    else if (msg.MessageType == CrdtMessageType.PUT_COMPONENT)
+                    {
+                        crdtMessage = executor.crdtProtocol.CreateLwwMessage(entityId, componentId, buffer.ToArray());
+                    }
+                    else
+                    {
+                        crdtMessage = executor.crdtProtocol.CreateLwwMessage(entityId, componentId, null);
+                    }
+
+                    CRDTSerializer.Serialize(sendCrdtBinaryWriter, crdtMessage);
+                    msg.PooledWrappedComponent.Dispose();
+                }
+
+                if (clearMessages)
+                    msgs.Clear();
+            }
         }
     }
 }
