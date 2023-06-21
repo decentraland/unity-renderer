@@ -76,7 +76,9 @@ namespace DCL
                 if (item.usePool)
                 {
                     EnsurePoolForItem(item);
-                    GetPoolForItem(item).ForcePrewarm(forceActive: false);
+
+                    bool forceActivate = item.classId == CLASS_ID_COMPONENT.TEXT_SHAPE;
+                    GetPoolForItem(item).ForcePrewarm(forceActivate);
                 }
             }
         }
@@ -109,7 +111,6 @@ namespace DCL
             GameObject original = Instantiate(item.prefab.gameObject);
             pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount, isPersistent: true);
             pool.useLifecycleHandlers = true;
-            pool.ForcePrewarm(forceActive: true);
             m_AddPool.End();
         }
 
@@ -147,6 +148,7 @@ namespace DCL
             if (factoryItem.usePool)
             {
                 m_CreateItemFromIdUsePool.Begin(id.ToString());
+
                 EnsurePoolForItem(factoryItem);
                 poolableObject = GetPoolForItem(factoryItem).Get();
                 instancedGo = poolableObject.gameObject;
