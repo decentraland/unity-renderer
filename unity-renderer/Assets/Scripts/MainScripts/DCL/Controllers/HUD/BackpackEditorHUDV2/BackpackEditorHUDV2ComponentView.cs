@@ -39,6 +39,7 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject normalSection;
         [SerializeField] internal GameObject outfitSection;
         [SerializeField] internal Button outfitButton;
+        [SerializeField] internal Image outfitButtonIcon;
 
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
@@ -83,10 +84,18 @@ namespace DCL.Backpack
 
         private void ToggleOutfitSection()
         {
-            normalSection.SetActive(false);
-            outfitSection.SetActive(true);
-            outfitButton.image.color = selectedOutfitButtonColor;
-            OnOutfitsOpened?.Invoke();
+            if (outfitSection.activeInHierarchy)
+            {
+                ToggleNormalSection();
+            }
+            else
+            {
+                normalSection.SetActive(false);
+                outfitSection.SetActive(true);
+                outfitButton.image.color = selectedOutfitButtonColor;
+                outfitButtonIcon.color = Color.white;
+                OnOutfitsOpened?.Invoke();
+            }
         }
 
         private void ToggleNormalSection()
@@ -94,6 +103,7 @@ namespace DCL.Backpack
             normalSection.SetActive(true);
             outfitSection.SetActive(false);
             outfitButton.image.color = Color.white;
+            outfitButtonIcon.color = Color.black;
         }
 
         private void Update() =>
