@@ -17,15 +17,22 @@ namespace DCL.Components
         where ReferencesContainerType : UIReferencesContainer
         where ModelType : UIShape.Model
     {
-        public const float RAYCAST_ALPHA_THRESHOLD = 0.01f;
+        protected const float RAYCAST_ALPHA_THRESHOLD = 0.01f;
 
-        public UIShape() { }
+        public new ModelType model
+        {
+            get => base.model as ModelType;
+            protected set => base.model = value;
+        }
 
-        new public ModelType model { get { return base.model as ModelType; } set { base.model = value; } }
+        public new ReferencesContainerType referencesContainer
+        {
+            get => base.referencesContainer as ReferencesContainerType;
+            protected set => base.referencesContainer = value;
+        }
 
-        new public ReferencesContainerType referencesContainer { get { return base.referencesContainer as ReferencesContainerType; } set { base.referencesContainer = value; } }
-
-        public override ComponentUpdateHandler CreateUpdateHandler() { return new UIShapeUpdateHandler<ReferencesContainerType, ModelType>(this); }
+        public override ComponentUpdateHandler CreateUpdateHandler() =>
+            new UIShapeUpdateHandler<ReferencesContainerType, ModelType>(this);
 
         bool raiseOnAttached;
         bool firstApplyChangesCall;
@@ -80,14 +87,8 @@ namespace DCL.Components
             {
                 UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>(true);
 
-                for (int i = 0; i < parents.Length; i++)
-                {
-                    UIReferencesContainer parent = parents[i];
-                    if (parent.owner != null)
-                    {
-                        parent.owner.OnChildAttached(parentUIComponent, this);
-                    }
-                }
+                for (var i = 0; i < parents.Length; i++)
+                    parents[i].owner?.OnChildAttached(parentUIComponent, this);
             }
         }
     }
@@ -170,18 +171,18 @@ namespace DCL.Components
         }
 
         public override string componentName => GetDebugName();
-        public virtual string referencesContainerPrefabName => "";
+        protected virtual string referencesContainerPrefabName => "";
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
         public bool isLayoutDirty { get; private set; }
-        protected System.Action OnLayoutRefresh;
+        private System.Action OnLayoutRefresh;
 
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
         private BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapesBySceneVariable => DataStore.i.HUDs.dirtyShapes;
-        public UIShape parentUIComponent { get; protected set; }
+        protected UIShape parentUIComponent { get; private set; }
 
-        public UIShape()
+        protected UIShape()
         {
             screenSize.OnChange += OnScreenResize;
             model = new Model();
@@ -193,23 +194,20 @@ namespace DCL.Components
                 RequestRefresh();
         }
 
-        public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
+        public override int GetClassId() =>
+            (int) CLASS_ID.UI_IMAGE_SHAPE;
 
-        public string GetDebugName()
+        private string GetDebugName()
         {
             Model model = (Model) this.model;
 
-            if (string.IsNullOrEmpty(model.name))
-            {
-                return GetType().Name;
-            }
-            else
-            {
-                return GetType().Name + " - " + model.name;
-            }
+            return string.IsNullOrEmpty(model.name)
+                ? GetType().Name
+                : GetType().Name + " - " + model.name;
         }
 
-        public override IEnumerator ApplyChanges(BaseModel newJson) { return null; }
+        public override IEnumerator ApplyChanges(BaseModel newJson) =>
+            null;
 
         ProfilerMarker m_UIShapeInstantiateUIGameObject = new ("VV.UIShape.InstantiateUIGameObject");
 
@@ -217,8 +215,6 @@ namespace DCL.Components
         {
             m_UIShapeInstantiateUIGameObject.Begin();
             Model model = (Model) this.model;
-
-            GameObject uiGameObject = null;
 
             bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) &&
                                       scene.componentsManagerLegacy.HasSceneSharedComponent(model.parentComponent);
@@ -239,10 +235,9 @@ namespace DCL.Components
                 parentUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
             }
 
-            uiGameObject =
-                Object.Instantiate(
-                    Resources.Load(prefabPath),
-                    parentUIComponent != null ? parentUIComponent.childHookRectTransform : null) as GameObject;
+            var uiGameObject = Object.Instantiate(
+                Resources.Load(prefabPath),
+                parentUIComponent?.childHookRectTransform) as GameObject;
 
             referencesContainer = uiGameObject.GetComponent<T>();
 
@@ -256,7 +251,7 @@ namespace DCL.Components
             return referencesContainer as T;
         }
 
-        public virtual void RequestRefresh()
+        private void RequestRefresh()
         {
             if (isLayoutDirty) return;
 
@@ -284,7 +279,7 @@ namespace DCL.Components
             RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
         }
 
-        public virtual void MarkLayoutDirty( System.Action OnRefresh = null )
+        protected void MarkLayoutDirty( System.Action OnRefresh = null )
         {
             UIShape rootParent = GetRootParent();
 
@@ -303,8 +298,7 @@ namespace DCL.Components
         ProfilerMarker m_UIShapeRefreshDCLSize = new ("VV.UIShape.RefreshDCLSize");
         ProfilerMarker m_UIShapeRefreshDCLAlignmentAndPosition = new ("VV.UIShape.RefreshDCLAlignmentAndPosition");
 
-
-        public void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        protected void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
         {
             m_UIShapeRefreshDCLLayout.Begin();
             RectTransform parentRT = referencesContainer.GetComponentInParent<RectTransform>();
@@ -340,7 +334,7 @@ namespace DCL.Components
                 model.height.GetScaledValue(parentTransform.rect.height));
         }
 
-        public void RefreshDCLAlignmentAndPosition(RectTransform parentTransform = null)
+        private void RefreshDCLAlignmentAndPosition(RectTransform parentTransform = null)
         {
             if (parentTransform == null)
                 parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
@@ -361,14 +355,10 @@ namespace DCL.Components
             referencesContainer.layoutElementRT.localPosition += position;
         }
 
-        public virtual void RefreshDCLLayoutRecursively(bool refreshSize = true,
-            bool refreshAlignmentAndPosition = true)
-        {
+        protected virtual void RefreshDCLLayoutRecursively(bool refreshSize = true, bool refreshAlignmentAndPosition = true) =>
             RefreshDCLLayoutRecursively_Internal(refreshSize, refreshAlignmentAndPosition);
-        }
 
-        public void RefreshDCLLayoutRecursively_Internal(bool refreshSize = true,
-            bool refreshAlignmentAndPosition = true)
+        private void RefreshDCLLayoutRecursively_Internal(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
         {
             UIShape rootParent = GetRootParent();
 
@@ -386,7 +376,7 @@ namespace DCL.Components
                 rootParent.referencesContainer.transform);
         }
 
-        public void FixMaxStretchRecursively()
+        private void FixMaxStretchRecursively()
         {
             UIShape rootParent = GetRootParent();
 
@@ -458,67 +448,37 @@ namespace DCL.Components
             return parent;
         }
 
-        protected void ConfigureAlignment(LayoutGroup layout)
+        private void ConfigureAlignment(LayoutGroup layout)
         {
             Model model = (Model) this.model;
-            switch (model.vAlign)
-            {
-                case "top":
-                    switch (model.hAlign)
-                    {
-                        case "left":
-                            layout.childAlignment = TextAnchor.UpperLeft;
-                            break;
-                        case "right":
-                            layout.childAlignment = TextAnchor.UpperRight;
-                            break;
-                        default:
-                            layout.childAlignment = TextAnchor.UpperCenter;
-                            break;
-                    }
 
-                    break;
-                case "bottom":
-                    switch (model.hAlign)
-                    {
-                        case "left":
-                            layout.childAlignment = TextAnchor.LowerLeft;
-                            break;
-                        case "right":
-                            layout.childAlignment = TextAnchor.LowerRight;
-                            break;
-                        default:
-                            layout.childAlignment = TextAnchor.LowerCenter;
-                            break;
-                    }
-
-                    break;
-                default: // center
-                    switch (model.hAlign)
-                    {
-                        case "left":
-                            layout.childAlignment = TextAnchor.MiddleLeft;
-                            break;
-                        case "right":
-                            layout.childAlignment = TextAnchor.MiddleRight;
-                            break;
-                        default:
-                            layout.childAlignment = TextAnchor.MiddleCenter;
-                            break;
-                    }
-
-                    break;
-            }
+            layout.childAlignment = model.vAlign switch
+                                    {
+                                        "top" => model.hAlign switch
+                                                 {
+                                                     "left" => TextAnchor.UpperLeft,
+                                                     "right" => TextAnchor.UpperRight,
+                                                     _ => TextAnchor.UpperCenter
+                                                 },
+                                        "bottom" => model.hAlign switch
+                                                    {
+                                                        "left" => TextAnchor.LowerLeft,
+                                                        "right" => TextAnchor.LowerRight,
+                                                        _ => TextAnchor.LowerCenter
+                                                    },
+                                        _ => model.hAlign switch
+                                             {
+                                                 "left" => TextAnchor.MiddleLeft,
+                                                 "right" => TextAnchor.MiddleRight,
+                                                 _ => TextAnchor.MiddleCenter
+                                             }
+                                    };
         }
 
         protected void SetComponentDebugName()
         {
-            if (referencesContainer == null || model == null)
-            {
-                return;
-            }
-
-            referencesContainer.name = componentName;
+            if (referencesContainer != null && model != null)
+                referencesContainer.name = componentName;
         }
 
         public override void Dispose()
@@ -532,9 +492,10 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent) { }
+        public virtual void OnChildAttached(UIShape _, UIShape childComponent) { }
 
-        public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent) { }
+        protected virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent) { }
+
         public void Refresh()
         {
             RefreshRecursively();

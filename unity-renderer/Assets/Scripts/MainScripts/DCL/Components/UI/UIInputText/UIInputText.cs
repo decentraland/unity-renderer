@@ -96,7 +96,7 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIInputText";
+        protected override string referencesContainerPrefabName => "UIInputText";
 
         public TMP_Text tmpText => referencesContainer.text;
         public TMP_InputField inputField => referencesContainer.inputField;

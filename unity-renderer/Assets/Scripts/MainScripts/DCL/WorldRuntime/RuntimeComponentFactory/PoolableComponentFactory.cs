@@ -83,15 +83,13 @@ namespace DCL
             }
         }
 
-        private Pool GetPoolForItem(Item item)
-        {
-            return PoolManager.i.GetPool(GetIdForPool(item));
-        }
+        private static Pool GetPoolForItem(Item item) =>
+            PoolManager.i.GetPool(GetIdForPool(item));
 
-        private object GetIdForPool(Item item)
+        private static object GetIdForPool(Item item)
         {
 #if UNITY_EDITOR
-            return item.classId.ToString() + "_POOL";
+            return item.classId + "_POOL";
 #else
             return item.classId;
 #endif

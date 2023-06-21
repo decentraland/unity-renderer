@@ -63,7 +63,7 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIImage";
+        protected override string referencesContainerPrefabName => "UIImage";
 
         DCLTexture dclTexture = null;
         private readonly DCLTexture.Fetcher dclTextureFetcher = new DCLTexture.Fetcher();

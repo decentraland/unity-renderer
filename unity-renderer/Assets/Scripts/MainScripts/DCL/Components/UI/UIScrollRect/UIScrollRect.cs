@@ -62,7 +62,7 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIScrollRect";
+        protected override string referencesContainerPrefabName => "UIScrollRect";
 
         public UIScrollRect() { model = new Model(); }
 
@@ -82,7 +82,7 @@ namespace DCL.Components
             RefreshContainerForShape(childComponent);
         }
 
-        public override void OnChildDetached(UIShape parent, UIShape childComponent)
+        protected override void OnChildDetached(UIShape parent, UIShape childComponent)
         {
             base.OnChildDetached(parent, childComponent);
             childComponent.OnAppliedChanges -= RefreshContainerForShape;
@@ -108,7 +108,7 @@ namespace DCL.Components
             RefreshDCLLayoutRecursively(false, true);
         }
 
-        public override void RefreshDCLLayoutRecursively(bool refreshSize = true,
+        protected override void RefreshDCLLayoutRecursively(bool refreshSize = true,
             bool refreshAlignmentAndPosition = true)
         {
             base.RefreshDCLLayoutRecursively(refreshSize, refreshAlignmentAndPosition);

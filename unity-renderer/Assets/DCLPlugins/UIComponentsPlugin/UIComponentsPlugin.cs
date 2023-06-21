@@ -1,17 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
-using UnityEngine;
 
 public class UIComponentsPlugin : IPlugin
 {
     public UIComponentsPlugin()
     {
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
-        
+
         // UI
         factory.RegisterBuilder((int) CLASS_ID.UI_INPUT_TEXT_SHAPE, BuildComponent<UIInputText>);
         factory.RegisterBuilder((int) CLASS_ID.UI_FULLSCREEN_SHAPE, BuildComponent<UIScreenSpace>);
@@ -26,23 +23,12 @@ public class UIComponentsPlugin : IPlugin
         factory.createConditions.Add((int) CLASS_ID.UI_FULLSCREEN_SHAPE, CanCreateScreenShape);
     }
 
-    bool CanCreateScreenShape(int sceneNumber, int classId)
-    {
-        IParcelScene scene = Environment.i.world.state.GetScene(sceneNumber);
+    private static bool CanCreateScreenShape(int sceneNumber, int _) =>
+        Environment.i.world.state.GetScene(sceneNumber)
+                   .componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>() == null;
 
-        if (scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>() != null)
-            return false;
-
-        return true;
-    }
-
-
-    protected T BuildComponent<T>()
-        where T : IComponent, new()
-    {
-        return new T();
-    }
-
+    private static T BuildComponent<T>() where T: IComponent, new() =>
+        new ();
 
     public void Dispose()
     {

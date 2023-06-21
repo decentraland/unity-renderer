@@ -12,7 +12,7 @@ namespace DCL.Components
     public class UIText : UIShape<UITextReferencesContainer, UIText.Model>
     {
         [System.Serializable]
-        new public class Model : UIShape.Model
+        public new class Model : UIShape.Model
         {
             public float outlineWidth = 0f;
             public Color outlineColor = Color.white;
@@ -90,7 +90,7 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIText";
+        protected override string referencesContainerPrefabName => "UIText";
 
         public UIText()
         {

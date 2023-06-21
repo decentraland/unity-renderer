@@ -44,7 +44,7 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIContainerRect";
+        protected override string referencesContainerPrefabName => "UIContainerRect";
 
         public UIContainerRect() { model = new Model(); }
 
