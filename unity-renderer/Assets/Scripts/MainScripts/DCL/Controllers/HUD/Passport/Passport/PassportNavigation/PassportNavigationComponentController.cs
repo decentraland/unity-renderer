@@ -8,6 +8,7 @@ using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 
@@ -26,6 +27,7 @@ namespace DCL.Social.Passports
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
         private readonly ViewAllComponentController viewAllController;
+        private readonly Regex linksRegex = new (@"\[(.*?)\]\((.*?)\)", RegexOptions.Multiline);
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
@@ -34,6 +36,8 @@ namespace DCL.Social.Passports
         private CancellationTokenSource cts = new ();
         private Promise<WearableItem[]> wearablesPromise;
         private Promise<WearableItem[]> emotesPromise;
+
+        private bool isMyAccountEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("my_account");
 
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
@@ -93,15 +97,26 @@ namespace DCL.Social.Passports
             {
                 var ct = cts.Token;
                 currentUserId = userProfile.userId;
-                string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
+                string filteredName = await FilterProfanityContentAsync(userProfile.userName).AttachExternalCancellation(ct);
                 view.SetGuestUser(userProfile.isGuest);
                 view.SetName(filteredName);
                 view.SetOwnUserTexts(userProfile.userId == ownUserProfile.userId);
 
                 if (!userProfile.isGuest)
                 {
-                    string filteredDescription = await FilterContentAsync(userProfile.description).AttachExternalCancellation(ct);
+                    string filteredDescription = await FilterProfanityContentAsync(userProfile.description)
+                       .AttachExternalCancellation(ct);
+
+                    List<(string title, string url)> links;
+
+                    if (isMyAccountEnabled)
+                        links = ownUserProfile.Links?.Select(link => (link.title, link.url)).ToList()
+                                ?? new List<(string title, string url)>();
+                    else
+                        filteredDescription = ExtractLinks(filteredDescription, out links);
+
                     view.SetDescription(filteredDescription);
+                    view.SetLinks(links);
                     view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
                     LoadAndShowOwnedNamesAsync(userProfile, ct).Forget();
                     LoadAndShowOwnedLandsAsync(userProfile, ct).Forget();
@@ -256,7 +271,7 @@ namespace DCL.Social.Passports
             }
         }
 
-        private async UniTask<string> FilterContentAsync(string filterContent) =>
+        private async UniTask<string> FilterProfanityContentAsync(string filterContent) =>
             IsProfanityFilteringEnabled()
                 ? await profanityFilter.Filter(filterContent)
                 : filterContent;
@@ -279,6 +294,22 @@ namespace DCL.Social.Passports
             dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
             dataStore.exploreV2.isOpen.Set(false, true);
             dataStore.HUDs.currentPlayerId.Set((null, null));
+        }
+
+        private string ExtractLinks(string description, out List<(string title, string url)> links)
+        {
+            links = new List<(string title, string url)>();
+            MatchCollection matches = linksRegex.Matches(description);
+
+            if (matches.Count == 0) return description;
+
+            foreach (Match match in matches)
+            {
+                links.Add((title: match.Groups[1].Value, url: match.Groups[2].Value));
+                description = description.Replace(match.Value, "");
+            }
+
+            return description;
         }
     }
 }

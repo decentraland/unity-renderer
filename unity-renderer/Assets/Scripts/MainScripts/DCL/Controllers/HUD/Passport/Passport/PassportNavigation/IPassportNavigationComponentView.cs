@@ -1,6 +1,7 @@
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using System;
+using System.Collections.Generic;
 
 namespace DCL.Social.Passports
 {
@@ -15,6 +16,7 @@ namespace DCL.Social.Passports
         void SetName(string username);
         void SetOwnUserTexts(bool isOwnUser);
         void SetDescription(string description);
+        void SetLinks(List<(string title, string url)> links);
         void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);
         void SetCollectibleWearables(WearableItem[] wearables);
         void SetCollectibleWearablesLoadingActive(bool isActive);

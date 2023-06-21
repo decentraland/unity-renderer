@@ -16,9 +16,6 @@ namespace DCL.Social.Passports
     {
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
-        private const string LINKS_REGEX = @"\[(.*?)\)";
-        private const string LINK_TITLE_REGEX = @"(?<=\[).+?(?=\])";
-        private const string LINK_REGEX = @"(?<=\().+?(?=\))";
         private const string OWN_PLAYER = "\n         You don't ";
         private const string OTHER_PLAYERS = "\n         This person doesn't ";
         private const string NO_WEARABLES_TEXT = "own any Wearables yet.";
@@ -208,18 +205,6 @@ namespace DCL.Social.Passports
 
         public void SetDescription(string description)
         {
-            MatchCollection matchCollection = Regex.Matches(description, LINKS_REGEX, RegexOptions.IgnoreCase);
-            List<string> links = new List<string>();
-
-            foreach (Match link in matchCollection)
-            {
-                description = description.Replace(link.Value, "");
-                links.Add(link.Value);
-            }
-
-            linksTitle.SetActive(links.Count > 0);
-            linksContainer.SetActive(links.Count > 0);
-
             if (string.IsNullOrEmpty(description))
             {
                 emptyDescriptionGO.SetActive(true);
@@ -232,8 +217,24 @@ namespace DCL.Social.Passports
                 description = AddCoordinateLinks(description);
                 descriptionText.text = description;
             }
+        }
 
-            SetLinks(links);
+        public void SetLinks(List<(string title, string url)> links)
+        {
+            linksTitle.SetActive(links.Count > 0);
+            linksContainer.SetActive(links.Count > 0);
+
+            foreach (Transform child in linksContainer.transform)
+                Destroy(child.gameObject);
+
+            foreach (var link in links)
+            {
+                PassportLinkView newLink = Instantiate(linkPrefabReference, linksContainer.transform).GetComponent<PassportLinkView>();
+                newLink.OnClickLink -= ClickedLink;
+                newLink.SetLinkTitle(link.title);
+                newLink.SetLink(link.url);
+                newLink.OnClickLink += ClickedLink;
+            }
         }
 
         private string AddCoordinateLinks(string description)
@@ -255,20 +256,6 @@ namespace DCL.Social.Passports
             string coordText = link[COORD_LINK_ID.Length..];
             ParcelCoordinates coordinates = CoordinateUtils.ParseCoordinatesString(coordText);
             OnClickDescriptionCoordinates?.Invoke(coordinates);
-        }
-
-        private void SetLinks(List<string> links)
-        {
-            foreach (Transform child in linksContainer.transform) { Destroy(child.gameObject); }
-
-            foreach (string link in links)
-            {
-                PassportLinkView newLink = Instantiate(linkPrefabReference, linksContainer.transform).GetComponent<PassportLinkView>();
-                newLink.OnClickLink -= ClickedLink;
-                newLink.SetLinkTitle(Regex.Matches(link, LINK_TITLE_REGEX, RegexOptions.IgnoreCase)[0].Value);
-                newLink.SetLink(Regex.Matches(link, LINK_REGEX, RegexOptions.IgnoreCase)[0].Value);
-                newLink.OnClickLink += ClickedLink;
-            }
         }
 
         private void ClickedLink(string obj)
