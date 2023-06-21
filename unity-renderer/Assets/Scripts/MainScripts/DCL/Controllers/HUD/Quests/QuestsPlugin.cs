@@ -62,7 +62,10 @@ public class QuestsPlugin : IPlugin
 
     public async UniTask<ClientQuestsService> GetClientQuestsService()
     {
-        var rpcSignRequest = new RPCSignRequest(DCL.Environment.i.serviceLocator.Get<IRPC>());
+        var rpc = Environment.i.serviceLocator.Get<IRPC>();
+        await rpc.EnsureRpc();
+        var rpcSignRequest = new RPCSignRequest(rpc);
+
         AuthedWebSocketClientTransport webSocketClientTransport = new AuthedWebSocketClientTransport(rpcSignRequest, "wss://quests-rpc.decentraland.zone");
 
         //TODO Quest Server is not accepting the correct url and by now it needs "/". Change it as soon as QuestServer is ready to have a generic authed WebSocket Client
