@@ -188,6 +188,9 @@ namespace DCL.LoadingScreen
 
             await shaderPrewarm.PrewarmAsync(OnShaderPrewarmProgress, cancellationToken);
 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
 

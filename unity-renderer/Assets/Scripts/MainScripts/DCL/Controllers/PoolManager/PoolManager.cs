@@ -102,11 +102,12 @@ namespace DCL
             if (!enablePrewarm)
                 maxPrewarmCount = 0;
 
-            Pool pool = new Pool(id.ToString(), maxPrewarmCount);
-
-            pool.id = id;
-            pool.original = original;
-            pool.persistent = isPersistent;
+            Pool pool = new Pool(id.ToString(), maxPrewarmCount)
+                {
+                    id = id,
+                    original = original,
+                    persistent = isPersistent,
+                };
 
             if (USE_POOL_CONTAINERS)
             {

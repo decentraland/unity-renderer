@@ -80,11 +80,11 @@ namespace DCL.Components
 
         private void OnDestroy()
         {
+            if (entity == null) return;
+
             entity.OnShapeLoaded -= OnEntityShapeLoaded;
 
-            var animationShape = scene.componentsManagerLegacy.GetSharedComponent(entity, (typeof(BaseShape))) as LoadableShape;
-
-            if (animationShape != null)
+            if (scene.componentsManagerLegacy.GetSharedComponent(entity, typeof(BaseShape)) is LoadableShape animationShape)
                 animationShape.OnLoaded -= OnShapeLoaded;
         }
 
@@ -102,28 +102,18 @@ namespace DCL.Components
             return null;
         }
 
-        new public Model GetModel() { return (Model) model; }
+        public new Model GetModel() =>
+            (Model) model;
 
-        private bool IsEntityShapeLoaded()
-        {
-            var animationShape = scene.componentsManagerLegacy.GetSharedComponent(entity, (typeof(BaseShape))) as LoadableShape;
-
-            if (animationShape == null)
-                return false;
-
-            return animationShape.isLoaded;
-        }
+        private bool IsEntityShapeLoaded() =>
+            (scene.componentsManagerLegacy.GetSharedComponent(entity, typeof(BaseShape)) as LoadableShape)
+            is { isLoaded: true };
 
         private void OnEntityShapeLoaded(IDCLEntity shapeEntity)
         {
             var animationShape = scene.componentsManagerLegacy.GetSharedComponent(entity, (typeof(BaseShape))) as LoadableShape;
 
-            if (animationShape == null)
-                return;
-
-            var shapeModel = animationShape.GetModel() as LoadableShape.Model;
-
-            if (shapeModel == null)
+            if (animationShape?.GetModel() is not LoadableShape.Model shapeModel)
                 return;
 
             if ( shapeModel.src == lastLoadedModelSrc )
@@ -131,7 +121,7 @@ namespace DCL.Components
 
             lastLoadedModelSrc = shapeModel.src;
 
-            if ( animationShape.isLoaded )
+            if (animationShape.isLoaded)
             {
                 UpdateAnimationState();
             }
@@ -205,7 +195,7 @@ namespace DCL.Components
                     unityState.speed = state.speed;
 
                     state.clipReference = unityState.clip;
-                    
+
                     unityState.enabled = state.playing;
 
                     if (state.shouldReset)

@@ -95,6 +95,9 @@ namespace DCL
 #endif
         }
 
+
+        ProfilerMarker m_AddPool = new ("VV.Factory.AddPool");
+
         private void EnsurePoolForItem(Item item)
         {
             Pool pool = GetPoolForItem(item);
@@ -102,12 +105,17 @@ namespace DCL
             if (pool != null)
                 return;
 
+            m_AddPool.Begin(item.classId.ToString());
             GameObject original = Instantiate(item.prefab.gameObject);
             pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount, isPersistent: true);
             pool.useLifecycleHandlers = true;
+            pool.ForcePrewarm(forceActive: true);
+            m_AddPool.End();
         }
 
         ProfilerMarker m_CreateItemFromId = new ("VV.Factory.CreateItemFromId");
+        ProfilerMarker m_CreateItemFromIdUsePool = new ("VV.Factory.CreateItemFromId.UsePool");
+        ProfilerMarker m_CreateItemFromIdInstantiate = new ("VV.Factory.CreateItemFromId.Instantiate");
 
         public ItemType CreateItemFromId<ItemType>(CLASS_ID_COMPONENT id)
             where ItemType : IPoolableObjectContainer
@@ -138,13 +146,17 @@ namespace DCL
 
             if (factoryItem.usePool)
             {
+                m_CreateItemFromIdUsePool.Begin(id.ToString());
                 EnsurePoolForItem(factoryItem);
                 poolableObject = GetPoolForItem(factoryItem).Get();
                 instancedGo = poolableObject.gameObject;
+                m_CreateItemFromIdUsePool.End();
             }
             else
             {
+                m_CreateItemFromIdInstantiate.Begin(id.ToString());
                 instancedGo = Instantiate(factoryItem.prefab.gameObject);
+                m_CreateItemFromIdInstantiate.End();
             }
 
             ItemType item = default;

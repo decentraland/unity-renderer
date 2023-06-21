@@ -101,12 +101,11 @@ namespace DCL.Components
         public TextMeshPro text;
         public RectTransform rectTransform;
         private Model cachedModel;
-        private Material cachedFontMaterial;
+        private static Material cachedFontMaterial;
         private Camera mainCamera;
         private bool cameraFound;
 
         public override string componentName => "text";
-
 
         private bool CameraFound
         {
@@ -123,12 +122,13 @@ namespace DCL.Components
             }
         }
 
-
         private void Awake()
         {
             model = new Model();
 
-            cachedFontMaterial = new Material(text.fontSharedMaterial);
+            if(cachedFontMaterial == null)
+                cachedFontMaterial = new Material(text.fontSharedMaterial);
+
             text.fontSharedMaterial = cachedFontMaterial;
             text.text = string.Empty;
 
