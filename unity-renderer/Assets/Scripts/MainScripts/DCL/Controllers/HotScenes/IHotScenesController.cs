@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCLServices.Lambdas;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -85,11 +86,18 @@ namespace MainScripts.DCL.Controllers.HotScenes
         }
 
         [Serializable]
-        public class PlacesAPIResponse
+        public class PlacesAPIResponse : PaginatedResponse
         {
             public bool ok;
             public int total;
             public List<PlaceInfo> data;
+        }
+
+        [Serializable]
+        public class PlacesAPIGetParcelResponse
+        {
+            public bool ok;
+            public PlaceInfo data;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace DCLServices.Lambdas
     public class LambdaResponsePagePointer<T> : IDisposable where T : PaginatedResponse
     {
         private readonly int pageSize;
-        private readonly Dictionary<int, T> cachedPages;
+        internal readonly Dictionary<int, T> cachedPages;
         private readonly ILambdaServiceConsumer<T> serviceConsumer;
         private readonly CancellationToken cancellationToken;
         private readonly string constEndPoint;
