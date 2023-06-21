@@ -16,6 +16,7 @@ public record SystemsContext
     public readonly WrappedComponentPool<IWrappedComponent<PBPointerLock>> PointerLockPool;
     public readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> TransformPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBVideoEvent>> VideoEventPool;
+    public readonly WrappedComponentPool<IWrappedComponent<PBRaycastResult>> RaycastResultPool;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IReadOnlyDictionary<int, ComponentWriter> componentWriters,
@@ -26,7 +27,8 @@ public record SystemsContext
         WrappedComponentPool<IWrappedComponent<PBCameraMode>> cameraModePool,
         WrappedComponentPool<IWrappedComponent<PBPointerLock>> pointerLockPool,
         WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool,
-        WrappedComponentPool<IWrappedComponent<PBVideoEvent>> videoEventPool)
+        WrappedComponentPool<IWrappedComponent<PBVideoEvent>> videoEventPool,
+        WrappedComponentPool<IWrappedComponent<PBRaycastResult>> raycastResultPool)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
@@ -38,5 +40,6 @@ public record SystemsContext
         TransformPool = transformPool;
         ComponentWriters = componentWriters;
         VideoEventPool = videoEventPool;
+        RaycastResultPool = raycastResultPool;
     }
 }

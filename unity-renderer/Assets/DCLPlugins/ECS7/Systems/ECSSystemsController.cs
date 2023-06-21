@@ -92,7 +92,8 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.customLayerColliderComponent,
             context.internalEcsComponents.EngineInfo,
-            context.componentWriter);
+            context.ComponentWriters,
+            context.RaycastResultPool);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             DataStore.i.ecs7.scenes,

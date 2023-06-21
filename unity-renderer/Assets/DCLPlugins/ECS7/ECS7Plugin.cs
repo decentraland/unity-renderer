@@ -63,7 +63,9 @@ namespace DCL.ECS7
                 new WrappedComponentPool<IWrappedComponent<PBCameraMode>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBCameraMode>(new PBCameraMode())),
                 new WrappedComponentPool<IWrappedComponent<PBPointerLock>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBPointerLock>(new PBPointerLock())),
                 new WrappedComponentPool<IWrappedComponent<ECSTransform>>(MAX_EXPECTED_SCENES * 2, () => new TransformWrappedComponent(new ECSTransform())),
-                new WrappedComponentPool<IWrappedComponent<PBVideoEvent>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBVideoEvent>(new PBVideoEvent())));
+                new WrappedComponentPool<IWrappedComponent<PBVideoEvent>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBVideoEvent>(new PBVideoEvent())),
+                new WrappedComponentPool<IWrappedComponent<PBRaycastResult>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBRaycastResult>(new PBRaycastResult()))
+            );
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
 
