@@ -9,6 +9,7 @@ import { fetchOwnedENS } from 'lib/web3/fetchOwnedENS'
 import { profileRequest, profileSuccess, saveProfileDelta } from '../actions'
 import { fetchProfile } from './fetchProfile'
 import { fetchLocalProfile } from './local/index'
+import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 
 export function* initialRemoteProfileLoad() {
   // initialize profile
@@ -39,6 +40,7 @@ export function* initialRemoteProfileLoad() {
 
   // Check for consolidating strategies if the user has claimed name or owned names are available for the address
   if (profile.hasClaimedName || names.length) {
+    const isMyAccountEnabled: boolean = yield select(getFeatureFlagEnabled, 'my_account')
     if (names.includes(profile.name)) {
       if (!profile.hasClaimedName) {
         // If the user has a name assigned and matches one of their owned names, consolidate the hasClaimedName setting to true
@@ -52,7 +54,7 @@ export function* initialRemoteProfileLoad() {
         }
         profileDirty = true
       }
-    } else {
+    } else if (!isMyAccountEnabled) {
       // User no longer has the current name but might have another, pick that one if available
       if (names.length) {
         defaultLogger.info(`Found missing claimed name '${names[0]}' for profile ${userId}, consolidating profile... `)
