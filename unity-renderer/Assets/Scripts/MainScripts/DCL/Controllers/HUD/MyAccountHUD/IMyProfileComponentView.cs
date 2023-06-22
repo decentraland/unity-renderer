@@ -9,6 +9,7 @@ namespace DCL.MyAccount
         event Action<string, bool> OnCurrentNameSubmitted;
         event Action OnGoFromClaimedToNonClaimNameClicked;
         event Action OnClaimNameClicked;
+        event Action<string> OnAboutDescriptionSubmitted;
         event Action<(string title, string url)> OnLinkAdded;
         event Action<(string title, string url)> OnLinkRemoved;
 
@@ -19,6 +20,7 @@ namespace DCL.MyAccount
         void SetClaimedNameDropdownOptions(List<string> claimedNamesList);
         void SetLoadingActive(bool isActive);
         void SetNonValidNameWarningActive(bool isActive);
+        void SetAboutDescription(string newDesc);
         void SetLinks(List<(string title, string url)> links);
         void ClearLinkInput();
     }

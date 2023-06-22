@@ -30,16 +30,24 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject nonValidNameWarning;
         [SerializeField] internal MyProfileLinkListComponentView linkListView;
 
+        [Header("About")]
+        [SerializeField] internal TMP_InputField aboutInputText;
+        [SerializeField] internal TMP_Text aboutCharCounter;
+
         public event Action<string> OnCurrentNameEdited;
         public event Action<string, bool> OnCurrentNameSubmitted;
         public event Action OnGoFromClaimedToNonClaimNameClicked;
         public event Action OnClaimNameClicked;
+        public event Action<string> OnAboutDescriptionSubmitted;
         public event Action<(string title, string url)> OnLinkAdded;
         public event Action<(string title, string url)> OnLinkRemoved;
 
         public override void Awake()
         {
             base.Awake();
+
+            UpdateNameCharLimit(0, nonClaimedNameInputField.characterLimit);
+            UpdateAboutCharLimit(0, aboutInputText.characterLimit);
 
             nonClaimedNameInputField.onValueChanged.AddListener(newName =>
             {
@@ -64,6 +72,10 @@ namespace DCL.MyAccount
             claimedNameGoToNonClaimedNameButton.onClick.AddListener(() => OnGoFromClaimedToNonClaimNameClicked?.Invoke());
             claimedNameBackToClaimedNamesListButton.onClick.AddListener(() => SetClaimedModeAsInput(false));
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
+
+            aboutInputText.onValueChanged.AddListener(newDesc => UpdateAboutCharLimit(newDesc.Length, aboutInputText.characterLimit));
+            aboutInputText.onDeselect.AddListener(newDesc => OnAboutDescriptionSubmitted?.Invoke(newDesc));
+            aboutInputText.onSubmit.AddListener(newDesc => OnAboutDescriptionSubmitted?.Invoke(newDesc));
 
             linkListView.OnAddedNew += tuple => OnLinkAdded?.Invoke((tuple.title, tuple.url));
             linkListView.OnRemoved += tuple => OnLinkRemoved?.Invoke((tuple.title, tuple.url));
@@ -91,6 +103,7 @@ namespace DCL.MyAccount
             SetClaimBannerActive(model.ShowClaimBanner);
             SetClaimedModeAsInput(model.ShowInputForClaimedMode);
             SetClaimedNameDropdownOptions(model.loadedClaimedNames);
+            SetAboutDescription(model.AboutDescription);
         }
 
         public void SetClaimedNameMode(bool isClaimed)
@@ -176,6 +189,12 @@ namespace DCL.MyAccount
             claimedNameDropdown.SetOptions(collectionsToAdd);
         }
 
+        public void SetAboutDescription(string newDesc)
+        {
+            model.AboutDescription = newDesc;
+            aboutInputText.text = newDesc;
+        }
+
         public void SetLoadingActive(bool isActive)
         {
             loadingContainer.SetActive(isActive);
@@ -198,5 +217,8 @@ namespace DCL.MyAccount
 
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>
             nameCharCounter.text = $"{currentLenght}/{maxLength}";
+
+        private void UpdateAboutCharLimit(int currentLenght, int maxLength) =>
+            aboutCharCounter.text = $"{currentLenght}/{maxLength}";
     }
 }

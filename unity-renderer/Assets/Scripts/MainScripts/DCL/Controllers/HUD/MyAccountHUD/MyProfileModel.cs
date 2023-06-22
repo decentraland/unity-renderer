@@ -12,5 +12,6 @@ namespace DCL.MyAccount
         public bool ShowClaimBanner;
         public bool ShowInputForClaimedMode;
         public List<string> loadedClaimedNames = new ();
+        public string AboutDescription;
     }
 }

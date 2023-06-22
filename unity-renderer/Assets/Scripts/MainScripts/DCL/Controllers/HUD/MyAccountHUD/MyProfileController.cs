@@ -54,6 +54,7 @@ namespace DCL.MyAccount
             view.OnCurrentNameSubmitted += OnNameSubmitted;
             view.OnGoFromClaimedToNonClaimNameClicked += GoFromClaimedToNonClaimName;
             view.OnClaimNameClicked += OnClaimNameRequested;
+            view.OnAboutDescriptionSubmitted += OnAboutDescriptionSubmitted;
             view.OnLinkAdded += OnAddLinkRequested;
             view.OnLinkRemoved += OnRemoveLinkRequested;
             ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
@@ -72,6 +73,7 @@ namespace DCL.MyAccount
             view.OnCurrentNameSubmitted -= OnNameSubmitted;
             view.OnGoFromClaimedToNonClaimNameClicked -= GoFromClaimedToNonClaimName;
             view.OnClaimNameClicked -= OnClaimNameRequested;
+            view.OnAboutDescriptionSubmitted -= OnAboutDescriptionSubmitted;
             view.OnLinkAdded -= OnAddLinkRequested;
             view.OnLinkRemoved -= OnRemoveLinkRequested;
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
@@ -95,6 +97,7 @@ namespace DCL.MyAccount
         {
             cts = cts.SafeRestart();
             LoadOwnedNamesAsync(cts.Token).Forget();
+            LoadAboutDescription();
             ShowLinks(ownUserProfile);
         }
 
@@ -167,6 +170,19 @@ namespace DCL.MyAccount
             myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
         }
 
+        private void OnAboutDescriptionSubmitted(string newDesc)
+        {
+            if (newDesc == ownUserProfile.description)
+                return;
+
+            userProfileBridge.SaveDescription(newDesc);
+
+            myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+        }
+
+        private void LoadAboutDescription() =>
+            view.SetAboutDescription(ownUserProfile.description);
+
         private bool IsValidUserName(string newName) =>
             nameRegex == null || nameRegex.IsMatch(newName);
 
@@ -176,6 +192,7 @@ namespace DCL.MyAccount
                 return;
 
             RefreshNamesSectionStatus();
+            LoadAboutDescription();
             ShowLinks(userProfile);
         }
 
@@ -210,8 +227,7 @@ namespace DCL.MyAccount
 
             async UniTaskVoid AddAndSaveLinkAsync(string title, string url, CancellationToken cancellationToken)
             {
-                List<UserProfileModel.Link> links = new (ownUserProfile.Links)
-                    {new UserProfileModel.Link(title, url)};
+                List<UserProfileModel.Link> links = new (ownUserProfile.Links) { new UserProfileModel.Link(title, url) };
 
                 try
                 {
@@ -219,6 +235,7 @@ namespace DCL.MyAccount
 
                     ShowLinks(profile);
                     view.ClearLinkInput();
+                    myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogException(e); }
@@ -240,6 +257,7 @@ namespace DCL.MyAccount
                     UserProfile profile = await userProfileBridge.SaveLinks(links, cancellationToken);
 
                     ShowLinks(profile);
+                    myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogException(e); }
