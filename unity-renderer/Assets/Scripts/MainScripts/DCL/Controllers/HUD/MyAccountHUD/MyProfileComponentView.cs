@@ -119,7 +119,7 @@ namespace DCL.MyAccount
         public void SetClaimBannerActive(bool isActive)
         {
             model.ShowClaimBanner = isActive;
-            claimNameBanner.SetActive(isActive);
+            claimNameBanner.SetActive(!model.IsClaimedMode && isActive);
         }
 
         public void SetClaimedModeAsInput(bool isInput, bool cleanInputField = false)
