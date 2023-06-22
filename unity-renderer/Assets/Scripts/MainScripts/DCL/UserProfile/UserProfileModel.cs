@@ -54,16 +54,36 @@ public class UserProfileModel
     public ulong updated_at;
     public int version;
     public AvatarModel avatar;
-    public Snapshots snapshots = new Snapshots();
+    public Snapshots snapshots = new ();
     public UserProfileModel Clone() => (UserProfileModel)MemberwiseClone();
 
     public bool hasConnectedWeb3 = true;
 
     public int tutorialFlagsMask;
-    public List<string> blocked;
-    public List<string> muted;
+    public List<string> blocked = new ();
+    public List<string> muted = new ();
     public int tutorialStep;
     public bool hasClaimedName = false;
+
+    public static UserProfileModel FallbackModel(string name, int id)
+    {
+        var fallbackId = $"{name}_{id}";
+
+        return new UserProfileModel
+        {
+            // Required fields (otherwise exceptions will be thrown by UserProfile.OnUpdate subscribers)
+            userId = fallbackId,
+            name = name,
+            description = "There was a problem with loading this profile. This is a fallback profile",
+
+            avatar = AvatarModel.FallbackModel(name, id),
+
+            // Optional (exceptions-free) fields
+            ethAddress = fallbackId,
+            email = fallbackId,
+            baseUrl = fallbackId,
+        };
+    }
 
     public bool Equals(UserProfileModel model)
     {
@@ -127,6 +147,4 @@ public class UserProfileModel
 
         return baseUrl + url;
     }
-
-
 }
