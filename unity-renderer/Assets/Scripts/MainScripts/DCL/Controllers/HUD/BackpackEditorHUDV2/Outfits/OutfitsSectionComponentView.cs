@@ -106,7 +106,7 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
             isVisible: false,
             previewCameraFocus: PreviewCameraFocus.DefaultEditing,
             isAvatarShadowActive: true);
-        characterPreviewController.SetFocus(PreviewCameraFocus.DefaultEditing);
+        characterPreviewController.SetFocus(PreviewCameraFocus.BodySnapshot);
         this.userProfileBridge = profileBridge;
         this.dataStore = dtaStore;
     }
